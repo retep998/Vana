@@ -88,3 +88,8 @@ enum class MobControlStatus : int8_t {
 	Normal = 1,
 	None = 5
 };
+
+enum class MobSpawnType {
+	New,
+	Existing,
+};

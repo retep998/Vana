@@ -210,7 +210,7 @@
     <ClInclude Include="src\Common\TimerContainerHolder.hpp" />
     <ClInclude Include="src\Common\TimerId.hpp" />
     <ClInclude Include="src\Common\TimerThread.hpp" />
-    <ClInclude Include="src\Common\TimerTypes.hpp" />
+    <ClInclude Include="src\Common\TimerType.hpp" />
     <ClInclude Include="src\Common\tokenizer.hpp" />
     <ClInclude Include="src\Common\Types.hpp" />
     <ClInclude Include="src\Common\BeautyDataProvider.hpp" />

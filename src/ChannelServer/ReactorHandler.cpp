@@ -118,7 +118,7 @@ auto ReactorHandler::checkDrop(Player *player, Drop *drop) -> void {
 						reaction.player = player;
 						reaction.state = reactorEvent.nextState;
 
-						Timer::Id id(Timer::Types::ReactionTimer, drop->getId(), 0);
+						Timer::Id id(TimerType::ReactionTimer, drop->getId());
 						Timer::Timer::create(reaction, id, nullptr, seconds_t(3));
 					}
 					return;
@@ -129,6 +129,6 @@ auto ReactorHandler::checkDrop(Player *player, Drop *drop) -> void {
 }
 
 auto ReactorHandler::checkLoot(Drop *drop) -> void {
-	Timer::Id id(Timer::Types::ReactionTimer, drop->getId(), 0);
+	Timer::Id id(TimerType::ReactionTimer, drop->getId());
 	Timer::TimerThread::getInstance().getTimerContainer()->removeTimer(id);
 }

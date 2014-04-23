@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 auto PlayerSummons::addSummon(Summon *summon, seconds_t time) -> void {
 	summon_id_t summonId = summon->getId();
-	Timer::Id id(Timer::Types::BuffTimer, summonId, 1);
+	Timer::Id id(TimerType::BuffTimer, summonId, 1);
 	Timer::Timer::create([this, summonId](const time_point_t &now) { SummonHandler::removeSummon(m_player, summonId, false, SummonMessages::OutOfTime, true); },
 		id, m_player->getTimerContainer(), time);
 
@@ -42,7 +42,7 @@ auto PlayerSummons::removeSummon(summon_id_t summonId, bool fromTimer) -> void {
 	Summon *summon = getSummon(summonId);
 	if (summon != nullptr) {
 		if (!fromTimer) {
-			Timer::Id id(Timer::Types::BuffTimer, summonId, 1);
+			Timer::Id id(TimerType::BuffTimer, summonId, 1);
 			m_player->getTimerContainer()->removeTimer(id);
 		}
 		ext::remove_element(m_summons, summon);
@@ -76,7 +76,7 @@ auto PlayerSummons::changedMap() -> void {
 }
 
 auto PlayerSummons::getSummonTimeRemaining(summon_id_t summonId) const -> seconds_t {
-	Timer::Id id(Timer::Types::BuffTimer, summonId, 1);
+	Timer::Id id(TimerType::BuffTimer, summonId, 1);
 	return m_player->getTimerContainer()->getRemainingTime<seconds_t>(id);
 }
 

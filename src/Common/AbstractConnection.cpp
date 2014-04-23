@@ -100,6 +100,6 @@ auto AbstractConnection::setSession(Session *val, bool ping, const Ip &ip) -> vo
 	m_ip = ip;
 
 	Timer::Timer::create([this](const time_point_t &now) { this->ping(); },
-		Timer::Id(Timer::Types::PingTimer, 0, 0),
+		Timer::Id(TimerType::PingTimer),
 		getTimers(), InitialPing, PingTime);
 }

@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "hash_combine.hpp"
-#include "TimerTypes.hpp"
+#include "TimerType.hpp"
 #include "Types.hpp"
 #include <algorithm>
 #include <functional>
@@ -28,7 +28,10 @@ namespace Timer {
 struct Id {
 	NO_DEFAULT_CONSTRUCTOR(Id);
 public:
-	Id(uint32_t type, uint32_t id, uint32_t id2);
+	Id(TimerType type, uint32_t id, uint32_t id2);
+	Id(TimerType type, uint32_t id);
+	Id(TimerType type);
+
 	uint32_t type;
 	uint32_t id;
 	uint32_t id2;
@@ -37,10 +40,26 @@ public:
 };
 
 inline
-Id::Id(uint32_t type, uint32_t id, uint32_t id2) :
-	type(type),
+Id::Id(TimerType type, uint32_t id, uint32_t id2) :
+	type(static_cast<uint32_t>(type)),
 	id(id),
 	id2(id2)
+{
+}
+
+inline
+Id::Id(TimerType type, uint32_t id) :
+	type(static_cast<uint32_t>(type)),
+	id(id),
+	id2(0)
+{
+}
+
+inline
+Id::Id(TimerType type) :
+	type(static_cast<uint32_t>(type)),
+	id(0),
+	id2(0)
 {
 }
 

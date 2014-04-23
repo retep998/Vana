@@ -354,9 +354,6 @@
     <ClInclude Include="src\Common\TimerThread.hpp">
       <Filter>Timer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\TimerTypes.hpp">
-      <Filter>Timer</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\InterHelper.hpp">
       <Filter>Inter-Server</Filter>
     </ClInclude>
@@ -517,5 +514,8 @@
       <Filter>Scripting</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\ThreadPool.hpp" />
+    <ClInclude Include="src\Common\TimerType.hpp">
+      <Filter>Timer</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

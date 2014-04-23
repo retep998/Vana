@@ -593,7 +593,7 @@ auto Skills::startCooldown(Player *player, skill_id_t skillId, int16_t coolTime,
 		player->getSkills()->addCooldown(skillId, coolTime);
 	}
 	Timer::Timer::create([player, skillId](const time_point_t &now) { Skills::stopCooldown(player, skillId); },
-		Timer::Id(Timer::Types::CoolTimer, skillId, 0),
+		Timer::Id(TimerType::CoolTimer, skillId),
 		player->getTimerContainer(), seconds_t(coolTime));
 }
 
@@ -604,21 +604,21 @@ auto Skills::stopCooldown(Player *player, skill_id_t skillId) -> void {
 		player->getActiveBuffs()->resetBattleshipHp();
 	}
 
-	Timer::Id id(Timer::Types::CoolTimer, skillId, 0);
+	Timer::Id id(TimerType::CoolTimer, skillId);
 	if (player->getTimerContainer()->isTimerRunning(id)) {
 		player->getTimerContainer()->removeTimer(id);
 	}
 }
 
 auto Skills::isCooling(Player *player, skill_id_t skillId) -> bool {
-	Timer::Id id(Timer::Types::CoolTimer, skillId, 0);
+	Timer::Id id(TimerType::CoolTimer, skillId);
 	return player->getTimerContainer()->isTimerRunning(id);
 }
 
 auto Skills::getCooldownTimeLeft(Player *player, skill_id_t skillId) -> int16_t {
 	int16_t coolTime = 0;
 	if (isCooling(player, skillId)) {
-		Timer::Id id(Timer::Types::CoolTimer, skillId, 0);
+		Timer::Id id(TimerType::CoolTimer, skillId);
 		coolTime = static_cast<int16_t>(player->getTimerContainer()->getRemainingTime<seconds_t>(id).count());
 	}
 	return coolTime;

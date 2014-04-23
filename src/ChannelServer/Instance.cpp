@@ -206,7 +206,7 @@ auto Instance::addTimer(const string_t &timerName, const TimerAction &timer) -> 
 	if (m_timerActions.find(timerName) == std::end(m_timerActions)) {
 		m_timerActions.emplace(timerName, timer);
 
-		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterId);
+		Timer::Id id(TimerType::InstanceTimer, timer.time, timer.counterId);
 		if (timer.time > 0) {
 			// Positive, occurs in the future
 			Timer::Timer::create([this, timerName](const time_point_t &now) { this->timerComplete(timerName, true); },
@@ -227,7 +227,7 @@ auto Instance::getTimerSecondsRemaining(const string_t &timerName) -> seconds_t 
 	auto kvp = m_timerActions.find(timerName);
 	if (kvp != std::end(m_timerActions)) {
 		auto &timer = kvp->second;
-		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterId);
+		Timer::Id id(TimerType::InstanceTimer, timer.time, timer.counterId);
 		timeLeft = getTimers()->getRemainingTime<seconds_t>(id);
 	}
 	return timeLeft;
@@ -238,7 +238,7 @@ auto Instance::removeTimer(const string_t &timerName) -> void {
 	if (kvp != std::end(m_timerActions)) {
 		const TimerAction &timer = kvp->second;
 		if (getTimerSecondsRemaining(timerName).count() > 0) {
-			Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterId);
+			Timer::Id id(TimerType::InstanceTimer, timer.time, timer.counterId);
 			getTimers()->removeTimer(id);
 			timerEnd(timerName, false);
 		}
@@ -432,5 +432,5 @@ auto Instance::showTimer(bool show, bool doIt) -> void {
 }
 
 auto Instance::getTimerId() const -> Timer::Id {
-	return Timer::Id(Timer::Types::InstanceTimer, static_cast<int32_t>(m_time.count()), -1);
+	return Timer::Id(TimerType::InstanceTimer, static_cast<int32_t>(m_time.count()), -1);
 }

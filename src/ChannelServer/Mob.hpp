@@ -98,7 +98,7 @@ private:
 
 	friend class Map;
 
-	auto setController(Player *control, bool spawn = false, Player *display = nullptr) -> void;
+	auto setController(Player *control, MobSpawnType spawn = MobSpawnType::Existing, Player *display = nullptr) -> void;
 	auto die(Player *player, bool fromExplosion = false) -> void;
 	auto distributeExpAndGetDropRecipient(Player *killer) -> player_id_t;
 	auto naturalHeal(int32_t hpHeal, int32_t mpHeal) -> void;
