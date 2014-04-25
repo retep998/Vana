@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.hpp"
 #include "ChatHandler.hpp"
 #include "CmsgHeader.hpp"
+#include "CommonHeader.hpp"
 #include "CommandHandler.hpp"
 #include "Database.hpp"
 #include "DropHandler.hpp"

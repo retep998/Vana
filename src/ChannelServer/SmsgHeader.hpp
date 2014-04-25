@@ -21,23 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Search for IV_PATCH_LOCATION in order to find the spot where the connect packet is created if this is the case for your locale
 #define IV_PATCH_LOCATION 0x0e
 
-#define SMSG_AUTHENTICATION 0x00
-#define SMSG_WORLD_STATUS 0x03
-#define SMSG_ACCOUNT_GENDER_DONE 0x04
-#define SMSG_MESSAGE_TRY_AGAIN 0x05 // Shows a popup with "Try again!" :P
-#define SMSG_PIN 0x06
-#define SMSG_PIN_ASSIGNED 0x07
-#define SMSG_PLAYER_GLOBAL_LIST 0x08
-#define SMSG_WORLD_LIST 0x0a
-#define SMSG_PLAYER_LIST 0x0b
-#define SMSG_CHANNEL_CONNECT 0x0c
-#define SMSG_PLAYER_NAME_CHECK 0x0d
-#define SMSG_PLAYER_CREATE 0x0e
-#define SMSG_PLAYER_DELETE 0x0f
 #define SMSG_CHANNEL_CHANGE 0x10
-#define SMSG_PING 0x11
-#define SMSG_CHANNEL_SELECT 0x14
-#define SMSG_LOGIN_RETURN 0x16
 #define SMSG_INVENTORY_OPERATION 0x1a
 #define SMSG_INVENTORY_SLOT_UPDATE 0x1b
 #define SMSG_PLAYER_UPDATE 0x1c

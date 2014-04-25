@@ -26,7 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.hpp"
 #include "PlayerDataProvider.hpp"
 #include "Session.hpp"
-#include "SmsgHeader.hpp"
 #include "SyncPacket.hpp"
 #include "WorldServer.hpp"
 #include "WorldServerAcceptConnection.hpp"

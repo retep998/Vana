@@ -17,10 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Decoder.hpp"
 #include "BitUtilities.hpp"
+#include "CommonHeader.hpp"
 #include "MapleVersion.hpp"
 #include "PacketBuilder.hpp"
 #include "Randomizer.hpp"
-#include "SmsgHeader.hpp"
 
 const uint8_t AesKeySize = 32;
 const uint8_t AesKey[AesKeySize] = {
