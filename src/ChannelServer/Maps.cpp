@@ -41,6 +41,11 @@ auto Maps::unloadMap(map_id_t mapId) -> void {
 }
 
 auto Maps::usePortal(Player *player, PortalInfo *portal) -> void {
+	if (portal->disabled) {
+		player->send(MapPacket::portalBlocked());
+		return;
+	}
+
 	if (portal->script.size() != 0) {
 		// Check for "onlyOnce" portal
 		if (portal->onlyOnce && player->usedPortal(portal->id)) {

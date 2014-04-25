@@ -216,6 +216,7 @@ namespace LuaExports {
 	auto clearDrops(lua_State *luaVm) -> lua_return_t;
 	auto clearMobs(lua_State *luaVm) -> lua_return_t;
 	auto countMobs(lua_State *luaVm) -> lua_return_t;
+	auto setPortalState(lua_State *luaVm) -> lua_return_t;
 	auto getAllMapPlayerIds(lua_State *luaVm) -> lua_return_t;
 	auto getNumPlayers(lua_State *luaVm) -> lua_return_t;
 	auto getReactorState(lua_State *luaVm) -> lua_return_t;
