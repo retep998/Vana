@@ -34,6 +34,7 @@ struct FootholdInfo {
 };
 
 struct PortalInfo {
+	bool disabled = false;
 	bool onlyOnce = false;
 	portal_id_t id = 0;
 	map_id_t toMap = 0;

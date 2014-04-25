@@ -234,6 +234,7 @@ auto LuaScriptable::initialize() -> void {
 	expose("clearDrops", &LuaExports::clearDrops);
 	expose("clearMobs", &LuaExports::clearMobs);
 	expose("countMobs", &LuaExports::countMobs);
+	expose("setPortalState", &LuaExports::setPortalState);
 	expose("getAllMapPlayerIds", &LuaExports::getAllMapPlayerIds);
 	expose("getNumPlayers", &LuaExports::getNumPlayers);
 	expose("getReactorState", &LuaExports::getReactorState);
@@ -351,6 +352,9 @@ auto LuaScriptable::setEnvironmentVariables() -> void {
 	set<int32_t>("type_int", VariableType::Integer);
 	set<int32_t>("type_num", VariableType::Number);
 	set<int32_t>("type_str", VariableType::String);
+
+	set<bool>("portal_enabled", true);
+	set<bool>("portal_disabled", false);
 
 	set<string_t>("locale_global", MAPLE_LOCALE_STRING_GLOBAL);
 	set<string_t>("locale_korea", MAPLE_LOCALE_STRING_KOREA);
@@ -1510,6 +1514,18 @@ auto LuaExports::countMobs(lua_State *luaVm) -> lua_return_t {
 	}
 	env.push<int32_t>(luaVm, Maps::getMap(mapId)->countMobs(mobId));
 	return 1;
+}
+
+auto LuaExports::setPortalState(lua_State *luaVm) -> lua_return_t {
+	auto &env = getEnvironment(luaVm);
+	map_id_t mapId = env.get<map_id_t>(luaVm, 1);
+	string_t portalName = env.get<string_t>(luaVm, 2);
+	bool enabled = env.get<bool>(luaVm, 3);
+
+	Map *map = Maps::getMap(mapId);
+	PortalInfo *portal = map->getPortal(portalName);
+	portal->disabled = !enabled;
+	return 0;
 }
 
 auto LuaExports::getAllMapPlayerIds(lua_State *luaVm) -> lua_return_t {
