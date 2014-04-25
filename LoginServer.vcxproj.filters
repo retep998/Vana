@@ -19,6 +19,9 @@
     <Filter Include="Packets\Helpers">
       <UniqueIdentifier>{ba56c2d1-7078-401f-9d22-b0b48b3f367b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Packets\Headers">
+      <UniqueIdentifier>{31fcc79f-21c7-45e8-9771-be06d60c5751}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LoginServer\Characters.cpp">
@@ -105,6 +108,12 @@
     <ClInclude Include="src\LoginServer\LoginServer.hpp" />
     <ClInclude Include="src\LoginServer\UserConnection.hpp">
       <Filter>LoginServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\CmsgHeader.hpp">
+      <Filter>Packets\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\SmsgHeader.hpp">
+      <Filter>Packets\Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

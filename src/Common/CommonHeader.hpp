@@ -15,22 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "PingPacket.hpp"
-#include "CommonHeader.hpp"
-#include "Session.hpp"
+#pragma once
 
-namespace PingPacket {
+// Technically the packet for global sets the length, but your Maple locale may not be the same
+// Search for IV_PATCH_LOCATION in order to find the spot where the connect packet is created if this is the case for your locale
+#define IV_PATCH_LOCATION 0x0e
 
-PACKET_IMPL(ping) {
-	PacketBuilder builder;
-	builder.add<header_t>(SMSG_PING);
-	return builder;
-}
-
-PACKET_IMPL(pong) {
-	PacketBuilder builder;
-	builder.add<header_t>(CMSG_PONG);
-	return builder;
-}
-
-}
+#define SMSG_PING 0x11
+#define CMSG_PONG 0x19

@@ -161,6 +161,7 @@
     <ClInclude Include="src\Common\CaseInsensitiveHash.hpp" />
     <ClInclude Include="src\Common\ClientIp.hpp" />
     <ClInclude Include="src\Common\ComboLoggers.hpp" />
+    <ClInclude Include="src\Common\CommonHeader.hpp" />
     <ClInclude Include="src\Common\Configuration.hpp" />
     <ClInclude Include="src\Common\ConsoleLogger.hpp" />
     <ClInclude Include="src\Common\CurseDataProvider.hpp" />
@@ -231,8 +232,6 @@
     <ClInclude Include="src\Common\PacketReader.hpp" />
     <ClInclude Include="src\Common\PingPacket.hpp" />
     <ClInclude Include="src\Common\InterHeader.hpp" />
-    <ClInclude Include="src\Common\CmsgHeader.hpp" />
-    <ClInclude Include="src\Common\SmsgHeader.hpp" />
     <ClInclude Include="src\Common\AuthenticationPacket.hpp" />
     <ClInclude Include="src\Common\FileUtilities.hpp" />
     <ClInclude Include="src\Common\GameLogicUtilities.hpp" />

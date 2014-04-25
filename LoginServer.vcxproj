@@ -125,6 +125,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\LoginServer\Channel.hpp" />
+    <ClInclude Include="src\LoginServer\CmsgHeader.hpp" />
     <ClInclude Include="src\LoginServer\PrecompiledHeader.hpp" />
     <ClInclude Include="src\LoginServer\LoginPacket.hpp" />
     <ClInclude Include="src\LoginServer\LoginPacketHelper.hpp" />
@@ -133,6 +134,7 @@
     <ClInclude Include="src\LoginServer\LoginServer.hpp" />
     <ClInclude Include="src\LoginServer\PlayerStatus.hpp" />
     <ClInclude Include="src\LoginServer\RankingCalculator.hpp" />
+    <ClInclude Include="src\LoginServer\SmsgHeader.hpp" />
     <ClInclude Include="src\LoginServer\SyncPacket.hpp" />
     <ClInclude Include="src\LoginServer\UserConnection.hpp" />
     <ClInclude Include="src\LoginServer\World.hpp" />

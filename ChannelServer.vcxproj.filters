@@ -40,6 +40,9 @@
     <Filter Include="Scripting">
       <UniqueIdentifier>{8121e5ce-8978-4b9e-ac5d-ae595156b19d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Packets\Headers">
+      <UniqueIdentifier>{54fdf726-3161-438c-b0db-4221fff64580}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ChannelServer\Buffs.cpp">
@@ -632,6 +635,12 @@
     </ClInclude>
     <ClInclude Include="src\ChannelServer\PlayerDataProvider.hpp">
       <Filter>Inter-Server\Sync</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\CmsgHeader.hpp">
+      <Filter>Packets\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\SmsgHeader.hpp">
+      <Filter>Packets\Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

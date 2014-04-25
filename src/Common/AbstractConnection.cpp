@@ -16,11 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractConnection.hpp"
-#include "CmsgHeader.hpp"
+#include "CommonHeader.hpp"
 #include "PacketReader.hpp"
 #include "PingPacket.hpp"
 #include "Session.hpp"
-#include "SmsgHeader.hpp"
 #include "Timer.hpp"
 #include "TimeUtilities.hpp"
 #include <chrono>

@@ -455,13 +455,7 @@
     <ClInclude Include="src\Common\ClientIp.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\CmsgHeader.hpp">
-      <Filter>Packets\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\InterHeader.hpp">
-      <Filter>Packets\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\SmsgHeader.hpp">
       <Filter>Packets\Headers</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\ExternalIpResolver.hpp">
@@ -516,6 +510,9 @@
     <ClInclude Include="src\Common\ThreadPool.hpp" />
     <ClInclude Include="src\Common\TimerType.hpp">
       <Filter>Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\CommonHeader.hpp">
+      <Filter>Packets\Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -206,6 +206,7 @@
   <ItemGroup>
     <ClInclude Include="src\ChannelServer\Buffs.hpp" />
     <ClInclude Include="src\ChannelServer\ChannelServer.hpp" />
+    <ClInclude Include="src\ChannelServer\CmsgHeader.hpp" />
     <ClInclude Include="src\ChannelServer\CustomFunctions.hpp" />
     <ClInclude Include="src\ChannelServer\Drop.hpp" />
     <ClInclude Include="src\ChannelServer\EffectPacket.hpp" />
@@ -237,6 +238,7 @@
     <ClInclude Include="src\ChannelServer\ReactorHandler.hpp" />
     <ClInclude Include="src\ChannelServer\SkillMacros.hpp" />
     <ClInclude Include="src\ChannelServer\Skills.hpp" />
+    <ClInclude Include="src\ChannelServer\SmsgHeader.hpp" />
     <ClInclude Include="src\ChannelServer\StatusInfo.hpp" />
     <ClInclude Include="src\ChannelServer\SummonHandler.hpp" />
     <ClInclude Include="src\ChannelServer\Summon.hpp" />
