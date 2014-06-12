@@ -240,6 +240,7 @@ namespace Items {
 		WhiteScroll = 2340000,
 
 		// Etc.
+		SackOfMoney = 4031138,
 		LudibriumMedal = 4031172,
 		BeginnersShoppingGuide = 4031180,
 		GoldenBell = 4031191,

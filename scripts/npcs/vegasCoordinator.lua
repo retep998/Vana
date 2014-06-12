@@ -23,7 +23,7 @@ choices = {
 	makeChoiceHandler("How can I get married here?", function()
 		addText("To get married in the Chapel, you'll need " .. red("a Chapel Wedding Ticket, any Engagement Ring or an Empty Engagement Ring Box") .. " and some time. ");
 		addText("Soon as you have them, we'll be happy to assist with your Wedding plans!");
-		sendNext();	
+		sendNext();
 	end),
 	makeChoiceHandler("I'd like to make a Premium Reservation.", function()
 		-- TODO FIXME implement reservations
@@ -50,7 +50,7 @@ choices = {
 			sendOk();
 		else
 			-- TODO FIXME implement reservations
-		end	
+		end
 	end),
 };
 

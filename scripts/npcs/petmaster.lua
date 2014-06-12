@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Cloy, explains all about pets
 
-dofile("scripts/lua_functions/miscFunctions.lua");
 dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/lua_functions/tableHelper.lua");
 
 enableApTransfer = false;
 

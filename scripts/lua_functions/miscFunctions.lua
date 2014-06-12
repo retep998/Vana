@@ -33,18 +33,6 @@ function separateDigits(num)
 	return left .. (num:reverse():gsub("(%d%d%d)", "%1,"):reverse()) .. right;
 end
 
-function append(tbl, elem)
-	tbl[#tbl + 1] = elem;
-end
-
-function prepend(tbl, elem)
-	table.insert(tbl, 1, elem);
-end
-
-function selectElement(tbl)
-	return tbl[getRandomNumber(#tbl)];
-end
-
 function printElement(elem)
 	_printers = {
 		["table"] = function(val, indent)
@@ -61,7 +49,7 @@ function printElement(elem)
 				text = text .. keyPrinter(key, indent);
 				text = text .. " = ";
 				if type(value) == "table" then
-					text = text .. valuePrinter(value, indent);				
+					text = text .. valuePrinter(value, indent);
 				else
 					text = text .. valuePrinter(value, "");
 				end
@@ -100,22 +88,6 @@ function printElement(elem)
 	end
 end
 
-function merge(...)
-	local args = {...};
-	local result = {};
-	for i = 1, #args do
-		local tbl = args[i];
-		if type(tbl) == "table" then
-			for j = 1, #tbl do
-				append(result, tbl[j]);
-			end
-		else
-			append(result, tbl);
-		end
-	end
-	return result;
-end
-
 serialize_ok = 1;
 serialize_err = 2;
 function serialize(val)
@@ -130,13 +102,13 @@ function serialize(val)
 			for key, value in pairs(val) do
 				if type(key) ~= "number" then
 					isArray = false;
-					append(stringKeys, key);
+					table.insert(stringKeys, key);
 				elseif key < 0 or key >= math.huge then
 					isArray = false;
-					append(numberKeys, key);
+					table.insert(numberKeys, key);
 				elseif maxKey == nil or maxKey < key then
 					maxKey = key;
-					append(numberKeys, key);
+					table.insert(numberKeys, key);
 				end
 			end
 
@@ -167,7 +139,7 @@ function serialize(val)
 				end
 
 				returnText = returnText .. "]";
-				return serialize_ok, returnText;			
+				return serialize_ok, returnText;
 			else
 				local finalizedPairs = val;
 				if #numberKeys > 0 then
@@ -180,7 +152,7 @@ function serialize(val)
 						if stringKeys[converted] ~= nil then
 							return serialize_err, "Integer key and string key collide";
 						end
-						append(stringKeys, converted);
+						table.insert(stringKeys, converted);
 						finalizedPairs[converted] = val[key];
 					end
 				end

@@ -43,14 +43,12 @@ if getLevel() >= 20 and getLevel() <= 30 then
 	addText(blue(choiceRef("I'd love to participate in this great competition.")));
 	choice = askChoice();
 
-	if choice == 0 then
-		addText("Okay, now I'll send you to the battle arena. ");
-		addText("I'd like to see you emerge victorious!");
-		sendNext();
+	addText("Okay, now I'll send you to the battle arena. ");
+	addText("I'd like to see you emerge victorious!");
+	sendNext();
 
-		setPlayerVariable("aMatch_origin", m);
-		setMap(980010000, "out00");
-	end
+	setPlayerVariable("aMatch_origin", m);
+	setMap(980010000, "out00");
 else
 	addText("Your level is not proper to participate in the Ariant Coliseum Challenge. ");
 	addText("Only players between Level " .. blue("20~30") .. " may participate.");

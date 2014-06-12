@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/npcHelper.lua");
 dofile("scripts/lua_functions/itemProduction.lua");
+dofile("scripts/lua_functions/tableHelper.lua");
 
 function generateChoice(itemId, rewards)
 	return makeChoiceData(" 100 " .. itemRef(itemId) .. "s", {itemId, rewards});
@@ -92,7 +93,7 @@ else
 		addText("Anyway if you feel like trading, feel free to come.");
 		sendNext();
 	else
-		reward = rewards[getRandomNumber(#rewards)];
+		reward = selectElement(rewards);
 		if getOpenSlots(4) == 0 or getOpenSlots(2) == 0 or not hasResources(requirements, 1) then
 			addText("Hmmm... are you sure you have " .. blue(qty .. " " .. itemRef(itemId) .. "s") .. "? ");
 			addText("If so, then please check and see if your item inventory is full or not.");

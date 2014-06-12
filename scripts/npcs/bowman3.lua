@@ -17,19 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Rene (3rd Job - Bowman Instructor)
 
-dofile("scripts/lua_functions/npcHelper.lua");
 dofile("scripts/lua_functions/jobFunctions.lua");
-dofile("scripts/lua_functions/miscFunctions.lua");
+dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/lua_functions/tableHelper.lua");
 
 zakum = getPlayerVariable("zakum_quest_status", type_int);
 
 if getLevel() >= 50 then
-	job = getJobLine();
-	jobLevel = getJobProgression();
-	jobType = getJobTrack();
+	jobLine, jobTrack, jobProgression = getJobMeta();
 	choices = {};
 
-	if getLevel() >= 70 and jobLevel == 0 and job == 3 then
+	if getLevel() >= 70 and jobProgression == progression_second and jobLine == line_bowman then
 		append(choices, makeChoiceHandler(" I want to make the 3rd job advancement", function()
 			questState = getPlayerVariable("third_job_advancement", type_int);
 
@@ -131,11 +129,11 @@ if getLevel() >= 50 then
 							giveSp(1);
 							giveAp(5);
 
-							if jobType == 1 then
+							if jobTrack == 1 then
 								addText("You have officialy become a " .. blue("Ranger") .. ". ");
 								addText("One of the skills that you'll truly embrace is a skill called " .. blue("Mortal Blow") .. " that allows Rangers to fire arrows from close-range. ");
 								addText(blue("Inferno") .. " allows Rangers to temporarily perform fire-based attacks on monsters, while skills like " .. blue("Puppet") .. " (summons a scarecrow which attracts the monsters' attention) and " .. blue("Silver Hawk") .. " (summons a Silver Hawk that attacks monsters) solidify the Bowman's status as a long-range attack extraordinaire.");
-							elseif jobType == 2 then
+							elseif jobTrack == 2 then
 								addText("You have officialy become a " .. blue("Sniper") .. ". ");
 								addText("One of the skills that you'll truly embrace is a skill called " .. blue("Mortal Blow") .. " that allows Snipers to fire arrows from close-range. ");
 								addText(blue("Blizzard") .. " allows the Snipers to temporarily perform ice-based attacks on monsters, while skills like " .. blue("Puppet") .. " (summons a scarecrow which attracts the monsters' attention) and " .. blue("Golden Eagle") .. " (summons a Golden Eagle that attacks monsters) solidify the Bowman's status as a long-range attack extraordinaire.");
@@ -163,8 +161,8 @@ if getLevel() >= 50 then
 
 	append(choices, makeChoiceHandler(" Please allow me to do the Zakum Dungeon Quest", function()
 		if zakum == nil then
-			if job == 0 or job == 3 then
-				setPlayerVariable("zakum_quest_status", "1");
+			if jobLine == line_beginner or jobLine == line_bowman then
+				setPlayerVariable("zakum_quest_status", 1);
 				addText("You want to be permitted to do the Zakum Dungeon Quest, right? ");
 				addText("Must be " .. blue(npcRef(2030008)) .. " ... ok, alright! ");
 				addText("I'm sure you'll be fine roaming around the dungeon. ");

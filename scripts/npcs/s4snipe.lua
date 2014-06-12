@@ -43,7 +43,7 @@ if isQuestActive(6108) then
 				for i = 1, #members do
 					member = members[i];
 					if setPlayer(member) then
-						if getJobLine() == 3 and getJobProgression() == 2 and getMap() == mapId then -- Only want 4th job bowmen
+						if getJobLine() == line_bowman and getJobProgression() == progression_fourth and getMap() == mapId then
 							memberCount = memberCount + 1;
 						end
 						revertPlayer();

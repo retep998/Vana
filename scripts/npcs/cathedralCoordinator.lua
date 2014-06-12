@@ -28,7 +28,7 @@ choices = {
 		addText("To get married in the Cathedral, you'll need " .. red("a Cathedral Wedding Ticket, any Engagement Ring or an Empty Engagement Ring Box and most of all, love") .. ". ");
 		addText("Soon as you have them, we'll be happy to assist with your Wedding plans! ");
 		addText("If you reserved the Cathedral don't forget to see High Priest John for the Officiator's permission.");
-		sendNext();	
+		sendNext();
 	end),
 	makeChoiceHandler("I'd like to make a Premium Reservation.", function()
 		-- TODO FIXME implement reservations
@@ -55,7 +55,7 @@ choices = {
 			sendOk();
 		else
 			-- TODO FIXME implement reservations
-		end	
+		end
 	end),
 };
 

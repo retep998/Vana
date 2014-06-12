@@ -156,7 +156,8 @@ choices = {
 	end),
 	makeChoiceHandler(bold("3. ") .. blue("Alright, let's go!"), function()
 		-- TODO FIXME implement events
-		addText("Either the event has not been started, you already have " .. itemRef(4031019) .. ", or have already participated in this event within the last 24 hours. Please try again later!");
+		addText("Either the event has not been started, you already have " .. itemRef(4031019) .. ", or have already participated in this event within the last 24 hours. ");
+		addText("Please try again later!");
 		sendNext();
 	end),
 };

@@ -33,7 +33,7 @@ public:
 
 	auto getCardId(mob_id_t mobId) const -> item_id_t;
 	auto getMobId(item_id_t cardId) const -> mob_id_t;
-	auto scrollItem(const EquipDataProvider &provider, item_id_t scrollId, Item *equip, bool whiteScroll, bool gmScroller, int8_t &succeed, bool &cursed) const -> void;
+	auto scrollItem(const EquipDataProvider &provider, item_id_t scrollId, Item *equip, bool whiteScroll, bool gmScroller, int8_t &succeed, bool &cursed) const -> HackingResult;
 	auto getItemInfo(item_id_t itemId) const -> const ItemInfo * const;
 	auto getConsumeInfo(item_id_t itemId) const -> const ConsumeInfo * const;
 	auto getPetInfo(item_id_t itemId) const -> const PetInfo * const;

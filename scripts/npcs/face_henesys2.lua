@@ -15,15 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Henesys EXP eyes
+-- Henesys EXP face
 
+dofile("scripts/lua_functions/beautyFunctions.lua");
 dofile("scripts/lua_functions/npcHelper.lua");
 
-if getGender() == gender_male then
-	face = {20000, 20001, 20002, 20003, 20004, 20005, 20006, 20007, 20008, 20012, 20014};
-else
-	face = {21000, 21001, 21002, 21003, 21004, 21005, 21006, 21007, 21008, 21012, 21014};
-end
+validFaces = getGenderStyles({
+	["male"] = {20000, 20001, 20002, 20003, 20004, 20005, 20006, 20007, 20008, 20012, 20014},
+	["female"] = {21000, 21001, 21002, 21003, 21004, 21005, 21006, 21007, 21008, 21012, 21014},
+});
 
 item = 5152000;
 
@@ -31,9 +31,8 @@ addText("If you use the regular coupon, your face may transform into a random ne
 answer = askYesNo();
 
 if answer == answer_yes then
-	if getItemAmount(item) > 0 then
-		giveItem(item, -1);
-		setStyle(face[getRandomNumber(#face)]);
+	if giveItem(item, -1) then
+		setStyle(getRandomFace(validFaces));
 
 		addText("Enjoy!");
 		sendNext();

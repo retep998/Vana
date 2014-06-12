@@ -219,4 +219,5 @@ function selectChoice(choices, choiceId)
 		end
 		return choice[2], choiceId;
 	end
+	return choice;
 end

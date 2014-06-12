@@ -69,7 +69,7 @@ public:
 	auto loadData() -> void;
 
 	auto isForbiddenName(const string_t &cmp) const -> bool;
-	auto isValidCharacter(gender_id_t genderId, hair_id_t hair, hair_id_t hairColor, face_id_t eyes, skin_id_t skin, item_id_t top, item_id_t bottom, item_id_t shoes, item_id_t weapon, int8_t classId = Adventurer) const -> bool;
+	auto isValidCharacter(gender_id_t genderId, hair_id_t hair, hair_id_t hairColor, face_id_t face, skin_id_t skin, item_id_t top, item_id_t bottom, item_id_t shoes, item_id_t weapon, int8_t classId = Adventurer) const -> bool;
 
 	const static int8_t Adventurer = 1;
 	const static int8_t Cygnus = 2;

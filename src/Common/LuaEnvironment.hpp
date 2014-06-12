@@ -87,6 +87,9 @@ public:
 	auto pushNil() -> LuaEnvironment &;
 	auto pushNil(lua_State *luaVm) -> LuaEnvironment &;
 
+	auto getScriptName() -> string_t;
+	auto getScriptPath() -> vector_t<string_t>;
+
 	template <typename T>
 	auto set(const string_t &key, const T &value) -> LuaEnvironment &;
 	template <typename T>

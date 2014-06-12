@@ -17,19 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Tylus (3rd Job - Warrior Instructor)
 
-dofile("scripts/lua_functions/npcHelper.lua");
 dofile("scripts/lua_functions/jobFunctions.lua");
-dofile("scripts/lua_functions/miscFunctions.lua");
+dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/lua_functions/tableHelper.lua");
 
 zakum = getPlayerVariable("zakum_quest_status", type_int);
 
 if getLevel() >= 50 then
-	job = getJobLine();
-	jobLevel = getJobProgression();
-	jobType = getJobTrack();
+	jobLine, jobTrack, jobProgression = getJobMeta();
 	choices = {};
 
-	if getLevel() >= 70 and jobLevel == 0 and job == 1 then
+	if getLevel() >= 70 and jobProgression == progression_second and jobLine == line_warrior then
 		append(choices, makeChoiceHandler(" I want to make the 3rd job advancement", function()
 			questState = getPlayerVariable("third_job_advancement", type_int);
 
@@ -130,17 +128,17 @@ if getLevel() >= 50 then
 							giveSp(1);
 							giveAp(5);
 
-							if jobType == 1 then
+							if jobTrack == 1 then
 								addText("You have just become the " .. blue("Crusader") .. ". ");
 								addText("You have a number of new devastating offensive skills such as " .. blue("Shout") .. ", " .. blue("Combo Attack") .. " and " .. blue("Armor Crush") .. ". ");
-							elseif jobType == 2 then
+							elseif jobTrack == 2 then
 								addText("You have just become the " .. blue("White Knight") .. ". ");
 								addText("You'll be introduced to a new skill book featuring various new attacking skills as well as element-based attacks. ");
 								addText("I suggest that you continue to use a weapon complementary to the Page, whether it be a sword or a blunt weapon. ");
 								addText("There's a skill called " .. blue("Charge") .. ", which adds an element of fire, ice, or lightning to the weapon, making the White Knight the only warrior that can perform element-based attacks. ");
 								addText("Charge your weapon with an element that weakens the monster, and then apply massive damage with the " .. blue("Charged Blow") .. ". ");
 								addText("You would definitely be a devastating force.");
-							elseif jobType == 3 then
+							elseif jobTrack == 3 then
 								addText("You're a " .. blue("Dragon Knight") .. " from here on out. ");
 								addText("You'll be introduced to a row of new offensive skills for spears and polearms. ");
 								addText("Skills such as " .. blue("Dragon Buster") .. " (heavy damage to one monster) and " .. blue("Dragon Fury") .. " (damage to multiple monsters) are recommended as main attacking skills, while a skill called " .. blue("Dragon Roar") .. " will damage everything on screen with devastating force. ");
@@ -169,8 +167,8 @@ if getLevel() >= 50 then
 
 	append(choices, makeChoiceHandler(" Please allow me to do the Zakum Dungeon Quest", function()
 		if zakum == nil then
-			if job == 0 or job == 1 then
-				setPlayerVariable("zakum_quest_status", "1");
+			if jobLine == line_beginner or jobLine == line_warrior then
+				setPlayerVariable("zakum_quest_status", 1);
 				addText("You want to be permitted to do the Zakum Dungeon Quest, right? ");
 				addText("Must be " .. blue(npcRef(2030008)) .. " ... ok, alright! ");
 				addText("I'm sure you'll be fine roaming around the dungeon. ");

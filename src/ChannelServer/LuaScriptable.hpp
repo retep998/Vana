@@ -101,7 +101,7 @@ namespace LuaExports {
 
 	// Beauty
 	auto getAllFaces(lua_State *luaVm) -> lua_return_t;
-	auto getAllHair(lua_State *luaVm) -> lua_return_t;
+	auto getAllHairs(lua_State *luaVm) -> lua_return_t;
 	auto getAllSkins(lua_State *luaVm) -> lua_return_t;
 	auto getRandomFace(lua_State *luaVm) -> lua_return_t;
 	auto getRandomHair(lua_State *luaVm) -> lua_return_t;
@@ -150,7 +150,7 @@ namespace LuaExports {
 	auto getAp(lua_State *luaVm) -> lua_return_t;
 	auto getDex(lua_State *luaVm) -> lua_return_t;
 	auto getExp(lua_State *luaVm) -> lua_return_t;
-	auto getEyes(lua_State *luaVm) -> lua_return_t;
+	auto getFace(lua_State *luaVm) -> lua_return_t;
 	auto getFame(lua_State *luaVm) -> lua_return_t;
 	auto getFh(lua_State *luaVm) -> lua_return_t;
 	auto getGender(lua_State *luaVm) -> lua_return_t;

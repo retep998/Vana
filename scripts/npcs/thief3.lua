@@ -17,19 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Arec (3rd Job - Thief Instructor)
 
-dofile("scripts/lua_functions/npcHelper.lua");
 dofile("scripts/lua_functions/jobFunctions.lua");
-dofile("scripts/lua_functions/miscFunctions.lua");
+dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/lua_functions/tableHelper.lua");
 
 zakum = getPlayerVariable("zakum_quest_status", type_int);
 
 if getLevel() >= 50 then
-	job = getJobLine();
-	jobLevel = getJobProgression();
-	jobType = getJobTrack();
+	jobLine, jobTrack, jobProgression = getJobMeta();
 	choices = {};
 
-	if getLevel() >= 70 and jobLevel == 0 and job == 4 then
+	if getLevel() >= 70 and jobLevel == progression_second and jobLine == line_thief then
 		append(choices, makeChoiceHandler(" I want to make the 3rd job advancement", function()
 			questState = getPlayerVariable("third_job_advancement", type_int);
 
@@ -130,12 +128,12 @@ if getLevel() >= 50 then
 							giveSp(1);
 							giveAp(5);
 
-							if jobType == 1 then
+							if jobTrack == 1 then
 								addText("You're the " .. blue("Hermit") .. " from this point forward. ");
 								addText("The skill book introduces a slew of new offensive skills for Hermits, using shadows as a way of duplication and replacement. ");
 								addText("You'll learn skills like " .. blue("Shadow Meso") .. " (replace MP with mesos and attack monsters with the damage based on the amount of mesos thrown) and " .. blue("Shadow Partner") .. " (create a shadow that mimics your every move, enabling you to attack twice). ");
 								addText("Use those skills to take on monsters that may have been difficult to conquer before. ");
-							elseif jobType == 2 then
+							elseif jobTrack == 2 then
 								addText("You're the " .. blue("Chief Bandit") .. " from this point forward. ");
 								addText("One of the new additions to the skill book is a skill called " .. blue("Band of Thieves") .. ", which lets you summon fellow Bandits to attack multiple monsters at once. ");
 								addText("Chief Bandits can also utilize mesos in numerous ways, from attacking monsters (" .. blue("Meso Explosion") .. ", which explodes mesos on the ground) to defending yourself (" .. blue("Meso Guard") .. ", which decreases damage done to you). ");
@@ -163,8 +161,8 @@ if getLevel() >= 50 then
 
 	append(choices, makeChoiceHandler(" Please allow me to do the Zakum Dungeon Quest", function()
 		if zakum == nil then
-			if job == 0 or job == 4 then
-				setPlayerVariable("zakum_quest_status", "1");
+			if jobLine == line_beginner or jobLine == line_thief then
+				setPlayerVariable("zakum_quest_status", 1);
 				addText("You want to be permitted to do the Zakum Dungeon Quest, right? ");
 				addText("Must be " .. blue(npcRef(2030008)) .. " ... ok, alright! ");
 				addText("I'm sure you'll be fine roaming around the dungeon. ");

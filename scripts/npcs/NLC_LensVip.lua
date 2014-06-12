@@ -20,21 +20,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 dofile("scripts/lua_functions/beautyFunctions.lua");
 dofile("scripts/lua_functions/npcHelper.lua");
 
-newEyes = {};
-getEyeColour(newEyes);
+choices = getFaceColours({ face_amethyst, face_black, face_blue, face_green, face_hazel, face_red, face_sapphire, face_violet });
+
+itemId = 5152036;
 
 addText("Hi there! ");
 addText("I'm J.J., the one in charge of the cosmetic lenses here at NLC Shop! ");
 addText("With our specialized machine, you can see the results of your potential treatment in advance. ");
 addText("What kind of lens would you like to wear? ");
 addText("Please choose the style of your liking.");
-style = askStyle(newEyes) + 1;
+choice = askStyle(choices);
 
-if getItemAmount(5152036) > 0 then
-	giveItem(5152036, -1);
-	if newEyes[style] > 0 then
-		setStyle(newEyes[style]);
-	end
+if giveItem(itemId, -1) then
+	setStyle(selectChoice(choices, choice));
 	addText("Enjoy your new and improved cosmetic lenses!");
 	sendNext();
 else

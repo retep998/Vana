@@ -35,7 +35,7 @@ if isQuestActive(6301) then
 					for i = 1, #party do
 						p = party[i];
 						if setPlayer(p) then
-							if getJobProgression() ~= 2 then
+							if getJobProgression() ~= progression_fourth then
 								fail = true;
 							end
 							revertPlayer();

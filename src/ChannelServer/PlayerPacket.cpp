@@ -58,7 +58,7 @@ PACKET_IMPL(connectData, Player *player) {
 		.add<string_t>(player->getName(), 13)
 		.add<gender_id_t>(player->getGender())
 		.add<skin_id_t>(player->getSkin())
-		.add<face_id_t>(player->getEyes())
+		.add<face_id_t>(player->getFace())
 		.add<hair_id_t>(player->getHair());
 
 	player->getPets()->connectData(builder);
@@ -160,7 +160,7 @@ PACKET_IMPL(updateStat, int32_t updateBits, int32_t value, bool itemResponse) {
 			builder.add<int16_t>(static_cast<int16_t>(value));
 			break;
 		case Stats::Skin:
-		case Stats::Eyes:
+		case Stats::Face:
 		case Stats::Hair:
 		case Stats::Exp:
 		case Stats::Fame:

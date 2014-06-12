@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Assassinate quest
 
+dofile("scripts/lua_functions/tableHelper.lua");
+
 if isQuestActive(6201) then
 	if getItemAmount(4031452) == 0 then
 		if not isInstance("assassinate4th") then
@@ -24,7 +26,7 @@ if isQuestActive(6201) then
 			addInstancePlayer(getId());
 			playPortalSe();
 			maps = {910200000, 910200001, 910200002};
-			setMap(maps[getRandomNumber(#maps)]);
+			setMap(selectElement(maps));
 		else
 			showMessage("Other characters are on request. You can't enter.", msg_red);
 		end

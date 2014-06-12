@@ -41,7 +41,7 @@ choices = {
 		addText("Let's go!");
 		sendNext();
 
-		setMap(801040000);	
+		setMap(801040000);
 	end),
 	makeChoiceHandler("Nothing. ", function()
 		addText("I'm a busy person! ");

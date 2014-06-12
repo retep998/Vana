@@ -203,7 +203,7 @@ namespace Stats {
 	}
 	enum Constants : int32_t {
 		Skin = 0x01,
-		Eyes = 0x02,
+		Face = 0x02,
 		Hair = 0x04,
 		Pet = 0x08,
 		Level = 0x10,

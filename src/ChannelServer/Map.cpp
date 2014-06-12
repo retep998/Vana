@@ -54,6 +54,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
+// TODO FIXME msvc
+// Remove this crap once MSVC supports static initializers
+int32_t Map::s_mapUnloadTime = 0;
+
 Map::Map(ref_ptr_t<MapInfo> info, map_id_t id) :
 	m_info(info),
 	m_id(id),
@@ -70,6 +74,7 @@ Map::Map(ref_ptr_t<MapInfo> info, map_id_t id) :
 	double mapWidth = std::max<double>(rightBottom.x, 800);
 	m_minSpawnCount = ext::constrain_range(static_cast<int32_t>((mapHeight * mapWidth * info->spawnRate) / 128000.), 1, 40);
 	m_maxSpawnCount = m_minSpawnCount * 2;
+	m_runUnloader = info->shipKind == -1;
 }
 
 // Map info
@@ -119,8 +124,9 @@ auto Map::addMobSpawn(const MobSpawnInfo &spawn) -> void {
 	m_mobSpawns[m_mobSpawns.size() - 1].spawned = true;
 	auto info = ChannelServer::getInstance().getMobDataProvider().getMobInfo(spawn.id);
 	if (info->boss) {
-		m_hasBoss = true;
+		m_runUnloader = false;
 	}
+	m_maxMobSpawnTime = std::max(m_maxMobSpawnTime, spawn.time);
 	spawnMob(m_mobSpawns.size() - 1, spawn);
 }
 
@@ -204,6 +210,10 @@ auto Map::boatDock(bool isDocked) -> void {
 		m_ship = isDocked;
 		send(MapPacket::boatDockUpdate(isDocked, m_info->shipKind));
 	}
+}
+
+auto Map::setMapUnloadTime(seconds_t newTime) -> void {
+	s_mapUnloadTime = static_cast<int32_t>(newTime.count());
 }
 
 auto Map::getNumPlayers() const -> size_t {
@@ -1053,17 +1063,18 @@ auto Map::clearDrops(time_point_t time) -> void {
 }
 
 auto Map::mapTick(const time_point_t &now) -> void {
-	auto &config = ChannelServer::getInstance().getConfig();
-	if (m_info->shipKind == -1 && config.mapUnloadTime.count() > 0) {
-		// TODO FIXME need more robust handling of instances active when the map goes to unload
-		if (m_players.size() > 0 || getInstance() != nullptr || m_hasBoss) {
-			m_emptyMapTicks = 0;
-		}
-		else {
-			m_emptyMapTicks++;
-			if (m_emptyMapTicks > static_cast<int32_t>(config.mapUnloadTime.count())) {
-				Maps::unloadMap(getId());
-				return;
+	if (m_runUnloader) {
+		if (s_mapUnloadTime > 0 && s_mapUnloadTime > m_maxMobSpawnTime) {
+			// TODO FIXME need more robust handling of instances active when the map goes to unload
+			if (m_players.size() > 0 || getInstance() != nullptr) {
+				m_emptyMapTicks = 0;
+			}
+			else {
+				m_emptyMapTicks++;
+				if (m_emptyMapTicks > s_mapUnloadTime) {
+					Maps::unloadMap(getId());
+					return;
+				}
 			}
 		}
 	}

@@ -73,7 +73,7 @@ if isQuestActive(8012) and getItemAmount(4031064) == 0 then
 			if not giveItem(4031064, 1) then
 				addText("Your Etc. inventory is FULL!?! ");
 				addText("You need to make room there if you want the Orange Marble.");
-				sendNext();			
+				sendNext();
 			else
 				addText("Our business is concluded, thank you very much! ");
 				addText("You can leave now!");

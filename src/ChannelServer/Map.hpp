@@ -58,6 +58,7 @@ public:
 	Map(ref_ptr_t<MapInfo> info, map_id_t id);
 
 	auto boatDock(bool isDocked) -> void;
+	static auto setMapUnloadTime(seconds_t newTime) -> void;
 
 	// Map info
 	static auto makeNpcId(map_object_t receivedId) -> size_t;
@@ -163,6 +164,9 @@ private:
 	auto getMistId() -> mist_id_t { return m_mistIds.next(); }
 	static const map_object_t NpcStart = 100;
 	static const map_object_t ReactorStart = 200;
+	// TODO FIXME msvc
+	// Remove this crap comment once MSVC supports static initializers
+	static int32_t s_mapUnloadTime/* = 0*/;
 
 	friend class MapDataProvider;
 	auto addFoothold(const FootholdInfo &foothold) -> void;
@@ -192,13 +196,14 @@ private:
 
 	// Longer-lived data
 	bool m_ship = false;
-	bool m_hasBoss = false;
+	bool m_runUnloader = true;
 	map_id_t m_id = 0;
 	map_object_t m_timeMob = 0;
 	mob_id_t m_spawnMobs = -1;
 	int32_t m_emptyMapTicks = 0;
 	int32_t m_minSpawnCount = 0;
 	int32_t m_maxSpawnCount = 0;
+	int32_t m_maxMobSpawnTime = -1;
 	Instance *m_instance = nullptr;
 	seconds_t m_timer = seconds_t(0);
 	time_point_t m_timerStart = seconds_t(0);

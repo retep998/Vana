@@ -85,7 +85,7 @@ auto ValidCharDataProvider::isForbiddenName(const string_t &cmp) const -> bool {
 	});
 }
 
-auto ValidCharDataProvider::isValidCharacter(gender_id_t genderId, hair_id_t hair, hair_id_t hairColor, face_id_t eyes, skin_id_t skin, item_id_t top, item_id_t bottom, item_id_t shoes, item_id_t weapon, int8_t classId) const -> bool {
+auto ValidCharDataProvider::isValidCharacter(gender_id_t genderId, hair_id_t hair, hair_id_t hairColor, face_id_t face, skin_id_t skin, item_id_t top, item_id_t bottom, item_id_t shoes, item_id_t weapon, int8_t classId) const -> bool {
 	if (genderId != Gender::Male && genderId != Gender::Female) {
 		return false;
 	}
@@ -93,7 +93,7 @@ auto ValidCharDataProvider::isValidCharacter(gender_id_t genderId, hair_id_t hai
 	auto &items = getItems(genderId, classId);
 	bool valid = isValidItem(hair, items, ValidItemType::Hair);
 	if (valid) valid = isValidItem(hairColor, items, ValidItemType::HairColor);
-	if (valid) valid = isValidItem(eyes, items, ValidItemType::Face);
+	if (valid) valid = isValidItem(face, items, ValidItemType::Face);
 	if (valid) valid = isValidItem(skin, items, ValidItemType::Skin);
 	if (valid) valid = isValidItem(top, items, ValidItemType::Top);
 	if (valid) valid = isValidItem(bottom, items, ValidItemType::Bottom);

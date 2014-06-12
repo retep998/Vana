@@ -25,6 +25,9 @@ elseif getMap() == 260020000 then
 	toMap = 261000000;
 end
 
+-- The following logic is intentional
+-- It really was that messed up in GMS
+
 addText("Will you move to " .. blue(mapRef(260000000)) .. " now? ");
 addText("The price is " .. blue("1500 mesos") .. ".");
 answer = askYesNo();

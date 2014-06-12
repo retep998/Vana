@@ -21,43 +21,45 @@ dofile("scripts/lua_functions/npcHelper.lua");
 
 -- TODO FIXME implement marriage
 
+choices = {
+	makeChoiceHandler("I am about to finish my wedding and want to pick my presents which my friends gave to me.", function()
+		addText("You are currently not married.");
+		sendNext();
+	end),
+	makeChoiceHandler("I have an " .. red("Onyx Chest") .. " and want to ask for you to open it.", function()
+		addText("I've got some fabulous items ready for you. ");
+		addText("Are you ready to pick them out?");
+		answer = askYesNo();
+
+		if answer == answer_yes then
+			addText("I don't think you have an Onyx Chest that I can open, kid...");
+			sendNext();
+		else
+			addText("Awww, really? ");
+			addText("I'm the only one who can open your Onyx Chest! ");
+			addText("I will be here and wait for you~");
+			sendNext();
+		end
+	end),
+	makeChoiceHandler("I have an " .. red("Onyx Chest for Bride and Groom") .. " and want to ask for you to open it.", function()
+		addText("I've got some fabulous items ready for you. ");
+		addText("Are you ready to pick them out?");
+		answer = askYesNo();
+
+		if answer == answer_yes then
+			addText("I don't think you have an " .. red("Onyx Chest for Bride and Groom") .. " that I can open, kid...");
+			sendNext();
+		else
+			addText("Awww, really? ");
+			addText("I'm the only one who can open your Onyx Chest! ");
+			addText("I will be here and wait for you~");
+			sendOk();
+		end
+	end),
+};
+
 addText("How do I help you? \r\n");
-addText(blue(choiceList({
-	"I am about to finish my wedding and want to pick my presents which my friends gave to me.",
-	"I have an " .. red("Onyx Chest") .. " and want to ask for you to open it.",
-	"I have an " .. red("Onyx Chest for Bride and Groom") .. " and want to ask for you to open it.",
-})));
+addText(blue(choiceList(choices)));
 choice = askChoice();
 
-if choice == 0 then
-	addText("You are currently not married.");
-	sendNext();
-elseif choice == 1 then
-	addText("I've got some fabulous items ready for you. ");
-	addText("Are you ready to pick them out?");
-	answer = askYesNo();
-
-	if answer == answer_yes then
-		addText("I don't think you have an Onyx Chest that I can open, kid...");
-		sendNext();
-	else
-		addText("Awww, really? ");
-		addText("I'm the only one who can open your Onyx Chest! ");
-		addText("I will be here and wait for you~");
-		sendNext();
-	end
-elseif choice == 2 then
-	addText("I've got some fabulous items ready for you. ");
-	addText("Are you ready to pick them out?");
-	answer = askYesNo();
-
-	if answer == answer_yes then
-		addText("I don't think you have an " .. red("Onyx Chest for Bride and Groom") .. " that I can open, kid...");
-		sendNext();
-	else
-		addText("Awww, really? ");
-		addText("I'm the only one who can open your Onyx Chest! ");
-		addText("I will be here and wait for you~");
-		sendOk();
-	end
-end
+selectChoice(choices, choice);

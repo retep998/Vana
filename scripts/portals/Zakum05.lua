@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/bossHelper.lua");
 
-zStatus = getPlayerVariable("zakum_quest_status", type_int);
+questStatus = getPlayerVariable("zakum_quest_status", type_int);
 
 if not isGm() then
-	if zStatus == nil or zStatus < 3 or getItemAmount(4001017) < 1 then
+	if questStatus == nil or questStatus < 3 or getItemAmount(4001017) < 1 then
 		showMessage("You may only enter this place after clearing level 3. You'll also need to have the Eye of Fire in possession.", msg_red);
 		return;
 	end

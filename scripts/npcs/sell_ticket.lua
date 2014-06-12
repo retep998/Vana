@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Agatha, Syras, Mue, Joel, Mel, travel guides
 
-dofile("scripts/lua_functions/miscFunctions.lua");
 dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/lua_functions/tableHelper.lua");
 
 if getLevel() < 10 then
 	addText("Your level seems to be too low for this. ");
@@ -105,7 +105,7 @@ if m == 101000300 then
 
 	if freeFlights then
 		platformInfoToOrbis("Victoria Island", boatTime, "ship", 1032008, false);
-	else		
+	else
 		buyTicketToOrbis(item, boatTime, price);
 	end
 elseif m == 240000100 then
@@ -236,6 +236,6 @@ elseif m == 200000100 then
 			else
 				giveItem(itemId, 1);
 			end
-		end	
+		end
 	end
 end

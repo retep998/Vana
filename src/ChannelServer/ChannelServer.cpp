@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Configuration.hpp"
 #include "ConnectionManager.hpp"
 #include "InitializeCommon.hpp"
+#include "Map.hpp"
 #include "MiscUtilities.hpp"
 #include "PacketBuilder.hpp"
 #include "Player.hpp"
@@ -137,6 +138,7 @@ auto ChannelServer::establishedWorldConnection(channel_id_t channelId, port_t po
 	m_channelId = channelId;
 	m_port = port;
 	m_config = config;
+	Map::setMapUnloadTime(config.mapUnloadTime);
 	listen();
 	displayLaunchTime();
 }
@@ -275,5 +277,8 @@ auto ChannelServer::setRates(const Rates &rates) -> void {
 
 auto ChannelServer::setConfig(const WorldConfig &config) -> void {
 	setScrollingHeader(config.scrollingHeader);
+	if (config.mapUnloadTime != m_config.mapUnloadTime) {
+		Map::setMapUnloadTime(config.mapUnloadTime);
+	}
 	m_config = config;
 }

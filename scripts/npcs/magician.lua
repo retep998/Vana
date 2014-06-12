@@ -140,7 +140,7 @@ elseif getJob() == 0 then
 		addText("Please come back much stronger.");
 		sendBackNext();
 	end
-elseif getJobLine() == 2 and getJobTrack() > 0 then
+elseif getJobLine() == line_magician and getJobTrack() > 0 then
 	choices = {
 		makeChoiceHandler("What are the basic characteristics of being a Magician?", function()
 			addText("I'll tell you more about being a Magician. ");

@@ -45,13 +45,13 @@ else
 	choices = {
 		makeChoiceHandler(" Refine the raw ore of a mineral", function()
 			choices = {
-				makeOreChoice(4011000, {4010000, 10, MESOS, 300}),
-				makeOreChoice(4011001, {4010001, 10, MESOS, 300}),
-				makeOreChoice(4011002, {4010002, 10, MESOS, 300}),
-				makeOreChoice(4011003, {4010003, 10, MESOS, 500}),
-				makeOreChoice(4011004, {4010004, 10, MESOS, 500}),
-				makeOreChoice(4011005, {4010005, 10, MESOS, 500}),
-				makeOreChoice(4011006, {4010006, 10, MESOS, 800}),
+				makeOreChoice(4011000, {4010000, 10, item_mesos, 300}),
+				makeOreChoice(4011001, {4010001, 10, item_mesos, 300}),
+				makeOreChoice(4011002, {4010002, 10, item_mesos, 300}),
+				makeOreChoice(4011003, {4010003, 10, item_mesos, 500}),
+				makeOreChoice(4011004, {4010004, 10, item_mesos, 500}),
+				makeOreChoice(4011005, {4010005, 10, item_mesos, 500}),
+				makeOreChoice(4011006, {4010006, 10, item_mesos, 800}),
 			};
 
 			addText("Which mineral do you want to make?\r\n");
@@ -90,15 +90,15 @@ else
 		end),
 		makeChoiceHandler(" Refine a jewel ore", function()
 			choices = {
-				makeOreChoice(4021000, {4020000, 10, MESOS, 500}),
-				makeOreChoice(4021001, {4020001, 10, MESOS, 500}),
-				makeOreChoice(4021002, {4020002, 10, MESOS, 500}),
-				makeOreChoice(4021003, {4020003, 10, MESOS, 500}),
-				makeOreChoice(4021004, {4020004, 10, MESOS, 500}),
-				makeOreChoice(4021005, {4020005, 10, MESOS, 500}),
-				makeOreChoice(4021006, {4020006, 10, MESOS, 500}),
-				makeOreChoice(4021007, {4020007, 10, MESOS, 1000}),
-				makeOreChoice(4021008, {4020008, 10, MESOS, 3000}),
+				makeOreChoice(4021000, {4020000, 10, item_mesos, 500}),
+				makeOreChoice(4021001, {4020001, 10, item_mesos, 500}),
+				makeOreChoice(4021002, {4020002, 10, item_mesos, 500}),
+				makeOreChoice(4021003, {4020003, 10, item_mesos, 500}),
+				makeOreChoice(4021004, {4020004, 10, item_mesos, 500}),
+				makeOreChoice(4021005, {4020005, 10, item_mesos, 500}),
+				makeOreChoice(4021006, {4020006, 10, item_mesos, 500}),
+				makeOreChoice(4021007, {4020007, 10, item_mesos, 1000}),
+				makeOreChoice(4021008, {4020008, 10, item_mesos, 3000}),
 			};
 
 			addText("Which jewel do you want to refine?\r\n");
@@ -136,30 +136,30 @@ else
 		end),
 		makeChoiceHandler(" Upgrade a helmet", function()
 			choices = {
-				makeItemChoice(1002042, 15, {1002001, 1, 4011002, 1, MESOS, 500}, "all"),
-				makeItemChoice(1002041, 15, {1002001, 1, 4021006, 1, MESOS, 300}, "all"),
-				makeItemChoice(1002002, 10, {1002043, 1, 4011001, 1, MESOS, 500}, "warrior"),
-				makeItemChoice(1002044, 10, {1002043, 1, 4011002, 1, MESOS, 800}, "warrior"),
-				makeItemChoice(1002003, 12, {1002039, 1, 4011001, 1, MESOS, 500}, "warrior"),
-				makeItemChoice(1002040, 12, {1002039, 1, 4011002, 1, MESOS, 800}, "warrior"),
-				makeItemChoice(1002007, 15, {1002051, 1, 4011001, 2, MESOS, 1000}, "warrior"),
-				makeItemChoice(1002052, 15, {1002051, 1, 4011002, 2, MESOS, 1500}, "warrior"),
-				makeItemChoice(1002011, 20, {1002059, 1, 4011001, 3, MESOS, 1500}, "warrior"),
-				makeItemChoice(1002058, 20, {1002059, 1, 4011002, 3, MESOS, 2000}, "warrior"),
-				makeItemChoice(1002009, 20, {1002055, 1, 4011001, 3, MESOS, 1500}, "warrior"),
-				makeItemChoice(1002056, 20, {1002055, 1, 4011002, 3, MESOS, 2000}, "warrior"),
-				makeItemChoice(1002087, 22, {1002027, 1, 4011002, 4, MESOS, 2000}, "warrior"),
-				makeItemChoice(1002088, 22, {1002027, 1, 4011006, 4, MESOS, 4000}, "warrior"),
-				makeItemChoice(1002049, 25, {1002005, 1, 4011006, 5, MESOS, 4000}, "warrior"),
-				makeItemChoice(1002050, 25, {1002005, 1, 4011005, 5, MESOS, 5000}, "warrior"),
-				makeItemChoice(1002047, 35, {1002004, 1, 4021000, 3, MESOS, 8000}, "warrior", "HP + 10"),
-				makeItemChoice(1002048, 35, {1002004, 1, 4021005, 3, MESOS, 10000}, "warrior", "DEX + 1"),
-				makeItemChoice(1002099, 40, {1002021, 1, 4011002, 5, MESOS, 12000}, "warrior", "STR + 1"),
-				makeItemChoice(1002098, 40, {1002021, 1, 4011006, 6, MESOS, 15000}, "warrior", "STR + 2"),
-				makeItemChoice(1002085, 50, {1002086, 1, 4011002, 5, MESOS, 20000}, "warrior", "STR + 1"),
-				makeItemChoice(1002028, 50, {1002086, 1, 4011004, 4, MESOS, 25000}, "warrior", "STR + 2"),
-				makeItemChoice(1002022, 55, {1002100, 1, 4011007, 1, 4011001, 7, MESOS, 30000}, "warrior", "DEX + 1, MP + 30"),
-				makeItemChoice(1002101, 55, {1002100, 1, 4011007, 1, 4011002, 7, MESOS, 30000}, "warrior", "STR + 1, MP + 30"),
+				makeItemChoice(1002042, 15, {1002001, 1, 4011002, 1, item_mesos, 500}, "all"),
+				makeItemChoice(1002041, 15, {1002001, 1, 4021006, 1, item_mesos, 300}, "all"),
+				makeItemChoice(1002002, 10, {1002043, 1, 4011001, 1, item_mesos, 500}, "warrior"),
+				makeItemChoice(1002044, 10, {1002043, 1, 4011002, 1, item_mesos, 800}, "warrior"),
+				makeItemChoice(1002003, 12, {1002039, 1, 4011001, 1, item_mesos, 500}, "warrior"),
+				makeItemChoice(1002040, 12, {1002039, 1, 4011002, 1, item_mesos, 800}, "warrior"),
+				makeItemChoice(1002007, 15, {1002051, 1, 4011001, 2, item_mesos, 1000}, "warrior"),
+				makeItemChoice(1002052, 15, {1002051, 1, 4011002, 2, item_mesos, 1500}, "warrior"),
+				makeItemChoice(1002011, 20, {1002059, 1, 4011001, 3, item_mesos, 1500}, "warrior"),
+				makeItemChoice(1002058, 20, {1002059, 1, 4011002, 3, item_mesos, 2000}, "warrior"),
+				makeItemChoice(1002009, 20, {1002055, 1, 4011001, 3, item_mesos, 1500}, "warrior"),
+				makeItemChoice(1002056, 20, {1002055, 1, 4011002, 3, item_mesos, 2000}, "warrior"),
+				makeItemChoice(1002087, 22, {1002027, 1, 4011002, 4, item_mesos, 2000}, "warrior"),
+				makeItemChoice(1002088, 22, {1002027, 1, 4011006, 4, item_mesos, 4000}, "warrior"),
+				makeItemChoice(1002049, 25, {1002005, 1, 4011006, 5, item_mesos, 4000}, "warrior"),
+				makeItemChoice(1002050, 25, {1002005, 1, 4011005, 5, item_mesos, 5000}, "warrior"),
+				makeItemChoice(1002047, 35, {1002004, 1, 4021000, 3, item_mesos, 8000}, "warrior", "HP + 10"),
+				makeItemChoice(1002048, 35, {1002004, 1, 4021005, 3, item_mesos, 10000}, "warrior", "DEX + 1"),
+				makeItemChoice(1002099, 40, {1002021, 1, 4011002, 5, item_mesos, 12000}, "warrior", "STR + 1"),
+				makeItemChoice(1002098, 40, {1002021, 1, 4011006, 6, item_mesos, 15000}, "warrior", "STR + 2"),
+				makeItemChoice(1002085, 50, {1002086, 1, 4011002, 5, item_mesos, 20000}, "warrior", "STR + 1"),
+				makeItemChoice(1002028, 50, {1002086, 1, 4011004, 4, item_mesos, 25000}, "warrior", "STR + 2"),
+				makeItemChoice(1002022, 55, {1002100, 1, 4011007, 1, 4011001, 7, item_mesos, 30000}, "warrior", "DEX + 1, MP + 30"),
+				makeItemChoice(1002101, 55, {1002100, 1, 4011007, 1, 4011002, 7, item_mesos, 30000}, "warrior", "STR + 1, MP + 30"),
 			};
 
 			addText("So you want to upgrade the helmet? ");
@@ -206,10 +206,10 @@ else
 		end),
 		makeChoiceHandler(" Upgrade a shield", function()
 			choices = {
-				makeItemChoice(1092013, 40, {1092012, 1, 4011002, 10, MESOS, 100000}, "warrior", "STR + 2"),
-				makeItemChoice(1092014, 40, {1092012, 1, 4011003, 10, MESOS, 100000}, "warrior", "DEX + 2"),
-				makeItemChoice(1092010, 60, {1092009, 1, 4011007, 1, 4011004, 15, MESOS, 120000}, "warrior", "DEX + 2"),
-				makeItemChoice(1092011, 60, {1092009, 1, 4011007, 1, 4011003, 15, MESOS, 120000}, "warrior", "STR + 2"),
+				makeItemChoice(1092013, 40, {1092012, 1, 4011002, 10, item_mesos, 100000}, "warrior", "STR + 2"),
+				makeItemChoice(1092014, 40, {1092012, 1, 4011003, 10, item_mesos, 100000}, "warrior", "DEX + 2"),
+				makeItemChoice(1092010, 60, {1092009, 1, 4011007, 1, 4011004, 15, item_mesos, 120000}, "warrior", "DEX + 2"),
+				makeItemChoice(1092011, 60, {1092009, 1, 4011007, 1, 4011003, 15, item_mesos, 120000}, "warrior", "STR + 2"),
 			};
 
 			addText("So you want to upgrade the shield? ");

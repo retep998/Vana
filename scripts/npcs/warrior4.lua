@@ -31,88 +31,90 @@ else
 	title = "Dark Knight"
 end
 
-if jobLine == 1 and jobProgression == 1 then
+if jobLine == line_warrior and jobProgression == progression_third then
 	if getLevel() < 120 then
 		addText("You're still weak to go to warrior extreme road. ");
 		addText("If you get stronger, come back to me.");
 		sendOk();
 	elseif isQuestCompleted(6904) then
-		addText("You're qualified to be a true warrior \r\n");
-		addText("Do you want job advancement?\r\n");
-		addText(blue(choiceList({
-			" I want to advance to " .. title .. ".",
-			"  Let me think for a while."
-		})));
-		choice = askChoice();
-
-		if choice == 0 then
-			if getSp() > ((getLevel() - 120) * 3) then
-				addText("Hmm...");
-				addText("You have too many " .. blue("SP") .. ". ");
-				addText("You can't make the 4th job advancement with too many SP left.");
-				sendOk();
-			else
-				if getOpenSlots(2) < 1 then
-					addText("You can't proceed as you don't have an empty slot in your inventory. ");
-					addText("Please clear your inventory and try again.");
+		choices = {
+			makeChoiceHandler(" I want to advance to " .. title .. ".", function()
+				if getSp() > ((getLevel() - 120) * 3) then
+					addText("Hmm...");
+					addText("You have too many " .. blue("SP") .. ". ");
+					addText("You can't make the 4th job advancement with too many SP left.");
 					sendOk();
 				else
-					giveItem(2280003, 1);
-					giveSp(3);
-					giveAp(5);
-					setJob(getJob() + 1);
-
-					if jobTrack == 1 then
-						setMaxSkillLevel(1120004, 10);
-						setMaxSkillLevel(1121001, 10);
-						setMaxSkillLevel(1121008, 10);
-					elseif jobTrack == 2 then
-						setMaxSkillLevel(1220005, 10);
-						setMaxSkillLevel(1220001, 10);
-						setMaxSkillLevel(1221009, 10);
+					if getOpenSlots(2) < 1 then
+						addText("You can't proceed as you don't have an empty slot in your inventory. ");
+						addText("Please clear your inventory and try again.");
+						sendOk();
 					else
-						setMaxSkillLevel(1320005, 10);
-						setMaxSkillLevel(1320001, 10);
-						setMaxSkillLevel(1321007, 10);
+						giveItem(2280003, 1);
+						giveSp(3);
+						giveAp(5);
+						setJob(getJob() + 1);
+
+						if jobTrack == 1 then
+							setMaxSkillLevel(1120004, 10);
+							setMaxSkillLevel(1121001, 10);
+							setMaxSkillLevel(1121008, 10);
+						elseif jobTrack == 2 then
+							setMaxSkillLevel(1220005, 10);
+							setMaxSkillLevel(1220001, 10);
+							setMaxSkillLevel(1221009, 10);
+						else
+							setMaxSkillLevel(1320005, 10);
+							setMaxSkillLevel(1320001, 10);
+							setMaxSkillLevel(1321007, 10);
+						end
+
+						addText("You have become the best of warriors, my " .. blue(title) .. ".");
+						addText("You will gain the " .. blue("Rush") .. " Skill which makes you attack mutiple enemies and give you indomitable will along with " .. blue("Stance") .. " and " .. blue("Achilles"));
+						sendNext();
+
+						if jobTrack == 1 then
+							addText("This is not all about Hero. ");
+							addText("Hero is a well-balanced warrior who has excellent attack and defense power. ");
+							addText("It can learn various attack skills as well as combo attack if he trains himself.");
+							sendNext();
+						elseif jobTrack == 2 then
+							addText("This is not all about Paladin. ");
+							addText("Paladin is good at element-based attack and defense. ");
+							addText("It can use a new element-based and may break the limit of charge blow if you train yourself.");
+							sendNext();
+						else
+							addText("This is not all about Dark Knight. ");
+							addText("Dark Knight can use the power of darkness. ");
+							addText("It can attack with power of darkness which is unbelievably strong and may summon the figure of darkness.");
+							sendNext();
+						end
+
+						addText("Don't forget that it all depends on how much you train.");
+						sendOk();
 					end
-
-					addText("You have become the best of warriors, my " .. blue(title) .. ".");
-					addText("You will gain the " .. blue("Rush") .. " Skill which makes you attack mutiple enemies and give you indomitable will along with " .. blue("Stance") .. " and " .. blue("Achilles"));
-					sendNext();
-
-					if jobTrack == 1 then
-						addText("This is not all about Hero. ");
-						addText("Hero is a well-balanced warrior who has excellent attack and defense power. ");
-						addText("It can learn various attack skills as well as combo attack if he trains himself.");
-						sendNext();
-					elseif jobTrack == 2 then
-						addText("This is not all about Paladin. ");
-						addText("Paladin is good at element-based attack and defense. ");
-						addText("It can use a new element-based and may break the limit of charge blow if you train yourself.");
-						sendNext();
-					else
-						addText("This is not all about Dark Knight. ");
-						addText("Dark Knight can use the power of darkness. ");
-						addText("It can attack with power of darkness which is unbelievably strong and may summon the figure of darkness.");
-						sendNext();
-					end
-
-					addText("Don't forget that it all depends on how much you train.");
-					sendOk();
 				end
-			end
-		elseif choice == 1 then
-			addText("You don't have to hesitate to be the best Warrior..");
-			addText("Whenever you decide, talk to me. ");
-			addText("If you're ready, I'll let you make the 4th job advancement.");
-			sendOk();
-		end
+			end),
+			makeChoiceHandler("  Let me think for a while.", function()
+				addText("You don't have to hesitate to be the best Warrior..");
+				addText("Whenever you decide, talk to me. ");
+				addText("If you're ready, I'll let you make the 4th job advancement.");
+				sendOk();
+			end),
+		};
+
+		addText("You're qualified to be a true warrior \r\n");
+		addText("Do you want job advancement?\r\n");
+		addText(blue(choiceList(choices)));
+		choice = askChoice();
+
+		selectChoice(choices, choice);
 	else
 		addText("You're not ready to make 4th job advancement. ");
 		addText("When you're ready, talk to me.");
 		sendOk();
 	end
-elseif jobLine == 1 and jobProgression == 2 then
+elseif jobLine == line_warrior and jobProgression == progression_fourth then
 	addText("You became the best warrior, the position of " .. blue(title) .. ". ");
 	addText("Stronger power means more responsibility. ");
 	addText("Hope you get over all the tests you will have in future.");

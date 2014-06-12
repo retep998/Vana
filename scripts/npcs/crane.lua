@@ -59,7 +59,7 @@ elseif map == 250000100 then
 				end
 			end
 		end),
-			makeChoiceHandler(" Herb Town(1500 mesos)", function()
+		makeChoiceHandler(" Herb Town(1500 mesos)", function()
 			addText("Will you move to " .. blue(mapRef(251000000))  .. " now? ");
 			addText("If you have " .. blue("1500mesos") .. ", I'll take you there right now.");
 			answer = askYesNo();
@@ -96,20 +96,18 @@ elseif map == 200000141 then
 	addText(blue(choiceRef(" Mu Lung(6000 mesos)")) .. "\r\n");
 	choice = askChoice();
 
-	if choice == 0 then
-		if isInstance("hakToMuLung") then
-			addText("Someone else is on the way to Mu Lung right now. ");
-			addText("Talk to me in a little bit.");
-			sendNext();
+	if isInstance("hakToMuLung") then
+		addText("Someone else is on the way to Mu Lung right now. ");
+		addText("Talk to me in a little bit.");
+		sendNext();
+	else
+		if giveMesos(-6000) then
+			createInstance("hakToMuLung", 60, true);
+			addInstancePlayer(getId());
+			setMap(200090300);
 		else
-			if giveMesos(-6000) then
-				createInstance("hakToMuLung", 60, true);
-				addInstancePlayer(getId());
-				setMap(200090300);
-			else
-				addText("Are you sure you have enough mesos?");
-				sendNext();
-			end
+			addText("Are you sure you have enough mesos?");
+			sendNext();
 		end
 	end
 end

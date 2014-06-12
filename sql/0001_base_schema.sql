@@ -86,7 +86,7 @@ CREATE TABLE `%%PREFIX%%characters` (
   `pos` smallint(6) NOT NULL DEFAULT '0',
   `gender` tinyint(1) NOT NULL,
   `skin` tinyint(4) NOT NULL,
-  `eyes` int(11) NOT NULL,
+  `face` int(11) NOT NULL,
   `hair` int(11) NOT NULL,
   `mesos` int(11) NOT NULL DEFAULT '0',
   `equip_slots` int(11) NOT NULL DEFAULT '24',

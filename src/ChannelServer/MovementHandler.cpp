@@ -25,9 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 auto MovementHandler::parseMovement(MovableLife *life, PacketReader &reader) -> Pos {
 	foothold_id_t foothold = 0;
 	int8_t stance = 0;
-	int16_t x = 0;
-	int16_t y = 0;
-	uint8_t n = reader.get<uint8_t>();
+	coord_t x = 0;
+	coord_t y = 0;
+	uint8_t movementCount = reader.get<uint8_t>();
 
 	enum MovementTypes {
 		NormalMovement = 0,
@@ -50,7 +50,7 @@ auto MovementHandler::parseMovement(MovableLife *life, PacketReader &reader) -> 
 		WingsFalling = 17
 	};
 
-	for (uint8_t i = 0; i < n; ++i) {
+	for (uint8_t i = 0; i < movementCount; ++i) {
 		int8_t type = reader.get<int8_t>();
 		switch (type) {
 			case Falling:
@@ -60,9 +60,9 @@ auto MovementHandler::parseMovement(MovableLife *life, PacketReader &reader) -> 
 				reader.skipBytes(7);
 				break;
 			case WingsFalling:
-				x = reader.get<int16_t>();
-				y = reader.get<int16_t>();
-				foothold = reader.get<int16_t>();
+				x = reader.get<coord_t>();
+				y = reader.get<coord_t>();
+				foothold = reader.get<foothold_id_t>();
 				stance = reader.get<int8_t>();
 				reader.skipBytes(6);
 				break;
@@ -74,10 +74,10 @@ auto MovementHandler::parseMovement(MovableLife *life, PacketReader &reader) -> 
 				break;
 			case NormalMovement:
 			case NormalMovement2:
-				x = reader.get<int16_t>();
-				y = reader.get<int16_t>();
+				x = reader.get<coord_t>();
+				y = reader.get<coord_t>();
 				reader.skipBytes(4);
-				foothold = reader.get<int16_t>();
+				foothold = reader.get<foothold_id_t>();
 				stance = reader.get<int8_t>();
 				reader.skipBytes(2);
 				break;
@@ -85,23 +85,23 @@ auto MovementHandler::parseMovement(MovableLife *life, PacketReader &reader) -> 
 			case JumpKb:
 			case FlashJump:
 			case RecoilShot:
-				x = reader.get<int16_t>();
-				y = reader.get<int16_t>();
+				x = reader.get<coord_t>();
+				y = reader.get<coord_t>();
 				stance = reader.get<int8_t>();
-				foothold = reader.get<int16_t>();
+				foothold = reader.get<foothold_id_t>();
 				break;
 			case JumpDown:
-				x = reader.get<int16_t>();
-				y = reader.get<int16_t>();
+				x = reader.get<coord_t>();
+				y = reader.get<coord_t>();
 				reader.skipBytes(6);
-				foothold = reader.get<int16_t>();
+				foothold = reader.get<foothold_id_t>();
 				stance = reader.get<int8_t>();
 				reader.skipBytes(2);
 				break;
 			case Chair:
-				x = reader.get<int16_t>();
-				y = reader.get<int16_t>();
-				foothold = reader.get<int16_t>();
+				x = reader.get<coord_t>();
+				y = reader.get<coord_t>();
+				foothold = reader.get<foothold_id_t>();
 				stance = reader.get<int8_t>();
 				reader.skipBytes(2);
 				break;
@@ -110,8 +110,8 @@ auto MovementHandler::parseMovement(MovableLife *life, PacketReader &reader) -> 
 			case Assaulter:
 			case Assassinate:
 			case Rush:
-				x = reader.get<int16_t>();
-				y = reader.get<int16_t>();
+				x = reader.get<coord_t>();
+				y = reader.get<coord_t>();
 				reader.skipBytes(4);
 				stance = reader.get<int8_t>();
 				break;

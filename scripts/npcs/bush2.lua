@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- A Pile of Herbs
 
 dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/lua_functions/tableHelper.lua");
 
 -- TODO FIXME implement distance properly
 -- You can't see the inside of the bush very well because you're too far. Go a little closer.
@@ -45,7 +46,7 @@ else
 		qty = 1;
 	else
 		items = {4020007, 4020008, 4010006};
-		item = items[getRandomNumber(#items)];
+		item = selectElement(items);
 		qty = 2;
 	end
 
@@ -55,5 +56,5 @@ else
 		addText("You need to make some room for your equipment and etc. inventory in order to take in the items you've discovered at the herbal bush. ");
 		addText("Please check again after making the adjustment.");
 		sendNext();
-	end	
+	end
 end

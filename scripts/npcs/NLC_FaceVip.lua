@@ -17,35 +17,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- NLC VIP eyes
 
+dofile("scripts/lua_functions/beautyFunctions.lua");
 dofile("scripts/lua_functions/npcHelper.lua");
 
-if getGender() == gender_male then
-	face = {20000, 20001, 20002, 20003, 20004, 20005, 20006, 20008, 20023};
-else
-	face = {21001, 21002, 21003, 21004, 21005, 21006, 21008, 21012, 21022};
-end
+choices = getFaceStyles(getGenderStyles({
+	["male"] = {20000, 20001, 20002, 20003, 20004, 20005, 20006, 20007, 20008, 20012},
+	["female"] = {21001, 21002, 21003, 21004, 21005, 21006, 21008, 21012, 21016},
+}));
 
--- Get player's eyes to get the face
-eye = getEyes();
+itemId = 5152034;
 
 addText("Let's see... ");
 addText("I can totally transform your face into something new. ");
 addText("Don't you want to try it? ");
-addText("For " .. blue(itemRef(5152034)) .. ", you can get the face of your liking. ");
+addText("For " .. blue(itemRef(itemId)) .. ", you can get the face of your liking. ");
 addText("Take your time in choosing the face of your preference...");
+choice = askStyle(choices);
 
-current = eye - (eye % 10000);
-newFace = {};
-for i = 0, #face do
-	if not (current + i == eye) then
-		newFace[#newFace + 1] = current + i;
-	end
-end
-style = askStyle(newFace) + 1;
-
-if getItemAmount(5152034) > 0 then
-	giveItem(5152034, -1);
-	setStyle(newFace[style]);
+if giveItem(itemId, -1) then
+	setStyle(selectChoice(choices, choice));
 	addText("Enjoy your new and improved face!");
 	sendNext();
 else

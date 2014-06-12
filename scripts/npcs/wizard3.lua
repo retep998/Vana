@@ -17,19 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Robeira (3rd Job - Magician Instructor)
 
-dofile("scripts/lua_functions/npcHelper.lua");
 dofile("scripts/lua_functions/jobFunctions.lua");
-dofile("scripts/lua_functions/miscFunctions.lua");
+dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/lua_functions/tableHelper.lua");
 
 zakum = getPlayerVariable("zakum_quest_status", type_int);
 
 if getLevel() >= 50 then
-	job = getJobLine();
-	jobLevel = getJobProgression();
-	jobType = getJobTrack();
+	jobLine, jobTrack, jobProgression = getJobMeta();
 	choices = {};
 
-	if getLevel() >= 70 and jobLevel == 0 and job == 2 then
+	if getLevel() >= 70 and jobProgression == progression_second and jobLine == line_magician then
 		append(choices, makeChoiceHandler(" I want to make the 3rd job advancement", function()
 			questState = getPlayerVariable("third_job_advancement", type_int);
 
@@ -131,15 +129,15 @@ if getLevel() >= 50 then
 							giveSp(1);
 							giveAp(5);
 
-							if jobType == 1 then
+							if jobTrack == 1 then
 								addText("You're the " .. blue("Mage of Fire and Poison") .. " from this point forward. ");
 								addText("The new skill book features new and improved fire and poison based spells, and skills such as " .. blue("Element Amplification") .. " (improves element-based spells) and " .. blue("Spell Booster") .. " (improves the overall speed of your attacking spells) will enable you to attack the monsters quickly and effectively. ");
 								addText("Defensive spells such as " .. blue("Partial Resistance") .. " (allows you to become stronger against certain element-based attacks) and " .. blue("Seal") .. " (seals up the monster) will help negate the one weakness of Mages: lack of HP.");
-							elseif jobType == 2 then
+							elseif jobTrack == 2 then
 								addText("You're the " .. blue("Mage of Ice and Lightning") .. " from this point forward. ");
 								addText("The new skill book features new and improved ice and lightning based spells, and skills such as " .. blue("Element Amplification") .. " (improves element-based spells) and " .. blue("Spell Booster") .. " (improves the overall speed of your attacking spells) will enable you to attack the monsters quickly and effectively. ");
 								addText("Defensive spells such as " .. blue("Partial Resistance") .. " (allows you to become stronger against certain element-based attacks) and " .. blue("Seal") .. " (seals up the monster) will help negate the one weakness of Mages: lack of HP.");
-							elseif jobType == 3 then
+							elseif jobTrack == 3 then
 								-- TODO FIXME: Find text
 							end
 							sendNext();
@@ -165,8 +163,8 @@ if getLevel() >= 50 then
 
 	append(choices, makeChoiceHandler(" Please allow me to do the Zakum Dungeon Quest", function()
 		if zakum == nil then
-			if job == 0 or job == 2 then
-				setPlayerVariable("zakum_quest_status", "1");
+			if jobLine == line_beginner or jobLine == line_magician then
+				setPlayerVariable("zakum_quest_status", 1);
 				addText("You want to be permitted to do the Zakum Dungeon Quest, right? ");
 				addText("Must be " .. blue(npcRef(2030008)) .. " ... ok, alright! ");
 				addText("I'm sure you'll be fine roaming around the dungeon. ");

@@ -56,7 +56,7 @@ if item ~= nil then
 					for i = 1, #members do
 						member = members[i];
 						if setPlayer(member) then
-							if getJobLine() == 2 and getJobTrack() ~= 3 and getJobProgression() == 2 and getMap() == mapId then -- Only want IL/FP Arch Mages
+							if getJobLine() == line_magician and getJobTrack() ~= 3 and getJobProgression() == progression_fourth and getMap() == mapId then -- Only want IL/FP Arch Mages
 								memberCount = memberCount + 1;
 							end
 							revertPlayer();

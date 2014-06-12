@@ -23,12 +23,10 @@ dofile("scripts/lua_functions/npcHelper.lua");
 zakum = getPlayerVariable("zakum_quest_status", type_int);
 
 if getLevel() >= 50 then
-	job = getJobLine();
-	jobLevel = getJobProgression();
-	jobType = getJobTrack();
+	jobLine, jobTrack, jobProgression = getJobMeta();
 	choices = {};
 
-	if getLevel() >= 70 and jobLevel == 0 and job == 5 then
+	if getLevel() >= 70 and jobProgression == progression_second and jobLine == line_pirate then
 		append(choices, makeChoiceHandler(" I want to make the 3rd job advancement", function()
 			questState = getPlayerVariable("third_job_advancement", type_int);
 
@@ -131,14 +129,14 @@ if getLevel() >= 50 then
 							giveSp(1);
 							giveAp(5);
 
-							if jobType == 1 then
+							if jobTrack == 1 then
 								addText("Great! ");
 								addText("You are now a " .. blue("Marauder") .. ". ");
 								addText("As a Marauder, you will learn some of the most sophisticated skills related to melee-based attacks. ");
 								addText(blue("Energy Charge") .. " is a skill that allows you to store your power and the damage you receive into a special form of energy. ");
 								addText("Once this ball of energy is charged, you may use " .. blue("Energy Blast") .. " to apply maximum damage against your enermies, and also use " .. blue("Energy Drain") .. " to steal your enemy's HP to recover your own. ");
 								addText(blue("Transformation") .. " will allow you to transform into a superhuman being with devastating melee attacks, and while transformed, you can use " .. blue("Shockwave") .. " to cause a mini-earthquake and inflict massive damage to your enemies.");
-							elseif jobType == 2 then
+							elseif jobTrack == 2 then
 								addText("Great! ");
 								addText("You are now an " .. blue("Outlaw") .. ". ");
 								addText("As an Outlaw, you will become a true pistolero, a master of every known Gun attack, as well as a few other skills to help you vanquish evil. ");
@@ -169,8 +167,8 @@ if getLevel() >= 50 then
 
 	append(choices, makeChoiceHandler(" I want your permission to attempt the Zakum Dungeon Quest!", function()
 		if zakum == nil then
-			if job == 0 or job == 5 then
-				setPlayerVariable("zakum_quest_status", "1");
+			if jobLine == line_beginner or jobLine == line_pirate then
+				setPlayerVariable("zakum_quest_status", 1);
 				addText("You want to be permitted to do the Zakum Dungeon Quest, right? ");
 				addText("Must be " .. blue(npcRef(2030008)) .. " ... ok, alright! ");
 				addText("I'm sure you'll be fine roaming around the dungeon. ");
