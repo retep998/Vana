@@ -123,83 +123,85 @@ else
 				enterBossMap();
 			end
 		else
+			choices = {
+				makeChoiceHandler(" Check out the list of the Squad", function()
+					getList();
+					sendOk();
+				end),
+				makeChoiceHandler(" Expel a member from the Squad", function()
+					if getInstanceSignupCount() == 1 then
+						addText("No one has yet to sign up for the squad.");
+						sendOk();
+					else
+						getLinkedList();
+						choice = askChoice();
+
+						if not verifyMaster() then
+							return;
+						end
+
+						name = getInstancePlayerByIndex(choice + 1);
+						addText("Are you sure you want to enter " .. blue(name) .. " in the Suspended List? ");
+						addText("Once suspended, the user may not re-apply for a spot until the suspension is lifted by the leader of the squad.");
+						answer = askYesNo();
+
+						if not verifyMaster() then
+							return;
+						end
+
+						if answer == answer_yes then
+							banInstancePlayer(name);
+							if setPlayer(name) then
+								showMessage("The leader of the squad has entered you in the squad's Suspended List.", msg_red);
+								revertPlayer();
+							end
+						end
+					end
+				end),
+				makeChoiceHandler(" Re-accept a member from the Suspended List", function()
+					if getBannedInstancePlayerCount() > 0 then
+						getBannedList();
+						player = askChoice();
+
+						if not verifyMaster() then
+							return;
+						end
+
+						unbanInstancePlayer(getBannedInstancePlayerByIndex(player + 1));
+					else
+						addText("No user is currently in the Suspended List.");
+						sendOk();
+					end
+				end),
+				makeChoiceHandler(red(" Form the Squad and enter", previousBlue), function()
+					if isGm() or getInstanceSignupCount() >= 6 then
+						setInstanceVariable("enter", true);
+						messageAll("The leader of the squad has entered the map. Please enter the map before time runs out on the squad.");
+						createInstance("zakum", 0, false);
+
+						if isGm() and setInstance("zakum") then
+							setInstanceVariable("gm", true);
+							revertInstance();
+						end
+
+						enterBossMap();
+					else
+						addText("The squad needs to consist of 6 or more members in order to start the quest.");
+						sendOk();
+					end
+				end),
+			};
+
 			addText("Greetings, leader of the Zakum Expedition Squad. ");
 			addText("What would you like to do? \r\n");
-			addText(blue(choiceList({
-				" Check out the list of the Squad",
-				" Expel a member from the Squad",
-				" Re-accept a member from the Suspended List",
-				red(" Form the Squad and enter", previousBlue),
-			})));
+			addText(blue(choiceList(choices)));
 			choice = askChoice();
 
 			if not verifyMaster() then
 				return;
 			end
 
-			if choice == 0 then
-				getList();
-				sendOk();
-			elseif choice == 1 then
-				if getInstanceSignupCount() == 1 then
-					addText("No one has yet to sign up for the squad.");
-					sendOk();
-				else
-					getLinkedList();
-					choice = askChoice();
-
-					if not verifyMaster() then
-						return;
-					end
-
-					name = getInstancePlayerByIndex(choice + 1);
-					addText("Are you sure you want to enter " .. blue(name) .. " in the Suspended List? ");
-					addText("Once suspended, the user may not re-apply for a spot until the suspension is lifted by the leader of the squad.");
-					answer = askYesNo();
-
-					if not verifyMaster() then
-						return;
-					end
-
-					if answer == answer_yes then
-						banInstancePlayer(name);
-						if setPlayer(name) then
-							showMessage("The leader of the squad has entered you in the squad's Suspended List.", msg_red);
-							revertPlayer();
-						end
-					end
-				end
-			elseif choice == 2 then
-				if getBannedInstancePlayerCount() > 0 then
-					getBannedList();
-					player = askChoice();
-
-					if not verifyMaster() then
-						return;
-					end
-
-					unbanInstancePlayer(getBannedInstancePlayerByIndex(player + 1));
-				else
-					addText("No user is currently in the Suspended List.");
-					sendOk();
-				end
-			elseif choice == 3 then
-				if isGm() or getInstanceSignupCount() >= 6 then
-					setInstanceVariable("enter", true);
-					messageAll("The leader of the squad has entered the map. Please enter the map before time runs out on the squad.");
-					createInstance("zakum", 0, false);
-
-					if isGm() and setInstance("zakum") then
-						setInstanceVariable("gm", true);
-						revertInstance();
-					end
-
-					enterBossMap();
-				else
-					addText("The squad needs to consist of 6 or more members in order to start the quest.");
-					sendOk();
-				end
-			end
+			selectChoice(choices, choice);
 		end
 	else
 		if getInstanceVariable("enter", type_bool) and not summonedCheck() then
@@ -213,12 +215,45 @@ else
 			addText("The battle has already begun.");
 			sendOk();
 		else
+			choices = {
+				makeChoiceHandler(" Enter the Zakum Expedition Squad", function()
+					if isListFull() then
+						addText("Unable to apply for a spot due to number of applicants already reaching the maximum.");
+					elseif isPlayerSignedUp(getName()) then
+						addText("You are already part of the expedition squad.");
+					elseif getInstanceVariable("enter", type_bool) then
+						addText("The application process for the Zakum Expedition Squad had already been concluded.");
+					else
+						addPlayerSignUp(getName());
+						if setPlayer(getInstanceVariable("master")) then
+							showMessage(getName() .. " has joined the expedition squad.", msg_red);
+							revertPlayer();
+						end
+						addText("You have been enrolled in the Zakum Expedition Squad.");
+					end
+					sendOk();
+				end),
+				makeChoiceHandler(" Leave the Zakum Expedition Squad", function()
+					if isPlayerSignedUp(getName()) then
+						removePlayerSignUp(getName());
+						if setPlayer(getInstanceVariable("master")) then
+							showMessage(getName() .. " has withdrawn from the squad.", msg_red);
+							revertPlayer();
+						end
+						addText("You have formally withdrawn from the squad.");
+					else
+						addText("Unable to leave the squad due to the fact that you're not participating in the Zakum Participation Squad.");
+					end
+					sendOk();
+				end),
+				makeChoiceHandler(" Check out the list of the Squad.", function()
+					getList();
+					sendOk();
+				end),
+			};
+
 			addText("What would you like to do?\r\n");
-			addText(blue(choiceList({
-				" Enter the Zakum Expedition Squad",
-				" Leave the Zakum Expedition Squad",
-				" Check out the list of the Squad.",
-			})));
+			addText(blue(choiceList(choices)));
 
 			choice = askChoice();
 
@@ -226,36 +261,7 @@ else
 				return;
 			end
 
-			if choice == 0 then
-				if isListFull() then
-					addText("Unable to apply for a spot due to number of applicants already reaching the maximum.");
-				elseif isPlayerSignedUp(getName()) then
-					addText("You are already part of the expedition squad.");
-				elseif getInstanceVariable("enter", type_bool) then
-					addText("The application process for the Zakum Expedition Squad had already been concluded.");
-				else
-					addPlayerSignUp(getName());
-					if setPlayer(getInstanceVariable("master")) then
-						showMessage(getName() .. " has joined the expedition squad.", msg_red);
-						revertPlayer();
-					end
-					addText("You have been enrolled in the Zakum Expedition Squad.");
-				end
-			elseif choice == 1 then
-				if isPlayerSignedUp(getName()) then
-					removePlayerSignUp(getName());
-					if setPlayer(getInstanceVariable("master")) then
-						showMessage(getName() .. " has withdrawn from the squad.", msg_red);
-						revertPlayer();
-					end
-					addText("You have formally withdrawn from the squad.");
-				else
-					addText("Unable to leave the squad due to the fact that you're not participating in the Zakum Participation Squad.");
-				end
-			elseif choice == 2 then
-				getList();
-			end
-			sendOk();
+			selectChoice(choices, choice);
 		end
 	end
 end

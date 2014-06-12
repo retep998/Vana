@@ -72,7 +72,7 @@ choices = {
 			end
 			revertInstance();
 		end
-	end),	
+	end),
 };
 
 addText("Hello there~ ");

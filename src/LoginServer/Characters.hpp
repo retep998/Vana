@@ -48,7 +48,7 @@ struct Character {
 	int16_t sp = 0;
 	fame_t fame = 0;
 	map_id_t map = 0;
-	face_id_t eyes = 0;
+	face_id_t face = 0;
 	hair_id_t hair = 0;
 	experience_t exp = 0;
 	int32_t worldRankChange = 0;

@@ -41,7 +41,7 @@ function doBoatDockCheck(mapId)
 	if getInstanceMinutes() <= (getInstanceVariable("boat_time", type_int) - 5) then
 		docked = boat_docked;
 	else
-		docked = boat_undocked;	
+		docked = boat_undocked;
 	end
 
 	setBoatDocked(mapId, docked);

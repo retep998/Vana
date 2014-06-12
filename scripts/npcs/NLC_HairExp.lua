@@ -20,35 +20,45 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 dofile("scripts/lua_functions/beautyFunctions.lua");
 dofile("scripts/lua_functions/npcHelper.lua");
 
-if getGender() == gender_male then
-	hairs = {30400, 30360, 30440, 30410, 30200, 30050, 30230, 30160, 30110, 30250};
-elseif getGender() == gender_female then
-	hairs = {31560, 31720, 31450, 31150, 31160, 31300, 31260, 31220, 31410, 31270};
-end
+validHairs = getGenderStyles({
+	["male"] = {30400, 30360, 30440, 30410, 30200, 30050, 30230, 30160, 30110, 30250},
+	["female"] = {31560, 31720, 31450, 31150, 31160, 31300, 31260, 31220, 31410, 31270},
+});
+
+expHairItem = 5150030;
+expColourItem = 5151025;
+
+choices = {
+	makeChoiceHandler(" Haircut(EXP coupon)", function()
+		addText("If you use the EXP coupon your hair will change RANDOMLY with a chance to obtain a new experimental style that even you didn't think was possible. ");
+		addText("Are you going to use " .. blue(itemRef(expHairItem)) .. " and really change your hairstyle?");
+		return {getHairStyles(validHairs), expHairItem, false};
+	end),
+	makeChoiceHandler(" Dye your hair(REG coupon)", function()
+		addText("If you use a regular coupon your hair will change RANDOMLY. ");
+		addText("Do you still want to use " .. blue(itemRef(expColourItem)) .. " and change it up?");
+		return {getHairColours(hair_all), expColourItem, true};
+	end),
+};
 
 addText("I'm Brittany the assistant. ");
-addText("If you have " .. blue(itemRef(5150030)) .. " or " .. blue(itemRef(5151025)) .. " by any chance, then how about letting me change your hairdo?\r\n");
-addText(blue(choiceList({
-	" Haircut(EXP coupon)",
-	" Dye your hair(REG coupon)",
-})));
+addText("If you have " .. blue(itemRef(expHairItem)) .. " or " .. blue(itemRef(expColourItem)) .. " by any chance, then how about letting me change your hairdo?\r\n");
+addText(blue(choiceList(choices)));
 choice = askChoice();
 
-if choice == 0 then
-	item = 5150030;
-	addText("If you use the EXP coupon your hair will change RANDOMLY with a chance to obtain a new experimental style that even you didn't think was possible. ");
-	addText("Are you going to use " .. blue(itemRef(item)) .. " and really change your hairstyle?");
-elseif choice == 1 then
-	item = 5151025;
-	addText("If you use a regular coupon your hair will change RANDOMLY. ");
-	addText("Do you still want to use " .. blue(itemRef(item)) .. " and change it up?");
-end
+data = selectChoice(choices, choice);
+validStyles, itemId, isColour = data[1], data[2], data[3];
+
 answer = askYesNo();
 
 if answer == answer_yes then
-	if getItemAmount(item) > 0 then
-		giveItem(item, -1);
-		giveRandomHair(hairs);
+	if giveItem(item, -1) then
+		if isColour then
+			setStyle(getRandomHairColour(validStyles));
+		else
+			setStyle(getRandomHair(validStyles));
+		end
+
 		addText("Enjoy!");
 		sendOk();
 	else

@@ -28,7 +28,7 @@ PACKET_IMPL(addCharacter, const Character &charc) {
 		.add<string_t>(charc.name, 13)
 		.add<gender_id_t>(charc.gender)
 		.add<skin_id_t>(charc.skin)
-		.add<face_id_t>(charc.eyes)
+		.add<face_id_t>(charc.face)
 		.add<hair_id_t>(charc.hair)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
@@ -56,7 +56,7 @@ PACKET_IMPL(addCharacter, const Character &charc) {
 		.add<int32_t>(0) // Unknown int32 added in .62
 		.add<gender_id_t>(charc.gender)
 		.add<skin_id_t>(charc.skin)
-		.add<face_id_t>(charc.eyes)
+		.add<face_id_t>(charc.face)
 		.add<int8_t>(1)
 		.add<hair_id_t>(charc.hair);
 

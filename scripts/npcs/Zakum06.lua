@@ -20,8 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 dofile("scripts/lua_functions/bossHelper.lua");
 dofile("scripts/lua_functions/npcHelper.lua");
 
-if getMap() == 280030000 then
-	-- Zakum's Altar
+zakumDoorMap = 211042300;
+zakumAltarMap = 280030000;
+
+if getMap() == zakumAltarMap then
 	x = getMaxZakumBattles();
 	addText("Are you sure you want to leave this place? ");
 
@@ -42,16 +44,16 @@ if getMap() == 280030000 then
 		if setInstance("zakum") then
 			revertInstance();
 		else
-			if getNumPlayers(280030000) == 1 then
-				if getReactorState(280030000, 2111001) == 1 then
-					setReactorState(280030000, 2111001, 0); -- Zakum's altar
-					setReactorState(211042300, 2118002, 0); -- Zakum's door
+			if getNumPlayers(zakumAltarMap) == 1 then
+				if getReactorState(zakumAltarMap, 2111001) == 1 then
+					setReactorState(zakumAltarMap, 2111001, 0);
+					setReactorState(zakumDoorMap, 2118002, 0);
 				end
-				clearDrops(280030000);
-				clearMobs(280030000);
+				clearDrops(zakumAltarMap);
+				clearMobs(zakumAltarMap);
 			end
 		end
-		setMap(211042300); -- Door to Zakum
+		setMap(zakumDoorMap);
 	end
 else
 	-- Maps 280020000 and 280020001, Zakum's jump quest
@@ -60,6 +62,6 @@ else
 	answer = askYesNo();
 
 	if answer == answer_yes then
-		setMap(211042300); -- Door to Zakum
+		setMap(zakumDoorMap);
 	end
 end

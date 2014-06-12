@@ -18,14 +18,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Dolphin (Aquarium)
 
 dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/lua_functions/tableHelper.lua");
 
-prices = nil;
-if getJob() == 0 then
-	prices = {100, 1000};
-else
-	prices = {1000, 10000};
+function getPrice(beginner, regular)
+	if getJob() == 0 then
+		return beginner;
+	end
+	return regular;
 end
-maps = {230030200, 251000100};
+
+choices = {};
+hasQuestTicket = getItemAmount(4031242) > 0;
+if hasQuestTicket then
+	append(choices, makeChoiceData("Go to " .. blue(mapRef(230030200)) .. " using " .. blue(itemRef(4031242)), {230030200}));
+else
+	price = getPrice(100, 1000);
+	append(choices, makeChoiceData("Go to " .. blue(mapRef(230030200)) .. " after paying " .. price .. "mesos.", {230030200, price}));
+end
+
+price = getPrice(1000, 10000);
+append(choices, makeChoiceData("Go to " .. blue(mapRef(251000000)) .. " after paying " .. price .. "mesos.", {251000100, price}));
 
 addText("Oceans are all connected to each other. ");
 addText("Places you can't reach by foot can be easily reached oversea. ");
@@ -34,23 +46,26 @@ if getJob() == 0 then
 	addText("We have special tickets with a 90% discount for Beginners! ");
 end
 addText("\r\n");
+addText(choiceList(choices));
+choice = askChoice();
 
-if getItemAmount(4031242) > 0 then
-	addText(choiceRef("Go to " .. blue(mapRef(230030200)) .. " using " .. blue(itemRef(4031242)), 0));
-else
-	addText(choiceRef("Go to " .. blue(mapRef(230030200)) .. " after paying " .. prices[1] .. "mesos.", 0));
+data = selectChoice(choices, choice);
+mapId, price = data[1], data[2];
+
+portal = nil;
+if mapId == 230030200 then
+	portal = "st00";
 end
 
-addText("\r\n" .. choiceRef("Go to " .. blue(mapRef(251000000)) .. " after paying " .. prices[2] .. "mesos.", 1) .. "\r\n");
-where = askChoice() + 1;
-
-if (where == 1 and getItemAmount(4031242) > 0 and giveItem(4031242, -1)) or giveMesos(-prices[where]) then -- Go to Sharp Unknown/Herb Town
-	map = maps[where];
-	portal = nil;
-	if map == 230030200 then
-		portal = "st00";
+if price == nil then
+	if giveItem(4031242, -1) then
+		setMap(mapId, portal);
+	else
+		addText("I don't think you have enough money...");
+		sendNext();
 	end
-	setMap(map, portal);
+elseif giveMesos(-price) then
+	setMap(mapId, portal);
 else
 	addText("I don't think you have enough money...");
 	sendNext();

@@ -112,7 +112,7 @@ PACKET_IMPL(addPlayerDisplay, Player *player) {
 	builder
 		.add<gender_id_t>(player->getGender())
 		.add<skin_id_t>(player->getSkin())
-		.add<face_id_t>(player->getEyes())
+		.add<face_id_t>(player->getFace())
 		.add<int8_t>(1)
 		.add<hair_id_t>(player->getHair());
 

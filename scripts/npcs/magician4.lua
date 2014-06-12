@@ -29,86 +29,88 @@ else
 	title = "Arch Mage";
 end
 
-if jobLine == 2 and jobProgression == 1 then
+if jobLine == line_magician and jobProgression == progression_third then
 	if getLevel() < 120 then
 		addText("You're still weak to go to magician extreme road. If you get stronger, come back to me.");
 		sendOk();
 	elseif isQuestCompleted(6914) then
-		addText("You're qualified to be a true magician. \r\n");
-		addText("Do you want job advancement?\r\n");
-		addText(blue(choiceList({
-			" I want to advance to " .. title .. ".",
-			"  Let me think for a while."
-		})));
-		choice = askChoice();
-
-		if choice == 0 then
-			if getSp() > ((getLevel() - 120) * 3) then
-				addText("Hmm...You have too many " .. blue("SP") .. ". ");
-				addText("You can't make the 4th job advancement with too many SP left.");
-				sendOk();
-			else
-				if getOpenSlots(2) < 1 then
-					addText("You can't proceed as you don't have an empty slot in your inventory. ");
-					addText("Please clear your inventory and try again.");
+		choices = {
+			makeChoiceHandler(" I want to advance to " .. title .. ".", function()
+				if getSp() > ((getLevel() - 120) * 3) then
+					addText("Hmm...You have too many " .. blue("SP") .. ". ");
+					addText("You can't make the 4th job advancement with too many SP left.");
 					sendOk();
 				else
-					giveItem(2280003, 1);
-					giveSp(3);
-					giveAp(5);
-					setJob(getJob() + 1);
-
-					if jobTrack == 1 then
-						setMaxSkillLevel(2121001, 10);
-						setMaxSkillLevel(2121002, 10);
-						setMaxSkillLevel(2121006, 10);
-					elseif jobTrack == 2 then
-						setMaxSkillLevel(2221001, 10);
-						setMaxSkillLevel(2221002, 10);
-						setMaxSkillLevel(2221006, 10);
+					if getOpenSlots(2) < 1 then
+						addText("You can't proceed as you don't have an empty slot in your inventory. ");
+						addText("Please clear your inventory and try again.");
+						sendOk();
 					else
-						setMaxSkillLevel(2321001, 10);
-						setMaxSkillLevel(2321002, 10);
-						setMaxSkillLevel(2321005, 10);
+						giveItem(2280003, 1);
+						giveSp(3);
+						giveAp(5);
+						setJob(getJob() + 1);
+
+						if jobTrack == 1 then
+							setMaxSkillLevel(2121001, 10);
+							setMaxSkillLevel(2121002, 10);
+							setMaxSkillLevel(2121006, 10);
+						elseif jobTrack == 2 then
+							setMaxSkillLevel(2221001, 10);
+							setMaxSkillLevel(2221002, 10);
+							setMaxSkillLevel(2221006, 10);
+						else
+							setMaxSkillLevel(2321001, 10);
+							setMaxSkillLevel(2321002, 10);
+							setMaxSkillLevel(2321005, 10);
+						end
+
+						addText("You became the best magician, " .. blue(title) .. ". ");
+						addText(title .. " can use its own power as well as Mana of nature just like \n" .. blue("Infinity") .. " or " .. blue("Big Bang"));
+						sendNext();
+
+						if jobTrack == 1 then
+							addText("This is not all about Arch Mage. ");
+							addText("Arch Mage is good at fire and poison element-based. ");
+							addText("It may change not only extreme element-based but also element-based of its own or enemies if you train.");
+							sendNext();
+						elseif jobTrack == 2 then
+							addText("This is not all about Arch Mage. ");
+							addText("Arch Mage is good at fire and poison element-based. ");
+							addText("It may change not only extreme element-based but also element-based of its own or enemies if you train.");
+							sendNext();
+						elseif jobTrack == 3 then
+							addText("This is not all about Bishop. ");
+							addText("Bishop can borrow God's power. ");
+							addText("It may make strong castle element-based magic and even make the dead alive.");
+							sendNext();
+						end
+
+						addText("Don't forget that it all depends on how much you train.");
+						sendOk();
 					end
-
-					addText("You became the best magician, " .. blue(title) .. ". ");
-					addText(title .. " can use its own power as well as Mana of nature just like \n" .. blue("Infinity") .. " or " .. blue("Big Bang"));
-					sendNext();
-
-					if jobTrack == 1 then
-						addText("This is not all about Arch Mage. ");
-						addText("Arch Mage is good at fire and poison element-based. ");
-						addText("It may change not only extreme element-based but also element-based of its own or enemies if you train.");
-						sendNext();
-					elseif jobTrack == 2 then
-						addText("This is not all about Arch Mage. ");
-						addText("Arch Mage is good at fire and poison element-based. ");
-						addText("It may change not only extreme element-based but also element-based of its own or enemies if you train.");
-						sendNext();
-					elseif jobTrack == 3 then
-						addText("This is not all about Bishop. ");
-						addText("Bishop can borrow God's power. ");
-						addText("It may make strong castle element-based magic and even make the dead alive.");
-						sendNext();
-					end
-
-					addText("Don't forget that it all depends on how much you train.");
-					sendOk();
 				end
-			end
-		elseif choice == 1 then
-			addText("You don't have to hesitate to be the best Magician..");
-			addText("Whenever you decide, talk to me. ");
-			addText("If you're ready, I'll let you make the 4th job advancement.");
-			sendOk();
-		end
+			end),
+			makeChoiceHandler("  Let me think for a while.", function()
+				addText("You don't have to hesitate to be the best Magician..");
+				addText("Whenever you decide, talk to me. ");
+				addText("If you're ready, I'll let you make the 4th job advancement.");
+				sendOk();
+			end),
+		};
+
+		addText("You're qualified to be a true magician. \r\n");
+		addText("Do you want job advancement?\r\n");
+		addText(blue(choiceList(choices)));
+		choice = askChoice();
+
+		selectChoice(choices, choice);
 	else
 		addText("You're not ready to make 4th job advancement. ");
 		addText("When you're ready, talk to me.");
 		sendOk();
 	end
-elseif jobLine == 2 and jobProgression == 2 then
+elseif jobLine == line_magician and jobProgression == progression_fourth then
 	addText("You became the best magician, the position of " .. blue(title) .. ". ");
 	addText("Stronger power means more responsibility. ");
 	addText("Hope you get over all the tests you will have in future.");

@@ -62,7 +62,7 @@ auto Characters::loadCharacter(Character &charc, const soci::row &row) -> void {
 	charc.name = row.get<string_t>("name");
 	charc.gender = row.get<gender_id_t>("gender");
 	charc.skin = row.get<skin_id_t>("skin");
-	charc.eyes = row.get<face_id_t>("eyes");
+	charc.face = row.get<face_id_t>("face");
 	charc.hair = row.get<hair_id_t>("hair");
 	charc.level = row.get<player_level_t>("level");
 	charc.job = row.get<job_id_t>("job");
@@ -242,12 +242,12 @@ auto Characters::createCharacter(UserConnection *user, PacketReader &reader) -> 
 	soci::session &sql = Database::getCharDb();
 
 	sql.once
-		<< "INSERT INTO " << Database::makeCharTable("characters") << " (name, user_id, world_id, eyes, hair, skin, gender, str, dex, `int`, luk) "
-		<< "VALUES (:name, :user, :world, :eyes, :hair, :skin, :gender, :str, :dex, :int, :luk)",
+		<< "INSERT INTO " << Database::makeCharTable("characters") << " (name, user_id, world_id, face, hair, skin, gender, str, dex, `int`, luk) "
+		<< "VALUES (:name, :user, :world, :face, :hair, :skin, :gender, :str, :dex, :int, :luk)",
 		soci::use(name, "name"),
 		soci::use(user->getUserId(), "user"),
 		soci::use(user->getWorldId(), "world"),
-		soci::use(face, "eyes"),
+		soci::use(face, "face"),
 		soci::use(hair + hairColor, "hair"),
 		soci::use(skin, "skin"),
 		soci::use(gender, "gender"),

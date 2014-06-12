@@ -26,29 +26,30 @@ end
 
 choices = {
 	makeChoiceHandler(" Buy the Magic Seed", function()
+		choiceText = nil;
 		if affinity < 5000 then
 			addText("You don't seem to be from our town. ");
 			addText("How can I help you?\r\n");
-			addText(blue(choiceRef(" I would like some Magic Seed.")));
+			choiceText = " I would like some Magic Seed.";
 		elseif affinity < 24000 then
 			addText("Haven't we met before? ");
 			addText("No wonder you looked familiar. ");
 			addText("Hahaha...\r\n");
 			addText("How can I help you this time?\r\n");
-			addText(blue(choiceRef(" I would like some Magic Seed.")));
+			choiceText = " I would like some Magic Seed.";
 		elseif affinity < 50000 then
 			addText("It's a beautiful day again today. ");
 			addText("Days like this should be spent out in the park on a picnic with your family. ");
 			addText("I have to admit, when I first met you, I had my reservations, what with you not being from this town and all ... but now, I feel more than comfortable doing business with you.\r\n");
 			addText("How can I help you this time?\r\n");
-			addText(blue(choiceRef(" I would like some Magic Seed.")));
+			choiceText = " I would like some Magic Seed.";
 		elseif affinity < 200000 then
 			addText("Hmmm ... ");
 			addText("It seems like Birk is crying out loud much louder than usual today. ");
 			addText("When Birk cries, it signals the fact that the egg of the baby dragon is ready to be hatched any minute now. ");
 			addText("Now that you have become part of the family here, I would like for you to personally witness the birth of the baby dragon when that time comes. \r\n");
 			addText("Do you need something from me today?\r\n");
-			addText(blue(choiceRef(" I would like some Magic Seed.")));
+			choiceText = " I would like some Magic Seed.";
 		elseif affinity < 800000 then
 			addText("Ohh hoh. ");
 			addText("I had a feeling that you'd be coming here right about now ...\r\n");
@@ -59,108 +60,107 @@ choices = {
 			addText("The sky shook, and the ground trembled as this incredibly loud thud covered every part of the forest. ");
 			addText("The baby dragons are now shivering in fear, wondering what may happen next. ");
 			addText("I wonder what actually happened... anyway, you're here for the seed, right?\r\n");
-			addText(blue(choiceRef(" I would like some Magic Seed.")));
+			choiceText = " I would like some Magic Seed.";
 		else
 			addText("Aren't you here for the Magic Seed? ");
 			addText("A lot of time has passed since we first met, and now I feel a sense of calmness and relief whenever I talk to you. ");
 			addText("People in this town love you, and I think the same way about you. ");
 			addText("You're a true friend.\r\n");
-			addText(blue(choiceRef(" Thank you so much for such kind words. I'd love to get some Magic Seeds right now.")));
+			choiceText = " Thank you so much for such kind words. I'd love to get some Magic Seeds right now.";
 		end
 
+		addText(blue(choiceRef(choiceText)));
 		choice = askChoice();
 
-		if choice == 0 then
-			price = nil;
-			if affinity < 5000 then
-				price = 30000;
+		price = nil;
+		if affinity < 5000 then
+			price = 30000;
 
-				addText(blue("Magic Seed") .. " is a precious item; I cannot give it to you just like that. ");
-				addText("How about doing me a little favor? ");
-				addText("Then I'll give it to you. ");
-				addText("I'll sell the " .. blue("Magic Seed") .. " to you for " .. blue("30,000 mesos") .. " each.\r\n");
-				addText("Are you willing to make the purchase? ");
-				addText("How many would you like, then?");
-			elseif affinity < 24000 then
-				price = 27000;
+			addText(blue("Magic Seed") .. " is a precious item; I cannot give it to you just like that. ");
+			addText("How about doing me a little favor? ");
+			addText("Then I'll give it to you. ");
+			addText("I'll sell the " .. blue("Magic Seed") .. " to you for " .. blue("30,000 mesos") .. " each.\r\n");
+			addText("Are you willing to make the purchase? ");
+			addText("How many would you like, then?");
+		elseif affinity < 24000 then
+			price = 27000;
 
-				addText("Ahh~ now I remember. ");
-				addText("If I'm mistaken, I gave you some " .. blue("Magic Seed") .. " before. ");
-				addText("How was it? ");
-				addText("I'm guessing you are more than satisfied with your previous purchase based on the look on your face.");
+			addText("Ahh~ now I remember. ");
+			addText("If I'm mistaken, I gave you some " .. blue("Magic Seed") .. " before. ");
+			addText("How was it? ");
+			addText("I'm guessing you are more than satisfied with your previous purchase based on the look on your face.");
+			sendNext();
+
+			addText(blue("Magic Seed") .. " is a precious item; I cannot give it to you just like that. ");
+			addText("How about doing me a little favor? ");
+			addText("Then I'll give it to you. ");
+			addText("I'll sell the " .. blue("Magic Seed") .. " to you for " .. blue("30,000 mesos") .. " each.\r\n");
+			addText("Are you willing to make the purchase? ");
+			addText("How many would you like, then?");
+		elseif affinity < 50000 then
+			price = 24000;
+
+			addText(blue("Magic Seed") .. " is a rare, precious item indeed, but now that we have been acquainted for quite some time, I'll give you a special discount. ");
+			addText("How about " .. blue("24,000 mesos") .. " for a " .. blue("Magic Seed") .. "? ");
+			addText("It's cheaper than flying over here through the ship! ");
+			addText("How many would you like?");
+		elseif affinity < 200000 then
+			price = 18000;
+
+			addText("You must have run out of the " .. blue("Magic Seed") .. ". ");
+			addText("We have grown very close to one another, and it doesn't sound too good for me to ask you for something in return, but please understand that the " .. blue("Magic Seed") .. " is very rare and hard to come by. ");
+			addText("How about " .. blue("18,000 mesos") .. " for " .. blue("1 Magic Seed") .. "? ");
+			addText("How many would you like to get?");
+		elseif affinity < 800000 then
+			price = 12000;
+
+			addText("I knew it. ");
+			addText("I can now tell just by looking at your eyes. ");
+			addText("I know that you will always be there for us here. ");
+			addText("We both understand that the " .. blue("Magic Seed") .. " is a precious item, but for you, I'll sell it to you for " .. blue("12,000 mesos") .. ". ");
+			addText("How many would you like?");
+		else
+			price = 8000;
+
+			addText("You know I always have them ready. ");
+			addText("Just give me " .. blue("8,000 mesos") .. " per seed. ");
+			addText("We've been friends for a while, anyway. ");
+			addText("How many would you like?");
+		end
+
+		result = askNumber(0, 0, 100);
+
+		if result == 0 then
+			addText("I can't sell you 0.");
+			sendNext();
+		else
+			totalPrice = price * result;
+			addText("Buying " .. blue(result .. " Magic Seed(s)") .. " will cost you " .. blue(totalPrice .. " mesos") .. ". ");
+			addText("Are you sure you want to make the purchase?");
+			answer = askYesNo();
+
+			if answer == answer_no then
+				addText("Please think carefully. ");
+				addText("Once you have made your decision, let me know.");
 				sendNext();
-
-				addText(blue("Magic Seed") .. " is a precious item; I cannot give it to you just like that. ");
-				addText("How about doing me a little favor? ");
-				addText("Then I'll give it to you. ");
-				addText("I'll sell the " .. blue("Magic Seed") .. " to you for " .. blue("30,000 mesos") .. " each.\r\n");
-				addText("Are you willing to make the purchase? ");
-				addText("How many would you like, then?");
-			elseif affinity < 50000 then
-				price = 24000;
-
-				addText(blue("Magic Seed") .. " is a rare, precious item indeed, but now that we have been acquainted for quite some time, I'll give you a special discount. ");
-				addText("How about " .. blue("24,000 mesos") .. " for a " .. blue("Magic Seed") .. "? ");
-				addText("It's cheaper than flying over here through the ship! ");
-				addText("How many would you like?");
-			elseif affinity < 200000 then
-				price = 18000;
-
-				addText("You must have run out of the " .. blue("Magic Seed") .. ". ");
-				addText("We have grown very close to one another, and it doesn't sound too good for me to ask you for something in return, but please understand that the " .. blue("Magic Seed") .. " is very rare and hard to come by. ");
-				addText("How about " .. blue("18,000 mesos") .. " for " .. blue("1 Magic Seed") .. "? ");
-				addText("How many would you like to get?");
-			elseif affinity < 800000 then
-				price = 12000;
-
-				addText("I knew it. ");
-				addText("I can now tell just by looking at your eyes. ");
-				addText("I know that you will always be there for us here. ");
-				addText("We both understand that the " .. blue("Magic Seed") .. " is a precious item, but for you, I'll sell it to you for " .. blue("12,000 mesos") .. ". ");
-				addText("How many would you like?");
 			else
-				price = 8000;
-
-				addText("You know I always have them ready. ");
-				addText("Just give me " .. blue("8,000 mesos") .. " per seed. ");
-				addText("We've been friends for a while, anyway. ");
-				addText("How many would you like?");
-			end
-
-			result = askNumber(0, 0, 100);
-
-			if result == 0 then
-				addText("I can't sell you 0.");
-				sendNext();
-			else
-				totalPrice = price * result;
-				addText("Buying " .. blue(result .. " Magic Seed(s)") .. " will cost you " .. blue(totalPrice .. " mesos") .. ". ");
-				addText("Are you sure you want to make the purchase?");
-				answer = askYesNo();
-
-				if answer == answer_no then
-					addText("Please think carefully. ");
-					addText("Once you have made your decision, let me know.");
+				item = 4031346;
+				if getMesos() < totalPrice or not hasOpenSlotsFor(item, result) then
+					addText("Please check and see if you have enough mesos to make the purchase. ");
+					addText("Also, I suggest you check the etc. inventory and see if you have enough space available to make the purchase.");
 					sendNext();
 				else
-					item = 4031346;
-					if getMesos() < totalPrice or not hasOpenSlotsFor(item, result) then
-						addText("Please check and see if you have enough mesos to make the purchase. ");
-						addText("Also, I suggest you check the etc. inventory and see if you have enough space available to make the purchase.");
-						sendNext();
-					else
-						giveMesos(-totalPrice);
-						giveItem(item, result);
+					giveMesos(-totalPrice);
+					giveItem(item, result);
 
-						if affinity >= 800000 then
-							addText("By the way, have you heard of the news that the Head Dragon, the one that has been protecting the forest, has disappeared? ");
-							addText("Something's not right, if you ask me; I can tell by hearing the devilish cry of the Horntail all the way here. ");
-							addText("This greatly concerns me...");
-						else
-							addText("See you again~");
-						end
-						sendNext();
+					if affinity >= 800000 then
+						addText("By the way, have you heard of the news that the Head Dragon, the one that has been protecting the forest, has disappeared? ");
+						addText("Something's not right, if you ask me; I can tell by hearing the devilish cry of the Horntail all the way here. ");
+						addText("This greatly concerns me...");
+					else
+						addText("See you again~");
 					end
+					sendNext();
 				end
 			end
 		end

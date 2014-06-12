@@ -39,15 +39,15 @@ else
 	choices = {
 		makeChoiceHandler(" Make a glove", function()
 			choices = {
-				makeItemChoice(1082003, 10, {4000021, 15, 4011001, 1, MESOS, 1000}, "warrior"),
-				makeItemChoice(1082000, 15, {4011001, 2, MESOS, 2000}, "warrior"),
-				makeItemChoice(1082004, 20, {4000021, 40, 4011000, 2, MESOS, 5000}, "warrior"),
-				makeItemChoice(1082001, 25, {4011001, 2, MESOS, 10000}, "warrior"),
-				makeItemChoice(1082007, 30, {4011000, 3, 4003000, 15, MESOS, 20000}, "warrior"),
-				makeItemChoice(1082008, 35, {4000021, 30, 4011001, 4, 4003000, 30, MESOS, 30000}, "warrior"),
-				makeItemChoice(1082023, 40, {4000021, 50, 4011001, 5, 4003000, 40, MESOS, 40000}, "warrior"),
-				makeItemChoice(1082009, 50, {4011001, 3, 4021007, 2, 4000030, 30, 4003000, 45, MESOS, 50000}, "warrior"),
-				makeItemChoice(1082059, 60, {4011007, 1, 4011000, 8, 4011006, 2, 4000030, 50, 4003000, 50, MESOS, 70000}, "warrior"),
+				makeItemChoice(1082003, 10, {4000021, 15, 4011001, 1, item_mesos, 1000}, "warrior"),
+				makeItemChoice(1082000, 15, {4011001, 2, item_mesos, 2000}, "warrior"),
+				makeItemChoice(1082004, 20, {4000021, 40, 4011000, 2, item_mesos, 5000}, "warrior"),
+				makeItemChoice(1082001, 25, {4011001, 2, item_mesos, 10000}, "warrior"),
+				makeItemChoice(1082007, 30, {4011000, 3, 4003000, 15, item_mesos, 20000}, "warrior"),
+				makeItemChoice(1082008, 35, {4000021, 30, 4011001, 4, 4003000, 30, item_mesos, 30000}, "warrior"),
+				makeItemChoice(1082023, 40, {4000021, 50, 4011001, 5, 4003000, 40, item_mesos, 40000}, "warrior"),
+				makeItemChoice(1082009, 50, {4011001, 3, 4021007, 2, 4000030, 30, 4003000, 45, item_mesos, 50000}, "warrior"),
+				makeItemChoice(1082059, 60, {4011007, 1, 4011000, 8, 4011006, 2, 4000030, 50, 4003000, 50, item_mesos, 70000}, "warrior"),
 			};
 
 			addText("I'm the best glove-maker in this town!! ");
@@ -86,16 +86,16 @@ else
 		end),
 		makeChoiceHandler(" Upgrade a glove", function()
 			choices = {
-				makeItemChoice(1082005, 30, {1082007, 1, 4011001, 1, MESOS, 20000}, "warrior"),
-				makeItemChoice(1082006, 30, {1082007, 1, 4011005, 2, MESOS, 25000}, "warrior"),
-				makeItemChoice(1082035, 35, {1082008, 1, 4021006, 3, MESOS, 30000}, "warrior"),
-				makeItemChoice(1082036, 35, {1082008, 1, 4021008, 1, MESOS, 40000}, "warrior"),
-				makeItemChoice(1082024, 40, {1082023, 1, 4011003, 4, MESOS, 45000}, "warrior"),
-				makeItemChoice(1082025, 40, {1082023, 1, 4021008, 2, MESOS, 50000}, "warrior"),
-				makeItemChoice(1082010, 50, {1082009, 1, 4011002, 5, MESOS, 55000}, "warrior"),
-				makeItemChoice(1082011, 50, {1082009, 1, 4011006, 4, MESOS, 60000}, "warrior"),
-				makeItemChoice(1082060, 60, {1082059, 1, 4011002, 3, 4021005, 5, MESOS, 70000}, "warrior"),
-				makeItemChoice(1082061, 60, {1082059, 1, 4021007, 2, 4021008, 2, MESOS, 80000}, "warrior"),
+				makeItemChoice(1082005, 30, {1082007, 1, 4011001, 1, item_mesos, 20000}, "warrior"),
+				makeItemChoice(1082006, 30, {1082007, 1, 4011005, 2, item_mesos, 25000}, "warrior"),
+				makeItemChoice(1082035, 35, {1082008, 1, 4021006, 3, item_mesos, 30000}, "warrior"),
+				makeItemChoice(1082036, 35, {1082008, 1, 4021008, 1, item_mesos, 40000}, "warrior"),
+				makeItemChoice(1082024, 40, {1082023, 1, 4011003, 4, item_mesos, 45000}, "warrior"),
+				makeItemChoice(1082025, 40, {1082023, 1, 4021008, 2, item_mesos, 50000}, "warrior"),
+				makeItemChoice(1082010, 50, {1082009, 1, 4011002, 5, item_mesos, 55000}, "warrior"),
+				makeItemChoice(1082011, 50, {1082009, 1, 4011006, 4, item_mesos, 60000}, "warrior"),
+				makeItemChoice(1082060, 60, {1082059, 1, 4011002, 3, 4021005, 5, item_mesos, 70000}, "warrior"),
+				makeItemChoice(1082061, 60, {1082059, 1, 4021007, 2, 4021008, 2, item_mesos, 80000}, "warrior"),
 			};
 
 			addText("So you want to upgrade the glove? ");

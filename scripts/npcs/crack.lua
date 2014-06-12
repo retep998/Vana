@@ -30,7 +30,7 @@ cloneId = nil;
 instance = nil;
 questState = getPlayerVariable("third_job_advancement", type_int);
 
-if getJobTrack() == 0 or getJobProgression() ~= 0 or questState == nil or questState ~= 2 then
+if getJobTrack() == 0 or getJobProgression() ~= progression_second or questState == nil or questState ~= 2 then
 	-- Beginners, non-second job, not in the process of advancing, too far in the advancement
 	failText();
 elseif questState == 2 and (getItemAmount(4031059) > 0 or getItemAmount(4031057) > 0) then
@@ -38,25 +38,25 @@ elseif questState == 2 and (getItemAmount(4031059) > 0 or getItemAmount(4031057)
 	failText();
 else
 	m = getMap();
-	g = getJobLine();
+	jobLine = getJobLine();
 
-	if m == 105070001 and g == 1 then
+	if m == 105070001 and jobLine == line_warrior then
 		instance = "warrior3rd";
 		destinationMap = 108010300;
 		cloneId = 1022000;
-	elseif m == 100040106 and g == 2 then
+	elseif m == 100040106 and jobLine == line_magician then
 		instance = "magician3rd";
 		destinationMap = 108010200;
 		cloneId = 1032001;
-	elseif m == 105040305 and g == 3 then
+	elseif m == 105040305 and jobLine == line_bowman then
 		instance = "bowman3rd";
 		destinationMap = 108010100;
 		cloneId = 1012100;
-	elseif m == 107000402 and g == 4 then
+	elseif m == 107000402 and jobLine == line_thief then
 		instance = "thief3rd";
 		destinationMap = 108010400;
 		cloneId = 1052001;
-	elseif m == 105070200 and g == 5 then
+	elseif m == 105070200 and jobLine == line_pirate then
 		instance = "pirate3rd";
 		destinationMap = 108010500;
 		cloneId = 1090000;

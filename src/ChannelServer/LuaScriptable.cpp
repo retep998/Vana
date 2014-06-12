@@ -69,6 +69,8 @@ LuaScriptable::LuaScriptable(const string_t &filename, player_id_t playerId, boo
 
 auto LuaScriptable::initialize() -> void {
 	set<player_id_t>("system_playerId", m_playerId); // Pushing ID for reference from static functions
+	set<string_t>("system_script", getScriptName());
+	set<vector_t<string_t>>("system_path", getScriptPath());
 	setEnvironmentVariables();
 
 	Player *player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(m_playerId);
@@ -119,7 +121,7 @@ auto LuaScriptable::initialize() -> void {
 
 	// Beauty
 	expose("getAllFaces", &LuaExports::getAllFaces);
-	expose("getAllHair", &LuaExports::getAllHair);
+	expose("getAllHairs", &LuaExports::getAllHairs);
 	expose("getAllSkins", &LuaExports::getAllSkins);
 	expose("getRandomFace", &LuaExports::getRandomFace);
 	expose("getRandomHair", &LuaExports::getRandomHair);
@@ -168,7 +170,7 @@ auto LuaScriptable::initialize() -> void {
 	expose("getAp", &LuaExports::getAp);
 	expose("getDex", &LuaExports::getDex);
 	expose("getExp", &LuaExports::getExp);
-	expose("getEyes", &LuaExports::getEyes);
+	expose("getFace", &LuaExports::getFace);
 	expose("getFame", &LuaExports::getFame);
 	expose("getFh", &LuaExports::getFh);
 	expose("getGender", &LuaExports::getGender);
@@ -356,6 +358,19 @@ auto LuaScriptable::setEnvironmentVariables() -> void {
 	set<bool>("portal_enabled", true);
 	set<bool>("portal_disabled", false);
 
+	set<int8_t>("line_beginner", Jobs::JobLines::Beginner);
+	set<int8_t>("line_warrior", Jobs::JobLines::Warrior);
+	set<int8_t>("line_magician", Jobs::JobLines::Magician);
+	set<int8_t>("line_bowman", Jobs::JobLines::Bowman);
+	set<int8_t>("line_thief", Jobs::JobLines::Thief);
+	set<int8_t>("line_pirate", Jobs::JobLines::Pirate);
+
+	set<int8_t>("progression_second", 0);
+	set<int8_t>("progression_third", 1);
+	set<int8_t>("progression_fourth", 2);
+
+	set<item_id_t>("item_mesos", Items::SackOfMoney);
+
 	set<string_t>("locale_global", MAPLE_LOCALE_STRING_GLOBAL);
 	set<string_t>("locale_korea", MAPLE_LOCALE_STRING_KOREA);
 	set<string_t>("locale_japan", MAPLE_LOCALE_STRING_JAPAN);
@@ -501,14 +516,19 @@ auto LuaExports::log(lua_State *luaVm) -> lua_return_t {
 auto LuaExports::selectDiscrete(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	vector_t<double> relativeChances = env.get<vector_t<double>>(luaVm, 1);
-	// TODO FIXME msvc
-	// MSVC did not provide the input iterator constructor for discrete_distribution
-	// Once Connect bug 812538 is fixed, remove this ugly, hideous workaround
-	std::discrete_distribution<> dist(relativeChances.size(), 0., static_cast<double>(relativeChances.size()), [&](double i) -> double {
-		return relativeChances[static_cast<size_t>(i)];
-	});
-	// Account for Lua array start
-	env.push<int32_t>(luaVm, Randomizer::rand(dist) + 1);
+	if (relativeChances.size() == 0) {
+		env.pushNil(luaVm);
+	}
+	else {
+		// TODO FIXME msvc
+		// MSVC did not provide the input iterator constructor for discrete_distribution
+		// Once Connect bug 812538 is fixed, remove this ugly, hideous workaround
+		std::discrete_distribution<> dist(relativeChances.size(), 0., static_cast<double>(relativeChances.size()), [&](double i) -> double {
+			return relativeChances[static_cast<size_t>(i)];
+		});
+		// Account for Lua array start
+		env.push<int32_t>(luaVm, Randomizer::rand(dist) + 1);
+	}
 	return 1;
 }
 
@@ -734,7 +754,7 @@ auto LuaExports::getAllFaces(lua_State *luaVm) -> lua_return_t {
 	return 1;
 }
 
-auto LuaExports::getAllHair(lua_State *luaVm) -> lua_return_t {
+auto LuaExports::getAllHairs(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	env.push<vector_t<hair_id_t>>(luaVm, ChannelServer::getInstance().getBeautyDataProvider().getHair(getPlayer(luaVm, env)->getGender()));
 	return 1;
@@ -1032,9 +1052,9 @@ auto LuaExports::getExp(lua_State *luaVm) -> lua_return_t {
 	return 1;
 }
 
-auto LuaExports::getEyes(lua_State *luaVm) -> lua_return_t {
+auto LuaExports::getFace(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.push<face_id_t>(luaVm, getPlayer(luaVm, env)->getEyes());
+	env.push<face_id_t>(luaVm, getPlayer(luaVm, env)->getFace());
 	return 1;
 }
 
@@ -1390,7 +1410,7 @@ auto LuaExports::setStyle(lua_State *luaVm) -> lua_return_t {
 		player->setSkin(static_cast<skin_id_t>(id));
 	}
 	else if (type == 2) {
-		player->setEyes(id);
+		player->setFace(id);
 	}
 	else if (type == 3) {
 		player->setHair(id);

@@ -355,14 +355,18 @@ auto ItemDataProvider::getMobId(item_id_t cardId) const -> mob_id_t {
 	return kvp->second;
 }
 
-auto ItemDataProvider::scrollItem(const EquipDataProvider &provider, item_id_t scrollId, Item *equip, bool whiteScroll, bool gmScroller, int8_t &succeed, bool &cursed) const -> void {
+auto ItemDataProvider::scrollItem(const EquipDataProvider &provider, item_id_t scrollId, Item *equip, bool whiteScroll, bool gmScroller, int8_t &succeed, bool &cursed) const -> HackingResult {
 	if (m_scrollInfo.find(scrollId) == std::end(m_scrollInfo)) {
-		return;
+		return HackingResult::DefinitelyHacking;
 	}
 
 	auto &itemInfo = m_scrollInfo.find(scrollId)->second;
 
 	bool scrollTakesSlot = !(itemInfo.preventSlip || itemInfo.warmSupport || itemInfo.recover);
+	if (scrollTakesSlot && equip->getSlots() == 0) {
+		return HackingResult::DefinitelyHacking;
+	}
+
 	if (itemInfo.preventSlip || itemInfo.warmSupport) {
 		succeed = 0;
 		if (gmScroller || Randomizer::rand<uint16_t>(99) < itemInfo.success) {
@@ -404,7 +408,7 @@ auto ItemDataProvider::scrollItem(const EquipDataProvider &provider, item_id_t s
 	else {
 		if (GameLogicUtilities::itemTypeToScrollType(equip->getId()) != GameLogicUtilities::getScrollType(scrollId)) {
 			// Hacking, equip slot different from the scroll slot
-			return;
+			return HackingResult::DefinitelyHacking;
 		}
 		if (equip->getSlots() > 0) {
 			succeed = 0;
@@ -439,6 +443,8 @@ auto ItemDataProvider::scrollItem(const EquipDataProvider &provider, item_id_t s
 	if (!whiteScroll && scrollTakesSlot) {
 		equip->decSlots();
 	}
+
+	return HackingResult::NotHacking;
 }
 
 auto ItemDataProvider::getItemInfo(item_id_t itemId) const -> const ItemInfo * const {

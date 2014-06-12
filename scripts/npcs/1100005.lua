@@ -47,6 +47,7 @@ if isToEreve then
 			sendBackOk();
 		end),
 		makeChoiceHandler("No, it's okay.", function()
+			-- Intentionally left blank
 		end),
 	};
 

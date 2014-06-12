@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Jake - Subway Worker (Kerning City)
 
-dofile("scripts/lua_functions/miscFunctions.lua");
 dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/lua_functions/tableHelper.lua");
 
 function generateChoice(choiceText, mapText, price, item, area)
 	return makeChoiceData(choiceText, {mapText, price, item, area});

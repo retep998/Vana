@@ -20,22 +20,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 dofile("scripts/lua_functions/beautyFunctions.lua");
 dofile("scripts/lua_functions/npcHelper.lua");
 
+item = 5153009;
+
 addText("Well, hello! ");
 addText("Welcome to the NLC Skin-Care! ");
 addText("Would you like to have a firm, tight, healthy looking skin like mine?  ");
-addText("With " .. blue(itemRef(5153009)) .. ", you can let us take care of the rest and have the kind of skin you've always wanted~!");
+addText("With " .. blue(itemRef(item)) .. ", you can let us take care of the rest and have the kind of skin you've always wanted~!");
 sendNext();
 
 addText("With our specialized machine, you can see your expected results after treatment in advance. ");
 addText("What kind of skin-treatment would you like to do? ");
 addText("Choose your preferred style.");
-styles = {};
-getSkins(styles);
-style = askStyle(styles) + 1;
+choices = getSkinStyles();
+choice = askStyle(choices);
 
-if getItemAmount(5153009) > 0 then
-	giveItem(5153009, -1);
-	setStyle(styles[style]);
+if giveItem(item, -1) then
+	setStyle(selectChoice(choices, choice));
 	addText("Enjoy your new and improved skin!");
 	sendNext();
 else

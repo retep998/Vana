@@ -28,48 +28,51 @@ if mapId == 924000000 then
 	addText("Otherwise, you're dead.");
 	sendNext();
 
-	addText("Don't forget " .. red("to hold shield") .. " before you get there!\r\n");
-	addText(blue(choiceList({
-		" I want to get " .. itemRef(item) .. ".",
-		" Let me go in to " .. mapRef(924000001) .. ".",
-		" Let me out.",
-	})));
-	choice = askChoice();
-
-	if choice == 0 then
-		if getItemAmount(item) > 0 then
-			addText("You already have " .. blue(itemRef(item)) .. ". ");
-			addText("No need more.");
-			sendNext();			
-		else
-			if destroyEquippedItem(item) then
-				showMessage("Shield for learning skill was removed.", msg_red);
-			end
-
-			if hasOpenSlotsFor(item, result) then
-				giveItem(item, 1);
-				addText("I gave you " .. itemRef(item) .. ". ");
-				addText("Check inventory. ");
-				addText("You have to be equipped with it!");
+	choices = {
+		makeChoiceHandler(" I want to get " .. itemRef(item) .. ".", function()
+			if getItemAmount(item) > 0 then
+				addText("You already have " .. blue(itemRef(item)) .. ". ");
+				addText("No need more.");
 				sendNext();
 			else
-				addText("I couldn't give you " .. blue(itemRef(item)) .. " as there's no blank in Equipment box. ");
-				addText("Make a blank and try again.");
-				sendNext();
+				if destroyEquippedItem(item) then
+					showMessage("Shield for learning skill was removed.", msg_red);
+				end
+
+				if hasOpenSlotsFor(item, result) then
+					giveItem(item, 1);
+					addText("I gave you " .. itemRef(item) .. ". ");
+					addText("Check inventory. ");
+					addText("You have to be equipped with it!");
+					sendNext();
+				else
+					addText("I couldn't give you " .. blue(itemRef(item)) .. " as there's no blank in Equipment box. ");
+					addText("Make a blank and try again.");
+					sendNext();
+				end
 			end
-		end
-	elseif choice == 1 then
-		if isInstance("guardian") then
-			addText("Other characters are on request. ");
-			addText("You can't enter.");
-			sendNext();
-		else
-			createInstance("guardian", 20 * 60, true);
-			setMap(924000001);
-		end
-	elseif choice == 2 then
-		setMap(924000002);
-	end
+		end),
+		makeChoiceHandler(" Let me go in to " .. mapRef(924000001) .. ".", function()
+			if isInstance("guardian") then
+				addText("Other characters are on request. ");
+				addText("You can't enter.");
+				sendNext();
+			else
+				createInstance("guardian", 20 * 60, true);
+				setMap(924000001);
+			end
+		end),
+		makeChoiceHandler(" Let me out.", function()
+			setMap(924000002);
+		end),
+
+	};
+
+	addText("Don't forget " .. red("to hold shield") .. " before you get there!\r\n");
+	addText(blue(choiceList(choices)));
+	choice = askChoice();
+
+	selectChoice(choices, choice);
 elseif mapId == 924000001 then
 	addText("Do you want to get out of here?");
 	answer = askYesNo();

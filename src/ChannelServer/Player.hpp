@@ -61,7 +61,7 @@ public:
 	auto setSkin(skin_id_t id) -> void;
 	auto setFallCounter(int8_t falls) -> void { m_fallCounter = falls; }
 	auto setMapChair(seat_id_t s) -> void { m_mapChair = s; }
-	auto setEyes(face_id_t id) -> void;
+	auto setFace(face_id_t id) -> void;
 	auto setHair(hair_id_t id) -> void;
 	auto setMap(map_id_t mapId, PortalInfo *portal = nullptr, bool instance = false) -> void;
 	auto setBuddyListSize(uint8_t size) -> void;
@@ -98,7 +98,7 @@ public:
 	auto getMapChair() const -> seat_id_t { return m_mapChair; }
 	auto getId() const -> player_id_t { return m_id; }
 	auto getUserId() const -> account_id_t { return m_userId; }
-	auto getEyes() const -> face_id_t { return m_eyes; }
+	auto getFace() const -> face_id_t { return m_face; }
 	auto getHair() const -> hair_id_t { return m_hair; }
 	auto getMapId() const -> map_id_t { return m_map; }
 	auto getLastMapId() const -> map_id_t { return m_lastMap; }
@@ -174,7 +174,7 @@ private:
 	seat_id_t m_mapChair = 0;
 	player_id_t m_id = 0;
 	account_id_t m_userId = 0;
-	face_id_t m_eyes = 0;
+	face_id_t m_face = 0;
 	hair_id_t m_hair = 0;
 	map_id_t m_map = 0;
 	map_id_t m_lastMap = 0;

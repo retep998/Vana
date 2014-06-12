@@ -19,10 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/npcHelper.lua");
 
-MESOS = -1
-
 -- displayResources takes an array of items in the form of {itemid, amount, itemid, amount} and a multiplier
--- Mesos are indicated by the constant MESOS
+-- Mesos are indicated by the constant item_mesos
 -- Returns nothing, just displays the array
 function displayResources(items, multiplier)
 	if multiplier == nil then
@@ -31,7 +29,7 @@ function displayResources(items, multiplier)
 	for index = 1, #reqs - 1, 2 do
 		local item = reqs[index];
 		local amt = reqs[index + 1];
-		if item == MESOS then -- Mesos are shown as item 4031138 (Sack of Money)
+		if item == item_mesos then
 			addText(questMesosIcon(amt * multiplier) .. "\r\n");
 		else
 			addText(questItemIcon(item, amt * multiplier) .. "\r\n");
@@ -40,14 +38,14 @@ function displayResources(items, multiplier)
 end
 
 -- giveResources takes an array of items in the form of {itemid, amount, itemid, amount} and a multiplier
--- Mesos are indicated by the constant MESOS
+-- Mesos are indicated by the constant item_mesos
 -- Returns nothing, just adds the items/mesos
 function giveResources(items, multiplier)
 	if multiplier == nil then
 		multiplier = 1;
 	end
 	for index = 1, #items - 1, 2 do
-		if items[index] == MESOS then
+		if items[index] == item_mesos then
 			giveMesos(multiplier * items[index + 1]);
 		else
 			giveItem(items[index], multiplier * items[index + 1]);
@@ -63,7 +61,7 @@ function hasResources(requisites, multiplier)
 		multiplier = 1;
 	end
 	for index = 1, #requisites - 1, 2 do
-		if requisites[index] == MESOS then
+		if requisites[index] == item_mesos then
 			if getMesos() < (requisites[index + 1] * multiplier) then
 				has = false;
 				break;
@@ -85,7 +83,7 @@ function takeResources(requisites, multiplier)
 		multiplier = 1;
 	end
 	for index = 1, #requisites - 1, 2 do
-		if requisites[index] == MESOS then
+		if requisites[index] == item_mesos then
 			giveMesos(-1 * multiplier * requisites[index + 1]);
 		else
 			giveItem(requisites[index], -1 * multiplier * requisites[index + 1]);

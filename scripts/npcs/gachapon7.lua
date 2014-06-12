@@ -18,25 +18,88 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Gachapon - Zipangu: Spa (M)
 
 dofile("scripts/lua_functions/gachaponHelper.lua");
-dofile("scripts/lua_functions/npcHelper.lua");
 
-items = {
-	1102082, 1102043, 1102041, 1102042, 1102040, 1002587, 1002394, 1002393, 1082147, 1082149,
-	1082148, 1082145, 1022047, 1050018, 1322021, 1442017, 1312012, 1432018, 2043104, 2043105,
-	2043204, 2043205, 2043004, 2043005, 2043006, 2043007, 2044104, 2044105, 2044204, 2044205,
-	2044004, 2044005, 2040604, 2040605, 2040610, 2040611, 2040606, 2040607, 2044504, 2044505,
-	2041038, 2041039, 2041030, 2041031, 2041036, 2041037, 2041040, 2041041, 2041026, 2041027,
-	2041032, 2041033, 2041034, 2041035, 2041028, 2041029, 2044704, 2044705, 2044604, 2044605,
-	2043304, 2043305, 2040308, 2040309, 2040306, 2040307, 2040304, 2040305, 2040810, 2040811,
-	2040808, 2040809, 2040812, 2040813, 2040814, 2040014, 2040015, 2040008, 2040009, 2040010,
-	2040011, 2040012, 2040013, 2040510, 2040511, 2040508, 2040509, 2040518, 2040519, 2040520,
-	2040520, 2044404, 2044405, 2040904, 2040905, 2040908, 2040909, 2040906, 2040907, 2040712,
-	2040713, 2040714, 2040715, 2040716, 2040717, 2044304, 2044305, 2043804, 2043805, 2043704,
-	2043705, 2040406, 2040407, 2040408, 2040409, 2040410, 2040411, 1402037, 1382037, 1382008,
-	1372008, 1372032, 1372017, 1452018, 1472051, 1472054, 1332053, 1452044, 1462039, 1332049,
-	1332050, 1312031, 1322052, 1302059, 1302026, 1302037, 1302049, 1302063, 1302021, 1442002,
-	1442045, 1432038, 1432017, 1432016, 1432015, 1412026, 1422028, 1422011, 1402014, 1402013,
-	1402017, 1402036, 1051017, 2000005, 1040097, 1452018
+-- General rules:
+-- No scrolls from the global items
+-- Includes skill books for mastery level 20 for all classes
+
+weight = mastery_book_20 * 4;
+
+skills = {
+	{2290000, ["weight"] = weight},
+	{2290002, ["weight"] = weight},
+	{2290004, ["weight"] = weight},
+	{2290006, ["weight"] = weight},
+	{2290008, ["weight"] = weight},
+	{2290010, ["weight"] = weight},
+	{2290012, ["weight"] = weight},
+	{2290014, ["weight"] = weight},
+	{2290016, ["weight"] = weight},
+	{2290018, ["weight"] = weight},
+	{2290019, ["weight"] = weight},
+	{2290020, ["weight"] = weight},
+	{2290022, ["weight"] = weight},
+	{2290024, ["weight"] = weight},
+	{2290026, ["weight"] = weight},
+	{2290028, ["weight"] = weight},
+	{2290030, ["weight"] = weight},
+	{2290032, ["weight"] = weight},
+	{2290034, ["weight"] = weight},
+	{2290036, ["weight"] = weight},
+	{2290038, ["weight"] = weight},
+	{2290040, ["weight"] = weight},
+	{2290042, ["weight"] = weight},
+	{2290044, ["weight"] = weight},
+	{2290046, ["weight"] = weight},
+	{2290048, ["weight"] = weight},
+	{2290050, ["weight"] = weight},
+	{2290052, ["weight"] = weight},
+	{2290054, ["weight"] = weight},
+	{2290056, ["weight"] = weight},
+	{2290058, ["weight"] = weight},
+	{2290060, ["weight"] = weight},
+	{2290062, ["weight"] = weight},
+	{2290064, ["weight"] = weight},
+	{2290066, ["weight"] = weight},
+	{2290068, ["weight"] = weight},
+	{2290070, ["weight"] = weight},
+	{2290072, ["weight"] = weight},
+	{2290074, ["weight"] = weight},
+	{2290076, ["weight"] = weight},
+	{2290078, ["weight"] = weight},
+	{2290080, ["weight"] = weight},
+	{2290082, ["weight"] = weight},
+	{2290084, ["weight"] = weight},
+	{2290086, ["weight"] = weight},
+	{2290088, ["weight"] = weight},
+	{2290090, ["weight"] = weight},
+	{2290092, ["weight"] = weight},
+	{2290094, ["weight"] = weight},
+	{2290097, ["weight"] = weight},
+	{2290099, ["weight"] = weight},
+	{2290101, ["weight"] = weight},
+	{2290102, ["weight"] = weight},
+	{2290104, ["weight"] = weight},
+	{2290106, ["weight"] = weight},
+	{2290108, ["weight"] = weight},
+	{2290110, ["weight"] = weight},
+	{2290112, ["weight"] = weight},
+	{2290114, ["weight"] = weight},
+	{2290115, ["weight"] = weight},
+	{2290117, ["weight"] = weight},
+	{2290119, ["weight"] = weight},
+	{2290121, ["weight"] = weight},
+	{2290123, ["weight"] = weight},
+	{2290124, ["weight"] = weight},
 };
 
-gachapon(items);
+gachapon({
+	["items"] = skills,
+	["globalItemWeightModifier"] = function(item)
+		-- Only pass non-scrolls through
+		if math.floor(item["id"] / 10000) == 204 then
+			return item_discard;
+		end
+		return item_keep;
+	end,
+});

@@ -114,3 +114,16 @@ auto StringUtilities::bytesToHex(const unsigned char *input, size_t inputSize, b
 	}
 	return ret;
 }
+
+auto StringUtilities::split(string_t input, const string_t &delimiter) -> vector_t<string_t> {
+	vector_t<string_t> ret;
+	size_t pos = 0;
+	string_t token;
+	while ((pos = input.find(delimiter)) != string_t::npos) {
+		token = input.substr(0, pos);
+		ret.push_back(token);
+		input.erase(0, pos + delimiter.length());
+	}
+	ret.push_back(input);
+	return ret;
+}

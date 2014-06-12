@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- A Pile of Flowers
 
 dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/lua_functions/tableHelper.lua");
 
 -- TODO FIXME implement distance properly
 -- You can't see the inside of the pile of flowers very well because you're too far. Go a little closer.
@@ -38,7 +39,7 @@ if isQuestActive(2050) then
 	end
 else
 	items = {4010000, 4010001, 4010002, 4010003, 4010004, 4010005, 4020000, 4020001, 4020002, 4020003, 4020004, 4020005, 4020006};
-	item = items[getRandomNumber(#items)];
+	item = selectElement(items);
 	if giveItem(item, 2) then
 		setMap(101000000);
 	else

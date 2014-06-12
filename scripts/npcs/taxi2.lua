@@ -22,11 +22,11 @@ dofile("scripts/lua_functions/npcHelper.lua");
 function generateChoice(mapId, price)
 	return makeChoiceData(mapRef(mapId) .. "(" .. price .. " mesos) ", {mapId, price});
 end
+
 function getPrice(basePrice)
 	if getJob() == 0 then
 		return basePrice / 10;
 	end
-
 	return basePrice;
 end
 

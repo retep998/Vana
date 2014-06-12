@@ -271,7 +271,7 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 	m_map = row.get<map_id_t>("map");
 	m_gmLevel = row.get<int32_t>("gm_level");
 	m_admin = row.get<bool>("admin");
-	m_eyes = row.get<face_id_t>("eyes");
+	m_face = row.get<face_id_t>("face");
 	m_hair = row.get<hair_id_t>("hair");
 	m_worldId = row.get<world_id_t>("world_id");
 	m_gender = row.get<gender_id_t>("gender");
@@ -586,9 +586,9 @@ auto Player::setHair(hair_id_t id) -> void {
 	send(PlayerPacket::updateStat(Stats::Hair, id));
 }
 
-auto Player::setEyes(face_id_t id) -> void {
-	m_eyes = id;
-	send(PlayerPacket::updateStat(Stats::Eyes, id));
+auto Player::setFace(face_id_t id) -> void {
+	m_face = id;
+	send(PlayerPacket::updateStat(Stats::Face, id));
 }
 
 auto Player::setSkin(skin_id_t id) -> void {
@@ -652,7 +652,7 @@ auto Player::saveStats() -> void {
 		<< "	pos = :pos, "
 		<< "	gender = :gender, "
 		<< "	skin = :skin, "
-		<< "	eyes = :eyes, "
+		<< "	face = :face, "
 		<< "	hair = :hair, "
 		<< "	mesos = :money, "
 		<< "	equip_slots = :equip, "
@@ -683,7 +683,7 @@ auto Player::saveStats() -> void {
 		soci::use(m_mapPos, "pos"),
 		soci::use(m_gender, "gender"),
 		soci::use(m_skin, "skin"),
-		soci::use(m_eyes, "eyes"),
+		soci::use(m_face, "face"),
 		soci::use(m_hair, "hair"),
 		soci::use(money, "money"),
 		soci::use(equip, "equip"),

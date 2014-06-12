@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Adobis that runs the quests
 
 dofile("scripts/lua_functions/npcHelper.lua");
-dofile("scripts/lua_functions/miscFunctions.lua");
+dofile("scripts/lua_functions/tableHelper.lua");
 
 choices = {
 	makeChoiceHandler(" Explore the Dead Mine. (Level 1)", function()

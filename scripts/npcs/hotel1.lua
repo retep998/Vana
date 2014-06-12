@@ -25,32 +25,32 @@ addText("Our hotel works hard to serve you the best at all times. ");
 addText("If you are tired and worn out from hunting, how about a relaxing stay at our hotel?");
 sendNext();
 
+choices = {
+	makeChoiceHandler("Regular sauna(499 mesos per use)", function()
+		addText("You've chosen the regular sauna. ");
+		addText("Your HP and MP will recover fast and you can even purchase some items there. ");
+		return {499, 105040401};
+	end),
+	makeChoiceHandler("VIP sauna(999 mesos per use)", function()
+		addText("You've chosen the VIP sauna. ");
+		addText("Your HP and MP will recover even faster than that of the regular sauna and you can even find a special item in there. ");
+		return {999, 105040402};
+	end),
+};
+
 addText("We offer two kinds of rooms for service. ");
 addText("Please choose the one of your liking.\r\n");
-addText(blue(choiceList({
-	"Regular sauna(499 mesos per use)",
-	"VIP sauna(999 mesos per use)",
-})));
+addText(blue(choiceList(choices)));
 choice = askChoice();
 
-if choice == 0 then
-	price = 499;
-	map = 105040401;
-	addText("You've chosen the regular sauna. ");
-	addText("Your HP and MP will recover fast and you can even purchase some items there. ");
-elseif choice == 1 then
-	price = 999;
-	map = 105040402;
-	addText("You've chosen the VIP sauna. ");
-	addText("Your HP and MP will recover even faster than that of the regular sauna and you can even find a special item in there. ");
-end
+price, mapId = selectChoice(choices, choice);
 
 addText("Are you sure you want to go in?");
 answer = askYesNo();
 
 if answer == answer_yes then
 	if giveMesos(-price) then
-		setMap(map);
+		setMap(mapId);
 	else
 		addText("I'm sorry. ");
 		addText("It looks like you don't have enough mesos. ");

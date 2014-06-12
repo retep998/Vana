@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaEnvironment.hpp"
 #include "FileUtilities.hpp"
+#include "StringUtilities.hpp"
 #include <iostream>
 #include <stdexcept>
 
@@ -44,7 +45,10 @@ LuaEnvironment::LuaEnvironment(const string_t &filename, bool useThread)
 {
 	loadFile(filename);
 
-	m_environmentIdentifier = s_identifiers.next();
+	do {
+		m_environmentIdentifier = s_identifiers.next();
+	} while (s_environments.find(m_environmentIdentifier) != s_environments.end());
+
 	if (useThread) {
 		m_luaThread = lua_newthread(m_luaVm);
 	}
@@ -147,6 +151,21 @@ auto LuaEnvironment::pushNil() -> LuaEnvironment & {
 auto LuaEnvironment::pushNil(lua_State *luaVm) -> LuaEnvironment & {
 	lua_pushnil(luaVm);
 	return *this;
+}
+
+auto LuaEnvironment::getScriptName() -> string_t {
+	vector_t<string_t> parts = StringUtilities::split(m_file, "/");
+	return FileUtilities::removeExtension(parts[parts.size() - 1]);
+}
+
+auto LuaEnvironment::getScriptPath() -> vector_t<string_t> {
+	vector_t<string_t> parts = StringUtilities::split(m_file, "/");
+	if (parts.size() == 1) {
+		vector_t<string_t> ret;
+		return ret;
+	}
+	vector_t<string_t> ret{parts.begin(), parts.end() - 1};
+	return ret;
 }
 
 auto LuaEnvironment::exists(const string_t &key) -> bool {

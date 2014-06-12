@@ -145,7 +145,7 @@ elseif getJob() == 0 then
 		addText("Don't think being the Bowman is a walk in the park...");
 		sendBackNext();
 	end
-elseif getJobLine() == 3 and getJobTrack() > 0 then
+elseif getJobLine() == line_bowman and getJobTrack() > 0 then
 	choices = {
 		makeChoiceHandler("What are the basic characters of a Bowman?", function()
 			addText("This is what being a bowman is all about. ");

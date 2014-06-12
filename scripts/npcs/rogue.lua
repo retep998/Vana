@@ -165,7 +165,7 @@ elseif getJob() == 0 then
 		addText("make yourself much stronger, THEN find me...");
 		sendBackNext();
 	end
-elseif getJobLine() == 4 and getJobTrack() > 0 then
+elseif getJobLine() == line_thief and getJobTrack() > 0 then
 	choices = {
 		makeChoiceHandler("What are the basic characters of a Thief?", function()
 			addText("Let me explain to you what being a thief means. ");

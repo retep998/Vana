@@ -98,6 +98,12 @@ enum class Result {
 	Failure
 };
 
+enum class HackingResult {
+	DefinitelyHacking,
+	MaybeHacking,
+	NotHacking,
+};
+
 using std::chrono::duration_cast;
 
 // Game protocol/entity types

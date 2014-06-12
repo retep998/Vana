@@ -19,47 +19,38 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/npcHelper.lua");
 
+choices = {
+	makeChoiceData("The platform to the ship that heads to Ellinia", {200000110,  blue("platform to the ship that heads to Ellinia") .. "?", false, true}),
+	makeChoiceData("The platform to the ship that heads to Ludibrium", {200000120,  blue("platform to the ship that heads to Ludibrium") .. "?", true, true}),
+	makeChoiceData("The platform to Hak that heads to Leafre", {200000130,  blue("platform to the ship that heads to Leafre") .. "?", false, true}),
+	makeChoiceData("The platform to Hak that heads to Mu Lung", {200000140,  blue("platform to Hak that heads to Mu Lung") .. "?"}),
+	makeChoiceData("The platform to Geenie that heads to Ariant", {200000150,  blue("platform to Geenie that heads to Ariant")}),
+	makeChoiceData("The platform to Geenie that heads to Ereve", {200000160,  blue("platform to Geenie that heads to Ereve")}),
+};
+
 addText("Orbis Station has lots of platforms available to choose from. ");
 addText("You need to choose the one that'll take you to the destination of your choice. ");
 addText("Which platform will you take?\r\n");
-addText(blue(choiceList({
-	"The platform to the ship that heads to Ellinia",
-	"The platform to the ship that heads to Ludibrium",
-	"The platform to Hak that heads to Leafre",
-	"The platform to Hak that heads to Mu Lung",
-	"The platform to Geenie that heads to Ariant",
-	"The platform to Geenie that heads to Ereve",
-})));
+addText(blue(choiceList(choices)));
 choice = askChoice();
 
+data = selectChoice(choices, choice);
+mapId, blueText, extraNewline, extraScheduleText = data[1], data[2], data[3], data[4];
+
 addText("Even if you took the wrong passage you can get back here using the portal, so no worries.");
-if choice == 0 then
-	map = 200000110;
-	addText(" Will you move to the " .. blue("platform to the ship that heads to Ellinia") .. "?");
-elseif choice == 1 then
-	map = 200000120;
-	addText(" Will you move to the " .. blue("platform to the ship that heads to Ludibrium") .. "?");
-elseif choice == 2 then
-	map = 200000130;
+if extraNewline then
 	addText("\r\n");
-	addText("Will you move to the " .. blue("platform to the ship that heads to Leafre") .. "?");
-elseif choice == 3 then
-	map = 200000140;
-	addText(" Will you move to the " .. blue("platform to Hak that heads to Mu Lung") .. "?");
-elseif choice == 4 then
-	map = 200000150;
-	addText(" Will you move to the " .. blue("platform to Geenie that heads to Ariant"));
-elseif choice == 5 then
-	map = 200000160;
-	addText(" Will you move to the " .. blue("platform to Geenie that heads to Ereve"));
+else
+	addText(" ");
 end
+addText("Will you move to the " .. blueText);
 answer = askYesNo();
 
 if answer == answer_yes then
-	setMap(map, "west00");
+	setMap(mapId, "west00");
 else
 	addText("Please make sure you know where you are going and then go to the platform through me.");
-	if choice == 0 or choice == 1 or choice == 2 then
+	if extraScheduleText then
 		addText(" The ride is on schedule so you better not miss it!");
 	end
 	sendNext();

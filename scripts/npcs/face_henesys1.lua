@@ -15,38 +15,29 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Denma the owner (Henesys VIP eyes)
+-- Denma the owner (Henesys VIP face)
 
+dofile("scripts/lua_functions/beautyFunctions.lua");
 dofile("scripts/lua_functions/npcHelper.lua");
 
-if getGender() == gender_male then
-	face = {20000, 20001, 20002, 20003, 20004, 20005, 20006, 20007, 20008, 20012, 20014};
-else
-	face = {21000, 21001, 21002, 21003, 21004, 21005, 21006, 21007, 21008, 21012, 21014};
-end
+validFaces = getGenderStyles({
+	["male"] = {20000, 20001, 20002, 20003, 20004, 20005, 20006, 20007, 20008, 20012, 20014},
+	["female"] = {21000, 21001, 21002, 21003, 21004, 21005, 21006, 21007, 21008, 21012, 21014},
+});
 
--- Get player's eyes to get the face
-eye = getEyes();
 item = 5152001;
+
+validFaces = getFaceStyles(validFaces)
 
 addText("Let's see... ");
 addText("I can totally transform your face into something new. ");
 addText("Don't you want to try it? ");
 addText("For " .. blue(itemRef(item)) .. ", you can get the face of your liking. ");
 addText("Take your time in choosing the face of your preference...");
+choice = askStyle(validFaces);
 
-current = eye - (eye % 10000);
-newFace = {};
-for i = 0, #face do
-	if not (current + i == eye) then
-		newFace[#newFace + 1] = current + i;
-	end
-end
-style = askStyle(newFace) + 1;
-
-if getItemAmount(item) > 0 then
-	giveItem(item, -1);
-	setStyle(newFace[style]);
+if giveItem(item, -1) then
+	setStyle(selectChoice(validFaces, choice));
 
 	addText("Enjoy your new and improved face!");
 	sendNext();

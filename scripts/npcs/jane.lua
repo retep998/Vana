@@ -53,7 +53,7 @@ if isQuestCompleted(2013) then
 
 	addText("Will you purchase " .. red(qty) .. " " .. blue(itemRef(item) .. "(s)") .. "? ");
 	addText(blue(itemRef(item)) .. " costs " .. price .. " per piece, so the total comes out to be " .. finalCost .. " mesos.");
-	answer = askYesNo();	
+	answer = askYesNo();
 
 	if answer == answer_yes then
 		if hasOpenSlotsFor(item, qty) and getMesos() >= finalCost then

@@ -28,6 +28,13 @@ function isBasicTicket()
 	return getLevel() <= 10;
 end
 
+function getTicket(basic, regular)
+	if isBasicTicket() then
+		return basic;
+	end
+	return regular;
+end
+
 if isBasicTicket() then
 	cost = 1000;
 end
@@ -38,9 +45,7 @@ if map == 103000100 then
 	answer = askYesNo();
 
 	if answer == answer_yes then
-		if isBasicTicket() then item = 4031710;
-		else item = 4031711;
-		end
+		item = getTicket(4031710, 4031711);
 	else
 		addText("Ok, come talk to me again when you want to go to NLC.");
 		sendOk();
@@ -51,9 +56,7 @@ elseif map == 600010001 then
 	answer = askYesNo();
 
 	if answer == answer_yes then
-		if isBasicTicket() then item = 4031712;
-		else item = 4031713;
-		end
+		item = getTicket(4031712, 4031713);
 	else
 		addText("Ok, come talk to me again when you want to go back to Kerning City.");
 		sendOk();
@@ -80,7 +83,7 @@ elseif map == 600010002 then
 	end
 end
 
-if item then
+if item ~= nil then
 	if hasOpenSlotsFor(item, 1) and giveMesos(-cost) then
 		giveItem(item, 1);
 	else

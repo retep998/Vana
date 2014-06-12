@@ -35,6 +35,7 @@ namespace StringUtilities {
 	auto atoli(const char *str) -> int64_t;
 	auto replace(const string_t &input, const string_t &what, const string_t &replacement) -> string_t;
 	auto bytesToHex(const unsigned char *input, size_t inputSize, bool uppercase = true) -> string_t;
+	auto split(string_t input, const string_t &delimiter) -> vector_t<string_t>;
 	template <typename TElement>
 	auto delimit(const string_t &delimiter, const init_list_t<TElement> &elements) -> string_t;
 	template <typename TElement>

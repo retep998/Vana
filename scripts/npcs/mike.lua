@@ -47,5 +47,5 @@ if isQuestActive(2048) then
 	addText("It has something to do with a dragon blowing fire or something like that. ");
 	addText("Anyway, if it's cruel, it will be difficult for you to take the " .. itemRef(4001006) .. ". ");
 	addText("Good luck!");
-	sendNext();	
+	sendNext();
 end

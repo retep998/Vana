@@ -20,22 +20,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 dofile("scripts/lua_functions/beautyFunctions.lua");
 dofile("scripts/lua_functions/npcHelper.lua");
 
+item = 5153000;
+
 addText("Well, hello! ");
 addText("Welcome to the Henesys Skin-Care! ");
 addText("Would you like to have a firm, tight, healthy looking skin like mine?  ");
-addText("With " .. blue(itemRef(5153000)) .. ", you can let us take care of the rest and have the kind of skin you've always wanted~!");
+addText("With " .. blue(itemRef(item)) .. ", you can let us take care of the rest and have the kind of skin you've always wanted~!");
 sendNext();
 
 addText("With our specialized machine, you can see yourself after the treatment in advance. ");
 addText("What kind of skin-treatment would you like to do? ");
 addText("Choose the style of your liking...");
-styles = {};
-getSkins(styles);
-style = askStyle(styles) + 1;
+validSkins = getSkinStyles({ skin_light, skin_tanned, skin_dark, skin_pale });
 
-if getItemAmount(5153000) > 0 then
-	giveItem(5153000, -1);
-	setStyle(styles[style]);
+choice = askStyle(validSkins);
+
+if giveItem(item, -1) then
+	setStyle(selectChoice(validSkins, choice));
 	addText("Enjoy your new and improved skin!");
 	sendNext();
 else

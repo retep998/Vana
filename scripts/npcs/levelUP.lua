@@ -26,31 +26,24 @@ end
 dofile("scripts/lua_functions/beautyFunctions.lua");
 dofile("scripts/lua_functions/npcHelper.lua");
 
+choices = {
+	makeChoiceData("Skin", getSkinStyles()),
+	makeChoiceData("Hair", getHairStyles()),
+	makeChoiceData("Hair Color", getHairColours()),
+	makeChoiceData("Face", getFaceStyles()),
+	makeChoiceData("Eye Color", getFaceColours()),
+	makeChoiceHandler("Random New Look", function()
+		setStyle(getRandomFace(getAllFaces()));
+		setStyle(getRandomHair(getAllHairs()));
+	end),
+};
+
 addText("Hello, what can I do for you today?\r\n");
-addText(blue(choiceList({
-	"Skin",
-	"Hair",
-	"Hair Color",
-	"Eyes",
-	"Eyes Color",
-	"Random New Look",
-})));
+addText(blue(choiceList(choices)));
 choice = askChoice();
 
-if choice == 5 then
-	setStyle(getRandomFace());
-	setStyle(getRandomHair());
-else
-	styles = {};
-	if choice == 0 then getSkins(styles);
-	elseif choice == 1 then getHairs(styles);
-	elseif choice == 2 then getHairColours(styles);
-	elseif choice == 3 then getEyeStyles(styles);
-	elseif choice == 4 then getEyeColour(styles);
-	end
-	style = askStyle(styles) + 1;
-
-	if styles[style] >= 0 then
-		setStyle(styles[style]);
-	end
+data = selectChoice(choices, choice);
+if data ~= nil then
+	choice = askStyle(data);
+	setStyle(selectChoice(data, choice));
 end

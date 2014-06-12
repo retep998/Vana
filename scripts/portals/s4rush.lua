@@ -36,8 +36,7 @@ if isQuestActive(6110) then
 				for i = 1, #members do
 					member = members[i];
 					if setPlayer(member) then
-						if getJobLine() == 1 and getJobProgression() == 2 and getMap() == mapId then
-							-- Only want 4th job warriors
+						if getJobLine() == line_warrior and getJobProgression() == progression_fourth and getMap() == mapId then
 							memberCount = memberCount + 1;
 						end
 						revertPlayer();
