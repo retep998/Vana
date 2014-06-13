@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Denma the owner (Henesys VIP face)
 
-dofile("scripts/utils/beautyFunctions.lua");
+dofile("scripts/utils/beautyHelper.lua");
 dofile("scripts/utils/npcHelper.lua");
 
 validFaces = getGenderStyles({

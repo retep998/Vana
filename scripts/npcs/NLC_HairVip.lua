@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Mani (VIP hair and color - NLC)
 
-dofile("scripts/utils/beautyFunctions.lua");
+dofile("scripts/utils/beautyHelper.lua");
 dofile("scripts/utils/npcHelper.lua");
 
 validHairs = getHairStyles(getGenderStyles({

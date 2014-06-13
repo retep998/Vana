@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Door of Dimension
 
 dofile("scripts/utils/npcHelper.lua");
-dofile("scripts/utils/jobFunctions.lua");
+dofile("scripts/utils/jobHelper.lua");
 
 function failText()
 	addText("There seems to be a door that leads me to the other dimension, but I can't go in for some reason.");

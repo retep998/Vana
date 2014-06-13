@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Staff Sergeant Charlie, exchange quest
 
 dofile("scripts/utils/npcHelper.lua");
-dofile("scripts/utils/itemProduction.lua");
+dofile("scripts/utils/itemProductionHelper.lua");
 dofile("scripts/utils/tableHelper.lua");
 
 function generateChoice(itemId, rewards)

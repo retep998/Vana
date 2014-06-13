@@ -23,7 +23,7 @@ if not isGm() then
 	return;
 end
 
-dofile("scripts/utils/beautyFunctions.lua");
+dofile("scripts/utils/beautyHelper.lua");
 dofile("scripts/utils/npcHelper.lua");
 
 choices = {

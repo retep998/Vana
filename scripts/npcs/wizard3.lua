@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Robeira (3rd Job - Magician Instructor)
 
-dofile("scripts/utils/jobFunctions.lua");
+dofile("scripts/utils/jobHelper.lua");
 dofile("scripts/utils/npcHelper.lua");
 dofile("scripts/utils/tableHelper.lua");
 
