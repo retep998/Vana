@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/utils/npcHelper.lua");
 dofile("scripts/utils/quizHelper.lua");
-dofile("scripts/utils/miscFunctions.lua");
+dofile("scripts/utils/miscHelper.lua");
 
 questions = {
 	makeQuizQuestion("Which of these NPCs will you see FIRST at MapleStory...?", 1, {" " .. npcRef(2000), " " .. npcRef(1010100), " " .. npcRef(2102), " " .. npcRef(2001), " " .. npcRef(2101)}),

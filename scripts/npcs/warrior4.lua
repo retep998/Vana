@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Harmonia
 
 dofile("scripts/utils/npcHelper.lua");
-dofile("scripts/utils/jobFunctions.lua");
+dofile("scripts/utils/jobHelper.lua");
 
 jobLine, jobTrack, jobProgression = getJobMeta();
 

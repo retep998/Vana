@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Grendel the Really Old - Magician Instructor
 
 dofile("scripts/utils/npcHelper.lua");
-dofile("scripts/utils/jobFunctions.lua");
+dofile("scripts/utils/jobHelper.lua");
 
 questState = getPlayerVariable("third_job_advancement", type_int);
 if questState == 1 then
