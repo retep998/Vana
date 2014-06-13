@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- First Eos Rock
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 if isGm() or getItemAmount(4001020) > 0 then
 	addText("You can use " .. blue(itemRef(4001020)) .. " to activate " .. blue(npcRef(2040024)) .. ". ");

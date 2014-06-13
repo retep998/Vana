@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Pason and Shuri (Tour Guides, teleport to Florina Beach)
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 ticket = 4031134;
 florina = 110000000;

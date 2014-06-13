@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- New Leaf City/Phantom Forest - NLC Taxi
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 if getMap() == 600000000 then
 	addText("Hey, there. ");

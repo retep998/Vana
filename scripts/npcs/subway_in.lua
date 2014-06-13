@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- The Ticket Gate, collects tickets for Kerning Jump Quests and for NLC Subway
 
-dofile("scripts/lua_functions/boatHelper.lua");
-dofile("scripts/lua_functions/npcHelper.lua");
-dofile("scripts/lua_functions/tableHelper.lua");
+dofile("scripts/utils/boatHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
+dofile("scripts/utils/tableHelper.lua");
 
 jumpTicketB1 = getItemAmount(4031036);
 jumpTicketB2 = getItemAmount(4031037);

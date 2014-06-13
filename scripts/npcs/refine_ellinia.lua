@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Francois - Item Creator (Ellinia)
 
-dofile("scripts/lua_functions/itemProduction.lua");
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/itemProduction.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 function makeItemChoice(itemId, levelLimit, reqs, jobType, statText)
 	return makeChoiceData(" " .. itemRef(itemId) .. black("(Level limit : " .. levelLimit .. ", " .. jobType .. ")", previousBlue), {itemId, levelLimit, reqs, statText});

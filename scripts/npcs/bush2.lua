@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- A Pile of Herbs
 
-dofile("scripts/lua_functions/npcHelper.lua");
-dofile("scripts/lua_functions/tableHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
+dofile("scripts/utils/tableHelper.lua");
 
 -- TODO FIXME implement distance properly
 -- You can't see the inside of the bush very well because you're too far. Go a little closer.

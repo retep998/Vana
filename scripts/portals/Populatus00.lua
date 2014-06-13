@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Door to Origin of Clocktower
 
-dofile("scripts/lua_functions/bossHelper.lua");
+dofile("scripts/utils/bossHelper.lua");
 
 if not isGm() and not isPapChannel() then
 	channels = getPapChannels();

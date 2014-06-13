@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Konpei (warps to Bodyguard room)
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 if getItemAmount(4000138) == 0 then
 	addText("So you've made it here. ");

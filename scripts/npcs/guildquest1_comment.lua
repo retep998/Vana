@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Shawn, Excavation Site
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 iterationBreak = 1;
 

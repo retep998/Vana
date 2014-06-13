@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Various functions to make coding beauty parlour NPCs easier and minimise repeated code
 
-dofile("scripts/lua_functions/tableHelper.lua");
+dofile("scripts/utils/tableHelper.lua");
 
 -- TODO FIXME beauty
 -- The usage of "styles" vs not is inconsistent and confusing, consider better naming

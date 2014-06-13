@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Mike at the dungeon entrance from Perion (1040001)
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 addText("Go through here and you will find the Dungeon of Victoria. ");
 addText("Take care...");

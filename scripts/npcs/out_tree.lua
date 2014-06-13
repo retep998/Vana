@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Scarf Snowman (Hill of Christmas exit)
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 addText("Have you decorated your tree nicely? ");
 addText("It's an interesting experience, to say the least, decorating a Christmas tree with other people. ");

@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Rain (Amherst)
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 addText("This is the town called " .. blue(mapRef(1010000)) .. ", located at the northeast part of the Maple Island. ");
 addText("You know that Maple Island is for beginners, right? ");

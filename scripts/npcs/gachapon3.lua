@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Gachapon - Victoria Road : Perion
 
-dofile("scripts/lua_functions/gachaponHelper.lua");
+dofile("scripts/utils/gachaponHelper.lua");
 
 -- General rules:
 -- Global item chance is significantly reduced

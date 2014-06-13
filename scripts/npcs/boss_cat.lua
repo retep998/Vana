@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Boss Kitty in Showa
 
-dofile("scripts/lua_functions/npcHelper.lua");
-dofile("scripts/lua_functions/quizHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
+dofile("scripts/utils/quizHelper.lua");
 
 questions = {
 	makeQuizQuestion("Which of these items does the Flaming Raccoon NOT drop?", 2, {"Raccoon Firewood ", "Solid Horn ", "Red Brick "}),

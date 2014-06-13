@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Cliff
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 addText("Do you see the group of snowman standing over there? ");
 addText("Go talk to one of them, and it'll take you to the famous christmas tree--it's just humongous! ");

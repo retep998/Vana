@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Gachapon machines
 
-dofile("scripts/lua_functions/npcHelper.lua");
-dofile("scripts/lua_functions/tableHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
+dofile("scripts/utils/tableHelper.lua");
 
 item_keep = nil;
 item_discard = 1;

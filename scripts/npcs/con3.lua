@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Konpei (warps to Hideout entrance from Bodyguard room)
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 if getItemAmount(4000141) == 0 then
 	addText("Once you eliminate the boss, you'll have to show me the boss's flashlight as evidence. ");

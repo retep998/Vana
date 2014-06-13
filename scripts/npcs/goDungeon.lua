@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Jeff - Ice Valley II
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 if getItemAmount(4031450) > 0 then
 	addText("I see you have a " .. blue(itemRef(4031450)) .. ". ");

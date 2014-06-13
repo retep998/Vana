@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Natalie (VIP hair and color - Henesys)
 
-dofile("scripts/lua_functions/beautyFunctions.lua");
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/beautyFunctions.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 validHairs = getGenderStyles({
 	["male"] = {30410, 30200, 30310, 30330, 30060, 30150, 30210, 30140, 30120, 30030, 30020, 30000},

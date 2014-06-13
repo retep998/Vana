@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Mad Bunny - Easter Event
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 addText("Sup. ");
 addText("Easter is over, but I still don't like it one bit, and now the people are aware of my plans. ");

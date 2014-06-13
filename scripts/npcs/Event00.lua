@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Paul, Jean, Martin, Tony (Event Assistants)
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 n = getNpcId();
 addText("Hey, I'm " .. blue(npcRef(n)));

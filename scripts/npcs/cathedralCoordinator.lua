@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Victoria
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 addText("Before I help you make a reservation for the Cathedral Wedding, I strongly recommend that " .. blue("both you and your partner") .. " need to have at least " .. blue("3 Etc. slots") .. " available. ");
 addText("Please check your etc. inventory.");

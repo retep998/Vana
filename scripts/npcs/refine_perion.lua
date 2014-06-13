@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Mr. Thunder - Item Creator (Perion)
 
-dofile("scripts/lua_functions/itemProduction.lua");
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/itemProduction.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 function makeOreChoice(itemId, reqs)
 	return makeChoiceData(" " .. itemRef(itemId), {itemId, reqs});

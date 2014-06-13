@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Functions to aid in the implementation of synthesizer NPCs
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 -- displayResources takes an array of items in the form of {itemid, amount, itemid, amount} and a multiplier
 -- Mesos are indicated by the constant item_mesos

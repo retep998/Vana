@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Crimsonwood Keep statue
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 addText("A name forever remembered, Rafael was an exceptionally skilled sorcerer, and the foremost master of mental magic power: telekinesis and telepathy.  ");
 addText("In addition to that, he was one of the ¡°Elite Mages¡±, who mastered all elements.  ");

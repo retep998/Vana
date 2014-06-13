@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Amon; Zakum's Altar bouncer
 
-dofile("scripts/lua_functions/bossHelper.lua");
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/bossHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 zakumDoorMap = 211042300;
 zakumAltarMap = 280030000;

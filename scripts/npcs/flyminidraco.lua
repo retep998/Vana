@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Corba, turns you into a dragon so you can fly to the Time Temple
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 addText("If you had wings, I'm sure you could go there.  ");
 addText("But, that alone won't be enough.  ");

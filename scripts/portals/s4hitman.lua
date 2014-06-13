@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Assassinate quest
 
-dofile("scripts/lua_functions/tableHelper.lua");
+dofile("scripts/utils/tableHelper.lua");
 
 if isQuestActive(6201) then
 	if getItemAmount(4031452) == 0 then

@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- A Mysterious Small Egg
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 addText("Hello, traveler. You have finally come to see me. ");
 addText("Have you fulfilled your duties?\r\n\r\n");

@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Casey of Henesys, Chico of Ludi
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 isGameZone = getNpcId() == 1012008;
 isLudi = getNpcId() == 2040014;

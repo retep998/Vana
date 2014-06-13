@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Trash Can near Muirhat
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 if not isQuestActive(2162) and not isQuestCompleted(2162) then
 	addText("A half-written letter...maybe it's important! ");

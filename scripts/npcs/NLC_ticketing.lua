@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Bell, warps to/from Kerning and NLC
 -- Originally programmed by Biscuit
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 map = getMap();
 cost = 5000;

@@ -23,8 +23,8 @@ if not isGm() then
 	return;
 end
 
-dofile("scripts/lua_functions/beautyFunctions.lua");
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/beautyFunctions.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 choices = {
 	makeChoiceData("Skin", getSkinStyles()),

@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Gachapon - Victoria Road : Henesys Market
 
-dofile("scripts/lua_functions/gachaponHelper.lua");
+dofile("scripts/utils/gachaponHelper.lua");
 
 -- TODO FIXME gachapon
 -- The TCG equips need to be culled out from all Gachapons

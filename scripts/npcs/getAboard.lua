@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Platform Usher (Orbis)
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 choices = {
 	makeChoiceData("The platform to the ship that heads to Ellinia", {200000110,  blue("platform to the ship that heads to Ellinia") .. "?", false, true}),

@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Regular Cab (Kerning cab)
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 function generateChoice(mapId, price)
 	return makeChoiceData(mapRef(mapId) .. "(" .. price .. " mesos) ", {mapId, price});

@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Tylus (3rd Job - Warrior Instructor)
 
-dofile("scripts/lua_functions/jobFunctions.lua");
-dofile("scripts/lua_functions/npcHelper.lua");
-dofile("scripts/lua_functions/tableHelper.lua");
+dofile("scripts/utils/jobFunctions.lua");
+dofile("scripts/utils/npcHelper.lua");
+dofile("scripts/utils/tableHelper.lua");
 
 zakum = getPlayerVariable("zakum_quest_status", type_int);
 

@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Mong from Kong (Kerning City)
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 addText("Aren't you connected through the Internet Cafe? ");
 addText("If so, then go in here ... you'll probably head to a familiar place. ");

@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Horntail Squad
 
-dofile("scripts/lua_functions/bossHelper.lua");
-dofile("scripts/lua_functions/npcHelper.lua");
-dofile("scripts/lua_functions/signupHelper.lua");
+dofile("scripts/utils/bossHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
+dofile("scripts/utils/signupHelper.lua");
 
 function enterBossMap()
 	x = getMaxHorntailBattles();

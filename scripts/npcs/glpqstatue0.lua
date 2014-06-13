@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Crimsonwood Keep statue
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 addText("A legendary family of heroes, the de Vrisiens are the original founders of the Stormcasters. ");
 addText("The family is unique, as each son or daughter inherits the full fighting techniques of their ancestors. ");
