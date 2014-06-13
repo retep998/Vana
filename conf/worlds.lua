@@ -14,6 +14,9 @@ world0_id = 0;
 --  3 = H
 world0_ribbon = 0;
 
+-- Whether GM chat is enabled or disabled by default
+world0_gm_chat_by_default = false;
+
 -- Server rates
 world0_mob_exp_rate = 1;
 world0_quest_exp_rate = 1;
@@ -24,6 +27,7 @@ world0_drop_rate = 1;
 world0_max_characters = 6;
 -- Default character slots (default 3, should be <= max chars)
 world0_default_characters = 3;
+
 -- Default storage slots (between 4 and 100)
 world0_default_storage = 4;
 
@@ -84,6 +88,7 @@ world0_pinkbean_attempts = 1;
 -- world1_channels = 1;
 -- world1_id = 1;
 -- world1_ribbon = 2;
+-- world1_gm_chat_by_default = true;
 -- world1_mob_exp_rate = 1;
 -- world1_quest_exp_rate = 1;
 -- world1_mob_meso_rate = 1;

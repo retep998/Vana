@@ -78,6 +78,7 @@ struct PacketSerialize<Rates> {
 };
 
 struct WorldConfig {
+	bool defaultGmChatMode = true;
 	int8_t ribbon = 0;
 	player_level_t maxMultiLevel = 1;
 	storage_slot_t defaultStorageSlots = 4;
@@ -104,6 +105,7 @@ template <>
 struct PacketSerialize<WorldConfig> {
 	auto read(PacketReader &reader) -> WorldConfig {
 		WorldConfig ret;
+		ret.defaultGmChatMode = reader.get<bool>();
 		ret.ribbon = reader.get<int8_t>();
 		ret.maxMultiLevel = reader.get<player_level_t>();
 		ret.defaultStorageSlots = reader.get<storage_slot_t>();
@@ -127,6 +129,7 @@ struct PacketSerialize<WorldConfig> {
 		return ret;
 	}
 	auto write(PacketBuilder &builder, const WorldConfig &obj) -> void {
+		builder.add<bool>(obj.defaultGmChatMode);
 		builder.add<int8_t>(obj.ribbon);
 		builder.add<player_level_t>(obj.maxMultiLevel);
 		builder.add<storage_slot_t>(obj.defaultStorageSlots);
