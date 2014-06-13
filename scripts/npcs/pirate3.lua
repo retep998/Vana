@@ -187,7 +187,7 @@ if getLevel() >= 50 then
 	end));
 
 	addText("Is there something that you want from me?\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	selectChoice(choices, choice);

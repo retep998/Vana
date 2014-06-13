@@ -34,7 +34,7 @@ if isGm() or getItemAmount(4001020) > 0 then
 
 	addText("You can use " .. blue(itemRef(4001020)) .. " to activate " .. blue(npcRef(2040025)) .. ". ");
 	addText("Which of these rocks would you like to teleport to?\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	data = selectChoice(choices, choice);

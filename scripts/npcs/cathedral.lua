@@ -43,7 +43,7 @@ choices = {
 };
 
 addText("I can guide you to the Wedding. Which one suits you?\r\n");
-addText(blue(choiceList(choices)));
+addText(blue(choiceRef(choices)));
 choice = askChoice();
 
 selectChoice(choices, choice);

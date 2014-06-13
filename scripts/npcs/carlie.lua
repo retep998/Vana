@@ -74,7 +74,7 @@ if answer == answer_no then
 else
 	addText("Ok! First you need to choose the item that you'll trade with. ");
 	addText("The better the item, the more likely the chance that I'll give you something much nicer in return.\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	data = selectChoice(choices, choice);

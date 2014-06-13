@@ -51,7 +51,7 @@ else
 
 			addText("If you gather up the materials for me, I'll make a wand for you with my magical power. ");
 			addText("How... what kind of a wand do you want to make?\r\n");
-			addText(blue(choiceList(choices)));
+			addText(blue(choiceRef(choices)));
 			choice = askChoice();
 
 			data = selectChoice(choices, choice);
@@ -74,7 +74,7 @@ else
 
 			addText("If you gather up the materials for me, I'll make a staff for you with my magical power. ");
 			addText("How... what kind of a wand do you want to make?\r\n");
-			addText(blue(choiceList(choices)));
+			addText(blue(choiceRef(choices)));
 			choice = askChoice();
 
 			data = selectChoice(choices, choice);
@@ -99,7 +99,7 @@ else
 
 			addText("If you gather up the materials for me, I'll make a glove for you with my magical power. ");
 			addText("How... what kind of a wand do you want to make?\r\n");
-			addText(blue(choiceList(choices)));
+			addText(blue(choiceRef(choices)));
 			choice = askChoice();
 
 			data = selectChoice(choices, choice);
@@ -134,7 +134,7 @@ else
 			sendNext();
 
 			addText("Now .. which glove do you want to upgrade?\r\n");
-			addText(blue(choiceList(choices)));
+			addText(blue(choiceRef(choices)));
 			choice = askChoice();
 
 			data = selectChoice(choices, choice);
@@ -163,7 +163,7 @@ else
 			sendNext();
 
 			addText("Alright, so which hat would you like to upgrade?\r\n");
-			addText(blue(choiceList(choices)));
+			addText(blue(choiceRef(choices)));
 			choice = askChoice();
 
 			data = selectChoice(choices, choice);
@@ -184,7 +184,7 @@ else
 
 	addText("Alright ... it's for both of our own good, right? ");
 	addText("Choose what you want to do...\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	data = selectChoice(choices, choice);

@@ -36,7 +36,7 @@ if isQuestCompleted(3035) then
 	addText("Oh, by the way... are you looking for rare items by any chance? ");
 	addText("As a sign of appreciation for your hard work, I'll sell some items I have to you, and ONLY you. ");
 	addText("Pick out the one you want!\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	data = selectChoice(choices, choice);

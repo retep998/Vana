@@ -127,7 +127,7 @@ choices = {
 
 		while true do
 			addText("What do you want to do?\r\n");
-			addText(blue(choiceList(choices)));
+			addText(blue(choiceRef(choices)));
 			choice = askChoice();
 
 			if selectChoice(choices, choice) == iterationBreak then
@@ -188,7 +188,7 @@ choices = {
 						};
 					end
 
-					addText(blue(choiceList(choices)));
+					addText(blue(choiceRef(choices)));
 					choice = askChoice();
 
 					data = selectChoice(choices, choice);
@@ -211,7 +211,7 @@ choices = {
 				addText("Select the weapon you'd like to trade for. ");
 				addText("The weapons I have here are extremely appealing. ");
 				addText("See for yourself! \r\n");
-				addText(blue(choiceList(choices)));
+				addText(blue(choiceRef(choices)));
 				choice = askChoice();
 
 				exchangeCoins(selectChoice(choices, choice));
@@ -229,7 +229,7 @@ choices = {
 				addText("Select the weapon you'd like to trade for. ");
 				addText("The weapons I have here are highly appealing. ");
 				addText("See for yourself! \r\n");
-				addText(blue(choiceList(choices)));
+				addText(blue(choiceRef(choices)));
 				choice = askChoice();
 
 				exchangeCoins(selectChoice(choices, choice));
@@ -249,7 +249,7 @@ choices = {
 				addText("Select the weapon you'd like to trade for. ");
 				addText("The weapons I have here are of the highest quality. ");
 				addText("Select what appeals to you! \r\n");
-				addText(blue(choiceList(choices)));
+				addText(blue(choiceRef(choices)));
 				choice = askChoice();
 
 				exchangeCoins(selectChoice(choices, choice));
@@ -267,7 +267,7 @@ choices = {
 				addText("Select the weapon you'd like to trade for. ");
 				addText("The weapons I have here are of the highest quality. ");
 				addText("Select what appeals to you! \r\n");
-				addText(blue(choiceList(choices)));
+				addText(blue(choiceRef(choices)));
 				choice = askChoice();
 
 				exchangeCoins(selectChoice(choices, choice));
@@ -277,7 +277,7 @@ choices = {
 		addText("Remember, if you have Maple Coins, you can trade them in for items. ");
 		addText("Please make sure you have enough Maple Coins for the item you want. ");
 		addText("Select the item you'd like to trade for! \r\n");
-		addText(blue(choiceList(choices)));
+		addText(blue(choiceRef(choices)));
 		choice = askChoice();
 
 		selectChoice(choices, choice);
@@ -286,7 +286,7 @@ choices = {
 
 addText("What would you like to do? ");
 addText("If you have never participated in the Monster Carnival, you'll need to know a thing or two about it before joining.\r\n");
-addText(blue(choiceList(choices)));
+addText(blue(choiceRef(choices)));
 choice = askChoice();
 
 selectChoice(choices, choice);

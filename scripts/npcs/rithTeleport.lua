@@ -130,7 +130,7 @@ choices = {
 
 		addText("There are 6 big towns here in Victoria Island. ");
 		addText("Which of those do you want to know more of?\r\n");
-		addText(blue(choiceList(choices)));
+		addText(blue(choiceRef(choices)));
 		choice = askChoice();
 
 		selectChoice(choices, choice);
@@ -162,7 +162,7 @@ choices = {
 			addText("Then I'm afraid I may have to charge you full price. ");
 			addText("Where would you like to go?\r\n");
 		end
-		addText(blue(choiceList(choices)));
+		addText(blue(choiceRef(choices)));
 		choice = askChoice();
 
 		data = selectChoice(choices, choice);
@@ -198,7 +198,7 @@ sendNext();
 
 addText("It's understable that you may be confused about this place if this is your first time around. ");
 addText("If you got any questions about this place, fire away. \r\n");
-addText(blue(choiceList(choices)));
+addText(blue(choiceRef(choices)));
 choice = askChoice();
 
 selectChoice(choices, choice);

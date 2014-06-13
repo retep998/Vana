@@ -40,7 +40,7 @@ choices = {
 
 addText("We offer two kinds of rooms for service. ");
 addText("Please choose the one of your liking.\r\n");
-addText(blue(choiceList(choices)));
+addText(blue(choiceRef(choices)));
 choice = askChoice();
 
 price, mapId = selectChoice(choices, choice);

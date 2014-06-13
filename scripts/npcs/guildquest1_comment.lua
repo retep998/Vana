@@ -66,7 +66,7 @@ while true do
 		addText("Do you have any other questions?\r\n");
 	end
 
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	if selectChoice(choices, choice) == iterationBreak then

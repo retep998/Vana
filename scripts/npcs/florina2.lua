@@ -84,7 +84,7 @@ choices = {
 
 addText("Have you heard of the beach with a spectacular view of the ocean called " .. blue(mapRef(florina)) .. ", located near " .. mapRef(getMap()) .. "? ");
 addText("I can take you there right now for either " .. blue("1500 mesos") .. ", or if you have " .. blue(itemRef(ticket)) .. " with you, in which case you'll be in for free.\r\n");
-addText(blue(choiceList(choices)));
+addText(blue(choiceRef(choices)));
 choice = askChoice();
 
 selectChoice(choices, choice);

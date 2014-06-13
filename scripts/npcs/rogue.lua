@@ -227,7 +227,7 @@ elseif getJobLine() == line_thief and getJobTrack() > 0 then
 	};
 
 	addText("Do you have anything you want to know about thieves?\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	selectChoice(choices, choice);
@@ -430,7 +430,7 @@ elseif getJob() == 400 and getLevel() >= 30 then
 
 				addText("Hmmm, have you made up your mind? ");
 				addText("Then choose the 2nd job advancement of your liking.\r\n");
-				addText(blue(choiceList(choices)));
+				addText(blue(choiceRef(choices)));
 				choice = askChoice();
 
 				selectChoice(choices, choice);
@@ -438,7 +438,7 @@ elseif getJob() == 400 and getLevel() >= 30 then
 		};
 
 		addText("Alright, when you have made your decision, click on [I'll choose my occupation!] at the very bottom.\r\n");
-		addText(blue(choiceList(choices)));
+		addText(blue(choiceRef(choices)));
 		choice = askChoice();
 
 		selectChoice(choices, choice);

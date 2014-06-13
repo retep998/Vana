@@ -49,7 +49,7 @@ if mapId == 240050100 or mapId == 240050101 or mapId == 240050102 or mapId == 24
 	};
 
 	addText("Words are revealed on the surface of crystal tangled roots.\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	selectChoice(choices, choice);

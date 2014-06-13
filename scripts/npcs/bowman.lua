@@ -203,7 +203,7 @@ elseif getJobLine() == line_bowman and getJobTrack() > 0 then
 	};
 
 	addText("Do you have any questions regarding the life of the Bowman?\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	selectChoice(choices, choice);
@@ -405,7 +405,7 @@ elseif getJob() == 300 and getLevel() >= 30 then
 
 				addText("Hmmm, have you made up your mind? ");
 				addText("Then choose the 2nd job advancement of your liking.\r\n");
-				addText(blue(choiceList(choices)));
+				addText(blue(choiceRef(choices)));
 				choice = askChoice();
 
 				selectChoice(choices, choice);
@@ -413,7 +413,7 @@ elseif getJob() == 300 and getLevel() >= 30 then
 		};
 
 		addText("Alright, when you have made your decision, click on [I'll choose my occupation!] at the very bottom.\r\n");
-		addText(blue(choiceList(choices)));
+		addText(blue(choiceRef(choices)));
 		choice = askChoice();
 
 		selectChoice(choices, choice);

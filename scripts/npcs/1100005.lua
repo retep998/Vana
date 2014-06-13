@@ -56,7 +56,7 @@ if isToEreve then
 	addText("Do you know much about Ereve? ");
 	addText("It's a floating island protected by Shinsoo. ");
 	addText("Would you like to know more about Ereve?\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	selectChoice(choices, choice);
@@ -190,7 +190,7 @@ else
 			addText("Despite its size, transportation is excellent since there's a " .. blue("Taxi") .. " in each town. ");
 			addText("Traveling through Maple World can be fascinating because each town is so different. ");
 			addText("Would you like me to tell you about each of Victoria Island's towns?\r\n");
-			addText(blue(choiceList(choices)));
+			addText(blue(choiceRef(choices)));
 			choice = askChoice();
 
 			selectChoice(choices, choice);
@@ -206,7 +206,7 @@ else
 	addText("At this rate, we'll get to Victoria Island in no time...");
 	addText("Is this your first time going to Victoria Island? ");
 	addText("If so, would you like me to tell you a little but about the place?\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	selectChoice(choices, choice);

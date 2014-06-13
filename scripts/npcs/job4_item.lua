@@ -222,7 +222,7 @@ choices = {
 		};
 
 		addText("Which item would you like to donate?\r\n");
-		addText(blue(choiceList(choices)));
+		addText(blue(choiceRef(choices)));
 		choice = askChoice();
 
 		data = selectChoice(choices, choice);
@@ -263,7 +263,7 @@ choices = {
 };
 
 addText("...Can I help you?\r\n");
-addText(blue(choiceList(choices)));
+addText(blue(choiceRef(choices)));
 choice = askChoice();
 
 selectChoice(choices, choice);

@@ -52,7 +52,7 @@ else
 
 			addText("I'm the best glove-maker in this town!! ");
 			addText("Now...what kind of a glove do you want to make?\r\n");
-			addText(blue(choiceList(choices)));
+			addText(blue(choiceRef(choices)));
 			choice = askChoice();
 
 			data = selectChoice(choices, choice);
@@ -105,7 +105,7 @@ else
 			sendNext();
 
 			addText("So~~ what kind of a glove do you want to upgrade and create?\r\n");
-			addText(blue(choiceList(choices)));
+			addText(blue(choiceRef(choices)));
 			choice = askChoice();
 
 			data = selectChoice(choices, choice);
@@ -176,7 +176,7 @@ else
 
 			addText("So you want to make some materials, huh? ");
 			addText("Okay...what kind of materials do you want to make?\r\n");
-			addText(blue(choiceList(choices)));
+			addText(blue(choiceRef(choices)));
 			choice = askChoice();
 
 			data = selectChoice(choices, choice);
@@ -201,7 +201,7 @@ else
 	addText("Alright! ");
 	addText("The service fee will be reasonable so don't worry about it. ");
 	addText("What do you want to do?\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	selectChoice(choices, choice);

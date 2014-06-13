@@ -60,7 +60,7 @@ choices = {
 addText("I'm the head of this hair salon Natalie. ");
 addText("If you have " .. blue(itemRef(vipHairItem)) .. ", " .. blue(itemRef(vipDyeItem)) .. " or " .. blue(itemRef(vipMembershipItem)) .. ", allow me to take care of your hairdo. ");
 addText("Please choose the one you want.\r\n");
-addText(blue(choiceList(choices)));
+addText(blue(choiceRef(choices)));
 choice = askChoice();
 
 data = selectChoice(choices, choice);

@@ -83,7 +83,7 @@ elseif map == 250000100 then
 	addText("I fly around all the time, so I figured, why not make some money by taking travelers like you along for a small fee? ");
 	addText("It's good business for me. ");
 	addText("Anyway, what do you think? \r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	selectChoice(choices, choice);

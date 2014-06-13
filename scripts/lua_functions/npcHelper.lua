@@ -182,22 +182,25 @@ function progressBar(completionPercentage)
 end
 
 function choiceRef(choice, choiceId)
-	if choiceId == nil then
-		choiceId = 0;
+	if type(choice) ~= "table" then
+		if choiceId == nil then
+			choiceId = 0;
+		end
+		return "#L" .. choiceId .. "#" .. choice .. "#l";
 	end
-	if type(choice) == "table" then
-		choice = choice[1];
-	end
-	return "#L" .. choiceId .. "#" .. choice .. "#l";
-end
-
-function choiceList(choices)
-	text = "";
-	for i = 1, #choices do
+	
+	local text = "";
+	for i = 1, #choice do
 		if i > 1 then
 			text = text .. "\r\n";
 		end
-		text = text .. choiceRef(choices[i], i - 1);
+		local element = choice[i];
+		-- This is really important for functions and data being able to be associated to an option
+		-- Essentially, we pull out the text for anything other than a pure text option
+		if type(element) == "table" then
+			element = element[1];
+		end
+		text = text .. "#L" .. (i - 1) .. "#" .. element .. "#l";
 	end
 	return text;
 end

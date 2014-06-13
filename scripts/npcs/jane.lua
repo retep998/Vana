@@ -38,7 +38,7 @@ if isQuestCompleted(2013) then
 	};
 
 	addText("What would you like to buy? \r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	data = selectChoice(choices, choice);

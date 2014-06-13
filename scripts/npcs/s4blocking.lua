@@ -69,7 +69,7 @@ if mapId == 924000000 then
 	};
 
 	addText("Don't forget " .. red("to hold shield") .. " before you get there!\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	selectChoice(choices, choice);

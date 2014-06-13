@@ -194,7 +194,7 @@ elseif m == 200000100 then
 		addText("Hello there! ");
 		addText("I am here to lead you to the trip that will take you to the destination of your choice. ");
 		addText("Where woulud you like to go?\r\n");
-		addText(blue(choiceList(choices)));
+		addText(blue(choiceRef(choices)));
 		choice = askChoice();
 
 		text = selectChoice(choices, choice);
@@ -215,7 +215,7 @@ elseif m == 200000100 then
 
 		addText("Hello, I'm in charge of selling tickets for the ship ride for every destination. ");
 		addText("Which ticket would you like to purchase?\r\n");
-		addText(blue(choiceList(choices)));
+		addText(blue(choiceRef(choices)));
 		choice = askChoice();
 
 		data = selectChoice(choices, choice);

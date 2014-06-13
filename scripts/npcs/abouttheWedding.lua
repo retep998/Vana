@@ -162,7 +162,7 @@ while true do
 	addText("I can offer a lifetime's worth of advice if you want to get married. ");
 	addText("Would you like to know more?\r\n");
 
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	if selectChoice(choices, choice) == iterationBreak then

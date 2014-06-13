@@ -104,7 +104,7 @@ if jumpTicketB1 > 0 or jumpTicketB2 > 0 or jumpTicketB3 > 0 or nlcTicketBasic > 
 
 	addText("You will be brought in immediately. ");
 	addText("Which ticket would you like to use?\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	selectChoice(choices, choice);

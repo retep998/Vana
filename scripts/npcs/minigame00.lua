@@ -57,7 +57,7 @@ choices = {
 
 				addText("The set also differs based on what kind of pieces you want to use for the game. ");
 				addText("Which set would you like to make?\r\n");
-				addText(blue(choiceList(choices)));
+				addText(blue(choiceRef(choices)));
 				choice = askChoice();
 
 				data = selectChoice(choices, choice);
@@ -151,7 +151,7 @@ choices = {
 		addText("Minigames aren't something you can just go ahead and play right off the bat. ");
 		addText("You'll need a specific set of items for a specific minigame. ");
 		addText("Which minigame item do you want to make?\r\n");
-		addText(blue(choiceList(choices)));
+		addText(blue(choiceRef(choices)));
 		choice = askChoice();
 
 		selectChoice(choices, choice);
@@ -254,7 +254,7 @@ choices = {
 		addText("Awesome! ");
 		addText("Ask me anything. ");
 		addText("Which minigame do you want to know more about?\r\n");
-		addText(blue(choiceList(choices)));
+		addText(blue(choiceRef(choices)));
 		choice = askChoice();
 
 		selectChoice(choices, choice);
@@ -276,7 +276,7 @@ else
 	consoleOutput("Unsupported minigame00 NPC/map: " .. getNpcId() .. "/" .. getMap());
 	return;
 end
-addText(blue(choiceList(choices)));
+addText(blue(choiceRef(choices)));
 choice = askChoice();
 
 selectChoice(choices, choice);

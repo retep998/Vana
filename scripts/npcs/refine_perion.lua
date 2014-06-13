@@ -55,7 +55,7 @@ else
 			};
 
 			addText("Which mineral do you want to make?\r\n");
-			addText(blue(choiceList(choices)));
+			addText(blue(choiceRef(choices)));
 			choice = askChoice();
 
 			data = selectChoice(choices, choice);
@@ -102,7 +102,7 @@ else
 			};
 
 			addText("Which jewel do you want to refine?\r\n");
-			addText(blue(choiceList(choices)));
+			addText(blue(choiceRef(choices)));
 			choice = askChoice();
 
 			data = selectChoice(choices, choice);
@@ -169,7 +169,7 @@ else
 			sendNext();
 
 			addText("So~~ what kind of a helmet do you want to upgrade and create?\r\n");
-			addText(blue(choiceList(choices)));
+			addText(blue(choiceRef(choices)));
 			choice = askChoice();
 
 			data = selectChoice(choices, choice);
@@ -219,7 +219,7 @@ else
 			sendNext();
 
 			addText("So~~ what kind of a shield do you want to upgrade and create?\r\n");
-			addText(blue(choiceList(choices)));
+			addText(blue(choiceRef(choices)));
 			choice = askChoice();
 
 			data = selectChoice(choices, choice);
@@ -259,7 +259,7 @@ else
 	addText("Alright, with the ore and a little service fee, I'll refine it so you can you use it. ");
 	addText("Check and see if your etc, storage has any room. ");
 	addText("Now ... what would you like me to do?\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	selectChoice(choices, choice);

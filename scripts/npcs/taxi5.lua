@@ -48,7 +48,7 @@ if getJob() == 0 then
 	addText("We have a special 90% discount for beginners. ");
 end
 addText("Choose your destination, for fees will change from place to place.\r\n");
-addText(blue(choiceList(choices)));
+addText(blue(choiceRef(choices)));
 choice = askChoice();
 
 data = selectChoice(choices, choice);

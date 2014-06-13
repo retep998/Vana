@@ -546,7 +546,7 @@ if isGm() then
 
 	addText("Hi " .. playerRef() .. "! ");
 	addText("What do you wish?\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	selectChoice(choices, choice);

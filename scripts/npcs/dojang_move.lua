@@ -53,7 +53,7 @@ choices = {
 addText(bold("< Notice >") .. "\r\n");
 addText("If there is anyone who has the courage to challenge the Mu Lung Dojo, come to the Mu Lung Dojo.  ");
 addText("- Mu Gong -\r\n\r\n\r\n");
-addText(blue(choiceList(choices)));
+addText(blue(choiceRef(choices)));
 choice = askChoice();
 
 selectChoice(choices, choice);

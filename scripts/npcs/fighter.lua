@@ -195,7 +195,7 @@ elseif getJobLine() == line_warrior and getJobTrack() > 0 then
 		end),
 	};
 	addText("Oh, you have a question?\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	selectChoice(choices, choice);
@@ -467,7 +467,7 @@ elseif getJob() == 100 and getLevel() >= 30 then
 
 				addText("Hmmm, have you made up your mind? ");
 				addText("Then choose the 2nd job advancement of your liking.\r\n");
-				addText(blue(choiceList(choices)));
+				addText(blue(choiceRef(choices)));
 				choice = askChoice();
 
 				selectChoice(choices, choice);
@@ -475,7 +475,7 @@ elseif getJob() == 100 and getLevel() >= 30 then
 		};
 
 		addText("Alright, when you have made your decision, click on [I'll choose my occupation!] at the very bottom.\r\n");
-		addText(blue(choiceList(choices)));
+		addText(blue(choiceRef(choices)));
 		choice = askChoice();
 
 		selectChoice(choices, choice);
