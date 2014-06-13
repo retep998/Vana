@@ -21,7 +21,7 @@ dofile("scripts/utils/itemProductionHelper.lua");
 dofile("scripts/utils/npcHelper.lua");
 
 function makeItemChoice(itemId, levelLimit, reqs, jobType, statText)
-	return makeChoiceData(" " .. itemRef(itemId) .. black("(Level limit : " .. levelLimit .. ", " .. jobType .. ")", previousBlue), {itemId, levelLimit, reqs, statText});
+	return makeChoiceData(" " .. itemRef(itemId) .. black("(Level limit : " .. levelLimit .. ", " .. jobType .. ")", npc_text_blue), {itemId, levelLimit, reqs, statText});
 end
 
 addText("Do you want to take a look at some items? ");

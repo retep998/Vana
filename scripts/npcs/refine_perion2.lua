@@ -21,7 +21,7 @@ dofile("scripts/utils/itemProductionHelper.lua");
 dofile("scripts/utils/npcHelper.lua");
 
 function makeItemChoice(itemId, levelLimit, reqs, jobType)
-	return makeChoiceData(" " .. itemRef(itemId) .. black("(level limit: " .. levelLimit .. ", " .. jobType .. ")", previousBlue), {itemId, levelLimit, reqs});
+	return makeChoiceData(" " .. itemRef(itemId) .. black("(level limit: " .. levelLimit .. ", " .. jobType .. ")", npc_text_blue), {itemId, levelLimit, reqs});
 end
 
 addText("I am Mr. Thunder's apprentice. ");

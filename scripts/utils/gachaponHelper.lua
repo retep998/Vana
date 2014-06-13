@@ -67,11 +67,11 @@ function preprocessItems(items)
 	return finalized;
 end
 
-commonEquipGloves = {
+local gach_commonEquipGloves = {
 	1082002, 1082147, 1082148, 1082146, 1082145, 1082150, {1082149, ["weight"] = .80},
 };
 
-commonEquipCapes = {
+local gach_commonEquipCapes = {
 	{1102041, ["weight"] = .70}, {1102042, ["weight"] = .70}, {1102040, ["weight"] = .80},
 	{1102084, ["weight"] = .50}, {1102085, ["weight"] = .50}, {1102084, ["weight"] = .60},
 	1102043, 1102087, 1102079, 1102080, 1102081, 1102082, 1102083, 1102053, 1102054, 1102055,
@@ -80,29 +80,29 @@ commonEquipCapes = {
 	1102022, 1102023, 1102024, 1102021, 1102021, 1102021, 1102021, 1102021, 1102021, 1102021,
 };
 
-commonEquipTubes = {
+local gach_commonEquipTubes = {
 	1442018, 1322026, 1322025, 1322024, 1322022, 1322021,
 };
 
-commonEquipUmbrellas = {
+local gach_commonEquipUmbrellas = {
 	1302026, 1302027, 1302028, 1302017,
 };
 
-commonEquipSnowboards = {
+local gach_commonEquipSnowboards = {
 	1442017, 1442016, 1442014, 1442012,
 };
 
-commonEquipSkis = {
+local gach_commonEquipSkis = {
 	1432018, 1432017, 1432016, 1432015,
 };
 
-commonEquips = merge(commonEquipGloves, commonEquipCapes, commonEquipTubes, commonEquipUmbrellas, commonEquipSnowboards, commonEquipSkis);
+local gach_commonEquips = merge(gach_commonEquipGloves, gach_commonEquipCapes, gach_commonEquipTubes, gach_commonEquipUmbrellas, gach_commonEquipSnowboards, gach_commonEquipSkis);
 
-beginnerEquips = {
+local gach_beginnerEquips = {
 	1442018, 1422011,
 };
 
-mapleEquips = {
+local gach_mapleEquips = {
 	{1302020, ["weight"] = .10}, {1302030, ["weight"] = .07},
 	-- 1h Axe (131xxxx) has no 35/43 Maple equips
 	-- 1h BW (132xxxx) has no 35/43 Maple equips
@@ -121,7 +121,7 @@ mapleEquips = {
 	{1492020, ["weight"] = .10}, {1492021, ["weight"] = .07},
 };
 
-potions = {
+local gach_potions = {
 	{2000004, ["weight"] = .60, ["qty"] = 100}, {2000005, ["weight"] = .60, ["qty"] = 100},
 	{2001002, ["weight"] = .60, ["qty"] = 100}, {2020012, ["weight"] = .60, ["qty"] = 100},
 	{2001001, ["weight"] = .60, ["qty"] = 100}, {2020013, ["weight"] = .60, ["qty"] = 100},
@@ -129,17 +129,17 @@ potions = {
 	2022179, 2022182, 2022245, 2022273, 2022284, 2022282, 2022283, 2022285, 2022439,
 };
 
-miscScrolls = {
+local gach_miscScrolls = {
 	2049100, 2049000, 2049001, 2049002, 2049003, 2041058, 2040727,
 };
 
-tenPercentScrolls = {
+local gach_tenPercentScrolls = {
 	2041002, 2040402, 2040702, 2040805, 2040026, 2040031, 2040318, 2040323, 2040328, 2040419,
 	2040422, 2040427, 2040534, 2040619, 2040622, 2040627, 2040825, 2040925, 2040928, 2040933,
 	2040016,
 };
 
-sixtyPercentScrolls = {
+local gach_sixtyPercentScrolls = {
 	{2040001, ["weight"] = 2}, {2040025, ["weight"] = 2}, {2040029, ["weight"] = 2}, {2040317, ["weight"] = 2},
 	{2040321, ["weight"] = 2}, {2040326, ["weight"] = 2}, {2040418, ["weight"] = 2}, {2040421, ["weight"] = 2},
 	{2040425, ["weight"] = 2}, {2040532, ["weight"] = 2}, {2040618, ["weight"] = 2}, {2040621, ["weight"] = 2},
@@ -148,7 +148,7 @@ sixtyPercentScrolls = {
 	{8048013, ["weight"] = 2},
 };
 
-hundredPercentScrolls = {
+local gach_hundredPercentScrolls = {
 	{2040923, ["weight"] = .5}, {2040926, ["weight"] = .5}, {2040929, ["weight"] = .5}, {2040024, ["weight"] = .5},
 	{2040027, ["weight"] = .5}, {2040316, ["weight"] = .5}, {2040319, ["weight"] = .5}, {2040324, ["weight"] = .5},
 	{2040417, ["weight"] = .5}, {2040420, ["weight"] = .5}, {2040423, ["weight"] = .5}, {2040530, ["weight"] = .5},
@@ -164,16 +164,16 @@ hundredPercentScrolls = {
 	{2048000, ["weight"] = .5}, {2048003, ["weight"] = .5},
 };
 
-scrolls = merge(hundredPercentScrolls, sixtyPercentScrolls, tenPercentScrolls, miscScrolls);
+local gach_scrolls = merge(gach_hundredPercentScrolls, gach_sixtyPercentScrolls, gach_tenPercentScrolls, gach_miscScrolls);
 
 mastery_book_20 = .05;
 mastery_book_30 = .025;
 
-skills = {
+local gach_skills = {
 	{2290096, ["weight"] = mastery_book_20}, {2290125, ["weight"] = mastery_book_30},
 };
 
-globalGachaponItems = preprocessItems(merge(potions, scrolls, skills, beginnerEquips, mapleEquips, commonEquips));
+local gach_globalGachaponItems = preprocessItems(merge(gach_potions, gach_scrolls, gach_skills, gach_beginnerEquips, gach_mapleEquips, gach_commonEquips));
 
 function gachapon(args)
 	local items = args["items"];
@@ -188,21 +188,21 @@ function gachapon(args)
 	end
 	if type(globalItemModifier) == "function" then
 		local finalized = {};
-		for i = 1, #globalGachaponItems do
-			local item = globalGachaponItems[i];
+		for i = 1, #gach_globalGachaponItems do
+			local item = gach_globalGachaponItems[i];
 			if globalItemModifier(item) == item_keep then
 				append(finalized, item);
 			end
 		end
-		globalGachaponItems = finalized;
+		gach_globalGachaponItems = finalized;
 	elseif type(globalItemModifier) == "number" then
-		for i = 1, #globalGachaponItems do
-			local item = globalGachaponItems[i];
+		for i = 1, #gach_globalGachaponItems do
+			local item = gach_globalGachaponItems[i];
 			item["weight"] = item["weight"] * globalItemModifier;
 		end
 	end
 
-	items = merge(preprocessItems(items), globalGachaponItems);
+	items = merge(preprocessItems(items), gach_globalGachaponItems);
 	local weights = {};
 	for i = 1, #items do
 		local item = items[i];

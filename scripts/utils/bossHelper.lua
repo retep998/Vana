@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Common code to determine how many times a player has been into a boss each day
 
-SECONDS_PER_DAY = 60 * 60 * 24;
+local seconds_per_day = 60 * 60 * 24;
 
 function enterBoss(boss, maxEntries)
 	if maxEntries == -1 then
@@ -27,13 +27,13 @@ function enterBoss(boss, maxEntries)
 		return false;
 	end
 
-	time = getTime();
-	entered = false;
+	local currentTime = getTime();
+	local entered = false;
 	for i = 1, maxEntries do
-		var = boss .. i;
-		entry = getPlayerVariable(var, type_int);
-		if entry == nil or time > (entry + SECONDS_PER_DAY) then
-			setPlayerVariable(var, time);
+		local var = boss .. i;
+		local entry = getPlayerVariable(var, type_int);
+		if entry == nil or currentTime > (entry + seconds_per_day) then
+			setPlayerVariable(var, currentTime);
 			entered = true;
 			break;
 		end
@@ -49,12 +49,12 @@ function getEntryCount(boss, maxEntries)
 		return 0;
 	end
 
-	time = getTime();
-	count = 0;
+	local currentTime = getTime();
+	local count = 0;
 	for i = 1, maxEntries do
-		var = boss .. i;
-		entry = getPlayerVariable(var, type_int);
-		if entry ~= nil and time < (entry + SECONDS_PER_DAY) then
+		local var = boss .. i;
+		local entry = getPlayerVariable(var, type_int);
+		if entry ~= nil and currentTime < (entry + seconds_per_day) then
 			count = count + 1;
 		end
 	end
@@ -62,18 +62,20 @@ function getEntryCount(boss, maxEntries)
 end
 
 function getChannelString(channels)
-	s = "no channels";
+	local s = "";
 	if #channels == 1 then
 		s = "channel " .. channels[1];
 	elseif #channels == 2 then
 		s = "channels " .. channels[1] .. " and " .. channels[2];
 	elseif #channels > 0 then
 		s = "channels ";
-		max = #channels - 1;
-		for i = 1, max do
+		local maxChannels = #channels - 1;
+		for i = 1, maxChannels do
 			s = s .. channels[i] .. ", ";
 		end
 		s = s .. "and " .. channels[#channels];
+	else
+		s = "no channels";
 	end
 	return s;
 end

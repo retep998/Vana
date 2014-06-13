@@ -173,7 +173,7 @@ else
 						sendOk();
 					end
 				end),
-				makeChoiceHandler(red(" Form the Squad and enter", previousBlue), function()
+				makeChoiceHandler(red(" Form the Squad and enter", npc_text_blue), function()
 					if isGm() or getInstanceSignupCount() >= 6 then
 						setInstanceVariable("enter", true);
 						messageAll("The leader of the squad has entered the map. Please enter the map before time runs out on the squad.");

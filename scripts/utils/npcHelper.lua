@@ -21,14 +21,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- #x
 -- #i<itemId>#
 
-previousBlack = 0;
-previousBlue = 1;
-previousRed = 2;
-previousGreen = 3;
-previousPurple = 4;
+npc_text_black = 0;
+npc_text_blue = 1;
+npc_text_red = 2;
+npc_text_green = 3;
+npc_text_purple = 4;
 
-previousNormal = 0;
-previousBold = 1;
+npc_text_normal = 0;
+npc_text_bold = 1;
 
 function processTextColor(text, previous, directive)
 	returnText = directive;
@@ -36,10 +36,10 @@ function processTextColor(text, previous, directive)
 		returnText = returnText .. text;
 	end
 	if previous ~= nil then
-		if previous == previousBlue then returnText = returnText .. "#b";
-		elseif previous == previousRed then returnText = returnText .. "#r";
-		elseif previous == previousGreen then returnText = returnText .. "#g";
-		elseif previous == previousPurple then returnText = returnText .. "#d";
+		if previous == npc_text_blue then returnText = returnText .. "#b";
+		elseif previous == npc_text_red then returnText = returnText .. "#r";
+		elseif previous == npc_text_green then returnText = returnText .. "#g";
+		elseif previous == npc_text_purple then returnText = returnText .. "#d";
 		else returnText = returnText .. "#k";
 		end
 	end
@@ -52,7 +52,7 @@ function processTextQuality(text, previous, directive)
 		returnText = returnText .. text;
 	end
 	if previous ~= nil then
-		if previous == previousBold then returnText = returnText .. "#e";
+		if previous == npc_text_bold then returnText = returnText .. "#e";
 		else returnText = returnText .. "#n";
 		end
 	end
@@ -65,35 +65,35 @@ end
 
 function red(text, previousColor)
 	if previousColor == nil then
-		previousColor = previousBlack;
+		previousColor = npc_text_black;
 	end
 	return processTextColor(text, previousColor, "#r");
 end
 
 function blue(text, previousColor)
 	if previousColor == nil then
-		previousColor = previousBlack;
+		previousColor = npc_text_black;
 	end
 	return processTextColor(text, previousColor, "#b");
 end
 
 function green(text, previousColor)
 	if previousColor == nil then
-		previousColor = previousBlack;
+		previousColor = npc_text_black;
 	end
 	return processTextColor(text, previousColor, "#g");
 end
 
 function purple(text, previousColor)
 	if previousColor == nil then
-		previousColor = previousBlack;
+		previousColor = npc_text_black;
 	end
 	return processTextColor(text, previousColor, "#d");
 end
 
 function bold(text, previousQuality)
 	if previousQuality == nil then
-		previousQuality = previousNormal;
+		previousQuality = npc_text_normal;
 	end
 	return processTextQuality(text, previousQuality, "#e");
 end
