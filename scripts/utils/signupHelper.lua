@@ -18,14 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Various functions to make coding sign up scripts much easier
 
 function getList()
-	g = getInstanceSignupCount();
+	local g = getInstanceSignupCount();
 	addText("The total number of applicants are #b" .. g .. "#k, and the list of the applicants is as follows.\r\n");
 	addText("1 : #b" .. getInstancePlayerByIndex(1) .. "#k (The Leader of the Squad)\r\n");
 	for i = 2, g do
 		addText(i .. " : " .. getInstancePlayerByIndex(i) .. "\r\n");
 	end
 
-	i = g;
+	local i = g;
 	for i = i + 1, getInstanceMax() do
 		addText(i .. " : \r\n");
 	end
@@ -51,7 +51,7 @@ end
 
 function messageAll(msg, color)
 	if color == nil then
-		color = env_redMessage;
+		color = msg_red;
 	end
 	for i = 1, getInstanceSignupCount() do
 		if setPlayer(getInstancePlayerByIndex(i)) then

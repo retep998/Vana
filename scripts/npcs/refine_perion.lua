@@ -25,7 +25,7 @@ function makeOreChoice(itemId, reqs)
 end
 
 function makeItemChoice(itemId, levelLimit, reqs, jobType, statText)
-	return makeChoiceData(" " .. itemRef(itemId) .. black("(level limit: " .. levelLimit .. ", " .. jobType .. ")", previousBlue), {itemId, reqs, statText});
+	return makeChoiceData(" " .. itemRef(itemId) .. black("(level limit: " .. levelLimit .. ", " .. jobType .. ")", npc_text_blue), {itemId, reqs, statText});
 end
 
 addText("Wait, do you have the ore of either a jewel or mineral? ");

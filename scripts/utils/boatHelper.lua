@@ -24,7 +24,7 @@ function getInstanceMinutes()
 end
 
 function doElevatorDoorCheck(mapId)
-	state = nil;
+	local state = nil;
 	if getInstanceMinutes() <= 1 then
 		state = 0;
 	else
@@ -37,7 +37,7 @@ function doElevatorDoorCheck(mapId)
 end
 
 function doBoatDockCheck(mapId)
-	docked = nil;
+	local docked = nil;
 	if getInstanceMinutes() <= (getInstanceVariable("boat_time", type_int) - 5) then
 		docked = boat_docked;
 	else

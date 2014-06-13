@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- A subset of Lua functions that helps common party quest tasks
 
 function getRandomFootholds(desiredAmount, tableFootholds)
-	i = 0;
-	correctFootholds = {};
+	local i = 0;
+	local correctFootholds = {};
 	while i < desiredAmount do
-		n = getRandomNumber(#tableFootholds);
+		local n = getRandomNumber(#tableFootholds);
 		local add = true;
 		if correctFootholds ~= nil then
 			for v = 1, #correctFootholds do
@@ -36,7 +36,7 @@ function getRandomFootholds(desiredAmount, tableFootholds)
 			correctFootholds[i] = n;
 		end
 	end
-	returnFootholds = {};
+	local returnFootholds = {};
 	for m = 1, desiredAmount do
 		returnFootholds[m] = tableFootholds[correctFootholds[m]];
 	end
@@ -53,16 +53,16 @@ function partyQuestWrong()
 	playFieldSound("Party1/Failed", getMap());
 end
 
-function giveAllPartyMembersExp(exp, mapId)
-	members = getAllPartyPlayerIds();
+function giveAllPartyMembersExp(expAmount, mapId)
+	local members = getAllPartyPlayerIds();
 	for i = 1, #members do
-		member = members[i];
+		local member = members[i];
 		if setPlayer(member) then
 			if mapId == nil then
-				giveExp(exp);
+				giveExp(expAmount);
 			else
 				if getMap() == mapId then
-					giveExp(exp);
+					giveExp(expAmount);
 				end
 			end
 			revertPlayer();
@@ -71,9 +71,9 @@ function giveAllPartyMembersExp(exp, mapId)
 end
 
 function moveAllMapMembers(mapId, portalString)
-	players = getAllMapPlayerIds();
+	local players = getAllMapPlayerIds();
 	for i = 1, #players do
-		player = players[i];
+		local player = players[i];
 		if setPlayer(player) then
 			if portalString == nil then
 				setMap(mapId);
@@ -86,10 +86,10 @@ function moveAllMapMembers(mapId, portalString)
 end
 
 function addPartyMembersToInstance()
-	players = getAllPartyPlayerIds();
-	mapId = getMap();
+	local players = getAllPartyPlayerIds();
+	local mapId = getMap();
 	for i = 1, #players do
-		player = players[i];
+		local player = players[i];
 		if setPlayer(player) then
 			if getMap() == mapId then
 				addInstancePlayer(getId());
@@ -100,10 +100,10 @@ function addPartyMembersToInstance()
 end
 
 function moveLocalPartyMembersToMap(destinationMapId, portalString)
-	players = getAllPartyPlayerIds();
-	currentMapId = getMap();
+	local players = getAllPartyPlayerIds();
+	local currentMapId = getMap();
 	for i = 1, #players do
-		player = players[i];
+		local player = players[i];
 		if setPlayer(player) then
 			if getMap() == currentMapId then
 				if portalString == nil then
