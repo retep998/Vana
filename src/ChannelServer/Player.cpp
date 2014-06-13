@@ -243,7 +243,9 @@ auto Player::handleRequest(PacketReader &reader) -> void {
 auto Player::playerConnect(PacketReader &reader) -> void {
 	player_id_t id = reader.get<player_id_t>();
 	bool hasTransferPacket = false;
-	if (ChannelServer::getInstance().getPlayerDataProvider().checkPlayer(id, getIp(), hasTransferPacket) == Result::Failure) {
+	auto &channel = ChannelServer::getInstance();
+	auto &provider = channel.getPlayerDataProvider();
+	if (provider.checkPlayer(id, getIp(), hasTransferPacket) == Result::Failure) {
 		// Hacking
 		disconnect();
 		return;
@@ -319,16 +321,17 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 	m_summons = make_owned_ptr<PlayerSummons>(this);
 
 	bool firstConnect = !hasTransferPacket;
+	auto &config = channel.getConfig();
 	if (hasTransferPacket) {
-		parseTransferPacket(ChannelServer::getInstance().getPlayerDataProvider().getPacket(m_id));
+		parseTransferPacket(provider.getPacket(m_id));
 	}
 	else {
 		// No packet, that means that they're connecting for the first time
 		setConnectionTime(time(nullptr));
-		m_gmChat = isGm();
+		m_gmChat = isGm() && config.defaultGmChatMode;
 	}
 
-	ChannelServer::getInstance().getPlayerDataProvider().playerEstablished(id);
+	provider.playerEstablished(id);
 
 	// The rest
 	m_variables = make_owned_ptr<PlayerVariables>(this);
@@ -371,7 +374,6 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 
 	send(PlayerPacket::connectData(this));
 
-	auto &config = ChannelServer::getInstance().getConfig();
 	if (!config.scrollingHeader.empty()) {
 		send(ServerPacket::showScrollingHeader(config.scrollingHeader));
 	}
@@ -389,16 +391,16 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 
 	send(PlayerPacket::showSkillMacros(&skillMacros));
 
-	ChannelServer::getInstance().getPlayerDataProvider().addPlayer(this);
+	provider.addPlayer(this);
 	Maps::addPlayer(this, m_map);
 
-	ChannelServer::getInstance().log(LogType::Info, [&](out_stream_t &log) { log << m_name << " (" << m_id << ") connected from " << getIp(); });
+	channel.log(LogType::Info, [&](out_stream_t &log) { log << m_name << " (" << m_id << ") connected from " << getIp(); });
 
 	setOnline(true);
 	m_isConnect = true;
 
 	PlayerData data;
-	const PlayerData * const existingData = ChannelServer::getInstance().getPlayerDataProvider().getPlayerData(m_id);
+	const PlayerData * const existingData = provider.getPlayerData(m_id);
 	bool firstConnectionSinceServerStarted = firstConnect && !existingData->initialized;
 
 	if (firstConnectionSinceServerStarted) {
@@ -410,12 +412,12 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 		data.mutualBuddies = m_buddyList->getBuddyIds();
 	}
 
-	data.channel = ChannelServer::getInstance().getChannelId();
+	data.channel = channel.getChannelId();
 	data.map = m_map;
 	data.id = m_id;
 	data.ip = getIp();
 
-	ChannelServer::getInstance().sendWorld(SyncPacket::PlayerPacket::connect(data, firstConnectionSinceServerStarted));
+	channel.sendWorld(SyncPacket::PlayerPacket::connect(data, firstConnectionSinceServerStarted));
 }
 
 auto Player::getMap() const -> Map * {

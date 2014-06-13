@@ -170,6 +170,7 @@ auto LoginServer::loadWorlds() -> void {
 			world = new World();
 		}
 
+		conf.defaultGmChatMode = config.get<bool>(getKey("gm_chat_by_default"));
 		conf.maxChannels = config.get<channel_id_t>(getKey("channels"));
 		conf.ribbon = config.get<int8_t>(getKey("ribbon"));
 		conf.maxStats = config.get<int16_t>(getKey("max_stats"));
