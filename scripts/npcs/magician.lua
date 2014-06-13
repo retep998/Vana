@@ -198,7 +198,7 @@ elseif getJobLine() == line_magician and getJobTrack() > 0 then
 	};
 
 	addText("Any questions about being a Magician?\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	selectChoice(choices, choice);
@@ -456,7 +456,7 @@ elseif getJob() == 200 and getLevel() >= 30 then
 
 				addText("Hmmm, have you made up your mind? ");
 				addText("Please select your occupation for the 2nd job advancement.\r\n");
-				addText(blue(choiceList(choices)));
+				addText(blue(choiceRef(choices)));
 				choice = askChoice();
 
 				selectChoice(choices, choice);
@@ -464,7 +464,7 @@ elseif getJob() == 200 and getLevel() >= 30 then
 		};
 
 		addText("Alright, when you have made your decision, click on [I'll choose my occupation!] at the very bottom...\r\n");
-		addText(blue(choiceList(choices)));
+		addText(blue(choiceRef(choices)));
 		choice = askChoice();
 
 		selectChoice(choices, choice);

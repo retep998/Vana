@@ -51,7 +51,7 @@ choices = {
 };
 
 addText("What do you want from me? \r\n");
-addText(blue(choiceList(choices)));
+addText(blue(choiceRef(choices)));
 choice = askChoice();
 
 selectChoice(choices, choice);

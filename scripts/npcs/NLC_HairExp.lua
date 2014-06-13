@@ -43,7 +43,7 @@ choices = {
 
 addText("I'm Brittany the assistant. ");
 addText("If you have " .. blue(itemRef(expHairItem)) .. " or " .. blue(itemRef(expColourItem)) .. " by any chance, then how about letting me change your hairdo?\r\n");
-addText(blue(choiceList(choices)));
+addText(blue(choiceRef(choices)));
 choice = askChoice();
 
 data = selectChoice(choices, choice);

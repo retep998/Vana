@@ -62,7 +62,7 @@ if isToEreve then
 	addText("Of course, I'm talking about you. ");
 	addText("Please refrain from using your skills. ");
 	addText("If you're bored, do you want me to tell you about Ereve?\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	selectChoice(choices, choice);
@@ -103,7 +103,7 @@ else
 	addText("And don't use your skills. ");
 	addText("It's very dangerous...huh? ");
 	addText("Do you want to know about Orbis?\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	selectChoice(choices, choice);

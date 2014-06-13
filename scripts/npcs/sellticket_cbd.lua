@@ -79,7 +79,7 @@ addText("Hello there~ ");
 addText("I am Shalon from Singapore Airport. ");
 addText("I will assist you in getting back to Kerning City in no time. ");
 addText("How can I help you?\r\n");
-addText(blue(choiceList(choices)));
+addText(blue(choiceRef(choices)));
 choice = askChoice();
 
 selectChoice(choices, choice);

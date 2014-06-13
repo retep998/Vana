@@ -130,7 +130,7 @@ while true do
 	addText("Name's " .. npcRef(9201050) .. ", mayor of New Leaf City! ");
 	addText("Happy to see you accepted my invite. ");
 	addText("So, what can I do for you?\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	if selectChoice(choices, choice) == iterationBreak then

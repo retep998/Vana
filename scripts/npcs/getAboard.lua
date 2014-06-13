@@ -31,7 +31,7 @@ choices = {
 addText("Orbis Station has lots of platforms available to choose from. ");
 addText("You need to choose the one that'll take you to the destination of your choice. ");
 addText("Which platform will you take?\r\n");
-addText(blue(choiceList(choices)));
+addText(blue(choiceRef(choices)));
 choice = askChoice();
 
 data = selectChoice(choices, choice);

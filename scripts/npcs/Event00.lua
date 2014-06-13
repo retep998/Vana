@@ -149,7 +149,7 @@ choices = {
 		addText("There are many games for this event. ");
 		addText("It will help you a lot to know how to play the game before you play it. ");
 		addText("Choose the one you want to know more of!\r\n");
-		addText(blue(choiceList(gameChoices)));
+		addText(blue(choiceRef(gameChoices)));
 		choice = askChoice();
 
 		selectChoice(gameChoices, choice);
@@ -162,7 +162,7 @@ choices = {
 	end),
 };
 
-addText(choiceList(choices));
+addText(choiceRef(choices));
 choice = askChoice();
 
 selectChoice(choices, choice);

@@ -38,7 +38,7 @@ choices = {
 
 addText("Have you found true love? ");
 addText("If so, I can make you a ring worthy of your devotion...\r\n");
-addText(blue(choiceList(choices)));
+addText(blue(choiceRef(choices)));
 choice = askChoice();
 
 selectChoice(choices, choice);

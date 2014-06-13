@@ -58,7 +58,7 @@ addText("You are looking lovely today! ");
 addText("I'm here to help you prepare for your Wedding. ");
 addText("I can help you make a Reservation, get additional Invitations, or tell you what you'll need to get married in our Chapel. ");
 addText("What would you like to know?\r\n");
-addText(blue(choiceList(choices)));
+addText(blue(choiceRef(choices)));
 choice = askChoice();
 
 selectChoice(choices, choice);

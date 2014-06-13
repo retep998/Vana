@@ -52,7 +52,7 @@ end
 addText("Well ... alright. ");
 addText("You seem more than qualified for this. ");
 addText("Which of these tasks do want to tackle on?\r\n");
-addText(blue(choiceList(choices)));
+addText(blue(choiceRef(choices)));
 choice = askChoice();
 
 selectChoice(choices, choice);

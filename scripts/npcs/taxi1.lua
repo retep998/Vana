@@ -47,7 +47,7 @@ if getJob() == 0 then
 else
 	addText("Choose your destination, for fees will change from place to place.\r\n");
 end
-addText(blue(choiceList(choices)));
+addText(blue(choiceRef(choices)));
 choice = askChoice();
 
 data = selectChoice(choices, choice);

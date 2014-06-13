@@ -38,7 +38,7 @@ function askQuizQuestion(questions, prefix)
 	end
 	question = questions[questionId];
 	addText(question[1] .. " \r\n");
-	addText(blue(choiceList(question[3])));
+	addText(blue(choiceRef(question[3])));
 	choice = askChoice();
 
 	if choice == (question[2] - 1) then

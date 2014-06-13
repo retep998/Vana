@@ -74,7 +74,7 @@ addText("I'm Dr. Lenu, in charge of the cosmetic lenses here at the Henesys Plas
 addText("With " .. blue(itemRef(expItem)) .. " or " .. blue(itemRef(vipItem)) .. ", you can let us take care of the rest and have the kind of beautiful look you've always craved~! ");
 addText("Remember, the first thing everyone notices about you is the eyes, and we can help you find the cosmetic lens that most fits you! ");
 addText("Now, what would you like to use?\r\n");
-addText(blue(choiceList(choices)));
+addText(blue(choiceRef(choices)));
 choice = askChoice();
 
 selectChoice(choices, choice);

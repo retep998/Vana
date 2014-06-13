@@ -787,7 +787,7 @@ append(choices, makeChoiceHandler("Please teach me about transferring pet abilit
 end));
 
 addText("What do you want to know more of?\r\n\r\n");
-addText(blue(choiceList(choices)));
+addText(blue(choiceRef(choices)));
 choice = askChoice();
 
 selectChoice(choices, choice);

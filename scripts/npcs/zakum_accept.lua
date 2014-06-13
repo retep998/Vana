@@ -194,7 +194,7 @@ else
 
 			addText("Greetings, leader of the Zakum Expedition Squad. ");
 			addText("What would you like to do? \r\n");
-			addText(blue(choiceList(choices)));
+			addText(blue(choiceRef(choices)));
 			choice = askChoice();
 
 			if not verifyMaster() then
@@ -253,7 +253,7 @@ else
 			};
 
 			addText("What would you like to do?\r\n");
-			addText(blue(choiceList(choices)));
+			addText(blue(choiceRef(choices)));
 
 			choice = askChoice();
 

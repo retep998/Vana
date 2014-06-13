@@ -210,7 +210,7 @@ choices = {
 
 while true do
 	addText("Now...ask me any questions you may have on traveling!!\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	if selectChoice(choices, choice) == iterationBreak then

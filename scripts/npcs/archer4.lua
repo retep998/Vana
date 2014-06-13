@@ -93,7 +93,7 @@ if jobLine == line_bowman and jobProgression == progression_third then
 		};
 		addText("You're qualified to be a true bowman. \r\n");
 		addText("Do you want job advancement?\r\n");
-		addText(blue(choiceList(choices)));
+		addText(blue(choiceRef(choices)));
 		choice = askChoice();
 
 		selectChoice(choices, choice);

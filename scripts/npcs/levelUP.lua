@@ -39,7 +39,7 @@ choices = {
 };
 
 addText("Hello, what can I do for you today?\r\n");
-addText(blue(choiceList(choices)));
+addText(blue(choiceRef(choices)));
 choice = askChoice();
 
 data = selectChoice(choices, choice);

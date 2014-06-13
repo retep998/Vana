@@ -43,7 +43,7 @@ if getMap() == 800000000 then
 
 	addText("How's the traveling? ");
 	addText("Are you enjoying it?\r\n");
-	addText(blue(choiceList(choices)));
+	addText(blue(choiceRef(choices)));
 	choice = askChoice();
 
 	selectChoice(choices, choice);
