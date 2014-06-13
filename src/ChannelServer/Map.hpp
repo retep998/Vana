@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "LoopingId.hpp"
+#include "IdPool.hpp"
 #include "MapDataProvider.hpp"
 #include "MapObjects.hpp"
 #include "Mob.hpp"
@@ -73,7 +73,6 @@ public:
 	auto getContinent() const -> uint8_t { return m_info->continent; }
 	auto getForcedReturn() const -> map_id_t { return m_info->forcedReturn; }
 	auto getReturnMap() const -> map_id_t { return m_info->rm; }
-	auto getObjectId() -> map_object_t { return m_objectIds.next(); }
 	auto getId() const -> map_id_t { return m_id; }
 
 	// Footholds
@@ -161,7 +160,6 @@ public:
 	// Weather cash item
 	auto createWeather(Player *player, bool adminWeather, int32_t time, item_id_t itemId, const string_t &message) -> bool;
 private:
-	auto getMistId() -> mist_id_t { return m_mistIds.next(); }
 	static const map_object_t NpcStart = 100;
 	static const map_object_t ReactorStart = 200;
 	// TODO FIXME msvc
@@ -209,8 +207,8 @@ private:
 	time_point_t m_timerStart = seconds_t(0);
 	time_point_t m_lastSpawn = seconds_t(0);
 	string_t m_music;
-	LoopingId<map_object_t> m_objectIds;
-	LoopingId<mist_id_t> m_mistIds;
+	IdPool<map_object_t> m_objectIds;
+	IdPool<mist_id_t> m_mistIds;
 	recursive_mutex_t m_dropsMutex;
 	ref_ptr_t<MapInfo> m_info;
 	ref_ptr_t<TimeMob> m_timeMobInfo;

@@ -383,7 +383,7 @@ auto PlayerDataProvider::handleCreateParty(player_id_t playerId) -> void {
 	}
 
 	PartyData party;
-	party.id = m_partyIds.next();
+	party.id = m_partyIds.lease();
 	party.leader = player.id;
 	party.members.push_back(player.id);
 	m_parties[party.id] = party;
@@ -417,6 +417,7 @@ auto PlayerDataProvider::handlePartyLeave(player_id_t playerId) -> void {
 			}
 		}
 		sendSync(SyncPacket::PartyPacket::disbandParty(party.id));
+		m_partyIds.release(party.id);
 		m_parties.erase(kvp);
 	}
 	else {

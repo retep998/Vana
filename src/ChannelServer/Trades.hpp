@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "LoopingId.hpp"
+#include "IdPool.hpp"
 #include "TimerContainerHolder.hpp"
 #include "Types.hpp"
 #include <memory>
@@ -36,11 +36,10 @@ public:
 private:
 	static seconds_t TradeTimeout;
 
-	auto getNewId() -> trade_id_t { return m_tradeIds.next(); }
 	auto getTimerSecondsRemaining(trade_id_t id) -> seconds_t;
 	auto timeout(Player *sender) -> void;
 	auto startTimeout(trade_id_t id, Player *sender) -> void;
 
-	LoopingId<trade_id_t> m_tradeIds;
+	IdPool<trade_id_t> m_tradeIds;
 	hash_map_t<trade_id_t, ref_ptr_t<ActiveTrade>> m_trades;
 };

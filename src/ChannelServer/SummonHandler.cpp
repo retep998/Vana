@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BuffsPacket.hpp"
 #include "ChannelServer.hpp"
 #include "GameLogicUtilities.hpp"
-#include "LoopingId.hpp"
+#include "IdPool.hpp"
 #include "Map.hpp"
 #include "Maps.hpp"
 #include "MovementHandler.hpp"
@@ -34,11 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Summon.hpp"
 #include "SummonsPacket.hpp"
 
-LoopingId<summon_id_t> SummonHandler::summonIds;
-
-auto SummonHandler::loopId() -> summon_id_t {
-	return summonIds.next();
-}
+IdPool<summon_id_t> SummonHandler::summonIds;
 
 auto SummonHandler::useSummon(Player *player, skill_id_t skillId, skill_level_t level) -> void {
 	// Determine if any summons need to be removed and do it
@@ -111,7 +107,7 @@ auto SummonHandler::useSummon(Player *player, skill_id_t skillId, skill_level_t 
 	else {
 		summonPosition = playerPosition;
 	}
-	Summon *summon = new Summon(loopId(), skillId, level, player->isFacingLeft() && !puppet, summonPosition);
+	Summon *summon = new Summon(summonIds.lease(), skillId, level, player->isFacingLeft() && !puppet, summonPosition);
 	if (summon->getMovementType() == Summon::Static) {
 		summon->resetMovement(foothold, summon->getPos(), summon->getStance());
 	}

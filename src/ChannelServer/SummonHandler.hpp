@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class PacketReader;
 class Player;
-template <typename T> class LoopingId;
+template <typename T> class IdPool;
 struct ActiveBuff;
 struct Buff;
 struct SkillLevelInfo;
@@ -36,7 +36,7 @@ namespace SummonMessages {
 }
 
 namespace SummonHandler {
-	extern LoopingId<summon_id_t> summonIds;
+	extern IdPool<summon_id_t> summonIds;
 	auto useSummon(Player *player, skill_id_t skillId, skill_level_t level) -> void;
 	auto removeSummon(Player *player, summon_id_t summonId, bool packetOnly, int8_t showMessage, bool fromTimer = false) -> void;
 	auto showSummon(Player *player) -> void;
@@ -46,5 +46,4 @@ namespace SummonHandler {
 	auto makeBuff(Player *player, item_id_t itemId) -> Buff;
 	auto makeActiveBuff(Player *player, const Buff &data, item_id_t itemId, const SkillLevelInfo *skillInfo) -> ActiveBuff;
 	auto summonSkill(Player *player, PacketReader &reader) -> void;
-	auto loopId() -> summon_id_t;
 }
