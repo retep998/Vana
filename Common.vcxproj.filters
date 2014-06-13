@@ -249,9 +249,6 @@
     <ClInclude Include="src\Common\GameLogicUtilities.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\LoopingId.hpp">
-      <Filter>Utilities</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\MiscUtilities.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
@@ -513,6 +510,15 @@
     </ClInclude>
     <ClInclude Include="src\Common\CommonHeader.hpp">
       <Filter>Packets\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\IdPool.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\IdLooper.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ObjectPool.hpp">
+      <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -526,7 +526,7 @@ auto Map::getNpc(size_t id) const -> NpcSpawnInfo {
 
 // Mobs
 auto Map::spawnMob(mob_id_t mobId, const Pos &pos, foothold_id_t foothold, ref_ptr_t<Mob> owner, int8_t summonEffect) -> ref_ptr_t<Mob> {
-	map_object_t id = getObjectId();
+	map_object_t id = m_objectIds.lease();
 
 	auto mob = make_ref_ptr<Mob>(id, getId(), mobId, summonEffect != 0 ? owner : nullptr, pos, -1, false, foothold, MobControlStatus::Normal);
 	if (summonEffect != 0) {
@@ -545,7 +545,7 @@ auto Map::spawnMob(mob_id_t mobId, const Pos &pos, foothold_id_t foothold, ref_p
 }
 
 auto Map::spawnMob(int32_t spawnId, const MobSpawnInfo &info) -> ref_ptr_t<Mob> {
-	map_object_t id = getObjectId();
+	map_object_t id = m_objectIds.lease();
 
 	ref_ptr_t<Mob> noOwner = nullptr;
 	auto mob = make_ref_ptr<Mob>(id, getId(), info.id, noOwner, info.pos, spawnId, info.facesLeft, info.foothold, MobControlStatus::Normal);
@@ -561,7 +561,7 @@ auto Map::spawnMob(int32_t spawnId, const MobSpawnInfo &info) -> ref_ptr_t<Mob> 
 }
 
 auto Map::spawnShell(mob_id_t mobId, const Pos &pos, foothold_id_t foothold) -> ref_ptr_t<Mob> {
-	map_object_t id = getObjectId();
+	map_object_t id = m_objectIds.lease();
 
 	ref_ptr_t<Mob> noOwner = nullptr;
 	auto mob = make_ref_ptr<Mob>(id, getId(), mobId, noOwner, pos, -1, false, foothold, MobControlStatus::None);
@@ -728,6 +728,7 @@ auto Map::mobDeath(ref_ptr_t<Mob> mob, bool fromExplosion) -> void {
 			}
 		}
 		m_mobs.erase(kvp);
+		m_objectIds.release(mapMobId);
 
 		if (m_timeMob == mapMobId) {
 			m_timeMob = 0;
@@ -856,7 +857,7 @@ auto Map::runFunctionMobs(function_t<void(ref_ptr_t<const Mob>)> func) -> void {
 // Drops
 auto Map::addDrop(Drop *drop) -> void {
 	owned_lock_t<recursive_mutex_t> l(m_dropsMutex);
-	map_object_t id = getObjectId();
+	map_object_t id = m_objectIds.lease();
 	drop->setId(id);
 	Pos foundPosition = drop->getPos();
 	findFloor(foundPosition, foundPosition, -100);
@@ -869,6 +870,7 @@ auto Map::removeDrop(map_object_t id) -> void {
 	auto drop = m_drops.find(id);
 	if (drop != std::end(m_drops)) {
 		m_drops.erase(drop);
+		m_objectIds.release(id);
 	}
 }
 
@@ -907,7 +909,7 @@ auto Map::playerSeated(seat_id_t id, Player *player) -> void {
 
 // Mists
 auto Map::addMist(Mist *mist) -> void {
-	mist->setId(getMistId());
+	mist->setId(m_mistIds.lease());
 
 	if (mist->isPoison() && !mist->isMobMist()) {
 		m_poisonMists[mist->getId()] = mist;
@@ -933,7 +935,7 @@ auto Map::getMist(mist_id_t id) -> Mist * {
 }
 
 auto Map::removeMist(Mist *mist) -> void {
-	int32_t id = mist->getId();
+	mist_id_t id = mist->getId();
 	if (mist->isPoison() && !mist->isMobMist()) {
 		m_poisonMists.erase(id);
 	}
@@ -942,6 +944,7 @@ auto Map::removeMist(Mist *mist) -> void {
 	}
 	delete mist;
 	send(MapPacket::removeMist(id));
+	m_mistIds.release(id);
 }
 
 auto Map::clearMists(bool showPacket) -> void {

@@ -47,6 +47,7 @@ auto PlayerSummons::removeSummon(summon_id_t summonId, bool fromTimer) -> void {
 		}
 		ext::remove_element(m_summons, summon);
 		delete summon;
+		SummonHandler::summonIds.release(summonId);
 	}
 }
 
@@ -104,7 +105,7 @@ auto PlayerSummons::parseTransferPacket(PacketReader &reader) -> void {
 			seconds_t timeLeft = reader.get<seconds_t>();
 			skill_level_t level = reader.get<skill_level_t>();
 
-			Summon *summon = new Summon(SummonHandler::loopId(), skillId, level, m_player->isFacingLeft(), m_player->getPos());
+			Summon *summon = new Summon(SummonHandler::summonIds.lease(), skillId, level, m_player->isFacingLeft(), m_player->getPos());
 			summon->setPos(m_player->getPos());
 			addSummon(summon, timeLeft);
 			m_player->sendMap(SummonsPacket::showSummon(m_player->getId(), summon, false));

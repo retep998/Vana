@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "GameObjects.hpp"
+#include "IdPool.hpp"
 #include "InterHelper.hpp"
 #include "Ip.hpp"
-#include "LoopingId.hpp"
 #include "PlayerObjects.hpp"
 #include "Types.hpp"
 #include <functional>
@@ -84,7 +84,7 @@ private:
 	auto removeBuddy(PacketReader &reader) -> void;
 	auto readdBuddy(PacketReader &reader) -> void;
 
-	LoopingId<party_id_t> m_partyIds;
+	IdPool<party_id_t> m_partyIds;
 	hash_map_t<player_id_t, channel_id_t> m_channelSwitches;
 	hash_map_t<party_id_t, PartyData> m_parties;
 	hash_map_t<player_id_t, PlayerData> m_players;

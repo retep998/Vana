@@ -32,7 +32,7 @@ Trades::Trades() :
 }
 
 auto Trades::newTrade(Player *start, Player *recv) -> trade_id_t {
-	trade_id_t id = getNewId();
+	trade_id_t id = m_tradeIds.lease();
 	m_trades[id] = make_ref_ptr<ActiveTrade>(start, recv, id);
 	startTimeout(id, start);
 	return id;
@@ -53,6 +53,7 @@ auto Trades::removeTrade(trade_id_t id) -> void {
 		p->setTradeId(0);
 	}
 	m_trades.erase(id);
+	m_tradeIds.release(id);
 }
 
 auto Trades::getTrade(trade_id_t id) -> ActiveTrade * {

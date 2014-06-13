@@ -21,8 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
-LoopingId<int32_t> LuaEnvironment::s_identifiers = LoopingId<int32_t>(1, 1000000);
-hash_map_t<int32_t, LuaEnvironment *> LuaEnvironment::s_environments;
+ObjectPool<int32_t, LuaEnvironment *> LuaEnvironment::s_environments = ObjectPool<int32_t, LuaEnvironment *>(1, 1000000);
 
 auto LuaEnvironment::getEnvironment(lua_State *luaVm) -> LuaEnvironment & {
 	lua_getglobal(luaVm, "system_environmentId");
@@ -36,28 +35,23 @@ LuaEnvironment::LuaEnvironment(const string_t &filename)
 {
 	loadFile(filename);
 
-	m_environmentIdentifier = s_identifiers.next();
+	m_environmentIdentifier = s_environments.store(this);
 	set<int32_t>("system_environmentId", m_environmentIdentifier);
-	s_environments.emplace(m_environmentIdentifier, this);
 }
 
 LuaEnvironment::LuaEnvironment(const string_t &filename, bool useThread)
 {
 	loadFile(filename);
 
-	do {
-		m_environmentIdentifier = s_identifiers.next();
-	} while (s_environments.find(m_environmentIdentifier) != s_environments.end());
-
+	m_environmentIdentifier = s_environments.store(this);
 	if (useThread) {
 		m_luaThread = lua_newthread(m_luaVm);
 	}
 	set<int32_t>("system_environmentId", m_environmentIdentifier);
-	s_environments.emplace(m_environmentIdentifier, this);
 }
 
 LuaEnvironment::~LuaEnvironment() {
-	s_environments.erase(m_environmentIdentifier);
+	s_environments.release(m_environmentIdentifier);
 	lua_close(m_luaVm);
 	m_luaVm = nullptr;
 }

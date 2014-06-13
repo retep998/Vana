@@ -171,6 +171,8 @@
     <ClInclude Include="src\Common\FileLogger.hpp" />
     <ClInclude Include="src\Common\GameConstants.hpp" />
     <ClInclude Include="src\Common\hash_combine.hpp" />
+    <ClInclude Include="src\Common\IdLooper.hpp" />
+    <ClInclude Include="src\Common\IdPool.hpp" />
     <ClInclude Include="src\Common\InterHelper.hpp" />
     <ClInclude Include="src\Common\Ip.hpp" />
     <ClInclude Include="src\Common\IPacket.hpp" />
@@ -189,6 +191,7 @@
     <ClInclude Include="src\Common\MobConstants.hpp" />
     <ClInclude Include="src\Common\MobDataObjects.hpp" />
     <ClInclude Include="src\Common\NpcDataProvider.hpp" />
+    <ClInclude Include="src\Common\ObjectPool.hpp" />
     <ClInclude Include="src\Common\optional.hpp" />
     <ClInclude Include="src\Common\PacketBuilder.hpp" />
     <ClInclude Include="src\Common\PacketWrapper.hpp" />
@@ -235,7 +238,6 @@
     <ClInclude Include="src\Common\AuthenticationPacket.hpp" />
     <ClInclude Include="src\Common\FileUtilities.hpp" />
     <ClInclude Include="src\Common\GameLogicUtilities.hpp" />
-    <ClInclude Include="src\Common\LoopingId.hpp" />
     <ClInclude Include="src\Common\MiscUtilities.hpp" />
     <ClInclude Include="src\Common\Randomizer.hpp" />
     <ClInclude Include="src\Common\StringUtilities.hpp" />

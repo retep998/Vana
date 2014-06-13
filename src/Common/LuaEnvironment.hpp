@@ -23,7 +23,7 @@ extern "C" {
 	#include "lauxlib.h"
 }
 
-#include "LoopingId.hpp"
+#include "ObjectPool.hpp"
 #include "Types.hpp"
 #include <stdexcept>
 #include <string>
@@ -258,8 +258,7 @@ private:
 	auto getImpl(lua_State *luaVm, int index, hash_map_t<TKey, TElement, THash, TOperation> *) -> hash_map_t<TKey, TElement, THash, TOperation>;
 	// End getImpl index
 
-	static LoopingId<int32_t> s_identifiers;
-	static hash_map_t<int32_t, LuaEnvironment *> s_environments;
+	static ObjectPool<int32_t, LuaEnvironment *> s_environments;
 
 	lua_State *m_luaVm = nullptr;
 	lua_State *m_luaThread = nullptr;
