@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Magician Job Instructor (Inside)
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 if getItemAmount(4031013) >= 30 then
 	addText("Ohhhhh...you collected all 30 Dark Marbles!! ");

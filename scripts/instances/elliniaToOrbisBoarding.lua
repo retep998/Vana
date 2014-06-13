@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 
-dofile("scripts/lua_functions/boatHelper.lua");
+dofile("scripts/utils/boatHelper.lua");
 
 function beginInstance()
 	addInstanceMap(101000301);

@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Insignificant Being
 
-dofile("scripts/lua_functions/jobFunctions.lua");
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/jobFunctions.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 if isQuestActive(6108) then
 	if getPartyId() == 0 then

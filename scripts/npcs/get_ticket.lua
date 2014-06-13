@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Boat ticket takers
 
-dofile("scripts/lua_functions/boatHelper.lua");
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/boatHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 function getTicketType(basic, regular)
 	if getItemAmount(basic) > 0 then return basic; end

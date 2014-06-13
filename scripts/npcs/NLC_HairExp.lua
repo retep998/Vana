@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Ari (EXP hair and color - NLC)
 
-dofile("scripts/lua_functions/beautyFunctions.lua");
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/beautyFunctions.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 validHairs = getGenderStyles({
 	["male"] = {30400, 30360, 30440, 30410, 30200, 30050, 30230, 30160, 30110, 30250},

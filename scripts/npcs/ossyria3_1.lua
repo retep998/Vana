@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Orbis Magic Spot (Orbis Tower: 20th Floor)
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 if getItemAmount(4001019) >= 1 then
 	addText("You can use " .. blue(itemRef(4001019)) .. " to activate " .. blue(npcRef(2012014)) .. ". ");

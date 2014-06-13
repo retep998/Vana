@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Door to Zakum
 
-dofile("scripts/lua_functions/bossHelper.lua");
+dofile("scripts/utils/bossHelper.lua");
 
 questStatus = getPlayerVariable("zakum_quest_status", type_int);
 

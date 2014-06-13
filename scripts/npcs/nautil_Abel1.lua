@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Bush
 
-dofile("scripts/lua_functions/npcHelper.lua");
-dofile("scripts/lua_functions/tableHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
+dofile("scripts/utils/tableHelper.lua");
 
 if isQuestActive(2186) and getItemAmount(4031853) == 0 then
 	if getNpcId() == 1094004 then

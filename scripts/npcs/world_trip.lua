@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Spinel (Tour Guide, teleports to/from Zipangu)
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 if getMap() == 800000000 then
 	wtOrigin = getPlayerVariable("wt_origin", type_int);

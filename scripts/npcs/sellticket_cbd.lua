@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Shalon, tickets to Kerning + flight map
 
-dofile("scripts/lua_functions/boatHelper.lua");
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/boatHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 choices = {
 	makeChoiceHandler("I would like to buy a plane ticket to Kerning City", function()

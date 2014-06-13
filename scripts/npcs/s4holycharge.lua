@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Puddle in Horntail's cave
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 if isQuestActive(6280) and getItemAmount(4031454) > 0 then
 	if getItemAmount(4031455) > 0 then

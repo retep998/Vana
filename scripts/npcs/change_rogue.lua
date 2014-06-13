@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Thief Job Instructor (Outside)
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 if getItemAmount(4031011) > 0 and getItemAmount(4031013) == 0 then
 	addText("Hmmm...it is definitely the letter from " .. blue(npcRef(1052001)) .. "...so you came all the way here to take the test and make the 2nd job advancement as the rogue. ");

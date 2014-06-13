@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- NLC Ticket Gate, collects tickets for NLC Subway
 
-dofile("scripts/lua_functions/boatHelper.lua");
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/boatHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 basicTicket = getItemAmount(4031712);
 regularTicket = getItemAmount(4031713);

@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Second Eos Rock
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 if isGm() or getItemAmount(4001020) > 0 then
 	function makeChoice(npcId, mapId, floorName, floorConfirmName)

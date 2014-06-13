@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Machine Apparatus - Origin of Clocktower
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 addText("Beep... beep... you can make you escape to a safer place through me. ");
 addText("Beep ... beep ... would you like to leave this place?");

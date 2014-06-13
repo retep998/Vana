@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- J.J. (NLC Cosmetic Eyes, VIP)
 
-dofile("scripts/lua_functions/beautyFunctions.lua");
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/beautyFunctions.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 choices = getFaceColours({ face_amethyst, face_black, face_blue, face_green, face_hazel, face_red, face_sapphire, face_violet });
 

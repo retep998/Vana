@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Gachapon - Zipangu: Spa (M)
 
-dofile("scripts/lua_functions/gachaponHelper.lua");
+dofile("scripts/utils/gachaponHelper.lua");
 
 -- General rules:
 -- No scrolls from the global items

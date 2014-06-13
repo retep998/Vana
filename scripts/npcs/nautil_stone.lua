@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Shiny Stone
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 if not isQuestActive(2166) or getQuestData(2166) ~= nil then
 	addText("It's a beautiful, shiny rock. ");

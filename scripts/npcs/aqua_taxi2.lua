@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Dolphin (Herb Town Pier)
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 addText("Will you move to " .. blue(mapRef(230000000)) .. " now? ");
 addText("The price is " .. blue("10000 mesos") .. ".");

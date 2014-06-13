@@ -17,4 +17,4 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Henesys Free Market entrance
 
-dofile("scripts/lua_functions/freeMarketHelper.lua");
+dofile("scripts/utils/freeMarketHelper.lua");

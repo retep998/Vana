@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Crimsonwood Keep statue
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 addText("Long ago, a strange warrior washed upon the shores of Masteria.  ");
 addText("This being claimed to be a member of a mysterious band of warriors that used claw like weapons and projectile-based artillery to defeat foes.   ");

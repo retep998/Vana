@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Kerny, sends player back to Singapore (from both in flight and waiting room and sends player to Kerning on the trip from Kerning)
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 m = getMap();
 if m == 540010001 then

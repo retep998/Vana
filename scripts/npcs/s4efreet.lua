@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Flo (takes you to elemental Thanatos dimension)
 
-dofile("scripts/lua_functions/jobFunctions.lua");
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/jobFunctions.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 item = nil;
 

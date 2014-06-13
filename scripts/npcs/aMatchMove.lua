@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Cesar (every town one)
 
-dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/utils/npcHelper.lua");
 
 if getLevel() >= 20 and getLevel() <= 30 then
 	addText("I have prepared a huge festival here at Ariant for the great fighters of MapleStory. ");
