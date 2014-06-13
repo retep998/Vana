@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "IdLooper.hpp"
 #include "Types.hpp"
 
-// Keep track of a pool of objects and sure that identifiers aren't reused
+// Keep track of a pool of objects and ensure that identifiers aren't reused
 template <typename TIdentifier, typename TObject>
 class ObjectPool {
 	using container_t = typename hash_map_t<TIdentifier, TObject>;
