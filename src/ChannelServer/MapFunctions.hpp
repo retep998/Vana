@@ -22,19 +22,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Player;
 
 namespace MapFunctions {
-	auto eventInstruction(Player *player, const string_t &args) -> ChatResult;
-	auto instruction(Player *player, const string_t &args) -> ChatResult;
-	auto timer(Player *player, const string_t &args) -> ChatResult;
-	auto killMob(Player *player, const string_t &args) -> ChatResult;
-	auto getMobHp(Player *player, const string_t &args) -> ChatResult;
-	auto listMobs(Player *player, const string_t &args) -> ChatResult;
-	auto listPortals(Player *player, const string_t &args) -> ChatResult;
-	auto listReactors(Player *player, const string_t &args) -> ChatResult;
-	auto listNpcs(Player *player, const string_t &args) -> ChatResult;
-	auto zakum(Player *player, const string_t &args) -> ChatResult;
-	auto horntail(Player *player, const string_t &args) -> ChatResult;
-	auto music(Player *player, const string_t &args) -> ChatResult;
-	auto summon(Player *player, const string_t &args) -> ChatResult;
-	auto clearDrops(Player *player, const string_t &args) -> ChatResult;
-	auto killAllMobs(Player *player, const string_t &args) -> ChatResult;
+	auto eventInstruction(Player *player, const chat_t &args) -> ChatResult;
+	auto instruction(Player *player, const chat_t &args) -> ChatResult;
+	auto timer(Player *player, const chat_t &args) -> ChatResult;
+	auto killMob(Player *player, const chat_t &args) -> ChatResult;
+	auto getMobHp(Player *player, const chat_t &args) -> ChatResult;
+	auto listMobs(Player *player, const chat_t &args) -> ChatResult;
+	auto listPortals(Player *player, const chat_t &args) -> ChatResult;
+	auto listReactors(Player *player, const chat_t &args) -> ChatResult;
+	auto listNpcs(Player *player, const chat_t &args) -> ChatResult;
+	auto zakum(Player *player, const chat_t &args) -> ChatResult;
+	auto horntail(Player *player, const chat_t &args) -> ChatResult;
+	auto music(Player *player, const chat_t &args) -> ChatResult;
+	auto summon(Player *player, const chat_t &args) -> ChatResult;
+	auto clearDrops(Player *player, const chat_t &args) -> ChatResult;
+	auto killAllMobs(Player *player, const chat_t &args) -> ChatResult;
 }

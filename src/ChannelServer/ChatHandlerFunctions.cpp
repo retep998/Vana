@@ -27,9 +27,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerModFunctions.hpp"
 #include "PlayerPacket.hpp"
 
-case_insensitive_hash_map_t<ChatCommand> ChatHandlerFunctions::sCommandList;
+case_insensitive_hash_map_t<ChatCommand, chat_t> ChatHandlerFunctions::sCommandList;
 
-const case_insensitive_hash_map_t<MapPair> ChatHandlerFunctions::sMapAssociations = {
+const case_insensitive_hash_map_t<MapPair, chat_t> ChatHandlerFunctions::sMapAssociations = {
 	// These first maps are here purely for documentation purposes - they are computed by other means
 	{"town", {Maps::NoMap, "Special"}},
 	{"return", {Maps::NoMap, "Special"}},
@@ -378,7 +378,7 @@ auto ChatHandlerFunctions::initialize() -> void {
 		existing->second.push_back(kvp.first);
 	}
 	for (const auto &kvp : byCategory) {
-		out_stream_t category;
+		chat_stream_t category;
 		category << " >>> " << kvp.first + ": ";
 		bool separate = false;
 		for (const auto &map : kvp.second) {
@@ -637,7 +637,7 @@ auto ChatHandlerFunctions::initialize() -> void {
 	CustomFunctions::initialize(sCommandList);
 }
 
-auto ChatHandlerFunctions::getMap(const string_t &query, Player *player) -> int32_t {
+auto ChatHandlerFunctions::getMap(const chat_t &query, Player *player) -> int32_t {
 	map_id_t mapId = -1;
 	// Special
 	if (query == "here") mapId = player->getMapId();
@@ -659,7 +659,7 @@ auto ChatHandlerFunctions::getMap(const string_t &query, Player *player) -> int3
 	return mapId;
 }
 
-auto ChatHandlerFunctions::getJob(const string_t &query) -> job_id_t {
+auto ChatHandlerFunctions::getJob(const chat_t &query) -> job_id_t {
 	job_id_t job = -1;
 	if (query == "beginner") job = Jobs::JobIds::Beginner;
 	else if (query == "warrior") job = Jobs::JobIds::Swordsman;
@@ -734,8 +734,8 @@ auto ChatHandlerFunctions::getJob(const string_t &query) -> job_id_t {
 	return job;
 }
 
-auto ChatHandlerFunctions::getBanString(int8_t reason) -> string_t {
-	string_t banMessage = ".";
+auto ChatHandlerFunctions::getBanString(int8_t reason) -> chat_t {
+	chat_t banMessage = ".";
 	switch (reason) {
 		case 0x01: banMessage = " for hacking."; break;
 		case 0x02: banMessage = " for using macro/auto-keyboard."; break;
@@ -754,7 +754,7 @@ auto ChatHandlerFunctions::getBanString(int8_t reason) -> string_t {
 	return banMessage;
 }
 
-auto ChatHandlerFunctions::getMessageType(const string_t &query) -> int8_t {
+auto ChatHandlerFunctions::getMessageType(const chat_t &query) -> int8_t {
 	int8_t ret = -1;
 	if (query == "notice") ret = PlayerPacket::NoticeTypes::Notice;
 	else if (query == "box") ret = PlayerPacket::NoticeTypes::Box;
@@ -763,19 +763,19 @@ auto ChatHandlerFunctions::getMessageType(const string_t &query) -> int8_t {
 	return ret;
 }
 
-auto ChatHandlerFunctions::runRegexPattern(const string_t &args, const string_t &pattern, match_t &matches) -> MatchResult {
+auto ChatHandlerFunctions::runRegexPattern(const chat_t &args, const chat_t &pattern, match_t &matches) -> MatchResult {
 	std::regex re;
 	re = pattern; // Why, C++, why?
 	return std::regex_match(args, matches, re) ? MatchResult::AnyMatches : MatchResult::NoMatches;
 }
 
-auto ChatHandlerFunctions::showSyntax(Player *player, const string_t &command, bool fromHelp) -> void {
+auto ChatHandlerFunctions::showSyntax(Player *player, const chat_t &command, bool fromHelp) -> void {
 	auto kvp = sCommandList.find(command);
 	if (kvp != std::end(sCommandList)) {
 		auto &cmd = kvp->second;
 		auto displayStyle = fromHelp ?
-			static_cast<void (*)(Player *, const string_t &)>(showInfo) :
-			static_cast<void (*)(Player *, const string_t &)>(showError);
+			static_cast<void (*)(Player *, const chat_t &)>(showInfo) :
+			static_cast<void (*)(Player *, const chat_t &)>(showError);
 
 		displayStyle(player, "Usage: !" + command + " " + cmd.syntax);
 
@@ -788,30 +788,30 @@ auto ChatHandlerFunctions::showSyntax(Player *player, const string_t &command, b
 	}
 }
 
-auto ChatHandlerFunctions::showError(Player *player, const string_t &message) -> void {
+auto ChatHandlerFunctions::showError(Player *player, const chat_t &message) -> void {
 	player->send(PlayerPacket::showMessage(message, PlayerPacket::NoticeTypes::Red));
 }
 
-auto ChatHandlerFunctions::showInfo(Player *player, const string_t &message) -> void {
+auto ChatHandlerFunctions::showInfo(Player *player, const chat_t &message) -> void {
 	player->send(PlayerPacket::showMessage(message, PlayerPacket::NoticeTypes::Blue));
 }
 
-auto ChatHandlerFunctions::showError(Player *player, function_t<void(out_stream_t &)> produceMessage) -> void {
-	out_stream_t error;
+auto ChatHandlerFunctions::showError(Player *player, function_t<void(chat_stream_t &)> produceMessage) -> void {
+	chat_stream_t error;
 	produceMessage(error);
 	showError(player, error.str());
 }
 
-auto ChatHandlerFunctions::showInfo(Player *player, function_t<void(out_stream_t &)> produceMessage) -> void {
-	out_stream_t info;
+auto ChatHandlerFunctions::showInfo(Player *player, function_t<void(chat_stream_t &)> produceMessage) -> void {
+	chat_stream_t info;
 	produceMessage(info);
 	showInfo(player, info.str());
 }
 
 auto ChatHandlerFunctions::showError(Player *player, const char *message) -> void {
-	showError(player, string_t{message});
+	showError(player, chat_t{message});
 }
 
 auto ChatHandlerFunctions::showInfo(Player *player, const char *message) -> void {
-	showInfo(player, string_t{message});
+	showInfo(player, chat_t{message});
 }

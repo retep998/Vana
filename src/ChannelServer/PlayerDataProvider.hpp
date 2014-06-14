@@ -71,8 +71,8 @@ public:
 	auto getParty(party_id_t id) -> Party *;
 
 	// Chat
-	auto handleGroupChat(int8_t chatType, player_id_t playerId, const vector_t<player_id_t> &receivers, const string_t &chat) -> void;
-	auto handleGmChat(Player *player, const string_t &chat) -> void;
+	auto handleGroupChat(int8_t chatType, player_id_t playerId, const vector_t<player_id_t> &receivers, const chat_t &chat) -> void;
+	auto handleGmChat(Player *player, const chat_t &chat) -> void;
 
 	// Connections
 	auto checkPlayer(player_id_t id, const Ip &ip, bool &hasPacket) const -> Result;

@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SyncPacket.hpp"
 #include "WorldServerConnectPacket.hpp"
 
-auto ManagementFunctions::map(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::map(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+)? ?(\w+)?)", matches) == MatchResult::AnyMatches) {
 		string_t rawMap = matches[1];
@@ -73,7 +73,7 @@ auto ManagementFunctions::map(Player *player, const string_t &args) -> ChatResul
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::warp(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::warp(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (\w+) (\w+) ?(\w+)? ?(\w+)?)", matches) == MatchResult::AnyMatches) {
 		string_t sourceType = matches[1];
@@ -274,7 +274,7 @@ auto ManagementFunctions::warp(Player *player, const string_t &args) -> ChatResu
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::follow(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::follow(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+)?)", matches) == MatchResult::AnyMatches) {
 		string_t playerName = matches[1];
@@ -307,7 +307,7 @@ auto ManagementFunctions::follow(Player *player, const string_t &args) -> ChatRe
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::changeChannel(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::changeChannel(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+))", matches) == MatchResult::AnyMatches) {
 		string_t targetChannel = matches[1];
@@ -318,7 +318,7 @@ auto ManagementFunctions::changeChannel(Player *player, const string_t &args) ->
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::lag(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::lag(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+))", matches) == MatchResult::AnyMatches) {
 		string_t target = matches[1];
@@ -333,12 +333,12 @@ auto ManagementFunctions::lag(Player *player, const string_t &args) -> ChatResul
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::header(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::header(Player *player, const chat_t &args) -> ChatResult {
 	ChannelServer::getInstance().sendWorld(SyncPacket::ConfigPacket::scrollingHeader(args));
 	return ChatResult::HandledDisplay;
 }
 
-auto ManagementFunctions::shutdown(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::shutdown(Player *player, const chat_t &args) -> ChatResult {
 	ChatHandlerFunctions::showInfo(player, "Shutting down the server");
 	ChannelServer::getInstance().log(LogType::GmCommand, "GM shutdown the server. GM: " + player->getName());
 	// TODO FIXME remove this or figure out a better way to post a shutdown than just doing the shutdown here
@@ -346,7 +346,7 @@ auto ManagementFunctions::shutdown(Player *player, const string_t &args) -> Chat
 	return ChatResult::HandledDisplay;
 }
 
-auto ManagementFunctions::kick(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::kick(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		if (Player *target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(args)) {
 			if (player->getGmLevel() > target->getGmLevel()) {
@@ -365,18 +365,18 @@ auto ManagementFunctions::kick(Player *player, const string_t &args) -> ChatResu
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::relog(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::relog(Player *player, const chat_t &args) -> ChatResult {
 	player->changeChannel(ChannelServer::getInstance().getChannelId());
 	return ChatResult::HandledDisplay;
 }
 
-auto ManagementFunctions::calculateRanks(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::calculateRanks(Player *player, const chat_t &args) -> ChatResult {
 	ChannelServer::getInstance().sendWorld(WorldServerConnectPacket::rankingCalculation());
 	ChatHandlerFunctions::showInfo(player, "Sent a signal to force the calculation of rankings");
 	return ChatResult::HandledDisplay;
 }
 
-auto ManagementFunctions::item(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::item(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) ?(\d*)?)", matches) == MatchResult::AnyMatches) {
 		string_t rawItem = matches[1];
@@ -394,12 +394,12 @@ auto ManagementFunctions::item(Player *player, const string_t &args) -> ChatResu
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::storage(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::storage(Player *player, const chat_t &args) -> ChatResult {
 	NpcHandler::showStorage(player, 1012009);
 	return ChatResult::HandledDisplay;
 }
 
-auto ManagementFunctions::shop(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::shop(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		shop_id_t shopId = -1;
 		if (args == "gear") shopId = 9999999;
@@ -419,7 +419,7 @@ auto ManagementFunctions::shop(Player *player, const string_t &args) -> ChatResu
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::reload(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::reload(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		if (args == "items" || args == "drops" || args == "shops" ||
 			args == "mobs" || args == "beauty" || args == "scripts" ||
@@ -436,7 +436,7 @@ auto ManagementFunctions::reload(Player *player, const string_t &args) -> ChatRe
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::npc(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::npc(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		npc_id_t npcId = atoi(args.c_str());
 		Npc *npc = new Npc(npcId, player);
@@ -446,7 +446,7 @@ auto ManagementFunctions::npc(Player *player, const string_t &args) -> ChatResul
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::addNpc(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::addNpc(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		NpcSpawnInfo npc;
 		npc.id = atoi(args.c_str());
@@ -461,12 +461,12 @@ auto ManagementFunctions::addNpc(Player *player, const string_t &args) -> ChatRe
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::killNpc(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::killNpc(Player *player, const chat_t &args) -> ChatResult {
 	player->setNpc(nullptr);
 	return ChatResult::HandledDisplay;
 }
 
-auto ManagementFunctions::kill(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::kill(Player *player, const chat_t &args) -> ChatResult {
 	if (player->getGmLevel() == 1) {
 		player->getStats()->setHp(0);
 	}
@@ -521,7 +521,7 @@ auto ManagementFunctions::kill(Player *player, const string_t &args) -> ChatResu
 	return ChatResult::HandledDisplay;
 }
 
-auto ManagementFunctions::ban(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::ban(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) ?(\d+)?)", matches) == MatchResult::AnyMatches) {
 		string_t targetName = matches[1];
@@ -567,7 +567,7 @@ auto ManagementFunctions::ban(Player *player, const string_t &args) -> ChatResul
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::tempBan(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::tempBan(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (\d+) (\d+))", matches) == MatchResult::AnyMatches) {
 		string_t targetName = matches[1];
@@ -614,7 +614,7 @@ auto ManagementFunctions::tempBan(Player *player, const string_t &args) -> ChatR
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::ipBan(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::ipBan(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) ?(\d+)?)", matches) == MatchResult::AnyMatches) {
 		string_t targetName = matches[1];
@@ -654,7 +654,7 @@ auto ManagementFunctions::ipBan(Player *player, const string_t &args) -> ChatRes
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::unban(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::unban(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		// Unban account
 		soci::session &sql = Database::getCharDb();
@@ -686,13 +686,13 @@ auto ManagementFunctions::unban(Player *player, const string_t &args) -> ChatRes
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::rehash(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::rehash(Player *player, const chat_t &args) -> ChatResult {
 	ChannelServer::getInstance().sendWorld(WorldServerConnectPacket::rehashConfig());
 	ChatHandlerFunctions::showInfo(player, "Sent a signal to force rehashing world configurations");
 	return ChatResult::HandledDisplay;
 }
 
-auto ManagementFunctions::rates(Player *player, const string_t &args) -> ChatResult {
+auto ManagementFunctions::rates(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (!args.empty()) {
 		if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) ?(\d+)?)", matches) == MatchResult::NoMatches) {

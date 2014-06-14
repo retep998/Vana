@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.hpp"
-#include <string>
 
 class PacketReader;
 class Player;
@@ -26,6 +25,6 @@ class Player;
 namespace ChatHandler {
 	auto initializeCommands() -> void;
 	auto handleChat(Player *player, PacketReader &reader) -> void;
-	auto handleCommand(Player *player, const string_t &message) -> HandleResult;
+	auto handleCommand(Player *player, const chat_t &message) -> HandleResult;
 	auto handleGroupChat(Player *player, PacketReader &reader) -> void;
 }

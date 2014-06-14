@@ -51,10 +51,10 @@ namespace PlayerPacket {
 	PACKET(showSkillMacros, SkillMacros *macros);
 	PACKET(updateStat, int32_t updateBits, int32_t value, bool itemResponse = false);
 	PACKET(changeChannel, const Ip &ip, port_t port);
-	PACKET(showMessage, const string_t &msg, int8_t type);
-	PACKET(groupChat, const string_t &name, const string_t &msg, int8_t type);
-	PACKET(instructionBubble, const string_t &msg, coord_t width = -1, int16_t time = 5, bool isStatic = false, int32_t x = 0, int32_t y = 0);
+	PACKET(showMessage, const chat_t &msg, int8_t type);
+	PACKET(groupChat, const string_t &name, const chat_t &msg, int8_t type);
+	PACKET(instructionBubble, const chat_t &msg, coord_t width = -1, int16_t time = 5, bool isStatic = false, int32_t x = 0, int32_t y = 0);
 	PACKET(showHpBar, player_id_t playerId, int32_t hp, int32_t maxHp);
 	PACKET(sendBlockedMessage, int8_t type);
-	PACKET(sendYellowMessage, const string_t &msg);
+	PACKET(sendYellowMessage, const chat_t &msg);
 }

@@ -22,11 +22,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Player;
 
 namespace InfoFunctions {
-	auto help(Player *player, const string_t &args) -> ChatResult;
-	auto lookup(Player *player, const string_t &args) -> ChatResult;
-	auto pos(Player *player, const string_t &args) -> ChatResult;
-	auto online(Player *player, const string_t &args) -> ChatResult;
-	auto variable(Player *player, const string_t &args) -> ChatResult;
-	auto questData(Player *player, const string_t &args) -> ChatResult;
-	auto questKills(Player *player, const string_t &args) -> ChatResult;
+	auto help(Player *player, const chat_t &args) -> ChatResult;
+	auto lookup(Player *player, const chat_t &args) -> ChatResult;
+	auto pos(Player *player, const chat_t &args) -> ChatResult;
+	auto online(Player *player, const chat_t &args) -> ChatResult;
+	auto variable(Player *player, const chat_t &args) -> ChatResult;
+	auto questData(Player *player, const chat_t &args) -> ChatResult;
+	auto questKills(Player *player, const chat_t &args) -> ChatResult;
 }

@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.hpp"
 #include <iostream>
 
-auto InfoFunctions::help(Player *player, const string_t &args) -> ChatResult {
+auto InfoFunctions::help(Player *player, const chat_t &args) -> ChatResult {
 	using ChatHandlerFunctions::sCommandList;
 	if (!args.empty()) {
 		if (sCommandList.find(args) != std::end(sCommandList)) {
@@ -54,7 +54,7 @@ auto InfoFunctions::help(Player *player, const string_t &args) -> ChatResult {
 	return ChatResult::HandledDisplay;
 }
 
-auto InfoFunctions::lookup(Player *player, const string_t &args) -> ChatResult {
+auto InfoFunctions::lookup(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (.+))", matches) == MatchResult::AnyMatches) {
 		uint16_t type = 0;
@@ -308,12 +308,12 @@ auto InfoFunctions::lookup(Player *player, const string_t &args) -> ChatResult {
 	return ChatResult::ShowSyntax;
 }
 
-auto InfoFunctions::pos(Player *player, const string_t &args) -> ChatResult {
+auto InfoFunctions::pos(Player *player, const chat_t &args) -> ChatResult {
 	ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) { message << "(Foothold, {X, Y}): (" << player->getFoothold() << ", " << player->getPos() << ")"; });
 	return ChatResult::HandledDisplay;
 }
 
-auto InfoFunctions::online(Player *player, const string_t &args) -> ChatResult {
+auto InfoFunctions::online(Player *player, const chat_t &args) -> ChatResult {
 	out_stream_t igns;
 	igns << "IGNs: ";
 	int32_t i = 0;
@@ -331,7 +331,7 @@ auto InfoFunctions::online(Player *player, const string_t &args) -> ChatResult {
 	return ChatResult::HandledDisplay;
 }
 
-auto InfoFunctions::variable(Player *player, const string_t &args) -> ChatResult {
+auto InfoFunctions::variable(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+))", matches) == MatchResult::NoMatches) {
 		return ChatResult::ShowSyntax;
@@ -348,7 +348,7 @@ auto InfoFunctions::variable(Player *player, const string_t &args) -> ChatResult
 	return ChatResult::HandledDisplay;
 }
 
-auto InfoFunctions::questData(Player *player, const string_t &args) -> ChatResult {
+auto InfoFunctions::questData(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) (\w+))", matches) == MatchResult::NoMatches) {
 		return ChatResult::ShowSyntax;
@@ -361,7 +361,7 @@ auto InfoFunctions::questData(Player *player, const string_t &args) -> ChatResul
 	return ChatResult::HandledDisplay;
 }
 
-auto InfoFunctions::questKills(Player *player, const string_t &args) -> ChatResult {
+auto InfoFunctions::questKills(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) (\d+))", matches) == MatchResult::NoMatches) {
 		return ChatResult::ShowSyntax;

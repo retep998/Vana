@@ -34,7 +34,7 @@ auto ChatHandler::initializeCommands() -> void {
 }
 
 auto ChatHandler::handleChat(Player *player, PacketReader &reader) -> void {
-	string_t message = reader.get<string_t>();
+	chat_t message = reader.get<chat_t>();
 	bool bubbleOnly = reader.get<bool>(); // Skill macros only display chat bubbles
 
 	if (ChatHandler::handleCommand(player, message) == HandleResult::Unhandled) {
@@ -47,7 +47,7 @@ auto ChatHandler::handleChat(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto ChatHandler::handleCommand(Player *player, const string_t &message) -> HandleResult {
+auto ChatHandler::handleCommand(Player *player, const chat_t &message) -> HandleResult {
 	using ChatHandlerFunctions::sCommandList;
 
 	if (player->isAdmin() && message[0] == '/') {
@@ -57,8 +57,8 @@ auto ChatHandler::handleCommand(Player *player, const string_t &message) -> Hand
 
 	if (player->isGm() && message[0] == '!' && message.size() > 2) {
 		char *chat = const_cast<char *>(message.c_str());
-		string_t command = strtok(chat + 1, " ");
-		string_t args = message.length() > command.length() + 2 ? message.substr(command.length() + 2) : "";
+		chat_t command = strtok(chat + 1, " ");
+		chat_t args = message.length() > command.length() + 2 ? message.substr(command.length() + 2) : "";
 		auto kvp = sCommandList.find(command);
 		if (kvp == std::end(sCommandList)) {
 			ChatHandlerFunctions::showError(player, "Invalid command: " + command);
@@ -82,7 +82,7 @@ auto ChatHandler::handleGroupChat(Player *player, PacketReader &reader) -> void 
 	int8_t type = reader.get<int8_t>();
 	uint8_t amount = reader.get<uint8_t>();
 	vector_t<player_id_t> receivers = reader.get<vector_t<player_id_t>>(amount);
-	string_t chat = reader.get<string_t>();
+	chat_t chat = reader.get<chat_t>();
 
 	if (ChatHandler::handleCommand(player, chat) == HandleResult::Unhandled) {
 		ChannelServer::getInstance().getPlayerDataProvider().handleGroupChat(type, player->getId(), receivers, chat);
