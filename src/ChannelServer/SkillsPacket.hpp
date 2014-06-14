@@ -28,7 +28,7 @@ struct PlayerSkillInfo;
 namespace SkillsPacket {
 	PACKET(addSkill, skill_id_t skillId, const PlayerSkillInfo &skillInfo);
 	SPLIT_PACKET(showSkill, player_id_t playerId, skill_id_t skillId, skill_level_t level, uint8_t direction, bool party = false, bool self = false);
-	PACKET(healHp, int16_t hp);
+	PACKET(healHp, health_t hp);
 	SPLIT_PACKET(showSkillEffect, player_id_t playerId, skill_id_t skillId);
 	SPLIT_PACKET(showChargeOrStationarySkill, player_id_t playerId, const ChargeOrStationarySkillInfo &info);
 	SPLIT_PACKET(endChargeOrStationarySkill, player_id_t playerId, const ChargeOrStationarySkillInfo &info);

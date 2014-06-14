@@ -1036,13 +1036,13 @@ auto LuaExports::endMorph(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::getAp(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.push<int16_t>(luaVm, getPlayer(luaVm, env)->getStats()->getAp());
+	env.push<stat_t>(luaVm, getPlayer(luaVm, env)->getStats()->getAp());
 	return 1;
 }
 
 auto LuaExports::getDex(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.push<int16_t>(luaVm, getPlayer(luaVm, env)->getStats()->getDex());
+	env.push<stat_t>(luaVm, getPlayer(luaVm, env)->getStats()->getDex());
 	return 1;
 }
 
@@ -1090,13 +1090,13 @@ auto LuaExports::getHair(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::getHp(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.push<int16_t>(luaVm, getPlayer(luaVm, env)->getStats()->getHp());
+	env.push<health_t>(luaVm, getPlayer(luaVm, env)->getStats()->getHp());
 	return 1;
 }
 
 auto LuaExports::getHpMpAp(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.push<int16_t>(luaVm, getPlayer(luaVm, env)->getStats()->getHpMpAp());
+	env.push<health_ap_t>(luaVm, getPlayer(luaVm, env)->getStats()->getHpMpAp());
 	return 1;
 }
 
@@ -1108,7 +1108,7 @@ auto LuaExports::getId(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::getInt(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.push<int16_t>(luaVm, getPlayer(luaVm, env)->getStats()->getInt());
+	env.push<stat_t>(luaVm, getPlayer(luaVm, env)->getStats()->getInt());
 	return 1;
 }
 
@@ -1126,7 +1126,7 @@ auto LuaExports::getLevel(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::getLuk(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.push<int16_t>(luaVm, getPlayer(luaVm, env)->getStats()->getLuk());
+	env.push<stat_t>(luaVm, getPlayer(luaVm, env)->getStats()->getLuk());
 	return 1;
 }
 
@@ -1138,19 +1138,19 @@ auto LuaExports::getMap(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::getMaxHp(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.push<int16_t>(luaVm, getPlayer(luaVm, env)->getStats()->getMaxHp());
+	env.push<health_t>(luaVm, getPlayer(luaVm, env)->getStats()->getMaxHp());
 	return 1;
 }
 
 auto LuaExports::getMaxMp(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.push<int16_t>(luaVm, getPlayer(luaVm, env)->getStats()->getMaxMp());
+	env.push<health_t>(luaVm, getPlayer(luaVm, env)->getStats()->getMaxMp());
 	return 1;
 }
 
 auto LuaExports::getMp(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.push<int16_t>(luaVm, getPlayer(luaVm, env)->getStats()->getMp());
+	env.push<health_t>(luaVm, getPlayer(luaVm, env)->getStats()->getMp());
 	return 1;
 }
 
@@ -1185,13 +1185,13 @@ auto LuaExports::getPosY(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::getRealMaxHp(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.push<int16_t>(luaVm, getPlayer(luaVm, env)->getStats()->getMaxHp(true));
+	env.push<health_t>(luaVm, getPlayer(luaVm, env)->getStats()->getMaxHp(true));
 	return 1;
 }
 
 auto LuaExports::getRealMaxMp(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.push<int16_t>(luaVm, getPlayer(luaVm, env)->getStats()->getMaxMp(true));
+	env.push<health_t>(luaVm, getPlayer(luaVm, env)->getStats()->getMaxMp(true));
 	return 1;
 }
 
@@ -1203,19 +1203,19 @@ auto LuaExports::getSkin(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::getSp(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.push<int16_t>(luaVm, getPlayer(luaVm, env)->getStats()->getSp());
+	env.push<stat_t>(luaVm, getPlayer(luaVm, env)->getStats()->getSp());
 	return 1;
 }
 
 auto LuaExports::getStr(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.push<int16_t>(luaVm, getPlayer(luaVm, env)->getStats()->getStr());
+	env.push<stat_t>(luaVm, getPlayer(luaVm, env)->getStats()->getStr());
 	return 1;
 }
 
 auto LuaExports::giveAp(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	int16_t ap = env.get<int16_t>(luaVm, -1);
+	stat_t ap = env.get<stat_t>(luaVm, -1);
 	getPlayer(luaVm, env)->getStats()->setAp(getPlayer(luaVm, env)->getStats()->getAp() + ap);
 	return 0;
 }
@@ -1237,7 +1237,7 @@ auto LuaExports::giveFame(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::giveSp(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	int16_t sp = env.get<int16_t>(luaVm, 1);
+	stat_t sp = env.get<stat_t>(luaVm, 1);
 	getPlayer(luaVm, env)->getStats()->setSp(getPlayer(luaVm, env)->getStats()->getSp() + sp);
 	return 0;
 }
@@ -1274,14 +1274,14 @@ auto LuaExports::revertPlayer(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::setAp(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	int16_t ap = env.get<int16_t>(luaVm, 1);
+	stat_t ap = env.get<stat_t>(luaVm, 1);
 	getPlayer(luaVm, env)->getStats()->setAp(ap);
 	return 0;
 }
 
 auto LuaExports::setDex(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	int16_t dex = env.get<int16_t>(luaVm, 1);
+	stat_t dex = env.get<stat_t>(luaVm, 1);
 	getPlayer(luaVm, env)->getStats()->setDex(dex);
 	return 0;
 }
@@ -1295,14 +1295,14 @@ auto LuaExports::setExp(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::setHp(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	int16_t hp = env.get<int16_t>(luaVm, 1);
+	health_t hp = env.get<health_t>(luaVm, 1);
 	getPlayer(luaVm, env)->getStats()->setHp(hp);
 	return 0;
 }
 
 auto LuaExports::setInt(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	int16_t intt = env.get<int16_t>(luaVm, 1);
+	stat_t intt = env.get<stat_t>(luaVm, 1);
 	getPlayer(luaVm, env)->getStats()->setInt(intt);
 	return 0;
 }
@@ -1323,7 +1323,7 @@ auto LuaExports::setLevel(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::setLuk(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	int16_t luk = env.get<int16_t>(luaVm, 1);
+	stat_t luk = env.get<stat_t>(luaVm, 1);
 	getPlayer(luaVm, env)->getStats()->setLuk(luk);
 	return 0;
 }
@@ -1350,21 +1350,21 @@ auto LuaExports::setMap(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::setMaxHp(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	int16_t hp = env.get<int16_t>(luaVm, 1);
+	health_t hp = env.get<health_t>(luaVm, 1);
 	getPlayer(luaVm, env)->getStats()->setMaxHp(hp);
 	return 0;
 }
 
 auto LuaExports::setMaxMp(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	int16_t mp = env.get<int16_t>(luaVm, 1);
+	health_t mp = env.get<health_t>(luaVm, 1);
 	getPlayer(luaVm, env)->getStats()->setMaxMp(mp);
 	return 0;
 }
 
 auto LuaExports::setMp(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	int16_t mp = env.get<int16_t>(luaVm, 1);
+	health_t mp = env.get<health_t>(luaVm, 1);
 	getPlayer(luaVm, env)->getStats()->setMp(mp);
 	return 0;
 }
@@ -1389,14 +1389,14 @@ auto LuaExports::setPlayerVariable(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::setSp(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	int16_t sp = env.get<int16_t>(luaVm, 1);
+	stat_t sp = env.get<stat_t>(luaVm, 1);
 	getPlayer(luaVm, env)->getStats()->setSp(sp);
 	return 0;
 }
 
 auto LuaExports::setStr(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	int16_t str = env.get<int16_t>(luaVm, 1);
+	stat_t str = env.get<stat_t>(luaVm, 1);
 	getPlayer(luaVm, env)->getStats()->setStr(str);
 	return 0;
 }
@@ -1422,7 +1422,10 @@ auto LuaExports::setStyle(lua_State *luaVm) -> lua_return_t {
 auto LuaExports::showInstructionBubble(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	string_t msg = env.get<string_t>(luaVm, 1);
-	int16_t width = env.get<int16_t>(luaVm, 2);
+	coord_t width = env.get<coord_t>(luaVm, 2);
+	// TODO FIXME lua
+	// This export appears to believe this arg is "height" however the packet function thinks it's "time"
+	// Figure out which is correct
 	int16_t height = env.get<int16_t>(luaVm, 3);
 
 	if (width == 0) {

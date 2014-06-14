@@ -75,12 +75,12 @@ SPLIT_PACKET_IMPL(showSkill, player_id_t playerId, skill_id_t skillId, skill_lev
 	return builder;
 }
 
-PACKET_IMPL(healHp, int16_t hp) {
+PACKET_IMPL(healHp, health_t hp) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_THEATRICS)
 		.add<int8_t>(0x0A)
-		.add<int16_t>(hp);
+		.add<health_t>(hp);
 	return builder;
 }
 

@@ -28,7 +28,7 @@ public:
 	auto loadData() -> void;
 
 	auto setEquipStats(Item *equip, Items::StatVariance variancePolicy, bool isGm, bool isItemInitialization) const -> void;
-	auto canEquip(item_id_t itemId, gender_id_t gender, job_id_t job, int16_t str, int16_t dex, int16_t intt, int16_t luk, fame_t fame) const -> bool;
+	auto canEquip(item_id_t itemId, gender_id_t gender, job_id_t job, stat_t str, stat_t dex, stat_t intt, stat_t luk, fame_t fame) const -> bool;
 	auto isValidSlot(item_id_t equipId, inventory_slot_t target) const -> bool;
 	auto getSlots(item_id_t equipId) const -> int8_t;
 	auto getEquipInfo(item_id_t equipId) const -> const EquipInfo &;

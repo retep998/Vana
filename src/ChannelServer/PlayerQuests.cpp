@@ -345,7 +345,7 @@ auto PlayerQuests::giveRewards(quest_id_t questId, bool start) -> Result {
 			}
 		}
 		else if (info.isExp) {
-			m_player->getStats()->giveExp(info.id * ChannelServer::getInstance().getConfig().rates.questExpRate, true);
+			m_player->getStats()->giveExp(static_cast<uint32_t>(info.id) * ChannelServer::getInstance().getConfig().rates.questExpRate, true);
 		}
 		else if (info.isMesos) {
 			m_player->getInventory()->modifyMesos(info.id);
@@ -409,13 +409,13 @@ auto PlayerQuests::isQuestComplete(quest_id_t questId) -> bool {
 auto PlayerQuests::connectData(PacketBuilder &packet) -> void {
 	packet.add<uint16_t>(m_quests.size());
 	for (const auto &kvp : m_quests) {
-		packet.add<uint16_t>(kvp.first);
+		packet.add<quest_id_t>(kvp.first);
 		packet.add<string_t>(kvp.second.getQuestData());
 	}
 
 	packet.add<uint16_t>(m_completed.size());
 	for (const auto &kvp : m_completed) {
-		packet.add<uint16_t>(kvp.first);
+		packet.add<quest_id_t>(kvp.first);
 		packet.add<int64_t>(kvp.second);
 	}
 }

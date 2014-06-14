@@ -129,7 +129,7 @@ PACKET_IMPL(showShop, const BuiltShopInfo &shop, slot_qty_t rechargeableBonus) {
 		if (GameLogicUtilities::isRechargeable(item->itemId)) {
 			maxSlot += rechargeableBonus;
 		}
-		builder.add<int16_t>(maxSlot);
+		builder.add<slot_qty_t>(maxSlot);
 	}
 
 	// Rechargeables

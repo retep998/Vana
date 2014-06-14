@@ -97,8 +97,8 @@ auto DropDataProvider::loadGlobalDrops() -> void {
 
 		drop.continent = row.get<int8_t>("continent");
 		drop.itemId = row.get<item_id_t>("itemid");
-		drop.minAmount = row.get<int16_t>("minimum_quantity");
-		drop.maxAmount = row.get<int16_t>("maximum_quantity");
+		drop.minAmount = row.get<slot_qty_t>("minimum_quantity");
+		drop.maxAmount = row.get<slot_qty_t>("maximum_quantity");
 		drop.minLevel = row.get<player_level_t>("minimum_level");
 		drop.maxLevel = row.get<player_level_t>("maximum_level");
 		drop.questId = row.get<quest_id_t>("questid");

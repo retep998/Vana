@@ -98,7 +98,7 @@ namespace Items {
 	const int64_t NoExpiration = 150842304000000000LL;
 	const int32_t MaxHammers = 2;
 	const int32_t WeatherTime = 30;
-	const int16_t ShadowStarsCost = 200;
+	const slot_qty_t ShadowStarsCost = 200;
 
 	namespace Types {
 		enum ItemTypes : int16_t {
@@ -201,21 +201,21 @@ namespace Items {
 	};
 
 	namespace MaxStats {
-		const int16_t Str = std::numeric_limits<int16_t>::max();
-		const int16_t Dex = std::numeric_limits<int16_t>::max();
-		const int16_t Int = std::numeric_limits<int16_t>::max();
-		const int16_t Luk = std::numeric_limits<int16_t>::max();
-		const int16_t Hp = std::numeric_limits<int16_t>::max();
-		const int16_t Mp = std::numeric_limits<int16_t>::max();
-		const int16_t Watk = 1999;
-		const int16_t Wdef = 255;
-		const int16_t Matk = 1999;
-		const int16_t Mdef = 255;
-		const int16_t Acc = 103;
-		const int16_t Avoid = 103;
-		const int16_t Hands = std::numeric_limits<int16_t>::max();
-		const int16_t Speed = 40;
-		const int16_t Jump = 23;
+		const stat_t Str = std::numeric_limits<int16_t>::max();
+		const stat_t Dex = std::numeric_limits<int16_t>::max();
+		const stat_t Int = std::numeric_limits<int16_t>::max();
+		const stat_t Luk = std::numeric_limits<int16_t>::max();
+		const health_t Hp = std::numeric_limits<int16_t>::max();
+		const health_t Mp = std::numeric_limits<int16_t>::max();
+		const stat_t Watk = 1999;
+		const stat_t Wdef = 255;
+		const stat_t Matk = 1999;
+		const stat_t Mdef = 255;
+		const stat_t Acc = 103;
+		const stat_t Avoid = 103;
+		const stat_t Hands = std::numeric_limits<int16_t>::max();
+		const stat_t Speed = 40;
+		const stat_t Jump = 23;
 	}
 
 	enum : item_id_t {

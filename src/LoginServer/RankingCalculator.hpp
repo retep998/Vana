@@ -32,7 +32,7 @@ namespace RankingCalculator {
 		player_level_t jobLevelMax;
 		world_id_t worldId;
 		job_id_t jobStat;
-		int16_t fameStat;
+		fame_t fameStat;
 		experience_t expStat;
 		player_id_t charId;
 		unix_time_t levelTime;

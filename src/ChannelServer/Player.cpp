@@ -287,17 +287,17 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 		row.get<player_level_t>("level"),
 		row.get<job_id_t>("job"),
 		row.get<fame_t>("fame"),
-		row.get<int16_t>("str"),
-		row.get<int16_t>("dex"),
-		row.get<int16_t>("int"),
-		row.get<int16_t>("luk"),
-		row.get<int16_t>("ap"),
-		row.get<uint16_t>("hpmp_ap"),
-		row.get<int16_t>("sp"),
-		row.get<int16_t>("chp"),
-		row.get<int16_t>("mhp"),
-		row.get<int16_t>("cmp"),
-		row.get<int16_t>("mmp"),
+		row.get<stat_t>("str"),
+		row.get<stat_t>("dex"),
+		row.get<stat_t>("int"),
+		row.get<stat_t>("luk"),
+		row.get<stat_t>("ap"),
+		row.get<health_ap_t>("hpmp_ap"),
+		row.get<stat_t>("sp"),
+		row.get<health_t>("chp"),
+		row.get<health_t>("mhp"),
+		row.get<health_t>("cmp"),
+		row.get<health_t>("mmp"),
 		row.get<experience_t>("exp")
 	);
 
@@ -605,17 +605,17 @@ auto Player::saveStats() -> void {
 	// Stats
 	player_level_t level = s->getLevel();
 	job_id_t job = s->getJob();
-	int16_t str = s->getStr();
-	int16_t dex = s->getDex();
-	int16_t intt = s->getInt();
-	int16_t luk = s->getLuk();
-	int16_t hp = s->getHp();
-	int16_t maxHp = s->getMaxHp(true);
-	int16_t mp = s->getMp();
-	int16_t maxMp = s->getMaxMp(true);
-	uint16_t hpMpAp = s->getHpMpAp();
-	int16_t ap = s->getAp();
-	int16_t sp = s->getSp();
+	stat_t str = s->getStr();
+	stat_t dex = s->getDex();
+	stat_t intt = s->getInt();
+	stat_t luk = s->getLuk();
+	health_t hp = s->getHp();
+	health_t maxHp = s->getMaxHp(true);
+	health_t mp = s->getMp();
+	health_t maxMp = s->getMaxMp(true);
+	health_ap_t hpMpAp = s->getHpMpAp();
+	stat_t ap = s->getAp();
+	stat_t sp = s->getSp();
 	fame_t fame = s->getFame();
 	experience_t exp = s->getExp();
 	// Inventory

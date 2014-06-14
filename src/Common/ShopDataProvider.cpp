@@ -132,7 +132,7 @@ auto ShopDataProvider::getShopItem(shop_id_t shopId, uint16_t shopIndex) const -
 		ext::find_value_ptr(m_shops, shopId)->items, shopIndex);
 }
 
-auto ShopDataProvider::getRechargeCost(shop_id_t shopId, item_id_t itemId, int16_t amount) const -> mesos_t {
+auto ShopDataProvider::getRechargeCost(shop_id_t shopId, item_id_t itemId, slot_qty_t amount) const -> mesos_t {
 	auto price = ext::find_value_ptr(
 		ext::find_value_ptr(m_rechargeCosts,
 			ext::find_value_ptr(m_shops, shopId)->rechargeTier), itemId);

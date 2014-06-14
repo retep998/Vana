@@ -173,7 +173,7 @@ auto LoginServer::loadWorlds() -> void {
 		conf.defaultGmChatMode = config.get<bool>(getKey("gm_chat_by_default"));
 		conf.maxChannels = config.get<channel_id_t>(getKey("channels"));
 		conf.ribbon = config.get<int8_t>(getKey("ribbon"));
-		conf.maxStats = config.get<int16_t>(getKey("max_stats"));
+		conf.maxStats = config.get<stat_t>(getKey("max_stats"));
 		conf.maxMultiLevel = config.get<player_level_t>(getKey("max_multi_level"));
 		conf.eventMsg = config.get<string_t>(getKey("event_message"));
 		conf.scrollingHeader = config.get<string_t>(getKey("scrolling_header"));

@@ -66,16 +66,16 @@ auto Characters::loadCharacter(Character &charc, const soci::row &row) -> void {
 	charc.hair = row.get<hair_id_t>("hair");
 	charc.level = row.get<player_level_t>("level");
 	charc.job = row.get<job_id_t>("job");
-	charc.str = row.get<int16_t>("str");
-	charc.dex = row.get<int16_t>("dex");
-	charc.intt = row.get<int16_t>("int");
-	charc.luk = row.get<int16_t>("luk");
-	charc.hp = row.get<int16_t>("chp");
-	charc.mhp = row.get<int16_t>("mhp");
-	charc.mp = row.get<int16_t>("cmp");
-	charc.mmp = row.get<int16_t>("mmp");
-	charc.ap = row.get<int16_t>("ap");
-	charc.sp = row.get<int16_t>("sp");
+	charc.str = row.get<stat_t>("str");
+	charc.dex = row.get<stat_t>("dex");
+	charc.intt = row.get<stat_t>("int");
+	charc.luk = row.get<stat_t>("luk");
+	charc.hp = row.get<health_t>("chp");
+	charc.mhp = row.get<health_t>("mhp");
+	charc.mp = row.get<health_t>("cmp");
+	charc.mmp = row.get<health_t>("mmp");
+	charc.ap = row.get<stat_t>("ap");
+	charc.sp = row.get<stat_t>("sp");
 	charc.exp = row.get<experience_t>("exp");
 	charc.fame = row.get<fame_t>("fame");
 	charc.map = row.get<map_id_t>("map");
@@ -234,10 +234,10 @@ auto Characters::createCharacter(UserConnection *user, PacketReader &reader) -> 
 		return;
 	}
 
-	uint16_t str = 12;
-	uint16_t dex = 5;
-	uint16_t intt = 4;
-	uint16_t luk = 4;
+	stat_t str = 12;
+	stat_t dex = 5;
+	stat_t intt = 4;
+	stat_t luk = 4;
 
 	soci::session &sql = Database::getCharDb();
 

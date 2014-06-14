@@ -138,8 +138,8 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 
 	switch (skillId) {
 		case Skills::Brawler::MpRecovery: {
-			int16_t modHp = player->getStats()->getMaxHp() * skill->x / 100;
-			int16_t healMp = modHp * skill->y / 100;
+			health_t modHp = player->getStats()->getMaxHp() * skill->x / 100;
+			health_t healMp = modHp * skill->y / 100;
 			player->getStats()->modifyHp(-modHp);
 			player->getStats()->modifyMp(healMp);
 			break;
@@ -253,14 +253,14 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 			}
 			Party *party = player->getParty();
 			int8_t partyPlayers = (party != nullptr ? party->getMembersCount() : 1);
-			int32_t expIncrease = 0;
+			experience_t expIncrease = 0;
 
-			int16_t heal = (healRate * player->getStats()->getMaxHp() / 100) / partyPlayers;
+			health_t heal = (healRate * player->getStats()->getMaxHp() / 100) / partyPlayers;
 
 			if (party != nullptr) {
 				const auto members = party->getPartyMembers(player->getMapId());
 				for (const auto &partyMember : members) {
-					int16_t chp = partyMember->getStats()->getHp();
+					health_t chp = partyMember->getStats()->getHp();
 					if (chp > 0 && chp < partyMember->getStats()->getMaxHp()) {
 						partyMember->getStats()->modifyHp(heal);
 						if (player != partyMember) {
@@ -406,8 +406,8 @@ auto Skills::applySkillCosts(Player *player, skill_id_t skillId, skill_level_t l
 
 	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
 	int16_t coolTime = skill->coolTime;
-	int16_t mpUse = skill->mp;
-	int16_t hpUse = skill->hp;
+	health_t mpUse = skill->mp;
+	health_t hpUse = skill->hp;
 	int16_t moneyConsume = skill->moneyConsume;
 	item_id_t item = skill->item;
 	if (mpUse > 0) {
@@ -566,14 +566,14 @@ auto Skills::useAttackSkillRanged(Player *player, skill_id_t skillId, inventory_
 	return Result::Successful;
 }
 
-auto Skills::heal(Player *player, int16_t value, skill_id_t skillId) -> void {
+auto Skills::heal(Player *player, health_t value, skill_id_t skillId) -> void {
 	if (player->getStats()->getHp() < player->getStats()->getMaxHp() && player->getStats()->getHp() > 0) {
 		player->getStats()->modifyHp(value);
 		player->send(SkillsPacket::healHp(value));
 	}
 }
 
-auto Skills::hurt(Player *player, int16_t value, skill_id_t skillId) -> void {
+auto Skills::hurt(Player *player, health_t value, skill_id_t skillId) -> void {
 	if (player->getStats()->getHp() - value > 1) {
 		player->getStats()->modifyHp(-value);
 		player->sendMap(SkillsPacket::showSkillEffect(player->getId(), skillId));

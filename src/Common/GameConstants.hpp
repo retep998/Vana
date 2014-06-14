@@ -57,20 +57,20 @@ namespace Stats {
 	const player_level_t CygnusLevels = 120;
 	const uint8_t PetLevels = 30;
 	const uint8_t MountLevels = 30;
-	const int16_t MaxMaxHp = 30000;
-	const int16_t MinMaxHp = 1;
-	const int16_t MaxMaxMp = 30000;
-	const int16_t MinMaxMp = 1;
+	const health_t MaxMaxHp = 30000;
+	const health_t MinMaxHp = 1;
+	const health_t MaxMaxMp = 30000;
+	const health_t MinMaxMp = 1;
 	const fame_t MaxFame = 30000;
 	const fame_t MinFame = -30000;
-	const int16_t MinHp = 0;
-	const int16_t MinMp = 0;
-	const int16_t DefaultHp = 50;
+	const health_t MinHp = 0;
+	const health_t MinMp = 0;
+	const health_t DefaultHp = 50;
 	const int16_t MaxCloseness = 30000;
-	const int16_t ApPerLevel = 5;
-	const int16_t ApPerCygnusLevel = 6;
-	const uint8_t CygnusApCutoff = 70;
-	const int16_t SpPerLevel = 3;
+	const stat_t ApPerLevel = 5;
+	const stat_t ApPerCygnusLevel = 6;
+	const player_level_t CygnusApCutoff = 70;
+	const stat_t SpPerLevel = 3;
 	const int8_t MaxFullness = 100;
 	const int8_t MinFullness = 0;
 	const int8_t PetFeedFullness = 30;
@@ -164,42 +164,42 @@ namespace Stats {
 	};
 
 	namespace BaseHp {
-		const int16_t Variation = 4; // This is the range of HP that the server will give
+		const health_t Variation = 4; // This is the range of HP that the server will give
 
-		const int16_t Beginner = 12; // These are base HP values rewarded on level up
-		const int16_t Warrior = 24;
-		const int16_t Magician = 10;
-		const int16_t Bowman = 20;
-		const int16_t Thief = 20;
-		const int16_t Pirate = 22;
-		const int16_t Gm = 150;
+		const health_t Beginner = 12; // These are base HP values rewarded on level up
+		const health_t Warrior = 24;
+		const health_t Magician = 10;
+		const health_t Bowman = 20;
+		const health_t Thief = 20;
+		const health_t Pirate = 22;
+		const health_t Gm = 150;
 
-		const int16_t BeginnerAp = 8; // These are base HP values rewarded on AP distribution
-		const int16_t WarriorAp = 20;
-		const int16_t MagicianAp = 8;
-		const int16_t BowmanAp = 16;
-		const int16_t ThiefAp = 16;
-		const int16_t PirateAp = 18;
-		const int16_t GmAp = 16;
+		const health_t BeginnerAp = 8; // These are base HP values rewarded on AP distribution
+		const health_t WarriorAp = 20;
+		const health_t MagicianAp = 8;
+		const health_t BowmanAp = 16;
+		const health_t ThiefAp = 16;
+		const health_t PirateAp = 18;
+		const health_t GmAp = 16;
 	}
 	namespace BaseMp {
-		const int16_t Variation = 2; // This is the range of MP that the server will give
+		const health_t Variation = 2; // This is the range of MP that the server will give
 
-		const int16_t Beginner = 10; // These are base MP values rewarded on level up
-		const int16_t Warrior = 4;
-		const int16_t Magician = 6;
-		const int16_t Bowman = 14;
-		const int16_t Thief = 14;
-		const int16_t Pirate = 18;
-		const int16_t Gm = 150;
+		const health_t Beginner = 10; // These are base MP values rewarded on level up
+		const health_t Warrior = 4;
+		const health_t Magician = 6;
+		const health_t Bowman = 14;
+		const health_t Thief = 14;
+		const health_t Pirate = 18;
+		const health_t Gm = 150;
 
-		const int16_t BeginnerAp = 6; // These are base MP values rewarded on AP distribution
-		const int16_t WarriorAp = 2;
-		const int16_t MagicianAp = 18;
-		const int16_t BowmanAp = 10;
-		const int16_t ThiefAp = 10;
-		const int16_t PirateAp = 14;
-		const int16_t GmAp = 10;
+		const health_t BeginnerAp = 6; // These are base MP values rewarded on AP distribution
+		const health_t WarriorAp = 2;
+		const health_t MagicianAp = 18;
+		const health_t BowmanAp = 10;
+		const health_t ThiefAp = 10;
+		const health_t PirateAp = 14;
+		const health_t GmAp = 10;
 	}
 	enum Constants : int32_t {
 		Skin = 0x01,
