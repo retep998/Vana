@@ -306,7 +306,7 @@ auto RankingCalculator::fame(vector_t<RankPlayer> &v) -> void {
 		return t1.fameStat > t2.fameStat;
 	});
 
-	int16_t lastFame = 0;
+	fame_t lastFame = 0;
 	bool first = true;
 	size_t rank = 1;
 

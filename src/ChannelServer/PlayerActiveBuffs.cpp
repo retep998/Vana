@@ -342,7 +342,7 @@ auto PlayerActiveBuffs::checkBerserk(bool display) -> void {
 		skill_level_t level = m_player->getSkills()->getSkillLevel(skillId);
 		if (level > 0) {
 			int16_t hpPercentage = m_player->getStats()->getMaxHp() * ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level)->x / 100;
-			int16_t hp = m_player->getStats()->getHp();
+			health_t hp = m_player->getStats()->getHp();
 			bool change = false;
 			if (m_berserk && hp > hpPercentage) {
 				m_berserk = false;

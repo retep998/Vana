@@ -126,63 +126,63 @@ auto Item::modifyFlags(bool add, int16_t flags) -> void {
 	}
 }
 
-auto Item::setStr(int16_t strength) -> void {
+auto Item::setStr(stat_t strength) -> void {
 	m_str = testStat(strength, Items::MaxStats::Str);
 }
 
-auto Item::setDex(int16_t dexterity) -> void {
+auto Item::setDex(stat_t dexterity) -> void {
 	m_dex = testStat(dexterity, Items::MaxStats::Dex);
 }
 
-auto Item::setInt(int16_t intelligence) -> void {
+auto Item::setInt(stat_t intelligence) -> void {
 	m_int = testStat(intelligence, Items::MaxStats::Int);
 }
 
-auto Item::setLuk(int16_t luck) -> void {
+auto Item::setLuk(stat_t luck) -> void {
 	m_luk = testStat(luck, Items::MaxStats::Luk);
 }
 
-auto Item::setHp(int16_t hp) -> void {
+auto Item::setHp(health_t hp) -> void {
 	m_hp = testStat(hp, Items::MaxStats::Hp);
 }
 
-auto Item::setMp(int16_t mp) -> void {
+auto Item::setMp(health_t mp) -> void {
 	m_mp = testStat(mp, Items::MaxStats::Mp);
 }
 
-auto Item::setWatk(int16_t wAtk) -> void {
+auto Item::setWatk(stat_t wAtk) -> void {
 	m_wAtk = testStat(wAtk, Items::MaxStats::Watk);
 }
 
-auto Item::setWdef(int16_t wDef) -> void {
+auto Item::setWdef(stat_t wDef) -> void {
 	m_wDef = testStat(wDef, Items::MaxStats::Wdef);
 }
 
-auto Item::setMatk(int16_t mAtk) -> void {
+auto Item::setMatk(stat_t mAtk) -> void {
 	m_mAtk = testStat(mAtk, Items::MaxStats::Matk);
 }
 
-auto Item::setMdef(int16_t mDef) -> void {
+auto Item::setMdef(stat_t mDef) -> void {
 	m_mDef = testStat(mDef, Items::MaxStats::Mdef);
 }
 
-auto Item::setAccuracy(int16_t acc) -> void {
+auto Item::setAccuracy(stat_t acc) -> void {
 	m_accuracy = testStat(acc, Items::MaxStats::Acc);
 }
 
-auto Item::setAvoid(int16_t avoid) -> void {
+auto Item::setAvoid(stat_t avoid) -> void {
 	m_avoid = testStat(avoid, Items::MaxStats::Avoid);
 }
 
-auto Item::setHands(int16_t hands) -> void {
+auto Item::setHands(stat_t hands) -> void {
 	m_hands = testStat(hands, Items::MaxStats::Hands);
 }
 
-auto Item::setJump(int16_t jump) -> void {
+auto Item::setJump(stat_t jump) -> void {
 	m_jump = testStat(jump, Items::MaxStats::Jump);
 }
 
-auto Item::setSpeed(int16_t speed) -> void {
+auto Item::setSpeed(stat_t speed) -> void {
 	m_speed = testStat(speed, Items::MaxStats::Speed);
 }
 
@@ -190,67 +190,67 @@ auto Item::testStat(int16_t stat, int16_t max) -> int16_t {
 	return stat < 0 ? 0 : (stat > max ? max : stat);
 }
 
-auto Item::addStr(int16_t strength) -> void {
+auto Item::addStr(stat_t strength) -> void {
 	setStr(getStr() + strength);
 }
 
-auto Item::addDex(int16_t dexterity) -> void {
+auto Item::addDex(stat_t dexterity) -> void {
 	setDex(getDex() + dexterity);
 }
 
-auto Item::addInt(int16_t intelligence) -> void {
+auto Item::addInt(stat_t intelligence) -> void {
 	setInt(getInt() + intelligence);
 }
 
-auto Item::addLuk(int16_t luck) -> void {
+auto Item::addLuk(stat_t luck) -> void {
 	setLuk(getLuk() + luck);
 }
 
-auto Item::addHp(int16_t hp) -> void {
+auto Item::addHp(health_t hp) -> void {
 	setHp(getHp() + hp);
 }
 
-auto Item::addMp(int16_t mp) -> void {
+auto Item::addMp(health_t mp) -> void {
 	setMp(getMp() + mp);
 }
 
-auto Item::addWatk(int16_t wAtk) -> void {
+auto Item::addWatk(stat_t wAtk) -> void {
 	setWatk(getWatk() + wAtk);
 }
 
-auto Item::addWdef(int16_t wDef) -> void {
+auto Item::addWdef(stat_t wDef) -> void {
 	setWdef(getWdef() + wDef);
 }
 
-auto Item::addMatk(int16_t mAtk) -> void {
+auto Item::addMatk(stat_t mAtk) -> void {
 	setMatk(getMatk() + mAtk);
 }
 
-auto Item::addMdef(int16_t mDef) -> void {
+auto Item::addMdef(stat_t mDef) -> void {
 	setMdef(getMdef() + mDef);
 }
 
-auto Item::addAccuracy(int16_t acc) -> void {
+auto Item::addAccuracy(stat_t acc) -> void {
 	setAccuracy(getAccuracy() + acc);
 }
 
-auto Item::addAvoid(int16_t avoid) -> void {
+auto Item::addAvoid(stat_t avoid) -> void {
 	setAvoid(getAvoid() + avoid);
 }
 
-auto Item::addHands(int16_t hands) -> void {
+auto Item::addHands(stat_t hands) -> void {
 	setHands(getHands() + hands);
 }
 
-auto Item::addJump(int16_t jump) -> void {
+auto Item::addJump(stat_t jump) -> void {
 	setJump(getJump() + jump);
 }
 
-auto Item::addSpeed(int16_t speed) -> void {
+auto Item::addSpeed(stat_t speed) -> void {
 	setSpeed(getSpeed() + speed);
 }
 
-auto Item::setAmount(int16_t amount) -> void {
+auto Item::setAmount(slot_qty_t amount) -> void {
 	m_amount = amount;
 }
 
@@ -268,25 +268,28 @@ auto Item::setName(const string_t &name) -> void {
 
 auto Item::initializeItem(const soci::row &row) -> void {
 	m_id = row.get<item_id_t>("item_id");
-	m_amount = row.get<int16_t>("amount");
+	m_amount = row.get<slot_qty_t>("amount");
+
+	using opt_stat_t = optional_t<stat_t>;
+	using opt_health_t = optional_t<health_t>;
 
 	opt_int8_t slots = row.get<opt_int8_t>("slots");
 	opt_int8_t scrolls = row.get<opt_int8_t>("scrolls");
-	opt_int16_t str = row.get<opt_int16_t>("istr");
-	opt_int16_t dex = row.get<opt_int16_t>("idex");
-	opt_int16_t intt = row.get<opt_int16_t>("iint");
-	opt_int16_t luk = row.get<opt_int16_t>("iluk");
-	opt_int16_t hp = row.get<opt_int16_t>("ihp");
-	opt_int16_t mp = row.get<opt_int16_t>("imp");
-	opt_int16_t watk = row.get<opt_int16_t>("iwatk");
-	opt_int16_t matk = row.get<opt_int16_t>("imatk");
-	opt_int16_t wdef = row.get<opt_int16_t>("iwdef");
-	opt_int16_t mdef = row.get<opt_int16_t>("imdef");
-	opt_int16_t accuracy = row.get<opt_int16_t>("iacc");
-	opt_int16_t avoid = row.get<opt_int16_t>("iavo");
-	opt_int16_t hands = row.get<opt_int16_t>("ihand");
-	opt_int16_t speed = row.get<opt_int16_t>("ispeed");
-	opt_int16_t jump = row.get<opt_int16_t>("ijump");
+	opt_stat_t str = row.get<opt_stat_t>("istr");
+	opt_stat_t dex = row.get<opt_stat_t>("idex");
+	opt_stat_t intt = row.get<opt_stat_t>("iint");
+	opt_stat_t luk = row.get<opt_stat_t>("iluk");
+	opt_health_t hp = row.get<opt_health_t>("ihp");
+	opt_health_t mp = row.get<opt_health_t>("imp");
+	opt_stat_t watk = row.get<opt_stat_t>("iwatk");
+	opt_stat_t matk = row.get<opt_stat_t>("imatk");
+	opt_stat_t wdef = row.get<opt_stat_t>("iwdef");
+	opt_stat_t mdef = row.get<opt_stat_t>("imdef");
+	opt_stat_t accuracy = row.get<opt_stat_t>("iacc");
+	opt_stat_t avoid = row.get<opt_stat_t>("iavo");
+	opt_stat_t hands = row.get<opt_stat_t>("ihand");
+	opt_stat_t speed = row.get<opt_stat_t>("ispeed");
+	opt_stat_t jump = row.get<opt_stat_t>("ijump");
 	opt_int16_t flags = row.get<opt_int16_t>("flags");
 	opt_int32_t hammers = row.get<opt_int32_t>("hammers");
 	optional_t<pet_id_t> petId = row.get<optional_t<pet_id_t>>("pet_id");
@@ -335,8 +338,11 @@ auto Item::databaseInsert(soci::session &sql, const vector_t<ItemDbRecord> &item
 	static init_list_t<int64_t> nullsExpiration = {0, Items::NoExpiration};
 	static init_list_t<string_t> nullsString = {""};
 
+	using opt_stat_t = optional_t<stat_t>;
+	using opt_health_t = optional_t<health_t>;
+
 	uint8_t inventory = 0;
-	int16_t amount = 0;
+	slot_qty_t amount = 0;
 	item_id_t itemId = 0;
 	inventory_slot_t slot = 0;
 	world_id_t worldId = 0;
@@ -346,21 +352,21 @@ auto Item::databaseInsert(soci::session &sql, const vector_t<ItemDbRecord> &item
 
 	opt_int8_t slots;
 	opt_int8_t scrolls;
-	opt_int16_t iStr;
-	opt_int16_t iDex;
-	opt_int16_t iInt;
-	opt_int16_t iLuk;
-	opt_int16_t iHp;
-	opt_int16_t iMp;
-	opt_int16_t iWatk;
-	opt_int16_t iMatk;
-	opt_int16_t iWdef;
-	opt_int16_t iMdef;
-	opt_int16_t iAcc;
-	opt_int16_t iAvo;
-	opt_int16_t iHands;
-	opt_int16_t iSpeed;
-	opt_int16_t iJump;
+	opt_stat_t iStr;
+	opt_stat_t iDex;
+	opt_stat_t iInt;
+	opt_stat_t iLuk;
+	opt_health_t iHp;
+	opt_health_t iMp;
+	opt_stat_t iWatk;
+	opt_stat_t iMatk;
+	opt_stat_t iWdef;
+	opt_stat_t iMdef;
+	opt_stat_t iAcc;
+	opt_stat_t iAvo;
+	opt_stat_t iHands;
+	opt_stat_t iSpeed;
+	opt_stat_t iJump;
 	opt_int16_t flags;
 	opt_int32_t hammers;
 	optional_t<pet_id_t> petId;

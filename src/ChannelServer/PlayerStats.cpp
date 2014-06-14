@@ -42,7 +42,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <limits>
 #include <string>
 
-PlayerStats::PlayerStats(Player *player, player_level_t level, job_id_t job, fame_t fame, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t ap, uint16_t hpMpAp, int16_t sp, int16_t hp, int16_t maxHp, int16_t mp, int16_t maxMp, experience_t exp) :
+PlayerStats::PlayerStats(Player *player, player_level_t level, job_id_t job, fame_t fame, stat_t str, stat_t dex, stat_t intt, stat_t luk, stat_t ap, health_ap_t hpMpAp, stat_t sp, health_t hp, health_t maxHp, health_t mp, health_t maxMp, experience_t exp) :
 	m_player(player),
 	m_level(level),
 	m_job(job),
@@ -123,32 +123,32 @@ auto PlayerStats::setEquip(inventory_slot_t slot, Item *equip, bool isLoading) -
 
 // Data acquisition
 auto PlayerStats::connectData(PacketBuilder &packet) -> void {
-	packet.add<int8_t>(getLevel());
-	packet.add<int16_t>(getJob());
-	packet.add<int16_t>(getStr());
-	packet.add<int16_t>(getDex());
-	packet.add<int16_t>(getInt());
-	packet.add<int16_t>(getLuk());
-	packet.add<int16_t>(getHp());
-	packet.add<int16_t>(getMaxHp(true));
-	packet.add<int16_t>(getMp());
-	packet.add<int16_t>(getMaxMp(true));
-	packet.add<int16_t>(getAp());
-	packet.add<int16_t>(getSp());
-	packet.add<int32_t>(getExp());
-	packet.add<int16_t>(getFame());
+	packet.add<player_level_t>(getLevel());
+	packet.add<job_id_t>(getJob());
+	packet.add<stat_t>(getStr());
+	packet.add<stat_t>(getDex());
+	packet.add<stat_t>(getInt());
+	packet.add<stat_t>(getLuk());
+	packet.add<health_t>(getHp());
+	packet.add<health_t>(getMaxHp(true));
+	packet.add<health_t>(getMp());
+	packet.add<health_t>(getMaxMp(true));
+	packet.add<stat_t>(getAp());
+	packet.add<stat_t>(getSp());
+	packet.add<experience_t>(getExp());
+	packet.add<fame_t>(getFame());
 }
 
-auto PlayerStats::getMaxHp(bool withoutBonus) -> int16_t {
+auto PlayerStats::getMaxHp(bool withoutBonus) -> health_t {
 	if (!withoutBonus) {
-		return static_cast<int16_t>(std::min<int32_t>(m_maxHp + m_equipBonuses.hp + m_buffBonuses.hp, Stats::MaxMaxHp));
+		return static_cast<health_t>(std::min<int32_t>(m_maxHp + m_equipBonuses.hp + m_buffBonuses.hp, Stats::MaxMaxHp));
 	}
 	return m_maxHp;
 }
 
-auto PlayerStats::getMaxMp(bool withoutBonus) -> int16_t {
+auto PlayerStats::getMaxMp(bool withoutBonus) -> health_t {
 	if (!withoutBonus) {
-		return static_cast<int16_t>(std::min<int32_t>(m_maxMp + m_equipBonuses.mp + m_buffBonuses.mp, Stats::MaxMaxMp));
+		return static_cast<health_t>(std::min<int32_t>(m_maxMp + m_equipBonuses.mp + m_buffBonuses.mp, Stats::MaxMaxMp));
 	}
 	return m_maxMp;
 }
@@ -157,28 +157,28 @@ auto PlayerStats::statUtility(int32_t test) -> int16_t {
 	return static_cast<int16_t>(std::min<int32_t>(std::numeric_limits<int16_t>::max(), test));
 }
 
-auto PlayerStats::getStr(bool withBonus) -> int16_t {
+auto PlayerStats::getStr(bool withBonus) -> stat_t {
 	if (withBonus) {
 		return statUtility(m_str + m_buffBonuses.str + m_equipBonuses.str);
 	}
 	return m_str;
 }
 
-auto PlayerStats::getDex(bool withBonus) -> int16_t {
+auto PlayerStats::getDex(bool withBonus) -> stat_t {
 	if (withBonus) {
 		return statUtility(m_dex + m_buffBonuses.dex + m_equipBonuses.dex);
 	}
 	return m_dex;
 }
 
-auto PlayerStats::getInt(bool withBonus) -> int16_t {
+auto PlayerStats::getInt(bool withBonus) -> stat_t {
 	if (withBonus) {
 		return statUtility(m_int + m_buffBonuses.intt + m_equipBonuses.intt);
 	}
 	return m_int;
 }
 
-auto PlayerStats::getLuk(bool withBonus) -> int16_t {
+auto PlayerStats::getLuk(bool withBonus) -> stat_t {
 	if (withBonus) {
 		return statUtility(m_luk + m_buffBonuses.luk + m_equipBonuses.luk);
 	}
@@ -202,8 +202,8 @@ auto PlayerStats::setLevel(player_level_t level) -> void {
 	ChannelServer::getInstance().getPlayerDataProvider().updatePlayerLevel(m_player);
 }
 
-auto PlayerStats::setHp(int16_t hp, bool sendPacket) -> void {
-	m_hp = ext::constrain_range<int16_t>(hp, Stats::MinHp, getMaxHp());
+auto PlayerStats::setHp(health_t hp, bool sendPacket) -> void {
+	m_hp = ext::constrain_range<health_t>(hp, Stats::MinHp, getMaxHp());
 	if (sendPacket) {
 		m_player->send(PlayerPacket::updateStat(Stats::Hp, m_hp));
 	}
@@ -213,7 +213,7 @@ auto PlayerStats::setHp(int16_t hp, bool sendPacket) -> void {
 auto PlayerStats::modifyHp(int32_t hpMod, bool sendPacket) -> void {
 	int32_t tempHp = m_hp + hpMod;
 	tempHp = ext::constrain_range<int32_t>(tempHp, Stats::MinHp, getMaxHp());
-	m_hp = static_cast<int16_t>(tempHp);
+	m_hp = static_cast<health_t>(tempHp);
 
 	if (sendPacket) {
 		m_player->send(PlayerPacket::updateStat(Stats::Hp, m_hp));
@@ -243,9 +243,9 @@ auto PlayerStats::modifiedHp() -> void {
 	}
 }
 
-auto PlayerStats::setMp(int16_t mp, bool sendPacket) -> void {
+auto PlayerStats::setMp(health_t mp, bool sendPacket) -> void {
 	if (!m_player->getActiveBuffs()->hasInfinity()) {
-		m_mp = ext::constrain_range<int16_t>(mp, Stats::MinMp, getMaxMp());
+		m_mp = ext::constrain_range<health_t>(mp, Stats::MinMp, getMaxMp());
 	}
 	m_player->send(PlayerPacket::updateStat(Stats::Mp, m_mp, sendPacket));
 }
@@ -254,7 +254,7 @@ auto PlayerStats::modifyMp(int32_t mpMod, bool sendPacket) -> void {
 	if (!m_player->getActiveBuffs()->hasInfinity()) {
 		int32_t tempMp = m_mp + mpMod;
 		tempMp = ext::constrain_range<int32_t>(tempMp, Stats::MinMp, getMaxMp());
-		m_mp = static_cast<int16_t>(tempMp);
+		m_mp = static_cast<health_t>(tempMp);
 	}
 	m_player->send(PlayerPacket::updateStat(Stats::Mp, m_mp, sendPacket));
 }
@@ -266,12 +266,12 @@ auto PlayerStats::damageMp(int32_t damageMp) -> void {
 	m_player->send(PlayerPacket::updateStat(Stats::Mp, m_mp, false));
 }
 
-auto PlayerStats::setSp(int16_t sp) -> void {
+auto PlayerStats::setSp(stat_t sp) -> void {
 	m_sp = sp;
 	m_player->send(PlayerPacket::updateStat(Stats::Sp, sp));
 }
 
-auto PlayerStats::setAp(int16_t ap) -> void {
+auto PlayerStats::setAp(stat_t ap) -> void {
 	m_ap = ap;
 	m_player->send(PlayerPacket::updateStat(Stats::Ap, ap));
 }
@@ -283,22 +283,22 @@ auto PlayerStats::setJob(job_id_t job) -> void {
 	ChannelServer::getInstance().getPlayerDataProvider().updatePlayerJob(m_player);
 }
 
-auto PlayerStats::setStr(int16_t str) -> void {
+auto PlayerStats::setStr(stat_t str) -> void {
 	m_str = str;
 	m_player->send(PlayerPacket::updateStat(Stats::Str, str));
 }
 
-auto PlayerStats::setDex(int16_t dex) -> void {
+auto PlayerStats::setDex(stat_t dex) -> void {
 	m_dex = dex;
 	m_player->send(PlayerPacket::updateStat(Stats::Dex, dex));
 }
 
-auto PlayerStats::setInt(int16_t intt) -> void {
+auto PlayerStats::setInt(stat_t intt) -> void {
 	m_int = intt;
 	m_player->send(PlayerPacket::updateStat(Stats::Int, intt));
 }
 
-auto PlayerStats::setLuk(int16_t luk) -> void {
+auto PlayerStats::setLuk(stat_t luk) -> void {
 	m_luk = luk;
 	m_player->send(PlayerPacket::updateStat(Stats::Luk, luk));
 }
@@ -314,13 +314,13 @@ auto PlayerStats::setMapleWarrior(int16_t xMod) -> void {
 	}
 }
 
-auto PlayerStats::setMaxHp(int16_t maxHp) -> void {
+auto PlayerStats::setMaxHp(health_t maxHp) -> void {
 	m_maxHp = ext::constrain_range(maxHp, Stats::MinMaxHp, Stats::MaxMaxHp);
 	m_player->send(PlayerPacket::updateStat(Stats::MaxHp, m_maxHp));
 	modifiedHp();
 }
 
-auto PlayerStats::setMaxMp(int16_t maxMp) -> void {
+auto PlayerStats::setMaxMp(health_t maxMp) -> void {
 	m_maxMp = ext::constrain_range(maxMp, Stats::MinMaxMp, Stats::MaxMaxMp);
 	m_player->send(PlayerPacket::updateStat(Stats::MaxMp, m_maxMp));
 }
@@ -338,13 +338,13 @@ auto PlayerStats::setHyperBody(int16_t xMod, int16_t yMod) -> void {
 	m_player->getActiveBuffs()->checkBerserk();
 }
 
-auto PlayerStats::modifyMaxHp(int16_t mod) -> void {
-	m_maxHp = std::min<int16_t>(m_maxHp + mod, Stats::MaxMaxHp);
+auto PlayerStats::modifyMaxHp(health_t mod) -> void {
+	m_maxHp = std::min<health_t>(m_maxHp + mod, Stats::MaxMaxHp);
 	m_player->send(PlayerPacket::updateStat(Stats::MaxHp, m_maxHp));
 }
 
-auto PlayerStats::modifyMaxMp(int16_t mod) -> void {
-	m_maxMp = std::min<int16_t>(m_maxMp + mod, Stats::MaxMaxMp);
+auto PlayerStats::modifyMaxMp(health_t mod) -> void {
+	m_maxMp = std::min<health_t>(m_maxMp + mod, Stats::MaxMaxMp);
 	m_player->send(PlayerPacket::updateStat(Stats::MaxMp, m_maxMp));
 }
 
@@ -414,13 +414,13 @@ auto PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) -> void {
 		bool cygnus = GameLogicUtilities::isCygnus(fullJob);
 		player_level_t levelsGained = 0;
 		player_level_t levelsMax = ChannelServer::getInstance().getConfig().maxMultiLevel;
-		int16_t apGain = 0;
-		int16_t spGain = 0;
-		int16_t hpGain = 0;
-		int16_t mpGain = 0;
+		stat_t apGain = 0;
+		stat_t spGain = 0;
+		health_t hpGain = 0;
+		health_t mpGain = 0;
 		int8_t jobLine = GameLogicUtilities::getJobLine(fullJob);
-		int16_t intt = getInt(true) / 10;
-		int16_t x = 0; // X value for Improving *P Increase skills, cached, only needs to be set once
+		stat_t intt = getInt(true) / 10;
+		health_t x = 0; // X value for Improving *P Increase skills, cached, only needs to be set once
 
 		while (curExp >= getExp(level) && levelsGained < levelsMax) {
 			curExp -= getExp(getLevel());
@@ -552,7 +552,7 @@ auto PlayerStats::addStatMulti(PacketReader &reader) -> void {
 }
 
 auto PlayerStats::addStat(int32_t type, int16_t mod, bool isReset) -> void {
-	int16_t maxStat = ChannelServer::getInstance().getConfig().maxStats;
+	stat_t maxStat = ChannelServer::getInstance().getConfig().maxStats;
 	bool isSubtract = mod < 0;
 	switch (type) {
 		case Stats::Str:
@@ -592,9 +592,9 @@ auto PlayerStats::addStat(int32_t type, int16_t mod, bool isReset) -> void {
 				return;
 			}
 			int8_t job = GameLogicUtilities::getJobTrack(getJob());
-			int16_t hpGain = 0;
-			int16_t mpGain = 0;
-			int16_t y = 0;
+			health_t hpGain = 0;
+			health_t mpGain = 0;
+			health_t y = 0;
 			switch (job) {
 				case Jobs::JobTracks::Beginner:
 					hpGain = apResetHp(isReset, isSubtract, Stats::BaseHp::BeginnerAp);
@@ -659,12 +659,12 @@ auto PlayerStats::addStat(int32_t type, int16_t mod, bool isReset) -> void {
 	updateBonuses();
 }
 
-auto PlayerStats::randHp() -> int16_t {
-	return Randomizer::rand<int16_t>(Stats::BaseHp::Variation); // Max HP range per class (e.g. Beginner is 8-12)
+auto PlayerStats::randHp() -> health_t {
+	return Randomizer::rand<health_t>(Stats::BaseHp::Variation); // Max HP range per class (e.g. Beginner is 8-12)
 }
 
-auto PlayerStats::randMp() -> int16_t {
-	return Randomizer::rand<int16_t>(Stats::BaseMp::Variation); // Max MP range per class (e.g. Beginner is 6-8)
+auto PlayerStats::randMp() -> health_t {
+	return Randomizer::rand<health_t>(Stats::BaseMp::Variation); // Max MP range per class (e.g. Beginner is 6-8)
 }
 
 auto PlayerStats::getX(skill_id_t skillId) -> int16_t {
@@ -683,11 +683,11 @@ auto PlayerStats::apResetMp(bool isReset, bool isSubtract, int16_t val, int16_t 
 	return (isReset ? (isSubtract ? -(sVal + val + Stats::BaseMp::Variation) : val) : levelMp(val, sVal));
 }
 
-auto PlayerStats::levelHp(int16_t val, int16_t bonus) -> int16_t {
+auto PlayerStats::levelHp(health_t val, health_t bonus) -> health_t {
 	return randHp() + val + bonus;
 }
 
-auto PlayerStats::levelMp(int16_t val, int16_t bonus) -> int16_t {
+auto PlayerStats::levelMp(health_t val, health_t bonus) -> health_t {
 	return randMp() + val + bonus;
 }
 

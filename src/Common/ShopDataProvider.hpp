@@ -49,7 +49,7 @@ public:
 	auto isShop(shop_id_t id) const -> bool;
 	auto getShop(shop_id_t id) const -> BuiltShopInfo;
 	auto getShopItem(shop_id_t shopId, uint16_t shopIndex) const -> const ShopItemInfo * const;
-	auto getRechargeCost(shop_id_t shopId, item_id_t itemId, int16_t amount) const -> mesos_t;
+	auto getRechargeCost(shop_id_t shopId, item_id_t itemId, slot_qty_t amount) const -> mesos_t;
 private:
 	auto loadShops() -> void;
 	auto loadUserShops() -> void;

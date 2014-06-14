@@ -41,7 +41,7 @@ auto Initializing::checkMcdbVersion() -> Result {
 
 	int32_t version = row.get<int32_t>("version");
 	int32_t subversion = row.get<int32_t>("subversion");
-	int16_t mapleVersion = row.get<int16_t>("maple_version");
+	version_t mapleVersion = row.get<version_t>("maple_version");
 	bool testServer = row.get<bool>("test_server");
 	string_t mapleLocale = row.get<string_t>("maple_locale");
 

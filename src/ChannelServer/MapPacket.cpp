@@ -208,7 +208,7 @@ PACKET_IMPL(changeMap, Player *player) {
 	builder
 		.add<map_id_t>(player->getMapId())
 		.add<int8_t>(player->getMapPos())
-		.add<int16_t>(player->getStats()->getHp())
+		.add<health_t>(player->getStats()->getHp())
 		.add<int8_t>(0)
 		.add<int64_t>(TimeUtilities::getServerTime());
 	return builder;

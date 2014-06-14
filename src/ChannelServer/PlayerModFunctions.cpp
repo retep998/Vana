@@ -87,7 +87,7 @@ auto PlayerModFunctions::maxStats(Player *player, const string_t &args) -> ChatR
 	player->getStats()->setFame(Stats::MaxFame);
 	player->getStats()->setMaxHp(Stats::MaxMaxHp);
 	player->getStats()->setMaxMp(Stats::MaxMaxMp);
-	auto max = std::numeric_limits<int16_t>::max();
+	auto max = std::numeric_limits<stat_t>::max();
 	player->getStats()->setStr(max);
 	player->getStats()->setDex(max);
 	player->getStats()->setInt(max);
@@ -97,7 +97,7 @@ auto PlayerModFunctions::maxStats(Player *player, const string_t &args) -> ChatR
 
 auto PlayerModFunctions::hp(Player *player, const string_t &args) -> ChatResult {
 	if (!args.empty()) {
-		uint16_t amount = atoi(args.c_str());
+		health_t amount = atoi(args.c_str());
 		player->getStats()->setMaxHp(amount);
 		if (player->getStats()->getHp() > amount) {
 			player->getStats()->setHp(player->getStats()->getMaxHp());
@@ -109,7 +109,7 @@ auto PlayerModFunctions::hp(Player *player, const string_t &args) -> ChatResult 
 
 auto PlayerModFunctions::mp(Player *player, const string_t &args) -> ChatResult {
 	if (!args.empty()) {
-		uint16_t amount = atoi(args.c_str());
+		health_t amount = atoi(args.c_str());
 		player->getStats()->setMaxMp(amount);
 		if (player->getStats()->getMp() > amount) {
 			player->getStats()->setMp(player->getStats()->getMaxMp());

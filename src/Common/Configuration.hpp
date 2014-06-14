@@ -82,7 +82,7 @@ struct WorldConfig {
 	int8_t ribbon = 0;
 	player_level_t maxMultiLevel = 1;
 	storage_slot_t defaultStorageSlots = 4;
-	int16_t maxStats = 999;
+	stat_t maxStats = 999;
 	int32_t defaultChars = 3;
 	int32_t maxChars = 6;
 	int32_t maxPlayerLoad = 100;
@@ -109,7 +109,7 @@ struct PacketSerialize<WorldConfig> {
 		ret.ribbon = reader.get<int8_t>();
 		ret.maxMultiLevel = reader.get<player_level_t>();
 		ret.defaultStorageSlots = reader.get<storage_slot_t>();
-		ret.maxStats = reader.get<int16_t>();
+		ret.maxStats = reader.get<stat_t>();
 		ret.defaultChars = reader.get<int32_t>();
 		ret.maxChars = reader.get<int32_t>();
 		ret.maxPlayerLoad = reader.get<int32_t>();
@@ -133,7 +133,7 @@ struct PacketSerialize<WorldConfig> {
 		builder.add<int8_t>(obj.ribbon);
 		builder.add<player_level_t>(obj.maxMultiLevel);
 		builder.add<storage_slot_t>(obj.defaultStorageSlots);
-		builder.add<int16_t>(obj.maxStats);
+		builder.add<stat_t>(obj.maxStats);
 		builder.add<int32_t>(obj.defaultChars);
 		builder.add<int32_t>(obj.maxChars);
 		builder.add<int32_t>(obj.maxPlayerLoad);

@@ -98,20 +98,20 @@ auto ItemDataProvider::loadScrolls() -> void {
 		item_id_t itemId = row.get<item_id_t>("itemid");
 		item.success = row.get<uint16_t>("success");
 		item.cursed = row.get<uint16_t>("break_item");
-		item.istr = row.get<int16_t>("istr");
-		item.idex = row.get<int16_t>("idex");
-		item.iint = row.get<int16_t>("iint");
-		item.iluk = row.get<int16_t>("iluk");
-		item.ihp = row.get<int16_t>("ihp");
-		item.imp = row.get<int16_t>("imp");
-		item.iwAtk = row.get<int16_t>("iwatk");
-		item.imAtk = row.get<int16_t>("imatk");
-		item.iwDef = row.get<int16_t>("iwdef");
-		item.imDef = row.get<int16_t>("imdef");
-		item.iacc = row.get<int16_t>("iacc");
-		item.iavo = row.get<int16_t>("iavo");
-		item.ijump = row.get<int16_t>("ijump");
-		item.ispeed = row.get<int16_t>("ispeed");
+		item.istr = row.get<stat_t>("istr");
+		item.idex = row.get<stat_t>("idex");
+		item.iint = row.get<stat_t>("iint");
+		item.iluk = row.get<stat_t>("iluk");
+		item.ihp = row.get<health_t>("ihp");
+		item.imp = row.get<health_t>("imp");
+		item.iwAtk = row.get<stat_t>("iwatk");
+		item.imAtk = row.get<stat_t>("imatk");
+		item.iwDef = row.get<stat_t>("iwdef");
+		item.imDef = row.get<stat_t>("imdef");
+		item.iacc = row.get<stat_t>("iacc");
+		item.iavo = row.get<stat_t>("iavo");
+		item.ijump = row.get<stat_t>("ijump");
+		item.ispeed = row.get<stat_t>("ispeed");
 
 		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&item](const string_t &cmp) {
 			if (cmp == "rand_stat") item.randStat = true;
@@ -133,8 +133,8 @@ auto ItemDataProvider::loadConsumes(BuffDataProvider &provider) -> void {
 		ConsumeInfo item;
 		item_id_t itemId = row.get<item_id_t>("itemid");
 		item.effect = row.get<uint8_t>("effect");
-		item.hp = row.get<int16_t>("hp");
-		item.mp = row.get<int16_t>("mp");
+		item.hp = row.get<health_t>("hp");
+		item.mp = row.get<health_t>("mp");
 		item.hpr = row.get<int16_t>("hp_percentage");
 		item.mpr = row.get<int16_t>("mp_percentage");
 		item.moveTo = row.get<map_id_t>("move_to");
@@ -143,14 +143,14 @@ auto ItemDataProvider::loadConsumes(BuffDataProvider &provider) -> void {
 		item.cp = row.get<uint8_t>("carnival_points");
 		item.mcProb = row.get<uint16_t>("prob");
 		item.time = row.get<int32_t>("buff_time");
-		item.wAtk = row.get<int16_t>("weapon_attack");
-		item.mAtk = row.get<int16_t>("magic_attack");
-		item.wDef = row.get<int16_t>("weapon_defense");
-		item.mDef = row.get<int16_t>("magic_defense");
-		item.acc = row.get<int16_t>("accuracy");
-		item.avo = row.get<int16_t>("avoid");
-		item.speed = row.get<int16_t>("speed");
-		item.jump = row.get<int16_t>("jump");
+		item.wAtk = row.get<stat_t>("weapon_attack");
+		item.mAtk = row.get<stat_t>("magic_attack");
+		item.wDef = row.get<stat_t>("weapon_defense");
+		item.mDef = row.get<stat_t>("magic_defense");
+		item.acc = row.get<stat_t>("accuracy");
+		item.avo = row.get<stat_t>("avoid");
+		item.speed = row.get<stat_t>("speed");
+		item.jump = row.get<stat_t>("jump");
 
 		morph_id_t morphId = row.get<morph_id_t>("morph");
 		if (morphId != 0) {

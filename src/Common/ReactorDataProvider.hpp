@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 struct ReactorStateInfo {
 	int8_t nextState = 0;
 	int16_t type = 0;
-	int16_t itemQuantity = 0;
+	slot_qty_t itemQuantity = 0;
 	item_id_t itemId = 0;
 	int32_t timeout = 0;
 	Rect dimensions;

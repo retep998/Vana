@@ -106,10 +106,10 @@ PACKET_IMPL(showInfo, Player *getInfo, bool isSelf) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PLAYER_INFO)
-		.add<int32_t>(getInfo->getId())
-		.add<int8_t>(getInfo->getStats()->getLevel())
-		.add<int16_t>(getInfo->getStats()->getJob())
-		.add<int16_t>(getInfo->getStats()->getFame())
+		.add<player_id_t>(getInfo->getId())
+		.add<player_level_t>(getInfo->getStats()->getLevel())
+		.add<job_id_t>(getInfo->getStats()->getJob())
+		.add<fame_t>(getInfo->getStats()->getFame())
 		.add<bool>(false) // Married
 		.add<string_t>("-") // Guild
 		.add<string_t>("") // Guild Alliance

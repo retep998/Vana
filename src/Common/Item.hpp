@@ -81,21 +81,21 @@ public:
 
 	auto getSlots() const -> int8_t { return m_slots; }
 	auto getScrolls() const -> int8_t { return m_scrolls; }
-	auto getStr() const -> int16_t { return m_str; }
-	auto getDex() const -> int16_t { return m_dex; }
-	auto getInt() const -> int16_t { return m_int; }
-	auto getLuk() const -> int16_t { return m_luk; }
-	auto getHp() const -> int16_t { return m_hp; }
-	auto getMp() const -> int16_t { return m_mp; }
-	auto getWatk() const -> int16_t { return m_wAtk; }
-	auto getMatk() const -> int16_t { return m_mAtk; }
-	auto getWdef() const -> int16_t { return m_wDef; }
-	auto getMdef() const -> int16_t { return m_mDef; }
-	auto getAccuracy() const -> int16_t { return m_accuracy; }
-	auto getAvoid() const -> int16_t { return m_avoid; }
-	auto getHands() const -> int16_t { return m_hands; }
-	auto getSpeed() const -> int16_t { return m_speed; }
-	auto getJump() const -> int16_t { return m_jump; }
+	auto getStr() const -> stat_t { return m_str; }
+	auto getDex() const -> stat_t { return m_dex; }
+	auto getInt() const -> stat_t { return m_int; }
+	auto getLuk() const -> stat_t { return m_luk; }
+	auto getHp() const -> health_t { return m_hp; }
+	auto getMp() const -> health_t { return m_mp; }
+	auto getWatk() const -> stat_t { return m_wAtk; }
+	auto getMatk() const -> stat_t { return m_mAtk; }
+	auto getWdef() const -> stat_t { return m_wDef; }
+	auto getMdef() const -> stat_t { return m_mDef; }
+	auto getAccuracy() const -> stat_t { return m_accuracy; }
+	auto getAvoid() const -> stat_t { return m_avoid; }
+	auto getHands() const -> stat_t { return m_hands; }
+	auto getSpeed() const -> stat_t { return m_speed; }
+	auto getJump() const -> stat_t { return m_jump; }
 	auto getAmount() const -> slot_qty_t { return m_amount; }
 	auto getFlags() const -> int16_t { return m_flags; }
 	auto getId() const -> item_id_t { return m_id; }
@@ -113,42 +113,42 @@ public:
 	auto databaseInsert(soci::session &sql, const ItemDbInformation &info) -> void;
 	auto setSlots(int8_t slots) -> void;
 	auto setScrolls(int8_t scrolls) -> void;
-	auto setStr(int16_t strength) -> void;
-	auto setDex(int16_t dexterity) -> void;
-	auto setInt(int16_t intelligence) -> void;
-	auto setLuk(int16_t luck) -> void;
-	auto setHp(int16_t hp) -> void;
-	auto setMp(int16_t mp) -> void;
-	auto setWatk(int16_t wAtk) -> void;
-	auto setWdef(int16_t wDef) -> void;
-	auto setMatk(int16_t mAtk) -> void;
-	auto setMdef(int16_t mDef) -> void;
-	auto setAccuracy(int16_t acc) -> void;
-	auto setAvoid(int16_t avoid) -> void;
-	auto setHands(int16_t hands) -> void;
-	auto setJump(int16_t jump) -> void;
-	auto setSpeed(int16_t speed) -> void;
+	auto setStr(stat_t strength) -> void;
+	auto setDex(stat_t dexterity) -> void;
+	auto setInt(stat_t intelligence) -> void;
+	auto setLuk(stat_t luck) -> void;
+	auto setHp(health_t hp) -> void;
+	auto setMp(health_t mp) -> void;
+	auto setWatk(stat_t wAtk) -> void;
+	auto setWdef(stat_t wDef) -> void;
+	auto setMatk(stat_t mAtk) -> void;
+	auto setMdef(stat_t mDef) -> void;
+	auto setAccuracy(stat_t acc) -> void;
+	auto setAvoid(stat_t avoid) -> void;
+	auto setHands(stat_t hands) -> void;
+	auto setJump(stat_t jump) -> void;
+	auto setSpeed(stat_t speed) -> void;
 	auto setAmount(slot_qty_t amount) -> void;
 	auto setName(const string_t &name) -> void;
 	auto setFlags(int16_t flags) -> void;
 	auto setHammers(int32_t hammers) -> void;
 	auto setPetId(pet_id_t petId) -> void;
 	auto setExpirationTime(int64_t exp) -> void;
-	auto addStr(int16_t strength) -> void;
-	auto addDex(int16_t dexterity) -> void;
-	auto addInt(int16_t intelligence) -> void;
-	auto addLuk(int16_t luck) -> void;
-	auto addHp(int16_t hp) -> void;
-	auto addMp(int16_t mp) -> void;
-	auto addWatk(int16_t wAtk) -> void;
-	auto addWdef(int16_t wDef) -> void;
-	auto addMatk(int16_t mAtk) -> void;
-	auto addMdef(int16_t mDef) -> void;
-	auto addAccuracy(int16_t acc) -> void;
-	auto addAvoid(int16_t avoid) -> void;
-	auto addHands(int16_t hands) -> void;
-	auto addJump(int16_t jump) -> void;
-	auto addSpeed(int16_t speed) -> void;
+	auto addStr(stat_t strength) -> void;
+	auto addDex(stat_t dexterity) -> void;
+	auto addInt(stat_t intelligence) -> void;
+	auto addLuk(stat_t luck) -> void;
+	auto addHp(health_t hp) -> void;
+	auto addMp(health_t mp) -> void;
+	auto addWatk(stat_t wAtk) -> void;
+	auto addWdef(stat_t wDef) -> void;
+	auto addMatk(stat_t mAtk) -> void;
+	auto addMdef(stat_t mDef) -> void;
+	auto addAccuracy(stat_t acc) -> void;
+	auto addAvoid(stat_t avoid) -> void;
+	auto addHands(stat_t hands) -> void;
+	auto addJump(stat_t jump) -> void;
+	auto addSpeed(stat_t speed) -> void;
 	auto incAmount(slot_qty_t mod) -> void { m_amount += mod; }
 	auto decAmount(slot_qty_t mod) -> void { m_amount -= mod; }
 	auto incHammers() -> void { m_hammers++; }
@@ -168,21 +168,21 @@ private:
 
 	int8_t m_slots = 0;
 	int8_t m_scrolls = 0;
-	int16_t m_str = 0;
-	int16_t m_dex = 0;
-	int16_t m_int = 0;
-	int16_t m_luk = 0;
-	int16_t m_hp = 0;
-	int16_t m_mp = 0;
-	int16_t m_wAtk = 0;
-	int16_t m_mAtk = 0;
-	int16_t m_wDef = 0;
-	int16_t m_mDef = 0;
-	int16_t m_accuracy = 0;
-	int16_t m_avoid = 0;
-	int16_t m_hands = 0;
-	int16_t m_jump = 0;
-	int16_t m_speed = 0;
+	stat_t m_str = 0;
+	stat_t m_dex = 0;
+	stat_t m_int = 0;
+	stat_t m_luk = 0;
+	health_t m_hp = 0;
+	health_t m_mp = 0;
+	stat_t m_wAtk = 0;
+	stat_t m_mAtk = 0;
+	stat_t m_wDef = 0;
+	stat_t m_mDef = 0;
+	stat_t m_accuracy = 0;
+	stat_t m_avoid = 0;
+	stat_t m_hands = 0;
+	stat_t m_jump = 0;
+	stat_t m_speed = 0;
 	int16_t m_flags = 0;
 	slot_qty_t m_amount = 0;
 	item_id_t m_id = 0;

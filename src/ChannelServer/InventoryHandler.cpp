@@ -135,7 +135,7 @@ auto InventoryHandler::useItem(Player *player, PacketReader &reader) -> void {
 	tick_count_t ticks = reader.get<tick_count_t>();
 	inventory_slot_t slot = reader.get<inventory_slot_t>();
 	item_id_t itemId = reader.get<item_id_t>();
-	const int16_t amountUsed = 1;
+	const slot_qty_t amountUsed = 1;
 	if (player->getStats()->isDead() || player->getInventory()->getItemAmountBySlot(Inventories::UseInventory, slot) < amountUsed) {
 		// Hacking
 		return;

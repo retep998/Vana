@@ -73,7 +73,7 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 	uint8_t stance = 0;
 	mob_skill_id_t disease = 0;
 	mob_skill_level_t level = 0;
-	uint16_t mpBurn = 0;
+	health_t mpBurn = 0;
 	map_object_t mapMobId = 0;
 	mob_id_t mobId = 0;
 	skill_id_t noDamageId = 0;
@@ -151,8 +151,8 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 		player->getActiveBuffs()->addDebuff(disease, level);
 	}
 
-	int16_t mp = player->getStats()->getMp();
-	int16_t hp = player->getStats()->getHp();
+	health_t mp = player->getStats()->getMp();
+	health_t hp = player->getStats()->getHp();
 
 	auto deadlyAttackFunc = [&player, &mp](bool setHp) {
 		if (mp > 0) {
@@ -208,8 +208,8 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 			else {
 				skill_id_t skillId = player->getActiveBuffs()->getMagicGuard();
 				int16_t reduc = player->getActiveBuffs()->getActiveSkillInfo(skillId)->x;
-				uint16_t mpDamage = static_cast<uint16_t>((damage * reduc) / 100);
-				uint16_t hpDamage = static_cast<uint16_t>(damage - mpDamage);
+				int32_t mpDamage = (damage * reduc) / 100;
+				int32_t hpDamage = damage - mpDamage;
 
 				if (mpDamage < mp || player->getActiveBuffs()->hasInfinity()) {
 					player->getStats()->damageMp(mpDamage);
@@ -278,8 +278,8 @@ auto PlayerHandler::handleGetInfo(Player *player, PacketReader &reader) -> void 
 
 auto PlayerHandler::handleHeal(Player *player, PacketReader &reader) -> void {
 	tick_count_t ticks = reader.get<tick_count_t>();
-	int16_t hp = reader.get<int16_t>();
-	int16_t mp = reader.get<int16_t>();
+	health_t hp = reader.get<health_t>();
+	health_t mp = reader.get<health_t>();
 	if (player->getStats()->isDead() || hp > 400 || mp > 1000 || (hp > 0 && mp > 0)) {
 		// Hacking
 		return;
@@ -343,8 +343,8 @@ auto PlayerHandler::handleSpecialSkills(Player *player, PacketReader &reader) ->
 			break;
 		}
 		case Skills::ChiefBandit::Chakra: {
-			int16_t dex = player->getStats()->getDex(true);
-			int16_t luk = player->getStats()->getLuk(true);
+			stat_t dex = player->getStats()->getDex(true);
+			stat_t luk = player->getStats()->getLuk(true);
 			int16_t recovery = player->getSkills()->getSkillInfo(skillId)->y;
 			int16_t maximum = (luk * 66 / 10 + dex) * 2 / 10 * (recovery / 100 + 1);
 			int16_t minimum = (luk * 33 / 10 + dex) * 2 / 10 * (recovery / 100 + 1);
@@ -695,7 +695,7 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 		case Skills::Assassin::Drain: {
 			int16_t xProperty = player->getSkills()->getSkillInfo(skillId)->x;
 			int32_t hpRecover = static_cast<int32_t>(attack.totalDamage * xProperty / 100);
-			int16_t playerMaxHp = player->getStats()->getMaxHp();
+			health_t playerMaxHp = player->getStats()->getMaxHp();
 			if (hpRecover > maxHp) {
 				hpRecover = maxHp;
 			}
@@ -706,7 +706,7 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 				player->getStats()->setHp(playerMaxHp);
 			}
 			else {
-				player->getStats()->modifyHp(static_cast<int16_t>(hpRecover));
+				player->getStats()->modifyHp(hpRecover);
 			}
 			break;
 		}

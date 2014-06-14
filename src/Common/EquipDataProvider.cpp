@@ -50,26 +50,26 @@ auto EquipDataProvider::loadEquips() -> void {
 		equip.attackSpeed = row.get<int8_t>("attack_speed");
 		equip.healing = row.get<int8_t>("heal_hp");
 		equip.slots = row.get<int8_t>("scroll_slots");
-		equip.ihp = row.get<int16_t>("hp");
-		equip.imp = row.get<int16_t>("mp");
-		equip.reqStr = row.get<int16_t>("req_str");
-		equip.reqDex = row.get<int16_t>("req_dex");
-		equip.reqInt = row.get<int16_t>("req_int");
-		equip.reqLuk = row.get<int16_t>("req_luk");
+		equip.ihp = row.get<health_t>("hp");
+		equip.imp = row.get<health_t>("mp");
+		equip.reqStr = row.get<stat_t>("req_str");
+		equip.reqDex = row.get<stat_t>("req_dex");
+		equip.reqInt = row.get<stat_t>("req_int");
+		equip.reqLuk = row.get<stat_t>("req_luk");
 		equip.reqFame = row.get<fame_t>("req_fame");
-		equip.istr = row.get<int16_t>("strength");
-		equip.idex = row.get<int16_t>("dexterity");
-		equip.iint = row.get<int16_t>("intelligence");
-		equip.iluk = row.get<int16_t>("luck");
-		equip.ihand = row.get<int16_t>("hands");
-		equip.iwAtk = row.get<int16_t>("weapon_attack");
-		equip.iwDef = row.get<int16_t>("weapon_defense");
-		equip.imAtk = row.get<int16_t>("magic_attack");
-		equip.imDef = row.get<int16_t>("magic_defense");
-		equip.iacc = row.get<int16_t>("accuracy");
-		equip.iavo = row.get<int16_t>("avoid");
-		equip.ijump = row.get<int16_t>("jump");
-		equip.ispeed = row.get<int16_t>("speed");
+		equip.istr = row.get<stat_t>("strength");
+		equip.idex = row.get<stat_t>("dexterity");
+		equip.iint = row.get<stat_t>("intelligence");
+		equip.iluk = row.get<stat_t>("luck");
+		equip.ihand = row.get<stat_t>("hands");
+		equip.iwAtk = row.get<stat_t>("weapon_attack");
+		equip.iwDef = row.get<stat_t>("weapon_defense");
+		equip.imAtk = row.get<stat_t>("magic_attack");
+		equip.imDef = row.get<stat_t>("magic_defense");
+		equip.iacc = row.get<stat_t>("accuracy");
+		equip.iavo = row.get<stat_t>("avoid");
+		equip.ijump = row.get<stat_t>("jump");
+		equip.ispeed = row.get<stat_t>("speed");
 		equip.tamingMob = row.get<uint8_t>("taming_mob");
 		equip.iceDamage = row.get<uint8_t>("inc_ice_damage");
 		equip.fireDamage = row.get<uint8_t>("inc_fire_damage");
@@ -175,7 +175,7 @@ auto EquipDataProvider::setEquipStats(Item *equip, Items::StatVariance varianceP
 	equip->setSpeed(getStat(ei.ispeed, equip->getSpeed()));
 }
 
-auto EquipDataProvider::canEquip(item_id_t itemId, gender_id_t gender, job_id_t job, int16_t str, int16_t dex, int16_t intt, int16_t luk, fame_t fame) const -> bool {
+auto EquipDataProvider::canEquip(item_id_t itemId, gender_id_t gender, job_id_t job, stat_t str, stat_t dex, stat_t intt, stat_t luk, fame_t fame) const -> bool {
 	const EquipInfo &ei = getEquipInfo(itemId);
 	return str >= ei.reqStr && dex >= ei.reqDex && intt >= ei.reqInt && luk >= ei.reqLuk && fame >= ei.reqFame;
 }
