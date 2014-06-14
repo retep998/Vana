@@ -28,12 +28,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <chrono>
 #include <iostream>
 
-auto MapFunctions::eventInstruction(Player *player, const string_t &args) -> ChatResult {
+auto MapFunctions::eventInstruction(Player *player, const chat_t &args) -> ChatResult {
 	player->sendMap(MapPacket::showEventInstructions());
 	return ChatResult::HandledDisplay;
 }
 
-auto MapFunctions::instruction(Player *player, const string_t &args) -> ChatResult {
+auto MapFunctions::instruction(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		player->sendMap(PlayerPacket::instructionBubble(args));
 		ChatHandlerFunctions::showInfo(player, "Showing instruction bubble to everyone on the map");
@@ -42,7 +42,7 @@ auto MapFunctions::instruction(Player *player, const string_t &args) -> ChatResu
 	return ChatResult::ShowSyntax;
 }
 
-auto MapFunctions::timer(Player *player, const string_t &args) -> ChatResult {
+auto MapFunctions::timer(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		seconds_t time(atoi(args.c_str()));
 		out_stream_t msg;
@@ -79,7 +79,7 @@ auto MapFunctions::timer(Player *player, const string_t &args) -> ChatResult {
 	return ChatResult::ShowSyntax;
 }
 
-auto MapFunctions::killMob(Player *player, const string_t &args) -> ChatResult {
+auto MapFunctions::killMob(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		map_object_t mobId = atoi(args.c_str());
 		auto mob = player->getMap()->getMob(mobId);
@@ -95,7 +95,7 @@ auto MapFunctions::killMob(Player *player, const string_t &args) -> ChatResult {
 	return ChatResult::ShowSyntax;
 }
 
-auto MapFunctions::getMobHp(Player *player, const string_t &args) -> ChatResult {
+auto MapFunctions::getMobHp(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		map_object_t mobId = atoi(args.c_str());
 		auto mob = player->getMap()->getMob(mobId);
@@ -115,7 +115,7 @@ auto MapFunctions::getMobHp(Player *player, const string_t &args) -> ChatResult 
 	return ChatResult::ShowSyntax;
 }
 
-auto MapFunctions::listMobs(Player *player, const string_t &args) -> ChatResult {
+auto MapFunctions::listMobs(Player *player, const chat_t &args) -> ChatResult {
 	if (player->getMap()->countMobs(0) > 0) {
 		out_stream_t message;
 		player->getMap()->runFunctionMobs([&message, &player](ref_ptr_t<const Mob> mob) {
@@ -138,7 +138,7 @@ auto MapFunctions::listMobs(Player *player, const string_t &args) -> ChatResult 
 	return ChatResult::HandledDisplay;
 }
 
-auto MapFunctions::listPortals(Player *player, const string_t &args) -> ChatResult {
+auto MapFunctions::listPortals(Player *player, const chat_t &args) -> ChatResult {
 	map_id_t mapId = args.empty() ? player->getMapId() : ChatHandlerFunctions::getMap(args, player);
 	Map *map = Maps::getMap(mapId);
 	if (map == nullptr) {
@@ -202,7 +202,7 @@ auto MapFunctions::listPortals(Player *player, const string_t &args) -> ChatResu
 	return ChatResult::HandledDisplay;
 }
 
-auto MapFunctions::listReactors(Player *player, const string_t &args) -> ChatResult {
+auto MapFunctions::listReactors(Player *player, const chat_t &args) -> ChatResult {
 	map_id_t mapId = args.empty() ? player->getMapId() : ChatHandlerFunctions::getMap(args, player);
 	Map *map = Maps::getMap(mapId);
 	if (map == nullptr) {
@@ -250,7 +250,7 @@ auto MapFunctions::listReactors(Player *player, const string_t &args) -> ChatRes
 	return ChatResult::HandledDisplay;
 }
 
-auto MapFunctions::listNpcs(Player *player, const string_t &args) -> ChatResult {
+auto MapFunctions::listNpcs(Player *player, const chat_t &args) -> ChatResult {
 	map_id_t mapId = args.empty() ? player->getMapId() : ChatHandlerFunctions::getMap(args, player);
 	Map *map = Maps::getMap(mapId);
 	if (map == nullptr) {
@@ -295,7 +295,7 @@ auto MapFunctions::listNpcs(Player *player, const string_t &args) -> ChatResult 
 	return ChatResult::HandledDisplay;
 }
 
-auto MapFunctions::zakum(Player *player, const string_t &args) -> ChatResult {
+auto MapFunctions::zakum(Player *player, const chat_t &args) -> ChatResult {
 	player->getMap()->spawnZakum(player->getPos());
 	ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {
 		log << "GM " << player->getName()
@@ -304,7 +304,7 @@ auto MapFunctions::zakum(Player *player, const string_t &args) -> ChatResult {
 	return ChatResult::HandledDisplay;
 }
 
-auto MapFunctions::horntail(Player *player, const string_t &args) -> ChatResult {
+auto MapFunctions::horntail(Player *player, const chat_t &args) -> ChatResult {
 	player->getMap()->spawnMob(Mobs::SummonHorntail, player->getPos());
 	ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {
 		log << "GM " << player->getName()
@@ -313,7 +313,7 @@ auto MapFunctions::horntail(Player *player, const string_t &args) -> ChatResult 
 	return ChatResult::HandledDisplay;
 }
 
-auto MapFunctions::music(Player *player, const string_t &args) -> ChatResult {
+auto MapFunctions::music(Player *player, const chat_t &args) -> ChatResult {
 	soci::session &sql = Database::getDataDb();
 	string_t music;
 
@@ -340,7 +340,7 @@ auto MapFunctions::music(Player *player, const string_t &args) -> ChatResult {
 	return ChatResult::HandledDisplay;
 }
 
-auto MapFunctions::summon(Player *player, const string_t &args) -> ChatResult {
+auto MapFunctions::summon(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) ?(\d+)?)", matches) == MatchResult::AnyMatches) {
 		string_t rawMobId = matches[1];
@@ -369,12 +369,12 @@ auto MapFunctions::summon(Player *player, const string_t &args) -> ChatResult {
 	return ChatResult::ShowSyntax;
 }
 
-auto MapFunctions::clearDrops(Player *player, const string_t &args) -> ChatResult {
+auto MapFunctions::clearDrops(Player *player, const chat_t &args) -> ChatResult {
 	player->getMap()->clearDrops();
 	return ChatResult::HandledDisplay;
 }
 
-auto MapFunctions::killAllMobs(Player *player, const string_t &args) -> ChatResult {
+auto MapFunctions::killAllMobs(Player *player, const chat_t &args) -> ChatResult {
 	int32_t killed = player->getMap()->killMobs(player, true);
 	ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) { message << "Killed " << killed << " mobs"; });
 	return ChatResult::HandledDisplay;

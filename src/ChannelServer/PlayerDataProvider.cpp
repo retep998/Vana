@@ -230,7 +230,7 @@ auto PlayerDataProvider::stopFollowing(Player *follower) -> void {
 	follower->setFollow(nullptr);
 }
 
-auto PlayerDataProvider::handleGroupChat(int8_t chatType, player_id_t playerId, const vector_t<player_id_t> &receivers, const string_t &chat) -> void {
+auto PlayerDataProvider::handleGroupChat(int8_t chatType, player_id_t playerId, const vector_t<player_id_t> &receivers, const chat_t &chat) -> void {
 	auto &packet = PlayerPacket::groupChat(m_playerData[playerId].name, chat, chatType);
 
 	vector_t<player_id_t> nonPresentReceivers;
@@ -251,8 +251,8 @@ auto PlayerDataProvider::handleGroupChat(int8_t chatType, player_id_t playerId, 
 	}
 }
 
-auto PlayerDataProvider::handleGmChat(Player *player, const string_t &chat) -> void {
-	out_stream_t message;
+auto PlayerDataProvider::handleGmChat(Player *player, const chat_t &chat) -> void {
+	chat_stream_t message;
 	message << player->getName() << " [ch"
 		<< static_cast<int32_t>(ChannelServer::getInstance().getChannelId() + 1)
 		<< "] : " << chat;

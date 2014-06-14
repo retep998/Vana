@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.hpp"
 #include "PlayerDataProvider.hpp"
 
-auto MessageFunctions::worldMessage(Player *player, const string_t &args) -> ChatResult {
+auto MessageFunctions::worldMessage(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (.+))", matches) == MatchResult::AnyMatches) {
 		string_t rawType = matches[1];
@@ -44,7 +44,7 @@ auto MessageFunctions::worldMessage(Player *player, const string_t &args) -> Cha
 	return ChatResult::ShowSyntax;
 }
 
-auto MessageFunctions::globalMessage(Player *player, const string_t &args) -> ChatResult {
+auto MessageFunctions::globalMessage(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (.+))", matches) == MatchResult::AnyMatches) {
 		string_t rawType = matches[1];
@@ -67,7 +67,7 @@ auto MessageFunctions::globalMessage(Player *player, const string_t &args) -> Ch
 	return ChatResult::ShowSyntax;
 }
 
-auto MessageFunctions::channelMessage(Player *player, const string_t &args) -> ChatResult {
+auto MessageFunctions::channelMessage(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (.+))", matches) == MatchResult::AnyMatches) {
 		string_t rawType = matches[1];
@@ -85,7 +85,7 @@ auto MessageFunctions::channelMessage(Player *player, const string_t &args) -> C
 	return ChatResult::ShowSyntax;
 }
 
-auto MessageFunctions::gmChatMode(Player *player, const string_t &args) -> ChatResult {
+auto MessageFunctions::gmChatMode(Player *player, const chat_t &args) -> ChatResult {
 	player->setGmChat(!player->isGmChat());
 	ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) { message << "GM chat mode " << (player->isGmChat() ? "enabled" : "disabled"); });
 	return ChatResult::HandledDisplay;

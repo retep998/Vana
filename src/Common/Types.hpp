@@ -106,6 +106,69 @@ enum class HackingResult {
 
 using std::chrono::duration_cast;
 
+// Miscellaneous utility types
+using effective_clock_t = std::chrono::system_clock;
+using duration_t = effective_clock_t::duration;
+using time_point_t = effective_clock_t::time_point;
+using nanoseconds_t = std::chrono::nanoseconds;
+using microseconds_t = std::chrono::microseconds;
+using milliseconds_t = std::chrono::milliseconds;
+using seconds_t = std::chrono::seconds;
+using minutes_t = std::chrono::minutes;
+using hours_t = std::chrono::hours;
+using string_t = std::string;
+using out_stream_t = std::ostringstream;
+using thread_t = std::thread;
+using mutex_t = std::mutex;
+using recursive_mutex_t = std::recursive_mutex;
+using match_t = std::smatch;
+
+template <typename TElement>
+using vector_t = std::vector<TElement>;
+template <typename TElement>
+using init_list_t = std::initializer_list<TElement>;
+template <typename TFirst, typename TSecond>
+using pair_t = std::pair<TFirst, TSecond>;
+template <typename TKey, typename TElement, typename THash = std::hash<TKey>, typename TOperation = std::equal_to<TKey>>
+using hash_map_t = std::unordered_map<TKey, TElement, THash, TOperation>;
+template <typename TKey, typename THash = std::hash<TKey>, typename TOperation = std::equal_to<TKey>>
+using hash_set_t = std::unordered_set<TKey, THash, TOperation>;
+template <typename TElement, typename TString = string_t>
+using case_insensitive_hash_map_t = std::unordered_map<TString, TElement, CaseInsensitiveHash, CaseInsensitiveEquals>;
+template <typename TString = string_t>
+using case_insensitive_hash_set_t = std::unordered_set<TString, CaseInsensitiveHash, CaseInsensitiveEquals>;
+template <typename TKey, typename TElement, typename TOrdering = std::less<TKey>>
+using ord_map_t = std::map<TKey, TElement, TOrdering>;
+template <typename TFunc>
+using function_t = std::function<TFunc>;
+template <typename TPtr>
+using owned_ptr_t = std::unique_ptr<TPtr>;
+template <typename TPtr>
+using ref_ptr_t = std::shared_ptr<TPtr>;
+template <typename TPtr>
+using view_ptr_t = std::weak_ptr<TPtr>;
+template <typename TMutex>
+using owned_lock_t = std::unique_lock<TMutex>;
+template <typename TElement, size_t Size>
+using array_t = std::array<TElement, Size>;
+template <typename TElement>
+using queue_t = std::deque<TElement>;
+
+template <typename TPtr>
+using enable_shared = std::enable_shared_from_this<TPtr>;
+
+template <typename TSrc, typename ...TArgs>
+inline
+auto make_ref_ptr(TArgs && ...args) -> ref_ptr_t<TSrc> {
+	return std::make_shared<TSrc>(args...);
+}
+
+template <typename TSrc, typename ...TArgs>
+inline
+auto make_owned_ptr(TArgs && ...args) -> owned_ptr_t<TSrc> {
+	return std::make_unique<TSrc>(args...);
+}
+
 // Game protocol/entity types
 using world_id_t = int8_t;
 using channel_id_t = int8_t;
@@ -140,6 +203,8 @@ using header_t = uint16_t;
 using port_t = uint16_t;
 using version_t = uint16_t;
 using locale_t = uint8_t;
+using chat_t = string_t;
+using chat_stream_t = out_stream_t;
 using player_level_t = uint8_t;
 using skill_level_t = uint8_t;
 using fame_t = int16_t;
@@ -159,68 +224,6 @@ using map_object_t = int32_t;
 using coord_t = int16_t;
 using tick_count_t = uint32_t;
 using charge_time_t = int32_t;
-
-// Miscellaneous utility types
-using effective_clock_t = std::chrono::system_clock;
-using duration_t = effective_clock_t::duration;
-using time_point_t = effective_clock_t::time_point;
-using nanoseconds_t = std::chrono::nanoseconds;
-using microseconds_t = std::chrono::microseconds;
-using milliseconds_t = std::chrono::milliseconds;
-using seconds_t = std::chrono::seconds;
-using minutes_t = std::chrono::minutes;
-using hours_t = std::chrono::hours;
-using string_t = std::string;
-using out_stream_t = std::ostringstream;
-using thread_t = std::thread;
-using mutex_t = std::mutex;
-using recursive_mutex_t = std::recursive_mutex;
-using match_t = std::smatch;
-
-template <typename TElement>
-using vector_t = std::vector<TElement>;
-template <typename TElement>
-using init_list_t = std::initializer_list<TElement>;
-template <typename TFirst, typename TSecond>
-using pair_t = std::pair<TFirst, TSecond>;
-template <typename TKey, typename TElement, typename THash = std::hash<TKey>, typename TOperation = std::equal_to<TKey>>
-using hash_map_t = std::unordered_map<TKey, TElement, THash, TOperation>;
-template <typename TKey, typename THash = std::hash<TKey>, typename TOperation = std::equal_to<TKey>>
-using hash_set_t = std::unordered_set<TKey, THash, TOperation>;
-template <typename TElement>
-using case_insensitive_hash_map_t = std::unordered_map<string_t, TElement, CaseInsensitiveHash, CaseInsensitiveEquals>;
-using case_insensitive_hash_set_t = std::unordered_set<string_t, CaseInsensitiveHash, CaseInsensitiveEquals>;
-template <typename TKey, typename TElement, typename TOrdering = std::less<TKey>>
-using ord_map_t = std::map<TKey, TElement, TOrdering>;
-template <typename TFunc>
-using function_t = std::function<TFunc>;
-template <typename TPtr>
-using owned_ptr_t = std::unique_ptr<TPtr>;
-template <typename TPtr>
-using ref_ptr_t = std::shared_ptr<TPtr>;
-template <typename TPtr>
-using view_ptr_t = std::weak_ptr<TPtr>;
-template <typename TMutex>
-using owned_lock_t = std::unique_lock<TMutex>;
-template <typename TElement, size_t Size>
-using array_t = std::array<TElement, Size>;
-template <typename TElement>
-using queue_t = std::deque<TElement>;
-
-template <typename TPtr>
-using enable_shared = std::enable_shared_from_this<TPtr>;
-
-template <typename TSrc, typename ...TArgs>
-inline
-auto make_ref_ptr(TArgs && ...args) -> ref_ptr_t<TSrc> {
-	return std::make_shared<TSrc>(args...);
-}
-
-template <typename TSrc, typename ...TArgs>
-inline
-auto make_owned_ptr(TArgs && ...args) -> owned_ptr_t<TSrc> {
-	return std::make_unique<TSrc>(args...);
-}
 
 // Useful DB-related aliases
 template <typename TElement>

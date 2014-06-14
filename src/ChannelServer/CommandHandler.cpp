@@ -83,7 +83,7 @@ namespace AdminOpcodes {
 
 auto CommandHandler::handleCommand(Player *player, PacketReader &reader) -> void {
 	int8_t type = reader.get<int8_t>();
-	string_t name = reader.get<string_t>();
+	chat_t name = reader.get<chat_t>();
 	Player *receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(name);
 	// If this player doesn't exist, connect to the world server to see if they're on any other channel
 	switch (type) {
@@ -108,7 +108,7 @@ auto CommandHandler::handleCommand(Player *player, PacketReader &reader) -> void
 			break;
 		}
 		case CommandOpcodes::Whisper: {
-			string_t chat = reader.get<string_t>();
+			chat_t chat = reader.get<chat_t>();
 			bool found = false;
 			if (receiver != nullptr) {
 				receiver->send(PlayersPacket::whisperPlayer(player->getName(), ChannelServer::getInstance().getChannelId(), chat));
@@ -142,8 +142,8 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 		// Hacking
 		return;
 	}
-	int8_t type = reader.get<int8_t>();
 
+	int8_t type = reader.get<int8_t>();
 	switch (type) {
 		case AdminOpcodes::Hide: {
 			bool hide = reader.get<bool>();
@@ -159,7 +159,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 			break;
 		}
 		case AdminOpcodes::Send: {
-			string_t name = reader.get<string_t>();
+			chat_t name = reader.get<chat_t>();
 			map_id_t mapId = reader.get<map_id_t>();
 
 			if (Player *receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(name)) {
@@ -210,7 +210,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 			break;
 		}
 		case AdminOpcodes::Ban: {
-			string_t victim = reader.get<string_t>();
+			chat_t victim = reader.get<chat_t>();
 			if (Player *receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(victim)) {
 				receiver->disconnect();
 			}
@@ -220,10 +220,10 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 			break;
 		}
 		case AdminOpcodes::Block: {
-			string_t victim = reader.get<string_t>();
+			chat_t victim = reader.get<chat_t>();
 			int8_t reason = reader.get<int8_t>();
 			int32_t length = reader.get<int32_t>();
-			string_t reasonMessage = reader.get<string_t>();
+			chat_t reasonMessage = reader.get<chat_t>();
 			if (Player *receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(victim)) {
 				Database::getCharDb().once
 					<< "UPDATE " << Database::makeCharTable("user_accounts") << " u "
@@ -239,7 +239,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 					soci::use(reasonMessage, "reasonMessage");
 
 				player->send(GmPacket::block());
-				string_t banMessage = victim + " has been banned" + ChatHandlerFunctions::getBanString(reason);
+				chat_t banMessage = victim + " has been banned" + ChatHandlerFunctions::getBanString(reason);
 				ChannelServer::getInstance().getPlayerDataProvider().send(PlayerPacket::showMessage(banMessage, PlayerPacket::NoticeTypes::Notice));
 			}
 			else {
@@ -255,11 +255,11 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 			break;
 		case AdminOpcodes::VarSetGet: {
 			int8_t type = reader.get<int8_t>();
-			string_t playerName = reader.get<string_t>();
+			chat_t playerName = reader.get<chat_t>();
 			if (Player *victim = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerName)) {
-				string_t variableName = reader.get<string_t>();
+				chat_t variableName = reader.get<chat_t>();
 				if (type == 0x0a) {
-					string_t variableValue = reader.get<string_t>();
+					chat_t variableValue = reader.get<chat_t>();
 					victim->getVariables()->setVariable(variableName, variableValue);
 				}
 				else {
@@ -272,8 +272,8 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 			break;
 		}
 		case AdminOpcodes::Warn: {
-			string_t victim = reader.get<string_t>();
-			string_t message = reader.get<string_t>();
+			chat_t victim = reader.get<chat_t>();
+			chat_t message = reader.get<chat_t>();
 			if (Player *receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(victim)) {
 				receiver->send(PlayerPacket::showMessage(message, PlayerPacket::NoticeTypes::Box));
 				player->send(GmPacket::warning(true));

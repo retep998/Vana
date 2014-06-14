@@ -23,18 +23,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.hpp"
 #include "SkillConstants.hpp"
 
-auto PlayerModFunctions::disconnect(Player *player, const string_t &args) -> ChatResult {
+auto PlayerModFunctions::disconnect(Player *player, const chat_t &args) -> ChatResult {
 	player->disconnect();
 	return ChatResult::HandledDisplay;
 }
 
-auto PlayerModFunctions::save(Player *player, const string_t &args) -> ChatResult {
+auto PlayerModFunctions::save(Player *player, const chat_t &args) -> ChatResult {
 	player->saveAll();
 	ChatHandlerFunctions::showInfo(player, "Your progress has been saved");
 	return ChatResult::HandledDisplay;
 }
 
-auto PlayerModFunctions::modMesos(Player *player, const string_t &args) -> ChatResult {
+auto PlayerModFunctions::modMesos(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		player->getInventory()->setMesos(atoi(args.c_str()));
 		return ChatResult::HandledDisplay;
@@ -42,7 +42,7 @@ auto PlayerModFunctions::modMesos(Player *player, const string_t &args) -> ChatR
 	return ChatResult::ShowSyntax;
 }
 
-auto PlayerModFunctions::heal(Player *player, const string_t &args) -> ChatResult {
+auto PlayerModFunctions::heal(Player *player, const chat_t &args) -> ChatResult {
 	player->getActiveBuffs()->useDispel();
 	player->getActiveBuffs()->removeDebuff(MobSkills::Seduce);
 	player->getActiveBuffs()->removeDebuff(MobSkills::CrazySkull);
@@ -51,7 +51,7 @@ auto PlayerModFunctions::heal(Player *player, const string_t &args) -> ChatResul
 	return ChatResult::HandledDisplay;
 }
 
-auto PlayerModFunctions::modStr(Player *player, const string_t &args) -> ChatResult {
+auto PlayerModFunctions::modStr(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		player->getStats()->setStr(atoi(args.c_str()));
 		return ChatResult::HandledDisplay;
@@ -59,7 +59,7 @@ auto PlayerModFunctions::modStr(Player *player, const string_t &args) -> ChatRes
 	return ChatResult::ShowSyntax;
 }
 
-auto PlayerModFunctions::modDex(Player *player, const string_t &args) -> ChatResult {
+auto PlayerModFunctions::modDex(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		player->getStats()->setDex(atoi(args.c_str()));
 		return ChatResult::HandledDisplay;
@@ -67,7 +67,7 @@ auto PlayerModFunctions::modDex(Player *player, const string_t &args) -> ChatRes
 	return ChatResult::ShowSyntax;
 }
 
-auto PlayerModFunctions::modInt(Player *player, const string_t &args) -> ChatResult {
+auto PlayerModFunctions::modInt(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		player->getStats()->setInt(atoi(args.c_str()));
 		return ChatResult::HandledDisplay;
@@ -75,7 +75,7 @@ auto PlayerModFunctions::modInt(Player *player, const string_t &args) -> ChatRes
 	return ChatResult::ShowSyntax;
 }
 
-auto PlayerModFunctions::modLuk(Player *player, const string_t &args) -> ChatResult {
+auto PlayerModFunctions::modLuk(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		player->getStats()->setLuk(atoi(args.c_str()));
 		return ChatResult::HandledDisplay;
@@ -83,7 +83,7 @@ auto PlayerModFunctions::modLuk(Player *player, const string_t &args) -> ChatRes
 	return ChatResult::ShowSyntax;
 }
 
-auto PlayerModFunctions::maxStats(Player *player, const string_t &args) -> ChatResult {
+auto PlayerModFunctions::maxStats(Player *player, const chat_t &args) -> ChatResult {
 	player->getStats()->setFame(Stats::MaxFame);
 	player->getStats()->setMaxHp(Stats::MaxMaxHp);
 	player->getStats()->setMaxMp(Stats::MaxMaxMp);
@@ -95,7 +95,7 @@ auto PlayerModFunctions::maxStats(Player *player, const string_t &args) -> ChatR
 	return ChatResult::HandledDisplay;
 }
 
-auto PlayerModFunctions::hp(Player *player, const string_t &args) -> ChatResult {
+auto PlayerModFunctions::hp(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		health_t amount = atoi(args.c_str());
 		player->getStats()->setMaxHp(amount);
@@ -107,7 +107,7 @@ auto PlayerModFunctions::hp(Player *player, const string_t &args) -> ChatResult 
 	return ChatResult::ShowSyntax;
 }
 
-auto PlayerModFunctions::mp(Player *player, const string_t &args) -> ChatResult {
+auto PlayerModFunctions::mp(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		health_t amount = atoi(args.c_str());
 		player->getStats()->setMaxMp(amount);
@@ -119,7 +119,7 @@ auto PlayerModFunctions::mp(Player *player, const string_t &args) -> ChatResult 
 	return ChatResult::ShowSyntax;
 }
 
-auto PlayerModFunctions::sp(Player *player, const string_t &args) -> ChatResult {
+auto PlayerModFunctions::sp(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		player->getStats()->setSp(atoi(args.c_str()));
 		return ChatResult::HandledDisplay;
@@ -127,7 +127,7 @@ auto PlayerModFunctions::sp(Player *player, const string_t &args) -> ChatResult 
 	return ChatResult::ShowSyntax;
 }
 
-auto PlayerModFunctions::ap(Player *player, const string_t &args) -> ChatResult {
+auto PlayerModFunctions::ap(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		player->getStats()->setAp(atoi(args.c_str()));
 		return ChatResult::HandledDisplay;
@@ -135,7 +135,7 @@ auto PlayerModFunctions::ap(Player *player, const string_t &args) -> ChatResult 
 	return ChatResult::ShowSyntax;
 }
 
-auto PlayerModFunctions::fame(Player *player, const string_t &args) -> ChatResult {
+auto PlayerModFunctions::fame(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		player->getStats()->setFame(atoi(args.c_str()));
 		return ChatResult::HandledDisplay;
@@ -143,7 +143,7 @@ auto PlayerModFunctions::fame(Player *player, const string_t &args) -> ChatResul
 	return ChatResult::ShowSyntax;
 }
 
-auto PlayerModFunctions::level(Player *player, const string_t &args) -> ChatResult {
+auto PlayerModFunctions::level(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		player->getStats()->setLevel(atoi(args.c_str()));
 		return ChatResult::HandledDisplay;
@@ -151,7 +151,7 @@ auto PlayerModFunctions::level(Player *player, const string_t &args) -> ChatResu
 	return ChatResult::ShowSyntax;
 }
 
-auto PlayerModFunctions::job(Player *player, const string_t &args) -> ChatResult {
+auto PlayerModFunctions::job(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		job_id_t job = ChatHandlerFunctions::getJob(args);
 		if (job >= 0) {
@@ -169,7 +169,7 @@ auto PlayerModFunctions::job(Player *player, const string_t &args) -> ChatResult
 	return ChatResult::HandledDisplay;
 }
 
-auto PlayerModFunctions::addSp(Player *player, const string_t &args) -> ChatResult {
+auto PlayerModFunctions::addSp(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) ?(-{0,1}\d+)?)", matches) == MatchResult::AnyMatches) {
 		string_t rawSkill = matches[1];
@@ -189,7 +189,7 @@ auto PlayerModFunctions::addSp(Player *player, const string_t &args) -> ChatResu
 	return ChatResult::ShowSyntax;
 }
 
-auto PlayerModFunctions::maxSp(Player *player, const string_t &args) -> ChatResult {
+auto PlayerModFunctions::maxSp(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) ?(-{0,1}\d+)?)", matches) == MatchResult::AnyMatches) {
 		string_t rawSkill = matches[1];

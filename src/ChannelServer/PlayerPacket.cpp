@@ -182,12 +182,12 @@ PACKET_IMPL(changeChannel, const Ip &ip, port_t port) {
 	return builder;
 }
 
-PACKET_IMPL(showMessage, const string_t &msg, int8_t type) {
+PACKET_IMPL(showMessage, const chat_t &msg, int8_t type) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_MESSAGE)
 		.add<int8_t>(type)
-		.add<string_t>(msg);
+		.add<chat_t>(msg);
 
 	if (type == NoticeTypes::Blue) {
 		builder.add<int32_t>(0);
@@ -195,17 +195,17 @@ PACKET_IMPL(showMessage, const string_t &msg, int8_t type) {
 	return builder;
 }
 
-PACKET_IMPL(groupChat, const string_t &name, const string_t &msg, int8_t type) {
+PACKET_IMPL(groupChat, const string_t &name, const chat_t &msg, int8_t type) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_MESSAGE_GROUP)
 		.add<int8_t>(type)
 		.add<string_t>(name)
-		.add<string_t>(msg);
+		.add<chat_t>(msg);
 	return builder;
 }
 
-PACKET_IMPL(instructionBubble, const string_t &msg, coord_t width, int16_t time, bool isStatic, int32_t x, int32_t y) {
+PACKET_IMPL(instructionBubble, const chat_t &msg, coord_t width, int16_t time, bool isStatic, int32_t x, int32_t y) {
 	PacketBuilder builder;
 
 	if (width == -1) {
@@ -217,7 +217,7 @@ PACKET_IMPL(instructionBubble, const string_t &msg, coord_t width, int16_t time,
 
 	builder
 		.add<header_t>(SMSG_BUBBLE)
-		.add<string_t>(msg)
+		.add<chat_t>(msg)
 		.add<coord_t>(width)
 		.add<int16_t>(time)
 		.add<bool>(!isStatic);
@@ -248,12 +248,12 @@ PACKET_IMPL(sendBlockedMessage, int8_t type) {
 	return builder;
 }
 
-PACKET_IMPL(sendYellowMessage, const string_t &msg) {
+PACKET_IMPL(sendYellowMessage, const chat_t &msg) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_YELLOW_MESSAGE)
 		.add<bool>(true)
-		.add<string_t>(msg);
+		.add<chat_t>(msg);
 	return builder;
 }
 
