@@ -437,25 +437,40 @@ auto ManagementFunctions::reload(Player *player, const chat_t &args) -> ChatResu
 }
 
 auto ManagementFunctions::npc(Player *player, const chat_t &args) -> ChatResult {
-	if (!args.empty()) {
+	match_t matches;
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+))", matches) == MatchResult::AnyMatches) {
+		auto &provider = ChannelServer::getInstance().getNpcDataProvider();
 		npc_id_t npcId = atoi(args.c_str());
-		Npc *npc = new Npc(npcId, player);
-		npc->run();
+		if (provider.isValidNpcId(npcId)) {
+			Npc *npc = new Npc(npcId, player);
+			npc->run();
+		}
+		else {
+			ChatHandlerFunctions::showError(player, "Invalid NPC ID: " + args);
+		}
 		return ChatResult::HandledDisplay;
 	}
 	return ChatResult::ShowSyntax;
 }
 
 auto ManagementFunctions::addNpc(Player *player, const chat_t &args) -> ChatResult {
-	if (!args.empty()) {
-		NpcSpawnInfo npc;
-		npc.id = atoi(args.c_str());
-		npc.foothold = 0;
-		npc.pos = player->getPos();
-		npc.rx0 = npc.pos.x - 50;
-		npc.rx1 = npc.pos.x + 50;
-		map_object_t id = player->getMap()->addNpc(npc);
-		ChatHandlerFunctions::showInfo(player, "Spawned NPC with object ID " + StringUtilities::lexical_cast<string_t>(id));
+	match_t matches;
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+))", matches) == MatchResult::AnyMatches) {
+		auto &provider = ChannelServer::getInstance().getNpcDataProvider();
+		npc_id_t npcId = atoi(args.c_str());
+		if (provider.isValidNpcId(npcId)) {
+			NpcSpawnInfo npc;
+			npc.id = npcId;
+			npc.foothold = 0;
+			npc.pos = player->getPos();
+			npc.rx0 = npc.pos.x - 50;
+			npc.rx1 = npc.pos.x + 50;
+			map_object_t id = player->getMap()->addNpc(npc);
+			ChatHandlerFunctions::showInfo(player, "Spawned NPC " + args + " with object ID " + StringUtilities::lexical_cast<string_t>(id));
+		}
+		else {
+			ChatHandlerFunctions::showError(player, "Invalid NPC ID: " + args);
+		}
 		return ChatResult::HandledDisplay;
 	}
 	return ChatResult::ShowSyntax;
