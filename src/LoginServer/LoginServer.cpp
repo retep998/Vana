@@ -37,7 +37,7 @@ LoginServer::LoginServer() :
 auto LoginServer::listen() -> void {
 	auto &config = getInterServerConfig();
 	getConnectionManager().accept(Ip::Type::Ipv4, m_port, [] { return new UserConnection(); }, config, false, MapleVersion::LoginSubversion);
-	getConnectionManager().accept(Ip::Type::Ipv4, m_interPort, [] { return new LoginServerAcceptConnection(); }, config, true, MapleVersion::LoginSubversion);
+	getConnectionManager().accept(Ip::Type::Ipv4, config.loginPort, [] { return new LoginServerAcceptConnection(); }, config, true, MapleVersion::LoginSubversion);
 }
 
 auto LoginServer::loadData() -> Result {
@@ -64,7 +64,6 @@ auto LoginServer::loadConfig() -> Result {
 	config.run();
 	m_pinEnabled = config.get<bool>("pin");
 	m_port = config.get<port_t>("port");
-	m_interPort = config.get<port_t>("inter_port");
 	m_maxInvalidLogins = config.get<int32_t>("invalid_login_threshold");
 
 	loadWorlds();
