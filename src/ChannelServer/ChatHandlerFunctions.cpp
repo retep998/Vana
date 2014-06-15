@@ -641,19 +641,20 @@ auto ChatHandlerFunctions::initialize() -> void {
 auto ChatHandlerFunctions::getMap(const chat_t &query, Player *player) -> int32_t {
 	map_id_t mapId = -1;
 	// Special
-	if (query == "here") mapId = player->getMapId();
-	else if (query == "back") mapId = player->getLastMapId();
-	else if (query == "town") mapId = player->getMap()->getReturnMap();
-	else if (query == "return") {
+	chat_t lowercaseQuery = StringUtilities::toLower(query);
+	if (lowercaseQuery == "here") mapId = player->getMapId();
+	else if (lowercaseQuery == "back") mapId = player->getLastMapId();
+	else if (lowercaseQuery == "town") mapId = player->getMap()->getReturnMap();
+	else if (lowercaseQuery == "return") {
 		mapId = player->getMap()->getForcedReturn();
 		if (mapId == Maps::NoMap) mapId = player->getMap()->getReturnMap();
 	}
 	else {
-		auto kvp = sMapAssociations.find(query);
+		auto kvp = sMapAssociations.find(lowercaseQuery);
 		if (kvp != std::end(sMapAssociations)) mapId = kvp->second.mapId;
 		else {
 			char *endptr;
-			mapId = strtol(query.c_str(), &endptr, 0);
+			mapId = strtol(lowercaseQuery.c_str(), &endptr, 0);
 			if (strlen(endptr) != 0) mapId = -1;
 		}
 	}
