@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <mutex>
 #include <queue>
 #include <regex>
+#include <set>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -139,6 +140,8 @@ template <typename TString = string_t>
 using case_insensitive_hash_set_t = std::unordered_set<TString, CaseInsensitiveHash, CaseInsensitiveEquals>;
 template <typename TKey, typename TElement, typename TOrdering = std::less<TKey>>
 using ord_map_t = std::map<TKey, TElement, TOrdering>;
+template <typename TKey, typename TOrdering = std::less<TKey>>
+using ord_set_t = std::set<TKey, TOrdering>;
 template <typename TFunc>
 using function_t = std::function<TFunc>;
 template <typename TPtr>
