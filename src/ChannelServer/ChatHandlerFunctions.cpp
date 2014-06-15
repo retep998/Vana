@@ -369,13 +369,13 @@ auto ChatHandlerFunctions::initialize() -> void {
 	command.notes.push_back("-------------------");
 	command.notes.push_back("Available Maps");
 	command.notes.push_back("-------------------");
-	ord_map_t<string_t, vector_t<string_t>> byCategory;
+	ord_map_t<string_t, ord_set_t<string_t>> byCategory;
 	for (const auto &kvp : sMapAssociations) {
 		auto existing = byCategory.find(kvp.second.category);
 		if (existing == std::end(byCategory)) {
-			existing = byCategory.emplace(kvp.second.category, vector_t<string_t>{}).first;
+			existing = byCategory.emplace(kvp.second.category, ord_set_t<string_t>{}).first;
 		}
-		existing->second.push_back(kvp.first);
+		existing->second.insert(kvp.first);
 	}
 	for (const auto &kvp : byCategory) {
 		chat_stream_t category;
@@ -629,6 +629,7 @@ auto ChatHandlerFunctions::initialize() -> void {
 	command.notes.push_back("$ = string");
 	command.notes.push_back("# = number");
 	command.notes.push_back("${hi | bye} = specific choices, in this case, strings of hi or bye");
+	command.notes.push_back("{${hi | bye} | #time in seconds} = specific choices, in this case, strings of hi or bye or the time in seconds");
 	command.notes.push_back("<#time in seconds> = required parameter");
 	command.notes.push_back("[#time in seconds] = optional parameter");
 	sCommandList["help"] = command.addToMap();
