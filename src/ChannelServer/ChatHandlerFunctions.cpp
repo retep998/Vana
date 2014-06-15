@@ -633,6 +633,10 @@ auto ChatHandlerFunctions::initialize() -> void {
 	command.notes.push_back("<#time in seconds> = required parameter");
 	command.notes.push_back("[#time in seconds] = optional parameter");
 	sCommandList["help"] = command.addToMap();
+
+	command.command = &InfoFunctions::gmLevel;
+	command.notes.push_back("Displays your current GM level");
+	sCommandList["gmlevel"] = command.addToMap();
 	#pragma endregion
 
 	CustomFunctions::initialize(sCommandList);
