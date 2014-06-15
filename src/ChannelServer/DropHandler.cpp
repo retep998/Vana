@@ -96,7 +96,9 @@ auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t dropping
 		}
 
 		if (Randomizer::rand<uint32_t>(999999) < chance) {
-			pos.x = origin.x + ((dropPosCounter % 2) ? (mod * (dropPosCounter + 1) / 2) : -(mod * (dropPosCounter / 2)));
+			pos.x = origin.x + ((dropPosCounter % 2) ?
+				(mod * (dropPosCounter + 1) / 2) :
+				-(mod * (dropPosCounter / 2)));
 			pos.y = origin.y;
 
 			if (Maps::getMap(mapId)->getFhAtPosition(pos) == 0) {
@@ -113,7 +115,10 @@ auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t dropping
 					}
 				}
 
-				Item f = (GameLogicUtilities::isEquip(itemId) ? Item(ChannelServer::getInstance().getEquipDataProvider(), itemId, Items::StatVariance::Normal, player != nullptr && player->hasGmBenefits()) : Item(itemId, amount));
+				Item f = GameLogicUtilities::isEquip(itemId) ?
+					Item(ChannelServer::getInstance().getEquipDataProvider(), itemId, Items::StatVariance::Normal, player != nullptr && player->hasGmBenefits()) :
+					Item(itemId, amount);
+
 				drop = new Drop(mapId, f, pos, playerId);
 
 				if (questId > 0) {

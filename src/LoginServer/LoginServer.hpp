@@ -48,7 +48,6 @@ protected:
 private:
 	bool m_pinEnabled = false;
 	port_t m_port = 0;
-	port_t m_interPort = 0;
 	int32_t m_maxInvalidLogins = 0;
 	ValidCharDataProvider m_validCharDataProvider;
 	EquipDataProvider m_equipDataProvider;

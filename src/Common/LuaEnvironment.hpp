@@ -49,10 +49,15 @@ class LuaEnvironment;
 
 template <typename T>
 struct LuaSerialize {
+	auto read(LuaEnvironment &config, int stackIndex) -> T {
+		static_assert(false, "index read of T is not appropriately specialized for that type");
+		throw std::logic_error("index read of T is not appropriately specialized for that type");
+	}
+
 	auto read(LuaEnvironment &config, const string_t &prefix) -> T {
-		static_assert(false, "T is not appropriately specialized for that type");
-		throw std::logic_error("T is not appropriately specialized for that type");
-	};
+		static_assert(false, "string prefix read of T is not appropriately specialized for that type");
+		throw std::logic_error("string prefix read of T is not appropriately specialized for that type");
+	}
 };
 
 // TODO FIXME lua
@@ -595,8 +600,8 @@ auto LuaEnvironment::getInteger(lua_State *luaVm, int index) -> TInteger {
 
 template <typename T>
 auto LuaEnvironment::getImpl(lua_State *luaVm, int index, T *) -> T {
-	static_assert(false, "T is not appropriately specialized for that type");
-	throw std::logic_error("T is not appropriately specialized for that type");
+	LuaSerialize<T> x;
+	return x.read(*this, index);
 }
 
 template <>
