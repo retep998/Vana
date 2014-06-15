@@ -298,7 +298,7 @@ auto ChatHandlerFunctions::initialize() -> void {
 	sCommandList["kick"] = command.addToMap();
 
 	command.command = &ManagementFunctions::warp;
-	command.syntax = "<${map | player | self | current | channel}> <${map | player | self | current}> <$map string | #map ID | $player name> [$map string | #map ID | $player name]";
+	command.syntax = "<${map | player | self | current | channel}> <${map | player | self | current}> <{$map string | #map ID | $player name}> [{$map string | #map ID | $player name}]";
 	command.notes.push_back("Warps the source argument to the destination argument");
 	command.notes.push_back("This is a complicated command, but here are some examples with explanations:");
 	command.notes.push_back("1: !warp player player Bill James");
@@ -364,7 +364,7 @@ auto ChatHandlerFunctions::initialize() -> void {
 	sCommandList["questkills"] = command.addToMap();
 
 	command.command = &ManagementFunctions::map;
-	command.syntax = "<$map string | #map ID>";
+	command.syntax = "<{$map string | #map ID}>";
 	command.notes.push_back("Warps you to a desired map");
 	command.notes.push_back("-------------------");
 	command.notes.push_back("Available Maps");
@@ -399,7 +399,7 @@ auto ChatHandlerFunctions::initialize() -> void {
 	sCommandList["follow"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::job;
-	command.syntax = "<$job string | #job ID>";
+	command.syntax = "<{$job string | #job ID}>";
 	command.notes.push_back("Sets your job");
 	command.notes.push_back("Valid job strings:");
 	command.notes.push_back("beginner | noblesse");
@@ -506,7 +506,7 @@ auto ChatHandlerFunctions::initialize() -> void {
 	sCommandList["gmchat"] = command.addToMap();
 
 	command.command = &ManagementFunctions::shop;
-	command.syntax = "<${gear, scrolls, nx, face, ring, chair, mega, pet} | #shop ID>";
+	command.syntax = "<{${gear, scrolls, nx, face, ring, chair, mega, pet} | #shop ID}>";
 	command.notes.push_back("Shows you the desired shop");
 	sCommandList["shop"] = command.addToMap();
 
@@ -566,17 +566,17 @@ auto ChatHandlerFunctions::initialize() -> void {
 	sCommandList["listmobs"] = command.addToMap();
 
 	command.command = &MapFunctions::listPortals;
-	command.syntax = "[$map string | #map ID]";
+	command.syntax = "[{$map string | #map ID}]";
 	command.notes.push_back("Lists all the non-spawn/non-Mystic Door portals on the map");
 	sCommandList["listportals"] = command.addToMap();
 
 	command.command = &MapFunctions::listReactors;
-	command.syntax = "[$map string | #map ID]";
+	command.syntax = "[{$map string | #map ID}]";
 	command.notes.push_back("Lists all the reactors on the map");
 	sCommandList["listreactors"] = command.addToMap();
 
 	command.command = &MapFunctions::listNpcs;
-	command.syntax = "[$map string | #map ID]";
+	command.syntax = "[{$map string | #map ID}]";
 	command.notes.push_back("Lists all the NPCs and potentially their scripts on the map");
 	sCommandList["listnpcs"] = command.addToMap();
 
