@@ -29,4 +29,5 @@ namespace InfoFunctions {
 	auto variable(Player *player, const chat_t &args) -> ChatResult;
 	auto questData(Player *player, const chat_t &args) -> ChatResult;
 	auto questKills(Player *player, const chat_t &args) -> ChatResult;
+	auto gmLevel(Player *player, const chat_t &args) -> ChatResult;
 }

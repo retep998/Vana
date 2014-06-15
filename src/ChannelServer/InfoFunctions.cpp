@@ -379,3 +379,8 @@ auto InfoFunctions::questKills(Player *player, const chat_t &args) -> ChatResult
 
 	return ChatResult::HandledDisplay;
 }
+
+auto InfoFunctions::gmLevel(Player *player, const chat_t &args) -> ChatResult {
+	ChatHandlerFunctions::showInfo(player, [&](chat_stream_t &message) { message << "Your GM level: " << player->getGmLevel(); });
+	return ChatResult::HandledDisplay;
+}
