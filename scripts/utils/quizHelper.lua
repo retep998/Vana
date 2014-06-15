@@ -21,7 +21,7 @@ dofile("scripts/utils/npcHelper.lua");
 
 answer_correct = 1;
 answer_incorrect = 0;
-local quiz_questionRecord = {};
+local quizQuestionRecord = {};
 
 function makeQuizQuestion(question, correctAnswerIndex, answers)
 	return {question, correctAnswerIndex, answers};
@@ -31,7 +31,7 @@ function askQuizQuestion(questions, prefix)
 	local questionId = nil;
 	repeat
 		questionId = getRandomNumber(#questions);
-	until quiz_questionRecord[questionId] == nil
+	until quizQuestionRecord[questionId] == nil
 
 	if prefix ~= nil then
 		addText(prefix);
@@ -43,7 +43,7 @@ function askQuizQuestion(questions, prefix)
 	local choice = askChoice();
 
 	if choice == (question[2] - 1) then
-		quiz_questionRecord[questionId] = true;
+		quizQuestionRecord[questionId] = true;
 		return answer_correct;
 	end
 
