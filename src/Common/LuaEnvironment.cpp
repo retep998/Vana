@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ObjectPool<int32_t, LuaEnvironment *> LuaEnvironment::s_environments = ObjectPool<int32_t, LuaEnvironment *>(1, 1000000);
 
 auto LuaEnvironment::getEnvironment(lua_State *luaVm) -> LuaEnvironment & {
-	lua_getglobal(luaVm, "system_environmentId");
+	lua_getglobal(luaVm, "system_environment_id");
 	int32_t id = lua_tointeger(luaVm, -1);
 	lua_pop(luaVm, 1);
 	auto kvp = s_environments.find(id);
@@ -36,7 +36,7 @@ LuaEnvironment::LuaEnvironment(const string_t &filename)
 	loadFile(filename);
 
 	m_environmentIdentifier = s_environments.store(this);
-	set<int32_t>("system_environmentId", m_environmentIdentifier);
+	set<int32_t>("system_environment_id", m_environmentIdentifier);
 }
 
 LuaEnvironment::LuaEnvironment(const string_t &filename, bool useThread)
@@ -47,7 +47,7 @@ LuaEnvironment::LuaEnvironment(const string_t &filename, bool useThread)
 	if (useThread) {
 		m_luaThread = lua_newthread(m_luaVm);
 	}
-	set<int32_t>("system_environmentId", m_environmentIdentifier);
+	set<int32_t>("system_environment_id", m_environmentIdentifier);
 }
 
 LuaEnvironment::~LuaEnvironment() {
