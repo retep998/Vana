@@ -68,14 +68,14 @@ LuaScriptable::LuaScriptable(const string_t &filename, player_id_t playerId, boo
 }
 
 auto LuaScriptable::initialize() -> void {
-	set<player_id_t>("system_playerId", m_playerId); // Pushing ID for reference from static functions
+	set<player_id_t>("system_player_id", m_playerId); // Pushing ID for reference from static functions
 	set<string_t>("system_script", getScriptName());
 	set<vector_t<string_t>>("system_path", getScriptPath());
 	setEnvironmentVariables();
 
 	Player *player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(m_playerId);
 	if (player != nullptr && player->getInstance() != nullptr) {
-		set<string_t>("system_instanceName", player->getInstance()->getName());
+		set<string_t>("system_instance_name", player->getInstance()->getName());
 	}
 
 	// Miscellanous
@@ -383,7 +383,7 @@ auto LuaScriptable::setEnvironmentVariables() -> void {
 
 	set<version_t>("env_version", MapleVersion::Version);
 	set<string_t>("env_subversion", MapleVersion::LoginSubversion);
-	set<bool>("env_isTestServer", MapleVersion::TestServer);
+	set<bool>("env_is_test_server", MapleVersion::TestServer);
 	set<string_t>("env_locale", MapleVersion::LocaleString);
 }
 
@@ -411,7 +411,7 @@ auto LuaExports::getEnvironment(lua_State *luaVm) -> LuaEnvironment & {
 }
 
 auto LuaExports::getPlayer(lua_State *luaVm, LuaEnvironment &env) -> Player * {
-	player_id_t playerId = env.get<player_id_t>(luaVm, "system_playerId");
+	player_id_t playerId = env.get<player_id_t>(luaVm, "system_player_id");
 	return ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId);
 }
 
@@ -427,7 +427,7 @@ auto LuaExports::getPlayerDeduced(int parameter, lua_State *luaVm, LuaEnvironmen
 }
 
 auto LuaExports::getInstance(lua_State *luaVm, LuaEnvironment &env) -> Instance * {
-	string_t instanceName = env.get<string_t>(luaVm, "system_instanceName");
+	string_t instanceName = env.get<string_t>(luaVm, "system_instance_name");
 	return ChannelServer::getInstance().getInstances().getInstance(instanceName);
 }
 
@@ -1268,7 +1268,7 @@ auto LuaExports::isOnline(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::revertPlayer(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.set<player_id_t>(luaVm, "system_playerId", env.get<player_id_t>(luaVm, "system_oldPlayerId"));
+	env.set<player_id_t>(luaVm, "system_player_id", env.get<player_id_t>(luaVm, "system_old_player_id"));
 	return 0;
 }
 
@@ -1373,8 +1373,8 @@ auto LuaExports::setPlayer(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	Player *player = getPlayerDeduced(1, luaVm, env);
 	if (player != nullptr) {
-		env.set<player_id_t>(luaVm, "system_oldPlayerId", env.get<player_id_t>(luaVm, "system_playerId"));
-		env.set<player_id_t>(luaVm, "system_playerId", player->getId());
+		env.set<player_id_t>(luaVm, "system_old_player_id", env.get<player_id_t>(luaVm, "system_player_id"));
+		env.set<player_id_t>(luaVm, "system_player_id", player->getId());
 	}
 	env.push<bool>(luaVm, player != nullptr);
 	return 1;
@@ -2048,7 +2048,7 @@ auto LuaExports::createInstance(lua_State *luaVm) -> lua_return_t {
 		instance->showTimer(true, true);
 	}
 
-	env.set<string_t>(luaVm, "system_instanceName", name);
+	env.set<string_t>(luaVm, "system_instance_name", name);
 	return 0;
 }
 
@@ -2232,7 +2232,7 @@ auto LuaExports::respawnInstanceReactors(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::revertInstance(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.set<string_t>(luaVm, "system_instanceName", env.get<string_t>(luaVm, "system_oldInstanceName"));
+	env.set<string_t>(luaVm, "system_instance_name", env.get<string_t>(luaVm, "system_old_instance_name"));
 	return 0;
 }
 
@@ -2240,8 +2240,8 @@ auto LuaExports::setInstance(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	Instance *instance = ChannelServer::getInstance().getInstances().getInstance(env.get<string_t>(luaVm, 1));
 	if (instance != nullptr) {
-		env.set<string_t>(luaVm, "system_oldInstanceName", env.get<string_t>(luaVm, "system_instanceName"));
-		env.set<string_t>(luaVm, "system_instanceName", instance->getName());
+		env.set<string_t>(luaVm, "system_old_instance_name", env.get<string_t>(luaVm, "system_instance_name"));
+		env.set<string_t>(luaVm, "system_instance_name", instance->getName());
 	}
 	env.push<bool>(luaVm, instance != nullptr);
 	return 1;

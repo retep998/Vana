@@ -32,8 +32,8 @@ LuaReactor::LuaReactor(const string_t &filename, player_id_t playerId, reactor_i
 	LuaScriptable(filename, playerId),
 	m_reactorId(reactorId)
 {
-	set<reactor_id_t>("system_reactorId", reactorId);
-	set<map_id_t>("system_mapId", mapId);
+	set<reactor_id_t>("system_reactor_id", reactorId);
+	set<map_id_t>("system_map_id", mapId);
 
 	// Reactor
 	expose("getState", &LuaExports::getState);
@@ -52,8 +52,8 @@ LuaReactor::LuaReactor(const string_t &filename, player_id_t playerId, reactor_i
 }
 
 auto LuaExports::getReactor(lua_State *luaVm, LuaEnvironment &env) -> Reactor * {
-	reactor_id_t reactorId = env.get<reactor_id_t>(luaVm, "system_reactorId");
-	map_id_t mapId = env.get<map_id_t>(luaVm, "system_mapId");
+	reactor_id_t reactorId = env.get<reactor_id_t>(luaVm, "system_reactor_id");
+	map_id_t mapId = env.get<map_id_t>(luaVm, "system_map_id");
 	return Maps::getMap(mapId)->getReactor(reactorId);
 }
 
