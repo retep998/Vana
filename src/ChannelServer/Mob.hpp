@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MobConstants.hpp"
 #include "MobDataProvider.hpp"
 #include "MovableLife.hpp"
-#include "Pos.hpp"
+#include "Point.hpp"
 #include "TimerContainerHolder.hpp"
 #include "Types.hpp"
 #include <map>
@@ -41,7 +41,7 @@ class Mob : public MovableLife, public enable_shared<Mob>, public TimerContainer
 	NONCOPYABLE(Mob);
 	NO_DEFAULT_CONSTRUCTOR(Mob);
 public:
-	Mob(map_object_t mapMobId, map_id_t mapId, mob_id_t mobId, view_ptr_t<Mob> owner, const Pos &pos, int32_t spawnId, bool facesLeft, foothold_id_t foothold, MobControlStatus controlStatus);
+	Mob(map_object_t mapMobId, map_id_t mapId, mob_id_t mobId, view_ptr_t<Mob> owner, const Point &pos, int32_t spawnId, bool facesLeft, foothold_id_t foothold, MobControlStatus controlStatus);
 
 	auto applyDamage(player_id_t playerId, damage_t damage, bool poison = false) -> void;
 	auto applyWebDamage() -> void;
@@ -87,7 +87,7 @@ public:
 	auto hasExplosiveDrop() const -> bool { return m_info->explosiveReward; }
 	auto hasFfaDrop() const -> bool { return m_info->publicReward; }
 	auto isSponge() const -> bool { return isSponge(getMobId()); }
-	auto getPos() const -> Pos override { return Pos(m_pos.x, m_pos.y - 1); }
+	auto getPos() const -> Point override { return Point{m_pos.x, m_pos.y - 1}; }
 	auto getControlStatus() const -> MobControlStatus { return m_controlStatus; }
 
 	auto getController() const -> Player * { return m_controller; }

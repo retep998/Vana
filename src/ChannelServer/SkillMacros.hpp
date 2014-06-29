@@ -33,7 +33,7 @@ public:
 	auto load(player_id_t charId) -> void;
 	auto save(player_id_t charId) -> void;
 private:
-	int8_t m_maxPos = -1;
+	int8_t m_maxPoint = -1;
 	hash_map_t<int8_t, ref_ptr_t<SkillMacro>> m_skillMacros;
 };
 
@@ -53,8 +53,8 @@ public:
 inline
 auto SkillMacros::add(uint8_t pos, SkillMacro *macro) -> void {
 	m_skillMacros[pos].reset(macro);
-	if (m_maxPos < pos) {
-		m_maxPos = pos;
+	if (m_maxPoint < pos) {
+		m_maxPoint = pos;
 	}
 }
 
@@ -68,7 +68,7 @@ SkillMacros::SkillMacro * SkillMacros::getSkillMacro(int8_t pos) {
 
 inline
 auto SkillMacros::getMax() -> int8_t {
-	return m_maxPos;
+	return m_maxPoint;
 }
 
 inline

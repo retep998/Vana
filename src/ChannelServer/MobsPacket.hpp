@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class Mob;
 class Player;
-struct Pos;
+struct Point;
 struct StatusInfo;
 
 namespace MobsPacket {
@@ -42,5 +42,5 @@ namespace MobsPacket {
 	PACKET(showHp, map_object_t mapMobId, int8_t percentage);
 	PACKET(showBossHp, ref_ptr_t<Mob> mob);
 	PACKET(dieMob, map_object_t mapMobId, int8_t death = 1);
-	PACKET(showSpawnEffect, int8_t summonEffect, const Pos &pos);
+	PACKET(showSpawnEffect, int8_t summonEffect, const Point &pos);
 }

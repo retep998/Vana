@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapDataProvider.hpp"
 #include "MapObjects.hpp"
 #include "Mob.hpp"
-#include "Pos.hpp"
+#include "Point.hpp"
 #include "Rect.hpp"
 #include "TimerContainerHolder.hpp"
 #include "Types.hpp"
@@ -76,8 +76,8 @@ public:
 	auto getId() const -> map_id_t { return m_id; }
 
 	// Footholds
-	auto findFloor(const Pos &pos, Pos &floorPos, coord_t yMod = 0) -> SearchResult;
-	auto getFhAtPosition(const Pos &pos) -> foothold_id_t;
+	auto findFloor(const Point &pos, Point &floorPos, coord_t yMod = 0) -> SearchResult;
+	auto getFhAtPosition(const Point &pos) -> foothold_id_t;
 
 	// Seats
 	auto seatOccupied(seat_id_t id) -> bool;
@@ -86,7 +86,7 @@ public:
 	// Portals
 	auto getPortal(const string_t &name) -> PortalInfo *;
 	auto getSpawnPoint(portal_id_t portalId = -1) -> PortalInfo *;
-	auto getNearestSpawnPoint(const Pos &pos) -> PortalInfo *;
+	auto getNearestSpawnPoint(const Point &pos) -> PortalInfo *;
 	auto getPortalNames() const -> vector_t<string_t>;
 
 	// Players
@@ -114,9 +114,9 @@ public:
 	auto mobDeath(ref_ptr_t<Mob> mob, bool fromExplosion) -> void;
 	auto healMobs(int32_t hp, int32_t mp, const Rect &dimensions) -> void;
 	auto statusMobs(vector_t<StatusInfo> &statuses, const Rect &dimensions) -> void;
-	auto spawnZakum(const Pos &pos, foothold_id_t foothold = 0) -> void;
+	auto spawnZakum(const Point &pos, foothold_id_t foothold = 0) -> void;
 	auto convertShellToNormal(ref_ptr_t<Mob> mob) -> void;
-	auto spawnMob(mob_id_t mobId, const Pos &pos, foothold_id_t foothold = 0, ref_ptr_t<Mob> owner = nullptr, int8_t summonEffect = 0) -> ref_ptr_t<Mob>;
+	auto spawnMob(mob_id_t mobId, const Point &pos, foothold_id_t foothold = 0, ref_ptr_t<Mob> owner = nullptr, int8_t summonEffect = 0) -> ref_ptr_t<Mob>;
 	auto spawnMob(int32_t spawnId, const MobSpawnInfo &info) -> ref_ptr_t<Mob>;
 	auto killMobs(Player *player, bool distributeExpAndDrops, mob_id_t mobId = 0) -> int32_t;
 	auto countMobs(mob_id_t mobId = 0) -> int32_t;
@@ -178,7 +178,7 @@ private:
 	auto checkMists() -> void;
 	auto clearDrops(time_point_t time) -> void;
 	auto timeMob(bool firstLoad = true) -> void;
-	auto spawnShell(mob_id_t mobId, const Pos &pos, foothold_id_t foothold) -> ref_ptr_t<Mob>;
+	auto spawnShell(mob_id_t mobId, const Point &pos, foothold_id_t foothold) -> ref_ptr_t<Mob>;
 	auto updateMobControl(Player *player) -> void;
 	auto updateMobControl(ref_ptr_t<Mob> mob, MobSpawnType spawn = MobSpawnType::Existing, Player *display = nullptr) -> void;
 	auto mapTick(const time_point_t &now) -> void;
@@ -188,13 +188,14 @@ private:
 	auto findController(ref_ptr_t<Mob> mob) -> Player *;
 	auto clearMists(bool showPacket = true) -> void;
 	auto removeMist(Mist *mist) -> void;
-	auto findRandomFloorPos() -> Pos;
-	auto findRandomFloorPos(const Rect &area) -> Pos;
+	auto findRandomFloorPos() -> Point;
+	auto findRandomFloorPos(const Rect &area) -> Point;
 	auto buffPlayers(item_id_t buffId) -> void;
 
 	// Longer-lived data
 	bool m_ship = false;
 	bool m_runUnloader = true;
+	bool m_inferSizeFromFootholds = false;
 	map_id_t m_id = 0;
 	map_object_t m_timeMob = 0;
 	mob_id_t m_spawnMobs = -1;
@@ -207,6 +208,7 @@ private:
 	time_point_t m_timerStart = seconds_t(0);
 	time_point_t m_lastSpawn = seconds_t(0);
 	string_t m_music;
+	Rect m_realDimensions;
 	IdPool<map_object_t> m_objectIds;
 	IdPool<mist_id_t> m_mistIds;
 	recursive_mutex_t m_dropsMutex;
@@ -219,7 +221,7 @@ private:
 	ord_map_t<seat_id_t, SeatInfo> m_seats;
 	hash_map_t<string_t, PortalInfo> m_portals;
 	hash_map_t<portal_id_t, PortalInfo> m_spawnPoints;
-	hash_map_t<string_t, Pos> m_reactorPositions;
+	hash_map_t<string_t, Point> m_reactorPositions;
 
 	// Shorter-lived objects
 	vector_t<Player *> m_players;

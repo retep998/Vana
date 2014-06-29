@@ -21,10 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class PacketReader;
 class Player;
-struct Pos;
+struct Point;
 
 namespace DropHandler {
-	auto doDrops(player_id_t playerId, map_id_t mapId, int32_t droppingLevel, int32_t droppingId, const Pos &origin, bool explosive, bool ffa, int32_t taunt = 100, bool isSteal = false) -> void;
+	auto doDrops(player_id_t playerId, map_id_t mapId, int32_t droppingLevel, int32_t droppingId, const Point &origin, bool explosive, bool ffa, int32_t taunt = 100, bool isSteal = false) -> void;
 	auto dropMesos(Player *player, PacketReader &reader) -> void;
 	auto petLoot(Player *player, PacketReader &reader) -> void;
 	auto lootItem(Player *player, PacketReader &reader, pet_id_t petId = 0) -> void;

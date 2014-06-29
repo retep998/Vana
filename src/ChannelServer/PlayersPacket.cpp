@@ -87,7 +87,7 @@ SPLIT_PACKET_IMPL(damagePlayer, int32_t playerId, int32_t dmg, int32_t mob, uint
 					.add<bool>(pgmr.isPhysical) // Maybe? No Mana Reflection on global to test with
 					.add<int32_t>(pgmr.mapMobId)
 					.add<int8_t>(6)
-					.add<Pos>(pgmr.pos);
+					.add<Point>(pgmr.pos);
 			}
 
 			builder.map
@@ -235,7 +235,7 @@ SPLIT_PACKET_IMPL(useRangedAttack, int32_t playerId, int32_t masterySkillId, uin
 			builder.map.add<int32_t>(damage);
 		}
 	}
-	builder.map.add<Pos>(attack.projectilePos);
+	builder.map.add<Point>(attack.projectilePos);
 	return builder;
 }
 

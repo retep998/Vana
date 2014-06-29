@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.hpp"
 #include "PacketReader.hpp"
 #include "Player.hpp"
-#include "Pos.hpp"
+#include "Point.hpp"
 #include "Reactor.hpp"
 #include "ReactorDataProvider.hpp"
 #include "ReactorPacket.hpp"

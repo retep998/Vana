@@ -89,8 +89,10 @@ auto SkillDataProvider::loadPlayerSkillLevels() -> void {
 		level.mpProp = row.get<uint16_t>("mp");
 		level.prop = row.get<uint16_t>("prop");
 		level.morph = row.get<morph_id_t>("morph");
-		level.dimensions = Rect(Pos(row.get<coord_t>("ltx"), row.get<coord_t>("lty")),
-								Pos(row.get<coord_t>("rbx"), row.get<coord_t>("rby")));
+		level.dimensions = Rect{
+			Point{row.get<coord_t>("ltx"), row.get<coord_t>("lty")},
+			Point{row.get<coord_t>("rbx"), row.get<coord_t>("rby")}
+		};
 		level.coolTime = row.get<int16_t>("cooldown_time");
 
 		m_skillLevels[skillId][skillLevel] = level;
@@ -116,8 +118,10 @@ auto SkillDataProvider::loadMobSkills() -> void {
 		mobLevel.prop = row.get<int16_t>("chance");
 		mobLevel.count = row.get<uint8_t>("target_count");
 		mobLevel.cooldown = row.get<int16_t>("cooldown");
-		mobLevel.dimensions = Rect(Pos(row.get<coord_t>("ltx"), row.get<coord_t>("lty")),
-									Pos(row.get<coord_t>("rbx"), row.get<coord_t>("rby")));
+		mobLevel.dimensions = Rect{
+			Point{row.get<coord_t>("ltx"), row.get<coord_t>("lty")},
+			Point{row.get<coord_t>("rbx"), row.get<coord_t>("rby")}
+		};
 		mobLevel.hp = row.get<uint8_t>("hp_limit_percentage");
 		mobLevel.limit = row.get<int16_t>("summon_limit");
 		mobLevel.summonEffect = row.get<int8_t>("summon_effect");

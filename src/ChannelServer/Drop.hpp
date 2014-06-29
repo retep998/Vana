@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "PlayerInventory.hpp"
-#include "Pos.hpp"
+#include "Point.hpp"
 #include "Types.hpp"
 
 class Map;
@@ -28,8 +28,8 @@ class Drop {
 	NO_DEFAULT_CONSTRUCTOR(Drop);
 	NONCOPYABLE(Drop);
 public:
-	Drop(map_id_t mapId, mesos_t mesos, const Pos &pos, player_id_t owner, bool playerDrop = false);
-	Drop(map_id_t mapId, const Item &item, const Pos &pos, player_id_t owner, bool playerDrop = false);
+	Drop(map_id_t mapId, mesos_t mesos, const Point &pos, player_id_t owner, bool playerDrop = false);
+	Drop(map_id_t mapId, const Item &item, const Point &pos, player_id_t owner, bool playerDrop = false);
 
 	auto setQuest(quest_id_t questId) -> void { m_questId = questId; }
 	auto setTradeable(bool isTrade) -> void { m_tradeable = isTrade; }
@@ -37,7 +37,7 @@ public:
 	auto setId(map_object_t id) -> void { m_id = id; }
 	auto setTime(int32_t time) -> void { m_time = time; }
 	auto setOwner(int32_t owner) -> void { m_owner = owner; }
-	auto setPos(Pos pos) -> void { m_pos = pos; }
+	auto setPos(Point pos) -> void { m_pos = pos; }
 	auto setType(int8_t t) -> void { m_type = t; }
 	auto setDroppedAtTime(time_point_t time) -> void { m_droppedAtTime = time; }
 
@@ -51,14 +51,14 @@ public:
 	auto isMesos() const -> bool { return m_mesos > 0; }
 	auto isQuest() const -> bool { return m_questId > 0; }
 	auto isTradeable() const -> bool { return m_tradeable; }
-	auto getPos() const -> Pos { return m_pos; }
+	auto getPos() const -> Point { return m_pos; }
 	auto getItem() const -> Item { return m_item; }
 	auto getDroppedAtTime() const -> time_point_t { return m_droppedAtTime; }
 
 	auto getAmount() -> slot_qty_t;
 	auto getObjectId() -> int32_t;
 
-	auto doDrop(const Pos &origin) -> void;
+	auto doDrop(const Point &origin) -> void;
 	auto showDrop(Player *player) -> void;
 	auto takeDrop(Player *player, pet_id_t petId) -> void;
 	auto removeDrop(bool showPacket = true) -> void;
@@ -80,6 +80,6 @@ private:
 	mesos_t m_mesos = 0;
 	int32_t m_time = 0;
 	time_point_t m_droppedAtTime;
-	Pos m_pos;
+	Point m_pos;
 	Item m_item;
 };

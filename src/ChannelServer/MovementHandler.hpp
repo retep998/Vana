@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class MovableLife;
 class PacketReader;
-struct Pos;
+struct Point;
 
 namespace MovementHandler {
-	auto parseMovement(MovableLife *life, PacketReader &reader) -> Pos;
+	auto parseMovement(MovableLife *life, PacketReader &reader) -> Point;
 }

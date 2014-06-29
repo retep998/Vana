@@ -62,8 +62,10 @@ auto ReactorDataProvider::loadStates() -> void {
 		int8_t stateId = row.get<int8_t>("state");
 		state.itemId = row.get<item_id_t>("itemid");
 		state.itemQuantity = row.get<slot_qty_t>("quantity");
-		state.dimensions = Rect(Pos(row.get<coord_t>("ltx"), row.get<coord_t>("lty")),
-								Pos(row.get<coord_t>("rbx"), row.get<coord_t>("rby")));
+		state.dimensions = Rect{
+			Point{row.get<coord_t>("ltx"), row.get<coord_t>("lty")},
+			Point{row.get<coord_t>("rbx"), row.get<coord_t>("rby")}
+		};
 		state.nextState = row.get<int8_t>("next_state");
 		state.timeout = row.get<int32_t>("timeout");
 

@@ -69,12 +69,16 @@ Map::Map(ref_ptr_t<MapInfo> info, map_id_t id) :
 		Timer::Id(TimerType::MapTimer, id),
 		getTimers(), seconds_t(0), seconds_t(1));
 
-	Pos rightBottom = info->dimensions.rightBottom();
+	Point rightBottom = info->dimensions.rightBottom();
 	double mapHeight = std::max<double>(rightBottom.y - 450, 600);
 	double mapWidth = std::max<double>(rightBottom.x, 800);
 	m_minSpawnCount = ext::constrain_range(static_cast<int32_t>((mapHeight * mapWidth * info->spawnRate) / 128000.), 1, 40);
 	m_maxSpawnCount = m_minSpawnCount * 2;
 	m_runUnloader = info->shipKind == -1;
+	m_inferSizeFromFootholds = info->dimensions.area() == 0;
+	if (!m_inferSizeFromFootholds) {
+		m_realDimensions = info->dimensions;
+	}
 }
 
 // Map info
@@ -106,6 +110,9 @@ auto Map::makeReactorId() -> map_object_t {
 // Data initialization
 auto Map::addFoothold(const FootholdInfo &foothold) -> void {
 	m_footholds.push_back(foothold);
+	if (m_inferSizeFromFootholds) {
+		m_realDimensions = m_realDimensions.combine(foothold.line.makeRect());
+	}
 }
 
 auto Map::addSeat(const SeatInfo &seat) -> void {
@@ -353,7 +360,7 @@ auto Map::killReactors(bool showPacket) -> void {
 }
 
 // Footholds
-auto Map::findFloor(const Pos &pos, Pos &floorPos, coord_t yMod) -> SearchResult {
+auto Map::findFloor(const Point &pos, Point &floorPos, coord_t yMod) -> SearchResult {
 	// Determines where a drop falls using the footholds data
 	// to check the platforms and find the correct one.
 	coord_t x = pos.x;
@@ -381,9 +388,9 @@ auto Map::findFloor(const Pos &pos, Pos &floorPos, coord_t yMod) -> SearchResult
 	return anyFound ? SearchResult::Found : SearchResult::NotFound;
 }
 
-auto Map::findRandomFloorPos() -> Pos {
-	Pos rightBottom = m_info->dimensions.rightBottom();
-	Pos leftTop = m_info->dimensions.leftTop();
+auto Map::findRandomFloorPos() -> Point {
+	Point rightBottom = m_realDimensions.rightBottom();
+	Point leftTop = m_realDimensions.leftTop();
 	if (leftTop.x == 0) {
 		leftTop.x = std::numeric_limits<coord_t>::min();
 	}
@@ -396,23 +403,25 @@ auto Map::findRandomFloorPos() -> Pos {
 	if (rightBottom.y == 0) {
 		rightBottom.y = std::numeric_limits<coord_t>::min();
 	}
-	return findRandomFloorPos(Rect(leftTop, rightBottom));
+	return findRandomFloorPos(Rect{leftTop, rightBottom});
 }
 
-auto Map::findRandomFloorPos(const Rect &area) -> Pos {
+auto Map::findRandomFloorPos(const Rect &area) -> Point {
 	vector_t<const FootholdInfo *> validFootholds;
+	Rect insideMapArea = area.intersection(m_realDimensions);
 	for (const auto &foothold : m_footholds) {
-		if (area.containsAnyPartOfLine(foothold.line)) {
+		// Vertical lines can't be "floors"
+		if (!foothold.line.isVertical() && insideMapArea.containsAnyPartOfLine(foothold.line)) {
 			validFootholds.push_back(&foothold);
 		}
 	}
 
-	Pos leftTop = area.leftTop();
-	Pos rightBottom = area.rightBottom();
+	Point leftTop = insideMapArea.leftTop();
+	Point rightBottom = insideMapArea.rightBottom();
 	auto xGenerate = [&rightBottom, &leftTop]() -> coord_t { return Randomizer::rand<coord_t>(rightBottom.x, leftTop.x); };
 	auto yGenerate = [&rightBottom, &leftTop]() -> coord_t { return Randomizer::rand<coord_t>(rightBottom.y, leftTop.y); };
 
-	Pos ret;
+	Point ret;
 	if (validFootholds.size() == 0) {
 		// There's no saving this, just use a random point in the area
 		ret.x = xGenerate();
@@ -446,7 +455,7 @@ auto Map::findRandomFloorPos(const Rect &area) -> Pos {
 	return ret;
 }
 
-auto Map::getFhAtPosition(const Pos &pos) -> foothold_id_t {
+auto Map::getFhAtPosition(const Point &pos) -> foothold_id_t {
 	// TODO FIXME
 	// Consider refactoring
 	foothold_id_t foothold = 0;
@@ -470,7 +479,7 @@ auto Map::getSpawnPoint(portal_id_t portalId) -> PortalInfo * {
 	return &m_spawnPoints[id];
 }
 
-auto Map::getNearestSpawnPoint(const Pos &pos) -> PortalInfo * {
+auto Map::getNearestSpawnPoint(const Point &pos) -> PortalInfo * {
 	portal_id_t id = -1;
 	int32_t distance = 200000;
 	for (const auto &kvp : m_spawnPoints) {
@@ -525,7 +534,7 @@ auto Map::getNpc(size_t id) const -> NpcSpawnInfo {
 }
 
 // Mobs
-auto Map::spawnMob(mob_id_t mobId, const Pos &pos, foothold_id_t foothold, ref_ptr_t<Mob> owner, int8_t summonEffect) -> ref_ptr_t<Mob> {
+auto Map::spawnMob(mob_id_t mobId, const Point &pos, foothold_id_t foothold, ref_ptr_t<Mob> owner, int8_t summonEffect) -> ref_ptr_t<Mob> {
 	map_object_t id = m_objectIds.lease();
 
 	auto mob = make_ref_ptr<Mob>(id, getId(), mobId, summonEffect != 0 ? owner : nullptr, pos, -1, false, foothold, MobControlStatus::Normal);
@@ -560,7 +569,7 @@ auto Map::spawnMob(int32_t spawnId, const MobSpawnInfo &info) -> ref_ptr_t<Mob> 
 	return mob;
 }
 
-auto Map::spawnShell(mob_id_t mobId, const Pos &pos, foothold_id_t foothold) -> ref_ptr_t<Mob> {
+auto Map::spawnShell(mob_id_t mobId, const Point &pos, foothold_id_t foothold) -> ref_ptr_t<Mob> {
 	map_object_t id = m_objectIds.lease();
 
 	ref_ptr_t<Mob> noOwner = nullptr;
@@ -741,11 +750,11 @@ auto Map::mobSummonSkillUsed(ref_ptr_t<Mob> mob, const MobSkillLevelInfo * const
 		return;
 	}
 
-	const Pos &mobPos = mob->getPos();
-	Rect area = skill->dimensions.resize(1).move(mobPos);
+	const Point &mobPos = mob->getPos();
+	Rect area = skill->dimensions.move(mobPos).resize(1);
 
 	for (const auto &spawnId : skill->summons) {
-		Pos floor = findRandomFloorPos(area);
+		Point floor = findRandomFloorPos(area);
 		spawnMob(spawnId, floor, 0, mob, skill->summonEffect);
 	}
 }
@@ -818,7 +827,7 @@ auto Map::statusMobs(vector_t<StatusInfo> &statuses, const Rect &dimensions) -> 
 	}
 }
 
-auto Map::spawnZakum(const Pos &pos, foothold_id_t foothold) -> void {
+auto Map::spawnZakum(const Point &pos, foothold_id_t foothold) -> void {
 	auto body = spawnShell(Mobs::ZakumBody1, pos, foothold);
 
 	init_list_t<mob_id_t> parts = {
@@ -859,7 +868,7 @@ auto Map::addDrop(Drop *drop) -> void {
 	owned_lock_t<recursive_mutex_t> l(m_dropsMutex);
 	map_object_t id = m_objectIds.lease();
 	drop->setId(id);
-	Pos foundPosition = drop->getPos();
+	Point foundPosition = drop->getPos();
 	findFloor(foundPosition, foundPosition, -100);
 	drop->setPos(foundPosition);
 	m_drops[id] = drop;
@@ -1106,14 +1115,14 @@ auto Map::timeMob(bool firstLoad) -> void {
 	TimeMob *tm = getTimeMob();
 	if (firstLoad) {
 		if (cHour >= tm->startHour && cHour < tm->endHour) {
-			Pos p = findRandomFloorPos();
+			Point p = findRandomFloorPos();
 			m_timeMob = spawnMob(tm->id, p, getFhAtPosition(p), nullptr, 0)->getMapMobId();
 			send(PlayerPacket::showMessage(tm->message, PlayerPacket::NoticeTypes::Blue));
 		}
 	}
 	else {
 		if (cHour == tm->startHour) {
-			Pos p = findRandomFloorPos();
+			Point p = findRandomFloorPos();
 			m_timeMob = spawnMob(tm->id, p, getFhAtPosition(p), nullptr, 0)->getMapMobId();
 			send(PlayerPacket::showMessage(tm->message, PlayerPacket::NoticeTypes::Blue));
 		}

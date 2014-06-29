@@ -24,38 +24,38 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <cmath>
 #include <ostream>
 
-struct Pos {
-	Pos(coord_t x, coord_t y) : x(x), y(y) { }
-	Pos() = default;
+struct Point {
+	Point(coord_t x, coord_t y) : x(x), y(y) { }
+	Point() = default;
 
 	auto isOrigin() const -> bool {
 		return x == 0 && y == 0;
 	}
 
-	auto operator-(const Pos &p) const -> int32_t {
+	auto operator-(const Point &p) const -> int32_t {
 		return static_cast<int32_t>(sqrt(pow(static_cast<float>(x - p.x), 2) + pow(static_cast<float>(y - p.y), 2)));
 	}
 
 	coord_t x = 0;
 	coord_t y = 0;
-	friend auto operator <<(std::ostream &out, const Pos &pos) -> std::ostream &;
+	friend auto operator <<(std::ostream &out, const Point &pos) -> std::ostream &;
 };
 
 template <>
-struct PacketSerialize<Pos> {
-	auto read(PacketReader &reader) -> Pos {
-		Pos ret;
+struct PacketSerialize<Point> {
+	auto read(PacketReader &reader) -> Point {
+		Point ret;
 		ret.x = reader.get<coord_t>();
 		ret.y = reader.get<coord_t>();
 		return ret;
 	}
-	auto write(PacketBuilder &builder, const Pos &obj) -> void {
+	auto write(PacketBuilder &builder, const Point &obj) -> void {
 		builder.add<coord_t>(obj.x);
 		builder.add<coord_t>(obj.y);
 	}
 };
 
 inline
-auto operator <<(std::ostream &out, const Pos &pos) -> std::ostream & {
+auto operator <<(std::ostream &out, const Point &pos) -> std::ostream & {
 	return out << "{" << pos.x << ", " << pos.y << "}";
 }

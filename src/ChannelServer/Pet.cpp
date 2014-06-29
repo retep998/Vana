@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 
 Pet::Pet(Player *player, Item *item) :
-	MovableLife(0, Pos(), 0),
+	MovableLife(0, Point{}, 0),
 	m_player(player),
 	m_itemId(item->getId()),
 	m_name(ChannelServer::getInstance().getItemDataProvider().getItemInfo(m_itemId)->name),
@@ -43,7 +43,7 @@ Pet::Pet(Player *player, Item *item) :
 }
 
 Pet::Pet(Player *player, Item *item, const soci::row &row) :
-	MovableLife(0, Pos(), 0),
+	MovableLife(0, Point{}, 0),
 	m_player(player),
 	m_id(item->getPetId()),
 	m_itemId(item->getId()),

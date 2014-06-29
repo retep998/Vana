@@ -31,7 +31,7 @@ PACKET_IMPL(spawnReactor, Reactor *reactor) {
 		.add<map_object_t>(reactor->getId())
 		.add<reactor_id_t>(reactor->getReactorId())
 		.add<int8_t>(reactor->getState())
-		.add<Pos>(reactor->getPos())
+		.add<Point>(reactor->getPos())
 		.add<bool>(reactor->facesLeft());
 	return builder;
 }
@@ -42,7 +42,7 @@ PACKET_IMPL(triggerReactor, Reactor *reactor) {
 		.add<header_t>(SMSG_REACTOR_TRIGGER)
 		.add<map_object_t>(reactor->getId())
 		.add<int8_t>(reactor->getState())
-		.add<Pos>(reactor->getPos())
+		.add<Point>(reactor->getPos())
 		.add<int32_t>(0);
 	return builder;
 }
@@ -53,7 +53,7 @@ PACKET_IMPL(destroyReactor, Reactor *reactor) {
 		.add<header_t>(SMSG_REACTOR_DESPAWN)
 		.add<map_object_t>(reactor->getId())
 		.add<int8_t>(reactor->getState())
-		.add<Pos>(reactor->getPos());
+		.add<Point>(reactor->getPos());
 	return builder;
 }
 

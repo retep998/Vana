@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "MapConstants.hpp"
-#include "Pos.hpp"
+#include "Point.hpp"
 #include "Rect.hpp"
 #include "Types.hpp"
 #include <string>
@@ -72,7 +72,7 @@ struct ReturnDamageInfo {
 	uint8_t reduction = 0;
 	damage_t damage = 0;
 	map_object_t mapMobId = 0;
-	Pos pos;
+	Point pos;
 };
 
 struct MpEaterInfo {
@@ -142,7 +142,7 @@ struct Attack {
 	item_id_t starId = 0;
 	tick_count_t ticks = 0;
 	int64_t totalDamage = 0;
-	Pos projectilePos;
-	Pos playerPos;
+	Point projectilePos;
+	Point playerPos;
 	hash_map_t<map_object_t, vector_t<damage_t>> damages;
 };

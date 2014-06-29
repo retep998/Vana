@@ -141,7 +141,7 @@ PACKET_IMPL(playerPacket, Player *player) {
 		.add<int32_t>(0)
 		.add<item_id_t>(player->getItemEffect())
 		.add<item_id_t>(player->getChair())
-		.add<Pos>(player->getPos())
+		.add<Point>(player->getPos())
 		.add<int8_t>(player->getStance())
 		.add<foothold_id_t>(player->getFoothold())
 		.add<int8_t>(0);
@@ -153,7 +153,7 @@ PACKET_IMPL(playerPacket, Player *player) {
 				.add<item_id_t>(pet->getItemId())
 				.add<string_t>(pet->getName())
 				.add<pet_id_t>(pet->getId())
-				.add<Pos>(pet->getPos())
+				.add<Point>(pet->getPos())
 				.add<int8_t>(pet->getStance())
 				.add<foothold_id_t>(pet->getFoothold())
 				.add<bool>(pet->hasNameTag())
@@ -272,8 +272,8 @@ PACKET_IMPL(spawnMist, Mist *mist, bool mapEntry) {
 		.add<skill_id_t>(mist->getSkillId())
 		.add<skill_level_t>(mist->getSkillLevel())
 		.add<int16_t>(mapEntry ? 0 : mist->getDelay())
-		.add<WidePos>(WidePos(mist->getArea().leftTop()))
-		.add<WidePos>(WidePos(mist->getArea().rightBottom()))
+		.add<WidePoint>(WidePoint{mist->getArea().leftTop()})
+		.add<WidePoint>(WidePoint{mist->getArea().rightBottom()})
 		.add<int32_t>(0);
 	return builder;
 }

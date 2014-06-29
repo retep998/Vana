@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Pos.hpp"
+#include "Point.hpp"
 #include "Types.hpp"
 
 class Map;
@@ -27,7 +27,7 @@ class Reactor {
 	NONCOPYABLE(Reactor);
 	NO_DEFAULT_CONSTRUCTOR(Reactor);
 public:
-	Reactor(map_id_t mapId, reactor_id_t reactorId, const Pos &pos, bool facesLeft);
+	Reactor(map_id_t mapId, reactor_id_t reactorId, const Point &pos, bool facesLeft);
 
 	auto kill() -> void { m_alive = false; }
 	auto revive() -> void { m_alive = true; }
@@ -39,7 +39,7 @@ public:
 	auto getReactorId() const -> reactor_id_t { return m_reactorId; }
 	auto getMapId() const -> map_id_t { return m_mapId; }
 	auto isAlive() const -> bool { return m_alive; }
-	auto getPos() const -> Pos { return m_pos; }
+	auto getPos() const -> Point { return m_pos; }
 	auto facesLeft() const -> bool { return m_facesLeft; }
 
 	auto restore() -> void;
@@ -52,5 +52,5 @@ private:
 	map_object_t m_id = 0;
 	reactor_id_t m_reactorId = 0;
 	map_id_t m_mapId = 0;
-	Pos m_pos;
+	Point m_pos;
 };

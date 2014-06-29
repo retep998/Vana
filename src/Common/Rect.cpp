@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <algorithm>
 #include <cmath>
 
-Rect::Rect(const Pos &leftTop, const Pos &rightBottom) :
+Rect::Rect(const Point &leftTop, const Point &rightBottom) :
 	m_leftTop(leftTop),
 	m_rightBottom(rightBottom)
 {
@@ -43,21 +43,21 @@ auto Rect::bottom() const -> Line {
 	return Line{leftBottom(), m_rightBottom};
 }
 
-auto Rect::leftTop() const -> Pos {
+auto Rect::leftTop() const -> Point {
 	return m_leftTop;
 }
 
-auto Rect::rightBottom() const -> Pos {
+auto Rect::rightBottom() const -> Point {
 	return m_rightBottom;
 }
 
-auto Rect::rightTop() const -> Pos {
-	Pos ret{m_rightBottom.x, m_leftTop.y};
+auto Rect::rightTop() const -> Point {
+	Point ret{m_rightBottom.x, m_leftTop.y};
 	return ret;
 }
 
-auto Rect::leftBottom() const -> Pos {
-	Pos ret{m_leftTop.x, m_rightBottom.y};
+auto Rect::leftBottom() const -> Point {
+	Point ret{m_leftTop.x, m_rightBottom.y};
 	return ret;
 }
 
@@ -81,7 +81,7 @@ auto Rect::width() const -> int32_t {
 	return abs(static_cast<int32_t>(m_rightBottom.x) - static_cast<int32_t>(m_leftTop.x));
 }
 
-auto Rect::contains(const Pos &pos) const -> bool {
+auto Rect::contains(const Point &pos) const -> bool {
 	return pos.y <= m_rightBottom.y && pos.y >= m_leftTop.y && pos.x >= m_leftTop.x && pos.x <= m_rightBottom.x;
 }
 
@@ -112,14 +112,14 @@ auto Rect::intersects(const Line &line) const -> bool {
 		return false;
 	}
 
-	auto testPos = [x1, x2, y1, y2](const Pos &pos) -> int32_t {
+	auto testPoint = [x1, x2, y1, y2](const Point &pos) -> int32_t {
 		return (y2 - y1) * static_cast<int32_t>(pos.x) + (x1 - x2) * static_cast<int32_t>(pos.y) + (x2 * y1 - x1 * y2);
 	};
 
-	int32_t testLeftTop = testPos(m_leftTop);
-	int32_t testRightTop = testPos(rightTop());
-	int32_t testRightBottom = testPos(m_rightBottom);
-	int32_t testLeftBottom = testPos(leftBottom());
+	int32_t testLeftTop = testPoint(m_leftTop);
+	int32_t testRightTop = testPoint(rightTop());
+	int32_t testRightBottom = testPoint(m_rightBottom);
+	int32_t testLeftBottom = testPoint(leftBottom());
 	if (testLeftTop == 0 || testRightTop == 0 || testRightBottom == 0 || testLeftBottom == 0) {
 		return true;
 	}
@@ -136,7 +136,7 @@ auto Rect::move(coord_t xMod, coord_t yMod) const -> Rect {
 	return ret;
 }
 
-auto Rect::move(const Pos &pos) const -> Rect {
+auto Rect::move(const Point &pos) const -> Rect {
 	return move(pos.x, pos.y);
 }
 

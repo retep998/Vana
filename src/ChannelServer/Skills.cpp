@@ -145,7 +145,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 			break;
 		}
 		case Skills::Shadower::Smokescreen: {
-			Pos origin = reader.get<Pos>();
+			Point origin = reader.get<Point>();
 			Mist *m = new Mist(player->getMapId(), player, skill->time, skill->dimensions.move(player->getPos()), skillId, level);
 			break;
 		}
@@ -391,7 +391,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 	}
 
 	if (GameLogicUtilities::isSummon(skillId)) {
-		Pos pos = reader.get<Pos>(); // Useful?
+		Point pos = reader.get<Point>(); // Useful?
 		SummonHandler::useSummon(player, skillId, level);
 	}
 }

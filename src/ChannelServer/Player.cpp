@@ -71,7 +71,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 
 Player::Player() :
-	MovableLife(0, Pos(), 0)
+	MovableLife(0, Point{}, 0)
 {
 }
 
@@ -454,7 +454,7 @@ auto Player::setMap(map_id_t mapId, PortalInfo *portal, bool instance) -> void {
 	m_map = mapId;
 	m_mapPos = portal->id;
 	m_usedPortals.clear();
-	setPos(Pos(portal->pos.x, portal->pos.y - 40));
+	setPos(Point{portal->pos.x, portal->pos.y - 40});
 	setStance(0);
 	setFoothold(0);
 	setFallCounter(0);

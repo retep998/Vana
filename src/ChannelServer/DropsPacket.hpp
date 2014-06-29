@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Drop;
 class Pet;
 class Player;
-struct Pos;
+struct Point;
 
 namespace DropsPacket {
 	namespace DropTypes {
@@ -35,7 +35,7 @@ namespace DropsPacket {
 		};
 	}
 
-	PACKET(showDrop, Drop *drop, int8_t type, const Pos &origin);
+	PACKET(showDrop, Drop *drop, int8_t type, const Point &origin);
 	PACKET(takeDrop, player_id_t playerId, map_object_t dropId, int8_t petIndex = -1);
 	PACKET(dontTake);
 	PACKET(removeDrop, map_object_t dropId);
