@@ -39,6 +39,11 @@ struct Line {
 	auto interpolateForY(coord_t xValue) const -> coord_t;
 	auto length() const -> int32_t;
 	auto makeRect() const -> Rect;
+	auto isVertical() const -> bool;
+	auto isHorizontal() const -> bool;
+	auto isOrigin() const -> bool;
+	auto isEdge(const Pos &pt) -> bool;
+	auto isEdge(coord_t xValue, coord_t yValue) -> bool;
 
 	Pos pt1;
 	Pos pt2;
