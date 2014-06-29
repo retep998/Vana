@@ -28,6 +28,10 @@ struct Pos {
 	Pos(coord_t x, coord_t y) : x(x), y(y) { }
 	Pos() = default;
 
+	auto isOrigin() const -> bool {
+		return x == 0 && y == 0;
+	}
+
 	auto operator-(const Pos &p) const -> int32_t {
 		return static_cast<int32_t>(sqrt(pow(static_cast<float>(x - p.x), 2) + pow(static_cast<float>(y - p.y), 2)));
 	}

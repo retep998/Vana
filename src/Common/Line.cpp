@@ -56,3 +56,24 @@ auto Line::length() const -> int32_t {
 auto Line::makeRect() const -> Rect {
 	return Rect(pt1, pt2).normalize();
 }
+
+auto Line::isVertical() const -> bool {
+	return pt1.x == pt2.x;
+}
+
+auto Line::isHorizontal() const -> bool {
+	return pt1.y == pt2.y;
+}
+
+auto Line::isOrigin() const -> bool {
+	return pt1.isOrigin() && pt2.isOrigin();
+}
+
+auto Line::isEdge(const Pos &pt) -> bool {
+	return (pt.x == pt1.x && pt.y == pt1.y) ||
+		(pt.x == pt2.x && pt.y == pt2.y);
+}
+
+auto Line::isEdge(coord_t xValue, coord_t yValue) -> bool {
+	return isEdge(Pos{xValue, yValue});
+}

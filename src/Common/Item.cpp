@@ -330,6 +330,7 @@ auto Item::databaseInsert(soci::session &sql, const ItemDbInformation &info) -> 
 auto Item::databaseInsert(soci::session &sql, const vector_t<ItemDbRecord> &items) -> void {
 	using namespace soci;
 	using MiscUtilities::getOptional;
+	using MiscUtilities::NullableMode;
 
 	static init_list_t<int8_t> nullsInt8 = {0};
 	static init_list_t<int16_t> nullsInt16 = {0};
@@ -419,8 +420,12 @@ auto Item::databaseInsert(soci::session &sql, const vector_t<ItemDbRecord> &item
 		itemId = item->m_id;
 		inventory = GameLogicUtilities::getInventory(itemId);
 		bool equip = (inventory == Inventories::EquipInventory);
-		MiscUtilities::NullableMode nulls = (equip ? MiscUtilities::NullableMode::NullIfFound : MiscUtilities::NullableMode::ForceNull);
-		MiscUtilities::NullableMode required = (equip ? MiscUtilities::NullableMode::ForceNotNull : MiscUtilities::NullableMode::ForceNull);
+		NullableMode nulls = (equip ?
+			NullableMode::NullIfFound :
+			NullableMode::ForceNull);
+		NullableMode required = (equip ?
+			NullableMode::ForceNotNull :
+			NullableMode::ForceNull);
 
 		slots = getOptional(item->m_slots, required, nullsInt8);
 		scrolls = getOptional(item->m_scrolls, required, nullsInt8);
