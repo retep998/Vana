@@ -42,7 +42,7 @@ SPLIT_PACKET_IMPL(petSummoned, player_id_t playerId, Pet *pet, bool kick, int8_t
 			.add<item_id_t>(pet->getItemId())
 			.add<string_t>(pet->getName())
 			.add<pet_id_t>(pet->getId())
-			.add<Pos>(pet->getPos())
+			.add<Point>(pet->getPos())
 			.add<int8_t>(pet->getStance())
 			.add<foothold_id_t>(pet->getFoothold())
 			.add<bool>(pet->hasNameTag())

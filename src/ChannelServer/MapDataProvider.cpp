@@ -123,8 +123,10 @@ auto MapDataProvider::loadMapData(map_id_t mapId, Map *&map) -> map_id_t {
 		mapInfo->forcedReturn = row.get<map_id_t>("forced_return_map");
 		mapInfo->spawnRate = row.get<double>("mob_rate");
 		mapInfo->defaultMusic = row.get<string_t>("default_bgm");
-		mapInfo->dimensions = Rect(Pos(row.get<coord_t>("map_ltx"), row.get<coord_t>("map_lty")),
-									Pos(row.get<coord_t>("map_rbx"), row.get<coord_t>("map_rby")));
+		mapInfo->dimensions = Rect{
+			Point{row.get<coord_t>("map_ltx"), row.get<coord_t>("map_lty")},
+			Point{row.get<coord_t>("map_rbx"), row.get<coord_t>("map_rby")}
+		};
 		mapInfo->shuffleName = row.get<string_t>("shuffle_name");
 		mapInfo->decHp = row.get<uint8_t>("decrease_hp");
 		mapInfo->dps = row.get<uint16_t>("damage_per_second");
@@ -153,7 +155,7 @@ auto MapDataProvider::loadSeats(Map *map, map_id_t link) -> void {
 	for (const auto &row : rs) {
 		SeatInfo chair;
 		seat_id_t id = row.get<seat_id_t>("seatid");
-		chair.pos = Pos(row.get<coord_t>("x_pos"), row.get<coord_t>("y_pos"));
+		chair.pos = Point{row.get<coord_t>("x_pos"), row.get<coord_t>("y_pos")};
 		chair.id = id;
 
 		map->addSeat(chair);
@@ -172,7 +174,7 @@ auto MapDataProvider::loadPortals(Map *map, map_id_t link) -> void {
 
 		portal.id = row.get<portal_id_t>("id");
 		portal.name = row.get<string_t>("label");
-		portal.pos = Pos(row.get<coord_t>("x_pos"), row.get<coord_t>("y_pos"));
+		portal.pos = Point{row.get<coord_t>("x_pos"), row.get<coord_t>("y_pos")};
 		portal.toMap = row.get<map_id_t>("destination");
 		portal.toName = row.get<string_t>("destination_label");
 		portal.script = row.get<string_t>("script");
@@ -198,7 +200,7 @@ auto MapDataProvider::loadMapLife(Map *map, map_id_t link) -> void {
 
 		type = row.get<string_t>("life_type");
 		life.id = row.get<int32_t>("lifeid");
-		life.pos = Pos(row.get<coord_t>("x_pos"), row.get<coord_t>("y_pos"));
+		life.pos = Point{row.get<coord_t>("x_pos"), row.get<coord_t>("y_pos")};
 		life.foothold = row.get<foothold_id_t>("foothold");
 		life.time = row.get<int32_t>("respawn_time");
 
@@ -234,8 +236,10 @@ auto MapDataProvider::loadFootholds(Map *map, map_id_t link) -> void {
 		});
 
 		foot.id = row.get<foothold_id_t>("id");
-		foot.line = Line(Pos(row.get<coord_t>("x1"), row.get<coord_t>("y1")),
-							Pos(row.get<coord_t>("x2"), row.get<coord_t>("y2")));
+		foot.line = Line{
+			Point{row.get<coord_t>("x1"), row.get<coord_t>("y1")},
+			Point{row.get<coord_t>("x2"), row.get<coord_t>("y2")}
+		};
 		foot.dragForce = row.get<int16_t>("drag_force");
 		foot.leftEdge = row.get<foothold_id_t>("previousid") == 0;
 		foot.rightEdge = row.get<foothold_id_t>("nextid") == 0;

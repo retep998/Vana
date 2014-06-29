@@ -23,13 +23,13 @@ auto Line::slope() const -> float {
 	return static_cast<float>(pt1.y - pt2.y) / static_cast<float>(pt1.x - pt2.x);
 }
 
-auto Line::contains(const Pos &pos) const -> bool {
+auto Line::contains(const Point &pos) const -> bool {
 	return slopeContains(pos) && (pt1.x != pt2.x ?
 		withinRangeX(pos.x) :
 		withinRangeY(pos.y));
 }
 
-auto Line::slopeContains(const Pos &pos) const -> bool {
+auto Line::slopeContains(const Point &pos) const -> bool {
 	return static_cast<int32_t>(pt2.x - pt1.x) * static_cast<int32_t>(pos.y - pt1.y) == static_cast<int32_t>(pos.x - pt1.x) * static_cast<int32_t>(pt2.y - pt1.y);
 }
 
@@ -69,11 +69,11 @@ auto Line::isOrigin() const -> bool {
 	return pt1.isOrigin() && pt2.isOrigin();
 }
 
-auto Line::isEdge(const Pos &pt) -> bool {
+auto Line::isEdge(const Point &pt) -> bool {
 	return (pt.x == pt1.x && pt.y == pt1.y) ||
 		(pt.x == pt2.x && pt.y == pt2.y);
 }
 
 auto Line::isEdge(coord_t xValue, coord_t yValue) -> bool {
-	return isEdge(Pos{xValue, yValue});
+	return isEdge(Point{xValue, yValue});
 }

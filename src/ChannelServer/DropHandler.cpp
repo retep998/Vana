@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Party.hpp"
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
-#include "Pos.hpp"
+#include "Point.hpp"
 #include "QuestDataProvider.hpp"
 #include "Randomizer.hpp"
 #include "ReactorHandler.hpp"
@@ -38,7 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.hpp"
 #include <algorithm>
 
-auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t droppingLevel, int32_t droppingId, const Pos &origin, bool explosive, bool ffa, int32_t taunt, bool isSteal) -> void {
+auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t droppingLevel, int32_t droppingId, const Point &origin, bool explosive, bool ffa, int32_t taunt, bool isSteal) -> void {
 	auto &globalDrops = ChannelServer::getInstance().getDropDataProvider().getGlobalDrops();
 	if (!ChannelServer::getInstance().getDropDataProvider().hasDrops(droppingId) && globalDrops.size() == 0) {
 		return;
@@ -50,7 +50,7 @@ auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t dropping
 	Player *player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId);
 	coord_t dropPosCounter = 0;
 	party_id_t partyId = 0;
-	Pos pos;
+	Point pos;
 
 	if (player != nullptr) {
 		if (Party *party = player->getParty()) {
@@ -180,7 +180,7 @@ auto DropHandler::petLoot(Player *player, PacketReader &reader) -> void {
 
 auto DropHandler::lootItem(Player *player, PacketReader &reader, pet_id_t petId) -> void {
 	reader.skipBytes(5);
-	Pos playerPos = reader.get<Pos>();
+	Point playerPos = reader.get<Point>();
 	map_object_t dropId = reader.get<map_object_t>();
 	Drop *drop = player->getMap()->getDrop(dropId);
 

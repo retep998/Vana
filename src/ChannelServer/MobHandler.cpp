@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
 #include "PlayerPacket.hpp"
-#include "Pos.hpp"
+#include "Point.hpp"
 #include "Randomizer.hpp"
 #include "SkillDataProvider.hpp"
 #include "StatusInfo.hpp"

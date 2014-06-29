@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace DropsPacket {
 
-PACKET_IMPL(showDrop, Drop *drop, int8_t type, const Pos &origin) {
+PACKET_IMPL(showDrop, Drop *drop, int8_t type, const Point &origin) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_DROP_ITEM)
@@ -36,13 +36,13 @@ PACKET_IMPL(showDrop, Drop *drop, int8_t type, const Pos &origin) {
 		.add<int32_t>(drop->getObjectId())
 		.add<int32_t>(drop->getOwner()) // Owner of drop
 		.add<int8_t>(drop->getType())
-		.add<Pos>(drop->getPos())
+		.add<Point>(drop->getPos())
 		.add<int32_t>(drop->getTime());
 
 	if (type != DropTypes::ShowExisting) {
 		// Give the point of origin for things that are just being dropped
 		builder
-			.add<Pos>(origin)
+			.add<Point>(origin)
 			.add<int16_t>(0);
 	}
 	if (!drop->isMesos()) {

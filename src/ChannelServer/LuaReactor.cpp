@@ -126,6 +126,6 @@ auto LuaExports::spawnZakum(lua_State *luaVm) -> lua_return_t {
 	if (env.is(luaVm, 3, LuaType::Number)) {
 		foothold = env.get<foothold_id_t>(luaVm, 3);
 	}
-	Maps::getMap(getReactor(luaVm, env)->getMapId())->spawnZakum(Pos(x, y), foothold);
+	Maps::getMap(getReactor(luaVm, env)->getMapId())->spawnZakum(Point{x, y}, foothold);
 	return 0;
 }

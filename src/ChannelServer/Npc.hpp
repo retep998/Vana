@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "LuaNpc.hpp"
-#include "Pos.hpp"
+#include "Point.hpp"
 #include "Types.hpp"
 #include <memory>
 #include <string>
@@ -31,7 +31,7 @@ class Npc {
 	NO_DEFAULT_CONSTRUCTOR(Npc);
 public:
 	Npc(npc_id_t npcId, Player *player, quest_id_t questId = 0, bool isStart = false);
-	Npc(npc_id_t npcId, Player *player, const Pos &pos, quest_id_t questId = 0, bool isStart = false);
+	Npc(npc_id_t npcId, Player *player, const Point &pos, quest_id_t questId = 0, bool isStart = false);
 	Npc(npc_id_t npcId, Player *player, const string_t &script);
 
 	static auto hasScript(npc_id_t npcId, quest_id_t questId, bool start) -> bool;
@@ -65,7 +65,7 @@ public:
 	auto getText() -> string_t & { return m_getText; }
 
 	auto isEnd() const -> bool { return m_cend; }
-	auto getPos() const -> Pos { return m_pos; }
+	auto getPos() const -> Point { return m_pos; }
 
 	auto setEndScript(int32_t npcId, const string_t &fullscript) -> void;
 
@@ -102,7 +102,7 @@ private:
 	string_t m_text;
 	string_t m_getText;
 	string_t m_script;
-	Pos m_pos;
+	Point m_pos;
 	owned_ptr_t<LuaNpc> m_luaNpc;
 	vector_t<ref_ptr_t<NpcChatState>> m_previousStates;
 };

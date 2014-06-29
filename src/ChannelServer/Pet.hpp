@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "MovableLife.hpp"
-#include "Pos.hpp"
+#include "Point.hpp"
 #include "Types.hpp"
 #include <soci.h>
 #include <string>
@@ -49,7 +49,7 @@ public:
 	auto getId() const -> pet_id_t { return m_id; }
 	auto isSummoned() const -> bool { return m_index.is_initialized(); }
 	auto getName() -> string_t { return m_name; }
-	auto getPos() const -> Pos override { return Pos(m_pos.x, m_pos.y - 1); }
+	auto getPos() const -> Point override { return Point{m_pos.x, m_pos.y - 1}; }
 	auto hasNameTag() const -> bool;
 	auto hasQuoteItem() const -> bool;
 

@@ -17,12 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MovementHandler.hpp"
 #include "MovableLife.hpp"
-#include "Pos.hpp"
+#include "Point.hpp"
 #include "PacketReader.hpp"
 #include <iomanip>
 #include <iostream>
 
-auto MovementHandler::parseMovement(MovableLife *life, PacketReader &reader) -> Pos {
+auto MovementHandler::parseMovement(MovableLife *life, PacketReader &reader) -> Point {
 	foothold_id_t foothold = 0;
 	int8_t stance = 0;
 	coord_t x = 0;
@@ -121,7 +121,7 @@ auto MovementHandler::parseMovement(MovableLife *life, PacketReader &reader) -> 
 		}
 	}
 
-	Pos pos(x, y);
+	Point pos(x, y);
 	life->resetMovement(foothold, pos, stance);
 	return pos;
 }

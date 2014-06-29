@@ -149,7 +149,7 @@ PACKET_IMPL(showWorld, World *world) {
 	builder.add<int16_t>(messageCount);
 	for (int16_t i = 0; i < messageCount; ++i) {
 		// When you set a pos of (0, 0), the message will be on the first world tab
-		builder.add<Pos>(Pos(i * 10, 0));
+		builder.add<Point>(Point{i * 10, 0});
 		builder.add<string_t>("message");
 	}
 	return builder;

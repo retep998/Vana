@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Pos.hpp"
+#include "Point.hpp"
 #include "Types.hpp"
 #include <algorithm>
 #include <cmath>
@@ -32,27 +32,27 @@ struct Line;
 class Rect {
 public:
 	Rect() = default;
-	Rect(const Pos &leftTop, const Pos &rightBottom);
+	Rect(const Point &leftTop, const Point &rightBottom);
 
 	auto left() const -> Line;
 	auto right() const -> Line;
 	auto top() const -> Line;
 	auto bottom() const -> Line;
-	auto rightTop() const -> Pos;
-	auto leftTop() const -> Pos;
-	auto leftBottom() const -> Pos;
-	auto rightBottom() const -> Pos;
+	auto rightTop() const -> Point;
+	auto leftTop() const -> Point;
+	auto leftBottom() const -> Point;
+	auto rightBottom() const -> Point;
 	auto area() const -> int32_t;
 	auto perimeter() const -> int32_t;
 	auto hypotenuse() const -> int32_t;
 	auto height() const -> int32_t;
 	auto width() const -> int32_t;
-	auto contains(const Pos &pos) const -> bool;
+	auto contains(const Point &pos) const -> bool;
 	auto containsAnyPartOfLine(const Line &line) const -> bool;
 	auto containsFullLine(const Line &line) const -> bool;
 	auto intersects(const Line &line) const -> bool;
 	auto move(coord_t xMod, coord_t yMod) const -> Rect;
-	auto move(const Pos &pos) const -> Rect;
+	auto move(const Point &pos) const -> Rect;
 	auto resize(coord_t mod) const -> Rect;
 	auto deform(coord_t leftTopMod, coord_t rightBottomMod) const -> Rect;
 	auto swap(bool swapHorizontal, bool swapVertical) const -> Rect;
@@ -61,6 +61,6 @@ public:
 	auto combine(const Rect &other) const -> Rect;
 	auto findOverlap(const Rect &other) const -> SearchResult;
 private:
-	Pos m_leftTop;
-	Pos m_rightBottom;
+	Point m_leftTop;
+	Point m_rightBottom;
 };

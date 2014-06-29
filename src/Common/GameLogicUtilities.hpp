@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameConstants.hpp"
 #include "ItemConstants.hpp"
 #include "JobConstants.hpp"
-#include "Pos.hpp"
+#include "Point.hpp"
 #include "Rect.hpp"
 #include "SkillConstants.hpp"
 #include <string>

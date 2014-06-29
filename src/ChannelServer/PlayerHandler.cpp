@@ -116,7 +116,7 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 			}
 			reader.skipBytes(1); // 0x06 for Power Guard, 0x00 for Mana Reflection?
 			reader.skipBytes(4); // Mob position garbage
-			pgmr.pos = reader.get<Pos>();
+			pgmr.pos = reader.get<Point>();
 			pgmr.damage = damage;
 			if (pgmr.isPhysical) {
 				// Only Power Guard decreases damage
@@ -303,10 +303,10 @@ auto PlayerHandler::handleMoving(Player *player, PacketReader &reader) -> void {
 		// GMs might be legitimately in this state (due to GM fly)
 		// We shouldn't mess with them because they have the tools to get out of falling off the map anyway
 		map_id_t mapId = player->getMapId();
-		Pos playerPos = player->getPos();
+		Point playerPos = player->getPos();
 		Map *map = Maps::getMap(mapId);
 
-		Pos floor;
+		Point floor;
 		if (map->findFloor(playerPos, floor) == SearchResult::NotFound) {
 			// There are no footholds below the player
 			int8_t count = player->getFallCounter();
@@ -416,7 +416,7 @@ auto PlayerHandler::handleAdminMessenger(Player *player, PacketReader &reader) -
 }
 
 auto PlayerHandler::useBombSkill(Player *player, PacketReader &reader) -> void {
-	WidePos playerPos = reader.get<WidePos>();
+	WidePoint playerPos = reader.get<WidePoint>();
 	charge_time_t charge = reader.get<charge_time_t>();
 	skill_id_t skillId = reader.get<skill_id_t>();
 	// TODO FIXME find packet, send packet to third parties
@@ -446,7 +446,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 	uint8_t ppLevel = player->getActiveBuffs()->getActiveSkillLevel(Skills::ChiefBandit::Pickpocket); // Check for active pickpocket level
 	bool ppok = !attack.isMesoExplosion && ppLevel > 0;
 	auto picking = ChannelServer::getInstance().getSkillDataProvider().getSkill(Skills::ChiefBandit::Pickpocket, ppLevel);
-	Pos origin;
+	Point origin;
 	vector_t<damage_t> ppDamages;
 
 	for (const auto &target : attack.damages) {
@@ -499,7 +499,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 		uint8_t ppSize = ppDamages.size();
 		for (uint8_t pickpocket = 0; pickpocket < ppSize; ++pickpocket) {
 			// Drop stuff for Pickpocket
-			Pos ppPos = origin;
+			Point ppPos = origin;
 			ppPos.x += (ppSize % 2 == 0 ? 5 : 0) + (ppSize / 2) - 20 * ((ppSize / 2) - pickpocket);
 
 			int32_t ppMesos = ((ppDamages[pickpocket] * picking->x) / 10000); // TODO FIXME formula
@@ -993,12 +993,12 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &reader, SkillTyp
 	}
 
 	if (skillType == SkillType::Ranged) {
-		attack.projectilePos = reader.get<Pos>();
+		attack.projectilePos = reader.get<Point>();
 	}
-	attack.playerPos = reader.get<Pos>();
+	attack.playerPos = reader.get<Point>();
 
 	if (skillId == Skills::NightWalker::PoisonBomb) {
-		attack.projectilePos = reader.get<Pos>();
+		attack.projectilePos = reader.get<Point>();
 	}
 	return attack;
 }

@@ -739,7 +739,7 @@ auto LuaExports::spawnNpc(lua_State *luaVm) -> lua_return_t {
 	NpcSpawnInfo npc;
 	npc.id = npcId;
 	npc.foothold = 0;
-	npc.pos = Pos(x, y);
+	npc.pos = Point{x, y};
 	npc.rx0 = x - 50;
 	npc.rx1 = x + 50;
 
@@ -1656,7 +1656,7 @@ auto LuaExports::spawnMobPos(lua_State *luaVm) -> lua_return_t {
 	if (env.is(luaVm, 5, LuaType::Number)) {
 		foothold = env.get<foothold_id_t>(luaVm, 5);
 	}
-	env.push<map_object_t>(luaVm, Maps::getMap(mapId)->spawnMob(mobId, Pos(x, y), foothold)->getMapMobId());
+	env.push<map_object_t>(luaVm, Maps::getMap(mapId)->spawnMob(mobId, Point{x, y}, foothold)->getMapMobId());
 	return 1;
 }
 

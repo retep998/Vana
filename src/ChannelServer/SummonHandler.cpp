@@ -95,8 +95,8 @@ auto SummonHandler::useSummon(Player *player, skill_id_t skillId, skill_level_t 
 			});
 	}
 
-	Pos playerPosition = player->getPos();
-	Pos summonPosition;
+	Point playerPosition = player->getPos();
+	Point summonPosition;
 	foothold_id_t foothold = player->getFoothold();
 	bool puppet = GameLogicUtilities::isPuppet(skillId);
 	if (puppet) {

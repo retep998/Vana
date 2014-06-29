@@ -196,6 +196,7 @@
     <ClInclude Include="src\Common\PacketBuilder.hpp" />
     <ClInclude Include="src\Common\PacketWrapper.hpp" />
     <ClInclude Include="src\Common\PlayerObjects.hpp" />
+    <ClInclude Include="src\Common\Point.hpp" />
     <ClInclude Include="src\Common\PrecompiledHeader.hpp" />
     <ClInclude Include="src\Common\MySqlQueryParser.hpp" />
     <ClInclude Include="src\Common\Quest.hpp" />
@@ -249,7 +250,6 @@
     <ClInclude Include="src\Common\AbstractConnection.hpp" />
     <ClInclude Include="src\Common\AbstractServer.hpp" />
     <ClInclude Include="src\Common\GameObjects.hpp" />
-    <ClInclude Include="src\Common\Pos.hpp" />
     <ClInclude Include="src\Common\VanaConstants.hpp" />
     <ClInclude Include="src\Common\VanaMain.hpp" />
     <ClInclude Include="src\Common\Variables.hpp" />

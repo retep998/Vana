@@ -33,7 +33,7 @@ Npc::Npc(npc_id_t npcId, Player *player, quest_id_t questId, bool isStart) :
 	initScript(getScript(questId, isStart));
 }
 
-Npc::Npc(npc_id_t npcId, Player *player, const Pos &pos, quest_id_t questId, bool isStart) :
+Npc::Npc(npc_id_t npcId, Player *player, const Point &pos, quest_id_t questId, bool isStart) :
 	m_pos(pos),
 	m_player(player),
 	m_npcId(npcId)

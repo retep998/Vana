@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Pos.hpp"
+#include "Point.hpp"
 #include "Types.hpp"
 #include <cmath>
 
@@ -28,11 +28,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Be VERY careful when dealing with things that require the Y position
 struct Line {
 	Line() = default;
-	Line(const Pos &pt1, const Pos &pt2) : pt1(pt1), pt2(pt2) { }
+	Line(const Point &pt1, const Point &pt2) : pt1(pt1), pt2(pt2) { }
 
 	auto slope() const -> float;
-	auto contains(const Pos &pos) const -> bool;
-	auto slopeContains(const Pos &pos) const -> bool;
+	auto contains(const Point &pos) const -> bool;
+	auto slopeContains(const Point &pos) const -> bool;
 	auto withinRangeX(coord_t xValue) const -> bool;
 	auto withinRangeY(coord_t yValue) const -> bool;
 	auto interpolateForX(coord_t yValue) const -> coord_t;
@@ -42,9 +42,9 @@ struct Line {
 	auto isVertical() const -> bool;
 	auto isHorizontal() const -> bool;
 	auto isOrigin() const -> bool;
-	auto isEdge(const Pos &pt) -> bool;
+	auto isEdge(const Point &pt) -> bool;
 	auto isEdge(coord_t xValue, coord_t yValue) -> bool;
 
-	Pos pt1;
-	Pos pt2;
+	Point pt1;
+	Point pt2;
 };

@@ -36,7 +36,7 @@ public:
 		Beholder = 2,
 	};
 
-	Summon(map_object_t id, skill_id_t summonId, skill_level_t level, bool isFacingLeft, const Pos &position, foothold_id_t foothold = 0);
+	Summon(map_object_t id, skill_id_t summonId, skill_level_t level, bool isFacingLeft, const Point &position, foothold_id_t foothold = 0);
 
 	auto getId() -> summon_id_t { return m_id; }
 	auto getSkillId() -> skill_id_t { return m_summonId; }

@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.hpp"
 #include "TimeUtilities.hpp"
 
-Drop::Drop(map_id_t mapId, mesos_t mesos, const Pos &pos, player_id_t owner, bool playerDrop) :
+Drop::Drop(map_id_t mapId, mesos_t mesos, const Point &pos, player_id_t owner, bool playerDrop) :
 	m_owner(owner),
 	m_mapId(mapId),
 	m_mesos(mesos),
@@ -33,7 +33,7 @@ Drop::Drop(map_id_t mapId, mesos_t mesos, const Pos &pos, player_id_t owner, boo
 {
 }
 
-Drop::Drop(map_id_t mapId, const Item &item, const Pos &pos, player_id_t owner, bool playerDrop) :
+Drop::Drop(map_id_t mapId, const Item &item, const Point &pos, player_id_t owner, bool playerDrop) :
 	m_owner(owner),
 	m_mapId(mapId),
 	m_playerDrop(playerDrop),
@@ -50,7 +50,7 @@ auto Drop::getAmount() -> slot_qty_t {
 	return m_item.getAmount();
 }
 
-auto Drop::doDrop(const Pos &origin) -> void {
+auto Drop::doDrop(const Point &origin) -> void {
 	setDroppedAtTime(TimeUtilities::getNow());
 	Map *map = getMap();
 	map->addDrop(this);
@@ -79,7 +79,7 @@ auto Drop::showDrop(Player *player) -> void {
 	if (isQuest() && player->getId() != m_owner) {
 		return;
 	}
-	player->send(DropsPacket::showDrop(this, DropsPacket::DropTypes::ShowExisting, Pos()));
+	player->send(DropsPacket::showDrop(this, DropsPacket::DropTypes::ShowExisting, Point{}));
 }
 
 auto Drop::takeDrop(Player *player, pet_id_t petId) -> void {

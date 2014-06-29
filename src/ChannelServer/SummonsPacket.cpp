@@ -33,7 +33,7 @@ SPLIT_PACKET_IMPL(showSummon, player_id_t playerId, Summon *summon, bool isMapEn
 		.add<summon_id_t>(summon->getId())
 		.add<skill_id_t>(summon->getSkillId())
 		.add<skill_level_t>(summon->getSkillLevel())
-		.add<Pos>(summon->getPos())
+		.add<Point>(summon->getPos())
 		.add<int8_t>(summon->getStance())
 		.add<foothold_id_t>(summon->getFoothold())
 		.add<int8_t>(summon->getMovementType())
@@ -44,13 +44,13 @@ SPLIT_PACKET_IMPL(showSummon, player_id_t playerId, Summon *summon, bool isMapEn
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(moveSummon, player_id_t playerId, Summon *summon, const Pos &startPos, unsigned char *buf, int32_t bufLen) {
+SPLIT_PACKET_IMPL(moveSummon, player_id_t playerId, Summon *summon, const Point &startPos, unsigned char *buf, int32_t bufLen) {
 	SplitPacketBuilder builder;
 	builder.player
 		.add<header_t>(SMSG_SUMMON_MOVEMENT)
 		.add<player_id_t>(playerId)
 		.add<summon_id_t>(summon->getId())
-		.add<Pos>(startPos)
+		.add<Point>(startPos)
 		.addBuffer(buf, bufLen);
 
 	builder.map.addBuffer(builder.player);

@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Pos.hpp"
+#include "Point.hpp"
 #include "Line.hpp"
 #include "Types.hpp"
 #include <string>
@@ -41,7 +41,7 @@ struct PortalInfo {
 	string_t toName;
 	string_t script;
 	string_t name;
-	Pos pos;
+	Point pos;
 };
 
 struct SpawnInfo {
@@ -59,7 +59,7 @@ struct SpawnInfo {
 	int32_t id = 0;
 	int32_t time = 0;
 	foothold_id_t foothold = 0;
-	Pos pos;
+	Point pos;
 };
 
 struct NpcSpawnInfo : public SpawnInfo {
@@ -87,5 +87,5 @@ struct Respawnable {
 struct SeatInfo {
 	seat_id_t id = 0;
 	Player *occupant = nullptr;
-	Pos pos;
+	Point pos;
 };
