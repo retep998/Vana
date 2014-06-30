@@ -162,9 +162,9 @@ auto PlayerModFunctions::job(Player *player, const chat_t &args) -> ChatResult {
 		}
 	}
 	else {
-		out_stream_t message;
-		message << "Current job: " << player->getStats()->getJob();
-		ChatHandlerFunctions::showInfo(player, message.str());
+		ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) {
+			message << "Current job: " << player->getStats()->getJob();
+		});
 	}
 	return ChatResult::HandledDisplay;
 }

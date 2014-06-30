@@ -45,6 +45,9 @@ protected:
 private:
 	auto initialize() -> void;
 	auto setEnvironmentVariables() -> void;
+	// TODO FIXME msvc
+	// Remove this when MSVC supports static init
+	static string_t sApiVersion/* = "1.0.0"*/;
 };
 
 namespace LuaExports {
