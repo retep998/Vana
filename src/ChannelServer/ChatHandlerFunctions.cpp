@@ -514,6 +514,11 @@ auto ChatHandlerFunctions::initialize() -> void {
 	command.notes.push_back("Displays your current position and foothold on the map");
 	sCommandList["pos"] = command.addToMap();
 
+	command.command = &MapFunctions::mapDimensions;
+	command.syntax = "[{$map string | #map ID}]";
+	command.notes.push_back("Displays the left top and right bottom dimensions of the map");
+	sCommandList["dimensions"] = command.addToMap();
+
 	command.command = &MapFunctions::zakum;
 	command.notes.push_back("Spawns Zakum");
 	sCommandList["zakum"] = command.addToMap();

@@ -56,10 +56,11 @@ auto InfoFunctions::help(Player *player, const chat_t &args) -> ChatResult {
 
 auto InfoFunctions::lookup(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (.+))", matches) == MatchResult::AnyMatches) {
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) ?(.+)?)", matches) == MatchResult::AnyMatches) {
 		uint16_t type = 0;
 		uint16_t subType = 0;
 		string_t rawType = matches[1];
+		uint16_t nonMcdbType = 999;
 
 		// These constants correspond to MCDB enum types
 		if (rawType == "item") type = 1;
@@ -73,15 +74,7 @@ auto InfoFunctions::lookup(Player *player, const chat_t &args) -> ChatResult {
 		else if (rawType == "mob") type = 4;
 		else if (rawType == "npc") type = 5;
 		else if (rawType == "quest") type = 6;
-		// The rest of the constants don't, they're merely there for later processing
-		else if (rawType == "id") type = 100;
-		else if (rawType == "continent") type = 200;
-		else if (rawType == "scriptbyname") type = 300;
-		else if (rawType == "scriptbyid") type = 400;
-		else if (rawType == "whatdrops") type = 500;
-		else if (rawType == "whatmaps") type = 600;
-		else if (rawType == "music") type = 700;
-		else if (rawType == "drops") type = 800;
+		else type = nonMcdbType;
 
 		auto isIntegerString = [](const string_t &input) -> bool {
 			return std::all_of(std::cbegin(input), std::cend(input), [](char c) -> bool {
@@ -92,213 +85,251 @@ auto InfoFunctions::lookup(Player *player, const chat_t &args) -> ChatResult {
 			ChatHandlerFunctions::showError(player, type + " should be given an integral identifier. Input was: " + input);
 			return ChatResult::HandledDisplay;
 		};
+		auto requiresSecondArgument = [player](const string_t &type) -> ChatResult {
+			ChatHandlerFunctions::showError(player, type + " requires a second argument");
+			return ChatResult::HandledDisplay;
+		};
 
-		if (type != 0) {
-			soci::session &sql = Database::getDataDb();
-			auto displayFunc = [&sql, &player](const soci::rowset<> &rs, function_t<void(const soci::row &row, out_stream_t &str)> formatMessage) {
-				// Bug in the behavior of SOCI
-				// In the case where you use dynamic resultset binding, got_data() will not properly report that it got results
+		soci::session &sql = Database::getDataDb();
+		auto displayFunc = [&sql, &player](const soci::rowset<> &rs, function_t<void(const soci::row &row, out_stream_t &str)> formatMessage, const string_t &query) {
+			// Bug in the behavior of SOCI
+			// In the case where you use dynamic resultset binding, got_data() will not properly report that it got results
 
-				out_stream_t str("");
-				bool found = false;
-				for (const auto &row : rs) {
-					found = true;
+			ChatHandlerFunctions::showInfo(player, "Search for '" + query + "'");
 
-					str.str("");
-					str.clear();
-					formatMessage(row, str);
-					ChatHandlerFunctions::showInfo(player, str.str());
-				}
+			out_stream_t str("");
+			bool found = false;
+			for (const auto &row : rs) {
+				found = true;
 
-				if (!found) {
-					ChatHandlerFunctions::showError(player, "No results");
-				}
+				str.str("");
+				str.clear();
+				formatMessage(row, str);
+				ChatHandlerFunctions::showInfo(player, str.str());
+			}
+
+			if (!found) {
+				ChatHandlerFunctions::showError(player, "No results");
+			}
+		};
+
+		if (type < nonMcdbType) {
+			auto format = [](const soci::row &row, out_stream_t &str) {
+				str << row.get<int32_t>(0) << " : " << row.get<string_t>(1);
 			};
 
 			string_t q = matches[2];
-
-			if (type < 200) {
-				auto format = [](const soci::row &row, out_stream_t &str) {
-					str << row.get<int32_t>(0) << " : " << row.get<string_t>(1);
-				};
-
-				if (type == 100) {
-					if (!isIntegerString(q)) {
-						return shouldBeIdOnly("id", q);
-					}
-
-					soci::rowset<> rs = (sql.prepare << "SELECT objectid, `label` FROM " << Database::makeDataTable("strings") << " WHERE objectid = :q", soci::use(q, "q"));
-					displayFunc(rs, format);
-				}
-				else if (type == 1 && subType != 0) {
-					q = "%" + q + "%";
-					soci::rowset<> rs = (sql.prepare
-						<< "SELECT s.objectid, s.`label` "
-						<< "FROM " << Database::makeDataTable("strings") << " s "
-						<< "INNER JOIN " << Database::makeDataTable("item_data") << " i ON s.objectid = i.itemid "
-						<< "WHERE s.object_type = :type AND s.label LIKE :q AND i.inventory = :subtype",
-						soci::use(q, "q"),
-						soci::use(type, "type"),
-						soci::use(subType, "subtype"));
-
-					displayFunc(rs, format);
-				}
-				else {
-					q = "%" + q + "%";
-					soci::rowset<> rs = (sql.prepare
-						<< "SELECT objectid, `label` "
-						<< "FROM " << Database::makeDataTable("strings") << " "
-						<< "WHERE object_type = :type AND label LIKE :q",
-						soci::use(q, "q"),
-						soci::use(type, "type"));
-
-					displayFunc(rs, format);
-				}
+			if (q.empty()) {
+				return requiresSecondArgument(rawType);
 			}
-			else if (type == 200) {
-				string_t rawMap = matches[2];
-				map_id_t mapId = ChatHandlerFunctions::getMap(rawMap, player);
-				if (Maps::getMap(mapId) != nullptr) {
-					out_stream_t message;
-					message << mapId << " : " << static_cast<int32_t>(ChannelServer::getInstance().getMapDataProvider().getContinent(mapId));
-					ChatHandlerFunctions::showInfo(player, message.str());
-				}
-				else {
-					ChatHandlerFunctions::showError(player, "Invalid map: " + rawMap);
-				}
-			}
-			else if (type == 300 || type == 400) {
-				auto format = [](const soci::row &row, out_stream_t &str) {
-					str << row.get<int32_t>(1) << " (" << row.get<string_t>(0) << "): " << row.get<string_t>(2);
-				};
 
-				if (type == 300) {
-					q = "%" + q + "%";
-					soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM " << Database::makeDataTable("scripts") << " WHERE script LIKE :q", soci::use(q, "q"));
-					displayFunc(rs, format);
-				}
-				else if (type == 400) {
-					if (!isIntegerString(q)) {
-						return shouldBeIdOnly("scriptbyid", q);
-					}
-					soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM " << Database::makeDataTable("scripts") << " WHERE objectid = :q", soci::use(q, "q"));
-					displayFunc(rs, format);
-				}
-			}
-			else if (type == 500) {
-				auto format = [](const soci::row &row, out_stream_t &str) {
-					str << row.get<int32_t>(0) << " : " << row.get<string_t>(1);
-				};
-
-				if (!isIntegerString(q)) {
-					return shouldBeIdOnly("whatdrops", q);
-				}
-
+			if (type == 1 && subType != 0) {
+				q = "%" + q + "%";
 				soci::rowset<> rs = (sql.prepare
-					<< "SELECT d.dropperid, s.label "
-					<< "FROM " << Database::makeDataTable("drop_data") << " d "
-					<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = d.dropperid AND s.object_type = 'mob' "
-					<< "WHERE d.dropperid NOT IN (SELECT DISTINCT dropperid FROM " << Database::makeDataTable("user_drop_data") << ") AND d.itemid = :q "
-					<< "UNION ALL "
-					<< "SELECT d.dropperid, s.label "
-					<< "FROM " << Database::makeDataTable("user_drop_data") << " d "
-					<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = d.dropperid AND s.object_type = 'mob' "
-					<< "WHERE d.itemid = :q ",
-					soci::use(q, "q"));
+					<< "SELECT s.objectid, s.`label` "
+					<< "FROM " << Database::makeDataTable("strings") << " s "
+					<< "INNER JOIN " << Database::makeDataTable("item_data") << " i ON s.objectid = i.itemid "
+					<< "WHERE s.object_type = :type AND s.label LIKE :q AND i.inventory = :subtype",
+					soci::use(q, "q"),
+					soci::use(type, "type"),
+					soci::use(subType, "subtype"));
 
-				displayFunc(rs, format);
+				displayFunc(rs, format, matches[2]);
 			}
-			else if (type == 600) {
-				if (ChatHandlerFunctions::runRegexPattern(q, R"((\w+) (\w+))", matches) == MatchResult::AnyMatches) {
-					auto format = [](const soci::row &row, out_stream_t &str) {
-						str << row.get<int32_t>(0) << " : " << row.get<string_t>(1);
-					};
+			else {
+				q = "%" + q + "%";
+				soci::rowset<> rs = (sql.prepare
+					<< "SELECT objectid, `label` "
+					<< "FROM " << Database::makeDataTable("strings") << " "
+					<< "WHERE object_type = :type AND label LIKE :q",
+					soci::use(q, "q"),
+					soci::use(type, "type"));
 
-					string_t option = matches[1];
-					string_t test = matches[2];
+				displayFunc(rs, format, matches[2]);
+			}
+		}
+		else if (rawType == "id") {
+			string_t q = matches[2];
+			if (q.empty()) {
+				return requiresSecondArgument(rawType);
+			}
+			if (!isIntegerString(q)) {
+				return shouldBeIdOnly("id", q);
+			}
 
-					if (option == "portal") {
-						soci::rowset<> rs = (sql.prepare
-							<< "SELECT m.mapid, s.label "
-							<< "FROM " << Database::makeDataTable("map_data") << " m "
-							<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = m.mapid AND s.object_type = 'map' "
-							<< "WHERE m.mapid IN ("
-							<< "	SELECT mp.mapid "
-							<< "	FROM " << Database::makeDataTable("map_portals") << " mp "
-							<< "	WHERE mp.script = :query "
-							<< ")",
-							soci::use(test, "query"));
+			auto format = [](const soci::row &row, out_stream_t &str) {
+				str << row.get<int32_t>(0) << " (" << row.get<string_t>(2) << ") : " << row.get<string_t>(1);
+			};
 
-						displayFunc(rs, format);					}
-					else if (option == "npc" || option == "mob" || option == "reactor") {
-						if (!isIntegerString(test)) {
-							return shouldBeIdOnly("whatmaps+" + option, test);
-						}
+			soci::rowset<> rs = (sql.prepare << "SELECT objectid, `label`, object_type FROM " << Database::makeDataTable("strings") << " WHERE objectid = :q", soci::use(q, "q"));
+			displayFunc(rs, format, matches[2]);
+		}
+		else if (rawType == "continent") {
+			string_t rawMap = matches[2];
+			map_id_t mapId = rawMap.empty() ?
+				player->getMapId() :
+				ChatHandlerFunctions::getMap(rawMap, player);
 
-						option = " AND ml.life_type = '" + option + "'";
+			if (Maps::getMap(mapId) != nullptr) {
+				ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) {
+					message << "Continent ID of " << mapId << " : " << static_cast<int32_t>(ChannelServer::getInstance().getMapDataProvider().getContinent(mapId));
+				});
+			}
+			else {
+				ChatHandlerFunctions::showError(player, "Invalid map: " + rawMap);
+			}
+		}
+		else if (rawType == "scriptbyname" || rawType == "scriptbyid") {
+			auto format = [](const soci::row &row, out_stream_t &str) {
+				str << row.get<int32_t>(1) << " (" << row.get<string_t>(0) << "): " << row.get<string_t>(2);
+			};
 
-						soci::rowset<> rs = (sql.prepare
-							<< "SELECT m.mapid, s.label "
-							<< "FROM " << Database::makeDataTable("map_data") << " m "
-							<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = m.mapid AND s.object_type = 'map' "
-							<< "WHERE m.mapid IN ("
-							<< "	SELECT ml.mapid "
-							<< "	FROM " << Database::makeDataTable("map_life") << " ml "
-							<< "	WHERE ml.lifeid = :objectId "
-							<< "	" << option
-							<< ")",
-							soci::use(test, "objectId"));
+			string_t q = matches[2];
+			if (q.empty()) {
+				return requiresSecondArgument(rawType);
+			}
+			if (rawType == "scriptbyname") {
+				q = "%" + q + "%";
+				soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM " << Database::makeDataTable("scripts") << " WHERE script LIKE :q", soci::use(q, "q"));
+				displayFunc(rs, format, matches[2]);
+			}
+			else if (rawType == "scriptbyid") {
+				if (!isIntegerString(q)) {
+					return shouldBeIdOnly("scriptbyid", q);
+				}
+				soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM " << Database::makeDataTable("scripts") << " WHERE objectid = :q", soci::use(q, "q"));
+				displayFunc(rs, format, matches[2]);
+			}
+		}
+		else if (rawType == "whatdrops") {
+			auto format = [](const soci::row &row, out_stream_t &str) {
+				str << row.get<int32_t>(0) << " : " << row.get<string_t>(1);
+			};
 
-						displayFunc(rs, format);
+			string_t q = matches[2];
+			if (q.empty()) {
+				return requiresSecondArgument(rawType);
+			}
+			if (!isIntegerString(q)) {
+				return shouldBeIdOnly("whatdrops", q);
+			}
+
+			soci::rowset<> rs = (sql.prepare
+				<< "SELECT d.dropperid, s.label "
+				<< "FROM " << Database::makeDataTable("drop_data") << " d "
+				<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = d.dropperid AND s.object_type = 'mob' "
+				<< "WHERE d.dropperid NOT IN (SELECT DISTINCT dropperid FROM " << Database::makeDataTable("user_drop_data") << ") AND d.itemid = :q "
+				<< "UNION ALL "
+				<< "SELECT d.dropperid, s.label "
+				<< "FROM " << Database::makeDataTable("user_drop_data") << " d "
+				<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = d.dropperid AND s.object_type = 'mob' "
+				<< "WHERE d.itemid = :q ",
+				soci::use(q, "q"));
+
+			displayFunc(rs, format, matches[2]);
+		}
+		else if (rawType == "whatmaps") {
+			string_t q = matches[2];
+			if (q.empty()) {
+				return requiresSecondArgument(rawType);
+			}
+			if (ChatHandlerFunctions::runRegexPattern(q, R"((\w+) (\w+))", matches) == MatchResult::AnyMatches) {
+				auto format = [](const soci::row &row, out_stream_t &str) {
+					str << row.get<int32_t>(0) << " : " << row.get<string_t>(1);
+				};
+
+				string_t option = matches[1];
+				string_t test = matches[2];
+				if (option == "portal") {
+					soci::rowset<> rs = (sql.prepare
+						<< "SELECT m.mapid, s.label "
+						<< "FROM " << Database::makeDataTable("map_data") << " m "
+						<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = m.mapid AND s.object_type = 'map' "
+						<< "WHERE m.mapid IN ("
+						<< "	SELECT mp.mapid "
+						<< "	FROM " << Database::makeDataTable("map_portals") << " mp "
+						<< "	WHERE mp.script = :query "
+						<< ")",
+						soci::use(test, "query"));
+
+					displayFunc(rs, format, matches[2]);
+				}
+				else if (option == "npc" || option == "mob" || option == "reactor") {
+					if (!isIntegerString(test)) {
+						return shouldBeIdOnly("whatmaps+" + option, test);
 					}
-					else {
-						ChatHandlerFunctions::showError(player, "Invalid life type: " + option);
-						return ChatResult::HandledDisplay;
-					}
+
+					option = " AND ml.life_type = '" + option + "'";
+
+					soci::rowset<> rs = (sql.prepare
+						<< "SELECT m.mapid, s.label "
+						<< "FROM " << Database::makeDataTable("map_data") << " m "
+						<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = m.mapid AND s.object_type = 'map' "
+						<< "WHERE m.mapid IN ("
+						<< "	SELECT ml.mapid "
+						<< "	FROM " << Database::makeDataTable("map_life") << " ml "
+						<< "	WHERE ml.lifeid = :objectId "
+						<< "	" << option
+						<< ")",
+						soci::use(test, "objectId"));
+
+					displayFunc(rs, format, matches[2]);
 				}
 				else {
-					ChatHandlerFunctions::showError(player, "whatmaps should be given a type indicator (valid ones are npc, mob, portal, and reactor) and an argument to match against. Input was: " + q);
+					ChatHandlerFunctions::showError(player, "Invalid life type: " + option);
 					return ChatResult::HandledDisplay;
 				}
 			}
-			else if (type == 700) {
-				auto format = [](const soci::row &row, out_stream_t &str) {
-					str << row.get<string_t>(0);
-				};
-
-				q = "%" + q + "%";
-				soci::rowset<> rs = (sql.prepare
-					<< "SELECT DISTINCT m.default_bgm "
-					<< "FROM " << Database::makeDataTable("map_data") << " m "
-					<< "WHERE m.default_bgm LIKE :q",
-					soci::use(q, "q"));
-
-				displayFunc(rs, format);
+			else {
+				ChatHandlerFunctions::showError(player, "whatmaps should be given a type indicator (valid ones are npc, mob, portal, and reactor) and an argument to match against. Input was: " + q);
+				return ChatResult::HandledDisplay;
 			}
-			else if (type == 800) {
-				auto format = [](const soci::row &row, out_stream_t &str) {
-					str << row.get<int32_t>(0) << " : " << row.get<string_t>(1) << " (base rate " << (static_cast<double>(row.get<int32_t>(2)) / 1000000. * 100.) << "%)";
-				};
+		}
+		else if (rawType == "music") {
+			auto format = [](const soci::row &row, out_stream_t &str) {
+				str << row.get<string_t>(0);
+			};
 
-				if (!isIntegerString(q)) {
-					return shouldBeIdOnly("drops", q);
-				}
-
-				soci::rowset<> rs = (sql.prepare
-					<< "SELECT d.itemid, s.label, d.chance "
-					<< "FROM " << Database::makeDataTable("drop_data") << " d "
-					<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = d.itemid AND s.object_type = 'item' "
-					<< "WHERE d.dropperid NOT IN (SELECT DISTINCT dropperid FROM " << Database::makeDataTable("user_drop_data") << ") AND d.dropperid = :q "
-					<< "UNION ALL "
-					<< "SELECT d.itemid, s.label, d.chance "
-					<< "FROM " << Database::makeDataTable("user_drop_data") << " d "
-					<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = d.itemid AND s.object_type = 'item' "
-					<< "WHERE d.dropperid = :q "
-					<< "ORDER BY itemid",
-					soci::use(q, "q"));
-
-				displayFunc(rs, format);
+			string_t q = matches[2];
+			if (q.empty()) {
+				return requiresSecondArgument(rawType);
 			}
+			q = "%" + q + "%";
+			soci::rowset<> rs = (sql.prepare
+				<< "SELECT DISTINCT m.default_bgm "
+				<< "FROM " << Database::makeDataTable("map_data") << " m "
+				<< "WHERE m.default_bgm LIKE :q",
+				soci::use(q, "q"));
+
+			displayFunc(rs, format, matches[2]);
+		}
+		else if (rawType == "drops") {
+			auto format = [](const soci::row &row, out_stream_t &str) {
+				str << row.get<int32_t>(0) << " : " << row.get<string_t>(1) << " (base rate " << (static_cast<double>(row.get<int32_t>(2)) / 1000000. * 100.) << "%)";
+			};
+
+			string_t q = matches[2];
+			if (q.empty()) {
+				return requiresSecondArgument(rawType);
+			}
+			if (!isIntegerString(q)) {
+				return shouldBeIdOnly("drops", q);
+			}
+
+			soci::rowset<> rs = (sql.prepare
+				<< "SELECT d.itemid, s.label, d.chance "
+				<< "FROM " << Database::makeDataTable("drop_data") << " d "
+				<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = d.itemid AND s.object_type = 'item' "
+				<< "WHERE d.dropperid NOT IN (SELECT DISTINCT dropperid FROM " << Database::makeDataTable("user_drop_data") << ") AND d.dropperid = :q "
+				<< "UNION ALL "
+				<< "SELECT d.itemid, s.label, d.chance "
+				<< "FROM " << Database::makeDataTable("user_drop_data") << " d "
+				<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = d.itemid AND s.object_type = 'item' "
+				<< "WHERE d.dropperid = :q "
+				<< "ORDER BY itemid",
+				soci::use(q, "q"));
+
+			displayFunc(rs, format, matches[2]);
 		}
 		else {
 			ChatHandlerFunctions::showError(player, "Invalid search type: " + rawType);
