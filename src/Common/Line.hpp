@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Point.hpp"
 #include "Types.hpp"
 #include <cmath>
+#include <ostream>
 
 // IMPORTANT
 // The assumption made in the Line and Rect classes are that the coordinate system works like you'd expect for x, but is inverted for y
@@ -47,4 +48,11 @@ struct Line {
 
 	Point pt1;
 	Point pt2;
+
+	friend auto operator <<(std::ostream &out, const Line &line) -> std::ostream &;
 };
+
+inline
+auto operator <<(std::ostream &out, const Line &line) -> std::ostream & {
+	return out << "(" << line.pt1 << ", " << line.pt2 << ")";
+}

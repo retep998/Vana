@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <algorithm>
 #include <cmath>
+#include <ostream>
 
 struct Line;
 
@@ -60,7 +61,15 @@ public:
 	auto intersection(const Rect &other) const -> Rect;
 	auto combine(const Rect &other) const -> Rect;
 	auto findOverlap(const Rect &other) const -> SearchResult;
+
+	friend auto operator <<(std::ostream &out, const Rect &rect) -> std::ostream &;
 private:
 	Point m_leftTop;
 	Point m_rightBottom;
 };
+
+inline
+auto operator <<(std::ostream &out, const Rect &rect) -> std::ostream & {
+	Rect normalized = rect.normalize();
+	return out << "(" << normalized.m_leftTop << ", " << normalized.m_rightBottom << ")";
+}

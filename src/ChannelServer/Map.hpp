@@ -74,6 +74,7 @@ public:
 	auto getForcedReturn() const -> map_id_t { return m_info->forcedReturn; }
 	auto getReturnMap() const -> map_id_t { return m_info->rm; }
 	auto getId() const -> map_id_t { return m_id; }
+	auto getDimensions() const -> Rect { return m_realDimensions; }
 
 	// Footholds
 	auto findFloor(const Point &pos, Point &floorPos, coord_t yMod = 0) -> SearchResult;
