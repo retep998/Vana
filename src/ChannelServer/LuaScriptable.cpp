@@ -53,6 +53,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <vector>
 
+// TODO FIXME msvc
+// Remove this when MSVC supports static init
+string_t LuaScriptable::sApiVersion = "1.0.0";
+
 LuaScriptable::LuaScriptable(const string_t &filename, player_id_t playerId) :
 	LuaEnvironment(filename),
 	m_playerId(playerId)
@@ -385,6 +389,7 @@ auto LuaScriptable::setEnvironmentVariables() -> void {
 	set<string_t>("env_subversion", MapleVersion::LoginSubversion);
 	set<bool>("env_is_test_server", MapleVersion::TestServer);
 	set<string_t>("env_locale", MapleVersion::LocaleString);
+	set<string_t>("env_api_version", sApiVersion);
 }
 
 auto LuaScriptable::handleError(const string_t &filename, const string_t &error) -> void {
