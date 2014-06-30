@@ -75,6 +75,7 @@ public:
 	auto getReturnMap() const -> map_id_t { return m_info->rm; }
 	auto getId() const -> map_id_t { return m_id; }
 	auto getDimensions() const -> Rect { return m_realDimensions; }
+	auto getMusic() const -> string_t { return m_music; }
 
 	// Footholds
 	auto findFloor(const Point &pos, Point &floorPos, coord_t yMod = 0) -> SearchResult;

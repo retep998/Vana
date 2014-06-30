@@ -328,28 +328,33 @@ auto MapFunctions::horntail(Player *player, const chat_t &args) -> ChatResult {
 }
 
 auto MapFunctions::music(Player *player, const chat_t &args) -> ChatResult {
-	soci::session &sql = Database::getDataDb();
-	string_t music;
-
-	if (args == "default") {
-		music = args;
+	if (args.empty()) {
+		ChatHandlerFunctions::showInfo(player, "Current music: " + player->getMap()->getMusic());
 	}
 	else {
-		sql
-			<< "SELECT m.default_bgm "
-			<< "FROM " << Database::makeDataTable("map_data") << " m "
-			<< "WHERE m.default_bgm = :q "
-			<< "LIMIT 1",
-			soci::use(args, "q"),
-			soci::into(music);
-	}
+		soci::session &sql = Database::getDataDb();
+		string_t music;
 
-	if (music.empty()) {
-		ChatHandlerFunctions::showError(player, "Invalid music: " + args);
-	}
-	else {
-		player->getMap()->setMusic(music);
-		ChatHandlerFunctions::showInfo(player, "Set music on the map to: " + music);
+		if (args == "default") {
+			music = args;
+		}
+		else {
+			sql
+				<< "SELECT m.default_bgm "
+				<< "FROM " << Database::makeDataTable("map_data") << " m "
+				<< "WHERE m.default_bgm = :q "
+				<< "LIMIT 1",
+				soci::use(args, "q"),
+				soci::into(music);
+		}
+
+		if (music.empty()) {
+			ChatHandlerFunctions::showError(player, "Invalid music: " + args);
+		}
+		else {
+			player->getMap()->setMusic(music);
+			ChatHandlerFunctions::showInfo(player, "Set music on the map to: " + music);
+		}
 	}
 	return ChatResult::HandledDisplay;
 }
