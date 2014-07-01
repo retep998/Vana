@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Kiriru
 
-dofile("scripts/utils/boatHelper.lua");
 dofile("scripts/utils/jobHelper.lua");
+dofile("scripts/utils/mapManagerHelper.lua");
 dofile("scripts/utils/npcHelper.lua");
 
 price = nil;
@@ -47,7 +47,7 @@ if answer == answer_no then
 	addText("If not, forget it.");
 	sendNext();
 else
-	mapId = queryBoatMap("ereveToElliniaTrip");
+	mapId = queryManagedMap("ereveToElliniaTrip");
 	if mapId == nil then
 		addText("There are no more boats available right now. ");
 		addText("Try again later.");
