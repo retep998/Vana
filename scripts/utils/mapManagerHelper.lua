@@ -79,27 +79,28 @@ function clearManagedMap(mapId)
 	end
 	temp = temp .. mapId;
 
+	showMapTimer(mapId, 0);
 	setInstanceVariable("available_maps", temp);
 end
 
-function startManagedMapInstance(playerId, mapId, timeInSeconds)
+function startManagedMapInstance(timerId, mapId, timeInSeconds)
 	showMapTimer(mapId, timeInSeconds);
-	startInstanceTimer("done_" .. playerId, timeInSeconds);
+	startInstanceTimer("done_" .. timerId, timeInSeconds);
 	takeManagedMap(mapId);
 end
 
-function getPlayerIdFromManagedMapTimer(name)
-	local playerId = nil;
+function getIdFromManagedMapTimer(name)
+	local id = nil;
 	local idx = name:find("done_");
 	if idx ~= nil then
-		playerId = tonumber(name:sub(6));
+		id = tonumber(name:sub(6));
 	end
-	return playerId;
+	return id;
 end
 
-function cleanManagedMapInstance(playerId, mapId, stopTimer)
+function cleanManagedMapInstance(timerId, mapId, stopTimer)
 	if stopTimer == nil or stopTimer then
-		stopInstanceTimer("done_" .. playerId);
+		stopInstanceTimer("done_" .. timerId);
 	end
 	clearManagedMap(mapId);
 end
