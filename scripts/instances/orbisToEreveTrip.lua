@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 
-dofile("scripts/utils/boatHelper.lua");
+dofile("scripts/utils/mapManagerHelper.lua");
 
 function beginInstance()
-	initBoatMaps({
+	initManagedMaps({
 		200090020,
 		200090022,
 		200090024,
@@ -30,38 +30,28 @@ end
 
 function timerEnd(name, fromTimer)
 	if fromTimer then
-		idx = name:find("done_");
-		if idx ~= nil then
-			playerId = tonumber(name:sub(6));
-			if setPlayer(playerId) then
-				setMap(130000210);
-				revertPlayer(playerId);
-			end
+		local playerId = getPlayerIdFromManagedMapTimer(name);
+		if playerId and setPlayer(playerId) then
+			setMap(130000210);
+			revertPlayer(playerId);
 		end
 	end
 end
 
 function playerDisconnect(playerId, isPartyLeader)
 	if setPlayer(playerId) then
-		cleanMap(playerId, getMap());
+		cleanManagedMapInstance(playerId, getMap());
 		revertPlayer();
 	end
-end
-
-function cleanMap(playerId, mapId)
-	stopInstanceTimer("done_" .. playerId);
-	clearBoatMap(mapId);
 end
 
 function changeMap(playerId, newMap, oldMap, isPartyLeader)
 	if not isInstanceMap(newMap) then
 		removeInstancePlayer(playerId);
-		cleanMap(playerId, oldMap);
+		cleanManagedMapInstance(playerId, oldMap);
 	elseif not isInstanceMap(oldMap) then
 		boatTime = 8 * 60;
 		addInstancePlayer(playerId);
-		showMapTimer(newMap, boatTime);
-		startInstanceTimer("done_" .. playerId, boatTime);
-		takeBoatMap(newMap);
+		startManagedMapInstance(playerId, newMap, boatTime);
 	end
 end
