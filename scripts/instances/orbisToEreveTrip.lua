@@ -30,7 +30,7 @@ end
 
 function timerEnd(name, fromTimer)
 	if fromTimer then
-		local playerId = getPlayerIdFromManagedMapTimer(name);
+		local playerId = getIdFromManagedMapTimer(name);
 		if playerId and setPlayer(playerId) then
 			setMap(130000210);
 			revertPlayer(playerId);
