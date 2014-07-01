@@ -70,15 +70,15 @@ function giveAllPartyMembersExp(expAmount, mapId)
 	end
 end
 
-function moveAllMapMembers(mapId, portalString)
-	local players = getAllMapPlayerIds();
+function moveAllMapMembers(fromMapId, toMapId, portalString)
+	local players = getAllMapPlayerIds(fromMapId);
 	for i = 1, #players do
 		local player = players[i];
 		if setPlayer(player) then
 			if portalString == nil then
-				setMap(mapId);
+				setMap(toMapId);
 			else
-				setMap(mapId, portalString);
+				setMap(toMapId, portalString);
 			end
 			revertPlayer();
 		end
