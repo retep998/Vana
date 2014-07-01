@@ -81,6 +81,9 @@ auto LuaScriptable::initialize() -> void {
 	if (player != nullptr && player->getInstance() != nullptr) {
 		set<string_t>("system_instance_name", player->getInstance()->getName());
 	}
+	else {
+		set<string_t>("system_instance_name", "");
+	}
 
 	// Miscellanous
 	expose("consoleOutput", &LuaExports::consoleOutput);
@@ -2243,10 +2246,12 @@ auto LuaExports::revertInstance(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::setInstance(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	Instance *instance = ChannelServer::getInstance().getInstances().getInstance(env.get<string_t>(luaVm, 1));
+	string_t instanceName = env.get<string_t>(luaVm, 1);
+	Instance *instance = ChannelServer::getInstance().getInstances().getInstance(instanceName);
 	if (instance != nullptr) {
-		env.set<string_t>(luaVm, "system_old_instance_name", env.get<string_t>(luaVm, "system_instance_name"));
-		env.set<string_t>(luaVm, "system_instance_name", instance->getName());
+		string_t oldInstanceName = env.get<string_t>(luaVm, "system_instance_name");
+		env.set<string_t>(luaVm, "system_old_instance_name", oldInstanceName);
+		env.set<string_t>(luaVm, "system_instance_name", instanceName);
 	}
 	env.push<bool>(luaVm, instance != nullptr);
 	return 1;
