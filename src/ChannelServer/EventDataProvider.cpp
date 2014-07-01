@@ -45,12 +45,12 @@ auto EventDataProvider::loadEvents() -> void {
 	// Starts a new timer that runs every hour
 	// Timer::Timer::create(bind(&namespace::func, parameters),
 	// Timer::Id(TimerType::EventTimer, ??, ??),
-	// getTimers(), Timer::Time::getNthSecondOfHour(0), hours_t(1));
+	// getTimers(), Timer::Time::getNthSecondOfHour(0), hours_t{1});
 
 	// Same, except runs a class function
 	// Timer::Timer::create(bind(&class::func, class instance, parameters),
 	// Timer::Id(TimerType::EventTimer, ??, ??),
-	// getTimers(), Timer::Time::getNthSecondOfHour(0), hours_t(1));
+	// getTimers(), Timer::Time::getNthSecondOfHour(0), hours_t{1});
 
 	std::cout << "DONE" << std::endl;
 }
@@ -67,32 +67,44 @@ auto EventDataProvider::loadInstances() -> void {
 	seconds_t nearestTen = TimeUtilities::getDistanceToNextMinuteMark(10, now);
 	seconds_t nearestFifteen = TimeUtilities::getDistanceToNextMinuteMark(15, now);
 
-	startInstance("ludiToKftBoarding", nearestFour, minutes_t(4));
-	startInstance("kftToLudiBoarding", nearestFour, minutes_t(4));
+	startInstance("ludiToKftBoarding", nearestFour, minutes_t{4});
+	startInstance("kftToLudiBoarding", nearestFour, minutes_t{4});
 
-	startInstance("kerningToNlcBoarding", nearestFive, minutes_t(5));
-	startInstance("nlcToKerningBoarding", nearestFive, minutes_t(5));
+	startInstance("kerningToNlcBoarding", nearestFive, minutes_t{5});
+	startInstance("nlcToKerningBoarding", nearestFive, minutes_t{5});
 
-	startInstance("kerningToCbdBoarding", nearestFive, minutes_t(5));
-	startInstance("cbdToKerningBoarding", nearestFive, minutes_t(5));
+	startInstance("kerningToCbdBoarding", nearestFive, minutes_t{5});
+	startInstance("cbdToKerningBoarding", nearestFive, minutes_t{5});
 
-	startInstance("elliniaToOrbisBoarding", nearestFifteen, minutes_t(15));
-	startInstance("orbisToElliniaBoarding", nearestFifteen, minutes_t(15));
+	startInstance("elliniaToOrbisBoarding", nearestFifteen, minutes_t{15});
+	startInstance("orbisToElliniaBoarding", nearestFifteen, minutes_t{15});
 
-	startInstance("ludiToOrbisBoarding", nearestTen, minutes_t(10));
-	startInstance("orbisToLudiBoarding", nearestTen, minutes_t(10));
+	startInstance("ludiToOrbisBoarding", nearestTen, minutes_t{10});
+	startInstance("orbisToLudiBoarding", nearestTen, minutes_t{10});
 
-	startInstance("leafreToOrbisBoarding", nearestTen, minutes_t(10));
-	startInstance("orbisToLeafreBoarding", nearestTen, minutes_t(10));
+	startInstance("leafreToOrbisBoarding", nearestTen, minutes_t{10});
+	startInstance("orbisToLeafreBoarding", nearestTen, minutes_t{10});
 
-	startInstance("ariantToOrbisBoarding", nearestTen, minutes_t(10));
-	startInstance("orbisToAriantBoarding", nearestTen, minutes_t(10));
+	startInstance("ariantToOrbisBoarding", nearestTen, minutes_t{10});
+	startInstance("orbisToAriantBoarding", nearestTen, minutes_t{10});
 
-	startInstance("ereveToElliniaTrip", seconds_t(0));
-	startInstance("elliniaToEreveTrip", seconds_t(0));
+	init_list_t<string_t> timelessInstances = {
+		"ereveToElliniaTrip", "elliniaToEreveTrip",
+		"ereveToOrbisTrip", "orbisToEreveTrip",
+		"miniDungeonPig",
+		"miniDungeonGolem",
+		"miniDungeonRabbit",
+		"miniDungeonSand",
+		"miniDungeonProtect",
+		"miniDungeonRemember",
+		"miniDungeonError",
+		"miniDungeonMushroom",
+		"miniDungeonRoundTable",
+	};
 
-	startInstance("ereveToOrbisTrip", seconds_t(0));
-	startInstance("orbisToEreveTrip", seconds_t(0));
+	for (const auto &inst : timelessInstances) {
+		startInstance(inst, seconds_t{0});
+	}
 
 	std::cout << "DONE" << std::endl;
 }
@@ -100,6 +112,7 @@ auto EventDataProvider::loadInstances() -> void {
 auto EventDataProvider::clearInstances() -> void {
 	auto clearInstance = [](const string_t &name) {
 		if (Instance *instance = ChannelServer::getInstance().getInstances().getInstance(name)) {
+			instance->instanceTimerEnd(false);
 			instance->markForDelete();
 			ChannelServer::getInstance().getInstances().removeInstance(instance);
 		}
@@ -115,6 +128,15 @@ auto EventDataProvider::clearInstances() -> void {
 		"ludiToKftBoarding", "kftToLudiBoarding",
 		"ereveToElliniaTrip", "elliniaToEreveTrip",
 		"ereveToOrbisTrip", "orbisToEreveTrip",
+		"miniDungeonPig",
+		"miniDungeonGolem",
+		"miniDungeonRabbit",
+		"miniDungeonSand",
+		"miniDungeonProtect",
+		"miniDungeonRemember",
+		"miniDungeonError",
+		"miniDungeonMushroom",
+		"miniDungeonRoundTable",
 	};
 
 	for (const auto &instance : instances) {
