@@ -43,6 +43,7 @@ auto Maps::unloadMap(map_id_t mapId) -> void {
 auto Maps::usePortal(Player *player, PortalInfo *portal) -> void {
 	if (portal->disabled) {
 		player->send(MapPacket::portalBlocked());
+		player->send(PlayerPacket::showMessage("The portal is closed for now.", PlayerPacket::NoticeTypes::Red));
 		return;
 	}
 
