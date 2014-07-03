@@ -181,7 +181,7 @@ auto InfoFunctions::lookup(Player *player, const chat_t &args) -> ChatResult {
 		}
 		else if (rawType == "scriptbyname" || rawType == "scriptbyid") {
 			auto format = [](const soci::row &row, out_stream_t &str) {
-				str << row.get<int32_t>(1) << " (" << row.get<string_t>(0) << "): " << row.get<string_t>(2);
+				str << row.get<int32_t>(1) << " (" << row.get<string_t>(0) << ") : " << row.get<string_t>(2);
 			};
 
 			string_t q = matches[2];
