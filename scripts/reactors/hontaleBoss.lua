@@ -19,4 +19,4 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 setMusic("Bgm14/HonTale");
 showMapMessage("As the cave shakes and rattles, here comes Horntail.", msg_red);
-spawnMobPos(getMap(), 8810026, 92, 250);
+spawnMobPos(getMap(), 8810026, 60, 250);
