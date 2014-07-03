@@ -375,8 +375,42 @@ auto Characters::connectGameWorldFromViewAllCharacters(UserConnection *user, Pac
 	world_id_t worldId = static_cast<world_id_t>(reader.get<int32_t>());
 	user->setWorldId(worldId);
 
+	// We need to do 2 validations here
+	// One to ensure that we're picking a character for the account
+	// And another to ensure that the world matches the expected world
+	optional_t<world_id_t> charWorldId;
+	optional_t<account_id_t> accountId;
+	soci::session &sql = Database::getCharDb();
+	sql.once
+		<< "SELECT world_id, user_id "
+		<< "FROM " << Database::makeCharTable("characters") << " c "
+		<< "WHERE c.character_id = :char ",
+		soci::use(id, "char"),
+		soci::into(charWorldId),
+		soci::into(accountId);
+
+	if (!sql.got_data() || !charWorldId.is_initialized() || !accountId.is_initialized()) {
+		// ???
+		// Most likely hacking
+		return;
+	}
+
+	if (accountId != user->getUserId() || worldId != worldId) {
+		// Hacking
+		return;
+	}
+
+	// TODO FIXME packet
+	// We need the packet for failure here - it's possible that there are no channels available
+
+	auto world = LoginServer::getInstance().getWorlds().getWorld(worldId);
+	if (world->getChannelCount() == 0) {
+		// Packet
+		return;
+	}
+
 	// Take the player to a random channel
-	channel_id_t channel = LoginServer::getInstance().getWorlds().getWorld(worldId)->getRandomChannel();
+	channel_id_t channel = world->getRandomChannel();
 	user->setChannel(channel);
 
 	connectGame(user, id);
