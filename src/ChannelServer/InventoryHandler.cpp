@@ -304,7 +304,7 @@ auto InventoryHandler::useScroll(Player *player, PacketReader &reader) -> void {
 	int8_t succeed = -1;
 	bool cursed = false;
 
-	if (ChannelServer::getInstance().getItemDataProvider().scrollItem(ChannelServer::getInstance().getEquipDataProvider(), itemId, equip, whiteScroll, player->hasGmBenefits(), succeed, cursed) == HackingResult::NotHacking) {
+	if (ChannelServer::getInstance().getItemDataProvider().scrollItem(ChannelServer::getInstance().getEquipDataProvider(), itemId, equip, whiteScroll, player->hasGmBenefits(), succeed, cursed) != HackingResult::NotHacking) {
 		return;
 	}
 
