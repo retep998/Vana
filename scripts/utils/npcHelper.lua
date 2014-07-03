@@ -188,7 +188,7 @@ function choiceRef(choice, choiceId)
 		end
 		return "#L" .. choiceId .. "#" .. choice .. "#l";
 	end
-	
+
 	local text = "";
 	for i = 1, #choice do
 		if i > 1 then

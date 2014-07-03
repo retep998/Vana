@@ -20,6 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 dofile("scripts/utils/bossHelper.lua");
 dofile("scripts/utils/npcHelper.lua");
 dofile("scripts/utils/signupHelper.lua");
+dofile("scripts/utils/tableHelper.lua");
+
+signupInstance = "zakumSignup";
 
 function enterBossMap()
 	x = getMaxZakumBattles();
@@ -31,29 +34,6 @@ function enterBossMap()
 	end
 end
 
-function verifyMaster()
-	if not verifyInstance() or getName() ~= getInstanceVariable("master") then
-		return false;
-	end
-	return true;
-end
-
-function verifyInstance()
-	-- We make sure that the person didn't keep open the window for just long enough
-	-- to screw things up using this
-	return isInstance("zakumSignup");
-end
-
-function compatibilityCheck()
-	if setInstance("zakumSignup") then
-		gm = isGm();
-		gmInstance = getInstanceVariable("gm", type_bool);
-		revertInstance();
-		return gm == gmInstance;
-	end
-	return false;
-end
-
 function summonedCheck()
 	if setInstance("zakum") then
 		summoned = getInstanceVariable("summoned", type_bool);
@@ -63,6 +43,22 @@ function summonedCheck()
 	return false;
 end
 
+function displaySquadList()
+	signedUp = getSignupList();
+	signupCount = getSignedUpCount();
+	addText("The total number of applicants are " .. blue(signupCount) .. ", and the list of the applicants is as follows.\r\n");
+	for i = 1, #signedUp do
+		player = signedUp[i];
+		if i == 1 then
+			addText(i .. " : " .. blue(player) .. " (The Leader of the Squad)");
+		else
+			addText(i .. " : " .. player);
+		end
+		addText("\r\n");
+	end
+	sendOk();
+end
+
 if getLevel() < 50 then
 	-- Should never get this far, but whatever, double checking
 	addText("Only players with level 50 or above are qualified to join the Zakum Squad.");
@@ -70,8 +66,8 @@ if getLevel() < 50 then
 	return;
 end
 
-if verifyInstance() then
-	if isBannedInstancePlayer(getName()) or not compatibilityCheck() then
+if verifyInstance(signupInstance) then
+	if isBannedPlayer(getName()) or not compatibilityCheck(signupInstance) then
 		addText("Your participation is formally rejected from the squad. ");
 		addText("You may only participate with an approval from the leader of the squad.");
 		sendOk();
@@ -79,43 +75,46 @@ if verifyInstance() then
 	end
 end
 
-if not verifyInstance() then
+if not verifyInstance(signupInstance) then
 	if not isInstance("zakum") then
 		if isGm() or isPartyLeader() then
 			addText("Would you like to become the leader of the Zakum Expedition Squad?");
 			answer = askYesNo();
 
-			if verifyInstance() then
+			if verifyInstance(signupInstance) then
 				-- Check again, make sure that no glitches occur... in theory
 				addText("The expedition squad is already active.");
+				sendOk();
 			else
 				if answer == answer_yes then
 					if not isGm() and (not isPartyInLevelRange(50, 200) or getPartyMapCount() < 3) then
 						addText("Only the leader of the party that consists of 3 or more members is eligible to become the leader of the Zakum Expedition Squad.");
+						sendOk();
 					else
-						createInstance("zakumSignup", 5 * 60, true);
-						addPlayerSignUp(getName());
-						setInstanceVariable("master", getName());
-						setInstanceVariable("gm", isGm());
+						createInstance(signupInstance, 5 * 60, true);
+						initSignup(30);
 						showMapMessage(getName() .. " has been appointed the leader of the Zakum Expedition Squad. To those willing to participate in the Expedition Squad, APPLY NOW!", msg_blue);
 
 						addText("You have been appointed the leader of the Zakum Expedition Squad. ");
 						addText("You'll now have 5 minutes to form the squad and have every member enter the mission.");
+						sendOk();
 					end
 				else
 					addText("Talk to me if you want to become the leader of the squad.");
+					sendOk();
 				end
 			end
 		else
 			addText("Only the leader of the party with 3 or more members that are at least Level 50 is eligible to apply for the leader of the expedition squad.");
+			sendOk();
 		end
 	else
 		addText("The battle against Zakum has already started.");
+		sendOk();
 	end
-	sendOk();
 else
-	if getName() == getInstanceVariable("master") then
-		if getInstanceVariable("enter", type_bool) then
+	if isSignupMaster() then
+		if isEntered() then
 			if summonedCheck() then
 				addText("The battle has already begun.");
 				sendOk();
@@ -125,33 +124,39 @@ else
 		else
 			choices = {
 				makeChoiceHandler(" Check out the list of the Squad", function()
-					getList();
-					sendOk();
+					displaySquadList();
 				end),
 				makeChoiceHandler(" Expel a member from the Squad", function()
-					if getInstanceSignupCount() == 1 then
+					if getSignedUpCount() == 1 then
 						addText("No one has yet to sign up for the squad.");
 						sendOk();
 					else
-						getLinkedList();
+						signedUp = getSignupList();
+						choices = transform(slice(signedUp, 2), transform_type_array, function(idx, key, value)
+							return makeChoiceData((key + 1) .. " : " .. value, {value});
+						end);
+
+						addText("Which of these members would you like to expel?\r\n");
+						addText(choiceRef(choices));
 						choice = askChoice();
 
-						if not verifyMaster() then
+						if not verifyMaster(signupInstance) then
 							return;
 						end
 
-						name = getInstancePlayerByIndex(choice + 1);
-						addText("Are you sure you want to enter " .. blue(name) .. " in the Suspended List? ");
+						data = selectChoice(choices, choice);
+						player = data[1];
+						addText("Are you sure you want to enter " .. blue(player) .. " in the Suspended List? ");
 						addText("Once suspended, the user may not re-apply for a spot until the suspension is lifted by the leader of the squad.");
 						answer = askYesNo();
 
-						if not verifyMaster() then
+						if not verifyMaster(signupInstance) then
 							return;
 						end
 
 						if answer == answer_yes then
-							banInstancePlayer(name);
-							if setPlayer(name) then
+							banPlayer(player);
+							if setPlayer(player) then
 								showMessage("The leader of the squad has entered you in the squad's Suspended List.", msg_red);
 								revertPlayer();
 							end
@@ -159,24 +164,25 @@ else
 					end
 				end),
 				makeChoiceHandler(" Re-accept a member from the Suspended List", function()
-					if getBannedInstancePlayerCount() > 0 then
-						getBannedList();
-						player = askChoice();
+					if getBannedCount() > 0 then
+						choices = getBannedList();
+						addText("Whose application are you willing to accept?\r\n");
+						addText(blue(choiceRef(choices)));
+						choice = askChoice();
 
-						if not verifyMaster() then
+						if not verifyMaster(signupInstance) then
 							return;
 						end
 
-						unbanInstancePlayer(getBannedInstancePlayerByIndex(player + 1));
+						unbanPlayer(selectChoice(choices, choice));
 					else
 						addText("No user is currently in the Suspended List.");
 						sendOk();
 					end
 				end),
 				makeChoiceHandler(red(" Form the Squad and enter", npc_text_blue), function()
-					if isGm() or getInstanceSignupCount() >= 6 then
-						setInstanceVariable("enter", true);
-						messageAll("The leader of the squad has entered the map. Please enter the map before time runs out on the squad.");
+					if isGm() or getSignedUpCount() >= 6 then
+						leaderEnterInstance();
 						createInstance("zakum", 0, false);
 
 						if isGm() and setInstance("zakum") then
@@ -197,15 +203,15 @@ else
 			addText(blue(choiceRef(choices)));
 			choice = askChoice();
 
-			if not verifyMaster() then
+			if not verifyMaster(signupInstance) then
 				return;
 			end
 
 			selectChoice(choices, choice);
 		end
 	else
-		if getInstanceVariable("enter", type_bool) and not summonedCheck() then
-			if isPlayerSignedUp(getName()) then
+		if isEntered() and not summonedCheck() then
+			if isSignedUpPlayer(getName()) then
 				enterBossMap();
 			else
 				addText("You may not enter this premise if you are not a member of the Zakum Expedition Squad.");
@@ -219,36 +225,41 @@ else
 				makeChoiceHandler(" Enter the Zakum Expedition Squad", function()
 					if isListFull() then
 						addText("Unable to apply for a spot due to number of applicants already reaching the maximum.");
-					elseif isPlayerSignedUp(getName()) then
+						sendOk();
+					elseif isSignedUpPlayer(getName()) then
 						addText("You are already part of the expedition squad.");
-					elseif getInstanceVariable("enter", type_bool) then
+						sendOk();
+					elseif isEntered() then
 						addText("The application process for the Zakum Expedition Squad had already been concluded.");
+						sendOk();
 					else
-						addPlayerSignUp(getName());
-						if setPlayer(getInstanceVariable("master")) then
-							showMessage(getName() .. " has joined the expedition squad.", msg_red);
+						playerName = getName();
+						addPlayerSignup(playerName, getId());
+						if setPlayer(getMasterId()) then
+							showMessage(playerName .. " has joined the expedition squad.", msg_red);
 							revertPlayer();
 						end
 						addText("You have been enrolled in the Zakum Expedition Squad.");
+						sendOk();
 					end
-					sendOk();
 				end),
 				makeChoiceHandler(" Leave the Zakum Expedition Squad", function()
-					if isPlayerSignedUp(getName()) then
-						removePlayerSignUp(getName());
-						if setPlayer(getInstanceVariable("master")) then
-							showMessage(getName() .. " has withdrawn from the squad.", msg_red);
+					if isSignedUpPlayer(getName()) then
+						playerName = getName();
+						removePlayerSignup(playerName);
+						if setPlayer(getMasterId()) then
+							showMessage(playerName .. " has withdrawn from the squad.", msg_red);
 							revertPlayer();
 						end
 						addText("You have formally withdrawn from the squad.");
+						sendOk();
 					else
 						addText("Unable to leave the squad due to the fact that you're not participating in the Zakum Participation Squad.");
+						sendOk();
 					end
-					sendOk();
 				end),
 				makeChoiceHandler(" Check out the list of the Squad.", function()
-					getList();
-					sendOk();
+					displaySquadList();
 				end),
 			};
 
@@ -257,7 +268,7 @@ else
 
 			choice = askChoice();
 
-			if not verifyInstance() then
+			if not verifyInstance(signupInstance) then
 				return;
 			end
 

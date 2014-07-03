@@ -22,7 +22,6 @@ function beginInstance()
 	for i = 1, #players do
 		addInstancePlayer(players[i]);
 	end
-	setInstanceMax(30);
 end
 
 function changeMap(playerId, newMap, oldMap, isPartyLeader)

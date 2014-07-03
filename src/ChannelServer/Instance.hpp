@@ -59,24 +59,13 @@ public:
 
 	// Players
 	auto getAllPlayerIds() -> vector_t<player_id_t>;
-	auto getPlayerByIndex(uint32_t index) const -> const string_t;
-	auto getBannedPlayerByIndex(uint32_t index) const -> const string_t;
-	auto setMaxPlayers(int32_t maxPlayers) -> void { m_maxPlayers = maxPlayers; }
 	auto addPlayer(Player *player) -> void;
 	auto removePlayer(Player *player) -> void;
 	auto removePlayer(player_id_t id) -> void;
 	auto removeAllPlayers() -> void;
-	auto setBanned(const string_t &name, bool isBanned) -> void;
-	auto addPlayerSignUp(Player *player) -> void;
-	auto removePlayerSignUp(const string_t &name) -> void;
 	auto moveAllPlayers(map_id_t mapId, bool respectInstances, PortalInfo *portal = nullptr) -> void;
-	auto isPlayerSignedUp(const string_t &name) -> bool;
-	auto isBanned(const string_t &name) -> bool;
 	auto instanceHasPlayers() const -> bool;
-	auto getMaxPlayers() const -> int32_t { return m_maxPlayers; }
 	auto getPlayerNum() const -> size_t { return m_players.size(); }
-	auto getPlayerSignupNum() const -> size_t { return m_playersOrder.size(); } // Number of players for the instance (squads, etc.)
-	auto getBannedPlayerNum() const -> size_t { return m_banned.size(); }
 
 	// Maps
 	auto addMap(Map *map) -> void;
@@ -125,7 +114,6 @@ private:
 	bool m_showTimer = false;
 	bool m_resetOnDestroy = true;
 	bool m_markedForDeletion = false;
-	int32_t m_maxPlayers = 0;
 	int32_t m_timerCounter = 0;
 	time_point_t m_start;
 	seconds_t m_time;
@@ -133,8 +121,6 @@ private:
 	string_t m_name;
 	owned_ptr_t<Variables> m_variables;
 	owned_ptr_t<LuaInstance> m_luaInstance; // Lua instance for interacting with scripts
-	vector_t<string_t> m_banned; // For squads
-	vector_t<string_t> m_playersOrder; // For squads
 	vector_t<Map *> m_maps;
 	vector_t<Party *> m_parties;
 	hash_map_t<string_t, TimerAction> m_timerActions; // Timers indexed by name

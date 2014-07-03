@@ -44,3 +44,67 @@ function merge(...)
 	end
 	return result;
 end
+
+function slice(tbl, startIndex, endIndex)
+	local result = {};
+	if startIndex == nil then
+		startIndex = 1;
+	end
+	if endIndex == nil then
+		endIndex = #tbl;
+	end
+	for i = startIndex, endIndex do
+		append(result, tbl[i]);
+	end
+	return result;
+end
+
+transform_type_kvp = 1;
+transform_type_array = 2;
+function transform(tbl, transformType, func)
+	local result = {};
+	local index = 1;
+	for key, value in ipairs(tbl) do
+		local value = func(index, key, value);
+		if transformType == transform_type_kvp then
+			if value["key"] ~= nil then
+				result[value["key"]] = value["value"];
+			else
+				result[value[1]] = value[2];
+			end
+		elseif transformType == transform_type_array then
+			append(result, value);
+		end
+		index = index + 1;
+	end
+	return result;
+end
+
+function findValue(tbl, needle)
+	local found = false;
+	local foundKey = nil;
+	if type(needle) == "function" then
+		for key, value in ipairs(tbl) do
+			if needle(value) then
+				found = true;
+				foundKey = key;
+				break;
+			end
+		end
+	else
+		for key, value in ipairs(tbl) do
+			if value == needle then
+				found = true;
+				foundKey = key;
+				break;
+			end
+		end
+	end
+	return {found, foundKey};
+end
+
+function performAction(tbl, action)
+	for key, value in ipairs(tbl) do
+		action(key, value);
+	end
+end

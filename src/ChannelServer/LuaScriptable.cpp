@@ -303,37 +303,26 @@ auto LuaScriptable::initialize() -> void {
 	expose("addInstanceMap", &LuaExports::addInstanceMap);
 	expose("addInstanceParty", &LuaExports::addInstanceParty);
 	expose("addInstancePlayer", &LuaExports::addInstancePlayer);
-	expose("addPlayerSignUp", &LuaExports::addPlayerSignUp);
-	expose("banInstancePlayer", &LuaExports::banInstancePlayer);
 	expose("checkInstanceTimer", &LuaExports::checkInstanceTimer);
 	expose("createInstance", &LuaExports::createInstance);
 	expose("deleteInstanceVariable", &LuaExports::deleteInstanceVariable);
 	expose("getAllInstancePlayerIds", &LuaExports::getAllInstancePlayerIds);
-	expose("getBannedInstancePlayerByIndex", &LuaExports::getBannedInstancePlayerByIndex);
-	expose("getBannedInstancePlayerCount", &LuaExports::getBannedInstancePlayerCount);
-	expose("getInstanceMax", &LuaExports::getInstanceMax);
-	expose("getInstancePlayerByIndex", &LuaExports::getInstancePlayerByIndex);
 	expose("getInstancePlayerCount", &LuaExports::getInstancePlayerCount);
 	expose("getInstancePlayerId", &LuaExports::getInstancePlayerId);
-	expose("getInstanceSignupCount", &LuaExports::getInstanceSignupCount);
 	expose("getInstanceTime", &LuaExports::getInstanceTime);
 	expose("getInstanceVariable", &LuaExports::getInstanceVariable);
-	expose("isBannedInstancePlayer", &LuaExports::isBannedInstancePlayer);
 	expose("isInstance", &LuaExports::isInstance);
 	expose("isInstanceMap", &LuaExports::isInstanceMap);
 	expose("isInstancePersistent", &LuaExports::isInstancePersistent);
-	expose("isPlayerSignedUp", &LuaExports::isPlayerSignedUp);
 	expose("markForDelete", &LuaExports::markForDelete);
 	expose("moveAllPlayers", &LuaExports::moveAllPlayers);
 	expose("passPlayersBetweenInstances", &LuaExports::passPlayersBetweenInstances);
 	expose("removeAllInstancePlayers", &LuaExports::removeAllInstancePlayers);
 	expose("removeInstancePlayer", &LuaExports::removeInstancePlayer);
-	expose("removePlayerSignUp", &LuaExports::removePlayerSignUp);
 	expose("respawnInstanceMobs", &LuaExports::respawnInstanceMobs);
 	expose("respawnInstanceReactors", &LuaExports::respawnInstanceReactors);
 	expose("revertInstance", &LuaExports::revertInstance);
 	expose("setInstance", &LuaExports::setInstance);
-	expose("setInstanceMax", &LuaExports::setInstanceMax);
 	expose("setInstancePersistence", &LuaExports::setInstancePersistence);
 	expose("setInstanceReset", &LuaExports::setInstanceReset);
 	expose("setInstanceTime", &LuaExports::setInstanceTime);
@@ -342,7 +331,6 @@ auto LuaScriptable::initialize() -> void {
 	expose("startInstanceTimer", &LuaExports::startInstanceTimer);
 	expose("stopAllInstanceTimers", &LuaExports::stopAllInstanceTimers);
 	expose("stopInstanceTimer", &LuaExports::stopInstanceTimer);
-	expose("unbanInstancePlayer", &LuaExports::unbanInstancePlayer);
 }
 
 auto LuaScriptable::setEnvironmentVariables() -> void {
@@ -1506,14 +1494,26 @@ auto LuaExports::setMusic(lua_State *luaVm) -> lua_return_t {
 auto LuaExports::showMapEffect(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	string_t val = env.get<string_t>(luaVm, 1);
-	getPlayer(luaVm, env)->sendMap(EffectPacket::sendEffect(val));
+	if (env.typeOf(luaVm, 2) == LuaType::Number) {
+		map_id_t mapId = env.get<map_id_t>(luaVm, 2);
+		Maps::getMap(mapId)->send(EffectPacket::sendEffect(val));
+	}
+	else {
+		getPlayer(luaVm, env)->sendMap(EffectPacket::sendEffect(val));
+	}
 	return 0;
 }
 
 auto LuaExports::showMapEvent(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	string_t val = env.get<string_t>(luaVm, 1);
-	getPlayer(luaVm, env)->sendMap(EffectPacket::sendEvent(val));
+	if (env.is(luaVm, 2, LuaType::Number)) {
+		map_id_t mapId = env.get<map_id_t>(luaVm, 2);
+		Maps::getMap(mapId)->send(EffectPacket::sendEvent(val));
+	}
+	else {
+		getPlayer(luaVm, env)->sendMap(EffectPacket::sendEvent(val));
+	}
 	return 0;
 }
 
@@ -2010,21 +2010,6 @@ auto LuaExports::addInstancePlayer(lua_State *luaVm) -> lua_return_t {
 	return 0;
 }
 
-auto LuaExports::addPlayerSignUp(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	Player *player = getPlayerDeduced(1, luaVm, env);
-	getInstance(luaVm, env)->addPlayerSignUp(player);
-	return 0;
-}
-
-auto LuaExports::banInstancePlayer(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	if (Player *player = getPlayerDeduced(1, luaVm, env)) {
-		getInstance(luaVm, env)->setBanned(player->getName(), true);
-	}
-	return 0;
-}
-
 auto LuaExports::checkInstanceTimer(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	string_t name = env.get<string_t>(luaVm, 1);
@@ -2072,30 +2057,6 @@ auto LuaExports::getAllInstancePlayerIds(lua_State *luaVm) -> lua_return_t {
 	return 1;
 }
 
-auto LuaExports::getBannedInstancePlayerByIndex(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	env.push<string_t>(luaVm, getInstance(luaVm, env)->getBannedPlayerByIndex(env.get<uint32_t>(luaVm, 1)));
-	return 1;
-}
-
-auto LuaExports::getBannedInstancePlayerCount(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	env.push<uint32_t>(luaVm, getInstance(luaVm, env)->getBannedPlayerNum());
-	return 1;
-}
-
-auto LuaExports::getInstanceMax(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	env.push<int32_t>(luaVm, getInstance(luaVm, env)->getMaxPlayers());
-	return 1;
-}
-
-auto LuaExports::getInstancePlayerByIndex(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	env.push<string_t>(luaVm, getInstance(luaVm, env)->getPlayerByIndex(env.get<uint32_t>(luaVm, 1)));
-	return 1;
-}
-
 auto LuaExports::getInstancePlayerCount(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	env.push<uint32_t>(luaVm, getInstance(luaVm, env)->getPlayerNum());
@@ -2106,12 +2067,6 @@ auto LuaExports::getInstancePlayerId(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	Player *player = getPlayerDeduced(1, luaVm, env);
 	env.push<player_id_t>(luaVm, player->getId());
-	return 1;
-}
-
-auto LuaExports::getInstanceSignupCount(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	env.push<uint32_t>(luaVm, getInstance(luaVm, env)->getPlayerSignupNum());
 	return 1;
 }
 
@@ -2132,13 +2087,6 @@ auto LuaExports::getInstanceVariable(lua_State *luaVm) -> lua_return_t {
 	return 1;
 }
 
-auto LuaExports::isBannedInstancePlayer(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	Player *player = getPlayerDeduced(1, luaVm, env);
-	env.push<bool>(luaVm, getInstance(luaVm, env)->isBanned(player->getName()));
-	return 1;
-}
-
 auto LuaExports::isInstance(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	env.push<bool>(luaVm, ChannelServer::getInstance().getInstances().isInstance(env.get<string_t>(luaVm, 1)));
@@ -2154,12 +2102,6 @@ auto LuaExports::isInstanceMap(lua_State *luaVm) -> lua_return_t {
 auto LuaExports::isInstancePersistent(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	env.push<bool>(luaVm, getInstance(luaVm, env)->getPersistence().count() != 0);
-	return 1;
-}
-
-auto LuaExports::isPlayerSignedUp(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	env.push<bool>(luaVm, getInstance(luaVm, env)->isPlayerSignedUp(env.get<string_t>(luaVm, 1)));
 	return 1;
 }
 
@@ -2212,12 +2154,6 @@ auto LuaExports::removeInstancePlayer(lua_State *luaVm) -> lua_return_t {
 	return 0;
 }
 
-auto LuaExports::removePlayerSignUp(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	getInstance(luaVm, env)->removePlayerSignUp(env.get<string_t>(luaVm, 1));
-	return 0;
-}
-
 auto LuaExports::respawnInstanceMobs(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	map_id_t mapId = Maps::NoMap;
@@ -2255,12 +2191,6 @@ auto LuaExports::setInstance(lua_State *luaVm) -> lua_return_t {
 	}
 	env.push<bool>(luaVm, instance != nullptr);
 	return 1;
-}
-
-auto LuaExports::setInstanceMax(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	getInstance(luaVm, env)->setMaxPlayers(env.get<int32_t>(luaVm, 1));
-	return 0;
 }
 
 auto LuaExports::setInstancePersistence(lua_State *luaVm) -> lua_return_t {
@@ -2320,12 +2250,5 @@ auto LuaExports::stopInstanceTimer(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	string_t name = env.get<string_t>(luaVm, 1);
 	getInstance(luaVm, env)->removeTimer(name);
-	return 0;
-}
-
-auto LuaExports::unbanInstancePlayer(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	Player *player = getPlayerDeduced(1, luaVm, env);
-	getInstance(luaVm, env)->setBanned(player->getName(), false);
 	return 0;
 }
