@@ -20,6 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 dofile("scripts/utils/bossHelper.lua");
 dofile("scripts/utils/npcHelper.lua");
 dofile("scripts/utils/signupHelper.lua");
+dofile("scripts/utils/tableHelper.lua");
+
+signupInstance = "horntailSignup";
 
 function enterBossMap()
 	x = getMaxHorntailBattles();
@@ -29,19 +32,6 @@ function enterBossMap()
 		addText("You may only enter this place " .. x .. " " .. timeString(x) .. " per day.");
 		sendOk();
 	end
-end
-
-function verifyMaster()
-	if not verifyInstance() or getName() ~= getInstanceVariable("master") then
-		return false;
-	end
-	return true;
-end
-
-function verifyInstance()
-	-- We make sure that the person didn't keep open the window for just long enough
-	-- to screw things up using this
-	return isInstance("horntailSignup");
 end
 
 function isAtHead()
@@ -55,15 +45,6 @@ function isAtHead()
 	return false;
 end
 
-function compatibilityCheck()
-	if setInstance("horntailSignup") then
-		gm = isGm();
-		gmInstance = getInstanceVariable("gm", type_bool);
-		revertInstance();
-		return gm == gmInstance;
-	end
-end
-
 if not isHorntailChannel() then
 	channels = getHorntailChannels();
 	if #channels == 0 then
@@ -75,14 +56,30 @@ if not isHorntailChannel() then
 	return;
 end
 
+function displaySquadList()
+	signedUp = getSignupList();
+	signupCount = getSignedUpCount();
+	addText("The total number of applicants are " .. blue(signupCount) .. ", and the list of the applicants is as follows.\r\n");
+	for i = 1, #signedUp do
+		player = signedUp[i];
+		if i == 1 then
+			addText(i .. " : " .. blue(player) .. " (The Leader of the Squad)");
+		else
+			addText(i .. " : " .. player);
+		end
+		addText("\r\n");
+	end
+	sendOk();
+end
+
 if getLevel() < 80 then
 	addText("Only players with level 80 or above are qualified to join the Horntail Squad.");
 	sendOk();
 	return;
 end
 
-if verifyInstance() then
-	if isBannedInstancePlayer(getName()) or not compatibilityCheck() then
+if verifyInstance(signupInstance) then
+	if isBannedPlayer(getName()) or not compatibilityCheck(signupInstance) then
 		addText("Your participation is formally rejected from the squad. ");
 		addText("You may only participate with an approval from the leader of the squad.");
 		sendOk();
@@ -90,7 +87,7 @@ if verifyInstance() then
 	end
 end
 
-if not isInstance("horntailSignup") then
+if not isInstance(signupInstance) then
 	if not isInstance("horntail") then
 		if getNumPlayers(240060000) > 0 then
 			addText("Someone is already in the cave.");
@@ -103,31 +100,32 @@ if not isInstance("horntailSignup") then
 				if answer == answer_yes then
 					if not isGm() and (not isPartyInLevelRange(80, 200) or getPartyMapCount() < 3) then
 						addText("Only the leader of the party that consists of 3 or more members is eligible to become the leader of the Horntail Expedition Squad.");
+						sendOk();
 					else
-						createInstance("horntailSignup", 5 * 60, true);
-						addPlayerSignUp(getName());
-						setInstanceVariable("master", getName());
-						setInstanceVariable("gm", isGm());
+						createInstance(signupInstance, 5 * 60, true);
+						initSignup(30);
 						showMapMessage(getName() .. " has been appointed the leader of the Zakum Expedition Squad. To those willing to participate in the Expedition Squad, APPLY NOW!", msg_blue);
 
 						addText("You have been appointed the leader of the Horntail Expedition Squad. ");
 						addText("You'll now have 5 minutes to form the squad and have every member enter the mission.");
+						sendOk();
 					end
 				else
 					addText("Talk to me if you want to become the leader of the squad.");
+					sendOk();
 				end
 			else
 				addText("Only the leader of the party with 3 or more members that are at least Level 80 is eligible to apply for the leader of the expedition squad.");
+				sendOk();
 			end
 		end
-		sendOk();
 	else
 		addText("The battle against Horntail has already started.");
 		sendOk();
 	end
 else
 	if getName() == getInstanceVariable("master") then
-		if getInstanceVariable("enter", type_bool) then
+		if isEntered() then
 			if isAtHead() then
 				addText("The battle has already begun.");
 				sendOk();
@@ -137,33 +135,39 @@ else
 		else
 			choices = {
 				makeChoiceHandler(" Check out the list of the Squad", function()
-					getList();
-					sendOk();
+					displaySquadList();
 				end),
 				makeChoiceHandler(" Expel a member from the Squad", function()
-					if getInstanceSignupCount() == 1 then
+					if getSignedUpCount() == 1 then
 						addText("No one has yet to sign up for the squad.");
 						sendOk();
 					else
-						getLinkedList();
+						signedUp = getSignupList();
+						choices = transform(slice(signedUp, 2), transform_type_array, function(idx, key, value)
+							return makeChoiceData((key + 1) .. " : " .. value, {value});
+						end);
+
+						addText("Which of these members would you like to expel?\r\n");
+						addText(choiceRef(choices));
 						choice = askChoice();
 
-						if not verifyMaster() then
+						if not verifyMaster(signupInstance) then
 							return;
 						end
 
-						name = getInstancePlayerByIndex(choice + 1);
+						data = selectChoice(choices, choice);
+						player = data[1];
 						addText("Are you sure you want to enter " .. blue(name) .. " in the Suspended List? ");
 						addText("Once suspended, the user may not re-apply for a spot until the suspension is lifted by the leader of the squad.");
 						answer = askYesNo();
 
-						if not verifyMaster() then
+						if not verifyMaster(signupInstance) then
 							return;
 						end
 
 						if answer == answer_yes then
-							banInstancePlayer(name);
-							if setPlayer(name) then
+							banPlayer(player);
+							if setPlayer(player) then
 								showMessage("The leader of the squad has entered you in the squad's Suspended List.", msg_red);
 								revertPlayer();
 							end
@@ -172,23 +176,24 @@ else
 				end),
 				makeChoiceHandler(" Re-accept a member from the Suspended List", function()
 					if getBannedInstancePlayerCount() > 0 then
-						getBannedList();
-						player = askChoice();
+						choices = getBannedList();
+						addText("Whose application are you willing to accept?\r\n");
+						addText(blue(choiceRef(choices)));
+						choice = askChoice();
 
-						if not verifyMaster() then
+						if not verifyMaster(signupInstance) then
 							return;
 						end
 
-						unbanInstancePlayer(getBannedInstancePlayerByIndex(player + 1));
+						unbanPlayer(selectChoice(choices, choice));
 					else
 						addText("No user is currently in the Suspended List.");
 						sendOk();
 					end
 				end),
 				makeChoiceHandler(red(" Form the Squad and enter", npc_text_blue), function()
-					if isGm() or getInstanceSignupCount() >= 6 then
-						setInstanceVariable("enter", true);
-						messageAll("The leader of the squad has entered the map. Please enter the map before time runs out on the squad.");
+					if isGm() or getSignedUpCount() >= 6 then
+						leaderEnterInstance();
 						createInstance("horntail", 12 * 60 * 60, true);
 
 						if isGm() and setInstance("horntail") then
@@ -209,15 +214,15 @@ else
 			addText(blue(choiceRef(choices)));
 			choice = askChoice();
 
-			if not verifyMaster() then
+			if not verifyMaster(signupInstance) then
 				return;
 			end
 
 			selectChoice(choices, choice);
 		end
 	else
-		if getInstanceVariable("enter", type_bool) and not isAtHead() then
-			if isPlayerSignedUp(getName()) then
+		if isEntered() and not isAtHead() then
+			if isSignedUpPlayer(getName()) then
 				enterBossMap();
 			else
 				addText("You may not enter this premise if you are not a member of the Horntail Expedition Squad.");
@@ -231,36 +236,41 @@ else
 				makeChoiceHandler(" Enter the Horntail Expedition Squad", function()
 					if isListFull() then
 						addText("Unable to apply for a spot due to number of applicants already reaching the maximum.");
-					elseif isPlayerSignedUp(getName()) then
+						sendOk();
+					elseif isSignedUpPlayer(getName()) then
 						addText("You are already part of the expedition squad.");
-					elseif getInstanceVariable("enter", type_bool) then
+						sendOk();
+					elseif isEntered() then
 						addText("The application process for the Horntail Expedition Squad had already been concluded.");
+						sendOk();
 					else
-						addPlayerSignUp(getName());
-						if setPlayer(getInstanceVariable("master")) then
-							showMessage(getName() .. " has joined the expedition squad.", msg_red);
+						playerName = getName();
+						addPlayerSignup(playerName, getId());
+						if setPlayer(getMasterId()) then
+							showMessage(playerName .. " has joined the expedition squad.", msg_red);
 							revertPlayer();
 						end
 						addText("You have been enrolled in the Horntail Expedition Squad.");
+						sendOk();
 					end
-					sendOk();
 				end),
 				makeChoiceHandler(" Leave the Horntail Expedition Squad", function()
-					if isPlayerSignedUp(getName()) then
-						removePlayerSignUp(getName());
-						if setPlayer(getInstanceVariable("master")) then
-							showMessage(getName() .. " has withdrawn from the squad.", msg_red);
+					if isSignedUpPlayer(getName()) then
+						playerName = getName();
+						removePlayerSignup(playerName);
+						if setPlayer(getMasterId()) then
+							showMessage(playerName .. " has withdrawn from the squad.", msg_red);
 							revertPlayer();
 						end
 						addText("You have formally withdrawn from the squad.");
+						sendOk();
 					else
 						addText("Unable to leave the squad due to the fact that you're not participating in the Horntail Participation Squad.");
+						sendOk();
 					end
-					sendOk();
 				end),
 				makeChoiceHandler(" Check out the list of the Squad.", function()
-					getList();
-					sendOk();
+					displaySquadList();
 				end),
 			};
 
@@ -268,7 +278,7 @@ else
 			addText(blue(choiceRef(choices)));
 			choice = askChoice();
 
-			if not verifyInstance() then
+			if not verifyInstance(signupInstance) then
 				return;
 			end
 

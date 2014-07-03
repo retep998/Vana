@@ -69,35 +69,6 @@ Instance::~Instance() {
 	ChannelServer::getInstance().getInstances().removeInstance(this);
 }
 
-auto Instance::getBannedPlayerByIndex(uint32_t index) const -> const string_t {
-	--index;
-	return m_banned[(index > m_banned.size() ? m_banned.size() : index)];
-}
-
-auto Instance::setBanned(const string_t &name, bool isBanned) -> void {
-	if (isBanned) {
-		m_banned.push_back(name);
-		removePlayerSignUp(name);
-	}
-	else {
-		for (size_t i = 0; i < m_banned.size(); ++i) {
-			if (m_banned[i] == name) {
-				m_banned.erase(std::begin(m_banned) + i);
-				break;
-			}
-		}
-	}
-}
-
-auto Instance::isBanned(const string_t &name) -> bool {
-	for (const auto &bannedName : m_banned) {
-		if (bannedName == name) {
-			return true;
-		}
-	}
-	return false;
-}
-
 auto Instance::addPlayer(Player *player) -> void {
 	if (player != nullptr) {
 		m_players[player->getId()] = player;
@@ -124,18 +95,6 @@ auto Instance::removeAllPlayers() -> void {
 	}
 }
 
-auto Instance::addPlayerSignUp(Player *player) -> void {
-	m_playersOrder.push_back(player->getName());
-}
-
-auto Instance::removePlayerSignUp(const string_t &name) -> void {
-	for (size_t i = 0; i < m_playersOrder.size(); ++i) {
-		if (m_playersOrder[i] == name) {
-			m_playersOrder.erase(std::begin(m_playersOrder) + i);
-		}
-	}
-}
-
 auto Instance::moveAllPlayers(map_id_t mapId, bool respectInstances, PortalInfo *portal) -> void {
 	if (!Maps::getMap(mapId)) {
 		return;
@@ -147,26 +106,12 @@ auto Instance::moveAllPlayers(map_id_t mapId, bool respectInstances, PortalInfo 
 	}
 }
 
-auto Instance::isPlayerSignedUp(const string_t &name) -> bool {
-	for (const auto &playerName : m_playersOrder) {
-		if (playerName == name) {
-			return true;
-		}
-	}
-	return false;
-}
-
 auto Instance::getAllPlayerIds() -> vector_t<player_id_t> {
 	vector_t<player_id_t> playerIds;
 	for (const auto &kvp : m_players) {
 		playerIds.push_back(kvp.first);
 	}
 	return playerIds;
-}
-
-auto Instance::getPlayerByIndex(uint32_t index) const -> const string_t {
-	--index;
-	return m_playersOrder[(index > m_playersOrder.size() ? m_playersOrder.size() : index)];
 }
 
 auto Instance::instanceHasPlayers() const -> bool {
@@ -394,6 +339,10 @@ auto Instance::getCounterId() -> int32_t {
 auto Instance::markForDelete() -> void {
 	m_markedForDeletion = true;
 	clearTimers();
+	// TODO FIXME lua
+	// TODO FIXME instance
+	// All sorts of instance trickery needs to be cleaned up here...perhaps marking for deletion needs a full review
+	// e.g. a crash can be caused by marking for delete and then going to a map where an instance was (e.g. Zakum signup)
 }
 
 auto Instance::respawnMobs(map_id_t mapId) -> void {
