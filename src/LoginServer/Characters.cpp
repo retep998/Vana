@@ -395,7 +395,7 @@ auto Characters::connectGameWorldFromViewAllCharacters(UserConnection *user, Pac
 		return;
 	}
 
-	if (accountId != user->getUserId() || worldId != worldId) {
+	if (accountId != user->getUserId() || charWorldId != worldId) {
 		// Hacking
 		return;
 	}
