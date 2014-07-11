@@ -147,21 +147,38 @@ auto Instance::addParty(Party *party) -> void {
 	party->setInstance(this);
 }
 
-auto Instance::addTimer(const string_t &timerName, const TimerAction &timer) -> bool {
+auto Instance::addFutureTimer(const string_t &timerName, seconds_t time, seconds_t persistence) -> bool {
+	if (timerName == "instance") {
+		setInstanceTimer(time, false);
+		return true;
+	}
+
 	if (m_timerActions.find(timerName) == std::end(m_timerActions)) {
+		TimerAction timer;
+		timer.counterId = getCounterId();
+		timer.isPersistent = persistence.count() > 0;
 		m_timerActions.emplace(timerName, timer);
 
-		Timer::Id id(TimerType::InstanceTimer, timer.time, timer.counterId);
-		if (timer.time > 0) {
-			// Positive, occurs in the future
-			Timer::Timer::create([this, timerName](const time_point_t &now) { this->timerComplete(timerName, true); },
-				id, getTimers(), seconds_t(timer.time), seconds_t(timer.persistent));
-		}
-		else {
-			// Negative, occurs nth second of hour
-			Timer::Timer::create([this, timerName](const time_point_t &now) { this->timerComplete(timerName, true); },
-				id, getTimers(), TimeUtilities::getDistanceToNextOccurringSecondOfHour(static_cast<uint16_t>(-(timer.time + 1))), seconds_t(timer.persistent));
-		}
+		Timer::Id id(TimerType::InstanceTimer, timer.counterId);
+		Timer::Timer::create([this, timerName](const time_point_t &now) { this->timerComplete(timerName, true); },
+			id, getTimers(), time, persistence);
+
+		return true;
+	}
+	return false;
+}
+
+auto Instance::addSecondOfHourTimer(const string_t &timerName, int16_t secondOfHour, seconds_t persistence) -> bool {
+	if (m_timerActions.find(timerName) == std::end(m_timerActions)) {
+		TimerAction timer;
+		timer.counterId = getCounterId();
+		timer.isPersistent = persistence.count() > 0;
+		m_timerActions.emplace(timerName, timer);
+
+		Timer::Id id(TimerType::InstanceTimer, timer.counterId);
+		Timer::Timer::create([this, timerName](const time_point_t &now) { this->timerComplete(timerName, true); },
+			id, getTimers(), TimeUtilities::getDistanceToNextOccurringSecondOfHour(secondOfHour), persistence);
+
 		return true;
 	}
 	return false;
@@ -172,52 +189,60 @@ auto Instance::getTimerSecondsRemaining(const string_t &timerName) -> seconds_t 
 	auto kvp = m_timerActions.find(timerName);
 	if (kvp != std::end(m_timerActions)) {
 		auto &timer = kvp->second;
-		Timer::Id id(TimerType::InstanceTimer, timer.time, timer.counterId);
+		Timer::Id id(TimerType::InstanceTimer, timer.counterId);
 		timeLeft = getTimers()->getRemainingTime<seconds_t>(id);
 	}
 	return timeLeft;
 }
 
 auto Instance::removeTimer(const string_t &timerName) -> void {
+	if (timerName == "instance") {
+		instanceEnd(true, false);
+		return;
+	}
+	removeTimer(timerName, true);
+}
+
+auto Instance::removeTimer(const string_t &timerName, bool performEvent) -> void {
 	auto kvp = m_timerActions.find(timerName);
 	if (kvp != std::end(m_timerActions)) {
 		const TimerAction &timer = kvp->second;
 		if (getTimerSecondsRemaining(timerName).count() > 0) {
-			Timer::Id id(TimerType::InstanceTimer, timer.time, timer.counterId);
+			Timer::Id id(TimerType::InstanceTimer, timer.counterId);
 			getTimers()->removeTimer(id);
-			timerEnd(timerName, false);
+			if (performEvent) {
+				timerEnd(timerName, false);
+			}
 		}
 		m_timerActions.erase(kvp);
 	}
 }
 
 auto Instance::removeAllTimers() -> void {
-	for (const auto &kvp : m_timerActions) {
+	auto copy = m_timerActions;
+	for (const auto &kvp : copy) {
 		removeTimer(kvp.first);
 	}
-	setInstanceTimer(seconds_t(0));
 }
 
-auto Instance::checkInstanceTimer() -> seconds_t {
-	seconds_t timeLeft(0);
-	if (m_time.count() > 0) {
-		Timer::Id id = getTimerId();
-		timeLeft = getTimers()->getRemainingTime<seconds_t>(id);
-	}
-	return timeLeft;
+auto Instance::getInstanceSecondsRemaining() -> seconds_t {
+	return getTimerSecondsRemaining("instance");
 }
 
 auto Instance::setInstanceTimer(const duration_t &time, bool firstRun) -> void {
-	if (checkInstanceTimer().count() > 0) {
-		Timer::Id id = getTimerId();
-		getTimers()->removeTimer(id);
+	if (getInstanceSecondsRemaining().count() > 0) {
+		removeTimer("instance", false);
 	}
-	if (time.count() != 0) {
-		m_time = duration_cast<seconds_t>(time);
 
-		Timer::Timer::create([this](const time_point_t &now) { this->instanceEnd(true); },
-			getTimerId(),
-			getTimers(), m_time, m_persistent);
+	if (time.count() != 0) {
+		TimerAction timer;
+		timer.counterId = getCounterId();
+		timer.isPersistent = m_persistent.count() > 0;
+		m_timerActions.emplace("instance", timer);
+
+		Timer::Id id(TimerType::InstanceTimer, timer.counterId);
+		Timer::Timer::create([this](const time_point_t &now) { this->instanceEnd(false, true); },
+			id, getTimers(), time, m_persistent);
 
 		if (!firstRun && showTimer()) {
 			showTimer(true, true);
@@ -239,14 +264,6 @@ auto Instance::playerDeath(player_id_t playerId) -> Result {
 		return Result::Failure;
 	}
 	return luaInst->call("playerDeath", playerId);
-}
-
-auto Instance::instanceTimerEnd(bool fromTimer) -> Result {
-	auto luaInst = getLuaInstance();
-	if (!luaInst->exists("instanceTimerEnd")) {
-		return Result::Failure;
-	}
-	return luaInst->call("instanceTimerEnd", fromTimer);
 }
 
 auto Instance::partyDisband(party_id_t partyId) -> Result {
@@ -320,25 +337,39 @@ auto Instance::timerComplete(const string_t &name, bool fromTimer) -> void {
 	}
 }
 
-auto Instance::instanceEnd(bool fromTimer) -> void {
-	instanceTimerEnd(fromTimer);
+auto Instance::instanceEnd(bool calledByLua, bool fromTimer) -> void {
+	if (!calledByLua) {
+		timerEnd("instance", fromTimer);
+	}
+
+	if (!fromTimer || (fromTimer && m_persistent.count() > 0)) {
+		removeTimer("instance", false);
+	}
+
 	showTimer(false);
-	if (getPersistence().count() == 0) {
+	if (m_persistent.count() == 0) {
 		markForDelete();
 	}
 }
 
 auto Instance::isTimerPersistent(const string_t &name) -> bool {
-	return m_timerActions.find(name) != std::end(m_timerActions) ? (m_timerActions[name].persistent > 0) : false;
+	auto iter = m_timerActions.find(name);
+	return iter != std::end(m_timerActions) ?
+		iter->second.isPersistent :
+		false;
 }
 
-auto Instance::getCounterId() -> int32_t {
+auto Instance::getCounterId() -> uint32_t {
 	return ++m_timerCounter;
 }
 
 auto Instance::markForDelete() -> void {
 	m_markedForDeletion = true;
 	clearTimers();
+	for (const auto &map : m_maps) {
+		map->setInstance(nullptr);
+	}
+
 	// TODO FIXME lua
 	// TODO FIXME instance
 	// All sorts of instance trickery needs to be cleaned up here...perhaps marking for deletion needs a full review
@@ -375,11 +406,19 @@ auto Instance::showTimer(bool show, bool doIt) -> void {
 	}
 	else if (show && (doIt || !m_showTimer)) {
 		for (const auto &map : m_maps) {
-			map->send(MapPacket::showTimer(checkInstanceTimer()));
+			map->send(MapPacket::showTimer(getInstanceSecondsRemaining()));
 		}
 	}
 }
 
-auto Instance::getTimerId() const -> Timer::Id {
-	return Timer::Id(TimerType::InstanceTimer, static_cast<int32_t>(m_time.count()), -1);
+auto Instance::setPersistence(const duration_t &persistence) -> void {
+	m_persistent = persistence;
+}
+
+auto Instance::getPersistence() const -> duration_t {
+	return m_persistent;
+}
+
+auto Instance::showTimer() const -> bool {
+	return m_showTimer;
 }

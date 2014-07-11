@@ -112,7 +112,6 @@ auto EventDataProvider::loadInstances() -> void {
 auto EventDataProvider::clearInstances() -> void {
 	auto clearInstance = [](const string_t &name) {
 		if (Instance *instance = ChannelServer::getInstance().getInstances().getInstance(name)) {
-			instance->instanceTimerEnd(false);
 			instance->markForDelete();
 			ChannelServer::getInstance().getInstances().removeInstance(instance);
 		}

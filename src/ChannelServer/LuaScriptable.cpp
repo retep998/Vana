@@ -309,7 +309,6 @@ auto LuaScriptable::initialize() -> void {
 	expose("getAllInstancePlayerIds", &LuaExports::getAllInstancePlayerIds);
 	expose("getInstancePlayerCount", &LuaExports::getInstancePlayerCount);
 	expose("getInstancePlayerId", &LuaExports::getInstancePlayerId);
-	expose("getInstanceTime", &LuaExports::getInstanceTime);
 	expose("getInstanceVariable", &LuaExports::getInstanceVariable);
 	expose("isInstance", &LuaExports::isInstance);
 	expose("isInstanceMap", &LuaExports::isInstanceMap);
@@ -325,15 +324,17 @@ auto LuaScriptable::initialize() -> void {
 	expose("setInstance", &LuaExports::setInstance);
 	expose("setInstancePersistence", &LuaExports::setInstancePersistence);
 	expose("setInstanceReset", &LuaExports::setInstanceReset);
-	expose("setInstanceTime", &LuaExports::setInstanceTime);
 	expose("setInstanceVariable", &LuaExports::setInstanceVariable);
 	expose("showInstanceTime", &LuaExports::showInstanceTime);
-	expose("startInstanceTimer", &LuaExports::startInstanceTimer);
+	expose("startInstanceFutureTimer", &LuaExports::startInstanceFutureTimer);
+	expose("startInstanceSecondOfHourTimer", &LuaExports::startInstanceSecondOfHourTimer);
 	expose("stopAllInstanceTimers", &LuaExports::stopAllInstanceTimers);
 	expose("stopInstanceTimer", &LuaExports::stopInstanceTimer);
 }
 
 auto LuaScriptable::setEnvironmentVariables() -> void {
+	set<string_t>("instance_timer", "instance");
+
 	set<int32_t>("msg_blue", PlayerPacket::NoticeTypes::Blue);
 	set<int32_t>("msg_red", PlayerPacket::NoticeTypes::Red);
 	set<int32_t>("msg_notice", PlayerPacket::NoticeTypes::Notice);
@@ -2070,12 +2071,6 @@ auto LuaExports::getInstancePlayerId(lua_State *luaVm) -> lua_return_t {
 	return 1;
 }
 
-auto LuaExports::getInstanceTime(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	env.push<int32_t>(luaVm, static_cast<int32_t>(getInstance(luaVm, env)->checkInstanceTimer().count()));
-	return 1;
-}
-
 auto LuaExports::getInstanceVariable(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	VariableType::Type returnType = VariableType::String;
@@ -2207,13 +2202,6 @@ auto LuaExports::setInstanceReset(lua_State *luaVm) -> lua_return_t {
 	return 0;
 }
 
-auto LuaExports::setInstanceTime(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	seconds_t time = env.get<seconds_t>(luaVm, 1);
-	getInstance(luaVm, env)->setInstanceTimer(time);
-	return 0;
-}
-
 auto LuaExports::setInstanceVariable(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	auto kvp = obtainSetVariablePair(luaVm, env);
@@ -2227,16 +2215,27 @@ auto LuaExports::showInstanceTime(lua_State *luaVm) -> lua_return_t {
 	return 0;
 }
 
-auto LuaExports::startInstanceTimer(lua_State *luaVm) -> lua_return_t {
+auto LuaExports::startInstanceFutureTimer(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	string_t name = env.get<string_t>(luaVm, 1);
-	TimerAction t;
-	t.time = env.get<int32_t>(luaVm, 2);
+	seconds_t time = env.get<seconds_t>(luaVm, 2);
+	seconds_t persistence{0};
 	if (env.is(luaVm, 3, LuaType::Number)) {
-		t.persistent = env.get<int32_t>(luaVm, 3);
+		persistence = env.get<seconds_t>(luaVm, 3);
 	}
-	t.counterId = getInstance(luaVm, env)->getCounterId();
-	env.push<bool>(luaVm, getInstance(luaVm, env)->addTimer(name, t));
+	env.push<bool>(luaVm, getInstance(luaVm, env)->addFutureTimer(name, time, persistence));
+	return 1;
+}
+
+auto LuaExports::startInstanceSecondOfHourTimer(lua_State *luaVm) -> lua_return_t {
+	auto &env = getEnvironment(luaVm);
+	string_t name = env.get<string_t>(luaVm, 1);
+	int16_t secondOfHour = env.get<int16_t>(luaVm, 2);
+	seconds_t persistence{0};
+	if (env.is(luaVm, 3, LuaType::Number)) {
+		persistence = env.get<seconds_t>(luaVm, 3);
+	}
+	env.push<bool>(luaVm, getInstance(luaVm, env)->addSecondOfHourTimer(name, secondOfHour, persistence));
 	return 1;
 }
 

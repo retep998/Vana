@@ -24,9 +24,11 @@ function playerDisconnect(playerId, isPartyLeader)
 	finish(playerId);
 end
 
-function instanceTimerEnd(fromTimer)
-	if getInstancePlayerCount() > 0 then
-		finish2();
+function timerEnd(name, fromTimer)
+	if name == instance_timer then
+		if getInstancePlayerCount() > 0 then
+			finish2();
+		end
 	end
 end
 

@@ -36,12 +36,6 @@ namespace Timer {
 	struct Id;
 }
 
-struct TimerAction {
-	int32_t counterId = 0;
-	int32_t time = 0; // How long the timer lasts, negative integers indicate second of hour (-1 to -3600)
-	int32_t persistent = 0; // How often does it repeat?
-};
-
 class Instance : public TimerContainerHolder {
 	NONCOPYABLE(Instance);
 	NO_DEFAULT_CONSTRUCTOR(Instance);
@@ -51,10 +45,8 @@ public:
 
 	auto getName() const -> string_t { return m_name; }
 	auto getStart() const -> const time_point_t & { return m_start; }
-	auto getCounterId() -> int32_t;
 	auto getMarkedForDelete() const -> bool { return m_markedForDeletion; }
 	auto markForDelete() -> void;
-	auto instanceEnd(bool fromTimer = false) -> void;
 	auto getVariables() const -> Variables * { return m_variables.get(); }
 
 	// Players
@@ -79,26 +71,23 @@ public:
 	auto addParty(Party *party) -> void;
 
 	// Instance time
-	auto hasInstanceTimer() const -> bool { return m_time.count() > 0; }
-	auto setInstanceTimer(const duration_t &time, bool firstRun = false) -> void;
-	auto setPersistence(const duration_t &persistence) -> void { m_persistent = persistence; }
-	auto getPersistence() const -> duration_t { return m_persistent; }
-	auto checkInstanceTimer() -> seconds_t;
-	auto showTimer() const -> bool { return m_showTimer; }
+	auto setPersistence(const duration_t &persistence) -> void;
+	auto getPersistence() const -> duration_t;
+	auto showTimer() const -> bool;
 	auto showTimer(bool show, bool doIt = false) -> void;
 
 	// Timers
 	auto removeAllTimers() -> void;
 	auto removeTimer(const string_t &name) -> void;
-	auto timerComplete(const string_t &name, bool fromTimer = false) -> void;
-	auto addTimer(const string_t &name, const TimerAction &timer) -> bool;
+	auto addFutureTimer(const string_t &name, seconds_t time, seconds_t persistence) -> bool;
+	auto addSecondOfHourTimer(const string_t &name, int16_t secondOfHour, seconds_t persistence) -> bool;
 	auto isTimerPersistent(const string_t &name) -> bool;
+	auto getInstanceSecondsRemaining() -> seconds_t;
 	auto getTimerSecondsRemaining(const string_t &name) -> seconds_t;
 
 	// Lua interaction
 	auto beginInstance() -> Result;
 	auto playerDeath(player_id_t playerId) -> Result;
-	auto instanceTimerEnd(bool fromTimer) -> Result;
 	auto partyDisband(party_id_t partyId) -> Result;
 	auto timerEnd(const string_t &name, bool fromTimer) -> Result;
 	auto playerDisconnect(player_id_t playerId, bool isPartyLeader) -> Result;
@@ -108,15 +97,23 @@ public:
 	auto playerChangeMap(player_id_t playerId, map_id_t newMapId, map_id_t oldMapId, bool isPartyLeader) -> Result;
 	auto friendlyMobHit(mob_id_t mobId, map_object_t mapMobId, map_id_t mapId, int32_t mobHp, int32_t mobMaxHp) -> Result;
 private:
+	struct TimerAction {
+		bool isPersistent = false;
+		uint32_t counterId = 0;
+	};
+
+	auto setInstanceTimer(const duration_t &time, bool firstRun = false) -> void;
+	auto timerComplete(const string_t &name, bool fromTimer = false) -> void;
+	auto removeTimer(const string_t &name, bool performEvent) -> void;
 	auto getLuaInstance() -> LuaInstance * { return m_luaInstance.get(); }
-	auto getTimerId() const -> Timer::Id;
+	auto getCounterId() -> uint32_t;
+	auto instanceEnd(bool calledByLua, bool fromTimer = false) -> void;
 
 	bool m_showTimer = false;
 	bool m_resetOnDestroy = true;
 	bool m_markedForDeletion = false;
-	int32_t m_timerCounter = 0;
+	uint32_t m_timerCounter = 1;
 	time_point_t m_start;
-	seconds_t m_time;
 	duration_t m_persistent;
 	string_t m_name;
 	owned_ptr_t<Variables> m_variables;
