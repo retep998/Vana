@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- A subset of Lua functions that helps with common boat patterns
 
 function getInstanceMinutes()
-	local g = getInstanceTime();
+	local g = checkInstanceTimer(instance_timer);
 	g = (g - (g % 60)) / 60 + 1;
 	return g;
 end

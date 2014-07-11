@@ -65,11 +65,11 @@ function cleanUpZakum()
 	if getInstancePlayerCount() == 0 then
 		instanceDelay = nil;
 		if setInstance("zakumSignup") then
-			instanceDelay = getInstanceTime();
+			instanceDelay = checkInstanceTimer(instance_timer);
 			revertInstance();
 		end
 		if instanceDelay then
-			startInstanceTimer("delayedMarkForDelete", instanceDelay + 5);
+			startInstanceFutureTimer("delayedMarkForDelete", instanceDelay + 5);
 			return;
 		end
 		if getInstanceVariable("summoned", type_bool) then

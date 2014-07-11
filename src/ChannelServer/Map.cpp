@@ -177,8 +177,11 @@ auto Map::addPlayer(Player *player) -> void {
 		player->send(MapPacket::showTimer(m_timer - duration_cast<seconds_t>(TimeUtilities::getNow() - m_timerStart)));
 	}
 	else if (Instance *instance = getInstance()) {
-		if (instance->showTimer() && instance->checkInstanceTimer().count() > 0) {
-			player->send(MapPacket::showTimer(instance->checkInstanceTimer()));
+		if (instance->showTimer()) {
+			seconds_t time = instance->getInstanceSecondsRemaining();
+			if (time.count() > 0) {
+				player->send(MapPacket::showTimer(time));
+			}
 		}
 	}
 	if (m_info->shipKind != -1) {

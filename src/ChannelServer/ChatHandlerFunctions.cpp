@@ -784,9 +784,11 @@ auto ChatHandlerFunctions::showSyntax(Player *player, const chat_t &command, boo
 	auto kvp = sCommandList.find(command);
 	if (kvp != std::end(sCommandList)) {
 		auto &cmd = kvp->second;
+
+		using overload_t = void (*)(Player *, const chat_t &);
 		auto displayStyle = fromHelp ?
-			static_cast<void (*)(Player *, const chat_t &)>(showInfo) :
-			static_cast<void (*)(Player *, const chat_t &)>(showError);
+			static_cast<overload_t>(showInfo) :
+			static_cast<overload_t>(showError);
 
 		displayStyle(player, "Usage: !" + command + " " + cmd.syntax);
 

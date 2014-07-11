@@ -26,13 +26,18 @@ function beginInstance()
 
 	if balrogCount > 0 then
 		setInstanceVariable("balrog_count", balrogCount);
-		startInstanceTimer("spawn_balrog", 60);
-		startInstanceTimer("despawn_balrog", 9 * 60);
+		startInstanceFutureTimer("spawn_balrog", 60);
+		startInstanceFutureTimer("despawn_balrog", 9 * 60);
 	end
 end
 
 function timerEnd(name, fromTimer)
-	if fromTimer then
+	if name == instance_timer then
+		if getInstancePlayerCount() > 0 then
+			moveAllPlayers(101000300);
+			removeAllInstancePlayers();
+		end
+	elseif fromTimer then
 		if name == "spawn_balrog" then
 			setBoatDocked(200090000, boat_docked);
 			setMusic("Bgm04/ArabPirate", 200090000);
@@ -45,13 +50,6 @@ function timerEnd(name, fromTimer)
 			clearMobs(200090000, false);
 		end
 	end
-end
-
-function instanceTimerEnd(fromTimer)
-	if getInstancePlayerCount() > 0 then
-   		moveAllPlayers(101000300);
-		removeAllInstancePlayers();
-  	end
 end
 
 function changeMap(playerId, newMap, oldMap, isPartyLeader)

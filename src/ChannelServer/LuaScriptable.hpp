@@ -285,7 +285,6 @@ namespace LuaExports {
 	auto getAllInstancePlayerIds(lua_State *luaVm) -> lua_return_t;
 	auto getInstancePlayerCount(lua_State *luaVm) -> lua_return_t;
 	auto getInstancePlayerId(lua_State *luaVm) -> lua_return_t;
-	auto getInstanceTime(lua_State *luaVm) -> lua_return_t;
 	auto getInstanceVariable(lua_State *luaVm) -> lua_return_t;
 	auto isInstance(lua_State *luaVm) -> lua_return_t;
 	auto isInstanceMap(lua_State *luaVm) -> lua_return_t;
@@ -301,10 +300,10 @@ namespace LuaExports {
 	auto setInstance(lua_State *luaVm) -> lua_return_t;
 	auto setInstancePersistence(lua_State *luaVm) -> lua_return_t;
 	auto setInstanceReset(lua_State *luaVm) -> lua_return_t;
-	auto setInstanceTime(lua_State *luaVm) -> lua_return_t;
 	auto setInstanceVariable(lua_State *luaVm) -> lua_return_t;
 	auto showInstanceTime(lua_State *luaVm) -> lua_return_t;
-	auto startInstanceTimer(lua_State *luaVm) -> lua_return_t;
+	auto startInstanceFutureTimer(lua_State *luaVm) -> lua_return_t;
+	auto startInstanceSecondOfHourTimer(lua_State *luaVm) -> lua_return_t;
 	auto stopAllInstanceTimers(lua_State *luaVm) -> lua_return_t;
 	auto stopInstanceTimer(lua_State *luaVm) -> lua_return_t;
 }

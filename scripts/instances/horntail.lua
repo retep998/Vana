@@ -27,9 +27,13 @@ function playerDisconnect(playerId, isPartyLeader)
 end
 
 function timerEnd(name, fromTimer)
-	if fromTimer then
+	if name == instance_timer then
+		moveAllPlayers(240050400, "st00");
+		removeAllInstancePlayers();
+		markForDelete();
+	elseif fromTimer then
 		if name == "delayedMarkForDelete" then
-			cleanUpZakum();
+			cleanUpHorntail();
 		end
 	end
 end
@@ -56,20 +60,14 @@ function cleanUpHorntail()
 	if getInstancePlayerCount() == 0 then
 		instanceDelay = nil;
 		if setInstance("horntailSignup") then
-			instanceDelay = getInstanceTime();
+			instanceDelay = checkInstanceTimer(instance_timer);
 			revertInstance();
 		end
 		if instanceDelay then
-			startInstanceTimer("delayedMarkForDelete", instanceDelay + 5);
+			startInstanceFutureTimer("delayedMarkForDelete", instanceDelay + 5);
 			return;
 		end
 
 		markForDelete();
 	end
-end
-
-function instanceTimerEnd(fromTimer)
-	moveAllPlayers(240050400, "st00");
-	removeAllInstancePlayers();
-	markForDelete();
 end

@@ -85,7 +85,7 @@ end
 
 function startManagedMapInstance(timerId, mapId, timeInSeconds)
 	showMapTimer(mapId, timeInSeconds);
-	startInstanceTimer("done_" .. timerId, timeInSeconds);
+	startInstanceFutureTimer("done_" .. timerId, timeInSeconds);
 	takeManagedMap(mapId);
 end
 

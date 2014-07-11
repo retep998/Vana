@@ -28,9 +28,11 @@ function changeMap(playerId, newMap, oldMap, isPartyLeader)
 	end
 end
 
-function instanceTimerEnd(fromTimer)
-	if getInstancePlayerCount() > 0 then
-		createInstance("kerningToNlcTrip", 60, false);
-		passPlayersBetweenInstances(600010005);
+function timerEnd(name, fromTimer)
+	if name == instance_timer then
+		if getInstancePlayerCount() > 0 then
+			createInstance("kerningToNlcTrip", 60, false);
+			passPlayersBetweenInstances(600010005);
+		end
 	end
 end

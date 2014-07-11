@@ -21,15 +21,7 @@ dofile("scripts/utils/boatHelper.lua");
 function beginInstance()
 	addInstanceMap(222020210);
 	doElevatorDoorCheck(222020200);
-	startInstanceTimer("door_check", getNearestMinute(1), 60);
-end
-
-function timerEnd(name, fromTimer)
-	if fromTimer then
-		if name == "door_check" then
-			doElevatorDoorCheck(222020200);
-		end
-	end
+	startInstanceFutureTimer("door_check", getNearestMinute(1), 60);
 end
 
 function changeMap(playerId, newMap, oldMap, isPartyLeader)
@@ -40,9 +32,15 @@ function changeMap(playerId, newMap, oldMap, isPartyLeader)
 	end
 end
 
-function instanceTimerEnd(fromTimer)
-	if getInstancePlayerCount() > 0 then
-		createInstance("ludiToKftTrip", 60, false);
-		passPlayersBetweenInstances(222020211);
+function timerEnd(name, fromTimer)
+	if name == instance_timer then
+		if getInstancePlayerCount() > 0 then
+			createInstance("ludiToKftTrip", 60, false);
+			passPlayersBetweenInstances(222020211);
+		end
+	elseif fromTimer then
+		if name == "door_check" then
+			doElevatorDoorCheck(222020200);
+		end
 	end
 end

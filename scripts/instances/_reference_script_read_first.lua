@@ -37,14 +37,10 @@ function playerDisconnect(playerId, isPartyLeader)
 	-- isPartyLeader: A boolean representing whether or not the player was a party leader
 end
 
-function instanceTimerEnd(fromTimer)
-	-- Happens when the instance timer ends
-
-	-- fromTimer: A boolean indicating whether the instance ended prematurely or not
-end
-
 function timerEnd(name, fromTimer)
-	-- Happens every time a timer started by startInstanceTimer ends
+	-- Happens every time a timer started by startInstanceFutureTimer or startInstanceSecondOfHourTimer ends
+	-- All instances have an implicit timer with the name "instance" (if the instance has an instance time)
+	-- This will *not* be triggered for the instance timer in the case where you restart or stop the instance timer manually
 
 	-- name: A string indicating the identifier of the timer
 	-- fromTimer: A boolean indicating whether the timer ended prematurely or not

@@ -26,10 +26,12 @@ function playerDisconnect(playerId, isPartyLeader)
 	finish(playerId);
 end
 
-function instanceTimerEnd(fromTimer)
-	if getInstancePlayerCount() > 0 then
-		moveAllPlayers(101030104);
-		removeAllInstancePlayers();
+function timerEnd(name, fromTimer)
+	if name == instance_timer then
+		if getInstancePlayerCount() > 0 then
+			moveAllPlayers(101030104);
+			removeAllInstancePlayers();
+		end
 	end
 end
 

@@ -22,15 +22,7 @@ function beginInstance()
 	addInstanceMap(101000301);
 	setInstanceVariable("boat_time", 15);
 	doBoatDockCheck(101000300);
-	startInstanceTimer("dock_check", getNearestMinute(1), 60);
-end
-
-function timerEnd(name, fromTimer)
-	if fromTimer then
-		if name == "dock_check" then
-			doBoatDockCheck(101000300);
-		end
-	end
+	startInstanceFutureTimer("dock_check", getNearestMinute(1), 60);
 end
 
 function changeMap(playerId, newMap, oldMap, isPartyLeader)
@@ -41,9 +33,15 @@ function changeMap(playerId, newMap, oldMap, isPartyLeader)
 	end
 end
 
-function instanceTimerEnd(fromTimer)
-	if getInstancePlayerCount() > 0 then
-		createInstance("elliniaToOrbisTrip", 10 * 60, false);
-		passPlayersBetweenInstances(200090010);
+function timerEnd(name, fromTimer)
+	if name == instance_timer then
+		if getInstancePlayerCount() > 0 then
+			createInstance("elliniaToOrbisTrip", 10 * 60, false);
+			passPlayersBetweenInstances(200090010);
+		end
+	elseif fromTimer then
+		if name == "dock_check" then
+			doBoatDockCheck(101000300);
+		end
 	end
 end

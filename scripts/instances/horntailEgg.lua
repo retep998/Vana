@@ -24,11 +24,13 @@ function playerDisconnect(playerId, isPartyLeader)
 	finish(playerId);
 end
 
-function instanceTimerEnd(fromTimer)
-	if getInstancePlayerCount() > 0 then
-		moveAllPlayers(240040610);
-		removeAllInstancePlayers();
-		despawnNpc();
+function timerEnd(name, fromTimer)
+	if name == instance_timer then
+		if getInstancePlayerCount() > 0 then
+			moveAllPlayers(240040610);
+			removeAllInstancePlayers();
+			despawnNpc();
+		end
 	end
 end
 
