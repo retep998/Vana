@@ -369,6 +369,12 @@ auto Instance::markForDelete() -> void {
 	for (const auto &map : m_maps) {
 		map->setInstance(nullptr);
 	}
+	for (const auto &player : m_players) {
+		player.second->setInstance(nullptr);
+	}
+	for (const auto &party : m_parties) {
+		party->setInstance(nullptr);
+	}
 
 	// TODO FIXME lua
 	// TODO FIXME instance
