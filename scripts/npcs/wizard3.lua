@@ -138,7 +138,9 @@ if getLevel() >= 50 then
 								addText("The new skill book features new and improved ice and lightning based spells, and skills such as " .. blue("Element Amplification") .. " (improves element-based spells) and " .. blue("Spell Booster") .. " (improves the overall speed of your attacking spells) will enable you to attack the monsters quickly and effectively. ");
 								addText("Defensive spells such as " .. blue("Partial Resistance") .. " (allows you to become stronger against certain element-based attacks) and " .. blue("Seal") .. " (seals up the monster) will help negate the one weakness of Mages: lack of HP.");
 							elseif jobTrack == 3 then
-								-- TODO FIXME: Find text
+								addText("You're a " .. blue("Priest") .. " from here on out. ");
+								addText("The new skill book features new and improved holy spells such as " .. blue("Shining Ray") .. " and " .. blue("Summon Dragon") .. ", and skills such as " .. blue("Mystic Door") .. " (creates a door to the nearest town) and " .. blue("Holy Symbol") .. " (improves the EXP gained) can be vital to the party play. ");
+								addText("Off-beat spells such as " .. blue("Doom") .. " (turns monsters into snails) separates Priests from the rest.");
 							end
 							sendNext();
 
