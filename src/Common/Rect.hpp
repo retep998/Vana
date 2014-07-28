@@ -39,10 +39,13 @@ public:
 	auto right() const -> Line;
 	auto top() const -> Line;
 	auto bottom() const -> Line;
+	auto diagonalLeftTopRightBottom() const -> Line;
+	auto diagonalLeftBottomRightTop() const -> Line;
 	auto rightTop() const -> Point;
 	auto leftTop() const -> Point;
 	auto leftBottom() const -> Point;
 	auto rightBottom() const -> Point;
+	auto center() const -> Point;
 	auto area() const -> int32_t;
 	auto perimeter() const -> int32_t;
 	auto hypotenuse() const -> int32_t;

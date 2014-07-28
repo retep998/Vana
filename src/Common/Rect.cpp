@@ -43,6 +43,14 @@ auto Rect::bottom() const -> Line {
 	return Line{leftBottom(), m_rightBottom};
 }
 
+auto Rect::diagonalLeftTopRightBottom() const -> Line {
+	return Line{m_leftTop, m_rightBottom};
+}
+
+auto Rect::diagonalLeftBottomRightTop() const -> Line {
+	return Line{leftBottom(), rightTop()};
+}
+
 auto Rect::leftTop() const -> Point {
 	return m_leftTop;
 }
@@ -58,6 +66,11 @@ auto Rect::rightTop() const -> Point {
 
 auto Rect::leftBottom() const -> Point {
 	Point ret{m_leftTop.x, m_rightBottom.y};
+	return ret;
+}
+
+auto Rect::center() const -> Point {
+	Point ret{(m_leftTop.x + m_rightBottom.x) / 2, (m_leftTop.y + m_rightBottom.y) / 2};
 	return ret;
 }
 

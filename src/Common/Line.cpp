@@ -49,6 +49,11 @@ auto Line::interpolateForY(coord_t xValue) const -> coord_t {
 	return static_cast<coord_t>(slope() * (xValue - pt1.x) + pt1.y);
 }
 
+auto Line::center() const -> Point {
+	Point ret{(pt2.x + pt1.x) / 2, (pt2.y + pt1.y) / 2};
+	return ret;
+}
+
 auto Line::length() const -> int32_t {
 	return abs(pt1 - pt2);
 }
