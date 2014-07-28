@@ -38,6 +38,7 @@ struct Line {
 	auto withinRangeY(coord_t yValue) const -> bool;
 	auto interpolateForX(coord_t yValue) const -> coord_t;
 	auto interpolateForY(coord_t xValue) const -> coord_t;
+	auto center() const -> Point;
 	auto length() const -> int32_t;
 	auto makeRect() const -> Rect;
 	auto isVertical() const -> bool;
