@@ -110,7 +110,7 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 				user->send(LoginPacket::loginError(LoginPacket::Errors::InvalidPassword));
 				valid = false;
 			}
-			else if (row.get<bool>("online")) {
+			else if (row.get<int32_t>("online") > 0) {
 				user->send(LoginPacket::loginError(LoginPacket::Errors::AlreadyLoggedIn));
 				valid = false;
 			}
