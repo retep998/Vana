@@ -340,7 +340,7 @@ auto InfoFunctions::lookup(Player *player, const chat_t &args) -> ChatResult {
 }
 
 auto InfoFunctions::pos(Player *player, const chat_t &args) -> ChatResult {
-	ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) { message << "(Foothold, {X, Y}): (" << player->getFoothold() << ", " << player->getPos() << ")"; });
+	ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) { message << "{X, Y} [Foothold]: " << player->getPos() << " [" << player->getFoothold() << "]"; });
 	return ChatResult::HandledDisplay;
 }
 
