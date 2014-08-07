@@ -39,7 +39,10 @@ enum SkillValues {
 	SkillAvo,
 	SkillProp,
 	SkillMorph,
-	SkillLv
+	SkillLv,
+	SkillMobCount,
+	SkillRange,
+	SkillDamage,
 };
 
 namespace BuffBytes {
@@ -184,13 +187,16 @@ namespace Skills {
 			FollowTheLead = 8,
 			MonsterRider = 1004,
 			NimbleFeet = 1002,
-			Recovery = 1001
+			Recovery = 1001,
+			ThreeSnails = 1000,
+			LegendarySpirit = 1003,
+			Maker = 1007,
 		};
 	}
 	namespace Swordsman {
 		enum Skills : skill_id_t {
 			ImprovedMaxHpIncrease = 1000001,
-			IronBody = 1001003
+			IronBody = 1001003,
 		};
 	}
 	namespace Fighter {
@@ -200,7 +206,7 @@ namespace Skills {
 			PowerGuard = 1101007,
 			Rage = 1101006,
 			SwordBooster = 1101004,
-			SwordMastery = 1100000
+			SwordMastery = 1100000,
 		};
 	}
 	namespace Crusader {
@@ -211,7 +217,7 @@ namespace Skills {
 			ComboAttack = 1111002,
 			Shout = 1111008,
 			SwordComa = 1111005,
-			SwordPanic = 1111003
+			SwordPanic = 1111003,
 		};
 	}
 	namespace Hero {
@@ -223,7 +229,7 @@ namespace Skills {
 			HerosWill = 1121011,
 			MapleWarrior = 1121000,
 			MonsterMagnet = 1121001,
-			PowerStance = 1121002
+			PowerStance = 1121002,
 		};
 	}
 	namespace Page {
@@ -233,7 +239,7 @@ namespace Skills {
 			PowerGuard = 1201007,
 			SwordBooster = 1201004,
 			SwordMastery = 1200000,
-			Threaten = 1201006
+			Threaten = 1201006,
 		};
 	}
 	namespace WhiteKnight {
@@ -245,7 +251,7 @@ namespace Skills {
 			MagicCrash = 1211009,
 			SwordFireCharge = 1211003,
 			SwordIceCharge = 1211005,
-			SwordLitCharge = 1211007
+			SwordLitCharge = 1211007,
 		};
 	}
 	namespace Paladin {
@@ -259,7 +265,7 @@ namespace Skills {
 			MapleWarrior = 1221000,
 			MonsterMagnet = 1221001,
 			PowerStance = 1221002,
-			SwordHolyCharge = 1221003
+			SwordHolyCharge = 1221003,
 		};
 	}
 	namespace Spearman {
@@ -269,7 +275,7 @@ namespace Skills {
 			PolearmBooster = 1301005,
 			PolearmMastery = 1300001,
 			SpearBooster = 1301004,
-			SpearMastery = 1300000
+			SpearMastery = 1300000,
 		};
 	}
 	namespace DragonKnight {
@@ -278,7 +284,7 @@ namespace Skills {
 			DragonRoar = 1311006,
 			ElementalResistance = 1310000,
 			PowerCrash = 1311007,
-			Sacrifice = 1311005
+			Sacrifice = 1311005,
 		};
 	}
 	namespace DarkKnight {
@@ -291,14 +297,14 @@ namespace Skills {
 			HexOfBeholder = 1320009,
 			MapleWarrior = 1321000,
 			MonsterMagnet = 1321001,
-			PowerStance = 1321002
+			PowerStance = 1321002,
 		};
 	}
 	namespace Magician {
 		enum Skills : skill_id_t {
 			ImprovedMaxMpIncrease = 2000001,
 			MagicArmor = 2001003,
-			MagicGuard = 2001002
+			MagicGuard = 2001002,
 		};
 	}
 	namespace FpWizard {
@@ -306,7 +312,7 @@ namespace Skills {
 			Meditation = 2101001,
 			MpEater = 2100000,
 			PoisonBreath = 2101005,
-			Slow = 2101003
+			Slow = 2101003,
 		};
 	}
 	namespace FpMage {
@@ -316,7 +322,7 @@ namespace Skills {
 			PartialResistance = 2110000,
 			PoisonMist = 2111003,
 			Seal = 2111004,
-			SpellBooster = 2111005
+			SpellBooster = 2111005,
 		};
 	}
 	namespace FpArchMage {
@@ -328,7 +334,7 @@ namespace Skills {
 			Infinity = 2121004,
 			ManaReflection = 2121002,
 			MapleWarrior = 2121000,
-			Paralyze = 2121006
+			Paralyze = 2121006,
 		};
 	}
 	namespace IlWizard {
@@ -336,7 +342,7 @@ namespace Skills {
 			ColdBeam = 2201004,
 			Meditation = 2201001,
 			MpEater = 2200000,
-			Slow = 2201003
+			Slow = 2201003,
 		};
 	}
 	namespace IlMage {
@@ -346,7 +352,7 @@ namespace Skills {
 			IceStrike = 2211002,
 			PartialResistance = 2210000,
 			Seal = 2211004,
-			SpellBooster = 2211005
+			SpellBooster = 2211005,
 		};
 	}
 	namespace IlArchMage {
@@ -358,7 +364,7 @@ namespace Skills {
 			Ifrit = 2221005,
 			Infinity = 2221004,
 			ManaReflection = 2221002,
-			MapleWarrior = 2221000
+			MapleWarrior = 2221000,
 		};
 	}
 	namespace Cleric {
@@ -366,7 +372,7 @@ namespace Skills {
 			Bless = 2301004,
 			Heal = 2301002,
 			Invincible = 2301003,
-			MpEater = 2300000
+			MpEater = 2300000,
 		};
 	}
 	namespace Priest {
@@ -376,7 +382,7 @@ namespace Skills {
 			ElementalResistance = 2310000,
 			HolySymbol = 2311003,
 			MysticDoor = 2311002,
-			SummonDragon = 2311006
+			SummonDragon = 2311006,
 		};
 	}
 	namespace Bishop {
@@ -388,13 +394,13 @@ namespace Skills {
 			Infinity = 2321004,
 			ManaReflection = 2321002,
 			MapleWarrior = 2321000,
-			Resurrection = 2321006
+			Resurrection = 2321006,
 		};
 	}
 	namespace Archer {
 		enum Skills : skill_id_t {
 			CriticalShot = 3000001,
-			Focus = 3001003
+			Focus = 3001003,
 		};
 	}
 	namespace Hunter {
@@ -402,14 +408,14 @@ namespace Skills {
 			ArrowBomb = 3101005,
 			BowBooster = 3101002,
 			BowMastery = 3100000,
-			SoulArrow = 3101004
+			SoulArrow = 3101004,
 		};
 	}
 	namespace Ranger {
 		enum Skills : skill_id_t {
 			MortalBlow = 3110001,
 			Puppet = 3111002,
-			SilverHawk = 3111005
+			SilverHawk = 3111005,
 		};
 	}
 	namespace Bowmaster {
@@ -428,7 +434,7 @@ namespace Skills {
 		enum Skills : skill_id_t {
 			CrossbowBooster = 3201002,
 			CrossbowMastery = 3200000,
-			SoulArrow = 3201004
+			SoulArrow = 3201004,
 		};
 	}
 	namespace Sniper {
@@ -436,7 +442,7 @@ namespace Skills {
 			Blizzard = 3211003,
 			GoldenEagle = 3211005,
 			MortalBlow = 3210001,
-			Puppet = 3211002
+			Puppet = 3211002,
 		};
 	}
 	namespace Marksman {
@@ -447,7 +453,7 @@ namespace Skills {
 			MapleWarrior = 3221000,
 			PiercingArrow = 3221001,
 			SharpEyes = 3221002,
-			Snipe = 3221007
+			Snipe = 3221007,
 		};
 	}
 	namespace Rogue {
@@ -455,7 +461,7 @@ namespace Skills {
 			DarkSight = 4001003,
 			Disorder = 4001002,
 			DoubleStab = 4001334,
-			LuckySeven = 4001344
+			LuckySeven = 4001344,
 		};
 	}
 	namespace Assassin {
@@ -464,7 +470,7 @@ namespace Skills {
 			ClawMastery = 4100000,
 			CriticalThrow = 4100001,
 			Drain = 4101005,
-			Haste = 4101004
+			Haste = 4101004,
 		};
 	}
 	namespace Hermit {
@@ -474,7 +480,7 @@ namespace Skills {
 			MesoUp = 4111001,
 			ShadowMeso = 4111004,
 			ShadowPartner = 4111002,
-			ShadowWeb = 4111003
+			ShadowWeb = 4111003,
 		};
 	}
 	namespace NightLord {
@@ -487,7 +493,7 @@ namespace Skills {
 			ShadowStars = 4121006,
 			Taunt = 4121003,
 			TripleThrow = 4121007,
-			VenomousStar = 4120005
+			VenomousStar = 4120005,
 		};
 	}
 	namespace Bandit {
@@ -496,7 +502,7 @@ namespace Skills {
 			DaggerMastery = 4200000,
 			Haste = 4201003,
 			SavageBlow = 4201005,
-			Steal = 4201004
+			Steal = 4201004,
 		};
 	}
 	namespace ChiefBandit {
@@ -506,7 +512,7 @@ namespace Skills {
 			Chakra = 4211001,
 			MesoExplosion = 4211006,
 			MesoGuard = 4211005,
-			Pickpocket = 4211003
+			Pickpocket = 4211003,
 		};
 	}
 	namespace Shadower {
@@ -519,12 +525,12 @@ namespace Skills {
 			ShadowShifter = 4220002,
 			Smokescreen = 4221006,
 			Taunt = 4221003,
-			VenomousStab = 4220005
+			VenomousStab = 4220005,
 		};
 	}
 	namespace Pirate {
 		enum Skills : skill_id_t {
-			Dash = 5001005
+			Dash = 5001005,
 		};
 	}
 	namespace Brawler {
@@ -536,7 +542,7 @@ namespace Skills {
 			KnucklerBooster = 5101006,
 			KnucklerMastery = 5100001,
 			MpRecovery = 5101005,
-			OakBarrel = 5101007
+			OakBarrel = 5101007,
 		};
 	}
 	namespace Marauder {
@@ -544,7 +550,7 @@ namespace Skills {
 			EnergyCharge = 5110001,
 			EnergyDrain = 5111004,
 			StunMastery = 5110000,
-			Transformation = 5111005
+			Transformation = 5111005,
 		};
 	}
 	namespace Buccaneer {
@@ -555,7 +561,7 @@ namespace Skills {
 			Snatch = 5121005,
 			SpeedInfusion = 5121009,
 			SuperTransformation = 5121003,
-			TimeLeap = 5121010
+			TimeLeap = 5121010,
 		};
 	}
 	namespace Gunslinger {
@@ -563,7 +569,7 @@ namespace Skills {
 			BlankShot = 5201004,
 			Grenade = 5201002,
 			GunBooster = 5201003,
-			GunMastery = 5200000
+			GunMastery = 5200000,
 		};
 	}
 	namespace Outlaw {
@@ -572,7 +578,7 @@ namespace Skills {
 			Gaviota = 5211002,
 			HomingBeacon = 5211006,
 			IceSplitter = 5211005,
-			Octopus = 5211001
+			Octopus = 5211001,
 		};
 	}
 	namespace Corsair {
@@ -585,14 +591,14 @@ namespace Skills {
 			MapleWarrior = 5221000,
 			RapidFire = 5221004,
 			HerosWill = 5221010,
-			WrathOfTheOctopi = 5220002
+			WrathOfTheOctopi = 5220002,
 		};
 	}
 	namespace Gm {
 		enum Skills : skill_id_t {
 			Haste = 9001000,
 			SuperDragonRoar = 9001001,
-			Teleport = 9001007
+			Teleport = 9001007,
 		};
 	}
 	namespace SuperGm {
@@ -605,7 +611,7 @@ namespace Skills {
 			HyperBody = 9101008,
 			Resurrection = 9101005,
 			SuperDragonRoar = 9101006,
-			Teleport = 9101007
+			Teleport = 9101007,
 		};
 	}
 	namespace Noblesse {
@@ -615,7 +621,10 @@ namespace Skills {
 			Maker = 10001007,
 			MonsterRider = 10001004,
 			NimbleFeet = 10001002,
-			Recovery = 10001001
+			Recovery = 10001001,
+			ThreeSnails = 10001000,
+			FollowTheLead = 10000018,
+			LegendarySpirit = 10001003,
 		};
 	}
 	namespace DawnWarrior {
@@ -632,7 +641,7 @@ namespace Skills {
 			SoulBlade = 11101004,
 			SoulCharge = 11111007,
 			SwordBooster = 11101001,
-			SwordMastery = 11100000
+			SwordMastery = 11100000,
 		};
 	}
 	namespace BlazeWizard {
@@ -649,7 +658,7 @@ namespace Skills {
 			Meditation = 12101000,
 			Seal = 12111002,
 			Slow = 12101001,
-			SpellBooster = 12101004
+			SpellBooster = 12101004,
 		};
 	}
 	namespace WindArcher {
@@ -683,7 +692,7 @@ namespace Skills {
 			PoisonBomb = 14111006,
 			ShadowPartner = 14111000,
 			ShadowWeb = 14111001,
-			SuddenAttack = 14100005,
+			Vanish = 14100005,
 			Vampire = 14101006,
 			Venom = 14110004,
 		};
@@ -700,8 +709,9 @@ namespace Skills {
 			Lightning = 15001004,
 			LightningCharge = 15101006,
 			Spark = 15111006,
+			SharkWave = 15111007,
 			SpeedInfusion = 15111005,
-			Transformation = 15111002
+			Transformation = 15111002,
 		};
 	}
 }

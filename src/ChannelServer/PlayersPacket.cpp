@@ -27,47 +27,48 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.hpp"
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
+#include "WidePoint.hpp"
 
 namespace PlayersPacket {
 
-SPLIT_PACKET_IMPL(showMoving, int32_t playerId, unsigned char *buf, size_t size) {
+SPLIT_PACKET_IMPL(showMoving, player_id_t playerId, unsigned char *buf, size_t size) {
 	SplitPacketBuilder builder;
 	builder.map
 		.add<header_t>(SMSG_PLAYER_MOVEMENT)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.add<int32_t>(0)
 		.addBuffer(buf, size);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(faceExpression, int32_t playerId, int32_t face) {
+SPLIT_PACKET_IMPL(faceExpression, player_id_t playerId, int32_t face) {
 	SplitPacketBuilder builder;
 	builder.map
 		.add<header_t>(SMSG_EMOTE)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.add<int32_t>(face);
 	return builder;
 }
 
-PACKET_IMPL(showChat, int32_t playerId, bool isGm, const string_t &msg, bool bubbleOnly) {
+PACKET_IMPL(showChat, player_id_t playerId, bool isGm, const string_t &msg, bool bubbleOnly) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PLAYER_CHAT)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.add<bool>(isGm)
 		.add<string_t>(msg)
 		.add<bool>(bubbleOnly);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(damagePlayer, int32_t playerId, int32_t dmg, int32_t mob, uint8_t hit, int8_t type, uint8_t stance, int32_t noDamageSkill, const ReturnDamageInfo &pgmr) {
+SPLIT_PACKET_IMPL(damagePlayer, player_id_t playerId, int32_t dmg, int32_t mob, uint8_t hit, int8_t type, uint8_t stance, int32_t noDamageSkill, const ReturnDamageInfo &pgmr) {
 	SplitPacketBuilder builder;
 	const int8_t BumpDamage = -1;
 	const int8_t MapDamage = -2;
 
 	builder.map
 		.add<header_t>(SMSG_PLAYER_DAMAGE)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.add<int8_t>(type);
 	switch (type) {
 		case MapDamage:
@@ -154,7 +155,7 @@ PACKET_IMPL(findPlayer, const string_t &name, int32_t map, uint8_t is, bool isCh
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useMeleeAttack, int32_t playerId, int32_t masterySkillId, uint8_t masteryLevel, const Attack &attack) {
+SPLIT_PACKET_IMPL(useMeleeAttack, player_id_t playerId, int32_t masterySkillId, uint8_t masteryLevel, const Attack &attack) {
 	SplitPacketBuilder builder;
 	int8_t hitByte = (attack.targets * 0x10) + attack.hits;
 	int32_t skillId = attack.skillId;
@@ -165,7 +166,7 @@ SPLIT_PACKET_IMPL(useMeleeAttack, int32_t playerId, int32_t masterySkillId, uint
 
 	builder.map
 		.add<header_t>(SMSG_ATTACK_MELEE)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.add<int8_t>(hitByte)
 		.add<uint8_t>(attack.skillLevel);
 
@@ -195,13 +196,13 @@ SPLIT_PACKET_IMPL(useMeleeAttack, int32_t playerId, int32_t masterySkillId, uint
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useRangedAttack, int32_t playerId, int32_t masterySkillId, uint8_t masteryLevel, const Attack &attack) {
+SPLIT_PACKET_IMPL(useRangedAttack, player_id_t playerId, int32_t masterySkillId, uint8_t masteryLevel, const Attack &attack) {
 	SplitPacketBuilder builder;
 	int32_t skillId = attack.skillId;
 
 	builder.map
 		.add<header_t>(SMSG_ATTACK_RANGED)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.add<int8_t>((attack.targets * 0x10) + attack.hits)
 		.add<uint8_t>(attack.skillLevel);
 
@@ -239,11 +240,11 @@ SPLIT_PACKET_IMPL(useRangedAttack, int32_t playerId, int32_t masterySkillId, uin
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useSpellAttack, int32_t playerId, const Attack &attack) {
+SPLIT_PACKET_IMPL(useSpellAttack, player_id_t playerId, const Attack &attack) {
 	SplitPacketBuilder builder;
 	builder.map
 		.add<header_t>(SMSG_ATTACK_MAGIC)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.add<int8_t>((attack.targets * 0x10) + attack.hits)
 		.add<uint8_t>(attack.skillLevel)
 		.add<int32_t>(attack.skillId)
@@ -269,11 +270,11 @@ SPLIT_PACKET_IMPL(useSpellAttack, int32_t playerId, const Attack &attack) {
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useSummonAttack, int32_t playerId, const Attack &attack) {
+SPLIT_PACKET_IMPL(useSummonAttack, player_id_t playerId, const Attack &attack) {
 	SplitPacketBuilder builder;
 	builder.map
 		.add<header_t>(SMSG_SUMMON_ATTACK)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.add<int32_t>(attack.summonId)
 		.add<int8_t>(attack.animation)
 		.add<int8_t>(attack.targets);
@@ -289,11 +290,22 @@ SPLIT_PACKET_IMPL(useSummonAttack, int32_t playerId, const Attack &attack) {
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useEnergyChargeAttack, int32_t playerId, int32_t masterySkillId, uint8_t masteryLevel, const Attack &attack) {
+SPLIT_PACKET_IMPL(useBombAttack, player_id_t playerId, charge_time_t chargeTime, skill_id_t skillId, const WidePoint &pos) {
+	SplitPacketBuilder builder;
+	builder.map
+		.add<header_t>(SMSG_3RD_PARTY_BOMB)
+		.add<player_id_t>(playerId)
+		.add<WidePoint>(pos)
+		.add<charge_time_t>(chargeTime)
+		.add<skill_id_t>(skillId);
+	return builder;
+}
+
+SPLIT_PACKET_IMPL(useEnergyChargeAttack, player_id_t playerId, int32_t masterySkillId, uint8_t masteryLevel, const Attack &attack) {
 	SplitPacketBuilder builder;
 	builder.map
 		.add<header_t>(SMSG_ATTACK_ENERGYCHARGE)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.add<int8_t>((attack.targets * 0x10) + attack.hits)
 		.add<int8_t>(attack.skillLevel)
 		.add<int32_t>(attack.skillId)

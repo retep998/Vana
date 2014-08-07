@@ -22,13 +22,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Map.hpp"
 #include "Maps.hpp"
 #include "Mist.hpp"
+#include "MysticDoor.hpp"
 #include "Pet.hpp"
 #include "Player.hpp"
 #include "PlayerPacketHelper.hpp"
+#include "Point.hpp"
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 #include "TimeUtilities.hpp"
-#include "WidePos.hpp"
+#include "WidePoint.hpp"
 #include <unordered_map>
 
 namespace MapPacket {
@@ -71,7 +73,8 @@ PACKET_IMPL(playerPacket, Player *player) {
 				for (const auto &kvp : enter.values[cbyte]) {
 					const MapEntryVals &info = kvp.second;
 					if (info.debuff) {
-						if (!(kvp.first == 0x01 && cbyte == Byte5)) { // Glitch in global, Slow doesn't display properly and if you try, it error 38s
+						if (!(kvp.first == 0x01 && cbyte == Byte5)) {
+							// Glitch in global, Slow doesn't display properly and if you try, it error 38s
 							builder
 								.add<int16_t>(info.skill)
 								.add<int16_t>(info.val);
@@ -120,19 +123,19 @@ PACKET_IMPL(playerPacket, Player *player) {
 		.add<item_id_t>(enter.mountId) // No point to having an if, these are 0 when not in use
 		.add<skill_id_t>(enter.mountSkill)
 		.add<int32_t>(unk)
+		.add<int32_t>(0)
+		.add<int32_t>(0)
 		.add<int8_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
 		.add<int32_t>(unk)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(unk)
+		.add<int32_t>(0)
+		.add<int32_t>(0)
+		.add<int32_t>(0)
 		.add<int8_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
 		.add<int32_t>(unk)
 		.add<int16_t>(0)
 		.add<int8_t>(0)
@@ -160,23 +163,26 @@ PACKET_IMPL(playerPacket, Player *player) {
 				.add<bool>(pet->hasQuoteItem());
 		}
 	}
+	// End of pets
+	builder.add<int8_t>(0);
+
+	player->getMounts()->mountInfoMapSpawnPacket(builder);
+
+	builder.add<int8_t>(0); // Player room
+
+	bool hasChalkboard = !player->getChalkboard().empty();
+	builder.add<bool>(hasChalkboard);
+	if (hasChalkboard) {
+		builder.add<string_t>(player->getChalkboard());
+	}
 
 	builder
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
+		.add<int8_t>(0) // Rings (crush)
+		.add<int8_t>(0) // Rings (friends)
+		.add<int8_t>(0) // Ring (marriage)
 		.add<int8_t>(0)
 		.add<int8_t>(0)
-		.add<bool>(!player->getChalkboard().empty())
-		.add<string_t>(player->getChalkboard())
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int16_t>(0);
+		.add<int8_t>(0);
 	return builder;
 }
 
@@ -188,7 +194,7 @@ PACKET_IMPL(removePlayer, player_id_t playerId) {
 	return builder;
 }
 
-PACKET_IMPL(changeMap, Player *player) {
+PACKET_IMPL(changeMap, Player *player, bool spawnByPosition, const Point &spawnPosition) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_CHANGE_MAP)
@@ -207,10 +213,15 @@ PACKET_IMPL(changeMap, Player *player) {
 
 	builder
 		.add<map_id_t>(player->getMapId())
-		.add<int8_t>(player->getMapPos())
+		.add<portal_id_t>(player->getMapPos())
 		.add<health_t>(player->getStats()->getHp())
-		.add<int8_t>(0)
-		.add<int64_t>(TimeUtilities::getServerTime());
+		.add<bool>(spawnByPosition);
+	
+	if (spawnByPosition) {
+		builder.add<WidePoint>(WidePoint{spawnPosition});
+	}
+
+	builder.add<int64_t>(TimeUtilities::getServerTime());
 	return builder;
 }
 
@@ -283,6 +294,52 @@ PACKET_IMPL(removeMist, map_object_t id) {
 	builder
 		.add<header_t>(SMSG_MIST_DESPAWN)
 		.add<map_object_t>(id);
+	return builder;
+}
+
+PACKET_IMPL(spawnDoor, ref_ptr_t<MysticDoor> door, bool isInsideTown, bool alreadyOpen) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_MYSTIC_DOOR_SPAWN)
+		.add<bool>(alreadyOpen)
+		.add<player_id_t>(door->getOwnerId())
+		.add<Point>(isInsideTown ? door->getTownPos() : door->getMapPos());
+	return builder;
+}
+
+PACKET_IMPL(removeDoor, ref_ptr_t<MysticDoor> door, bool isFade) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_MYSTIC_DOOR_DESPAWN)
+		.add<bool>(!isFade)
+		.add<player_id_t>(door->getOwnerId());
+	return builder;
+}
+
+PACKET_IMPL(spawnPortal, ref_ptr_t<MysticDoor> door, map_id_t callingMap) {
+	PacketBuilder builder;
+	builder.add<header_t>(SMSG_PORTAL_ACTION);
+	if (door->getMapId() == callingMap) {
+		builder
+			.add<map_id_t>(door->getMapId())
+			.add<map_id_t>(door->getTownId())
+			.add<Point>(door->getTownPos());
+	}
+	else {
+		builder
+			.add<map_id_t>(door->getTownId())
+			.add<map_id_t>(door->getMapId())
+			.add<Point>(door->getMapPos());
+	}
+	return builder;
+}
+
+PACKET_IMPL(removePortal) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PORTAL_ACTION)
+		.add<map_id_t>(Maps::NoMap)
+		.add<map_id_t>(Maps::NoMap);
 	return builder;
 }
 

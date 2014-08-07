@@ -139,3 +139,16 @@ auto PlayerMounts::mountInfoPacket(PacketBuilder &packet) -> void {
 		packet.add<bool>(false);
 	}
 }
+
+auto PlayerMounts::mountInfoMapSpawnPacket(PacketBuilder &packet) -> void {
+	if (getCurrentMount() > 0 && m_player->getInventory()->getEquippedId(EquipSlots::Saddle) != 0) {
+		packet.add<int32_t>(getCurrentLevel());
+		packet.add<int32_t>(getCurrentExp());
+		packet.add<int32_t>(getCurrentTiredness());
+	}
+	else {
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+	}
+}

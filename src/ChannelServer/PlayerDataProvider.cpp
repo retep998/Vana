@@ -508,7 +508,7 @@ auto PlayerDataProvider::handleCreateParty(party_id_t id, player_id_t leaderId) 
 	}
 	else {
 		p->addMember(leader, true);
-		leader->send(PartyPacket::createParty(p.get()));
+		leader->send(PartyPacket::createParty(p.get(), leader));
 	}
 	
 	p->setLeader(leaderId);

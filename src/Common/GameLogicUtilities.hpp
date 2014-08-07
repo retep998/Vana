@@ -64,7 +64,8 @@ namespace GameLogicUtilities {
 	inline auto isFourthJobSkill(skill_id_t skillId) -> bool { return (skillId / 10000) % 10 == 2; }
 	inline auto isPuppet(skill_id_t skillId) -> bool { return skillId == Skills::Sniper::Puppet || skillId == Skills::Ranger::Puppet || skillId == Skills::WindArcher::Puppet; }
 	inline auto isSummon(skill_id_t skillId) -> bool { return isPuppet(skillId) || skillId == Skills::Priest::SummonDragon || skillId == Skills::Ranger::SilverHawk || skillId == Skills::Sniper::GoldenEagle || skillId == Skills::DarkKnight::Beholder || skillId == Skills::FpArchMage::Elquines || skillId == Skills::IlArchMage::Ifrit || skillId == Skills::BlazeWizard::Ifrit || skillId == Skills::Bishop::Bahamut || skillId == Skills::Bowmaster::Phoenix || skillId == Skills::Marksman::Frostprey || skillId == Skills::Outlaw::Octopus || skillId == Skills::Corsair::WrathOfTheOctopi || skillId == Skills::Outlaw::Gaviota || skillId == Skills::DawnWarrior::Soul || skillId == Skills::BlazeWizard::Flame || skillId == Skills::WindArcher::Storm || skillId == Skills::NightWalker::Darkness || skillId == Skills::ThunderBreaker::Lightning; }
-	inline auto isDarkSight(skill_id_t skillId) -> bool { return skillId == Skills::Rogue::DarkSight || skillId == Skills::NightWalker::DarkSight; }
+	inline auto isDarkSight(skill_id_t skillId) -> bool { return skillId == Skills::Rogue::DarkSight || skillId == Skills::NightWalker::DarkSight || skillId == Skills::WindArcher::WindWalk; }
+	inline auto isBlessingOfTheFairy(skill_id_t skillId) -> bool { return skillId == Skills::Beginner::BlessingOfTheFairy || skillId == Skills::Noblesse::BlessingOfTheFairy; }
 	inline auto skillMatchesJob(skill_id_t skillId, job_id_t job) -> bool { return (skillId / 1000000 == job / 100) && (skillId / 10000 <= job); }
 	inline auto itemSkillMatchesJob(skill_id_t skillId, job_id_t job) -> bool { return (skillId / 10000) == job; }
 	inline auto getMasteryDisplay(skill_level_t level) -> int8_t { return (level + 1) / 2; }
@@ -78,6 +79,13 @@ namespace GameLogicUtilities {
 	inline auto isCygnus(job_id_t jobId) -> bool { return jobId != 1024 && jobId >= 1000 && jobId < 2000; }
 	inline auto isLegend(job_id_t jobId) -> bool { return jobId != 2048 && jobId >= 2000 && jobId < 3000; }
 	inline auto isResistance(job_id_t jobId) -> bool { return jobId >= 3000 && jobId < 4000; }
+	inline auto getJobType(job_id_t jobId) -> Jobs::JobType {
+		if (isAdventurer(jobId)) return Jobs::JobType::Adventurer;
+		if (isCygnus(jobId)) return Jobs::JobType::Cygnus;
+		if (isLegend(jobId)) return Jobs::JobType::Legend;
+		if (isResistance(jobId)) return Jobs::JobType::Resistance;
+		throw std::invalid_argument("jobId must be a valid type");
+	}
 	inline auto isBeginnerJob(job_id_t jobId) -> bool {
 		for (const auto &job : Jobs::Beginners::Jobs) {
 			if (jobId == job) {

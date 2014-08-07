@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemConstants.hpp"
 #include "ItemDataProvider.hpp"
 #include "Maps.hpp"
+#include "MysticDoor.hpp"
 #include "NpcHandler.hpp"
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
@@ -33,7 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 auto ManagementFunctions::map(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+)? ?(\w+)?)", matches) == MatchResult::AnyMatches) {
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+)? ?(\w+|\{(-?\d+)\, ?(-?\d+)\}|\[\d+\])?)", matches) == MatchResult::AnyMatches) {
 		string_t rawMap = matches[1];
 		string_t rawPortal = matches[2];
 		if (rawMap.empty()) {
@@ -43,25 +44,42 @@ auto ManagementFunctions::map(Player *player, const chat_t &args) -> ChatResult 
 
 		map_id_t mapId = ChatHandlerFunctions::getMap(rawMap, player);
 		if (mapId != -1 && Maps::getMap(mapId) != nullptr) {
-			PortalInfo *portal = nullptr;
-			if (!rawPortal.empty()) {
-				Map *map = Maps::getMap(mapId);
-				if (rawPortal == "sp") {
-					portal = map->getSpawnPoint();
+			Map *map = Maps::getMap(mapId);
+			// We determine here if we're looking for a position or a portal
+			if (!rawPortal.empty() && ChatHandlerFunctions::runRegexPattern(rawPortal, R"(\{(-?\d+)\, ?(-?\d+)\})", matches) == MatchResult::AnyMatches) {
+				string_t xPosition = matches[1];
+				string_t yPosition = matches[2];
+				Point pos{
+					StringUtilities::lexical_cast<coord_t>(xPosition),
+					StringUtilities::lexical_cast<coord_t>(yPosition)
+				};
+				player->setMap(mapId, MysticDoor::PortalId, pos);
+			}
+			else if (!rawPortal.empty() && ChatHandlerFunctions::runRegexPattern(rawPortal, R"(\[(\d+)\])", matches) == MatchResult::AnyMatches) {
+				string_t footholdId = matches[1];
+				foothold_id_t foothold = StringUtilities::lexical_cast<foothold_id_t>(footholdId);
+				if (!map->isValidFoothold(foothold) || map->isVerticalFoothold(foothold)) {
+					ChatHandlerFunctions::showError(player, "Invalid foothold: " + footholdId);
+					return ChatResult::HandledDisplay;
 				}
-				else if (rawPortal == "tp") {
+				Point pos = map->getPositionAtFoothold(foothold);
+				player->setMap(mapId, MysticDoor::PortalId, pos);
+			}
+			else {
+				const PortalInfo * const destinationPortal = map->queryPortalName(rawPortal);
 
-				}
-				else {
-					portal = map->getPortal(rawPortal);
-				}
-
-				if (portal == nullptr) {
+				if (!rawPortal.empty() && destinationPortal == nullptr) {
 					ChatHandlerFunctions::showError(player, "Invalid portal: " + rawPortal);
 					return ChatResult::HandledDisplay;
 				}
+
+				if (rawPortal == "tp") {
+					player->setMap(mapId, destinationPortal->id, destinationPortal->pos);
+				}
+				else {
+					player->setMap(mapId, destinationPortal);
+				}
 			}
-			player->setMap(mapId, portal);
 		}
 		else {
 			ChatHandlerFunctions::showError(player, "Invalid map: " + rawMap);
@@ -209,29 +227,22 @@ auto ManagementFunctions::warp(Player *player, const chat_t &args) -> ChatResult
 			return ChatResult::HandledDisplay;
 		}
 
-		PortalInfo *destinationPortal = nullptr;
 		Map *destination = Maps::getMap(destinationMapId);
+		const PortalInfo * const destinationPortal = destination->queryPortalName(portal);
 
-		if (portalSpecified) {
-			if (portal == "sp") {
-				destinationPortal = destination->getSpawnPoint();
-			}
-			else if (portal == "tp") {
-
-			}
-			else {
-				destinationPortal = destination->getPortal(portal);
-			}
-
-			if (destinationPortal == nullptr) {
-				ChatHandlerFunctions::showError(player, "Invalid destination portal: " + (singleArgumentDestination ? rawMap : (onlySource ? optional : moreOptional)));
-				return ChatResult::HandledDisplay;
-			}
+		if (portalSpecified && destinationPortal == nullptr) {
+			ChatHandlerFunctions::showError(player, "Invalid destination portal: " + (singleArgumentDestination ? rawMap : (onlySource ? optional : moreOptional)));
+			return ChatResult::HandledDisplay;
 		}
 
-		auto warpToMap = [destinationMapId, destinationPortal](Player *target) {
+		auto warpToMap = [&](Player *target) {
 			if (target->getMapId() != destinationMapId) {
-				target->setMap(destinationMapId, destinationPortal);
+				if (portal == "tp") {
+					target->setMap(destinationMapId, destinationPortal->id, destinationPortal->pos);
+				}
+				else {
+					target->setMap(destinationMapId, destinationPortal);
+				}
 			}
 		};
 

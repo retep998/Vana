@@ -364,8 +364,12 @@ auto ChatHandlerFunctions::initialize() -> void {
 	sCommandList["questkills"] = command.addToMap();
 
 	command.command = &ManagementFunctions::map;
-	command.syntax = "<{$map string | #map ID}>";
+	command.syntax = "<{$map string | #map ID}> [{$portal name | $position string | $foothold string}]";
 	command.notes.push_back("Warps you to a desired map");
+	command.notes.push_back("Position strings have the following format: {xPosition, yPosition}");
+	command.notes.push_back("For example: {-500, 1300}");
+	command.notes.push_back("Foothold strings have the following format: [foothold ID]");
+	command.notes.push_back("For example: [150]");
 	command.notes.push_back("-------------------");
 	command.notes.push_back("Available Maps");
 	command.notes.push_back("-------------------");

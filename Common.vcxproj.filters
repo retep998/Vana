@@ -458,9 +458,6 @@
     <ClInclude Include="src\Common\StopWatch.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\WidePos.hpp">
-      <Filter>Data Structures</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\Rect.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
@@ -518,6 +515,9 @@
       <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\Point.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\WidePoint.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
   </ItemGroup>

@@ -31,13 +31,15 @@ if isGm() then
 		makeChoiceHandler("I would like my skills maxed", function()
 			skills = {
 				-- Beginner
+				{8, 1}, -- Follow the Lead
+				{12, 20}, -- Blessing of the Spirit
 				{1003, 1}, -- Legendary Spirit
+				{1007, 1}, -- Maker
 				{1004, 1}, -- Monster Rider
 				{1005, 1}, -- Echo of Hero
-				{1002, 1}, -- Nimble Feet
-				{1001, 1}, -- Recovery
-				{1000, 1}, -- Three Snails
-				{8, 1}, -- Follow the Lead
+				{1002, 3}, -- Nimble Feet
+				{1001, 3}, -- Recovery
+				{1000, 3}, -- Three Snails
 				-- Warrior (1st job)
 				{1000002, 8}, -- Endure
 				{1000000, 16}, -- Improving HP Recovery
@@ -415,6 +417,7 @@ if isGm() then
 				{10001001, 3}, -- Recovery
 				{10001002, 3}, -- Nimble Feet
 				{10001003, 1}, -- Legendary Spirit
+				{10001007, 1}, -- Legendary Spirit
 				{10001004, 1}, -- Monster Rider
 				{10001005, 1}, -- Echo of Hero
 				-- Soul Warrior 1st Job

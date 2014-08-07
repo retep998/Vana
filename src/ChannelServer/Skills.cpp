@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.hpp"
 #include "Mist.hpp"
 #include "MobHandler.hpp"
+#include "MysticDoor.hpp"
 #include "PacketReader.hpp"
 #include "PacketWrapper.hpp"
 #include "Party.hpp"
@@ -130,13 +131,34 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 		return;
 	}
 
+	if (player->getStats()->isDead()) {
+		// Possibly hacking, possibly lag
+		return;
+	}
+
 	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
+	if (skillId == Skills::Priest::MysticDoor) {
+		Point origin = reader.get<Point>();
+		MysticDoorResult result = player->getSkills()->openMysticDoor(origin, seconds_t{skill->time});
+		if (result == MysticDoorResult::Hacking) {
+			return;
+		}
+		if (result == MysticDoorResult::NoSpace || result == MysticDoorResult::NoDoorPoints) {
+			// TODO FIXME packet?
+			// There's probably some packet to indicate failure
+			return;
+		}
+	}
+
 	if (applySkillCosts(player, skillId, level) == Result::Failure) {
 		// Most likely hacking, could feasibly be lag
 		return;
 	}
 
 	switch (skillId) {
+		case Skills::Priest::MysticDoor:
+			// Prevent the default case from executing, there's no packet data left for it
+			break;
 		case Skills::Brawler::MpRecovery: {
 			health_t modHp = player->getStats()->getMaxHp() * skill->x / 100;
 			health_t healMp = modHp * skill->y / 100;
@@ -328,6 +350,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 			}
 			break;
 		}
+
 		case Skills::Beginner::EchoOfHero:
 		case Skills::Noblesse::EchoOfHero:
 		case Skills::SuperGm::Haste:

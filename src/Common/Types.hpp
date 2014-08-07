@@ -36,6 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sstream>
 #include <string>
 #include <thread>
+#include <tuple>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -105,6 +106,13 @@ enum class HackingResult {
 	NotHacking,
 };
 
+enum class MysticDoorResult {
+	Success,
+	NoDoorPoints,
+	NoSpace,
+	Hacking,
+};
+
 using std::chrono::duration_cast;
 
 // Miscellaneous utility types
@@ -130,6 +138,8 @@ template <typename TElement>
 using init_list_t = std::initializer_list<TElement>;
 template <typename TFirst, typename TSecond>
 using pair_t = std::pair<TFirst, TSecond>;
+template <typename ... TArgs>
+using tuple_t = std::tuple<TArgs...>;
 template <typename TKey, typename TElement, typename THash = std::hash<TKey>, typename TOperation = std::equal_to<TKey>>
 using hash_map_t = std::unordered_map<TKey, TElement, THash, TOperation>;
 template <typename TKey, typename THash = std::hash<TKey>, typename TOperation = std::equal_to<TKey>>

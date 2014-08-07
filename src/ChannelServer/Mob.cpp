@@ -675,23 +675,23 @@ auto Mob::useAnticipatedSkill() -> Result {
 			break;
 		}
 		case MobSkills::SendToTown: {
-			map_id_t field = map->getReturnMap();
-			PortalInfo *portal = nullptr;
-			string_t message;
 			if (auto banishInfo = ChannelServer::getInstance().getSkillDataProvider().getBanishData(getMobId())) {
-				field = banishInfo->field;
-				message = banishInfo->message;
-				if (banishInfo->portal != "" && banishInfo->portal != "sp") {
-					portal = Maps::getMap(field)->getPortal(banishInfo->portal);
-				}
+				map_id_t field = banishInfo->field;
+				string_t message = banishInfo->message;
+				const PortalInfo * const portal = Maps::getMap(field)->queryPortalName(banishInfo->portal);
+
+				auto func = [&message, &field, &portal](Player *player) {
+					if (!message.empty()) {
+						player->send(PlayerPacket::showMessage(message, PlayerPacket::NoticeTypes::Blue));
+					}
+					player->setMap(field, portal);
+				};
+				map->runFunctionPlayers(skillArea, skillLevelInfo->prop, skillLevelInfo->count, func);
 			}
-			auto func = [&message, &field, &portal](Player *player) {
-				if (message != "") {
-					player->send(PlayerPacket::showMessage(message, PlayerPacket::NoticeTypes::Blue));
-				}
-				player->setMap(field, portal);
-			};
-			map->runFunctionPlayers(skillArea, skillLevelInfo->prop, skillLevelInfo->count, func);
+			else {
+				std::cerr << "SendToTown used on an invalid mob?" << std::endl;
+				return Result::Failure;
+			}
 			break;
 		}
 		case MobSkills::PoisonMist:

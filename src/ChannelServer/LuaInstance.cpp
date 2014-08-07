@@ -42,7 +42,7 @@ auto LuaExports::createInstanceInstance(lua_State *luaVm) -> lua_return_t {
 		persistent = env.get<int32_t>(luaVm, 4);
 	}
 
-	Instance *instance = new Instance(name, 0, 0, seconds_t(time), seconds_t(persistent), showTimer);
+	Instance *instance = new Instance(name, 0, 0, seconds_t{time}, seconds_t{persistent}, showTimer);
 	ChannelServer::getInstance().getInstances().addInstance(instance);
 	instance->beginInstance();
 

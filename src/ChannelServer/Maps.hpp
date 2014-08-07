@@ -26,7 +26,7 @@ class Player;
 namespace Maps {
 	auto getMap(map_id_t mapId) -> Map *;
 	auto unloadMap(map_id_t mapId) -> void;
-	auto usePortal(Player *player, PortalInfo *portal) -> void;
+	auto usePortal(Player *player, const PortalInfo * const portal) -> void;
 	auto usePortal(Player *player, PacketReader &reader) -> void;
 	auto useScriptedPortal(Player *player, PacketReader &reader) -> void;
 	auto addPlayer(Player *player, map_id_t mapId) -> void;

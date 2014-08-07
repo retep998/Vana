@@ -19,12 +19,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.hpp"
 #include "GameConstants.hpp"
 #include "Instance.hpp"
+#include "MapPacket.hpp"
 #include "Maps.hpp"
 #include "PartyPacket.hpp"
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
 #include "PlayerObjects.hpp"
 #include "PlayerPacket.hpp"
+#include "PlayerSkills.hpp"
 #include "WorldServerConnectPacket.hpp"
 
 Party::Party(party_id_t partyId) :
@@ -58,6 +60,16 @@ auto Party::addMember(Player *player, bool first) -> void {
 	receiveHpBar(player);
 
 	if (!first) {
+		// This must be executed first in case the player has an open door already
+		// The town position will need to change upon joining
+		player->getSkills()->onJoinParty(this, player);
+
+		runFunction([&](Player *partyMember) {
+			if (partyMember != player) {
+				partyMember->getSkills()->onJoinParty(this, player);
+			}
+		});
+
 		Functors::JoinPartyUpdate func = {this, player->getName()};
 		runFunction(func);
 	}
@@ -88,11 +100,19 @@ namespace Functors {
 }
 
 auto Party::deleteMember(Player *player, bool kicked) -> void {
+	player->getSkills()->onLeaveParty(this, player, kicked);
+
 	m_members.erase(player->getId());
 	player->setParty(nullptr);
 	if (Instance *instance = getInstance()) {
 		instance->removePartyMember(getId(), player->getId());
 	}
+
+	runFunction([&](Player *partyMember) {
+		if (partyMember != player) {
+			partyMember->getSkills()->onLeaveParty(this, player, kicked);
+		}
+	});
 
 	Functors::LeavePartyUpdate func = {this, player->getId(), player->getName(), kicked};
 	func(player);
@@ -114,6 +134,11 @@ auto Party::disband() -> void {
 		instance->partyDisband(getId());
 		setInstance(nullptr);
 	}
+
+	runFunction([&](Player *partyMember) {
+		partyMember->getSkills()->onPartyDisband(this);
+	});
+
 	auto temp = m_members;
 	for (const auto &kvp : temp) {
 		if (Player *player = kvp.second) {
@@ -130,19 +155,30 @@ auto Party::silentUpdate() -> void {
 	});
 }
 
-auto Party::getMemberByIndex(uint8_t index) -> Player * {
+auto Party::getMemberByIndex(uint8_t oneBasedIndex) -> Player * {
 	Player *member = nullptr;
-	if (index <= m_members.size()) {
-		int8_t f = 0;
+	if (oneBasedIndex <= m_members.size()) {
+		uint8_t f = 0;
 		for (const auto &kvp : m_members) {
 			f++;
-			if (f == index) {
+			if (f == oneBasedIndex) {
 				member = kvp.second;
 				break;
 			}
 		}
 	}
 	return member;
+}
+
+auto Party::getZeroBasedIndexByMember(Player *player) -> int8_t {
+	int8_t index = 0;
+	for (const auto &kvp : m_members) {
+		if (kvp.second == player) {
+			return index;
+		}
+		index++;
+	}
+	return -1;
 }
 
 auto Party::runFunction(function_t<void(Player *)> func) -> void {
@@ -213,15 +249,10 @@ auto Party::isWithinLevelRange(player_level_t lowBound, player_level_t highBound
 }
 
 auto Party::warpAllMembers(map_id_t mapId, const string_t &portalName) -> void {
-	if (Maps::getMap(mapId)) {
-		PortalInfo *portal = nullptr;
-		if (portalName != "") {
-			// Optional portal parameter
-			portal = Maps::getMap(mapId)->getPortal(portalName);
-		}
-
-		runFunction([&mapId, &portal](Player *test) {
-			test->setMap(mapId, portal);
+	if (Map *destination = Maps::getMap(mapId)) {
+		const PortalInfo * const destinationPortal = destination->queryPortalName(portalName);
+		runFunction([&](Player *test) {
+			test->setMap(mapId, destinationPortal);
 		});
 	}
 }

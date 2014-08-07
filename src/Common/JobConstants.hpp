@@ -200,15 +200,14 @@ namespace Jobs {
 			AngelicBuster4 = 6512,
 		};
 	}
-	namespace JobTypes {
-		enum class Types : int8_t {
-			Adventurer = 0,
-			Cygnus = 1,
-			Legend = 2,
-			Resistance = 3,
-			Nova = 6,
-		};
-	}
+	enum class JobType : int8_t {
+		Adventurer = 0,
+		Cygnus = 1,
+		Legend = 2,
+		Resistance = 3,
+		Nova = 6,
+	};
+
 	namespace JobLines {
 		enum Lines : int8_t {
 			Beginner = 0,

@@ -101,9 +101,12 @@ auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t dropping
 				-(mod * (dropPosCounter / 2)));
 			pos.y = origin.y;
 
-			if (Maps::getMap(mapId)->getFhAtPosition(pos) == 0) {
-				// pos = Maps::getMap(mapId)->findFloor(pos); // getFhAtPosition doesn't work correctly!
+			/*
+			// getFootholdAtPosition doesn't work correctly
+			if (Maps::getMap(mapId)->getFootholdAtPosition(pos) == 0) {
+				pos = Maps::getMap(mapId)->findFloor(pos);
 			}
+			*/
 
 			if (!dropInfo.isMesos) {
 				item_id_t itemId = dropInfo.itemId;

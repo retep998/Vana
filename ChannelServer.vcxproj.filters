@@ -339,6 +339,9 @@
     <ClCompile Include="src\ChannelServer\PlayerDataProvider.cpp">
       <Filter>Inter-Server\Sync</Filter>
     </ClCompile>
+    <ClCompile Include="src\ChannelServer\MysticDoor.cpp">
+      <Filter>ChannelServer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ChannelServer\Buffs.hpp">
@@ -641,6 +644,9 @@
     </ClInclude>
     <ClInclude Include="src\ChannelServer\SmsgHeader.hpp">
       <Filter>Packets\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\MysticDoor.hpp">
+      <Filter>ChannelServer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

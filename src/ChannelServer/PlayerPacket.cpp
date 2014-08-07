@@ -71,22 +71,24 @@ PACKET_IMPL(connectData, Player *player) {
 		.add<int32_t>(0) // Unknown int32 added in .62
 		.add<uint8_t>(player->getBuddyListSize());
 
-	player->getInventory()->connectData(builder); // Inventory data
-	player->getSkills()->connectData(builder); // Skills - levels and cooldowns
-	player->getQuests()->connectData(builder); // Quests
+	player->getSkills()->connectDataForBlessing(builder);
+	player->getInventory()->connectData(builder);
+	player->getSkills()->connectData(builder);
+	player->getQuests()->connectData(builder);
 
+	// Must do significant testing on all of the following to verify
 	builder
-		.add<int32_t>(0)
-		.add<int32_t>(0);
+		.add<int16_t>(0) // I think this is the minigame record
+		.add<int16_t>(0) // I think this is the couple ring record
+		.add<int16_t>(0) // I think this is the friendship ring record
+		.add<int16_t>(0); // I think this is the marriage ring record
 
 	player->getInventory()->rockPacket(builder); // Teleport Rock/VIP Rock maps
 	player->getMonsterBook()->connectData(builder);
 
 	builder
-		.add<int16_t>(0)
-		// Party Quest data (quest needs to be added in the quests list)
-		.add<int16_t>(0) // Amount of pquests
-		// for every pquest: quest_id_t questId, string_t questdata
+		.add<int16_t>(0) 
+		.add<int16_t>(0) // Amount of pquests (or extended quests? Maybe related to Battleship?), for every quest: quest_id_t questId, string_t questdata
 		.add<int16_t>(0)
 		.add<int64_t>(TimeUtilities::getServerTime());
 	return builder;

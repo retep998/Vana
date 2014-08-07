@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerHandler.hpp"
+#include "Algorithm.hpp"
 #include "ChannelServer.hpp"
 #include "Drop.hpp"
 #include "DropHandler.hpp"
@@ -30,10 +31,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MobHandler.hpp"
 #include "MonsterBookPacket.hpp"
 #include "MovementHandler.hpp"
+#include "MysticDoor.hpp"
 #include "PacketWrapper.hpp"
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
 #include "PlayerPacket.hpp"
+#include "PlayerSkills.hpp"
 #include "PlayersPacket.hpp"
 #include "Randomizer.hpp"
 #include "PacketReader.hpp"
@@ -45,18 +48,39 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SummonHandler.hpp"
 #include "TimeUtilities.hpp"
 #include "Timer.hpp"
-#include "WidePos.hpp"
+#include "WidePoint.hpp"
 #include <functional>
 
 auto PlayerHandler::handleDoorUse(Player *player, PacketReader &reader) -> void {
-	int32_t doorId = reader.get<int32_t>();
+	player_id_t doorPlayerId = reader.get<player_id_t>();
 	bool toTown = !reader.get<bool>();
-	//Player *doorHolder = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(doorId);
-	//if (doorHolder == nullptr || (doorHolder->getParty() != player->getParty() && doorHolder != player)) {
-	//	// Hacking or lag
-	//	return;
-	//}
-	//doorHolder->getDoor()->warp(player, toTown);
+	Player *doorHolder = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(doorPlayerId);
+	if (doorHolder == nullptr || (doorHolder->getParty() != player->getParty() && doorHolder != player)) {
+		// Hacking or lag
+		return;
+	}
+	ref_ptr_t<MysticDoor> door = doorHolder->getSkills()->getMysticDoor();
+	if (door == nullptr) {
+		// Hacking or lag
+		return;
+	}
+
+	if (player->getMapId() != door->getMapId() && player->getMapId() != door->getTownId()) {
+		// Hacking
+		return;
+	}
+
+	if ((player->getMapId() == door->getTownId()) == toTown) {
+		// Hacking
+		return;
+	}
+
+	if (toTown) {
+		player->setMap(door->getTownId(), door->getPortalId(), door->getTownPos());
+	}
+	else {
+		player->setMap(door->getMapId(), MysticDoor::PortalId, door->getMapPos());
+	}
 }
 
 auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
@@ -416,10 +440,22 @@ auto PlayerHandler::handleAdminMessenger(Player *player, PacketReader &reader) -
 }
 
 auto PlayerHandler::useBombSkill(Player *player, PacketReader &reader) -> void {
+	// TODO FIXME packet
+	// Ignore this position in favor of player->getPos()?
 	WidePoint playerPos = reader.get<WidePoint>();
 	charge_time_t charge = reader.get<charge_time_t>();
 	skill_id_t skillId = reader.get<skill_id_t>();
-	// TODO FIXME find packet, send packet to third parties
+
+	if (player->getSkills()->getSkillLevel(skillId) == 0) {
+		// Hacking
+		return;
+	}
+	if (!ext::in_range_inclusive(charge, 0, 1000)) {
+		// Hacking
+		return;
+	}
+
+	player->sendMap(PlayersPacket::useBombAttack(player->getId(), charge, skillId, playerPos));
 }
 
 auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void {
@@ -514,6 +550,14 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 
 	if (player->getSkills()->hasEnergyCharge()) {
 		player->getActiveBuffs()->increaseEnergyChargeLevel(damagedTargets);
+	}
+
+	if (player->getSkills()->hasDarkSightInterruptionSkill()) {
+		skill_id_t darkSightId = player->getSkills()->getDarkSight();
+		skill_level_t darkSight = player->getActiveBuffs()->getActiveSkillLevel(darkSightId);
+		if (darkSight > 0) {
+			Skills::stopSkill(player, darkSightId);
+		}
 	}
 
 	switch (skillId) {
@@ -616,6 +660,7 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 	skill_id_t masteryId = player->getSkills()->getMastery();
 	skill_id_t skillId = attack.skillId;
 	skill_level_t level = attack.skillLevel;
+	int8_t damagedTargets = 0;
 
 	if (Skills::useAttackSkillRanged(player, skillId, attack.starPos, attack.cashStarPos, attack.starId) == Result::Failure) {
 		// Most likely hacking, could feasibly be lag
@@ -682,11 +727,26 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 				mob = nullptr;
 			}
 		}
-		if (mob != nullptr && targetTotal > 0 && mob->getHp() > 0) {
-			MobHandler::handleMobStatus(player->getId(), mob, skillId, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedHits, firstHit); // Mob status handler (freeze, stun, etc)
-			if (mob->getHp() < mob->getSelfDestructHp()) {
-				mob->explode();
+		if (targetTotal > 0) {
+			if (mob != nullptr && mob->getHp() > 0) {
+				MobHandler::handleMobStatus(player->getId(), mob, skillId, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedHits, firstHit); // Mob status handler (freeze, stun, etc)
+				if (mob->getHp() < mob->getSelfDestructHp()) {
+					mob->explode();
+				}
 			}
+			damagedTargets++;
+		}
+	}
+
+	if (player->getSkills()->hasEnergyCharge()) {
+		player->getActiveBuffs()->increaseEnergyChargeLevel(damagedTargets);
+	}
+
+	if (player->getSkills()->hasDarkSightInterruptionSkill()) {
+		skill_id_t darkSightId = player->getSkills()->getDarkSight();
+		skill_level_t darkSight = player->getActiveBuffs()->getActiveSkillLevel(darkSightId);
+		if (darkSight > 0) {
+			Skills::stopSkill(player, darkSightId);
 		}
 	}
 

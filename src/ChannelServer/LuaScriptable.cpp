@@ -1327,20 +1327,23 @@ auto LuaExports::setLuk(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::setMap(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	PortalInfo *portal = nullptr;
 
 	map_id_t mapId = env.get<map_id_t>(luaVm, 1);
-
 	if (env.is(luaVm, 2, LuaType::String)) {
 		// Optional portal parameter
 		string_t to = env.get<string_t>(luaVm, 2);
-		portal = Maps::getMap(mapId)->getPortal(to);
-	}
-
-	if (Maps::getMap(mapId)) {
-		getPlayer(luaVm, env)->setMap(mapId, portal);
+		Map *map = Maps::getMap(mapId);
+		const PortalInfo * const destinationPortal = map->queryPortalName(to);
+		getPlayer(luaVm, env)->setMap(mapId, destinationPortal);
 		env.set<bool>(luaVm, "player_map_changed", true);
 	}
+	else {
+		if (Maps::getMap(mapId) != nullptr) {
+			getPlayer(luaVm, env)->setMap(mapId);
+			env.set<bool>(luaVm, "player_map_changed", true);
+		}
+	}
+
 
 	return 0;
 }
@@ -1555,8 +1558,7 @@ auto LuaExports::setPortalState(lua_State *luaVm) -> lua_return_t {
 	bool enabled = env.get<bool>(luaVm, 3);
 
 	Map *map = Maps::getMap(mapId);
-	PortalInfo *portal = map->getPortal(portalName);
-	portal->disabled = !enabled;
+	map->setPortalState(portalName, enabled);
 	return 0;
 }
 
@@ -2108,31 +2110,35 @@ auto LuaExports::markForDelete(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::moveAllPlayers(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	PortalInfo *portal = nullptr;
 
 	map_id_t mapId = env.get<map_id_t>(luaVm, 1);
 	if (env.is(luaVm, 2, LuaType::String)) {
 		// Optional portal parameter
 		string_t to = env.get<string_t>(luaVm, 2);
-		portal = Maps::getMap(mapId)->getPortal(to);
+		Map *map = Maps::getMap(mapId);
+		const PortalInfo * const destinationPortal = map->queryPortalName(to);
+		getInstance(luaVm, env)->moveAllPlayers(mapId, true, destinationPortal);
 	}
-
-	getInstance(luaVm, env)->moveAllPlayers(mapId, true, portal);
+	else {
+		getInstance(luaVm, env)->moveAllPlayers(mapId, true);
+	}
 	return 0;
 }
 
 auto LuaExports::passPlayersBetweenInstances(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	PortalInfo *portal = nullptr;
 
 	map_id_t mapId = env.get<map_id_t>(luaVm, 1);
 	if (env.is(luaVm, 2, LuaType::String)) {
 		// Optional portal parameter
 		string_t to = env.get<string_t>(luaVm, 2);
-		portal = Maps::getMap(mapId)->getPortal(to);
+		Map *map = Maps::getMap(mapId);
+		const PortalInfo * const destinationPortal = map->queryPortalName(to);
+		getInstance(luaVm, env)->moveAllPlayers(mapId, false, destinationPortal);
 	}
-
-	getInstance(luaVm, env)->moveAllPlayers(mapId, false, portal);
+	else {
+		getInstance(luaVm, env)->moveAllPlayers(mapId, false);
+	}
 	return 0;
 }
 
