@@ -19,11 +19,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.hpp"
 #include "GameConstants.hpp"
 #include "InterHelper.hpp"
+#include "MysticDoor.hpp"
 #include "Party.hpp"
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
+#include "PlayerSkills.hpp"
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
+#include "WidePoint.hpp"
 
 namespace PartyPacket {
 
@@ -35,15 +38,60 @@ PACKET_IMPL(error, int8_t error) {
 	return builder;
 }
 
-PACKET_IMPL(createParty, Party *party) {
+PACKET_IMPL(inviteError, int8_t error, const string_t &player) {
+	PacketBuilder builder;
+	builder
+		.add<int16_t>(SMSG_PARTY)
+		.add<int8_t>(error)
+		.add<string_t>(player);
+	return builder;
+}
+
+PACKET_IMPL(customError, const string_t &error) {
+	PacketBuilder builder;
+	builder
+		.add<int16_t>(SMSG_PARTY)
+		.add<int8_t>(0x24);
+
+	if (error.empty()) {
+		builder
+			.add<bool>(true)
+			.add<string_t>(error);
+	}
+	else {
+		builder.add<bool>(false);
+	}
+		
+	return builder;
+}
+
+PACKET_IMPL(createParty, Party *party, Player *leader) {
 	PacketBuilder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
 		.add<int8_t>(0x08)
-		.add<party_id_t>(party->getId())
-		.add<map_id_t>(Maps::NoMap)
-		.add<map_id_t>(Maps::NoMap)
-		.add<int32_t>(0);
+		.add<party_id_t>(party->getId());
+
+	if (ref_ptr_t<MysticDoor> door = leader->getSkills()->getMysticDoor()) {
+		if (door->getMapId() == leader->getMapId()) {
+			builder
+				.add<map_id_t>(door->getMapId())
+				.add<map_id_t>(door->getTownId())
+				.add<Point>(door->getMapPos());
+		}
+		else {
+			builder
+				.add<map_id_t>(door->getTownId())
+				.add<map_id_t>(door->getMapId())
+				.add<Point>(door->getTownPos());
+		}
+	}
+	else {
+		builder
+			.add<map_id_t>(Maps::NoMap)
+			.add<map_id_t>(Maps::NoMap)
+			.add<Point>(Point{});
+	}
 	return builder;
 }
 
@@ -65,7 +113,7 @@ PACKET_IMPL(leaveParty, map_id_t targetMapId, Party *party, player_id_t playerId
 		.add<int8_t>(0x0C)
 		.add<party_id_t>(party->getId())
 		.add<player_id_t>(playerId)
-		.add<bool>(true) // Not disbanding
+		.add<bool>(true) // Is a regular leave (aka not disbanding)
 		.add<bool>(kicked)
 		.add<string_t>(name)
 		.addBuffer(updateParty(targetMapId, party));
@@ -90,7 +138,7 @@ PACKET_IMPL(disbandParty, Party *party) {
 		.add<int8_t>(0x0C)
 		.add<party_id_t>(party->getId())
 		.add<player_id_t>(party->getLeaderId())
-		.add<bool>(false) // Disbanding
+		.add<bool>(false) // Is not a regular leave (aka disbanding)
 		.add<party_id_t>(party->getId());
 	return builder;
 }
@@ -187,21 +235,56 @@ PACKET_IMPL(updateParty, map_id_t targetMapId, Party *party) {
 		builder.add<map_id_t>(-2);
 	}
 
-	// Add some portal information (Door?)
+	// Mystic Door information
 	for (const auto &kvp : members) {
-		builder
-			.add<map_id_t>(Maps::NoMap)
-			.add<map_id_t>(Maps::NoMap)
-			.add<int32_t>(-1)
-			.add<int32_t>(-1);
+		if (kvp.second == nullptr) {
+			builder
+				.add<map_id_t>(Maps::NoMap)
+				.add<map_id_t>(Maps::NoMap)
+				.add<WidePoint>(WidePoint{-1, -1});
+		}
+		else if (ref_ptr_t<MysticDoor> door = kvp.second->getSkills()->getMysticDoor()) {
+			builder
+				.add<map_id_t>(door->getTownId())
+				.add<map_id_t>(door->getMapId())
+				.add<WidePoint>(WidePoint{door->getMapPos()});
+		}
+		else {
+			builder
+				.add<map_id_t>(Maps::NoMap)
+				.add<map_id_t>(Maps::NoMap)
+				.add<WidePoint>(WidePoint{-1, -1});
+		}
 	}
 	for (i = 0; i < offset; i++) {
 		builder
 			.add<map_id_t>(Maps::NoMap)
 			.add<map_id_t>(Maps::NoMap)
-			.add<int32_t>(-1)
-			.add<int32_t>(-1);
+			.add<WidePoint>(WidePoint{-1, -1});
 	}
+	return builder;
+}
+
+PACKET_IMPL(updateDoor, uint8_t zeroBasedPlayerIndex, ref_ptr_t<MysticDoor> door) {
+	PacketBuilder builder;
+	builder
+		.add<int16_t>(SMSG_PARTY)
+		.add<int8_t>(0x25)
+		.add<uint8_t>(zeroBasedPlayerIndex);
+
+	if (door == nullptr) {
+		builder
+			.add<map_id_t>(Maps::NoMap)
+			.add<map_id_t>(Maps::NoMap)
+			.add<WidePoint>(WidePoint{-1, -1});
+	}
+	else {
+		builder
+			.add<map_id_t>(door->getTownId())
+			.add<map_id_t>(door->getMapId())
+			.add<WidePoint>(WidePoint{door->getMapPos()});
+	}
+
 	return builder;
 }
 

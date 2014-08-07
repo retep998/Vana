@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "IdPool.hpp"
+#include "MapConstants.hpp"
 #include "MapDataProvider.hpp"
 #include "MapObjects.hpp"
 #include "Mob.hpp"
@@ -41,6 +42,7 @@ class Mob;
 class PacketBuilder;
 class Player;
 class Reactor;
+enum class MysticDoorResult;
 struct SplitPacketBuilder;
 
 namespace SpawnTypes {
@@ -50,6 +52,26 @@ namespace SpawnTypes {
 		All = Mob | Reactor
 	};
 }
+
+struct MysticDoorOpenResult {
+	MysticDoorOpenResult(MysticDoorResult result) :
+		result{result},
+		townId{Maps::NoMap},
+		portal{nullptr}
+	{
+	}
+
+	MysticDoorOpenResult(map_id_t townId, const PortalInfo * const portal) :
+		result{MysticDoorResult::Success},
+		townId{townId},
+		portal{portal}
+	{
+	}
+
+	MysticDoorResult result;
+	map_id_t townId;
+	const PortalInfo * const portal;
+};
 
 class Map : public TimerContainerHolder {
 	NONCOPYABLE(Map);
@@ -79,17 +101,26 @@ public:
 
 	// Footholds
 	auto findFloor(const Point &pos, Point &floorPos, coord_t yMod = 0) -> SearchResult;
-	auto getFhAtPosition(const Point &pos) -> foothold_id_t;
+	auto getFootholdAtPosition(const Point &pos) -> foothold_id_t;
+	auto isValidFoothold(foothold_id_t id) -> bool;
+	auto isVerticalFoothold(foothold_id_t id) -> bool;
+	auto getPositionAtFoothold(foothold_id_t id) -> Point;
 
 	// Seats
 	auto seatOccupied(seat_id_t id) -> bool;
 	auto playerSeated(seat_id_t id, Player *player) -> void;
 
 	// Portals
-	auto getPortal(const string_t &name) -> PortalInfo *;
-	auto getSpawnPoint(portal_id_t portalId = -1) -> PortalInfo *;
-	auto getNearestSpawnPoint(const Point &pos) -> PortalInfo *;
+	auto getPortal(const string_t &name) const -> const PortalInfo * const;
+	auto getSpawnPoint(portal_id_t portalId = -1) const -> const PortalInfo * const;
+	auto getNearestSpawnPoint(const Point &pos) const -> const PortalInfo * const;
+	auto queryPortalName(const string_t &name, Player *player = nullptr) const -> const PortalInfo * const;
+	auto setPortalState(const string_t &name, bool enabled) -> void;
 	auto getPortalNames() const -> vector_t<string_t>;
+	auto getTownMysticDoorPortal(Player *player) const -> MysticDoorOpenResult;
+	auto getTownMysticDoorPortal(Player *player, uint8_t zeroBasedPartyIndex) const -> MysticDoorOpenResult;
+	auto getMysticDoorPortal(Player *player) const -> MysticDoorOpenResult;
+	auto getMysticDoorPortal(Player *player, uint8_t zeroBasedPartyIndex) const -> MysticDoorOpenResult;
 
 	// Players
 	auto addPlayer(Player *player) -> void;
@@ -223,6 +254,7 @@ private:
 	ord_map_t<seat_id_t, SeatInfo> m_seats;
 	hash_map_t<string_t, PortalInfo> m_portals;
 	hash_map_t<portal_id_t, PortalInfo> m_spawnPoints;
+	vector_t<PortalInfo> m_doorPoints;
 	hash_map_t<string_t, Point> m_reactorPositions;
 
 	// Shorter-lived objects

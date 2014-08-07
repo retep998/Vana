@@ -26,6 +26,7 @@ enum class TimerType : uint32_t {
 	MapleTvTimer,
 	MapTimer,
 	MistTimer,
+	DoorTimer,
 	MobHealTimer,
 	MobRemoveTimer,
 	MobStatusTimer,

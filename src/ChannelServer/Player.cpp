@@ -40,6 +40,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.hpp"
 #include "MobHandler.hpp"
 #include "MonsterBookPacket.hpp"
+#include "MysticDoor.hpp"
 #include "Npc.hpp"
 #include "NpcHandler.hpp"
 #include "PacketBuilder.hpp"
@@ -94,6 +95,9 @@ Player::~Player() {
 		if (Party *party = getParty()) {
 			isLeader = party->isLeader(getId());
 		}
+
+		getSkills()->onDisconnect();
+
 		if (Instance *instance = getInstance()) {
 			instance->removePlayer(getId());
 			instance->playerDisconnect(getId(), isLeader);
@@ -104,7 +108,7 @@ Player::~Player() {
 		// "Bug" in global, would be fixed here:
 		// When disconnecting and dead, you actually go back to forced return map before the death return map
 		// (that means that it's parsed while logging in, not while logging out)
-		if (PortalInfo *closest = curMap->getNearestSpawnPoint(getPos())) {
+		if (const PortalInfo * const closest = curMap->getNearestSpawnPoint(getPos())) {
 			m_mapPos = closest->id;
 		}
 
@@ -424,37 +428,18 @@ auto Player::getMap() const -> Map * {
 	return Maps::getMap(getMapId());
 }
 
-auto Player::setMap(map_id_t mapId, PortalInfo *portal, bool instance) -> void {
-	if (!Maps::getMap(mapId)) {
-		send(MapPacket::portalBlocked());
-		return;
-	}
+auto Player::internalSetMap(map_id_t mapId, portal_id_t portalId, const Point &pos, bool fromPosition) -> void {
 	Map *oldMap = Maps::getMap(m_map);
 	Map *newMap = Maps::getMap(mapId);
-
-	if (portal == nullptr) {
-		portal = newMap->getSpawnPoint();
-	}
-
-	if (!instance) {
-		// Only trigger the message for natural map changes not caused by moveAllPlayers, etc.
-		bool isPartyLeader = getParty() != nullptr && getParty()->isLeader(getId());
-		if (Instance *i = oldMap->getInstance()) {
-			i->playerChangeMap(getId(), mapId, m_map, isPartyLeader);
-		}
-		if (Instance *i = newMap->getInstance()) {
-			i->playerChangeMap(getId(), mapId, m_map, isPartyLeader);
-		}
-	}
 
 	oldMap->removePlayer(this);
 	if (m_map != mapId) {
 		m_lastMap = m_map;
 	}
 	m_map = mapId;
-	m_mapPos = portal->id;
+	m_mapPos = portalId;
 	m_usedPortals.clear();
-	setPos(Point{portal->pos.x, portal->pos.y - 40});
+	setPos(pos);
 	setStance(0);
 	setFoothold(0);
 	setFallCounter(0);
@@ -470,7 +455,7 @@ auto Player::setMap(map_id_t mapId, PortalInfo *portal, bool instance) -> void {
 
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = getPets()->getSummoned(i)) {
-			pet->setPos(portal->pos);
+			pet->setPos(pos);
 		}
 	}
 
@@ -483,11 +468,42 @@ auto Player::setMap(map_id_t mapId, PortalInfo *portal, bool instance) -> void {
 		setChalkboard("");
 	}
 
-	send(MapPacket::changeMap(this));
+	send(MapPacket::changeMap(this, fromPosition, getPos()));
 	Maps::addPlayer(this, mapId);
 
 	ChannelServer::getInstance().getPlayerDataProvider().updatePlayerMap(this);
 }
+
+auto Player::setMap(map_id_t mapId, portal_id_t portalId, const Point &pos) -> void {
+	internalSetMap(mapId, portalId, pos, true);
+}
+
+auto Player::setMap(map_id_t mapId, const PortalInfo * const portal, bool instance) -> void {
+	if (!Maps::getMap(mapId)) {
+		send(MapPacket::portalBlocked());
+		return;
+	}
+	Map *oldMap = Maps::getMap(m_map);
+	Map *newMap = Maps::getMap(mapId);
+
+	const PortalInfo * const actualPortal = portal != nullptr ?
+		portal :
+		newMap->getSpawnPoint();
+
+	if (!instance) {
+		// Only trigger the message for natural map changes not caused by moveAllPlayers, etc.
+		bool isPartyLeader = getParty() != nullptr && getParty()->isLeader(getId());
+		if (Instance *i = oldMap->getInstance()) {
+			i->playerChangeMap(getId(), mapId, m_map, isPartyLeader);
+		}
+		if (Instance *i = newMap->getInstance()) {
+			i->playerChangeMap(getId(), mapId, m_map, isPartyLeader);
+		}
+	}
+
+	internalSetMap(mapId, actualPortal->id, Point{actualPortal->pos.x, actualPortal->pos.y - 40}, false);
+}
+
 
 auto Player::getMedalName() -> string_t {
 	out_stream_t ret;

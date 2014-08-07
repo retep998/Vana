@@ -43,6 +43,9 @@ auto Buffs::getValue(int8_t value, skill_id_t skillId, skill_level_t level) -> i
 		case SkillProp: rValue = skill->prop; break;
 		case SkillMorph: rValue = skill->morph; break;
 		case SkillLv: rValue = level; break;
+		case SkillMobCount: rValue = skill->mobCount; break;
+		case SkillRange: rValue = skill->range; break;
+		case SkillDamage: rValue = skill->damage; break;
 	}
 	return rValue;
 }
@@ -98,7 +101,7 @@ auto Buffs::parseBuffInfo(Player *player, skill_id_t skillId, skill_level_t leve
 				case Skills::Marksman::SharpEyes:
 				case Skills::Hermit::ShadowPartner:
 				case Skills::NightWalker::ShadowPartner:
-					value = skill->x * 256 + skill->y;
+					value = (skill->x << 8) | skill->y;
 					break;
 				case Skills::Crusader::ComboAttack:
 				case Skills::DawnWarrior::ComboAttack:
@@ -113,8 +116,9 @@ auto Buffs::parseBuffInfo(Player *player, skill_id_t skillId, skill_level_t leve
 				case Skills::ThunderBreaker::Transformation:
 					value = getValue(val, skillId, level);
 					if (val == SkillMorph) {
-						// Females are +100
-						value += player->getGender() * 100;
+						value += player->getGender() == Gender::Male ?
+							0 :
+							100;
 					}
 					break;
 				case Skills::Marauder::EnergyCharge:
@@ -295,11 +299,11 @@ auto Buffs::addBuff(Player *player, skill_id_t skillId, skill_level_t level, int
 
 	skill_id_t mountId = parseMountInfo(player, skillId, level);
 	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
-	seconds_t time(skill->time);
+	seconds_t time{skill->time};
 
 	switch (skillId) {
 		case Skills::DragonKnight::DragonRoar:
-			time = seconds_t(skill->y);
+			time = seconds_t{skill->y};
 			break;
 		case Skills::Beginner::MonsterRider:
 		case Skills::Noblesse::MonsterRider:
@@ -311,7 +315,7 @@ auto Buffs::addBuff(Player *player, skill_id_t skillId, skill_level_t level, int
 			player->getActiveBuffs()->setMountInfo(skillId, mountId);
 			break;
 		case Skills::SuperGm::Hide:
-			time = seconds_t(2100000); // Make sure that it doesn't end any time soon
+			time = seconds_t{2100000}; // Make sure that it doesn't end any time soon
 			break;
 		case Skills::Spearman::HyperBody:
 		case Skills::SuperGm::HyperBody:

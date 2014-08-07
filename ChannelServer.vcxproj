@@ -100,6 +100,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\ChannelServer\CustomFunctions.cpp" />
+    <ClCompile Include="src\ChannelServer\MysticDoor.cpp" />
     <ClCompile Include="src\ChannelServer\EffectPacket.cpp" />
     <ClCompile Include="src\ChannelServer\InfoFunctions.cpp" />
     <ClCompile Include="src\ChannelServer\InventoryPacketHelper.cpp" />
@@ -208,6 +209,7 @@
     <ClInclude Include="src\ChannelServer\ChannelServer.hpp" />
     <ClInclude Include="src\ChannelServer\CmsgHeader.hpp" />
     <ClInclude Include="src\ChannelServer\CustomFunctions.hpp" />
+    <ClInclude Include="src\ChannelServer\MysticDoor.hpp" />
     <ClInclude Include="src\ChannelServer\Drop.hpp" />
     <ClInclude Include="src\ChannelServer\EffectPacket.hpp" />
     <ClInclude Include="src\ChannelServer\Fame.hpp" />

@@ -95,7 +95,7 @@ auto Instance::removeAllPlayers() -> void {
 	}
 }
 
-auto Instance::moveAllPlayers(map_id_t mapId, bool respectInstances, PortalInfo *portal) -> void {
+auto Instance::moveAllPlayers(map_id_t mapId, bool respectInstances, const PortalInfo * const portal) -> void {
 	if (!Maps::getMap(mapId)) {
 		return;
 	}

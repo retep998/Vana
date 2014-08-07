@@ -40,7 +40,7 @@ auto Maps::unloadMap(map_id_t mapId) -> void {
 	ChannelServer::getInstance().unloadMap(mapId);
 }
 
-auto Maps::usePortal(Player *player, PortalInfo *portal) -> void {
+auto Maps::usePortal(Player *player, const PortalInfo * const portal) -> void {
 	if (portal->disabled) {
 		player->send(MapPacket::portalBlocked());
 		player->send(PlayerPacket::showMessage("The portal is closed for now.", PlayerPacket::NoticeTypes::Red));
@@ -57,7 +57,7 @@ auto Maps::usePortal(Player *player, PortalInfo *portal) -> void {
 		string_t filename = ChannelServer::getInstance().getScriptDataProvider().buildScriptPath(ScriptTypes::Portal, portal->script);
 
 		if (FileUtilities::fileExists(filename)) {
-			auto luaEnv = LuaPortal(filename, player->getId(), portal);
+			auto luaEnv = LuaPortal(filename, player->getId(), player->getMapId(), portal);
 
 			if (!luaEnv.playerMapChanged()) {
 				player->send(MapPacket::portalBlocked());
@@ -67,13 +67,10 @@ auto Maps::usePortal(Player *player, PortalInfo *portal) -> void {
 			}
 		}
 		else {
-			string_t message;
-			if (player->isGm()) {
-				message = "Portal '" + portal->script + "' is currently unavailable.";
-			}
-			else {
-				message = "This portal is currently unavailable.";
-			}
+			string_t message = player->isGm() ?
+				"Portal '" + portal->script + "' is currently unavailable." :
+				"This portal is currently unavailable.";
+
 			player->send(PlayerPacket::showMessage(message, PlayerPacket::NoticeTypes::Red));
 			player->send(MapPacket::portalBlocked());
 		}
@@ -86,7 +83,7 @@ auto Maps::usePortal(Player *player, PortalInfo *portal) -> void {
 			player->send(MapPacket::portalBlocked());
 			return;
 		}
-		PortalInfo *nextPortal = toMap->getPortal(portal->toName);
+		const PortalInfo * const nextPortal = toMap->getPortal(portal->toName);
 		player->setMap(portal->toMap, nextPortal);
 	}
 }
@@ -116,7 +113,7 @@ auto Maps::usePortal(Player *player, PacketReader &reader) -> void {
 			if (toMap == nullptr) {
 				return;
 			}
-			PortalInfo *portal = toMap->getPortal(portalName);
+			const PortalInfo * const portal = toMap->getPortal(portalName);
 			if (portal == nullptr) {
 				return;
 			}
@@ -125,7 +122,7 @@ auto Maps::usePortal(Player *player, PacketReader &reader) -> void {
 		}
 		default: {
 			// GM Map change (command "/m")
-			if (player->isGm() && getMap(opcode)) {
+			if (player->isGm() && getMap(opcode) != nullptr) {
 				player->setMap(opcode);
 			}
 		}
@@ -136,7 +133,7 @@ auto Maps::useScriptedPortal(Player *player, PacketReader &reader) -> void {
 	reader.skipBytes(1);
 	string_t portalName = reader.get<string_t>();
 
-	PortalInfo *portal = player->getMap()->getPortal(portalName);
+	const PortalInfo * const portal = player->getMap()->getPortal(portalName);
 	if (portal == nullptr) {
 		return;
 	}

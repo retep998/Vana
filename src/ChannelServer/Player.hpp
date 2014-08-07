@@ -63,7 +63,8 @@ public:
 	auto setMapChair(seat_id_t s) -> void { m_mapChair = s; }
 	auto setFace(face_id_t id) -> void;
 	auto setHair(hair_id_t id) -> void;
-	auto setMap(map_id_t mapId, PortalInfo *portal = nullptr, bool instance = false) -> void;
+	auto setMap(map_id_t mapId, const PortalInfo * const portal = nullptr, bool instance = false) -> void;
+	auto setMap(map_id_t mapId, portal_id_t portalId, const Point &pos) -> void;
 	auto setBuddyListSize(uint8_t size) -> void;
 	auto setConnectionTime(int64_t newtime) -> void { m_onlineTime = newtime; }
 	auto setTradeId(trade_id_t id) -> void { m_tradeId = id; }
@@ -156,6 +157,7 @@ private:
 	auto changeKey(PacketReader &reader) -> void;
 	auto changeSkillMacros(PacketReader &reader) -> void;
 	auto saveStats() -> void;
+	auto internalSetMap(map_id_t mapId, portal_id_t portalId, const Point &pos, bool fromPosition) -> void;
 
 	bool m_tradeState = false;
 	bool m_saveOnDc = true;

@@ -254,7 +254,7 @@
     <ClInclude Include="src\Common\VanaMain.hpp" />
     <ClInclude Include="src\Common\Variables.hpp" />
     <ClInclude Include="src\Common\DatabaseUpdater.hpp" />
-    <ClInclude Include="src\Common\WidePos.hpp" />
+    <ClInclude Include="src\Common\WidePoint.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

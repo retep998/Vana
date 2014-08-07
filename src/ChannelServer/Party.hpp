@@ -61,7 +61,8 @@ public:
 	auto checkFootholds(int8_t memberCount, const vector_t<vector_t<foothold_id_t>> &footholds) -> Result;
 	auto verifyFootholds(const vector_t<vector_t<foothold_id_t>> &footholds) -> Result;
 	auto getMemberCountOnMap(map_id_t mapId) -> int8_t;
-	auto getMemberByIndex(uint8_t index) -> Player *;
+	auto getMemberByIndex(uint8_t oneBasedIndex) -> Player *;
+	auto getZeroBasedIndexByMember(Player *player) -> int8_t;
 	auto getAllPlayerIds() -> vector_t<player_id_t>;
 	auto getPartyMembers(map_id_t mapId = -1) -> vector_t<Player *>;
 

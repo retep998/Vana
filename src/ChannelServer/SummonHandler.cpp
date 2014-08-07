@@ -100,9 +100,12 @@ auto SummonHandler::useSummon(Player *player, skill_id_t skillId, skill_level_t 
 	foothold_id_t foothold = player->getFoothold();
 	bool puppet = GameLogicUtilities::isPuppet(skillId);
 	if (puppet) {
+		// TODO FIXME formula
+		// TODO FIXME skill
+		// This is not kosher
 		playerPosition.x += 200 * (player->isFacingRight() ? 1 : -1);
 		player->getMap()->findFloor(playerPosition, summonPosition, -5);
-		foothold = player->getMap()->getFhAtPosition(summonPosition);
+		foothold = player->getMap()->getFootholdAtPosition(summonPosition);
 	}
 	else {
 		summonPosition = playerPosition;
@@ -111,7 +114,9 @@ auto SummonHandler::useSummon(Player *player, skill_id_t skillId, skill_level_t 
 	if (summon->getMovementType() == Summon::Static) {
 		summon->resetMovement(foothold, summon->getPos(), summon->getStance());
 	}
-	player->getSummons()->addSummon(summon, seconds_t(ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level)->time));
+
+	auto time = seconds_t{ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level)->time};
+	player->getSummons()->addSummon(summon, time);
 	player->sendMap(SummonsPacket::showSummon(player->getId(), summon, false));
 }
 

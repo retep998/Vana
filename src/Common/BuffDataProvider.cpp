@@ -288,6 +288,7 @@ auto BuffDataProvider::loadData() -> void {
 	buff.value = SkillX;
 	player.buff = buff;
 	m_skillInfo[Skills::Beginner::EchoOfHero].player.push_back(player);
+	m_skillInfo[Skills::Noblesse::EchoOfHero].player.push_back(player);
 
 	// Power Stance
 	buff.type = 0x10;
@@ -335,6 +336,34 @@ auto BuffDataProvider::loadData() -> void {
 	buff.value = SkillX;
 	player.buff = buff;
 	m_skillInfo[Skills::Bishop::HolyShield].player.push_back(player);
+
+	// Spark
+	buff.type = 0x20;
+	buff.byte = Byte8;
+	buff.value = SkillX;
+	player.buff = buff;
+	m_skillInfo[Skills::ThunderBreaker::Spark].player.push_back(player);
+
+	// Dawn Warrior Final Attack
+	buff.type = 0x80;
+	buff.byte = Byte8;
+	buff.value = SkillNone;
+	player.buff = buff;
+	m_skillInfo[Skills::DawnWarrior::FinalAttack].player.push_back(player);
+
+	// Wind Walker Final Attack
+	buff.type = 0x01;
+	buff.byte = Byte9;
+	buff.value = SkillNone;
+	player.buff = buff;
+	m_skillInfo[Skills::WindArcher::FinalAttack].player.push_back(player);
+
+	// Elemental Reset
+	buff.type = 0x02;
+	buff.byte = Byte9;
+	buff.value = SkillX;
+	player.buff = buff;
+	m_skillInfo[Skills::BlazeWizard::ElementalReset].player.push_back(player);
 	// End regular buffs
 
 	// Begin map buffs
@@ -421,6 +450,15 @@ auto BuffDataProvider::loadData() -> void {
 	m_skillInfo[Skills::WindArcher::WindWalk].player.push_back(player);
 	map.buff = buff;
 	map.useVal = true;
+	m_skillInfo[Skills::WindArcher::WindWalk].map.push_back(map);
+	buff.type = 0x04;
+	buff.byte = Byte9;
+	buff.value = SkillNone;
+	player.buff = buff;
+	player.hasMapVal = true;
+	m_skillInfo[Skills::WindArcher::WindWalk].player.push_back(player);
+	map.buff = buff;
+	map.useVal = false;
 	m_skillInfo[Skills::WindArcher::WindWalk].map.push_back(map);
 
 	// Dash
@@ -548,7 +586,7 @@ auto BuffDataProvider::loadData() -> void {
 	map.useVal = true;
 	m_skillInfo[Skills::Brawler::OakBarrel].map.push_back(map);
 
-	// Transformation, Super Transformation
+	// Transformation, Super Transformation, Eagle Eye
 	buff.type = 0x02;
 	buff.byte = Byte1;
 	buff.value = SkillWdef;

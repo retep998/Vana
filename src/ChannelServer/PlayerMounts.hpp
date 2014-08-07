@@ -39,6 +39,8 @@ public:
 	auto load() -> void;
 
 	auto mountInfoPacket(PacketBuilder &packet) -> void;
+	auto mountInfoMapSpawnPacket(PacketBuilder &packet) -> void;
+
 	auto getCurrentMount() const -> item_id_t { return m_currentMount; }
 	auto getCurrentExp() -> int16_t;
 	auto getCurrentLevel() -> int8_t;

@@ -61,7 +61,7 @@ auto PetHandler::handleSummon(Player *player, PacketReader &reader) -> void {
 	tick_count_t ticks = reader.get<tick_count_t>();
 	inventory_slot_t slot = reader.get<inventory_slot_t>();
 	bool master = reader.get<int8_t>() == 1; // Might possibly fit under getBool criteria
-	bool multipet = player->getSkills()->getSkillLevel(Skills::Beginner::FollowTheLead) > 0;
+	bool multipet = player->getSkills()->hasFollowTheLead();
 	Pet *pet = player->getPets()->getPet(player->getInventory()->getItem(Inventories::CashInventory, slot)->getPetId());
 
 	if (pet == nullptr) {

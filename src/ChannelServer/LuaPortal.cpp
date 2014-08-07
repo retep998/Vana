@@ -21,15 +21,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.hpp"
 #include "Player.hpp"
 
-hash_map_t<player_id_t, PortalInfo *> LuaExports::portals;
-
-LuaPortal::LuaPortal(const string_t &filename, player_id_t playerId, PortalInfo *portal) :
+LuaPortal::LuaPortal(const string_t &filename, player_id_t playerId, map_id_t mapId, const PortalInfo * const portal) :
 	LuaScriptable(filename, playerId)
 {
-	LuaExports::portals[playerId] = portal;
+	set<portal_id_t>("system_portal_id", portal->id);
+	set<string_t>("system_portal_name", portal->name);
+	set<map_id_t>("system_map_id", mapId);
 
 	// Portal
-	expose("getPortalName", &LuaExports::getPortalName);
 	expose("instantWarp", &LuaExports::instantWarp);
 	expose("playPortalSe", &LuaExports::playPortalSe);
 	expose("portalFailed", &LuaExports::portalFailed);
@@ -49,18 +48,7 @@ auto LuaPortal::portalFailed() -> bool {
 	return exists("player_portal_failed");
 }
 
-auto LuaExports::getPortal(lua_State *luaVm) -> PortalInfo * {
-	auto &env = getEnvironment(luaVm);
-	return portals[getPlayer(luaVm, env)->getId()];
-}
-
 // Portal
-auto LuaExports::getPortalName(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	env.push<string_t>(luaVm, getPortal(luaVm)->name);
-	return 1;
-}
-
 auto LuaExports::instantWarp(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	Player *player = getPlayer(luaVm, env);

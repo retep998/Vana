@@ -55,7 +55,7 @@ public:
 	auto removePlayer(Player *player) -> void;
 	auto removePlayer(player_id_t id) -> void;
 	auto removeAllPlayers() -> void;
-	auto moveAllPlayers(map_id_t mapId, bool respectInstances, PortalInfo *portal = nullptr) -> void;
+	auto moveAllPlayers(map_id_t mapId, bool respectInstances, const PortalInfo * const portal = nullptr) -> void;
 	auto instanceHasPlayers() const -> bool;
 	auto getPlayerNum() const -> size_t { return m_players.size(); }
 

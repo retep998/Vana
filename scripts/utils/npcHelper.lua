@@ -152,12 +152,12 @@ function questExpIcon(experience)
 end
 
 function questMesosIcon(mesos)
-	return itemIcon(4031138) .. " " .. mesos .. " mesos";
+	return itemIcon(item_mesos) .. " " .. mesos .. " mesos";
 end
 
-localeSupportsGenderedText = false;
+local locale_supports_gendered_text = false;
 function genderedText(female, male)
-	if localeSupportsGenderedText then
+	if locale_supports_gendered_text then
 		return "#G" .. male .. ":" .. female .. "#";
 	end
 	if getGender() == gender_male then

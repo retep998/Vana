@@ -17,10 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-// Technically the packet for global sets the length, but your Maple locale may not be the same
-// Search for IV_PATCH_LOCATION in order to find the spot where the connect packet is created if this is the case for your locale
-#define IV_PATCH_LOCATION 0x0e
-
 #define SMSG_CHANNEL_CHANGE 0x10
 #define SMSG_INVENTORY_OPERATION 0x1a
 #define SMSG_INVENTORY_SLOT_UPDATE 0x1b
@@ -36,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_NOTE 0x26 // The real note system
 #define SMSG_TELEPORT_ROCK 0x27 // Teleport Rock, VIP Teleport Rock
 #define SMSG_ANTI_MACRO 0x28
-#define SMSG_REPORT_MORE 0x2a // More report shit >_>
+#define SMSG_REPORT_MORE 0x2a // More report functionality
 #define SMSG_QUEST_COMPLETED 0x2e
 #define SMSG_PLAYER_STORE_MESSAGE 0x2f
 #define SMSG_SKILLBOOK 0x30
@@ -60,10 +56,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_MONSTER_BOOK_COVER 0x50
 #define SMSG_PLAYER_LEVEL_UPDATE 0x63 // Byte after it: 2 = guild, everything else = family
 #define SMSG_POPUP_MESSAGE 0x65 // I don't know where it is used, but it's like the admin warning? Might be part of megaphone
-#define SMSG_MEGAPHONE_MESSAGES 0x66 // Wait line shit and such? Megaphone message too... (when byte is not 0x46 or 0x47)
+#define SMSG_MEGAPHONE_MESSAGES 0x66 // Wait line or something? Megaphone message too... (when byte is not 0x46 or 0x47)
 #define SMSG_AVATAR_MEGAPHONE 0x67
-#define SMSG_NAME_CANCELLATION_REQUEST 0x69 // It's gone before you know it (when it was successfull)
-#define SMSG_TRANSFER_CANCELLATION_REQUEST 0x6a // It's gone before you know it (when it was successfull)
+#define SMSG_NAME_CANCELLATION_REQUEST 0x69 // It's gone before you know it (when it was successful)
+#define SMSG_TRANSFER_CANCELLATION_REQUEST 0x6a // It's gone before you know it (when it was successful)
 #define SMSG_GM_BAN 0x6c // GMMapleStory with it's HACK reason bans
 #define SMSG_SILVER_BOX_REWARD 0x6d // Silver Box event?
 #define SMSG_NEWYEAR_CARDS 0x6e // I want to code this!
@@ -122,7 +118,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_3RD_PARTY_SKILL 0xb5 // From other player
 #define SMSG_3RD_PARTY_BUFF_END 0xb6 // From other player
 #define SMSG_PARTY_HP_DISPLAY 0xb7
-#define SMSG_PIRATE_BOMB 0xba // Drops the bomb of the pirate skill at pos 0,0. The client disconnects right after it landed...
+#define SMSG_3RD_PARTY_BOMB 0xba
 #define SMSG_CHAIR 0xbb
 #define SMSG_THEATRICS 0xbc // Gain item notice in chat
 #define SMSG_MAP_TELEPORT 0xbd // Instantaneous transfer

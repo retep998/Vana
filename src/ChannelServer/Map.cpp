@@ -34,6 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MobConstants.hpp"
 #include "MobHandler.hpp"
 #include "MobsPacket.hpp"
+#include "MysticDoor.hpp"
 #include "NpcDataProvider.hpp"
 #include "NpcPacket.hpp"
 #include "PacketWrapper.hpp"
@@ -53,6 +54,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <initializer_list>
 #include <iostream>
 #include <stdexcept>
+#include <utility>
 
 // TODO FIXME msvc
 // Remove this crap once MSVC supports static initializers
@@ -142,7 +144,7 @@ auto Map::addPortal(const PortalInfo &portal) -> void {
 		m_spawnPoints[portal.id] = portal;
 	}
 	else if (portal.name == "tp") {
-		// Mystic Door portals
+		m_doorPoints.push_back(portal);
 	}
 	else {
 		m_portals[portal.name] = portal;
@@ -458,7 +460,7 @@ auto Map::findRandomFloorPos(const Rect &area) -> Point {
 	return ret;
 }
 
-auto Map::getFhAtPosition(const Point &pos) -> foothold_id_t {
+auto Map::getFootholdAtPosition(const Point &pos) -> foothold_id_t {
 	// TODO FIXME
 	// Consider refactoring
 	foothold_id_t foothold = 0;
@@ -471,18 +473,63 @@ auto Map::getFhAtPosition(const Point &pos) -> foothold_id_t {
 	return foothold;
 }
 
+auto Map::isValidFoothold(foothold_id_t id) -> bool {
+	for (const auto &cur : m_footholds) {
+		if (cur.id == id) {
+			return true;
+		}
+	}
+	return false;
+}
+
+auto Map::isVerticalFoothold(foothold_id_t id) -> bool {
+	for (const auto &cur : m_footholds) {
+		if (cur.id == id) {
+			return cur.line.isVertical();
+		}
+	}
+	return false;
+}
+
+auto Map::getPositionAtFoothold(foothold_id_t id) -> Point {
+	for (const auto &cur : m_footholds) {
+		if (cur.id == id) {
+			return cur.line.center();
+		}
+	}
+	return Point{-1, -1};
+}
+
 // Portals
-auto Map::getPortal(const string_t &name) -> PortalInfo * {
+auto Map::getPortal(const string_t &name) const -> const PortalInfo * const {
 	auto portal = m_portals.find(name);
 	return portal != std::end(m_portals) ? &portal->second : nullptr;
 }
 
-auto Map::getSpawnPoint(portal_id_t portalId) -> PortalInfo * {
-	portal_id_t id = portalId != -1 ? portalId : Randomizer::rand<portal_id_t>(m_spawnPoints.size() - 1);
-	return &m_spawnPoints[id];
+auto Map::getSpawnPoint(portal_id_t portalId) const -> const PortalInfo * const {
+	portal_id_t id = portalId != -1 ?
+		portalId :
+		Randomizer::rand<portal_id_t>(m_spawnPoints.size() - 1);
+
+	auto iter = m_spawnPoints.find(id);
+	return &iter->second;
 }
 
-auto Map::getNearestSpawnPoint(const Point &pos) -> PortalInfo * {
+auto Map::queryPortalName(const string_t &name, Player *player) const -> const PortalInfo * const {
+	return name.empty() ?
+		nullptr :
+		(name == "sp" ?
+			getSpawnPoint() :
+			(name == "tp" ?
+				getMysticDoorPortal(player).portal :
+				getPortal(name)));
+}
+
+auto Map::setPortalState(const string_t &name, bool enabled) -> void {
+	m_portals[name].disabled = !enabled;
+}
+
+auto Map::getNearestSpawnPoint(const Point &pos) const -> const PortalInfo * const {
 	portal_id_t id = -1;
 	int32_t distance = 200000;
 	for (const auto &kvp : m_spawnPoints) {
@@ -502,6 +549,42 @@ auto Map::getPortalNames() const -> vector_t<string_t> {
 		ret.push_back(kvp.first);
 	}
 	return ret;
+}
+
+auto Map::getTownMysticDoorPortal(Player *player) const -> MysticDoorOpenResult {
+	return getTownMysticDoorPortal(player, 0);
+}
+
+auto Map::getTownMysticDoorPortal(Player *player, uint8_t zeroBasedPartyIndex) const -> MysticDoorOpenResult {
+	if (m_info->limitations.mysticDoor) {
+		return MysticDoorOpenResult{MysticDoorResult::Hacking};
+	}
+
+	map_id_t townId = m_info->rm;
+	if (townId == Maps::NoMap) {
+		std::cerr << "Mystic Door used on a map that has no return map: " << m_id << std::endl;
+		return MysticDoorOpenResult{MysticDoorResult::Hacking};
+	}
+
+	Map *town = Maps::getMap(townId);
+	return town->getMysticDoorPortal(player, zeroBasedPartyIndex);
+}
+
+auto Map::getMysticDoorPortal(Player *player) const -> MysticDoorOpenResult {
+	return getMysticDoorPortal(player, 0);
+}
+
+auto Map::getMysticDoorPortal(Player *player, uint8_t zeroBasedPartyIndex) const -> MysticDoorOpenResult {
+	if (m_doorPoints.size() == 0) {
+		return MysticDoorOpenResult{MysticDoorResult::NoDoorPoints};
+	}
+
+	if (m_doorPoints.size() <= zeroBasedPartyIndex) {
+		return MysticDoorOpenResult{MysticDoorResult::NoSpace};
+	}
+
+	const PortalInfo * const portal = &m_doorPoints[zeroBasedPartyIndex];
+	return MysticDoorOpenResult{getId(), portal};
 }
 
 // NPCs
@@ -1119,14 +1202,14 @@ auto Map::timeMob(bool firstLoad) -> void {
 	if (firstLoad) {
 		if (cHour >= tm->startHour && cHour < tm->endHour) {
 			Point p = findRandomFloorPos();
-			m_timeMob = spawnMob(tm->id, p, getFhAtPosition(p), nullptr, 0)->getMapMobId();
+			m_timeMob = spawnMob(tm->id, p, getFootholdAtPosition(p), nullptr, 0)->getMapMobId();
 			send(PlayerPacket::showMessage(tm->message, PlayerPacket::NoticeTypes::Blue));
 		}
 	}
 	else {
 		if (cHour == tm->startHour) {
 			Point p = findRandomFloorPos();
-			m_timeMob = spawnMob(tm->id, p, getFhAtPosition(p), nullptr, 0)->getMapMobId();
+			m_timeMob = spawnMob(tm->id, p, getFootholdAtPosition(p), nullptr, 0)->getMapMobId();
 			send(PlayerPacket::showMessage(tm->message, PlayerPacket::NoticeTypes::Blue));
 		}
 		else if (cHour == tm->endHour && m_timeMob != 0) {
@@ -1225,6 +1308,8 @@ auto Map::showObjects(Player *player) -> void {
 		party->showHpBar(player);
 		party->receiveHpBar(player);
 	}
+
+	player->getSkills()->onMapChange();
 
 	if (m_info->clock) {
 		time_t rawTime = time(nullptr);
