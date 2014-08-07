@@ -299,6 +299,14 @@ auto InventoryHandler::useScroll(Player *player, PacketReader &reader) -> void {
 		// Most likely hacking
 		return;
 	}
+	if (legendarySpirit && !player->getSkills()->hasLegendarySpirit()) {
+		// Hacking
+		return;
+	}
+	if (!legendarySpirit && equipSlot > 0) {
+		// Hacking
+		return;
+	}
 
 	item_id_t itemId = item->getId();
 	int8_t succeed = -1;
