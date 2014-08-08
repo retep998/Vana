@@ -32,6 +32,6 @@ if isQuestActive(6280) and getItemAmount(4031454) > 0 then
 elseif isQuestActive(6169) and getItemAmount(4031461) < 1 then
 	if giveItem(4031461, 1) then
 		addText("You found a small Life's Root growing in a place of death...");
-		sendOK();
+		sendOk();
 	end
 end

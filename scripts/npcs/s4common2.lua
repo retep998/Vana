@@ -29,7 +29,7 @@ if isQuestActive(6301) then
 				if getPartyId() == 0 then
 					addText("You don't have a  party. ");
 					addText("You can challenge with party.");
-					sendOK();
+					sendOk();
 				else
 					fail = false;
 					for i = 1, #party do
@@ -45,7 +45,7 @@ if isQuestActive(6301) then
 
 					if fail then
 						addText("You can't enter if anyone in your party hasn't make 4th job advancement.");
-						sendOK();
+						sendOk();
 					else
 						if not isInstance("herosWill") then
 							giveItem(4000175, -1);
