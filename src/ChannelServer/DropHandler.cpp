@@ -263,6 +263,9 @@ auto DropHandler::lootItem(Player *player, PacketReader &reader, pet_id_t petId)
 		else {
 			Item *item = new Item(dropItem);
 			slot_qty_t dropAmount = drop->getAmount();
+			if (item->hasKarma()) {
+				item->setKarma(false);
+			}
 			slot_qty_t amount = Inventory::addItem(player, item, true);
 			if (amount > 0) {
 				if ((dropAmount - amount) > 0) {

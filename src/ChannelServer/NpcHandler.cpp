@@ -310,6 +310,15 @@ auto NpcHandler::useStorage(Player *player, PacketReader &reader) -> void {
 				// Hacking
 				return;
 			}
+
+			if (item->hasKarma()) {
+				item->setKarma(false);
+			}
+			else {
+				// TODO FIXME hacking
+				// Must validate the Karma state of items here
+			}
+
 			player->getStorage()->addItem(!GameLogicUtilities::isStackable(itemId) ? new Item(item) : new Item(itemId, amount));
 			// For equips or rechargeable items (stars/bullets) we create a
 			// new object for storage with the inventory object, and allow
