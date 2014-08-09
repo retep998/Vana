@@ -41,7 +41,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReactorHandler.hpp"
 #include "ScriptDataProvider.hpp"
 #include "ShopDataProvider.hpp"
-#include "StoragePacket.hpp"
 #include "ValidCharDataProvider.hpp"
 
 auto InventoryHandler::itemMove(Player *player, PacketReader &reader) -> void {
@@ -95,6 +94,10 @@ auto InventoryHandler::dropItem(Player *player, PacketReader &reader, Item *item
 		// Hacking
 		return;
 	}
+	else if (item->hasLock()) {
+		// Hacking
+		return;
+	}
 	if (GameLogicUtilities::isGmEquip(item->getId()) || item->hasLock()) {
 		// We don't allow these to be dropped or traded
 		return;
@@ -119,7 +122,7 @@ auto InventoryHandler::dropItem(Player *player, PacketReader &reader, Item *item
 	}
 
 	auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(droppedItem.getId());
-	bool isTradeable = !(droppedItem.hasTradeBlock() || itemInfo->quest || itemInfo->noTrade);
+	bool isTradeable = droppedItem.hasKarma() || !(droppedItem.hasTradeBlock() || itemInfo->quest || itemInfo->noTrade);
 	Drop *drop = new Drop(player->getMapId(), droppedItem, player->getPos(), player->getId(), true);
 	drop->setTime(0);
 	drop->setTradeable(isTradeable);
