@@ -59,7 +59,7 @@ auto WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 	if (channel != -1) {
 		port_t port = reader.get<port_t>();
 		WorldConfig conf = reader.get<WorldConfig>();
-		std::cout << "Handling channel " <<static_cast<int32_t>(channel) << " on port " << port << std::endl;
+		std::cout << "Handling channel " << static_cast<int32_t>(channel) << " on port " << port << std::endl;
 		ChannelServer::getInstance().establishedWorldConnection(channel, port, conf);
 	}
 	else {

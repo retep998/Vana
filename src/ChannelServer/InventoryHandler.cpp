@@ -536,8 +536,10 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 							}
 							item->setLock(true);
 							break;
-						case Items::ScissorsOfKarma:
-							if (!itemInfo->karmaScissors) {
+						case Items::ScissorsOfKarma: {
+							auto equipInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(item->getId());
+
+							if (!equipInfo->karmaScissors) {
 								// Hacking
 								return;
 							}
@@ -547,6 +549,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 							}
 							item->setKarma(true);
 							break;
+						}
 					}
 
 					vector_t<InventoryPacketOperation> ops;
