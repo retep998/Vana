@@ -440,7 +440,7 @@ auto ItemDataProvider::scrollItem(const EquipDataProvider &provider, item_id_t s
 		}
 	}
 
-	if (!whiteScroll && scrollTakesSlot) {
+	if (scrollTakesSlot && (!whiteScroll || succeed == 1)) {
 		equip->decSlots();
 	}
 
