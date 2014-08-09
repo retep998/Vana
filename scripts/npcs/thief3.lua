@@ -27,7 +27,7 @@ if getLevel() >= 50 then
 	jobLine, jobTrack, jobProgression = getJobMeta();
 	choices = {};
 
-	if getLevel() >= 70 and jobLevel == progression_second and jobLine == line_thief then
+	if getLevel() >= 70 and jobProgression == progression_second and jobLine == line_thief then
 		append(choices, makeChoiceHandler(" I want to make the 3rd job advancement", function()
 			questState = getPlayerVariable("third_job_advancement", type_int);
 
