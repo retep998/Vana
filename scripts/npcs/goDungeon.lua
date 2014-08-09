@@ -58,7 +58,7 @@ else
 	else
 		addText("! You look pretty strong. ");
 		addText("All right, do you want to go in?");
-		asnwer = askYesNo();
+		answer = askYesNo();
 
 		if answer == answer_yes then
 			setMap(211040300, "under00");
