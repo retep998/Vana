@@ -315,7 +315,7 @@ auto InventoryHandler::useScroll(Player *player, PacketReader &reader) -> void {
 	int8_t succeed = -1;
 	bool cursed = false;
 
-	if (legendarySpirit && item->getSlots() == 0) {
+	if (legendarySpirit && equip->getSlots() == 0) {
 		// This is actually allowed by the game for some reason, the server is expected to send an error
 	}
 	else if (HackingResult::NotHacking != ChannelServer::getInstance().getItemDataProvider().scrollItem(ChannelServer::getInstance().getEquipDataProvider(), itemId, equip, whiteScroll, player->hasGmBenefits(), succeed, cursed)) {
