@@ -104,25 +104,25 @@ auto PlayerInventory::save() -> void {
 	sql.once << "DELETE FROM " << Database::makeCharTable("teleport_rock_locations") << " WHERE character_id = :char", use(charId, "char");
 	if (m_rockLocations.size() > 0 || m_vipLocations.size() > 0) {
 		map_id_t mapId = 0;
-		size_t i = 0;
+		size_t rockIndex = 0;
 
 		statement st = (sql.prepare
 			<< "INSERT INTO " << Database::makeCharTable("teleport_rock_locations") << " "
 			<< "VALUES (:char, :i, :map)",
 			use(charId, "char"),
 			use(mapId, "map"),
-			use(i, "i"));
+			use(rockIndex, "i"));
 
-		for (i = 0; i < m_rockLocations.size(); ++i) {
-			mapId = m_rockLocations[i];
+		for (rockIndex = 0; rockIndex < m_rockLocations.size(); ++rockIndex) {
+			mapId = m_rockLocations[rockIndex];
 			st.execute(true);
 		}
 
-		i = Inventories::TeleportRockMax;
-		for (size_t j = 0; j < m_vipLocations.size(); ++j) {
+		rockIndex = Inventories::TeleportRockMax;
+		for (size_t i = 0; i < m_vipLocations.size(); ++i) {
 			mapId = m_vipLocations[i];
 			st.execute(true);
-			++i;
+			++rockIndex;
 		}
 	}
 
