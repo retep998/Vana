@@ -23,7 +23,7 @@ dofile("scripts/utils/tableHelper.lua");
 item_keep = nil;
 item_discard = 1;
 
-function preprocessItems(items)
+function internalPreprocessItems(items)
 	local finalized = {};
 	for i = 1, #items do
 		local item = items[i];
@@ -173,7 +173,7 @@ local gachSkills = {
 	{2290096, ["weight"] = mastery_book_20}, {2290125, ["weight"] = mastery_book_30},
 };
 
-local gachGlobalGachaponItems = preprocessItems(merge(gachPotions, gachScrolls, gachSkills, gachBeginnerEquips, gachMapleEquips, gachCommonEquips));
+local gachGlobalGachaponItems = internalPreprocessItems(merge(gachPotions, gachScrolls, gachSkills, gachBeginnerEquips, gachMapleEquips, gachCommonEquips));
 
 function gachapon(args)
 	local items = args["items"];
@@ -202,7 +202,7 @@ function gachapon(args)
 		end
 	end
 
-	items = merge(preprocessItems(items), gachGlobalGachaponItems);
+	items = merge(internalPreprocessItems(items), gachGlobalGachaponItems);
 	local weights = {};
 	for i = 1, #items do
 		local item = items[i];
