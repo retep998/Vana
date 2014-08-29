@@ -99,11 +99,6 @@ auto LuaScriptable::initialize() -> void {
 	expose("getChannel", &LuaExports::getChannel);
 	expose("getChannelVariable", &LuaExports::getChannelVariable);
 	expose("getWorld", &LuaExports::getWorld);
-	expose("isHorntailChannel", &LuaExports::isHorntailChannel);
-	expose("isPapChannel", &LuaExports::isPapChannel);
-	expose("isPianusChannel", &LuaExports::isPianusChannel);
-	expose("isPinkBeanChannel", &LuaExports::isPinkBeanChannel);
-	expose("isZakumChannel", &LuaExports::isZakumChannel);
 	expose("setChannelVariable", &LuaExports::setChannelVariable);
 	expose("showChannelMessage", &LuaExports::showChannelMessage);
 
@@ -118,6 +113,11 @@ auto LuaScriptable::initialize() -> void {
 	expose("getPianusChannels", &LuaExports::getPianusChannels);
 	expose("getPinkBeanChannels", &LuaExports::getPinkBeanChannels);
 	expose("getZakumChannels", &LuaExports::getZakumChannels);
+	expose("isHorntailChannel", &LuaExports::isHorntailChannel);
+	expose("isPapChannel", &LuaExports::isPapChannel);
+	expose("isPianusChannel", &LuaExports::isPianusChannel);
+	expose("isPinkBeanChannel", &LuaExports::isPinkBeanChannel);
+	expose("isZakumChannel", &LuaExports::isZakumChannel);
 
 	// Npc
 	expose("isBusy", &LuaExports::isBusy);
@@ -591,26 +591,6 @@ auto LuaExports::getWorld(lua_State *luaVm) -> lua_return_t {
 	return 1;
 }
 
-auto LuaExports::isHorntailChannel(lua_State *luaVm) -> lua_return_t {
-	return isBossChannel(luaVm, ChannelServer::getInstance().getConfig().horntail.channels);
-}
-
-auto LuaExports::isPapChannel(lua_State *luaVm) -> lua_return_t {
-	return isBossChannel(luaVm, ChannelServer::getInstance().getConfig().pap.channels);
-}
-
-auto LuaExports::isPianusChannel(lua_State *luaVm) -> lua_return_t {
-	return isBossChannel(luaVm, ChannelServer::getInstance().getConfig().pianus.channels);
-}
-
-auto LuaExports::isPinkBeanChannel(lua_State *luaVm) -> lua_return_t {
-	return isBossChannel(luaVm, ChannelServer::getInstance().getConfig().pinkbean.channels);
-}
-
-auto LuaExports::isZakumChannel(lua_State *luaVm) -> lua_return_t {
-	return isBossChannel(luaVm, ChannelServer::getInstance().getConfig().zakum.channels);
-}
-
 auto LuaExports::setChannelVariable(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	auto kvp = obtainSetVariablePair(luaVm, env);
@@ -687,7 +667,27 @@ auto LuaExports::getZakumChannels(lua_State *luaVm) -> lua_return_t {
 	return 1;
 }
 
-// Npc
+auto LuaExports::isHorntailChannel(lua_State *luaVm) -> lua_return_t {
+	return isBossChannel(luaVm, ChannelServer::getInstance().getConfig().horntail.channels);
+}
+
+auto LuaExports::isPapChannel(lua_State *luaVm) -> lua_return_t {
+	return isBossChannel(luaVm, ChannelServer::getInstance().getConfig().pap.channels);
+}
+
+auto LuaExports::isPianusChannel(lua_State *luaVm) -> lua_return_t {
+	return isBossChannel(luaVm, ChannelServer::getInstance().getConfig().pianus.channels);
+}
+
+auto LuaExports::isPinkBeanChannel(lua_State *luaVm) -> lua_return_t {
+	return isBossChannel(luaVm, ChannelServer::getInstance().getConfig().pinkbean.channels);
+}
+
+auto LuaExports::isZakumChannel(lua_State *luaVm) -> lua_return_t {
+	return isBossChannel(luaVm, ChannelServer::getInstance().getConfig().zakum.channels);
+}
+
+// NPC
 auto LuaExports::isBusy(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	env.push<bool>(luaVm, getPlayer(luaVm, env)->getNpc() != nullptr);

@@ -155,15 +155,15 @@ auto Npc::sendQuiz(int8_t type, int32_t objectId, int32_t correct, int32_t quest
 		.add<int32_t>(time));
 }
 
-auto Npc::sendQuestion(const string_t &question, const string_t &clue, int32_t minCharacters, int32_t maxCharacters, int32_t time) -> void {
+auto Npc::sendQuestion(const string_t &question, const string_t &clue, int32_t minLength, int32_t maxLength, int32_t time) -> void {
 	m_sentDialog = NpcPacket::Dialogs::Question;
 	m_player->send(NpcPacket::npcChat(m_sentDialog, m_npcId, "", false)
 		.add<int8_t>(0x00) // If it's 0x01, it does something else
 		.add<string_t>(m_text)
 		.add<string_t>(question) // Another question thing
 		.add<string_t>(clue)
-		.add<int32_t>(minCharacters)
-		.add<int32_t>(maxCharacters)
+		.add<int32_t>(minLength)
+		.add<int32_t>(maxLength)
 		.add<int32_t>(time));
 }
 

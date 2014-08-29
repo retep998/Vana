@@ -175,11 +175,11 @@ auto LuaExports::askQuestion(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	string_t question = env.get<string_t>(luaVm, 1);
 	string_t clue = env.get<string_t>(luaVm, 2);
-	int32_t minChars = env.get<int32_t>(luaVm, 3);
-	int32_t maxChars = env.get<int32_t>(luaVm, 4);
+	int32_t minLength = env.get<int32_t>(luaVm, 3);
+	int32_t maxLength = env.get<int32_t>(luaVm, 4);
 	int32_t time = env.get<int32_t>(luaVm, 5);
 
-	getNpc(luaVm, env)->sendQuestion(question, clue, minChars, maxChars, time);
+	getNpc(luaVm, env)->sendQuestion(question, clue, minLength, maxLength, time);
 	return env.yield(1);
 }
 

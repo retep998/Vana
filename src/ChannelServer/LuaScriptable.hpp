@@ -75,11 +75,6 @@ namespace LuaExports {
 	auto getChannel(lua_State *luaVm) -> lua_return_t;
 	auto getChannelVariable(lua_State *luaVm) -> lua_return_t;
 	auto getWorld(lua_State *luaVm) -> lua_return_t;
-	auto isHorntailChannel(lua_State *luaVm) -> lua_return_t;
-	auto isPapChannel(lua_State *luaVm) -> lua_return_t;
-	auto isPianusChannel(lua_State *luaVm) -> lua_return_t;
-	auto isPinkBeanChannel(lua_State *luaVm) -> lua_return_t;
-	auto isZakumChannel(lua_State *luaVm) -> lua_return_t;
 	auto setChannelVariable(lua_State *luaVm) -> lua_return_t;
 	auto showChannelMessage(lua_State *luaVm) -> lua_return_t;
 
@@ -94,6 +89,11 @@ namespace LuaExports {
 	auto getPianusChannels(lua_State *luaVm) -> lua_return_t;
 	auto getPinkBeanChannels(lua_State *luaVm) -> lua_return_t;
 	auto getZakumChannels(lua_State *luaVm) -> lua_return_t;
+	auto isHorntailChannel(lua_State *luaVm) -> lua_return_t;
+	auto isPapChannel(lua_State *luaVm) -> lua_return_t;
+	auto isPianusChannel(lua_State *luaVm) -> lua_return_t;
+	auto isPinkBeanChannel(lua_State *luaVm) -> lua_return_t;
+	auto isZakumChannel(lua_State *luaVm) -> lua_return_t;
 
 	// NPC
 	auto isBusy(lua_State *luaVm) -> lua_return_t;

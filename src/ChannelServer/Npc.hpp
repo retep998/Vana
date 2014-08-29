@@ -47,7 +47,7 @@ public:
 	auto sendGetNumber(int32_t def, int32_t min, int32_t max) -> void;
 	auto sendStyle(vector_t<int32_t> styles) -> void;
 	auto sendQuiz(int8_t type, int32_t objectId, int32_t correct, int32_t questions, int32_t time) -> void;
-	auto sendQuestion(const string_t &question, const string_t &clue, int32_t minCharacters, int32_t maxCharacters, int32_t time) -> void;
+	auto sendQuestion(const string_t &question, const string_t &clue, int32_t minLength, int32_t maxLength, int32_t time) -> void;
 	auto addText(const string_t &text) -> void { m_text += text; }
 	auto end() -> void { m_cend = true; }
 
