@@ -93,7 +93,7 @@ auto ServerClient::readConnectPacket() -> void {
 	string_t subversion = reader.get<string_t>();
 	iv_t sendIv = reader.get<iv_t>();
 	iv_t recvIv = reader.get<iv_t>();
-	locale_t locale = reader.get<locale_t>();
+	game_locale_t locale = reader.get<game_locale_t>();
 
 	if (version != MapleVersion::Version || locale != MapleVersion::Locale || subversion != MapleVersion::LoginSubversion) {
 		std::cerr << "ERROR: The server you are connecting to lacks the same MapleStory version." << std::endl;

@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "Timer.hpp"
 #include "TimerId.hpp"
 #include "TimerType.hpp"
 #include "Types.hpp"
@@ -25,8 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 
 namespace Timer {
-
-class Timer;
 
 class Container {
 public:
@@ -45,7 +44,7 @@ auto Container::getRemainingTime(const Id &id) const -> TDuration {
 	if (iter != std::end(m_timers)) {
 		return duration_cast<TDuration>(iter->second->getTimeLeft());
 	}
-	return TDuration(0);
+	return TDuration{0};
 }
 
 

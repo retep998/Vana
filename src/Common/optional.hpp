@@ -18,6 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "IPacket.hpp"
+#include "PacketBuilder.hpp"
+#include "PacketReader.hpp"
+#include "Types.hpp"
 
 namespace MiscUtilities {
 	// Sorta based on Boost's
@@ -87,3 +90,19 @@ struct PacketSerialize<MiscUtilities::optional<TElement>> {
 		}
 	};
 };
+
+// Useful DB-related aliases
+template <typename TElement>
+using optional_t = MiscUtilities::optional<TElement>;
+using opt_bool = optional_t<bool>;
+using opt_int8_t = optional_t<int8_t>;
+using opt_uint8_t = optional_t<uint8_t>;
+using opt_int16_t = optional_t<int16_t>;
+using opt_uint16_t = optional_t<uint16_t>;
+using opt_int32_t = optional_t<int32_t>;
+using opt_uint32_t = optional_t<uint32_t>;
+using opt_int64_t = optional_t<int64_t>;
+using opt_uint64_t = optional_t<uint64_t>;
+using opt_double = optional_t<double>;
+using opt_unix_time_t = optional_t<unix_time_t>;
+using opt_string_t = optional_t<string_t>;

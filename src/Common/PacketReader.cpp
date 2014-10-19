@@ -27,8 +27,9 @@ PacketReader::PacketReader(unsigned char *buffer, size_t length) :
 {
 }
 
-auto PacketReader::skipBytes(int32_t len) -> void {
+auto PacketReader::skip(int32_t len) -> PacketReader & {
 	m_pos += len;
+	return *this;
 }
 
 auto PacketReader::getBuffer() const -> unsigned char * {

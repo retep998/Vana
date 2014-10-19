@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Decoder.hpp"
 #include "PacketBuilder.hpp"
 #include "PacketReader.hpp"
+#include "Randomizer.hpp"
 #include <functional>
 #include <iostream>
 
@@ -90,7 +91,7 @@ auto Session::send(const unsigned char *buf, int32_t len, bool encrypt) -> void 
 		m_sendPacket.reset(sendBuffer);
 
 		memcpy(sendBuffer + headerLen, buf, len);
-		m_decoder.createHeader(sendBuffer, static_cast<int16_t>(len));
+		m_decoder.createHeader(sendBuffer, static_cast<uint16_t>(len));
 		m_decoder.encrypt(sendBuffer + headerLen, len, headerLen);
 	}
 	else {
@@ -179,7 +180,7 @@ auto Session::getConnectPacket(const string_t &subversion) const -> PacketBuilde
 		.add<string_t>(subversion)
 		.add<iv_t>(m_decoder.getRecvIv())
 		.add<iv_t>(m_decoder.getSendIv())
-		.add<locale_t>(MapleVersion::Locale);
+		.add<game_locale_t>(MapleVersion::Locale);
 
 	builder.set<header_t>(static_cast<header_t>(builder.getSize() - sizeof(header_t)), 0);
 	return builder;

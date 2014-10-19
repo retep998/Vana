@@ -40,6 +40,10 @@ public:
 	template <typename TValue>
 	auto add(const TValue &value) -> PacketBuilder &;
 	template <typename TValue>
+	auto unk() -> PacketBuilder &;
+	template <typename TValue>
+	auto unk(const TValue &value) -> PacketBuilder &;
+	template <typename TValue>
 	auto add(const TValue &value, size_t count) -> PacketBuilder &;
 	template <typename TValue>
 	auto set(const TValue &value, size_t pos) -> PacketBuilder &;
@@ -117,6 +121,18 @@ auto PacketBuilder::add(const TValue &value) -> PacketBuilder & {
 }
 
 template <typename TValue>
+auto PacketBuilder::unk() -> PacketBuilder & {
+	addImpl(TValue{});
+	return *this;
+}
+
+template <typename TValue>
+auto PacketBuilder::unk(const TValue &value) -> PacketBuilder & {
+	addImpl(value);
+	return *this;
+}
+
+template <typename TValue>
 auto PacketBuilder::add(const TValue &value, size_t size) -> PacketBuilder & {
 	addSizedImpl(value, size);
 	return *this;
@@ -136,13 +152,13 @@ auto PacketBuilder::addSizedImpl(const TValue &value, size_t size) -> void {
 
 template <typename TValue>
 auto PacketBuilder::addImplDefault(const TValue &value) -> void {
-	(*(TValue *) getBuffer(m_pos, sizeof(TValue))) = value;
+	*reinterpret_cast<TValue *>(getBuffer(m_pos, sizeof(TValue))) = value;
 	m_pos += sizeof(TValue);
 }
 
 template <typename TValue>
 auto PacketBuilder::set(const TValue &value, size_t pos) -> PacketBuilder & {
-	(*(TValue *) getBuffer(pos, sizeof(TValue))) = value;
+	*reinterpret_cast<TValue *>(getBuffer(pos, sizeof(TValue))) = value;
 	return *this;
 }
 
@@ -234,7 +250,7 @@ auto PacketBuilder::addSizedImpl<string_t>(const string_t &value, size_t size) -
 	if (size < slen) {
 		throw std::invalid_argument("addString used with a length shorter than string size");
 	}
-	strncpy((char *) getBuffer(m_pos, size), value.c_str(), slen);
+	strncpy(reinterpret_cast<char *>(getBuffer(m_pos, size)), value.c_str(), slen);
 	for (size_t i = slen; i < size; i++) {
 		m_packet[m_pos + i] = 0;
 	}

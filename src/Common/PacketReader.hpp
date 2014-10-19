@@ -39,11 +39,15 @@ public:
 	template <typename TValue>
 	auto get() -> TValue;
 	template <typename TValue>
+	auto unk() -> TValue;
+	template <typename TValue>
 	auto get(size_t size) -> TValue;
 	template <typename TValue>
 	auto peek() -> TValue;
+	template <typename TValue>
+	auto skip() -> PacketReader &;
 
-	auto skipBytes(int32_t len) -> void;
+	auto skip(int32_t len) -> PacketReader &;
 	auto getBuffer() const -> unsigned char *;
 	auto getBufferLength() const -> size_t;
 	auto getConsumedLength() const -> size_t;
@@ -52,6 +56,15 @@ public:
 private:
 	friend auto operator <<(std::ostream &out, const PacketReader &reader) -> std::ostream &;
 	auto getSize() const -> size_t { return m_length; }
+
+	template <typename TValue>
+	auto skipImpl(TValue *) -> void;
+	template <>
+	auto skipImpl<bool>(bool *) -> void;
+	template <>
+	auto skipImpl<string_t>(string_t *) -> void;
+	template <typename TElement>
+	auto skipImpl(vector_t<TElement> *) -> void;
 
 	template <typename TValue>
 	auto getImpl(TValue *) -> TValue;
@@ -110,6 +123,12 @@ auto PacketReader::get() -> TValue {
 }
 
 template <typename TValue>
+auto PacketReader::unk() -> TValue {
+	auto v = getImpl(static_cast<TValue *>(nullptr));
+	return v;
+}
+
+template <typename TValue>
 auto PacketReader::get(size_t size) -> TValue {
 	auto v = getSizedImpl(size, static_cast<TValue *>(nullptr));
 	return v;
@@ -121,6 +140,34 @@ auto PacketReader::peek() -> TValue {
 	auto val = get<TValue>();
 	m_pos = pos;
 	return val;
+}
+
+template <typename TValue>
+auto PacketReader::skip() -> PacketReader & {
+	skipImpl(static_cast<TValue *>(nullptr));
+	return *this;
+}
+
+template <typename TValue>
+auto PacketReader::skipImpl(TValue *) -> void {
+	m_pos += sizeof(TValue);
+}
+
+template <>
+auto PacketReader::skipImpl<bool>(bool *) -> void {
+	m_pos += 1;
+}
+
+template <>
+auto PacketReader::skipImpl<string_t>(string_t *) -> void {
+	size_t length = get<uint16_t>();
+	m_pos += length;
+}
+
+template <typename TElement>
+auto PacketReader::skipImpl(vector_t<TElement> *) -> void {
+	size_t length = get<uint32_t>();
+	m_pos += length * sizeof(TElement);
 }
 
 template <typename TValue>
@@ -140,7 +187,7 @@ auto PacketReader::getImplDefault() -> TValue {
 	if (sizeof(TValue) > getBufferLength()) {
 		throw PacketContentException("Packet data longer than buffer allows");
 	}
-	TValue val = (*(TValue *)(m_buffer + m_pos));
+	TValue val = *reinterpret_cast<TValue *>(m_buffer + m_pos);
 	m_pos += sizeof(TValue);
 	return val;
 }
@@ -239,7 +286,7 @@ auto PacketReader::getSizedImpl<string_t>(size_t size, string_t *) -> string_t {
 	if (size > getBufferLength()) {
 		throw PacketContentException("Packet string longer than buffer allows");
 	}
-	string_t s((char *) m_buffer + m_pos, size);
+	string_t s{reinterpret_cast<char *>(m_buffer + m_pos), size};
 	m_pos += size;
 	return s;
 }

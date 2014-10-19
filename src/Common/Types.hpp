@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "CaseInsensitiveEquals.hpp"
 #include "CaseInsensitiveHash.hpp"
 #include "make_unique.hpp"
-#include "optional.hpp"
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -215,7 +214,7 @@ using gender_id_t = int8_t;
 using header_t = uint16_t;
 using port_t = uint16_t;
 using version_t = uint16_t;
-using locale_t = uint8_t;
+using game_locale_t = uint8_t;
 using chat_t = string_t;
 using chat_stream_t = out_stream_t;
 using player_level_t = uint8_t;
@@ -237,22 +236,8 @@ using map_object_t = int32_t;
 using coord_t = int16_t;
 using tick_count_t = uint32_t;
 using charge_time_t = int32_t;
-
-// Useful DB-related aliases
-template <typename TElement>
-using optional_t = MiscUtilities::optional<TElement>;
-using opt_bool = optional_t<bool>;
-using opt_int8_t = optional_t<int8_t>;
-using opt_uint8_t = optional_t<uint8_t>;
-using opt_int16_t = optional_t<int16_t>;
-using opt_uint16_t = optional_t<uint16_t>;
-using opt_int32_t = optional_t<int32_t>;
-using opt_uint32_t = optional_t<uint32_t>;
-using opt_int64_t = optional_t<int64_t>;
-using opt_uint64_t = optional_t<uint64_t>;
-using opt_double = optional_t<double>;
-using opt_unix_time_t = optional_t<unix_time_t>;
-using opt_string_t = optional_t<string_t>;
+using portal_count_t = uint8_t;
+using checksum_t = uint32_t;
 
 // Remove when VS2012 supports thread_local
 #ifdef WIN32

@@ -176,6 +176,6 @@ auto Decoder::createHeader(unsigned char *header, uint16_t size) -> void {
 		version = MapleVersion::Version;
 		pSize = size;
 	}
-	(*(uint16_t *)(header)) = version;
-	(*(uint16_t *)(header + 2)) = pSize;
+	*reinterpret_cast<uint16_t *>(header) = version;
+	*reinterpret_cast<uint16_t *>(header + 2) = pSize;
 }

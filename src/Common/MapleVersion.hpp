@@ -54,10 +54,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define MAPLE_VERSION 75
 
 namespace MapleVersion {
-	const version_t Version = MAPLE_VERSION;
+	const version_t Version = static_cast<version_t>(MAPLE_VERSION);
 	const string_t LoginSubversion = "0";
 	const string_t ChannelSubversion = "";
-	const locale_t Locale = MAPLE_LOCALE;
+	const game_locale_t Locale = static_cast<game_locale_t>(MAPLE_LOCALE);
 	const string_t LocaleString = MAPLE_LOCALE_STRING;
 	const bool TestServer = false;
 }

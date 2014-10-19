@@ -69,13 +69,13 @@ auto Decoder::validPacket(unsigned char *header) -> bool {
 inline
 auto Decoder::getVersionAndSize(unsigned char *header, uint16_t &version, uint16_t &size) -> void {
 	if (!m_encrypted) {
-		version = (*(uint16_t *)(header));
-		size = (*(uint16_t *)(header + 2));
+		version = *reinterpret_cast<uint16_t *>(header);
+		size = *reinterpret_cast<uint16_t *>(header + 2);
 	}
 	else {
 		unsigned char *iv = m_recv.getBytes();
 		uint16_t enc = ((iv[3] << 8) | iv[2]);
-		version = (-(*(uint16_t *)(header)) - 1) ^ enc;
-		size = (*(uint16_t *)(header)) ^ (*(uint16_t *)(header + 2));
+		version = (-(*reinterpret_cast<uint16_t *>(header)) - 1) ^ enc;
+		size = *reinterpret_cast<uint16_t *>(header) ^ *reinterpret_cast<uint16_t *>(header + 2);
 	}
 }
