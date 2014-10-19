@@ -43,7 +43,7 @@ PACKET_IMPL(triggerReactor, Reactor *reactor) {
 		.add<map_object_t>(reactor->getId())
 		.add<int8_t>(reactor->getState())
 		.add<Point>(reactor->getPos())
-		.add<int32_t>(0);
+		.unk<int32_t>();
 	return builder;
 }
 

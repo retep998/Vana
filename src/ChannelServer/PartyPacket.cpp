@@ -127,7 +127,7 @@ PACKET_IMPL(invitePlayer, Party *party, const string_t &inviter) {
 		.add<int8_t>(0x04)
 		.add<party_id_t>(party->getId())
 		.add<string_t>(inviter)
-		.add<int8_t>(0);
+		.unk<int8_t>();
 	return builder;
 }
 

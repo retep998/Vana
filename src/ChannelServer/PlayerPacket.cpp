@@ -68,7 +68,7 @@ PACKET_IMPL(connectData, Player *player) {
 		.add<int32_t>(0) // Gachapon EXP
 		.add<map_id_t>(player->getMapId())
 		.add<portal_id_t>(player->getMapPos())
-		.add<int32_t>(0) // Unknown int32 added in .62
+		.unk<int32_t>() // Added in .62
 		.add<uint8_t>(player->getBuddyListSize());
 
 	player->getSkills()->connectDataForBlessing(builder);
@@ -87,9 +87,9 @@ PACKET_IMPL(connectData, Player *player) {
 	player->getMonsterBook()->connectData(builder);
 
 	builder
-		.add<int16_t>(0) 
+		.unk<int16_t>() 
 		.add<int16_t>(0) // Amount of pquests (or extended quests? Maybe related to Battleship?), for every quest: quest_id_t questId, string_t questdata
-		.add<int16_t>(0)
+		.unk<int16_t>()
 		.add<int64_t>(TimeUtilities::getServerTime());
 	return builder;
 }

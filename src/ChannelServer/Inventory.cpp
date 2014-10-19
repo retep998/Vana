@@ -240,7 +240,7 @@ auto Inventory::useItem(Player *player, item_id_t itemId) -> void {
 			player->sendMap(MonsterBookPacket::addCardEffect(player->getId()));
 		}
 		if (item->mcProb != 0 && Randomizer::rand<uint16_t>(99) < item->mcProb) {
-			Buffs::addBuff(player, itemId, seconds_t(item->time));
+			Buffs::addBuff(player, itemId, seconds_t{item->time});
 		}
 	}
 }

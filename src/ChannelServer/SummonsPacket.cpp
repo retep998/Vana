@@ -78,7 +78,7 @@ SPLIT_PACKET_IMPL(damageSummon, player_id_t playerId, summon_id_t summonId, int8
 		.add<int8_t>(unk)
 		.add<damage_t>(damage)
 		.add<map_object_t>(mobId)
-		.add<int8_t>(0);
+		.unk<int8_t>();
 
 	builder.map.addBuffer(builder.player);
 	return builder;

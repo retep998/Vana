@@ -43,7 +43,7 @@ PACKET_IMPL(showDrop, Drop *drop, int8_t type, const Point &origin) {
 		// Give the point of origin for things that are just being dropped
 		builder
 			.add<Point>(origin)
-			.add<int16_t>(0);
+			.unk<int16_t>();
 	}
 	if (!drop->isMesos()) {
 		builder.add<int64_t>(Items::NoExpiration);
@@ -123,8 +123,8 @@ PACKET_IMPL(pickupDrop, map_object_t id, int32_t amount, bool isMesos, int16_t c
 	}
 	if (!isMesos) {
 		builder
-			.add<int32_t>(0)
-			.add<int32_t>(0);
+			.unk<int32_t>()
+			.unk<int32_t>();
 	}
 	return builder;
 }
@@ -135,7 +135,7 @@ PACKET_IMPL(pickupDropSpecial, map_object_t id) {
 	builder
 		.add<header_t>(SMSG_NOTICE)
 		.add<int8_t>(0)
-		.add<int8_t>(2)
+		.unk<int8_t>(2)
 		.add<map_object_t>(id);
 	return builder;
 }

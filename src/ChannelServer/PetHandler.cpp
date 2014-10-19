@@ -39,7 +39,8 @@ auto PetHandler::handleMovement(Player *player, PacketReader &reader) -> void {
 		// Hacking
 		return;
 	}
-	reader.skipBytes(4); // Ticks?
+
+	reader.unk<uint32_t>(); // Not ticks at all, not sure what this is
 	MovementHandler::parseMovement(pet, reader);
 	reader.reset(10);
 	player->sendMap(PetsPacket::showMovement(player->getId(), pet, reader.getBuffer(), reader.getBufferLength() - 9));
@@ -51,14 +52,14 @@ auto PetHandler::handleChat(Player *player, PacketReader &reader) -> void {
 		// Hacking
 		return;
 	}
-	reader.skipBytes(1);
+	reader.unk<uint8_t>();
 	int8_t act = reader.get<int8_t>();
 	string_t message = reader.get<string_t>();
 	player->sendMap(PetsPacket::showChat(player->getId(), player->getPets()->getPet(petId), message, act));
 }
 
 auto PetHandler::handleSummon(Player *player, PacketReader &reader) -> void {
-	tick_count_t ticks = reader.get<tick_count_t>();
+	reader.skip<tick_count_t>();
 	inventory_slot_t slot = reader.get<inventory_slot_t>();
 	bool master = reader.get<int8_t>() == 1; // Might possibly fit under getBool criteria
 	bool multipet = player->getSkills()->hasFollowTheLead();
@@ -139,7 +140,7 @@ auto PetHandler::handleSummon(Player *player, PacketReader &reader) -> void {
 }
 
 auto PetHandler::handleFeed(Player *player, PacketReader &reader) -> void {
-	tick_count_t ticks = reader.get<tick_count_t>();
+	reader.skip<tick_count_t>();
 	inventory_slot_t slot = reader.get<inventory_slot_t>();
 	item_id_t itemId = reader.get<item_id_t>();
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
@@ -170,7 +171,7 @@ auto PetHandler::handleCommand(Player *player, PacketReader &reader) -> void {
 		// Hacking
 		return;
 	}
-	reader.skipBytes(1);
+	reader.unk<uint8_t>();
 	int8_t act = reader.get<int8_t>();
 	auto action = ChannelServer::getInstance().getItemDataProvider().getInteraction(pet->getItemId(), act);
 	if (action == nullptr) {
@@ -192,8 +193,8 @@ auto PetHandler::handleConsumePotion(Player *player, PacketReader &reader) -> vo
 		// Hacking
 		return;
 	}
-	reader.skipBytes(1); // It MIGHT be some flag for Meso/Power/Magic Guard...?
-	tick_count_t ticks = reader.get<tick_count_t>();
+	reader.unk<uint8_t>(); // It MIGHT be some flag for Meso/Power/Magic Guard...?
+	reader.skip<tick_count_t>();
 	inventory_slot_t slot = reader.get<inventory_slot_t>();
 	item_id_t itemId = reader.get<item_id_t>();
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);

@@ -89,20 +89,22 @@ auto Maps::usePortal(Player *player, const PortalInfo * const portal) -> void {
 }
 
 auto Maps::usePortal(Player *player, PacketReader &reader) -> void {
-	reader.skipBytes(1);
+	reader.skip<portal_count_t>();
 
 	int32_t opcode = reader.get<int32_t>();
 	switch (opcode) {
 		case 0: // Dead
 			if (player->getStats()->isDead()) {
-				string_t unk = reader.get<string_t>(); // Useless
-				reader.skipBytes(1); // Useless
+				reader.unk<string_t>(); // Seemingly useless
+				reader.unk<int8_t>(); // Seemingly useless
 				bool wheel = reader.get<bool>();
-				if (wheel && player->getInventory()->getItemAmount(Items::WheelOfDestiny) <= 0) {
-					player->acceptDeath(false);
-					return;
+				if (wheel) {
+					if (player->getInventory()->getItemAmount(Items::WheelOfDestiny) <= 0) {
+						player->acceptDeath(false);
+						return;
+					}
+					Inventory::takeItem(player, Items::WheelOfDestiny, 1);
 				}
-				Inventory::takeItem(player, Items::WheelOfDestiny, 1);
 				player->acceptDeath(wheel);
 			}
 			break;
@@ -130,7 +132,7 @@ auto Maps::usePortal(Player *player, PacketReader &reader) -> void {
 }
 
 auto Maps::useScriptedPortal(Player *player, PacketReader &reader) -> void {
-	reader.skipBytes(1);
+	reader.skip<portal_count_t>();
 	string_t portalName = reader.get<string_t>();
 
 	const PortalInfo * const portal = player->getMap()->getPortal(portalName);

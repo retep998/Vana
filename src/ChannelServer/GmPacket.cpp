@@ -54,7 +54,7 @@ PACKET_IMPL(block) {
 	builder
 		.add<header_t>(SMSG_GM)
 		.add<int8_t>(0x04)
-		.add<int8_t>(0); // Might be something like succeed but it isn't displayed
+		.unk<int8_t>(); // Might be something like succeed but it isn't displayed
 	return builder;
 }
 
@@ -63,7 +63,7 @@ PACKET_IMPL(invalidCharacterName) {
 	builder
 		.add<header_t>(SMSG_GM)
 		.add<int8_t>(0x06)
-		.add<int8_t>(1);
+		.unk<int8_t>(1);
 	return builder;
 }
 

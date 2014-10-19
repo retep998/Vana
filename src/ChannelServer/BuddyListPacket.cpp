@@ -42,7 +42,7 @@ PACKET_IMPL(update, Player *player, uint8_t type) {
 	player->getBuddyList()->addBuddies(builder);
 
 	for (uint8_t i = 0; i < size; i++) {
-		builder.add<int32_t>(0);
+		builder.unk<int32_t>();
 	}
 	return builder;
 }
@@ -66,13 +66,13 @@ PACKET_IMPL(invitation, const BuddyInvite &invite) {
 		.add<player_id_t>(invite.id)
 		.add<string_t>(invite.name, 13)
 		.add<uint8_t>(OppositeStatus::Requested) // Buddy status
-		.add<int32_t>(-1) // Doesn't appear to matter
+		.unk<int32_t>(-1) // Doesn't appear to matter
 		.add<string_t>("Default Group", 13) // Needs to be set to "Default Group", because it's automatically added.
-		.add<int8_t>(0x00)
+		.unk<int8_t>()
 		.add<int8_t>(20) // Seems to be the amount of buddy slots for the character...
-		.add<uint8_t>(0xFD)
-		.add<uint8_t>(0xBA)
-		.add<int8_t>(0); // Unknown
+		.unk<uint8_t>(0xFD)
+		.unk<uint8_t>(0xBA)
+		.unk<int8_t>();
 	return builder;
 }
 
@@ -82,7 +82,7 @@ PACKET_IMPL(online, player_id_t charId, channel_id_t channel, bool cashShop) {
 		.add<header_t>(SMSG_BUDDY)
 		.add<int8_t>(ActionTypes::Logon)
 		.add<player_id_t>(charId)
-		.add<int8_t>(0)
+		.unk<int8_t>()
 		.add<int32_t>(cashShop ? 20 : channel);
 	return builder;
 }

@@ -33,7 +33,7 @@ PACKET_IMPL(acceptQuest, quest_id_t questId, npc_id_t npcId) {
 		.add<int8_t>(8)
 		.add<quest_id_t>(questId)
 		.add<npc_id_t>(npcId)
-		.add<int32_t>(0);
+		.unk<int32_t>();
 	return builder;
 }
 
@@ -43,10 +43,10 @@ PACKET_IMPL(acceptQuestNotice, quest_id_t questId) {
 		.add<header_t>(SMSG_NOTICE)
 		.add<int8_t>(1)
 		.add<quest_id_t>(questId)
-		.add<int8_t>(1)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int16_t>(0);
+		.unk<int8_t>(1)
+		.unk<int32_t>()
+		.unk<int32_t>()
+		.unk<int16_t>();
 	return builder;
 }
 
@@ -56,7 +56,7 @@ PACKET_IMPL(completeQuestNotice, quest_id_t questId, int64_t time) {
 		.add<header_t>(SMSG_NOTICE)
 		.add<int8_t>(1)
 		.add<quest_id_t>(questId)
-		.add<int8_t>(2)
+		.unk<int8_t>(2)
 		.add<int64_t>(time);
 	return builder;
 }
@@ -91,7 +91,7 @@ PACKET_IMPL(updateQuest, const ActiveQuest &quest) {
 		.add<header_t>(SMSG_NOTICE)
 		.add<int8_t>(1)
 		.add<quest_id_t>(quest.id)
-		.add<int8_t>(1)
+		.unk<int8_t>(1)
 		.add<string_t>(quest.getQuestData());
 	return builder;
 }
@@ -128,7 +128,7 @@ PACKET_IMPL(forfeitQuest, quest_id_t questId) {
 		.add<header_t>(SMSG_NOTICE)
 		.add<int8_t>(1)
 		.add<quest_id_t>(questId)
-		.add<int8_t>(0);
+		.unk<int8_t>();
 	return builder;
 }
 

@@ -52,21 +52,6 @@ auto TimeUtilities::timeToTick(time_t time) -> int64_t {
 	return ticks;
 }
 
-auto TimeUtilities::timeToTick32(time_t time) -> int32_t {
-	return tickToTick32(timeToTick(time));
-}
-
-auto TimeUtilities::tickToTick32(int64_t tick) -> int32_t{
-	int32_t tick32;
-	if (tick == -1) {
-		tick32 = -1;
-	}
-	else {
-		tick32 = static_cast<int32_t>(tick / 4294967296LL + 1); // Plus one to compensate for the loss of conversion
-	}
-	return tick32;
-}
-
 auto TimeUtilities::getDate(time_t ctime) -> int32_t {
 	std::tm *timeInfo = localtime(&ctime);
 	int32_t result = timeInfo->tm_mday;

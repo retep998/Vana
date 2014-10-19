@@ -40,8 +40,8 @@ SPLIT_PACKET_IMPL(updatePlayer, Player *player) {
 		.add<player_id_t>(player->getId())
 		.add<int8_t>(1)
 		.addBuffer(PlayerPacketHelper::addPlayerDisplay(player))
-		.add<int8_t>(0)
-		.add<int16_t>(0);
+		.unk<int8_t>()
+		.unk<int16_t>();
 
 	builder.map.addBuffer(builder.player);
 	return builder;
@@ -52,7 +52,7 @@ SPLIT_PACKET_IMPL(sitChair, player_id_t playerId, item_id_t chairId) {
 	builder.player
 		.add<header_t>(SMSG_PLAYER_UPDATE)
 		.add<int16_t>(1)
-		.add<int32_t>(0);
+		.unk<int32_t>();
 
 	builder.map
 		.add<header_t>(SMSG_CHAIR_SIT)

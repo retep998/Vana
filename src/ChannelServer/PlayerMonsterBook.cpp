@@ -110,7 +110,7 @@ auto PlayerMonsterBook::addCard(int32_t cardId, uint8_t level, bool initialLoad)
 
 auto PlayerMonsterBook::connectData(PacketBuilder &packet) -> void {
 	packet.add<int32_t>(getCover() != 0 ? ChannelServer::getInstance().getItemDataProvider().getCardId(getCover()) : 0);
-	packet.add<int8_t>(0);
+	packet.unk<int8_t>();
 
 	packet.add<uint16_t>(m_cards.size());
 	for (const auto &kvp : m_cards) {

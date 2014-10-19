@@ -79,10 +79,10 @@ auto MobHandler::handleTurncoats(Player *player, PacketReader &reader) -> void {
 	map_object_t mobFrom = reader.get<map_object_t>();
 	player_id_t playerId = reader.get<player_id_t>();
 	map_object_t mobTo = reader.get<map_object_t>();
-	reader.skipBytes(1); // Same as player damage, -1 = bump, integer = skill ID
+	reader.skip<uint8_t>(); // Same as player damage, -1 = bump, integer = skill ID
 	damage_t damage = reader.get<damage_t>();
-	reader.skipBytes(1); // Facing direction
-	reader.skipBytes(4); // Some type of pos, damage display, I think
+	reader.skip<uint8_t>(); // Facing direction
+	reader.unk<uint32_t>(); // Some type of pos, damage display, I think
 
 	Map *map = player->getMap();
 	auto damager = map->getMob(mobFrom);
@@ -111,9 +111,9 @@ auto MobHandler::monsterControl(Player *player, PacketReader &reader) -> void {
 	mob_skill_id_t useSkillId = reader.get<mob_skill_id_t>();
 	mob_skill_level_t useSkillLevel = reader.get<mob_skill_level_t>();
 	int16_t option = reader.get<int16_t>();
-	reader.skipBytes(1); // unk
-	reader.skipBytes(4); // 4 bytes of always 1 or always 0?
-	reader.skipBytes(4); // Pos?
+	reader.unk<uint8_t>();
+	reader.unk<uint32_t>(); // 4 bytes of always 1 or always 0?
+	reader.unk<uint32_t>(); // Pos?
 
 	// TODO FIXME mob.get() - perhaps movement parsing should be on the MovableLife class itself?
 	MovementHandler::parseMovement(mob.get(), reader);

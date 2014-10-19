@@ -54,32 +54,40 @@ auto MovementHandler::parseMovement(MovableLife *life, PacketReader &reader) -> 
 		int8_t type = reader.get<int8_t>();
 		switch (type) {
 			case Falling:
-				reader.skipBytes(1);
+				reader.unk<uint8_t>();
 				break;
 			case Wings:
-				reader.skipBytes(7);
+				reader.unk<uint8_t>();
+				reader.unk<uint16_t>();
+				reader.unk<uint32_t>();
 				break;
 			case WingsFalling:
 				x = reader.get<coord_t>();
 				y = reader.get<coord_t>();
 				foothold = reader.get<foothold_id_t>();
 				stance = reader.get<int8_t>();
-				reader.skipBytes(6);
+				reader.unk<uint16_t>();
+				reader.unk<uint16_t>();
+				reader.unk<uint16_t>();
 				break;
 			case ExcessiveKb:
-				reader.skipBytes(7);
+				reader.unk<uint8_t>();
+				reader.unk<uint16_t>();
+				reader.unk<uint32_t>();
 				break;
 			case Unk2:
-				reader.skipBytes(9);
+				reader.unk<uint8_t>();
+				reader.unk<uint32_t>();
+				reader.unk<uint32_t>();
 				break;
 			case NormalMovement:
 			case NormalMovement2:
 				x = reader.get<coord_t>();
 				y = reader.get<coord_t>();
-				reader.skipBytes(4);
+				reader.unk<uint32_t>();
 				foothold = reader.get<foothold_id_t>();
 				stance = reader.get<int8_t>();
-				reader.skipBytes(2);
+				reader.unk<uint16_t>();
 				break;
 			case Jump:
 			case JumpKb:
@@ -93,17 +101,18 @@ auto MovementHandler::parseMovement(MovableLife *life, PacketReader &reader) -> 
 			case JumpDown:
 				x = reader.get<coord_t>();
 				y = reader.get<coord_t>();
-				reader.skipBytes(6);
+				reader.unk<uint16_t>();
+				reader.unk<uint32_t>();
 				foothold = reader.get<foothold_id_t>();
 				stance = reader.get<int8_t>();
-				reader.skipBytes(2);
+				reader.unk<uint16_t>();
 				break;
 			case Chair:
 				x = reader.get<coord_t>();
 				y = reader.get<coord_t>();
 				foothold = reader.get<foothold_id_t>();
 				stance = reader.get<int8_t>();
-				reader.skipBytes(2);
+				reader.unk<uint16_t>();
 				break;
 			case Unk1:
 			case Teleport:
@@ -112,7 +121,7 @@ auto MovementHandler::parseMovement(MovableLife *life, PacketReader &reader) -> 
 			case Rush:
 				x = reader.get<coord_t>();
 				y = reader.get<coord_t>();
-				reader.skipBytes(4);
+				reader.unk<uint32_t>();
 				stance = reader.get<int8_t>();
 				break;
 			default:

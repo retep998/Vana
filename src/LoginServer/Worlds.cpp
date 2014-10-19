@@ -81,7 +81,7 @@ auto Worlds::channelSelect(UserConnection *user, PacketReader &reader) -> void {
 		// Hacking
 		return;
 	}
-	reader.skipBytes(1);
+	reader.unk<uint8_t>();
 	channel_id_t channelId = reader.get<int8_t>();
 
 	user->send(LoginPacket::channelSelect());

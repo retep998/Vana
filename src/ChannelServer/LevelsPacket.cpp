@@ -31,16 +31,17 @@ PACKET_IMPL(showExp, experience_t exp, bool white, bool inChat) {
 		.add<bool>(white)
 		.add<experience_t>(exp)
 		.add<bool>(inChat)
-		.add<int32_t>(0)
-		.add<int8_t>(0)
-		.add<int8_t>(0)
-		.add<int32_t>(0);
+		.unk<int32_t>()
+		.unk<int8_t>()
+		.unk<int8_t>()
+		.unk<int32_t>();
+
 	if (inChat) {
-		builder.add<int8_t>(0);
+		builder.unk<int8_t>();
 	}
 	builder
-		.add<int8_t>(0)
-		.add<int32_t>(0);
+		.unk<int8_t>()
+		.unk<int32_t>();
 	return builder;
 }
 
@@ -59,8 +60,8 @@ PACKET_IMPL(statOk) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PLAYER_UPDATE)
-		.add<int16_t>(1)
-		.add<int32_t>(0);
+		.unk<int16_t>(1)
+		.unk<int32_t>();
 	return builder;
 }
 

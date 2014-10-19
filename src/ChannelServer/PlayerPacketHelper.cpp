@@ -79,20 +79,20 @@ PACKET_IMPL(addItemInfo, inventory_slot_t slot, Item *item, bool shortSlot) {
 		if (false) { //item->getCashId() != 0) {
 			builder
 				.addBytes("91174826F700") // Always the same for cash equips
-				.add<int32_t>(0);
+				.unk<int32_t>();
 		}
 		else {
 			builder
-				.add<int8_t>(0)
-				.add<int8_t>(0) // Item level
-				.add<int16_t>(0)
-				.add<int16_t>(0) // Item EXP of.. some sort
-				.add<int32_t>(item->getHammers()) // Vicious' Hammer
-				.add<int64_t>(-1);
+				.unk<int8_t>()
+				.unk<int8_t>() // Item level
+				.unk<int16_t>()
+				.unk<int16_t>() // Item EXP of.. some sort
+				.add<int32_t>(item->getHammers())
+				.unk<int64_t>(-1);
 		}
 		builder
 			.addBytes("0040E0FD3B374F01") // Always the same?
-			.add<int32_t>(-1);
+			.unk<int32_t>(-1);
 	}
 	else {
 		builder
@@ -113,7 +113,7 @@ PACKET_IMPL(addPlayerDisplay, Player *player) {
 		.add<gender_id_t>(player->getGender())
 		.add<skin_id_t>(player->getSkin())
 		.add<face_id_t>(player->getFace())
-		.add<int8_t>(1)
+		.unk<int8_t>(1)
 		.add<hair_id_t>(player->getHair());
 
 	player->getInventory()->addEquippedPacket(builder);

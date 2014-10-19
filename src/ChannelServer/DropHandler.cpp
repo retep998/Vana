@@ -164,7 +164,7 @@ auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t dropping
 }
 
 auto DropHandler::dropMesos(Player *player, PacketReader &reader) -> void {
-	tick_count_t ticks = reader.get<tick_count_t>();
+	reader.skip<tick_count_t>();
 	int32_t amount = reader.get<int32_t>();
 	if (amount < 10 || amount > 50000 || amount > player->getInventory()->getMesos()) {
 		// Hacking
@@ -182,7 +182,8 @@ auto DropHandler::petLoot(Player *player, PacketReader &reader) -> void {
 }
 
 auto DropHandler::lootItem(Player *player, PacketReader &reader, pet_id_t petId) -> void {
-	reader.skipBytes(5);
+	reader.unk<uint8_t>();
+	reader.skip<tick_count_t>();
 	Point playerPos = reader.get<Point>();
 	map_object_t dropId = reader.get<map_object_t>();
 	Drop *drop = player->getMap()->getDrop(dropId);

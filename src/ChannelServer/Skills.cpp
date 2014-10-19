@@ -41,7 +41,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 
 auto Skills::addSkill(Player *player, PacketReader &reader) -> void {
-	tick_count_t ticks = reader.get<tick_count_t>();
+	reader.skip<tick_count_t>();
 	skill_id_t skillId = reader.get<skill_id_t>();
 	if (!GameLogicUtilities::isBeginnerSkill(skillId)) {
 		if (player->getStats()->getSp() == 0) {
@@ -120,7 +120,7 @@ auto Skills::getAffectedPartyMembers(Party *party, int8_t affected, int8_t membe
 }
 
 auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
-	tick_count_t ticks = reader.get<tick_count_t>();
+	reader.skip<tick_count_t>();
 	skill_id_t skillId = reader.get<skill_id_t>();
 	int16_t addedInfo = 0;
 	skill_level_t level = reader.get<skill_level_t>();
@@ -180,7 +180,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 		case Skills::WhiteKnight::MagicCrash:
 		case Skills::DragonKnight::PowerCrash: {
 			// Might be CRC
-			reader.skipBytes(4);
+			reader.unk<uint32_t>();
 			uint8_t mobs = reader.get<uint8_t>();
 			for (uint8_t k = 0; k < mobs; k++) {
 				map_object_t mapMobId = reader.get<map_object_t>();
@@ -209,7 +209,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 		case Skills::BlazeWizard::Slow:
 		case Skills::Page::Threaten:
 			// Might be CRC
-			reader.skipBytes(4);
+			reader.unk<uint32_t>();
 			// Intentional fallthrough
 		case Skills::FpMage::Seal:
 		case Skills::IlMage::Seal:
@@ -256,7 +256,9 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 					}
 				}
 			}
-			reader.skipBytes(2);
+
+			reader.unk<int16_t>();
+
 			affected = reader.get<int8_t>();
 			for (int8_t k = 0; k < affected; k++) {
 				map_object_t mapMobId = reader.get<map_object_t>();

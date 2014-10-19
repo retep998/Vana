@@ -77,7 +77,7 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 			banTime.tm_year = 7100;
 			banTime.tm_mon = 0;
 			banTime.tm_mday = 1;
-			int32_t time = TimeUtilities::timeToTick32(mktime(&banTime));
+			int64_t time = TimeUtilities::timeToTick(mktime(&banTime));
 			user->send(LoginPacket::loginBan(0, time));
 			valid = false;
 		}
@@ -115,7 +115,7 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 				valid = false;
 			}
 			else if (row.get<bool>("banned") && (!row.get<bool>("admin") || row.get<int32_t>("gm_level") == 0)) {
-				int32_t time = TimeUtilities::timeToTick32(row.get<unix_time_t>("ban_expire"));
+				int64_t time = TimeUtilities::timeToTick(row.get<unix_time_t>("ban_expire"));
 				user->send(LoginPacket::loginBan(row.get<int8_t>("ban_reason"), time));
 				valid = false;
 			}
@@ -240,7 +240,8 @@ auto Login::checkPin(UserConnection *user, PacketReader &reader) -> void {
 		return;
 	}
 	int8_t act = reader.get<int8_t>();
-	reader.skipBytes(5);
+	reader.unk<uint8_t>();
+	reader.unk<uint32_t>();
 
 	if (act == 0x00) {
 		user->setStatus(PlayerStatus::AskPin);

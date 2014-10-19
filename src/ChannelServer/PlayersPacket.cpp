@@ -36,7 +36,7 @@ SPLIT_PACKET_IMPL(showMoving, player_id_t playerId, unsigned char *buf, size_t s
 	builder.map
 		.add<header_t>(SMSG_PLAYER_MOVEMENT)
 		.add<player_id_t>(playerId)
-		.add<int32_t>(0)
+		.unk<int32_t>()
 		.addBuffer(buf, size);
 	return builder;
 }
@@ -61,7 +61,7 @@ PACKET_IMPL(showChat, player_id_t playerId, bool isGm, const string_t &msg, bool
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(damagePlayer, player_id_t playerId, int32_t dmg, int32_t mob, uint8_t hit, int8_t type, uint8_t stance, int32_t noDamageSkill, const ReturnDamageInfo &pgmr) {
+SPLIT_PACKET_IMPL(damagePlayer, player_id_t playerId, damage_t dmg, mob_id_t mob, uint8_t hit, int8_t type, uint8_t stance, skill_id_t noDamageSkill, const ReturnDamageInfo &pgmr) {
 	SplitPacketBuilder builder;
 	const int8_t BumpDamage = -1;
 	const int8_t MapDamage = -2;
@@ -70,33 +70,34 @@ SPLIT_PACKET_IMPL(damagePlayer, player_id_t playerId, int32_t dmg, int32_t mob, 
 		.add<header_t>(SMSG_PLAYER_DAMAGE)
 		.add<player_id_t>(playerId)
 		.add<int8_t>(type);
+
 	switch (type) {
 		case MapDamage:
 			builder.map
-				.add<int32_t>(dmg)
-				.add<int32_t>(dmg);
+				.add<damage_t>(dmg)
+				.add<damage_t>(dmg);
 			break;
 		default:
 			builder.map
-				.add<int32_t>(pgmr.reduction > 0 ? pgmr.damage : dmg)
-				.add<int32_t>(mob)
-				.add<int8_t>(hit)
-				.add<int8_t>(pgmr.reduction);
+				.add<damage_t>(pgmr.reduction > 0 ? pgmr.damage : dmg)
+				.add<mob_id_t>(mob)
+				.add<uint8_t>(hit)
+				.add<uint8_t>(pgmr.reduction);
 
 			if (pgmr.reduction > 0) {
 				builder.map
 					.add<bool>(pgmr.isPhysical) // Maybe? No Mana Reflection on global to test with
-					.add<int32_t>(pgmr.mapMobId)
-					.add<int8_t>(6)
+					.add<map_object_t>(pgmr.mapMobId)
+					.unk<int8_t>(6)
 					.add<Point>(pgmr.pos);
 			}
 
 			builder.map
-				.add<int8_t>(stance)
-				.add<int32_t>(dmg);
+				.add<uint8_t>(stance)
+				.add<damage_t>(dmg);
 
 			if (noDamageSkill > 0) {
-				builder.map.add<int32_t>(noDamageSkill);
+				builder.map.add<skill_id_t>(noDamageSkill);
 			}
 			break;
 	}
@@ -143,8 +144,8 @@ PACKET_IMPL(findPlayer, const string_t &name, int32_t map, uint8_t is, bool isCh
 			.add<string_t>(name)
 			.add<int8_t>(isChannel ? 0x03 : 0x01)
 			.add<int32_t>(map)
-			.add<int32_t>(0)
-			.add<int32_t>(0);
+			.unk<int32_t>()
+			.unk<int32_t>();
 	}
 	else {
 		builder
@@ -155,10 +156,10 @@ PACKET_IMPL(findPlayer, const string_t &name, int32_t map, uint8_t is, bool isCh
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useMeleeAttack, player_id_t playerId, int32_t masterySkillId, uint8_t masteryLevel, const Attack &attack) {
+SPLIT_PACKET_IMPL(useMeleeAttack, player_id_t playerId, skill_id_t masterySkillId, skill_level_t masteryLevel, const Attack &attack) {
 	SplitPacketBuilder builder;
 	int8_t hitByte = (attack.targets * 0x10) + attack.hits;
-	int32_t skillId = attack.skillId;
+	skill_id_t skillId = attack.skillId;
 	bool isMesoExplosion = attack.isMesoExplosion;
 	if (isMesoExplosion) {
 		hitByte = (attack.targets * 0x10) + 0x0A;
@@ -168,10 +169,10 @@ SPLIT_PACKET_IMPL(useMeleeAttack, player_id_t playerId, int32_t masterySkillId, 
 		.add<header_t>(SMSG_ATTACK_MELEE)
 		.add<player_id_t>(playerId)
 		.add<int8_t>(hitByte)
-		.add<uint8_t>(attack.skillLevel);
+		.add<skill_level_t>(attack.skillLevel);
 
 	if (skillId != Skills::All::RegularAttack) {
-		builder.map.add<int32_t>(skillId);
+		builder.map.add<skill_id_t>(skillId);
 	}
 
 	builder.map
@@ -179,35 +180,35 @@ SPLIT_PACKET_IMPL(useMeleeAttack, player_id_t playerId, int32_t masterySkillId, 
 		.add<uint8_t>(attack.animation)
 		.add<uint8_t>(attack.weaponSpeed)
 		.add<uint8_t>(masterySkillId > 0 ? GameLogicUtilities::getMasteryDisplay(masteryLevel) : 0)
-		.add<int32_t>(0);
+		.unk<int32_t>();
 
 	for (const auto &target : attack.damages) {
 		builder.map
-			.add<int32_t>(target.first)
-			.add<int8_t>(0x06);
+			.add<map_object_t>(target.first)
+			.unk<int8_t>(0x06);
 
 		if (isMesoExplosion) {
 			builder.map.add<uint8_t>(target.second.size());
 		}
 		for (const auto &hit : target.second) {
-			builder.map.add<int32_t>(hit);
+			builder.map.add<damage_t>(hit);
 		}
 	}
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useRangedAttack, player_id_t playerId, int32_t masterySkillId, uint8_t masteryLevel, const Attack &attack) {
+SPLIT_PACKET_IMPL(useRangedAttack, player_id_t playerId, skill_id_t masterySkillId, skill_level_t masteryLevel, const Attack &attack) {
 	SplitPacketBuilder builder;
-	int32_t skillId = attack.skillId;
+	skill_id_t skillId = attack.skillId;
 
 	builder.map
 		.add<header_t>(SMSG_ATTACK_RANGED)
 		.add<player_id_t>(playerId)
 		.add<int8_t>((attack.targets * 0x10) + attack.hits)
-		.add<uint8_t>(attack.skillLevel);
+		.add<skill_level_t>(attack.skillLevel);
 
 	if (skillId != Skills::All::RegularAttack) {
-		builder.map.add<int32_t>(skillId);
+		builder.map.add<skill_id_t>(skillId);
 	}
 
 	builder.map
@@ -217,23 +218,23 @@ SPLIT_PACKET_IMPL(useRangedAttack, player_id_t playerId, int32_t masterySkillId,
 		.add<uint8_t>(masterySkillId > 0 ? GameLogicUtilities::getMasteryDisplay(masteryLevel) : 0)
 		// Bug in global:
 		// The colored swoosh does not display as it should
-		.add<int32_t>(attack.starId);
+		.add<item_id_t>(attack.starId);
 
 	for (const auto &target : attack.damages) {
 		builder.map
-			.add<int32_t>(target.first)
-			.add<int8_t>(0x06);
+			.add<map_object_t>(target.first)
+			.unk<int8_t>(0x06);
 
 		for (const auto &hit : target.second) {
-			int32_t damage = hit;
+			damage_t damage = hit;
 			switch (skillId) {
 				case Skills::Marksman::Snipe: // Snipe is always crit
-					damage += 0x80000000; // Critical damage = 0x80000000 + damage
+					damage |= 0x80000000; // Critical damage = 0x80000000 + damage
 					break;
 				default:
 					break;
 			}
-			builder.map.add<int32_t>(damage);
+			builder.map.add<damage_t>(damage);
 		}
 	}
 	builder.map.add<Point>(attack.projectilePos);
@@ -247,25 +248,25 @@ SPLIT_PACKET_IMPL(useSpellAttack, player_id_t playerId, const Attack &attack) {
 		.add<player_id_t>(playerId)
 		.add<int8_t>((attack.targets * 0x10) + attack.hits)
 		.add<uint8_t>(attack.skillLevel)
-		.add<int32_t>(attack.skillId)
+		.add<skill_id_t>(attack.skillId)
 		.add<uint8_t>(attack.display)
 		.add<uint8_t>(attack.animation)
 		.add<uint8_t>(attack.weaponSpeed)
 		.add<uint8_t>(0) // Mastery byte is always 0 because spells don't have a swoosh
-		.add<int32_t>(0); // No clue
+		.unk<int32_t>();
 
 	for (const auto &target : attack.damages) {
 		builder.map
-			.add<int32_t>(target.first)
-			.add<int8_t>(0x06);
+			.add<map_object_t>(target.first)
+			.unk<int8_t>(0x06);
 
 		for (const auto &hit : target.second) {
-			builder.map.add<int32_t>(hit);
+			builder.map.add<damage_t>(hit);
 		}
 	}
 
 	if (attack.charge > 0) {
-		builder.map.add<int32_t>(attack.charge);
+		builder.map.add<charge_time_t>(attack.charge);
 	}
 	return builder;
 }
@@ -275,16 +276,17 @@ SPLIT_PACKET_IMPL(useSummonAttack, player_id_t playerId, const Attack &attack) {
 	builder.map
 		.add<header_t>(SMSG_SUMMON_ATTACK)
 		.add<player_id_t>(playerId)
-		.add<int32_t>(attack.summonId)
+		.add<summon_id_t>(attack.summonId)
 		.add<int8_t>(attack.animation)
 		.add<int8_t>(attack.targets);
+
 	for (const auto &target : attack.damages) {
 		builder.map
-			.add<int32_t>(target.first)
-			.add<int8_t>(0x06);
+			.add<map_object_t>(target.first)
+			.unk<int8_t>(0x06);
 
 		for (const auto &hit : target.second) {
-			builder.map.add<int32_t>(hit);
+			builder.map.add<damage_t>(hit);
 		}
 	}
 	return builder;
@@ -307,21 +309,21 @@ SPLIT_PACKET_IMPL(useEnergyChargeAttack, player_id_t playerId, int32_t masterySk
 		.add<header_t>(SMSG_ATTACK_ENERGYCHARGE)
 		.add<player_id_t>(playerId)
 		.add<int8_t>((attack.targets * 0x10) + attack.hits)
-		.add<int8_t>(attack.skillLevel)
-		.add<int32_t>(attack.skillId)
+		.add<skill_level_t>(attack.skillLevel)
+		.add<skill_id_t>(attack.skillId)
 		.add<uint8_t>(attack.display)
 		.add<uint8_t>(attack.animation)
 		.add<uint8_t>(attack.weaponSpeed)
 		.add<uint8_t>(masterySkillId > 0 ? GameLogicUtilities::getMasteryDisplay(masteryLevel) : 0)
-		.add<int32_t>(0);
+		.unk<int32_t>();
 
 	for (const auto &target : attack.damages) {
 		builder.map
-			.add<int32_t>(target.first)
-			.add<int8_t>(0x06);
+			.add<map_object_t>(target.first)
+			.unk<int8_t>(0x06);
 
 		for (const auto &hit : target.second) {
-			builder.map.add<int32_t>(hit);
+			builder.map.add<damage_t>(hit);
 		}
 	}
 	return builder;

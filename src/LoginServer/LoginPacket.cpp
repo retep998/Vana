@@ -32,19 +32,21 @@ PACKET_IMPL(loginError, int16_t errorId) {
 	builder
 		.add<header_t>(SMSG_AUTHENTICATION)
 		.add<int16_t>(errorId)
-		.add<int32_t>(0);
+		.unk<int32_t>();
 	return builder;
 }
 
-PACKET_IMPL(loginBan, int8_t reason, int32_t expire) {
+PACKET_IMPL(loginBan, int8_t reason, int64_t expire) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_AUTHENTICATION)
 		.add<int16_t>(2)
-		.add<int32_t>(0)
+		.unk<int32_t>()
 		.add<int8_t>(reason)
-		.add<int32_t>(0)
-		.add<int32_t>(expire); // Ban over: Time, anything >= 00aacb01 (year >= 2011) will cause perma ban
+		.add<int64_t>(expire);
+	// Expiration will be a permanent ban if it's more than 2 years over the current year
+	// However, the cutoff is Jan1
+	// So if it's June, 2008 on the client's system, sending Jan 1 2011 = permanent ban
 	return builder;
 }
 
@@ -52,8 +54,8 @@ PACKET_IMPL(loginConnect, UserConnection *user, const string_t &username) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_AUTHENTICATION)
-		.add<int32_t>(0)
 		.add<int16_t>(0)
+		.unk<int32_t>()
 		.add<account_id_t>(user->getUserId());
 
 	switch (user->getStatus()) {
@@ -80,11 +82,11 @@ PACKET_IMPL(loginConnect, UserConnection *user, const string_t &username) {
 
 	builder
 		.add<string_t>(username)
-		.add<int8_t>(0)
+		.unk<int8_t>()
 		.add<int8_t>(user->getQuietBanReason())
 		.add<int64_t>(user->getQuietBanTime())
 		.add<int64_t>(user->getCreationTime())
-		.add<int32_t>(0);
+		.unk<int32_t>();
 	return builder;
 }
 
@@ -100,7 +102,7 @@ PACKET_IMPL(pinAssigned) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PIN_ASSIGNED)
-		.add<int8_t>(0);
+		.unk<int8_t>();
 	return builder;
 }
 
@@ -109,21 +111,25 @@ PACKET_IMPL(genderDone, gender_id_t gender) {
 	builder
 		.add<header_t>(SMSG_ACCOUNT_GENDER_DONE)
 		.add<gender_id_t>(gender)
-		.add<int8_t>(1);
+		.unk<int8_t>(1);
 	return builder;
 }
 
 PACKET_IMPL(showWorld, World *world) {
 	PacketBuilder builder;
+
+	// Modifying this will show the event message
+	int16_t expRatePercentage = 100;
+
 	builder
 		.add<header_t>(SMSG_WORLD_LIST)
 		.add<world_id_t>(world->getId())
 		.add<string_t>(world->getName())
 		.add<int8_t>(world->getRibbon())
 		.add<string_t>(world->getEventMessage())
-		.add<int16_t>(100) // EXP rate. x/100. Changing this will show event message.
-		.add<int16_t>(100)
-		.add<int8_t>(0);
+		.add<int16_t>(expRatePercentage) 
+		.unk<int16_t>(100)
+		.unk<int8_t>();
 
 	builder.add<channel_id_t>(world->getMaxChannels());
 	for (channel_id_t i = 0; i < world->getMaxChannels(); i++) {
@@ -142,7 +148,7 @@ PACKET_IMPL(showWorld, World *world) {
 		builder
 			.add<world_id_t>(world->getId())
 			.add<uint8_t>(i)
-			.add<uint8_t>(0); // Some sort of state
+			.unk<uint8_t>(); // Some sort of state
 	}
 
 	int16_t messageCount = 0;
@@ -152,6 +158,7 @@ PACKET_IMPL(showWorld, World *world) {
 		builder.add<Point>(Point{i * 10, 0});
 		builder.add<string_t>("message");
 	}
+
 	return builder;
 }
 
@@ -175,8 +182,8 @@ PACKET_IMPL(channelSelect) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_CHANNEL_SELECT)
-		.add<int16_t>(0)
-		.add<int8_t>(0);
+		.unk<int16_t>()
+		.unk<int8_t>();
 	return builder;
 }
 
@@ -184,7 +191,7 @@ PACKET_IMPL(showCharacters, const vector_t<Character> &chars, int32_t maxChars) 
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PLAYER_LIST)
-		.add<int8_t>(0);
+		.unk<int8_t>();
 
 	builder.add<uint8_t>(chars.size());
 	for (const auto &elem : chars) {
@@ -216,9 +223,9 @@ PACKET_IMPL(showAllCharactersInfo, world_id_t worldCount, uint32_t unk) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PLAYER_GLOBAL_LIST)
-		.add<int8_t>(1)
+		.add<bool>(true) // Indicates the world-specific character list, true means it's the world-specific character list
 		.add<int32_t>(worldCount)
-		.add<uint32_t>(unk);
+		.unk<uint32_t>(unk);
 	return builder;
 }
 
@@ -226,7 +233,7 @@ PACKET_IMPL(showViewAllCharacters, world_id_t worldId, const vector_t<Character>
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PLAYER_GLOBAL_LIST)
-		.add<int8_t>(0)
+		.add<bool>(false) // Indicates the world-specific character list, false means it's view all characters
 		.add<world_id_t>(worldId);
 
 	builder.add<uint8_t>(chars.size());
@@ -240,7 +247,7 @@ PACKET_IMPL(showCharacter, const Character &charc) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PLAYER_CREATE)
-		.add<int8_t>(0)
+		.unk<int8_t>()
 		.addBuffer(LoginPacketHelper::addCharacter(charc));
 	return builder;
 }
@@ -258,12 +265,12 @@ PACKET_IMPL(connectIp, const ClientIp &ip, port_t port, player_id_t charId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_CHANNEL_CONNECT)
-		.add<int16_t>(0)
+		.unk<int16_t>()
 		.add<ClientIp>(ip)
 		.add<port_t>(port)
 		.add<player_id_t>(charId)
-		.add<int32_t>(0)
-		.add<int8_t>(0);
+		.unk<int32_t>()
+		.unk<int8_t>();
 	return builder;
 }
 
@@ -271,7 +278,7 @@ PACKET_IMPL(relogResponse) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_LOGIN_RETURN)
-		.add<int8_t>(1);
+		.unk<int8_t>(1);
 	return builder;
 }
 

@@ -172,9 +172,9 @@ auto NpcHandler::useShop(Player *player, PacketReader &reader) -> void {
 	switch (type) {
 		case ShopOpcodes::Buy: {
 			uint16_t itemIndex = reader.get<uint16_t>();
-			reader.skipBytes(4); // Item ID, no reason to trust this
+			reader.skip<item_id_t>(); // No reason to trust this
 			slot_qty_t quantity = reader.get<slot_qty_t>();
-			reader.skipBytes(4); // Price, don't want to trust this
+			reader.skip<mesos_t>(); // Price, don't want to trust this
 			auto shopItem = ChannelServer::getInstance().getShopDataProvider().getShopItem(player->getShop(), itemIndex);
 			if (shopItem == nullptr) {
 				// Hacking
@@ -198,7 +198,7 @@ auto NpcHandler::useShop(Player *player, PacketReader &reader) -> void {
 				player->send(NpcPacket::bought(NpcPacket::BoughtMessages::NoSlots));
 				return;
 			}
-			Inventory::addNewItem(player, itemId, static_cast<int16_t>(totalAmount));
+			Inventory::addNewItem(player, itemId, totalAmount);
 			player->getInventory()->modifyMesos(-totalPrice);
 			player->send(NpcPacket::bought(NpcPacket::BoughtMessages::Success));
 			break;

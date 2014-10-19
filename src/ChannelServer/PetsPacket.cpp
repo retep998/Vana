@@ -59,7 +59,7 @@ SPLIT_PACKET_IMPL(showChat, player_id_t playerId, Pet *pet, const string_t &mess
 		.add<header_t>(SMSG_PET_MESSAGE)
 		.add<player_id_t>(playerId)
 		.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1)
-		.add<int8_t>(0)
+		.unk<int8_t>()
 		.add<int8_t>(act)
 		.add<string_t>(message)
 		.add<bool>(pet->hasQuoteItem());
@@ -84,7 +84,7 @@ PACKET_IMPL(showAnimation, player_id_t playerId, Pet *pet, int8_t animation) {
 		.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1)
 		.add<bool>(animation == 1)
 		.add<int8_t>(animation)
-		.add<int8_t>(0)
+		.unk<int8_t>()
 		.add<bool>(pet->hasQuoteItem());
 	return builder;
 }
@@ -163,7 +163,7 @@ PACKET_IMPL(updateSummonedPets, Player *player) {
 			builder.add<pet_id_t>(0);
 		}
 	}
-	builder.add<int8_t>(0);
+	builder.unk<int8_t>();
 	return builder;
 }
 
@@ -172,7 +172,7 @@ PACKET_IMPL(blankUpdate) {
 	builder
 		.add<header_t>(SMSG_PLAYER_UPDATE)
 		.add<int8_t>(1)
-		.add<int32_t>(0);
+		.unk<int32_t>();
 	return builder;
 }
 
@@ -189,7 +189,7 @@ PACKET_IMPL(addInfo, Pet *pet, Item *petItem) {
 		.add<int16_t>(pet->getCloseness())
 		.add<int8_t>(pet->getFullness())
 		.add<int64_t>(petItem->getExpirationTime())
-		.add<int32_t>(0)
+		.unk<int32_t>()
 		.add<int32_t>(0); // Time to expire (for trial pet)
 	return builder;
 }

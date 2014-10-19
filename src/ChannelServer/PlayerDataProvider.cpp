@@ -211,7 +211,6 @@ auto PlayerDataProvider::send(const PacketBuilder &packet) -> void {
 	}
 }
 
-
 auto PlayerDataProvider::addFollower(Player *follower, Player *target) -> void {
 	auto kvp = m_followers.find(target->getId());
 	if (kvp == std::end(m_followers)) {

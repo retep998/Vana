@@ -350,13 +350,13 @@ auto Characters::connectGame(UserConnection *user, player_id_t charId) -> void {
 	auto world = LoginServer::getInstance().getWorlds().getWorld(user->getWorldId());
 	world->send(LoginServerAcceptPacket::playerConnectingToChannel(user->getChannel(), charId, user->getIp()));
 
-	Ip chanIp(0);
+	Ip chanIp{0};
 	port_t port = -1;
 	if (Channel *channel = world->getChannel(user->getChannel())) {
 		chanIp = channel->matchIpToSubnet(user->getIp());
 		port = channel->getPort();
 	}
-	ClientIp ip(chanIp);
+	ClientIp ip{chanIp};
 	user->send(LoginPacket::connectIp(ip, port, charId));
 }
 

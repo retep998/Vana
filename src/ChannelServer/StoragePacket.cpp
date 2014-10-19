@@ -34,9 +34,9 @@ PACKET_IMPL(showStorage, Player *player, npc_id_t npcId) {
 		.add<npc_id_t>(npcId)
 		.add<storage_slot_t>(player->getStorage()->getSlots())
 		.add<int32_t>(0x7e)
-		.add<int32_t>(0)
+		.unk<int32_t>()
 		.add<mesos_t>(player->getStorage()->getMesos())
-		.add<int16_t>(0)
+		.unk<int16_t>()
 		.add<storage_slot_t>(player->getStorage()->getNumItems());
 
 	for (storage_slot_t i = 0; i < player->getStorage()->getNumItems(); i++) {
@@ -44,8 +44,8 @@ PACKET_IMPL(showStorage, Player *player, npc_id_t npcId) {
 	}
 
 	builder
-		.add<int16_t>(0)
-		.add<int8_t>(0);
+		.unk<int16_t>()
+		.unk<int8_t>();
 	return builder;
 }
 
@@ -57,7 +57,7 @@ PACKET_IMPL(addItem, Player *player, inventory_t inv) {
 		.add<int8_t>(0x0d)
 		.add<storage_slot_t>(player->getStorage()->getSlots())
 		.add<int32_t>(type)
-		.add<int32_t>(0)
+		.unk<int32_t>()
 		.add<storage_slot_t>(player->getStorage()->getNumItems(inv));
 
 	for (storage_slot_t i = 0; i < player->getStorage()->getNumItems(); i++) {
@@ -77,7 +77,7 @@ PACKET_IMPL(takeItem, Player *player, int8_t inv) {
 		.add<int8_t>(0x09)
 		.add<storage_slot_t>(player->getStorage()->getSlots())
 		.add<int32_t>(type)
-		.add<int32_t>(0)
+		.unk<int32_t>()
 		.add<storage_slot_t>(player->getStorage()->getNumItems(inv));
 
 	for (storage_slot_t i = 0; i < player->getStorage()->getNumItems(); i++) {
@@ -95,9 +95,9 @@ PACKET_IMPL(changeMesos, storage_slot_t slotCount, mesos_t mesos) {
 		.add<header_t>(SMSG_STORAGE)
 		.add<int8_t>(0x13)
 		.add<storage_slot_t>(slotCount)
-		.add<int16_t>(2)
-		.add<int16_t>(0)
-		.add<int32_t>(0)
+		.unk<int16_t>(2)
+		.unk<int16_t>()
+		.unk<int32_t>()
 		.add<mesos_t>(mesos);
 	return builder;
 }

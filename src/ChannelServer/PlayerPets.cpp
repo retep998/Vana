@@ -84,12 +84,12 @@ auto PlayerPets::petInfoPacket(PacketBuilder &packet) -> void {
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = getSummoned(i)) {
 			packet.add<int8_t>(1);
-			packet.add<int32_t>(pet->getItemId());
+			packet.add<item_id_t>(pet->getItemId());
 			packet.add<string_t>(pet->getName());
 			packet.add<int8_t>(pet->getLevel());
 			packet.add<int16_t>(pet->getCloseness());
 			packet.add<int8_t>(pet->getFullness());
-			packet.add<int16_t>(0);
+			packet.unk<int16_t>();
 			int16_t slot = 0;
 			switch (i) {
 				case 0: slot = EquipSlots::PetEquip1;
@@ -98,7 +98,7 @@ auto PlayerPets::petInfoPacket(PacketBuilder &packet) -> void {
 			}
 
 			it = m_player->getInventory()->getItem(Inventories::EquipInventory, slot);
-			packet.add<int32_t>(it != nullptr ? it->getId() : 0);
+			packet.add<item_id_t>(it != nullptr ? it->getId() : 0);
 		}
 	}
 	packet.add<int8_t>(0); // End of pets / start of taming mob

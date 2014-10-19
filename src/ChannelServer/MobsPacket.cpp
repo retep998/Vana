@@ -38,7 +38,7 @@ PACKET_IMPL(requestControl, ref_ptr_t<Mob> mob, MobSpawnType spawn) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_MOB_CONTROL)
-		.add<int8_t>(1)
+		.unk<int8_t>(1)
 		.addBuffer(mobPacket(mob, 0, nullptr, spawn));
 	return builder;
 }
@@ -66,7 +66,7 @@ PACKET_IMPL(mobPacket, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> o
 			builder.add<int16_t>(1);
 		}
 		else {
-			builder.add<int32_t>(0);
+			builder.unk<int32_t>();
 		}
 	}
 
@@ -92,8 +92,8 @@ PACKET_IMPL(mobPacket, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> o
 	}
 
 	builder
-		.add<int8_t>(-1)
-		.add<int32_t>(0);
+		.unk<int8_t>(-1)
+		.unk<int32_t>();
 	return builder;
 }
 
@@ -138,11 +138,11 @@ PACKET_IMPL(healMob, map_object_t mapMobId, int32_t amount) {
 	builder
 		.add<header_t>(SMSG_MOB_DAMAGE)
 		.add<map_object_t>(mapMobId)
-		.add<int8_t>(0)
+		.unk<int8_t>()
 		.add<int32_t>(-amount)
-		.add<int8_t>(0)
-		.add<int8_t>(0)
-		.add<int8_t>(0);
+		.unk<int8_t>()
+		.unk<int8_t>()
+		.unk<int8_t>();
 	return builder;
 }
 
@@ -151,11 +151,11 @@ PACKET_IMPL(hurtMob, map_object_t mapMobId, damage_t amount) {
 	builder
 		.add<header_t>(SMSG_MOB_DAMAGE)
 		.add<map_object_t>(mapMobId)
-		.add<int8_t>(0)
+		.unk<int8_t>()
 		.add<damage_t>(amount)
-		.add<int8_t>(0)
-		.add<int8_t>(0)
-		.add<int8_t>(0);
+		.unk<int8_t>()
+		.unk<int8_t>()
+		.unk<int8_t>();
 	return builder;
 }
 
