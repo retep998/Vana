@@ -396,7 +396,7 @@ auto Buffs::addBuff(Player *player, skill_id_t skillId, skill_level_t level, int
 				break;
 			case Skills::Marauder::EnergyCharge:
 			case Skills::ThunderBreaker::EnergyCharge:
-				player->sendMap(BuffsPacket::usePirateBuff(player->getId(), 0, (player->getActiveBuffs()->getEnergyChargeLevel() == Stats::MaxEnergyChargeLevel ? time : seconds_t(0)), playerSkill, mapSkill));
+				player->sendMap(BuffsPacket::usePirateBuff(player->getId(), 0, (player->getActiveBuffs()->getEnergyChargeLevel() == Stats::MaxEnergyChargeLevel ? time : seconds_t{0}), playerSkill, mapSkill));
 				break;
 			case Skills::Buccaneer::SpeedInfusion:
 			case Skills::ThunderBreaker::SpeedInfusion:

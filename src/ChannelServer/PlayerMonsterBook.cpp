@@ -112,7 +112,7 @@ auto PlayerMonsterBook::connectData(PacketBuilder &packet) -> void {
 	packet.add<int32_t>(getCover() != 0 ? ChannelServer::getInstance().getItemDataProvider().getCardId(getCover()) : 0);
 	packet.unk<int8_t>();
 
-	packet.add<uint16_t>(m_cards.size());
+	packet.add<uint16_t>(static_cast<uint16_t>(m_cards.size()));
 	for (const auto &kvp : m_cards) {
 		packet.add<int16_t>(GameLogicUtilities::getCardShortId(kvp.second.id));
 		packet.add<int8_t>(kvp.second.level);

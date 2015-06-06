@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -20,13 +20,13 @@
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <CLRSupport>false</CLRSupport>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -50,7 +50,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(MySqlDirectory32)\include\mysql;src\Common;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\core;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\backends\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\lua\include;$(LazurBeemz)\$(PlatformToolsetVersion)\Botan-$(BotanVersion)\build\include;$(LazurBeemz)\$(PlatformToolsetVersion)\boost_$(BoostVersion)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MySqlDirectory32)\include\mysql;src\Common;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\core;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\backends\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\lua-$(LuaVersion)\src;$(LazurBeemz)\$(PlatformToolsetVersion)\Botan-$(BotanVersion)\build\include;$(LazurBeemz)\$(PlatformToolsetVersion)\boost_$(BoostVersion)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WIN32;MSVC;DEBUG;_DEBUG;X86;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;_WIN32_WINNT=0x0601;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -76,7 +76,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(MySqlDirectory32)\include\mysql;src\Common;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\core;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\backends\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\lua\include;$(LazurBeemz)\$(PlatformToolsetVersion)\Botan-$(BotanVersion)\build\include;$(LazurBeemz)\$(PlatformToolsetVersion)\boost_$(BoostVersion)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MySqlDirectory32)\include\mysql;src\Common;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\core;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\backends\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\lua-$(LuaVersion)\src;$(LazurBeemz)\$(PlatformToolsetVersion)\Botan-$(BotanVersion)\build\include;$(LazurBeemz)\$(PlatformToolsetVersion)\boost_$(BoostVersion)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WIN32;MSVC;NDEBUG;RELEASE;X86;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;_WIN32_WINNT=0x0601;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>

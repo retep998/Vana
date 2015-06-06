@@ -147,7 +147,7 @@ auto SummonHandler::moveSummon(Player *player, PacketReader &reader) -> void {
 	summon_id_t summonId = reader.get<summon_id_t>();
 
 	// I am not certain what this is, but in the Odin source they seemed to think it was original position. However, it caused AIDS.
-	reader.skipBytes(4);
+	reader.skip(4);
 
 	Summon *summon = player->getSummons()->getSummon(summonId);
 	if (summon == nullptr || summon->getMovementType() == Summon::Static) {

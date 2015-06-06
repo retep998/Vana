@@ -54,7 +54,7 @@ public:
 	auto removeBuddy(player_id_t charId) -> void;
 
 	auto getBuddy(player_id_t charId) -> ref_ptr_t<Buddy> { return m_buddies[charId]; }
-	auto listSize() const -> uint8_t { return m_buddies.size(); }
+	auto listSize() const -> uint8_t { return static_cast<uint8_t>(m_buddies.size()); }
 	auto getBuddyIds() -> vector_t<player_id_t>;
 	auto addBuddyInvite(const BuddyInvite &invite) -> void { m_pendingBuddies.push_back(invite); }
 

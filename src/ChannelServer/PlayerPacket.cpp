@@ -211,7 +211,7 @@ PACKET_IMPL(instructionBubble, const chat_t &msg, coord_t width, int16_t time, b
 	PacketBuilder builder;
 
 	if (width == -1) {
-		width = msg.size() * 10;
+		width = static_cast<coord_t>(msg.size()) * 10;
 		if (width < 40) {
 			width = 40; // Anything lower crashes client/doesn't look good
 		}

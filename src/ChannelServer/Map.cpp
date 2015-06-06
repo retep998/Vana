@@ -61,15 +61,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 int32_t Map::s_mapUnloadTime = 0;
 
 Map::Map(ref_ptr_t<MapInfo> info, map_id_t id) :
-	m_info(info),
-	m_id(id),
-	m_objectIds(1000),
-	m_music(info->defaultMusic)
+	m_info{info},
+	m_id{id},
+	m_objectIds{1000},
+	m_music{info->defaultMusic}
 {
 	// Dynamic loading, start the map timer once the object is created
-	Timer::Timer::create([this](const time_point_t &now) { this->mapTick(now); },
-		Timer::Id(TimerType::MapTimer, id),
-		getTimers(), seconds_t(0), seconds_t(1));
+	Timer::Timer::create(
+		[this](const time_point_t &now) { this->mapTick(now); },
+		Timer::Id{TimerType::MapTimer, id},
+		getTimers(), seconds_t{0}, seconds_t{1});
 
 	Point rightBottom = info->dimensions.rightBottom();
 	double mapHeight = std::max<double>(rightBottom.y - 450, 600);
@@ -85,7 +86,10 @@ Map::Map(ref_ptr_t<MapInfo> info, map_id_t id) :
 
 // Map info
 auto Map::setMusic(const string_t &musicName) -> void {
-	m_music = (musicName == "default" ? m_info->defaultMusic : musicName);
+	m_music = musicName == "default" ?
+		m_info->defaultMusic :
+		musicName;
+
 	send(EffectPacket::playMusic(m_music));
 }
 
@@ -153,11 +157,11 @@ auto Map::addPortal(const PortalInfo &portal) -> void {
 
 auto Map::addTimeMob(ref_ptr_t<TimeMob> info) -> void {
 	Timer::Timer::create([this](const time_point_t &now) { this->timeMob(false); },
-		Timer::Id(TimerType::MapTimer, getId(), 1),
-		getTimers(), TimeUtilities::getDistanceToNextOccurringSecondOfHour(0), hours_t(1));
+		Timer::Id{TimerType::MapTimer, getId(), 1},
+		getTimers(), TimeUtilities::getDistanceToNextOccurringSecondOfHour(0), hours_t{1});
 
 	Timer::Timer::create([this](const time_point_t &now) { this->timeMob(true); },
-		Timer::Id(TimerType::MapTimer, getId(), 2),
+		Timer::Id{TimerType::MapTimer, getId(), 2},
 		getTimers(), seconds_t(3)); // First check
 
 	m_timeMobInfo = info;
@@ -509,7 +513,7 @@ auto Map::getPortal(const string_t &name) const -> const PortalInfo * const {
 auto Map::getSpawnPoint(portal_id_t portalId) const -> const PortalInfo * const {
 	portal_id_t id = portalId != -1 ?
 		portalId :
-		Randomizer::rand<portal_id_t>(m_spawnPoints.size() - 1);
+		Randomizer::rand<portal_id_t>(static_cast<portal_id_t>(m_spawnPoints.size()) - 1);
 
 	auto iter = m_spawnPoints.find(id);
 	return &iter->second;
@@ -1013,9 +1017,10 @@ auto Map::addMist(Mist *mist) -> void {
 		m_mists[mist->getId()] = mist;
 	}
 
-	Timer::Timer::create([this, mist](const time_point_t &now) { this->removeMist(mist); },
-		Timer::Id(TimerType::MistTimer, mist->getId()),
-		getTimers(), seconds_t(mist->getTime()));
+	Timer::Timer::create(
+		[this, mist](const time_point_t &now) { this->removeMist(mist); },
+		Timer::Id{TimerType::MistTimer, mist->getId()},
+		getTimers(), seconds_t{mist->getTime()});
 
 	send(MapPacket::spawnMist(mist, false));
 }
@@ -1229,8 +1234,9 @@ auto Map::setMapTimer(const seconds_t &timer) -> void {
 
 	send(MapPacket::showTimer(timer));
 	if (timer.count() > 0) {
-		Timer::Timer::create([this](const time_point_t &now) { this->setMapTimer(seconds_t(0)); },
-			Timer::Id(TimerType::MapTimer, getId(), 25),
+		Timer::Timer::create(
+			[this](const time_point_t &now) { this->setMapTimer(seconds_t{0}); },
+			Timer::Id{TimerType::MapTimer, getId(), 25},
 			getTimers(), timer);
 	}
 }

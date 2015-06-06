@@ -356,7 +356,7 @@ auto InventoryHandler::useScroll(Player *player, PacketReader &reader) -> void {
 }
 
 auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void {
-	reader.skipBytes(2); // Type?
+	reader.skip(2); // Type?
 	item_id_t itemId = reader.get<item_id_t>();
 
 	if (player->getInventory()->getItemAmount(itemId) == 0) {
@@ -738,7 +738,7 @@ auto InventoryHandler::handleRockFunctions(Player *player, PacketReader &reader)
 
 auto InventoryHandler::handleRockTeleport(Player *player, int32_t itemId, PacketReader &reader) -> bool {
 	if (itemId == Items::SpecialTeleportRock) {
-		reader.skipBytes(5);
+		reader.skip(5);
 	}
 	int8_t type = InventoryPacket::RockTypes::Regular;
 	switch (itemId) {

@@ -617,9 +617,10 @@ auto Skills::startCooldown(Player *player, skill_id_t skillId, int16_t coolTime,
 		player->send(SkillsPacket::sendCooldown(skillId, coolTime));
 		player->getSkills()->addCooldown(skillId, coolTime);
 	}
-	Timer::Timer::create([player, skillId](const time_point_t &now) { Skills::stopCooldown(player, skillId); },
-		Timer::Id(TimerType::CoolTimer, skillId),
-		player->getTimerContainer(), seconds_t(coolTime));
+	Timer::Timer::create(
+		[player, skillId](const time_point_t &now) { Skills::stopCooldown(player, skillId); },
+		Timer::Id{TimerType::CoolTimer, skillId},
+		player->getTimerContainer(), seconds_t{coolTime});
 }
 
 auto Skills::stopCooldown(Player *player, skill_id_t skillId) -> void {

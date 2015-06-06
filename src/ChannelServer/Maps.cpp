@@ -57,7 +57,7 @@ auto Maps::usePortal(Player *player, const PortalInfo * const portal) -> void {
 		string_t filename = ChannelServer::getInstance().getScriptDataProvider().buildScriptPath(ScriptTypes::Portal, portal->script);
 
 		if (FileUtilities::fileExists(filename)) {
-			auto luaEnv = LuaPortal(filename, player->getId(), player->getMapId(), portal);
+			LuaPortal luaEnv = {filename, player->getId(), player->getMapId(), portal};
 
 			if (!luaEnv.playerMapChanged()) {
 				player->send(MapPacket::portalBlocked());

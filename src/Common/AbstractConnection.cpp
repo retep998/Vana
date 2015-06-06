@@ -98,7 +98,8 @@ auto AbstractConnection::setSession(Session *val, bool ping, const Ip &ip) -> vo
 	m_doesPing = ping;
 	m_ip = ip;
 
-	Timer::Timer::create([this](const time_point_t &now) { this->ping(); },
-		Timer::Id(TimerType::PingTimer),
+	Timer::Timer::create(
+		[this](const time_point_t &now) { this->ping(); },
+		Timer::Id{TimerType::PingTimer},
 		getTimers(), InitialPing, PingTime);
 }

@@ -188,7 +188,7 @@ SPLIT_PACKET_IMPL(useMeleeAttack, player_id_t playerId, skill_id_t masterySkillI
 			.unk<int8_t>(0x06);
 
 		if (isMesoExplosion) {
-			builder.map.add<uint8_t>(target.second.size());
+			builder.map.add<uint8_t>(static_cast<uint8_t>(target.second.size()));
 		}
 		for (const auto &hit : target.second) {
 			builder.map.add<damage_t>(hit);

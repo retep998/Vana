@@ -89,7 +89,7 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 
 	tick_count_t ticks = reader.get<tick_count_t>();
 	int8_t type = reader.get<int8_t>();
-	reader.skipBytes(1); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
+	reader.skip(1); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
 	damage_t damage = reader.get<damage_t>();
 	bool damageApplied = false;
 	bool deadlyAttack = false;
@@ -130,7 +130,7 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 
 		hit = reader.get<uint8_t>(); // Knock direction
 		pgmr.reduction = reader.get<uint8_t>();
-		reader.skipBytes(1); // I think reduction is a short, but it's a byte in the S -> C packet, so..
+		reader.skip(1); // I think reduction is a short, but it's a byte in the S -> C packet, so..
 		if (pgmr.reduction != 0) {
 			pgmr.isPhysical = reader.get<bool>();
 			pgmr.mapMobId = reader.get<map_object_t>();
@@ -138,8 +138,8 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 				// Hacking
 				return;
 			}
-			reader.skipBytes(1); // 0x06 for Power Guard, 0x00 for Mana Reflection?
-			reader.skipBytes(4); // Mob position garbage
+			reader.skip(1); // 0x06 for Power Guard, 0x00 for Mana Reflection?
+			reader.skip(4); // Mob position garbage
 			pgmr.pos = reader.get<Point>();
 			pgmr.damage = damage;
 			if (pgmr.isPhysical) {
@@ -532,7 +532,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 			}
 			damagedTargets++;
 		}
-		uint8_t ppSize = ppDamages.size();
+		uint8_t ppSize = static_cast<uint8_t>(ppDamages.size());
 		for (uint8_t pickpocket = 0; pickpocket < ppSize; ++pickpocket) {
 			// Drop stuff for Pickpocket
 			Point ppPos = origin;
@@ -541,9 +541,10 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 			int32_t ppMesos = ((ppDamages[pickpocket] * picking->x) / 10000); // TODO FIXME formula
 			Drop *ppDrop = new Drop(player->getMapId(), ppMesos, ppPos, player->getId(), true);
 			ppDrop->setTime(100);
-			Timer::Timer::create([ppDrop, origin](const time_point_t &now) { ppDrop->doDrop(origin); },
-				Timer::Id(TimerType::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
-				nullptr, milliseconds_t(175 * pickpocket));
+			Timer::Timer::create(
+				[ppDrop, origin](const time_point_t &now) { ppDrop->doDrop(origin); },
+				Timer::Id{TimerType::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()},
+				nullptr, milliseconds_t{175 * pickpocket});
 		}
 		ppDamages.clear();
 	}
@@ -566,7 +567,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 			Map *map = player->getMap();
 			for (uint8_t i = 0; i < items; i++) {
 				map_object_t objId = reader.get<map_object_t>();
-				reader.skipBytes(1); // Some value
+				reader.skip(1); // Some value
 				if (Drop *drop = map->getDrop(objId)) {
 					if (!drop->isMesos()) {
 						// Hacking
@@ -958,10 +959,10 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &reader, SkillTyp
 			attack.skillLevel = player->getSkills()->getSkillLevel(skillId);
 		}
 
-		reader.skipBytes(4); // Unk, strange constant that doesn't seem to change
+		reader.skip(4); // Unk, strange constant that doesn't seem to change
 		// Things atttemped: Map changes, character changes, job changes, skill changes, position changes, hitting enemies
 		// It appears as 0xF9B16E60 which is 4189154912 unsigned, -105812384 signed, doesn't seem to be a size, probably a CRC
-		reader.skipBytes(4); // Unk, strange constant dependent on skill, probably a CRC
+		reader.skip(4); // Unk, strange constant dependent on skill, probably a CRC
 
 		switch (skillId) {
 			case Skills::Hermit::ShadowMeso:
@@ -1010,7 +1011,7 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &reader, SkillTyp
 		inventory_slot_t csStar = reader.get<inventory_slot_t>();
 		attack.starPos = starSlot;
 		attack.cashStarPos = csStar;
-		reader.skipBytes(1); // 0x00 = AoE?
+		reader.skip(1); // 0x00 = AoE?
 		if (!shadowMeso) {
 			if (player->getActiveBuffs()->hasShadowStars() && skillId != Skills::NightLord::Taunt) {
 				attack.starId = reader.get<int32_t>();
@@ -1034,10 +1035,10 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &reader, SkillTyp
 
 	for (int8_t i = 0; i < targets; ++i) {
 		map_object_t mapMobId = reader.get<map_object_t>();
-		reader.skipBytes(4); // Always 0x06, <two bytes of some kind>, 0x01
-		reader.skipBytes(8); // Mob pos, damage pos
+		reader.skip(4); // Always 0x06, <two bytes of some kind>, 0x01
+		reader.skip(8); // Mob pos, damage pos
 		if (!mesoExplosion) {
-			reader.skipBytes(2); // Distance
+			reader.skip(2); // Distance
 		}
 		else {
 			hits = reader.get<int8_t>(); // Hits for Meso Explosion
@@ -1048,7 +1049,7 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &reader, SkillTyp
 			attack.totalDamage += damage;
 		}
 		if (skillType != SkillType::Summon) {
-			reader.skipBytes(4); // 4 bytes of unknown purpose, differs by the mob, probably a CRC
+			reader.skip(4); // 4 bytes of unknown purpose, differs by the mob, probably a CRC
 		}
 	}
 

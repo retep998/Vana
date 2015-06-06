@@ -41,7 +41,7 @@ class Timer {
 	NO_DEFAULT_CONSTRUCTOR(Timer);
 public:
 	Timer(const timer_func_t func, const Id &id, ref_ptr_t<Container> container, const duration_t &differenceFromNow, const duration_t &repeat);
-	static auto create(const timer_func_t func, const Id &id, ref_ptr_t<Container> container, const duration_t &differenceFromNow, const duration_t &repeat = seconds_t(0)) -> void;
+	static auto create(const timer_func_t func, const Id &id, ref_ptr_t<Container> container, const duration_t &differenceFromNow, const duration_t &repeat = seconds_t{0}) -> void;
 
 	auto getTimeLeft() const -> duration_t;
 	auto run(const time_point_t &now) const -> RunResult;

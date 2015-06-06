@@ -63,14 +63,16 @@ Mob::Mob(map_object_t mapMobId, map_id_t mapId, mob_id_t mobId, view_ptr_t<Mob> 
 	if (m_info->hpRecovery > 0 || m_info->mpRecovery > 0) {
 		int32_t hpRecovery = m_info->hpRecovery;
 		int32_t mpRecovery = m_info->mpRecovery;
-		Timer::Timer::create([this, hpRecovery, mpRecovery](const time_point_t &now) { this->naturalHeal(hpRecovery, mpRecovery); },
-			Timer::Id(TimerType::MobHealTimer),
-			getTimers(), seconds_t(1), seconds_t(10));
+		Timer::Timer::create(
+			[this, hpRecovery, mpRecovery](const time_point_t &now) { this->naturalHeal(hpRecovery, mpRecovery); },
+			Timer::Id{TimerType::MobHealTimer},
+			getTimers(), seconds_t{1}, seconds_t{10});
 	}
 	if (m_info->removeAfter > 0) {
-		Timer::Timer::create([this](const time_point_t &now) { this->kill(); },
-			Timer::Id(TimerType::MobRemoveTimer, m_mapMobId),
-			getTimers(), seconds_t(m_info->removeAfter));
+		Timer::Timer::create(
+			[this](const time_point_t &now) { this->kill(); },
+			Timer::Id{TimerType::MobRemoveTimer, m_mapMobId},
+			getTimers(), seconds_t{m_info->removeAfter});
 	}
 }
 
@@ -206,16 +208,20 @@ auto Mob::addStatus(player_id_t playerId, vector_t<StatusInfo> &statusInfo) -> v
 			case StatusEffects::Mob::VenomousWeapon:
 			case StatusEffects::Mob::NinjaAmbush:
 				damage_t poisonDamage = info.val;
-				Timer::Timer::create([this, playerId, poisonDamage](const time_point_t &now) { this->applyDamage(playerId, poisonDamage, true); },
-					Timer::Id(TimerType::MobStatusTimer, cStatus, 1),
-					getTimers(), seconds_t(1), seconds_t(1));
+				Timer::Timer::create(
+					[this, playerId, poisonDamage](const time_point_t &now) {
+						this->applyDamage(playerId, poisonDamage, true);
+					},
+					Timer::Id{TimerType::MobStatusTimer, cStatus, 1},
+					getTimers(), seconds_t{1}, seconds_t{1});
 				break;
 		}
 
 		// We add some milliseconds to our times in order to allow poisons to not end one hit early
-		Timer::Timer::create([this, cStatus](const time_point_t &now) { this->removeStatus(cStatus, true); },
-			Timer::Id(TimerType::MobStatusTimer, cStatus),
-			getTimers(), milliseconds_t(info.time.count() * 1000 + 100));
+		Timer::Timer::create(
+			[this, cStatus](const time_point_t &now) { this->removeStatus(cStatus, true); },
+			Timer::Id{TimerType::MobStatusTimer, cStatus},
+			getTimers(), milliseconds_t{info.time.count() * 1000 + 100});
 	}
 
 	// Calculate new status mask
@@ -250,11 +256,11 @@ auto Mob::removeStatus(int32_t status, bool fromTimer) -> void {
 				// Intentional fallthrough
 			case StatusEffects::Mob::Poison:
 				// Stop poison damage timer
-				getTimers()->removeTimer(Timer::Id(TimerType::MobStatusTimer, status, 1));
+				getTimers()->removeTimer(Timer::Id{TimerType::MobStatusTimer, status, 1});
 				break;
 		}
 		if (!fromTimer) {
-			getTimers()->removeTimer(Timer::Id(TimerType::MobStatusTimer, status));
+			getTimers()->removeTimer(Timer::Id{TimerType::MobStatusTimer, status});
 		}
 		m_status -= status;
 		m_statuses.erase(kvp);

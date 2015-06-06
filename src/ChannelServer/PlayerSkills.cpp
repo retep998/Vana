@@ -778,7 +778,7 @@ auto PlayerSkills::onDisconnect() -> void {
 
 auto PlayerSkills::connectData(PacketBuilder &packet) const -> void {
 	// Skill levels
-	packet.add<uint16_t>(m_skills.size());
+	packet.add<uint16_t>(static_cast<uint16_t>(m_skills.size()));
 	for (const auto &kvp : m_skills) {
 		packet.add<skill_id_t>(kvp.first);
 		packet.add<int32_t>(kvp.second.level);
@@ -787,7 +787,7 @@ auto PlayerSkills::connectData(PacketBuilder &packet) const -> void {
 		}
 	}
 	// Cooldowns
-	packet.add<uint16_t>(m_cooldowns.size());
+	packet.add<uint16_t>(static_cast<uint16_t>(m_cooldowns.size()));
 	for (const auto &kvp : m_cooldowns) {
 		packet.add<skill_id_t>(kvp.first);
 		packet.add<int16_t>(kvp.second);

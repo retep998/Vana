@@ -68,7 +68,7 @@ PACKET_IMPL(PlayerPacket::newConnectable, player_id_t playerId, const Ip &ip, Pa
 		.add<sync_t>(Sync::Player::NewConnectable)
 		.add<player_id_t>(playerId)
 		.add<Ip>(ip)
-		.add<uint16_t>(buffer.getBufferLength())
+		.add<uint16_t>(static_cast<uint16_t>(buffer.getBufferLength()))
 		.addBuffer(buffer);
 	return builder;
 }

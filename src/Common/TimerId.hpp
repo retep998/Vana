@@ -29,7 +29,11 @@ struct Id {
 	NO_DEFAULT_CONSTRUCTOR(Id);
 public:
 	Id(TimerType type, uint32_t id, uint32_t id2);
+	Id(TimerType type, uint32_t id, int32_t id2);
 	Id(TimerType type, uint32_t id);
+	Id(TimerType type, int32_t id, uint32_t id2);
+	Id(TimerType type, int32_t id, int32_t id2);
+	Id(TimerType type, int32_t id);
 	Id(TimerType type);
 
 	uint32_t type;
@@ -41,25 +45,57 @@ public:
 
 inline
 Id::Id(TimerType type, uint32_t id, uint32_t id2) :
-	type(static_cast<uint32_t>(type)),
-	id(id),
-	id2(id2)
+	type{static_cast<uint32_t>(type)},
+	id{id},
+	id2{id2}
+{
+}
+
+inline
+Id::Id(TimerType type, uint32_t id, int32_t id2) :
+	type{static_cast<uint32_t>(type)},
+	id{id},
+	id2{static_cast<uint32_t>(id2)}
 {
 }
 
 inline
 Id::Id(TimerType type, uint32_t id) :
-	type(static_cast<uint32_t>(type)),
-	id(id),
-	id2(0)
+	type{static_cast<uint32_t>(type)},
+	id{id},
+	id2{0}
+{
+}
+
+inline
+Id::Id(TimerType type, int32_t id, uint32_t id2) :
+	type{static_cast<uint32_t>(type)},
+	id{static_cast<uint32_t>(id)},
+	id2{id2}
+{
+}
+
+inline
+Id::Id(TimerType type, int32_t id, int32_t id2) :
+	type{static_cast<uint32_t>(type)},
+	id{static_cast<uint32_t>(id)},
+	id2{static_cast<uint32_t>(id2)}
+{
+}
+
+inline
+Id::Id(TimerType type, int32_t id) :
+	type{static_cast<uint32_t>(type)},
+	id{static_cast<uint32_t>(id)},
+	id2{0}
 {
 }
 
 inline
 Id::Id(TimerType type) :
-	type(static_cast<uint32_t>(type)),
-	id(0),
-	id2(0)
+	type{static_cast<uint32_t>(type)},
+	id{0},
+	id2{0}
 {
 }
 

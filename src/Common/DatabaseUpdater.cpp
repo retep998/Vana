@@ -103,24 +103,15 @@ auto DatabaseUpdater::loadDatabaseInfo() -> void {
 auto DatabaseUpdater::loadSqlFiles() -> void {
 	fs::path fullPath = fs::system_complete(fs::path("sql"));
 	if (!fs::exists(fullPath)) {
-#ifdef WIN32
-		std::cerr << "SQL files not found: " << fullPath.file_string() << std::endl;
-#else
 		std::cerr << "SQL files not found: " << fullPath.generic_string() << std::endl;
-#endif
 		ExitCodes::exit(ExitCodes::SqlDirectoryNotFound);
 		return;
 	}
 
 	fs::directory_iterator end;
 	for (fs::directory_iterator dir(fullPath); dir != end; ++dir) {
-#ifdef WIN32
-		string_t filename = dir->path().filename();
-		string_t fullFile = dir->path().directory_string();
-#else
 		string_t filename = dir->path().filename().generic_string();
 		string_t fullFile = dir->path().generic_string();
-#endif
 
 		// Our Vana version files have a format of 0000_file.sql where 0000 is a number identifier
 		// Scripts are executed in the order of lowest identifier (e.g. 0000) to highest (e.g. 9999)

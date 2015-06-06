@@ -37,7 +37,7 @@ public:
 	auto changeMesos(mesos_t mesos) -> void;
 
 	auto getSlots() const -> storage_slot_t { return m_slots; }
-	auto getNumItems() const -> storage_slot_t { return m_items.size(); }
+	auto getNumItems() const -> storage_slot_t { return static_cast<storage_slot_t>(m_items.size()); }
 	auto getNumItems(inventory_t inv) -> storage_slot_t;
 	auto getMesos() const -> mesos_t { return m_mesos; }
 	auto isFull() const -> bool { return m_items.size() == m_slots; }

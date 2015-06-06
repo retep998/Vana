@@ -105,7 +105,7 @@ auto PlayerActiveBuffs::addAction(skill_id_t skill, Action act, int16_t value, c
 	runAct.value = value;
 
 	Timer::Id id(TimerType::SkillActTimer, act);
-	Timer::Timer::create(runAct, id, getActTimer(skill), seconds_t(0), time);
+	Timer::Timer::create(runAct, id, getActTimer(skill), seconds_t{0}, time);
 }
 
 auto PlayerActiveBuffs::getActTimer(skill_id_t skill) -> ref_ptr_t<Timer::Container> {
@@ -397,7 +397,7 @@ auto PlayerActiveBuffs::startEnergyChargeTimer() -> void {
 	skill_id_t skillId = m_player->getSkills()->getEnergyCharge();
 	Timer::Id id(TimerType::BuffTimer, skillId, m_timeSeed); // Causes heap errors when it's a static number, but we need it for ID
 	Timer::Timer::create([this](const time_point_t &now) { this->decreaseEnergyChargeLevel(); },
-		id, m_player->getTimerContainer(), seconds_t(10));
+		id, m_player->getTimerContainer(), seconds_t{10});
 }
 
 auto PlayerActiveBuffs::setEnergyChargeLevel(int16_t chargeLevel, bool startTimer) -> void {
@@ -628,7 +628,7 @@ auto PlayerActiveBuffs::getTransferPacket() const -> PacketBuilder {
 			continue;
 		}
 		auto &values = foundValue->second;
-		builder.add<uint8_t>(values.size());
+		builder.add<uint8_t>(static_cast<uint8_t>(values.size()));
 		for (const auto &kvp : values) {
 			const MapEntryVals &info = kvp.second;
 			builder.add<uint8_t>(kvp.first);
@@ -644,7 +644,7 @@ auto PlayerActiveBuffs::getTransferPacket() const -> PacketBuilder {
 		}
 	}
 	// Current buff info (IDs, times, levels)
-	builder.add<uint8_t>(m_buffs.size());
+	builder.add<uint8_t>(static_cast<uint8_t>(m_buffs.size()));
 	for (const auto &buffId : m_buffs) {
 		builder.add<skill_id_t>(buffId);
 		builder.add<seconds_t>(getBuffSecondsRemaining(buffId));
@@ -658,7 +658,7 @@ auto PlayerActiveBuffs::getTransferPacket() const -> PacketBuilder {
 			continue;
 		}
 		auto &currentByte = foundByte->second;
-		builder.add<uint8_t>(currentByte.size());
+		builder.add<uint8_t>(static_cast<uint8_t>(currentByte.size()));
 		for (const auto &kvp : currentByte) {
 			builder.add<uint8_t>(kvp.first);
 			builder.add<skill_id_t>(kvp.second);

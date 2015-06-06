@@ -197,7 +197,7 @@ PACKET_IMPL(applyStatus, map_object_t mapMobId, int32_t statusMask, const vector
 
 	builder.add<int16_t>(delay);
 
-	uint8_t buffCount = info.size();
+	uint8_t buffCount = static_cast<uint8_t>(info.size());
 	if (reflection.size() > 0) {
 		buffCount /= 2; // This gives 2 buffs per reflection but it's really one buff
 	}

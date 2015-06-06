@@ -47,6 +47,6 @@ private:
 	bool m_doesPing = true;
 	Session *m_session = nullptr;
 	Ip m_ip;
-	milliseconds_t m_latency = milliseconds_t(0);
+	milliseconds_t m_latency = milliseconds_t{0};
 	time_point_t m_lastPing;
 };

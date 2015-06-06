@@ -134,7 +134,7 @@ PACKET_IMPL(inventoryOperation, bool unk, const vector_t<InventoryPacketOperatio
 	builder
 		.add<header_t>(SMSG_INVENTORY_OPERATION)
 		.add<bool>(unk)
-		.add<uint8_t>(operations.size());
+		.add<uint8_t>(static_cast<uint8_t>(operations.size()));
 
 	int8_t addedByte = -1;
 
@@ -382,7 +382,7 @@ PACKET_IMPL(sendItemExpired, const vector_t<item_id_t> &items) {
 	builder
 		.add<int16_t>(SMSG_NOTICE)
 		.add<int8_t>(0x08)
-		.add<uint8_t>(items.size());
+		.add<uint8_t>(static_cast<uint8_t>(items.size()));
 
 	for (const auto &itemId : items) {
 		builder.add<item_id_t>(itemId);

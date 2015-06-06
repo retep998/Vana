@@ -239,10 +239,7 @@ using charge_time_t = int32_t;
 using portal_count_t = uint8_t;
 using checksum_t = uint32_t;
 
-// Remove when VS2012 supports thread_local
-#ifdef WIN32
-#define thread_local __declspec(thread)
-#else
+#ifndef WIN32
 #define thread_local __thread
 #endif
 

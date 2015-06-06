@@ -188,7 +188,7 @@ auto Npc::sendGetNumber(int32_t def, int32_t min, int32_t max) -> void {
 auto Npc::sendStyle(vector_t<int32_t> styles) -> void {
 	m_sentDialog = NpcPacket::Dialogs::Style;
 	m_player->send(NpcPacket::npcChat(m_sentDialog, m_npcId, m_text)
-		.add<uint8_t>(styles.size())
+		.add<uint8_t>(static_cast<uint8_t>(styles.size()))
 		.add<vector_t<int32_t>>(styles, styles.size()));
 	m_text = "";
 }

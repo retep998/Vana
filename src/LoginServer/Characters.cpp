@@ -123,7 +123,7 @@ auto Characters::showAllCharacters(UserConnection *user) -> void {
 	}
 
 	uint32_t unk = charsNum + (3 - charsNum % 3); // What I've observed
-	user->send(LoginPacket::showAllCharactersInfo(chars.size(), unk));
+	user->send(LoginPacket::showAllCharactersInfo(static_cast<world_id_t>(chars.size()), unk));
 	for (const auto &kvp : chars) {
 		user->send(LoginPacket::showViewAllCharacters(kvp.first, kvp.second));
 	}

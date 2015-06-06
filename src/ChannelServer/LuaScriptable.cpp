@@ -517,12 +517,7 @@ auto LuaExports::selectDiscrete(lua_State *luaVm) -> lua_return_t {
 		env.pushNil(luaVm);
 	}
 	else {
-		// TODO FIXME msvc
-		// MSVC did not provide the input iterator constructor for discrete_distribution
-		// Once Connect bug 812538 is fixed, remove this ugly, hideous workaround
-		std::discrete_distribution<> dist(relativeChances.size(), 0., static_cast<double>(relativeChances.size()), [&](double i) -> double {
-			return relativeChances[static_cast<size_t>(i)];
-		});
+		std::discrete_distribution<> dist{relativeChances.begin(), relativeChances.end()};
 		// Account for Lua array start
 		env.push<int32_t>(luaVm, Randomizer::rand(dist) + 1);
 	}

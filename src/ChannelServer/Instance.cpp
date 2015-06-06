@@ -407,7 +407,7 @@ auto Instance::respawnReactors(map_id_t mapId) -> void {
 auto Instance::showTimer(bool show, bool doIt) -> void {
 	if (!show && (doIt || m_showTimer)) {
 		for (const auto &map : m_maps) {
-			map->send(MapPacket::showTimer(seconds_t(0)));
+			map->send(MapPacket::showTimer(seconds_t{0}));
 		}
 	}
 	else if (show && (doIt || !m_showTimer)) {

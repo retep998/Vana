@@ -81,7 +81,7 @@ struct Respawnable {
 
 	bool spawn = false;
 	size_t spawnId = 0;
-	time_point_t spawnAt = seconds_t{0};
+	time_point_t spawnAt = time_point_t{seconds_t{0}};
 };
 
 struct SeatInfo {

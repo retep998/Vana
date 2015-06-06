@@ -316,7 +316,7 @@ auto PlayerQuests::giveRewards(quest_id_t questId, bool start) -> Result {
 		return Result::Failure;
 	}
 
-	for (size_t i = 0; i < Inventories::InventoryCount; i++) {
+	for (inventory_t i = 0; i < Inventories::InventoryCount; i++) {
 		if (neededSlots[i] != 0 && m_player->getInventory()->getOpenSlotsNum(i + 1) < neededSlots[i]) {
 			m_player->send(QuestsPacket::questError(questId, QuestsPacket::ErrorNoItemSpace));
 			return Result::Failure;
@@ -407,13 +407,13 @@ auto PlayerQuests::isQuestComplete(quest_id_t questId) -> bool {
 }
 
 auto PlayerQuests::connectData(PacketBuilder &packet) -> void {
-	packet.add<uint16_t>(m_quests.size());
+	packet.add<uint16_t>(static_cast<uint16_t>(m_quests.size()));
 	for (const auto &kvp : m_quests) {
 		packet.add<quest_id_t>(kvp.first);
 		packet.add<string_t>(kvp.second.getQuestData());
 	}
 
-	packet.add<uint16_t>(m_completed.size());
+	packet.add<uint16_t>(static_cast<uint16_t>(m_completed.size()));
 	for (const auto &kvp : m_completed) {
 		packet.add<quest_id_t>(kvp.first);
 		packet.add<int64_t>(kvp.second);

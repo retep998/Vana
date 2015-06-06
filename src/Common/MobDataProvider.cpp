@@ -158,7 +158,7 @@ auto MobDataProvider::loadMobs() -> void {
 
 		// Skill count relies on skills being loaded first
 		auto kvp = m_skills.find(mobId);
-		mob->skillCount = kvp != m_skills.end() ? kvp->second.size() : 0; 
+		mob->skillCount = kvp != m_skills.end() ? static_cast<uint8_t>(kvp->second.size()) : 0; 
 		m_mobInfo[mobId] = mob;
 	}
 }

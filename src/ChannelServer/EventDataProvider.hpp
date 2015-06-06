@@ -32,7 +32,7 @@ public:
 private:
 	auto loadEvents() -> void;
 	auto loadInstances() -> void;
-	auto startInstance(const string_t &name, const duration_t &time, const duration_t &repeat = seconds_t(0)) -> void;
+	auto startInstance(const string_t &name, const duration_t &time, const duration_t &repeat = seconds_t{0}) -> void;
 
 	owned_ptr_t<Variables> m_variables;
 };

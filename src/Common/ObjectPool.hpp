@@ -48,17 +48,11 @@ public:
 
 	using iterator = typename container_t::iterator;
 	using const_iterator = typename container_t::const_iterator;
-	using reverse_iterator = typename container_t::reverse_iterator;
-	using const_reverse_iterator = typename container_t::const_reverse_iterator;
 
 	auto begin() -> iterator { return std::begin(m_taken); }
 	auto end() -> iterator { return std::end(m_taken); }
 	auto cbegin() const -> const_iterator { return std::cbegin(m_taken); }
 	auto cend() const -> const_iterator { return std::cend(m_taken); }
-	auto rbegin() -> reverse_iterator { return std::rbegin(m_taken); }
-	auto rend() -> reverse_iterator { return std::rend(m_taken); }
-	auto crbegin() const -> const_reverse_iterator { return std::crbegin(m_taken); }
-	auto crend() const -> const_reverse_iterator { return std::crend(m_taken); }
 
 	auto taken() const -> size_t {
 		return m_taken.size();

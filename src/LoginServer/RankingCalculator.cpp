@@ -40,8 +40,8 @@ mutex_t RankingCalculator::RankingsMutex;
 
 auto RankingCalculator::setTimer() -> void {
 	//Timer::Timer::create([]() { RankingCalculator::runThread(); },
-	//	Timer::Id(TimerType::RankTimer),
-	//	nullptr, TimeUtilities::getDistanceToNextOccurringSecondOfHour(0), hours_t(1));
+	//	Timer::Id{TimerType::RankTimer),
+	//	nullptr, TimeUtilities::getDistanceToNextOccurringSecondOfHour(0), hours_t{1});
 	// Calculate ranking every 1 hour, starting on the hour
 }
 

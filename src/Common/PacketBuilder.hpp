@@ -22,6 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <cstring>
 #include <iostream>
+#include <limits>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -234,7 +236,8 @@ auto PacketBuilder::addImpl<hours_t>(const hours_t &value) -> void {
 
 template <>
 auto PacketBuilder::addImpl<string_t>(const string_t &value) -> void {
-	addImplDefault<uint16_t>(value.size());
+	if (value.size() > static_cast<size_t>(std::numeric_limits<uint16_t>::max())) throw std::invalid_argument("String is too large to be sent via packet");
+	addImplDefault<uint16_t>(static_cast<uint16_t>(value.size()));
 	add<string_t>(value, value.size());
 }
 

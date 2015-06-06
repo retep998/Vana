@@ -662,7 +662,7 @@ auto PlayerInventory::rockPacket(PacketBuilder &packet) -> void {
 }
 
 auto PlayerInventory::wishListPacket(PacketBuilder &packet) -> void {
-	packet.add<uint8_t>(m_wishlist.size());
+	packet.add<uint8_t>(static_cast<uint8_t>(m_wishlist.size()));
 	for (const auto &item : m_wishlist) {
 		packet.add<int32_t>(item);
 	}

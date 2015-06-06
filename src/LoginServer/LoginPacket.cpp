@@ -193,7 +193,7 @@ PACKET_IMPL(showCharacters, const vector_t<Character> &chars, int32_t maxChars) 
 		.add<header_t>(SMSG_PLAYER_LIST)
 		.unk<int8_t>();
 
-	builder.add<uint8_t>(chars.size());
+	builder.add<uint8_t>(static_cast<uint8_t>(chars.size()));
 	for (const auto &elem : chars) {
 		builder.addBuffer(LoginPacketHelper::addCharacter(elem));
 	}
@@ -236,7 +236,7 @@ PACKET_IMPL(showViewAllCharacters, world_id_t worldId, const vector_t<Character>
 		.add<bool>(false) // Indicates the world-specific character list, false means it's view all characters
 		.add<world_id_t>(worldId);
 
-	builder.add<uint8_t>(chars.size());
+	builder.add<uint8_t>(static_cast<uint8_t>(chars.size()));
 	for (const auto &elem : chars) {
 		builder.addBuffer(LoginPacketHelper::addCharacter(elem));
 	}

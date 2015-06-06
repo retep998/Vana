@@ -57,7 +57,7 @@ public:
 	auto getPlayerLoad() const -> int32_t { return m_playerLoad; }
 	auto getMaxPlayerLoad() const -> int32_t { return m_config.maxPlayerLoad; }
 	auto matchSubnet(const Ip &test) -> Ip;
-	auto getChannelCount() const -> channel_id_t { return m_channels.size(); }
+	auto getChannelCount() const -> channel_id_t { return static_cast<channel_id_t>(m_channels.size()); }
 	auto getName() const -> string_t { return m_config.name; }
 	auto getEventMessage() const -> string_t { return m_config.eventMsg; }
 	auto getChannel(channel_id_t id) -> Channel * { return m_channels.find(id) != std::end(m_channels) ? m_channels[id].get() : nullptr; }

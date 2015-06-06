@@ -38,7 +38,7 @@ public:
 	auto setMember(player_id_t playerId, Player *player) -> void;
 	auto setInstance(Instance *instance) -> void { m_instance = instance; }
 	auto isLeader(player_id_t playerId) const -> bool { return playerId == m_leaderId; }
-	auto getMembersCount() const -> int8_t { return m_members.size(); }
+	auto getMembersCount() const -> int8_t { return static_cast<int8_t>(m_members.size()); }
 	auto getId() const -> party_id_t { return m_partyId; }
 	auto getLeaderId() const -> player_id_t { return m_leaderId; }
 	auto getMember(player_id_t id) -> Player * { return m_members.find(id) != std::end(m_members) ? m_members[id] : nullptr; }

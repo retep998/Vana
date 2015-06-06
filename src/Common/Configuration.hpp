@@ -86,9 +86,9 @@ struct WorldConfig {
 	int32_t defaultChars = 3;
 	int32_t maxChars = 6;
 	int32_t maxPlayerLoad = 100;
-	seconds_t fameTime = 24 * 60 * 60;
-	seconds_t fameResetTime = 24 * 60 * 60 * 30;
-	seconds_t mapUnloadTime = 30 * 60;
+	seconds_t fameTime = seconds_t{24 * 60 * 60};
+	seconds_t fameResetTime = seconds_t{24 * 60 * 60 * 30};
+	seconds_t mapUnloadTime = seconds_t{30 * 60};
 	channel_id_t maxChannels = 20;
 	string_t eventMsg;
 	string_t scrollingHeader;
