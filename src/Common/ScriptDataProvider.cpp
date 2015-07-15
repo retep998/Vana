@@ -103,7 +103,7 @@ auto ScriptDataProvider::resolve(ScriptTypes type) const -> const hash_map_t<int
 		case ScriptTypes::Npc: return m_npcScripts;
 		case ScriptTypes::Reactor: return m_reactorScripts;
 	}
-	throw std::domain_error("Invalid ScriptTypes");
+	throw NotImplementedException{"ScriptType"};
 }
 
 auto ScriptDataProvider::resolvePath(ScriptTypes type) const -> string_t {
@@ -117,5 +117,5 @@ auto ScriptDataProvider::resolvePath(ScriptTypes type) const -> string_t {
 		case ScriptTypes::Instance: return "instances";
 		case ScriptTypes::Portal: return "portals";
 	}
-	throw std::domain_error("Invalid ScriptTypes");
+	throw NotImplementedException{"ScriptType"};
 }

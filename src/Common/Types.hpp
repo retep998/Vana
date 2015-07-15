@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <regex>
 #include <set>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <thread>
 #include <tuple>
@@ -55,10 +56,10 @@ public:
 	auto operator +=(const unix_time_t &right) -> unix_time_t & { m_time += right.m_time; return *this; }
 	auto operator -=(const time_t &t) -> unix_time_t & { m_time -= t; return *this; }
 	auto operator -=(const unix_time_t &right) -> unix_time_t & { m_time -= right.m_time; return *this; }
-	auto operator +(const time_t &t) const -> unix_time_t { return unix_time_t(m_time + t); }
-	auto operator +(const unix_time_t &right) const -> unix_time_t { return unix_time_t(m_time + right.m_time); }
-	auto operator -(const time_t &t) const -> unix_time_t { return unix_time_t(m_time - t); }
-	auto operator -(const unix_time_t &right) const -> unix_time_t { return unix_time_t(m_time - right.m_time); }
+	auto operator +(const time_t &t) const -> unix_time_t { return unix_time_t{m_time + t}; }
+	auto operator +(const unix_time_t &right) const -> unix_time_t { return unix_time_t{m_time + right.m_time}; }
+	auto operator -(const time_t &t) const -> unix_time_t { return unix_time_t{m_time - t}; }
+	auto operator -(const unix_time_t &right) const -> unix_time_t { return unix_time_t{m_time - right.m_time}; }
 private:
 	time_t m_time;
 };
@@ -270,6 +271,8 @@ using checksum_t = uint32_t;
 
 #define DEFAULT_EXCEPTION(TypeName, BaseType) \
 	struct TypeName : public BaseType { \
-		explicit TypeName(const std::string &message) : BaseType(message) { } \
-		explicit TypeName(const char *message) : BaseType(message) { } \
+		explicit TypeName(const std::string &message) : BaseType{message.c_str()} { } \
+		explicit TypeName(const char *message = nullptr) : BaseType{message} { } \
 	};
+
+DEFAULT_EXCEPTION(NotImplementedException, std::exception);

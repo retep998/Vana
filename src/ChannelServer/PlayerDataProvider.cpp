@@ -73,6 +73,7 @@ auto PlayerDataProvider::handleSync(sync_t type, PacketReader &reader) -> void {
 		case Sync::SyncTypes::Player: handlePlayerSync(reader); break;
 		case Sync::SyncTypes::Party: handlePartySync(reader); break;
 		case Sync::SyncTypes::Buddy: handleBuddySync(reader); break;
+		default: throw NotImplementedException{"Sync type"};
 	}
 }
 
@@ -296,7 +297,8 @@ auto PlayerDataProvider::checkPlayer(player_id_t id, const Ip &ip, bool &hasPack
 	auto kvp = m_connections.find(id);
 	if (kvp != std::end(m_connections)) {
 		auto &test = kvp->second;
-		if (test.connectIp == ip && TimeUtilities::getDistance<milliseconds_t>(TimeUtilities::getNow(), test.connectTime) < MaxConnectionMilliseconds) {
+		auto distance = TimeUtilities::getDistance<milliseconds_t>(TimeUtilities::getNow(), test.connectTime);
+		if (test.connectIp == ip && distance < MaxConnectionMilliseconds) {
 			result = Result::Successful;
 			if (test.packetSize > 0) {
 				hasPacket = true;
@@ -324,6 +326,7 @@ auto PlayerDataProvider::handlePlayerSync(PacketReader &reader) -> void {
 		case Sync::Player::UpdatePlayer: handleUpdatePlayer(reader); break;
 		case Sync::Player::CharacterCreated: handleCharacterCreated(reader); break;
 		case Sync::Player::CharacterDeleted: handleCharacterDeleted(reader); break;
+		default: throw NotImplementedException{"PlayerSync type"};
 	}
 }
 
@@ -340,6 +343,7 @@ auto PlayerDataProvider::handlePartySync(PacketReader &reader) -> void {
 			handlePartyRemove(partyId, playerId, reader.get<bool>());
 			break;
 		}
+		default: throw NotImplementedException{"PartySync type"};
 	}
 }
 
@@ -349,6 +353,7 @@ auto PlayerDataProvider::handleBuddySync(PacketReader &reader) -> void {
 		case Sync::Buddy::AcceptInvite: acceptBuddyInvite(reader); break;
 		case Sync::Buddy::RemoveBuddy: removeBuddy(reader); break;
 		case Sync::Buddy::ReaddBuddy: readdBuddy(reader); break;
+		default: throw NotImplementedException{"BuddySync type"};
 	}
 }
 
@@ -509,7 +514,7 @@ auto PlayerDataProvider::handleCreateParty(party_id_t id, player_id_t leaderId) 
 		p->addMember(leader, true);
 		leader->send(PartyPacket::createParty(p.get(), leader));
 	}
-	
+
 	p->setLeader(leaderId);
 	m_parties[id] = p;
 }

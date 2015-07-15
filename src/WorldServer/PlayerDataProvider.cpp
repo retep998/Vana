@@ -37,7 +37,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <memory>
 
 PlayerDataProvider::PlayerDataProvider() :
-	m_partyIds(1, 100000)
+	m_partyIds{1, 100000}
 {
 }
 
@@ -140,7 +140,7 @@ auto PlayerDataProvider::send(const vector_t<player_id_t> &playerIds, const Pack
 
 		auto kvp = sendTargets.find(data.channel.get());
 		if (kvp == std::end(sendTargets)) {
-			kvp = sendTargets.emplace(data.channel.get(), vector_t<player_id_t>()).first;
+			kvp = sendTargets.emplace(data.channel.get(), vector_t<player_id_t>{}).first;
 		}
 
 		kvp->second.push_back(data.id);
@@ -166,7 +166,7 @@ auto PlayerDataProvider::send(const PacketBuilder &builder) -> void {
 		}
 		auto kvp = sendTargets.find(data.channel.get());
 		if (kvp == std::end(sendTargets)) {
-			kvp = sendTargets.emplace(data.channel.get(), vector_t<player_id_t>()).first;
+			kvp = sendTargets.emplace(data.channel.get(), vector_t<player_id_t>{}).first;
 		}
 
 		kvp->second.push_back(data.id);
@@ -188,6 +188,7 @@ auto PlayerDataProvider::handleSync(AbstractConnection *connection, sync_t type,
 		case Sync::SyncTypes::Player: handlePlayerSync(connection, reader); break;
 		case Sync::SyncTypes::Party: handlePartySync(connection, reader); break;
 		case Sync::SyncTypes::Buddy: handleBuddySync(connection, reader); break;
+		default: throw NotImplementedException{"Sync type"};
 	}
 }
 
@@ -200,6 +201,7 @@ auto PlayerDataProvider::handlePlayerSync(AbstractConnection *connection, Packet
 		case Sync::Player::UpdatePlayer: handlePlayerUpdate(reader); break;
 		case Sync::Player::CharacterCreated: handleCharacterCreated(reader); break;
 		case Sync::Player::CharacterDeleted: handleCharacterDeleted(reader); break;
+		default: throw NotImplementedException{"PlayerSync type"};
 	}
 }
 
@@ -212,6 +214,7 @@ auto PlayerDataProvider::handlePartySync(AbstractConnection *connection, PacketR
 		case PartyActions::Expel: handlePartyRemove(playerId, reader.get<player_id_t>()); break;
 		case PartyActions::Join: handlePartyAdd(playerId, reader.get<party_id_t>()); break;
 		case PartyActions::SetLeader: handlePartyTransfer(playerId, reader.get<player_id_t>()); break;
+		default: throw NotImplementedException{"PartySync type"};
 	}
 }
 
@@ -221,6 +224,7 @@ auto PlayerDataProvider::handleBuddySync(AbstractConnection *connection, PacketR
 		case Sync::Buddy::AcceptInvite: acceptBuddyInvite(reader); break;
 		case Sync::Buddy::RemoveBuddy: removeBuddy(reader); break;
 		case Sync::Buddy::ReaddBuddy: readdBuddy(reader); break;
+		default: throw NotImplementedException{"BuddySync type"};
 	}
 }
 
@@ -333,7 +337,7 @@ auto PlayerDataProvider::handleCharacterDeleted(PacketReader &reader) -> void {
 auto PlayerDataProvider::handleChangeChannelRequest(AbstractConnection *connection, PacketReader &reader) -> void {
 	player_id_t playerId = reader.get<player_id_t>();
 	Channel *channel = WorldServer::getInstance().getChannels().getChannel(reader.get<channel_id_t>());
-	Ip ip(0);
+	Ip ip{0};
 	port_t port = -1;
 	if (channel != nullptr) {
 		m_channelSwitches[playerId] = channel->getId();
@@ -363,7 +367,7 @@ auto PlayerDataProvider::handleChangeChannel(AbstractConnection *connection, Pac
 
 	channel_id_t channelId = m_channelSwitches[playerId];
 	Channel *destinationChannel = WorldServer::getInstance().getChannels().getChannel(channelId);
-	Ip ip(0);
+	Ip ip{0};
 	port_t port = -1;
 	if (destinationChannel != nullptr) {
 		ip = destinationChannel->matchIpToSubnet(player.ip);

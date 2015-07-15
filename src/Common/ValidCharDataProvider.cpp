@@ -104,21 +104,17 @@ auto ValidCharDataProvider::isValidCharacter(gender_id_t genderId, hair_id_t hai
 
 auto ValidCharDataProvider::isValidItem(int32_t id, const ValidItems &items, ValidItemType type) const -> bool {
 	auto idTest = [id](int32_t test) -> bool { return id == test; };
-	// TODO FIXME c++
-	// remove when lambda aliases (e.g. [id = static_cast<skin_id_t>(id)](skin_id_t test) -> bool { ... })
-	skin_id_t casted = static_cast<skin_id_t>(id);
-
 	switch (type) {
 		case ValidItemType::Face: return ext::any_of(items.faces, idTest);
 		case ValidItemType::Hair: return ext::any_of(items.hair, idTest);
 		case ValidItemType::HairColor: return ext::any_of(items.hairColor, idTest);
-		case ValidItemType::Skin: return ext::any_of(items.skin, [casted](skin_id_t test) -> bool { return casted == test; });
+		case ValidItemType::Skin: return ext::any_of(items.skin, [id = static_cast<skin_id_t>(id)](skin_id_t test) -> bool { return id == test; });
 		case ValidItemType::Top: return ext::any_of(items.top, idTest);
 		case ValidItemType::Bottom: return ext::any_of(items.bottom, idTest);
 		case ValidItemType::Shoes: return ext::any_of(items.shoes, idTest);
 		case ValidItemType::Weapon: return ext::any_of(items.weapons, idTest);
 	}
-	throw std::domain_error("Missing ValidItemType");
+	throw NotImplementedException{"ValidItemType"};
 }
 
 auto ValidCharDataProvider::getItems(gender_id_t genderId, int8_t classId) const -> const ValidItems & {

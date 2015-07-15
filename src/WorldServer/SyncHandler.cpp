@@ -44,5 +44,6 @@ auto SyncHandler::handleConfigSync(PacketReader &reader) -> void {
 		case Sync::Config::RateSet: WorldServer::getInstance().setRates(reader.get<Rates>()); break;
 		case Sync::Config::RateReset: WorldServer::getInstance().resetRates(); break;
 		case Sync::Config::ScrollingHeader: WorldServer::getInstance().setScrollingHeader(reader.get<string_t>()); break;
+		default: throw NotImplementedException{"ConfigSync type"};
 	}
 }

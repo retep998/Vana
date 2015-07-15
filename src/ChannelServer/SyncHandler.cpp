@@ -43,5 +43,6 @@ auto SyncHandler::handleConfigSync(PacketReader &reader) -> void {
 	switch (reader.get<sync_t>()) {
 		case Sync::Config::RateSet: ChannelServer::getInstance().setRates(reader.get<Rates>()); break;
 		case Sync::Config::ScrollingHeader: ChannelServer::getInstance().setScrollingHeader(reader.get<string_t>()); break;
+		default: throw NotImplementedException{"ConfigSync type"};
 	}
 }

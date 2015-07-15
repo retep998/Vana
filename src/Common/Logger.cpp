@@ -24,9 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sstream>
 
 Logger::Logger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize) :
-	m_format(format),
-	m_timeFormat(timeFormat),
-	m_serverType(serverType)
+	m_format{format},
+	m_timeFormat{timeFormat},
+	m_serverType{serverType}
 {
 }
 
@@ -52,11 +52,11 @@ auto Logger::formatLog(const string_t &format, LogType type, Logger *logger, tim
 }
 
 Logger::ReplacementArgs::ReplacementArgs(LogType logType, Logger *logger, time_t time, const opt_string_t &id, const string_t &msg) :
-	logType(logType),
-	logger(logger),
-	time(time),
-	id(id),
-	msg(msg)
+	logType{logType},
+	logger{logger},
+	time{time},
+	id{id},
+	msg{msg}
 {
 }
 
@@ -191,5 +191,5 @@ auto Logger::LogReplacements::getServerTypeString(ServerType type) -> string_t {
 		case ServerType::Mts: return "MTS";
 		case ServerType::World: return "World";
 	}
-	throw std::invalid_argument("Invalid ServerType");
+	throw NotImplementedException{"ServerType"};
 }

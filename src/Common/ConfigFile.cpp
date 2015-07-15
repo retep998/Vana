@@ -21,16 +21,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "FileUtilities.hpp"
 #include <iostream>
 
-
 ConfigFile::ConfigFile(const string_t &filename) :
-	LuaEnvironment(filename)
+	LuaEnvironment{filename}
 {
 }
 
 auto ConfigFile::handleFileNotFound(const string_t &filename) -> void {
 	std::cerr << "ERROR: Configuration file " << filename << " does not exist!" << std::endl;
 	ExitCodes::exit(ExitCodes::ConfigFileMissing);
-	throw ConfigException("");
+	throw ConfigException{};
 }
 
 auto ConfigFile::handleKeyNotFound(const string_t &filename, const string_t &key) -> void {
@@ -38,12 +37,12 @@ auto ConfigFile::handleKeyNotFound(const string_t &filename, const string_t &key
 	std::cerr << "File: " << filename << std::endl;
 	std::cerr << "Value: " << key << std::endl;
 	ExitCodes::exit(ExitCodes::ConfigError);
-	throw ConfigException("");
+	throw ConfigException{};
 }
 
 auto ConfigFile::handleError(const string_t &filename, const string_t &error) -> void {
 	std::cerr << "ERROR: " << error << std::endl;
 	std::cerr << "File: " << filename << std::endl;
 	ExitCodes::exit(ExitCodes::ConfigError);
-	throw ConfigException("");
+	throw ConfigException{};
 }

@@ -31,7 +31,7 @@ public:
 private:
 	friend struct PacketSerialize<ClientIp>;
 
-	ClientIp() : m_ip(0) { }
+	ClientIp() : m_ip{0} { }
 
 	Ip m_ip;
 };
@@ -43,7 +43,7 @@ struct PacketSerialize<ClientIp> {
 			builder.add<uint32_t>(htonl(obj.m_ip.asIpv4()));
 		}
 		else {
-			throw std::invalid_argument("IPv6 unsupported");
+			throw NotImplementedException{"IPv6"};
 		}
 	}
 };
