@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 struct Line;
 
 // IMPORTANT
-// The assumption made in the Line and Rect classes are that the coordinate system works like you'd expect for x, but is inverted for y
+// The assumption made in the Point, Line, and Rect classes are that the coordinate system works like you'd expect for x, but is inverted for y
 // That is, -1000 x is on the left side, 1000 x is on the right side
 // However, -1000 y is on the top and 1000 y is on the bottom
 // Be VERY careful when dealing with things that require the Y position

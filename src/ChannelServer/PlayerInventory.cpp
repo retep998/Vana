@@ -540,7 +540,7 @@ auto PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) 
 		// The only interesting things that can happen here are stack modifications and slot swapping
 		Item *item1 = getItem(inventory, slot1);
 		Item *item2 = getItem(inventory, slot2);
-		
+
 		if (item1 == nullptr) {
 			// If item2 is nullptr, it's moving item1 into slot2
 			// Hacking

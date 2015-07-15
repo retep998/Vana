@@ -34,7 +34,7 @@ class Party;
 class Player;
 
 struct ConnectingPlayer {
-	ConnectingPlayer() : connectIp(0) { }
+	ConnectingPlayer() : connectIp{0} { }
 
 	Ip connectIp;
 	time_point_t connectTime;
@@ -80,7 +80,7 @@ public:
 	auto playerEstablished(player_id_t id) -> void;
 private:
 	auto parseChannelConnectPacket(PacketReader &reader) -> void;
-	
+
 	auto handlePlayerSync(PacketReader &reader) -> void;
 	auto handlePartySync(PacketReader &reader) -> void;
 	auto handleBuddySync(PacketReader &reader) -> void;

@@ -52,7 +52,7 @@ auto StringUtilities::runFlags(const opt_string_t &flags, function_t<void (const
 
 auto StringUtilities::runFlags(const string_t &flags, function_t<void (const string_t &)> func) -> void {
 	if (!flags.empty()) {
-		MiscUtilities::tokenizer tokens(flags, ",");
+		MiscUtilities::tokenizer tokens{flags, ","};
 		for (const auto &token : tokens) {
 			func(token);
 		}

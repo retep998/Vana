@@ -137,13 +137,13 @@ auto EquipDataProvider::setEquipStats(Item *equip, Items::StatVariance varianceP
 			default:
 				variance = std::min<int16_t>(amount / 10 + 1, 5);
 		}
-		
+
 		if (!isGm) {
 			// This code turns a single event into a series of events to give a normal distribution
 			// e.g. 1 event of [0, 5] is turned into 7 events of [0, 1]
 			// This makes it like flipping 7 coins instead of rolling a single die
 
-			std::binomial_distribution<> dist(variance + 2, .5);
+			std::binomial_distribution<> dist{variance + 2, .5};
 			variance = Randomizer::rand(dist) - 2;
 		}
 

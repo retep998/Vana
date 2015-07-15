@@ -47,5 +47,4 @@ auto Container::getRemainingTime(const Id &id) const -> TDuration {
 	return TDuration{0};
 }
 
-
 }

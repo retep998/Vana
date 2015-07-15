@@ -36,7 +36,7 @@ namespace fs = boost::filesystem;
 #endif
 
 DatabaseUpdater::DatabaseUpdater(bool update) :
-	m_update(update)
+	m_update{update}
 {
 	loadDatabaseInfo();
 	loadSqlFiles();
@@ -55,7 +55,7 @@ auto DatabaseUpdater::update() -> void {
 
 auto DatabaseUpdater::update(size_t version) -> void {
 	if (version <= m_fileVersion) {
-		throw std::out_of_range("SQL version to update to is less than the highest query file");
+		throw std::out_of_range{"SQL version to update to is less than the highest query file"};
 	}
 
 	for (auto iter = m_sqlFiles.find(m_fileVersion + 1); iter != std::end(m_sqlFiles); ++iter) {
@@ -101,7 +101,7 @@ auto DatabaseUpdater::loadDatabaseInfo() -> void {
 }
 
 auto DatabaseUpdater::loadSqlFiles() -> void {
-	fs::path fullPath = fs::system_complete(fs::path("sql"));
+	fs::path fullPath = fs::system_complete(fs::path{"sql"});
 	if (!fs::exists(fullPath)) {
 		std::cerr << "SQL files not found: " << fullPath.generic_string() << std::endl;
 		ExitCodes::exit(ExitCodes::SqlDirectoryNotFound);
@@ -115,7 +115,7 @@ auto DatabaseUpdater::loadSqlFiles() -> void {
 
 		// Our Vana version files have a format of 0000_file.sql where 0000 is a number identifier
 		// Scripts are executed in the order of lowest identifier (e.g. 0000) to highest (e.g. 9999)
-		std::regex re(R"((\d\d\d\d)_.*\.sql)");
+		std::regex re{R"((\d\d\d\d)_.*\.sql)"};
 		match_t matches;
 		if (!std::regex_match(filename, matches, re)) {
 			// Not a valid version SQL file

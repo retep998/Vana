@@ -34,9 +34,9 @@ namespace Vana {
 
 	template <typename TAbstractServer>
 	auto main() -> exit_code_t {
-		Botan::LibraryInitializer init("thread_safe=true");
+		Botan::LibraryInitializer init{"thread_safe=true"};
 		boost::asio::io_service s;
-		boost::asio::signal_set signals(s, SIGINT);
+		boost::asio::signal_set signals{s, SIGINT};
 
 		try {
 			AbstractServer &server = TAbstractServer::getInstance();

@@ -65,7 +65,7 @@ auto WorldServer::establishedLoginConnection(world_id_t worldId, port_t port, co
 	m_config = conf;
 	m_defaultRates = conf.rates;
 	listen();
-	
+
 	m_playerDataProvider.loadData();
 
 	displayLaunchTime();

@@ -124,8 +124,17 @@ auto Maps::usePortal(Player *player, PacketReader &reader) -> void {
 		}
 		default: {
 			// GM Map change (command "/m")
-			if (player->isGm() && getMap(opcode) != nullptr) {
-				player->setMap(opcode);
+			if (player->isGm()) {
+				if (getMap(opcode) != nullptr) {
+					player->setMap(opcode);
+				}
+				else {
+					// TODO FIXME message
+				}
+			}
+			else {
+				// Hacking
+				return;
 			}
 		}
 	}

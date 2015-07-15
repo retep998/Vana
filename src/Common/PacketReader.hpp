@@ -179,13 +179,13 @@ auto PacketReader::getImpl(TValue *) -> TValue {
 template <typename TValue>
 auto PacketReader::getSizedImpl(size_t size, TValue *) -> TValue {
 	static_assert(false, "T is not appropriately specialized for that type");
-	throw std::logic_error("T is not appropriately specialized for that type");
+	throw std::logic_error{"T is not appropriately specialized for that type"};
 }
 
 template <typename TValue>
 auto PacketReader::getImplDefault() -> TValue {
 	if (sizeof(TValue) > getBufferLength()) {
-		throw PacketContentException("Packet data longer than buffer allows");
+		throw PacketContentException{"Packet data longer than buffer allows"};
 	}
 	TValue val = *reinterpret_cast<TValue *>(m_buffer + m_pos);
 	m_pos += sizeof(TValue);
@@ -197,7 +197,7 @@ auto PacketReader::getImpl<bool>(bool *) -> bool {
 #ifdef DEBUG
 	// Address programming errors in debug
 	int8_t byte = getImplDefault<int8_t>();
-	if (byte != 0 && byte != 1) throw PacketDebugException("Packet data inconsistent with bool type");
+	if (byte != 0 && byte != 1) throw PacketDebugException{"Packet data inconsistent with bool type"};
 	return byte != 0;
 #else
 	return getImplDefault<int8_t>() != 0;
@@ -251,22 +251,22 @@ auto PacketReader::getImpl<uint64_t>(uint64_t *) -> uint64_t {
 
 template <>
 auto PacketReader::getImpl<milliseconds_t>(milliseconds_t *) -> milliseconds_t {
-	return milliseconds_t(getImplDefault<int32_t>());
+	return milliseconds_t{getImplDefault<int32_t>()};
 }
 
 template <>
 auto PacketReader::getImpl<seconds_t>(seconds_t *) -> seconds_t {
-	return seconds_t(getImplDefault<int32_t>());
+	return seconds_t{getImplDefault<int32_t>()};
 }
 
 template <>
 auto PacketReader::getImpl<minutes_t>(minutes_t *) -> minutes_t {
-	return minutes_t(getImplDefault<int32_t>());
+	return minutes_t{getImplDefault<int32_t>()};
 }
 
 template <>
 auto PacketReader::getImpl<hours_t>(hours_t *) -> hours_t {
-	return hours_t(getImplDefault<int32_t>());
+	return hours_t{getImplDefault<int32_t>()};
 }
 
 template <>
@@ -284,7 +284,7 @@ auto PacketReader::getImpl(vector_t<TElement> *) -> vector_t<TElement> {
 template <>
 auto PacketReader::getSizedImpl<string_t>(size_t size, string_t *) -> string_t {
 	if (size > getBufferLength()) {
-		throw PacketContentException("Packet string longer than buffer allows");
+		throw PacketContentException{"Packet string longer than buffer allows"};
 	}
 	string_t s{reinterpret_cast<char *>(m_buffer + m_pos), size};
 	m_pos += size;

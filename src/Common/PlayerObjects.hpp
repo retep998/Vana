@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 struct PlayerData {
 	PlayerData() :
-		ip(0)
+		ip{0}
 	{
 	}
 

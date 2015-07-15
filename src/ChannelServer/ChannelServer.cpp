@@ -33,8 +33,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectPacket.hpp"
 
 ChannelServer::ChannelServer() :
-	AbstractServer(ServerType::Channel),
-	m_worldIp(0)
+	AbstractServer{ServerType::Channel},
+	m_worldIp{0}
 {
 }
 
@@ -130,7 +130,7 @@ auto ChannelServer::connectToWorld(world_id_t worldId, port_t port, const Ip &ip
 	if (getConnectionManager().connect(ip, port, getInterServerConfig(), m_worldConnection) == Result::Failure) {
 		return;
 	}
-	
+
 	sendAuth(m_worldConnection);
 }
 

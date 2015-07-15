@@ -22,24 +22,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 
 Ip::Ip(const string_t &addr, Ip::Type type) :
-	m_type(type)
+	m_type{type}
 {
 	if (m_type != Ip::Type::Ipv4) {
-		throw std::invalid_argument("Can only resolve Ip::Type::Ipv4");
+		throw std::invalid_argument{"Can only resolve Ip::Type::Ipv4"};
 	}
 	m_ipv4 = stringToIpv4(addr);
 }
 
 Ip::Ip(uint32_t ipv4) :
-	m_type(Ip::Type::Ipv4),
-	m_ipv4(ipv4)
+	m_type{Ip::Type::Ipv4},
+	m_ipv4{ipv4}
 {
 }
 
 auto Ip::stringToIpv4(const string_t &name) -> uint32_t {
 	boost::asio::io_service ioService;
-	boost::asio::ip::tcp::resolver resolver(ioService);
-	boost::asio::ip::tcp::resolver::query query(boost::asio::ip::tcp::v4(), name, "http");
+	boost::asio::ip::tcp::resolver resolver{ioService};
+	boost::asio::ip::tcp::resolver::query query{boost::asio::ip::tcp::v4(), name, "http"};
 	boost::asio::ip::tcp::resolver::iterator iter = resolver.resolve(query);
 	boost::asio::ip::tcp::resolver::iterator end;
 
@@ -53,7 +53,7 @@ auto Ip::toString() const -> string_t {
 	if (m_type == Ip::Type::Ipv4) {
 		return boost::asio::ip::address_v4(m_ipv4).to_string();
 	}
-	throw std::invalid_argument("m_type");
+	throw std::invalid_argument{"m_type"};
 }
 
 auto Ip::asIpv4() const -> uint32_t {

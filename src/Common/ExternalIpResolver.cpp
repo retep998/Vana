@@ -22,13 +22,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 
 ExternalIpResolver::ExternalIpResolver(const Ip &defaultIp, const IpMatrix &externalIps) :
-	m_defaultIp(defaultIp),
-	m_externalIps(externalIps)
+	m_defaultIp{defaultIp},
+	m_externalIps{externalIps}
 {
 }
 
 auto ExternalIpResolver::matchIpToSubnet(const Ip &test) const -> Ip {
-	if (test.getType() != m_defaultIp.getType()) throw std::invalid_argument("IP type must match the external IP type");
+	if (test.getType() != m_defaultIp.getType()) throw std::invalid_argument{"IP type must match the external IP type"};
 
 	Ip ret = m_defaultIp;
 	for (const auto &ipArray : m_externalIps) {

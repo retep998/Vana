@@ -259,7 +259,6 @@ PACKET_IMPL(showTripleMegaphone, int8_t lines, const string_t &line1, const stri
 	return builder;
 }
 
-
 PACKET_IMPL(updateSlots, inventory_t inventory, inventory_slot_count_t slots) {
 	PacketBuilder builder;
 	builder

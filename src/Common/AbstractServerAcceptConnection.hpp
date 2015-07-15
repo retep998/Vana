@@ -35,7 +35,7 @@ public:
 	auto setExternalIpInformation(const Ip &defaultIp, const IpMatrix &matrix) -> void { m_resolver.setExternalIpInformation(defaultIp, matrix); }
 protected:
 	AbstractServerAcceptConnection() :
-		AbstractConnection(true)
+		AbstractConnection{true}
 	{
 	}
 

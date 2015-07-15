@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 auto MySqlQueryParser::parseQueries(const string_t &filename) -> vector_t<string_t> {
 	if (!FileUtilities::fileExists(filename)) {
-		throw std::runtime_error("Query file doesn't exist: " + filename);
+		throw std::runtime_error{"Query file doesn't exist: " + filename};
 	}
 
 	vector_t<string_t> queries;
@@ -46,7 +46,7 @@ auto MySqlQueryParser::parseQueries(const string_t &filename) -> vector_t<string
 
 	// Parse each SQL statement
 	{
-		MiscUtilities::tokenizer tokens(content, ";");
+		MiscUtilities::tokenizer tokens{content, ";"};
 
 		for (const auto &token : tokens) {
 			string_t q = token;

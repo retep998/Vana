@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class ExternalIpResolver {
 public:
 	ExternalIpResolver(const Ip &defaultIp, const IpMatrix &externalIps);
-	ExternalIpResolver() : m_defaultIp(0) { }
+	ExternalIpResolver() : m_defaultIp{0} { }
 
 	auto setExternalIpInformation(const Ip &defaultIp, const IpMatrix &matrix) -> void {
 		m_defaultIp = defaultIp;

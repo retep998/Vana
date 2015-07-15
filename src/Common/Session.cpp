@@ -28,13 +28,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace asio = boost::asio;
 
 Session::Session(asio::io_service &ioService, ConnectionManager &manager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string_t &subversion) :
-	m_manager(manager),
-	m_socket(ioService),
-	m_connection(connection),
-	m_isForClient(isForClient),
-	m_subversion(subversion),
-	m_decoder(!isForClient || isEncrypted),
-	m_usePing(usePing)
+	m_manager{manager},
+	m_socket{ioService},
+	m_connection{connection},
+	m_isForClient{isForClient},
+	m_subversion{subversion},
+	m_decoder{!isForClient || isEncrypted},
+	m_usePing{usePing}
 {
 }
 
@@ -80,7 +80,7 @@ auto Session::send(const PacketBuilder &builder) -> void {
 }
 
 auto Session::send(const unsigned char *buf, int32_t len, bool encrypt) -> void {
-	owned_lock_t<mutex_t> l(m_sendMutex);
+	owned_lock_t<mutex_t> l{m_sendMutex};
 
 	unsigned char *sendBuffer;
 	size_t realLength = len;
@@ -118,7 +118,7 @@ auto Session::startReadHeader() -> void {
 }
 
 auto Session::handleWrite(const boost::system::error_code &error, size_t bytesTransferred) -> void {
-	owned_lock_t<mutex_t> l(m_sendMutex);
+	owned_lock_t<mutex_t> l{m_sendMutex};
 	if (error) {
 		disconnect();
 	}
@@ -158,7 +158,7 @@ auto Session::handleReadBody(const boost::system::error_code &error, size_t byte
 	if (!error) {
 		m_decoder.decrypt(m_buffer.get(), bytesTransferred, headerLen);
 
-		PacketReader packet(m_buffer.get(), bytesTransferred);
+		PacketReader packet{m_buffer.get(), bytesTransferred};
 		m_connection->baseHandleRequest(packet);
 
 		startReadHeader();

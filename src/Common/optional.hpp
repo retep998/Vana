@@ -28,7 +28,7 @@ namespace MiscUtilities {
 	class optional {
 	public:
 		optional() = default;
-		optional(const TElement &val) : m_initialized(true), m_val(val) { }
+		optional(const TElement &val) : m_initialized{true}, m_val{val} { }
 		auto is_initialized() const -> bool { return m_initialized; }
 		auto get() const -> const TElement & { return m_val; }
 		auto get() -> TElement & { return m_val; }

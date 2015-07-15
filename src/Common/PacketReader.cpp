@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 
 PacketReader::PacketReader(unsigned char *buffer, size_t length) :
-	m_buffer(buffer),
-	m_length(length)
+	m_buffer{buffer},
+	m_length{length}
 {
 }
 

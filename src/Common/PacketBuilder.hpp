@@ -149,7 +149,7 @@ auto PacketBuilder::addImpl(const TValue &val) -> void {
 template <typename TValue>
 auto PacketBuilder::addSizedImpl(const TValue &value, size_t size) -> void {
 	static_assert(false, "T is not appropriately specialized for that type");
-	throw std::logic_error("T is not appropriately specialized for that type");
+	throw std::logic_error{"T is not appropriately specialized for that type"};
 }
 
 template <typename TValue>
@@ -236,7 +236,7 @@ auto PacketBuilder::addImpl<hours_t>(const hours_t &value) -> void {
 
 template <>
 auto PacketBuilder::addImpl<string_t>(const string_t &value) -> void {
-	if (value.size() > static_cast<size_t>(std::numeric_limits<uint16_t>::max())) throw std::invalid_argument("String is too large to be sent via packet");
+	if (value.size() > static_cast<size_t>(std::numeric_limits<uint16_t>::max())) throw std::invalid_argument{"String is too large to be sent via packet"};
 	addImplDefault<uint16_t>(static_cast<uint16_t>(value.size()));
 	add<string_t>(value, value.size());
 }
@@ -251,7 +251,7 @@ template <>
 auto PacketBuilder::addSizedImpl<string_t>(const string_t &value, size_t size) -> void {
 	size_t slen = value.size();
 	if (size < slen) {
-		throw std::invalid_argument("addString used with a length shorter than string size");
+		throw std::invalid_argument{"addString used with a length shorter than string size"};
 	}
 	strncpy(reinterpret_cast<char *>(getBuffer(m_pos, size)), value.c_str(), slen);
 	for (size_t i = slen; i < size; i++) {

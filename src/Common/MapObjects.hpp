@@ -77,7 +77,7 @@ struct ReactorSpawnInfo : public SpawnInfo {
 
 struct Respawnable {
 	Respawnable() = default;
-	Respawnable(size_t spawnId, time_point_t spawnAt) : spawnAt(spawnAt), spawnId(spawnId), spawn(true) { }
+	Respawnable(size_t spawnId, time_point_t spawnAt) : spawnAt{spawnAt}, spawnId{spawnId}, spawn{true} { }
 
 	bool spawn = false;
 	size_t spawnId = 0;

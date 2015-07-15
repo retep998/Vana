@@ -61,7 +61,7 @@ PACKET_IMPL(customError, const string_t &error) {
 	else {
 		builder.add<bool>(false);
 	}
-		
+
 	return builder;
 }
 

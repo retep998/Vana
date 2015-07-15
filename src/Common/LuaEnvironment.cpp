@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
-ObjectPool<int32_t, LuaEnvironment *> LuaEnvironment::s_environments = ObjectPool<int32_t, LuaEnvironment *>(1, 1000000);
+ObjectPool<int32_t, LuaEnvironment *> LuaEnvironment::s_environments = ObjectPool<int32_t, LuaEnvironment *>{1, 1000000};
 
 auto LuaEnvironment::getEnvironment(lua_State *luaVm) -> LuaEnvironment & {
 	lua_getglobal(luaVm, "system_environment_id");
@@ -58,7 +58,7 @@ LuaEnvironment::~LuaEnvironment() {
 
 auto LuaEnvironment::loadFile(const string_t &filename) -> void {
 	if (m_luaVm != nullptr) {
-		throw std::runtime_error("LuaVM was still specified");
+		throw std::runtime_error{"LuaVM was still specified"};
 	}
 	if (!FileUtilities::fileExists(filename)) {
 		handleFileNotFound(filename);
@@ -119,7 +119,7 @@ auto LuaEnvironment::handleThreadCompletion() -> void {
 }
 
 auto LuaEnvironment::handleKeyNotFound(const string_t &filename, const string_t &key) -> void {
-	throw std::runtime_error("Key '" + key + "' does not exist and is required in file '" + filename + "'");
+	throw std::runtime_error{"Key '" + key + "' does not exist and is required in file '" + filename + "'"};
 }
 
 auto LuaEnvironment::printError(const string_t &error) const -> void {

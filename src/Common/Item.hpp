@@ -33,11 +33,11 @@ struct ItemDbInformation {
 	NO_DEFAULT_CONSTRUCTOR(ItemDbInformation);
 public:
 	ItemDbInformation(inventory_slot_t slot, player_id_t charId, account_id_t userId, world_id_t worldId, const string_t &location) :
-		slot(slot),
-		charId(charId),
-		userId(userId),
-		worldId(worldId),
-		location(location)
+		slot{slot},
+		charId{charId},
+		userId{userId},
+		worldId{worldId},
+		location{location}
 	{
 	}
 
@@ -52,13 +52,13 @@ struct ItemDbRecord : ItemDbInformation {
 	NO_DEFAULT_CONSTRUCTOR(ItemDbRecord);
 public:
 	ItemDbRecord(inventory_slot_t slot, player_id_t charId, account_id_t userId, world_id_t worldId, const string_t &location, Item *item) :
-		ItemDbInformation(slot, charId, userId, worldId, location),
-		item(item)
+		ItemDbInformation{slot, charId, userId, worldId, location},
+		item{item}
 	{
 	}
 	ItemDbRecord(const ItemDbInformation &info, Item *item) :
-		ItemDbInformation(info.slot, info.charId, info.userId, info.worldId, info.location),
-		item(item)
+		ItemDbInformation{info.slot, info.charId, info.userId, info.worldId, info.location},
+		item{item}
 	{
 	}
 
@@ -112,7 +112,6 @@ public:
 
 	auto databaseInsert(soci::session &sql, const ItemDbInformation &info) -> void;
 	auto setSlots(int8_t slots) -> void;
-	auto setScrolls(int8_t scrolls) -> void;
 	auto setStr(stat_t strength) -> void;
 	auto setDex(stat_t dexterity) -> void;
 	auto setInt(stat_t intelligence) -> void;
@@ -130,10 +129,7 @@ public:
 	auto setSpeed(stat_t speed) -> void;
 	auto setAmount(slot_qty_t amount) -> void;
 	auto setName(const string_t &name) -> void;
-	auto setFlags(int16_t flags) -> void;
-	auto setHammers(int32_t hammers) -> void;
 	auto setPetId(pet_id_t petId) -> void;
-	auto setExpirationTime(int64_t exp) -> void;
 	auto addStr(stat_t strength) -> void;
 	auto addDex(stat_t dexterity) -> void;
 	auto addInt(stat_t intelligence) -> void;

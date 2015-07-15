@@ -526,7 +526,7 @@ auto ManagementFunctions::kill(Player *player, const chat_t &args) -> ChatResult
 				}
 				return false;
 			});
-			ChatHandlerFunctions::showInfo(player, "Killed " + StringUtilities::lexical_cast<string_t>(kills)+" " + (args == "gm" ? "GMs" : "players") + " in the current map");
+			ChatHandlerFunctions::showInfo(player, "Killed " + StringUtilities::lexical_cast<string_t>(kills) + " " + (args == "gm" ? "GMs" : "players") + " in the current map");
 		}
 		if (proceed) {
 			if (args == "me") {

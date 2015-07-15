@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.hpp"
 
 SqlLogger::SqlLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize) :
-	Logger(filename, format, timeFormat, serverType, bufferSize),
-	m_bufferSize(bufferSize)
+	Logger{filename, format, timeFormat, serverType, bufferSize},
+	m_bufferSize{bufferSize}
 {
 	m_buffer.reserve(bufferSize);
 }

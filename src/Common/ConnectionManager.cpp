@@ -34,17 +34,22 @@ ConnectionManager::~ConnectionManager() {
 }
 
 ConnectionManager::Listener::Listener(boost::asio::io_service &ioService, const boost::asio::ip::tcp::endpoint &endpoint, function_t<AbstractConnection *()> createConnection, const InterServerConfig &config, bool isServer, const string_t &subversion) :
-	acceptor(ioService, endpoint),
-	isPinging(isServer ? config.serverPing : config.clientPing),
-	isEncrypted(config.clientEncryption || isServer),
-	connectionCreator(createConnection),
-	subversion(subversion),
-	isServer(isServer)
+	acceptor{ioService, endpoint},
+	isPinging{isServer ? config.serverPing : config.clientPing},
+	isEncrypted{config.clientEncryption || isServer},
+	connectionCreator{createConnection},
+	subversion{subversion},
+	isServer{isServer}
 {
 }
 
 auto ConnectionManager::accept(const Ip::Type &ipType, port_t port, function_t<AbstractConnection *()> createConnection, const InterServerConfig &config, bool isServer, const string_t &subversion) -> void {
-	boost::asio::ip::tcp::endpoint endpoint(ipType == Ip::Type::Ipv4 ? boost::asio::ip::tcp::v4() : boost::asio::ip::tcp::v6(), port);
+	boost::asio::ip::tcp::endpoint endpoint{
+		ipType == Ip::Type::Ipv4 ?
+			boost::asio::ip::tcp::v4() :
+			boost::asio::ip::tcp::v6(),
+		port};
+
 	auto listener = make_ref_ptr<Listener>(m_ioService, endpoint, createConnection, config, isServer, subversion);
 	m_servers.push_back(listener);
 	acceptConnection(listener);

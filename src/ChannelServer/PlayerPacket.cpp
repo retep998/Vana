@@ -101,10 +101,16 @@ PACKET_IMPL(showKeys, KeyMaps *keyMaps) {
 		.add<int8_t>(0);
 
 	for (size_t i = 0; i < KeyMaps::size; i++) {
-		KeyMaps::KeyMap *keyMap = keyMaps->getKeyMap(i);
-		builder
-			.add<int8_t>(keyMap == nullptr ? 0 : keyMap->type)
-			.add<int32_t>(keyMap == nullptr ? 0 : keyMap->action);
+		if (KeyMaps::KeyMap *keyMap = keyMaps->getKeyMap(i)) {
+			builder
+				.add<int8_t>(keyMap->type)
+				.add<int32_t>(keyMap->action);
+		}
+		else {
+			builder
+				.add<int8_t>(0)
+				.add<int32_t>(0);
+		}
 	}
 	return builder;
 }
@@ -116,8 +122,7 @@ PACKET_IMPL(showSkillMacros, SkillMacros *macros) {
 		.add<int8_t>(macros->getMax() + 1);
 
 	for (int8_t i = 0; i <= macros->getMax(); i++) {
-		SkillMacros::SkillMacro *macro = macros->getSkillMacro(i);
-		if (macro != nullptr) {
+		if (SkillMacros::SkillMacro *macro = macros->getSkillMacro(i)) {
 			builder
 				.add<string_t>(macro->name)
 				.add<bool>(macro->shout)
@@ -179,7 +184,7 @@ PACKET_IMPL(changeChannel, const Ip &ip, port_t port) {
 	builder
 		.add<header_t>(SMSG_CHANNEL_CHANGE)
 		.add<bool>(true)
-		.add<ClientIp>(ClientIp(ip))
+		.add<ClientIp>(ClientIp{ip})
 		.add<port_t>(port);
 	return builder;
 }

@@ -25,8 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 
 PacketBuilder::PacketBuilder() :
-	m_packet(new unsigned char[bufferLen]),
-	m_packetCapacity(bufferLen)
+	m_packet{new unsigned char[bufferLen]},
+	m_packetCapacity{bufferLen}
 {
 }
 
@@ -55,7 +55,7 @@ auto PacketBuilder::getHexByte(unsigned char input) -> unsigned char {
 		input -= '0';
 	}
 	else {
-		throw std::invalid_argument("addBytes used with a non-hex digit");
+		throw std::invalid_argument{"addBytes used with a non-hex digit"};
 	}
 	return input;
 }

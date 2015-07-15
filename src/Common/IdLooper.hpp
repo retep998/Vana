@@ -25,15 +25,15 @@ template <typename TIdentifier>
 class IdLooper {
 public:
 	explicit IdLooper(TIdentifier minimum = 1, TIdentifier maximum = std::numeric_limits<TIdentifier>::max()) :
-		m_current(minimum),
-		m_minimum(minimum),
-		m_maximum(maximum)
+		m_current{minimum},
+		m_minimum{minimum},
+		m_maximum{maximum}
 	{
 		if (maximum <= minimum) {
-			throw std::domain_error("maximum must be greater than minimum");
+			throw std::domain_error{"maximum must be greater than minimum"};
 		}
 		if (minimum == typeMin() && maximum == typeMax()) {
-			throw std::domain_error("range is not representible in the unsigned version of the TIdentifier type");
+			throw std::domain_error{"range is not representible in the unsigned version of the TIdentifier type"};
 		}
 	}
 
@@ -75,6 +75,7 @@ private:
 		// For this reason, we use distance from 0 and cast it into the unsigned type to allow us to do the math
 		// So if we have [-2147, 2147], we end up with 2147 + 2147 + 1 or 4295 possible values
 		// If we have mixed signedness and max is > min (validated by constructor), only min can be negative and needs abs
+		// We already validated whether max and min had the same sign, so that case doesn't apply here
 		return static_cast<unsigned_type>(m_maximum) + abs(m_minimum) + 1;
 	}
 

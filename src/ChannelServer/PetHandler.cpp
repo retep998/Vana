@@ -75,7 +75,7 @@ auto PetHandler::handleSummon(Player *player, PacketReader &reader) -> void {
 		int8_t index = pet->getIndex().get();
 		player->getPets()->setSummoned(index, 0);
 		if (index == 0) {
-			Timer::Id id(TimerType::PetTimer, index);
+			Timer::Id id{TimerType::PetTimer, index};
 			player->getTimerContainer()->removeTimer(id);
 		}
 		if (multipet) {
@@ -113,7 +113,7 @@ auto PetHandler::handleSummon(Player *player, PacketReader &reader) -> void {
 				player->sendMap(PetsPacket::petSummoned(player->getId(), pet));
 			}
 			else if (Pet *kicked = player->getPets()->getSummoned(0)) {
-				Timer::Id id(TimerType::PetTimer, kicked->getIndex().get());
+				Timer::Id id{TimerType::PetTimer, kicked->getIndex().get()};
 				player->getTimerContainer()->removeTimer(id);
 				kicked->desummon();
 				player->sendMap(PetsPacket::petSummoned(player->getId(), pet, true));

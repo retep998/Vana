@@ -79,7 +79,7 @@ auto Initializing::checkMcdbVersion() -> Result {
 }
 
 auto Initializing::checkSchemaVersion(bool update) -> Result {
-	DatabaseUpdater db(update);
+	DatabaseUpdater db{update};
 
 	VersionCheckResult check = db.checkVersion();
 

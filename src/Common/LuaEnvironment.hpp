@@ -51,12 +51,12 @@ template <typename T>
 struct LuaSerialize {
 	auto read(LuaEnvironment &config, int stackIndex) -> T {
 		static_assert(false, "index read of T is not appropriately specialized for that type");
-		throw std::logic_error("index read of T is not appropriately specialized for that type");
+		throw std::logic_error{"index read of T is not appropriately specialized for that type"};
 	}
 
 	auto read(LuaEnvironment &config, const string_t &prefix) -> T {
 		static_assert(false, "string prefix read of T is not appropriately specialized for that type");
-		throw std::logic_error("string prefix read of T is not appropriately specialized for that type");
+		throw std::logic_error{"string prefix read of T is not appropriately specialized for that type"};
 	}
 };
 
@@ -400,7 +400,7 @@ auto LuaEnvironment::pushThread(const T &value) -> void {
 template <typename T>
 auto LuaEnvironment::pushImpl(lua_State *luaVm, const T &value) -> void {
 	static_assert(false, "T is not appropriately specialized for that type");
-	throw std::logic_error("T is not appropriately specialized for that type");
+	throw std::logic_error{"T is not appropriately specialized for that type"};
 }
 
 template <>
@@ -554,22 +554,22 @@ auto LuaEnvironment::getImpl<uint32_t>(lua_State *luaVm, const string_t &key, ui
 
 template <>
 auto LuaEnvironment::getImpl<milliseconds_t>(lua_State *luaVm, const string_t &key, milliseconds_t *) -> milliseconds_t {
-	return milliseconds_t(getImplDefault<int32_t>(luaVm, key));
+	return milliseconds_t{getImplDefault<int32_t>(luaVm, key)};
 }
 
 template <>
 auto LuaEnvironment::getImpl<seconds_t>(lua_State *luaVm, const string_t &key, seconds_t *) -> seconds_t {
-	return seconds_t(getImplDefault<int32_t>(luaVm, key));
+	return seconds_t{getImplDefault<int32_t>(luaVm, key)};
 }
 
 template <>
 auto LuaEnvironment::getImpl<minutes_t>(lua_State *luaVm, const string_t &key, minutes_t *) -> minutes_t {
-	return minutes_t(getImplDefault<int32_t>(luaVm, key));
+	return minutes_t{getImplDefault<int32_t>(luaVm, key)};
 }
 
 template <>
 auto LuaEnvironment::getImpl<hours_t>(lua_State *luaVm, const string_t &key, hours_t *) -> hours_t {
-	return hours_t(getImplDefault<int32_t>(luaVm, key));
+	return hours_t{getImplDefault<int32_t>(luaVm, key)};
 }
 
 template <typename TElement>
@@ -654,22 +654,22 @@ auto LuaEnvironment::getImpl<uint32_t>(lua_State *luaVm, int index, uint32_t *) 
 
 template <>
 auto LuaEnvironment::getImpl<milliseconds_t>(lua_State *luaVm, int index, milliseconds_t *) -> milliseconds_t {
-	return milliseconds_t(getInteger<int32_t>(luaVm, index));
+	return milliseconds_t{getInteger<int32_t>(luaVm, index)};
 }
 
 template <>
 auto LuaEnvironment::getImpl<seconds_t>(lua_State *luaVm, int index, seconds_t *) -> seconds_t {
-	return seconds_t(getInteger<int32_t>(luaVm, index));
+	return seconds_t{getInteger<int32_t>(luaVm, index)};
 }
 
 template <>
 auto LuaEnvironment::getImpl<minutes_t>(lua_State *luaVm, int index, minutes_t *) -> minutes_t {
-	return minutes_t(getInteger<int32_t>(luaVm, index));
+	return minutes_t{getInteger<int32_t>(luaVm, index)};
 }
 
 template <>
 auto LuaEnvironment::getImpl<hours_t>(lua_State *luaVm, int index, hours_t *) -> hours_t {
-	return hours_t(getInteger<int32_t>(luaVm, index));
+	return hours_t{getInteger<int32_t>(luaVm, index)};
 }
 
 template <typename TElement>

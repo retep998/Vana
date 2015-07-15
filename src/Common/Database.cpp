@@ -26,19 +26,19 @@ string_t Database::m_charTablePrefix;
 string_t Database::m_dataTablePrefix;
 
 auto Database::connectCharDb() -> void {
-	ConfigFile config("conf/database.lua");
+	ConfigFile config{"conf/database.lua"};
 	config.run();
 	DbConfig conf = config.get<DbConfig>("chardb");
-	m_chardb = new soci::session(soci::mysql, buildConnectionString(conf));
+	m_chardb = new soci::session{soci::mysql, buildConnectionString(conf)};
 	m_chardb->reconnect();
 	m_charTablePrefix = conf.tablePrefix;
 }
 
 auto Database::connectDataDb() -> void {
-	ConfigFile config("conf/database.lua");
+	ConfigFile config{"conf/database.lua"};
 	config.run();
 	DbConfig conf = config.get<DbConfig>("datadb");
-	m_datadb = new soci::session(soci::mysql, buildConnectionString(conf));
+	m_datadb = new soci::session{soci::mysql, buildConnectionString(conf)};
 	m_datadb->reconnect();
 	m_dataTablePrefix = conf.tablePrefix;
 }

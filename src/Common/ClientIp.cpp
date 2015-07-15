@@ -22,6 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 
 ClientIp::ClientIp(const Ip &ip) :
-	m_ip(ip)
+	m_ip{ip}
 {
 }

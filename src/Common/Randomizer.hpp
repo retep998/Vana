@@ -88,7 +88,7 @@ private:
 
 		template <typename TNumber>
 		auto rand(TNumber max, TNumber min) -> std::enable_if_t<std::is_integral<TNumber>::value, TNumber> {
-			std::uniform_int_distribution<TNumber> distribution(min, max);
+			std::uniform_int_distribution<TNumber> distribution{min, max};
 			return distribution(m_engine);
 		}
 
@@ -106,7 +106,7 @@ private:
 
 		template <typename TNumber>
 		auto rand(TNumber max, TNumber min) -> std::enable_if_t<std::is_floating_point<TNumber>::value, TNumber> {
-			std::uniform_real_distribution<TNumber> distribution(min, max);
+			std::uniform_real_distribution<TNumber> distribution{min, max};
 			return distribution(m_engine);
 		}
 

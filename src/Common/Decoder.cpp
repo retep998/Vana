@@ -30,7 +30,7 @@ const uint8_t AesKey[AesKeySize] = {
 const int32_t BlockSize = 1460;
 
 Decoder::Decoder(bool encrypted) :
-	m_encrypted(encrypted)
+	m_encrypted{encrypted}
 {
 	m_botanKey = Botan::SymmetricKey(AesKey, AesKeySize);
 }
@@ -74,13 +74,13 @@ auto Decoder::encrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) -
 	uint8_t first = 1;
 	int32_t tPos = 0;
 	int32_t writeAmount = 0;
-	Botan::InitializationVector iv(m_send.getBytes(), 16);
+	Botan::InitializationVector iv{m_send.getBytes(), 16};
 
 	while (size > pos) {
 		tPos = BlockSize - first * headerLen;
 		writeAmount = (size > (pos + tPos) ? tPos : (size - pos));
 
-		Botan::Pipe pipe(Botan::get_cipher("AES-256/OFB/NoPadding", m_botanKey, iv, Botan::ENCRYPTION));
+		Botan::Pipe pipe{Botan::get_cipher("AES-256/OFB/NoPadding", m_botanKey, iv, Botan::ENCRYPTION)};
 		pipe.start_msg();
 		pipe.write(buffer + pos, writeAmount);
 		pipe.end_msg();
@@ -107,13 +107,13 @@ auto Decoder::decrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) -
 	uint8_t first = 1;
 	int32_t tPos = 0;
 	int32_t readAmount = 0;
-	Botan::InitializationVector iv(m_recv.getBytes(), 16);
+	Botan::InitializationVector iv{m_recv.getBytes(), 16};
 
 	while (size > pos) {
 		tPos = BlockSize - first * headerLen;
 		readAmount = (size > (pos + tPos) ? tPos : (size - pos));
 
-		Botan::Pipe pipe(Botan::get_cipher("AES-256/OFB/NoPadding", m_botanKey, iv, Botan::DECRYPTION));
+		Botan::Pipe pipe{Botan::get_cipher("AES-256/OFB/NoPadding", m_botanKey, iv, Botan::DECRYPTION)};
 		pipe.start_msg();
 		pipe.write(buffer + pos, readAmount);
 		pipe.end_msg();

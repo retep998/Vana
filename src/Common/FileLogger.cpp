@@ -34,9 +34,9 @@ namespace fs = boost::filesystem;
 #endif
 
 FileLogger::FileLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize) :
-	Logger(filename, format, timeFormat, serverType, bufferSize),
-	m_bufferSize(bufferSize),
-	m_filenameFormat(filename)
+	Logger{filename, format, timeFormat, serverType, bufferSize},
+	m_bufferSize{bufferSize},
+	m_filenameFormat{filename}
 {
 	m_buffer.reserve(bufferSize);
 }
@@ -58,11 +58,11 @@ auto FileLogger::log(LogType type, const opt_string_t &identifier, const string_
 auto FileLogger::flush() -> void {
 	for (const auto &bufferedMessage : m_buffer) {
 		const string_t &file = bufferedMessage.file;
-		fs::path fullPath = fs::system_complete(fs::path(file.substr(0, file.find_last_of("/"))));
+		fs::path fullPath = fs::system_complete(fs::path{file.substr(0, file.find_last_of("/"))});
 		if (!fs::exists(fullPath)) {
 			fs::create_directories(fullPath);
 		}
-		std::fstream f(file, std::ios_base::out);
+		std::fstream f{file, std::ios_base::out};
 		f << bufferedMessage.message;
 		f.close();
 	}

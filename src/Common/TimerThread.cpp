@@ -72,7 +72,7 @@ auto TimerThread::getTimerContainer() const -> ref_ptr_t<Container> {
 }
 
 auto TimerThread::registerTimer(ref_ptr_t<Timer> timer, time_point_t runAt) -> void {
-	owned_lock_t<recursive_mutex_t> l(m_timersMutex);
+	owned_lock_t<recursive_mutex_t> l{m_timersMutex};
 	m_timers.emplace(runAt, timer);
 	m_mainLoopCondition.notify_one();
 }
@@ -82,7 +82,7 @@ auto TimerThread::getWaitTime() const -> time_point_t {
 		return m_timers.top().first;
 	}
 
-	return TimeUtilities::getNowWithTimeAdded(milliseconds_t(1000000000));
+	return TimeUtilities::getNowWithTimeAdded(milliseconds_t{1000000000});
 }
 
 }

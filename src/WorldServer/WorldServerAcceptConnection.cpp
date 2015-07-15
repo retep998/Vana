@@ -95,7 +95,7 @@ auto WorldServerAcceptConnection::authenticated(ServerType type) -> void {
 			send(SyncPacket::sendSyncData([&](PacketBuilder &builder) {
 				server.getPlayerDataProvider().getChannelConnectPacket(builder);
 			}));
-			
+
 			server.sendLogin(LoginServerConnectPacket::registerChannel(m_channel, getIp(), ips, port));
 
 			server.log(LogType::ServerConnect, [&](out_stream_t &log) { log << "Channel " << static_cast<int32_t>(m_channel); });

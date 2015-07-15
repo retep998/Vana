@@ -36,7 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 AbstractServer::AbstractServer(ServerType type) :
-	m_serverType(type)
+	m_serverType{type}
 {
 }
 
@@ -198,7 +198,6 @@ auto AbstractServer::log(LogType type, function_t<void(out_stream_t &)> produceM
 auto AbstractServer::log(LogType type, const char *message) -> void {
 	log(type, string_t{message});
 }
-
 
 auto AbstractServer::buildLogIdentifier(function_t<void(out_stream_t &)> produceId) const -> opt_string_t {
 	out_stream_t message;

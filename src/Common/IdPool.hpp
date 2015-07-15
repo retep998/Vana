@@ -25,13 +25,13 @@ template <typename TIdentifier>
 class IdPool {
 public:
 	explicit IdPool(TIdentifier minimum = 1, TIdentifier maximum = std::numeric_limits<TIdentifier>::max()) :
-		m_identifiers(minimum, maximum)
+		m_identifiers{minimum, maximum}
 	{
 	}
 
 	auto lease() -> TIdentifier {
 		if (free() == 0) {
-			throw std::range_error("all identifiers are consumed");
+			throw std::range_error{"all identifiers are consumed"};
 		}
 
 		TIdentifier ret;

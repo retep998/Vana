@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class StopWatch {
 	NONCOPYABLE(StopWatch);
 public:
-	StopWatch() : m_start(effective_clock_t::now()) { }
+	StopWatch() : m_start{effective_clock_t::now()} { }
 	auto restart() -> void { m_start = effective_clock_t::now(); }
 	template <typename TDuration>
 	auto elapsed() const -> typename TDuration::rep { return duration_cast<TDuration>(effective_clock_t::now() - m_start).count(); }

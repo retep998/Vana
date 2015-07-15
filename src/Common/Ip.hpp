@@ -30,10 +30,10 @@ public:
 	class Type {
 	public:
 		Type(int8_t ipType) :
-			m_type(ipType)
+			m_type{ipType}
 		{
 			if (ipType != Ipv4 && ipType != Ipv6) {
-				throw std::invalid_argument("Must pass Ip::Type::Ipv4 or Ip::Type::Ipv6 to the constructor");
+				throw std::invalid_argument{"Must pass Ip::Type::Ipv4 or Ip::Type::Ipv6 to the constructor"};
 			}
 		}
 

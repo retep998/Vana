@@ -34,7 +34,7 @@ public:
 	auto tryMatchIpToSubnet(const Ip &test, Ip &result) const -> bool;
 private:
 	friend struct PacketSerialize<ExternalIp>;
-	ExternalIp() : Ip() { }
+	ExternalIp() : Ip{} { }
 
 	uint32_t m_ipv4SubnetMask = 0;
 };

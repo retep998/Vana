@@ -27,13 +27,13 @@ class ObjectPool {
 
 public:
 	explicit ObjectPool(TIdentifier minimum = 1, TIdentifier maximum = std::numeric_limits<TIdentifier>::max()) :
-		m_identifiers(minimum, maximum)
+		m_identifiers{minimum, maximum}
 	{
 	}
 
 	auto store(TObject obj) -> TIdentifier {
 		if (free() == 0) {
-			throw std::range_error("all identifiers are consumed");
+			throw std::range_error{"all identifiers are consumed"};
 		}
 
 		TIdentifier ret;

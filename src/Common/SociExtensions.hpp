@@ -92,7 +92,7 @@ namespace soci {
 				const base_type max = (std::numeric_limits<target_type>::max)();
 				const base_type min = (std::numeric_limits<target_type>::min)();
 				if (in < min || in >  max) {
-					throw soci_error("Value outside of allowed range");
+					throw soci_error{"Value outside of allowed range"};
 				}
 
 				out = static_cast<target_type>(in);
@@ -123,7 +123,7 @@ namespace soci {
 				const base_type max = (std::numeric_limits<target_type>::max)();
 				const base_type min = (std::numeric_limits<target_type>::min)();
 				if (in < min || in >  max) {
-					throw soci_error("Value outside of allowed range");
+					throw soci_error{"Value outside of allowed range"};
 				}
 
 				out = static_cast<target_type>(in);
@@ -149,7 +149,7 @@ namespace soci {
 				const base_type max = (std::numeric_limits<target_type>::max)();
 				const base_type min = (std::numeric_limits<target_type>::min)();
 				if (in < min || in >  max) {
-					throw soci_error("Value outside of allowed range");
+					throw soci_error{"Value outside of allowed range"};
 				}
 
 				out = static_cast<target_type>(in);
@@ -196,7 +196,7 @@ namespace soci {
 				const base_type max = (std::numeric_limits<target_type>::max)();
 				const base_type min = (std::numeric_limits<target_type>::min)();
 				if (in < min || in >  max) {
-					throw soci_error("Value outside of allowed range");
+					throw soci_error{"Value outside of allowed range"};
 				}
 
 				out = static_cast<target_type>(in);

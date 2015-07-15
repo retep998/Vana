@@ -24,10 +24,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimerContainer.hpp"
 #include <functional>
 
-seconds_t Trades::TradeTimeout = seconds_t(180);
+seconds_t Trades::TradeTimeout = seconds_t{180};
 
 Trades::Trades() :
-	m_tradeIds(1, 100000)
+	m_tradeIds{1, 100000}
 {
 }
 
@@ -61,7 +61,7 @@ auto Trades::getTrade(trade_id_t id) -> ActiveTrade * {
 }
 
 auto Trades::getTimerSecondsRemaining(trade_id_t id) -> seconds_t {
-	Timer::Id timerId(TimerType::TradeTimer, id);
+	Timer::Id timerId{TimerType::TradeTimer, id};
 	return getTimers()->getRemainingTime<seconds_t>(timerId);
 }
 
@@ -70,12 +70,17 @@ auto Trades::timeout(Player *sender) -> void {
 }
 
 auto Trades::stopTimeout(trade_id_t id) -> void {
-	Timer::Id timerId(TimerType::TradeTimer, id);
+	Timer::Id timerId{TimerType::TradeTimer, id};
 	getTimers()->removeTimer(timerId);
 }
 
 auto Trades::startTimeout(trade_id_t id, Player *sender) -> void {
-	Timer::Id timerId(TimerType::TradeTimer, id);
-	Timer::Timer::create([this, sender](const time_point_t &now) { this->timeout(sender); },
-		timerId, nullptr, TradeTimeout);
+	Timer::Id timerId{TimerType::TradeTimer, id};
+	Timer::Timer::create(
+		[this, sender](const time_point_t &now) {
+			this->timeout(sender);
+		},
+		timerId,
+		nullptr,
+		TradeTimeout);
 }

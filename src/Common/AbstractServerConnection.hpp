@@ -32,8 +32,8 @@ public:
 	auto getType() const -> ServerType { return m_type; }
 protected:
 	AbstractServerConnection(ServerType type) :
-		AbstractConnection(true),
-		m_type(type)
+		AbstractConnection{true},
+		m_type{type}
 	{
 	}
 private:

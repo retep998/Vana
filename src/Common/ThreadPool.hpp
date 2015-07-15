@@ -40,8 +40,8 @@ private:
 		function_t<void()> preWaitHook;
 
 		ThreadPair(ref_ptr_t<thread_t> thread, function_t<void()> preWaitHook) :
-			thread(thread),
-			preWaitHook(preWaitHook)
+			thread{thread},
+			preWaitHook{preWaitHook}
 		{
 		}
 	};
@@ -65,7 +65,7 @@ private:
 
 		auto lease(function_t<void(owned_lock_t<recursive_mutex_t> &)> work, function_t<void()> preWaitHook, recursive_mutex_t &mutex) -> ref_ptr_t<thread_t> {
 			auto thread = make_ref_ptr<thread_t>([this, work, &mutex]() -> void {
-				owned_lock_t<recursive_mutex_t> l(mutex);
+				owned_lock_t<recursive_mutex_t> l{mutex};
 				while (m_runThread.load(std::memory_order_relaxed)) {
 					work(l);
 				}

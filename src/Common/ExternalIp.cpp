@@ -22,19 +22,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 
 ExternalIp::ExternalIp(const string_t &addr, uint32_t ipv4SubnetMask) :
-	Ip(addr, Ip::Type::Ipv4),
-	m_ipv4SubnetMask(ipv4SubnetMask)
+	Ip{addr, Ip::Type::Ipv4},
+	m_ipv4SubnetMask{ipv4SubnetMask}
 {
 }
 
 ExternalIp::ExternalIp(uint32_t ipv4, uint32_t ipv4SubnetMask) :
-	Ip(ipv4),
-	m_ipv4SubnetMask(ipv4SubnetMask)
+	Ip{ipv4},
+	m_ipv4SubnetMask{ipv4SubnetMask}
 {
 }
 
 auto ExternalIp::tryMatchIpToSubnet(const Ip &test, Ip &result) const -> bool {
-	if (test.m_type != m_type) throw std::invalid_argument("IP type must match the external IP type");
+	if (test.m_type != m_type) throw std::invalid_argument{"IP type must match the external IP type"};
 
 	if (m_type == Ip::Type::Ipv4) {
 		if ((m_ipv4 & m_ipv4SubnetMask) == (test.m_ipv4 & m_ipv4SubnetMask)) {

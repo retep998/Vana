@@ -54,7 +54,7 @@ auto RankingCalculator::runThread() -> void {
 
 auto RankingCalculator::all() -> void {
 	// There's no guarantee what effect running two at once will have, but it's likely to be bad
-	owned_lock_t<mutex_t> l(RankingsMutex, std::try_to_lock);
+	owned_lock_t<mutex_t> l{RankingsMutex, std::try_to_lock};
 	if (!l) {
 		return;
 	}

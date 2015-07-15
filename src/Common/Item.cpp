@@ -33,14 +33,14 @@ Item::Item(const soci::row &row)
 }
 
 Item::Item(item_id_t itemId, slot_qty_t amount) :
-	m_id(itemId),
-	m_amount(amount)
+	m_id{itemId},
+	m_amount{amount}
 {
 }
 
 Item::Item(const EquipDataProvider &provider, item_id_t equipId, Items::StatVariance variancePolicy, bool isGm) :
-	m_id(equipId),
-	m_amount(1)
+	m_id{equipId},
+	m_amount{1}
 {
 	provider.setEquipStats(this, variancePolicy, isGm, true);
 }
@@ -322,7 +322,7 @@ auto Item::initializeItem(const soci::row &row) -> void {
 
 auto Item::databaseInsert(soci::session &sql, const ItemDbInformation &info) -> void {
 	vector_t<ItemDbRecord> v;
-	ItemDbRecord r(info, this);
+	ItemDbRecord r{info, this};
 	v.push_back(r);
 	Item::databaseInsert(sql, v);
 }

@@ -33,10 +33,10 @@ auto Timer::create(const timer_func_t func, const Id &id, ref_ptr_t<Container> c
 }
 
 Timer::Timer(const timer_func_t func, const Id &id, ref_ptr_t<Container> container, const duration_t &differenceFromNow, const duration_t &repeat) :
-	m_id(id),
-	m_container(container),
-	m_repeatTime(repeat),
-	m_function(func)
+	m_id{id},
+	m_container{container},
+	m_repeatTime{repeat},
+	m_function{func}
 {
 	m_repeat = repeat.count() != 0;
 	m_runAt = TimeUtilities::getNowWithTimeAdded(differenceFromNow);

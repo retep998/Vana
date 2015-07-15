@@ -26,10 +26,10 @@ template <typename T>
 struct PacketSerialize {
 	auto read(PacketReader &reader) -> T {
 		static_assert(false, "T is not appropriately specialized for that type");
-		throw std::logic_error("T is not appropriately specialized for that type");
+		throw std::logic_error{"T is not appropriately specialized for that type"};
 	};
 	auto write(PacketBuilder &builder, const T &obj) -> void {
 		static_assert(false, "T is not appropriately specialized for that type");
-		throw std::logic_error("T is not appropriately specialized for that type");
+		throw std::logic_error{"T is not appropriately specialized for that type"};
 	};
 };

@@ -75,7 +75,7 @@ namespace _impl {
 		using input_type = string_t;
 		using output_type = Dst;
 		static auto cast(const input_type &input) -> output_type {
-			std::istringstream strm(input);
+			std::istringstream strm{input};
 			output_type out;
 			strm >> out;
 			return out;
@@ -132,7 +132,7 @@ namespace _impl {
 
 template <typename TElement>
 auto StringUtilities::delimit(const string_t &delimiter, const init_list_t<TElement> &elements) -> string_t {
-	out_stream_t q("");
+	out_stream_t q{""};
 	bool addDelimiter = false;
 	for (const auto &element : elements) {
 		if (addDelimiter) {
@@ -146,7 +146,7 @@ auto StringUtilities::delimit(const string_t &delimiter, const init_list_t<TElem
 
 template <typename TElement>
 auto StringUtilities::delimit(const string_t &delimiter, const vector_t<TElement> &elements) -> string_t {
-	out_stream_t q("");
+	out_stream_t q{""};
 	bool addDelimiter = false;
 	for (const auto &element : elements) {
 		if (addDelimiter) {

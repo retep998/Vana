@@ -26,10 +26,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 
 ServerClient::ServerClient(boost::asio::io_service &ioService, const Ip &serverIp, port_t serverPort, ConnectionManager &manager, AbstractConnection *connection, bool ping) :
-	Session(ioService, manager, connection, false, true, ping, MapleVersion::LoginSubversion),
-	m_server(serverIp),
-	m_port(serverPort),
-	m_resolver(ioService)
+	Session{ioService, manager, connection, false, true, ping, MapleVersion::LoginSubversion},
+	m_server{serverIp},
+	m_port{serverPort},
+	m_resolver{ioService}
 {
 }
 
@@ -38,12 +38,12 @@ auto ServerClient::startConnect() -> Result {
 
 	boost::asio::ip::address endAddress;
 	if (m_server.getType() == Ip::Type::Ipv4) {
-		endAddress = boost::asio::ip::address_v4(m_server.asIpv4());
+		endAddress = boost::asio::ip::address_v4{m_server.asIpv4()};
 	}
 	else {
-		throw std::invalid_argument("IPv6 unsupported");
+		throw std::invalid_argument{"IPv6 unsupported"};
 	}
-	boost::asio::ip::tcp::endpoint endpoint(endAddress, m_port);
+	boost::asio::ip::tcp::endpoint endpoint{endAddress, m_port};
 
 	boost::system::error_code error;
 	getSocket().connect(endpoint, error);
@@ -86,7 +86,7 @@ auto ServerClient::readConnectPacket() -> void {
 		return;
 	}
 
-	PacketReader reader(buffer.get(), packetSize);
+	PacketReader reader{buffer.get(), packetSize};
 
 	header_t header = reader.get<header_t>(); // Gives us the packet length
 	version_t version = reader.get<version_t>();

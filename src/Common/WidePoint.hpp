@@ -24,9 +24,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <cmath>
 
+// IMPORTANT
+// The assumption made in the Point, Line, and Rect classes are that the coordinate system works like you'd expect for x, but is inverted for y
+// That is, -1000 x is on the left side, 1000 x is on the right side
+// However, -1000 y is on the top and 1000 y is on the bottom
+// Be VERY careful when dealing with things that require the Y position
 struct WidePoint {
-	WidePoint(const Point &pos) : x(pos.x), y(pos.y) { }
-	WidePoint(int32_t x, int32_t y) : x(x), y(y) { }
+	WidePoint(const Point &pos) : x{pos.x}, y{pos.y} { }
+	WidePoint(int32_t x, int32_t y) : x{x}, y{y} { }
 	WidePoint() = default;
 
 	auto operator-(const WidePoint &p) const -> int32_t {
