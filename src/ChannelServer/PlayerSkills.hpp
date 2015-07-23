@@ -37,7 +37,7 @@ class PlayerSkills {
 	NONCOPYABLE(PlayerSkills);
 	NO_DEFAULT_CONSTRUCTOR(PlayerSkills);
 public:
-	PlayerSkills(Player *m_player) : m_player(m_player) { load(); }
+	PlayerSkills(Player *player);
 
 	auto load() -> void;
 	auto save(bool saveCooldowns = false) -> void;
@@ -64,10 +64,8 @@ public:
 	auto hasBlessingOfTheFairy() const -> bool;
 	auto getElementalAmp() const -> skill_id_t;
 	auto getEnergyCharge() const -> skill_id_t;
-	auto getComboAttack() const -> skill_id_t;
 	auto getAdvancedCombo() const -> skill_id_t;
 	auto getAlchemist() const -> skill_id_t;
-	auto getDarkSight() const -> skill_id_t;
 	auto getHpIncrease() const -> skill_id_t;
 	auto getMpIncrease() const -> skill_id_t;
 	auto getMastery() const -> skill_id_t;
@@ -82,7 +80,7 @@ public:
 	auto getBlessingOfTheFairy() const -> skill_id_t;
 	auto getRechargeableBonus() const -> slot_qty_t;
 
-	auto addCooldown(skill_id_t skillId, int16_t time) -> void;
+	auto addCooldown(skill_id_t skillId, seconds_t time) -> void;
 	auto removeCooldown(skill_id_t skillId) -> void;
 	auto removeAllCooldowns() -> void;
 
@@ -99,7 +97,7 @@ private:
 
 	Player *m_player = nullptr;
 	hash_map_t<skill_id_t, PlayerSkillInfo> m_skills;
-	hash_map_t<skill_id_t, int16_t> m_cooldowns;
+	hash_map_t<skill_id_t, seconds_t> m_cooldowns;
 	ref_ptr_t<MysticDoor> m_mysticDoor;
 	string_t m_blessingPlayer;
 };

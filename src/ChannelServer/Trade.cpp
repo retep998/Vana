@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Trades.hpp"
 
 ActiveTrade::ActiveTrade(Player *sender, Player *receiver, trade_id_t id) :
-	m_id(id)
+	m_id{id}
 {
 	m_sender = make_owned_ptr<TradeInfo>();
 	m_receiver = make_owned_ptr<TradeInfo>();

@@ -72,7 +72,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 
 Player::Player() :
-	MovableLife(0, Point{}, 0)
+	MovableLife{0, Point{}, 0}
 {
 }
 
@@ -144,6 +144,7 @@ auto Player::handleRequest(PacketReader &reader) -> void {
 				case CMSG_ATTACK_RANGED: PlayerHandler::useRangedAttack(this, reader); break;
 				case CMSG_BOMB_SKILL_USE: PlayerHandler::useBombSkill(this, reader); break;
 				case CMSG_BUDDY: BuddyListHandler::handleBuddyList(this, reader); break;
+				case CMSG_BUFF_ITEM_USE: InventoryHandler::useBuffItem(this, reader); break;
 				case CMSG_CASH_ITEM_USE: InventoryHandler::useCashItem(this, reader); break;
 				case CMSG_CASH_SHOP: send(PlayerPacket::sendBlockedMessage(PlayerPacket::BlockMessages::NoCashShop)); break;
 				case CMSG_CHAIR: InventoryHandler::handleChair(this, reader); break;
@@ -352,7 +353,7 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 
 	SkillMacros skillMacros;
 	skillMacros.load(id);
-	
+
 	// Adjust down HP or MP if necessary
 	getStats()->checkHpMp();
 
@@ -461,9 +462,6 @@ auto Player::internalSetMap(map_id_t mapId, portal_id_t portalId, const Point &p
 
 	getSummons()->changedMap();
 
-	if (getActiveBuffs()->hasMarkedMonster()) {
-		Buffs::endBuff(this, getActiveBuffs()->getHomingBeacon());
-	}
 	if (!getChalkboard().empty() && !newMap->canChalkboard()) {
 		setChalkboard("");
 	}
@@ -503,7 +501,6 @@ auto Player::setMap(map_id_t mapId, const PortalInfo * const portal, bool instan
 
 	internalSetMap(mapId, actualPortal->id, Point{actualPortal->pos.x, actualPortal->pos.y - 40}, false);
 }
-
 
 auto Player::getMedalName() -> string_t {
 	out_stream_t ret;
@@ -792,7 +789,7 @@ auto Player::setBuddyListSize(uint8_t size) -> void {
 	send(BuddyListPacket::showSize(this));
 }
 
-auto Player::getPortalCount(bool add) -> uint8_t {
+auto Player::getPortalCount(bool add) -> portal_count_t {
 	if (add) {
 		m_portalCount++;
 	}

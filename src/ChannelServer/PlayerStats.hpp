@@ -72,7 +72,8 @@ public:
 	auto setMaxMp(health_t maxMp) -> void;
 	auto modifyMaxHp(health_t mod) -> void;
 	auto modifyMaxMp(health_t mod) -> void;
-	auto setHyperBody(int16_t xMod, int16_t yMod) -> void;
+	auto setHyperBodyHp(int16_t mod) -> void;
+	auto setHyperBodyMp(int16_t mod) -> void;
 	auto setHpMpAp(health_ap_t ap) -> void { m_hpMpAp = ap; }
 	auto setExp(experience_t exp) -> void;
 	auto setAp(stat_t ap) -> void;
@@ -84,7 +85,7 @@ public:
 	auto setDex(stat_t dex) -> void;
 	auto setInt(stat_t intt) -> void;
 	auto setLuk(stat_t luk) -> void;
-	auto setMapleWarrior(int16_t xMod) -> void;
+	auto setMapleWarrior(int16_t mod) -> void;
 	auto loseExp() -> void;
 
 	auto setEquip(inventory_slot_t slot, Item *equip, bool isLoading = false) -> void;

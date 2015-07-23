@@ -83,10 +83,10 @@ public:
 	static auto setMapUnloadTime(seconds_t newTime) -> void;
 
 	// Map info
-	static auto makeNpcId(map_object_t receivedId)->size_t;
-	static auto makeReactorId(map_object_t receivedId)->size_t;
-	auto makeNpcId()->map_object_t;
-	auto makeReactorId()->map_object_t;
+	static auto makeNpcId(map_object_t receivedId) -> size_t;
+	static auto makeReactorId(map_object_t receivedId) -> size_t;
+	auto makeNpcId() -> map_object_t;
+	auto makeReactorId() -> map_object_t;
 	auto setMusic(const string_t &musicName) -> void;
 	auto setMobSpawning(mob_id_t spawn) -> void;
 	auto canVip() const -> bool { return !m_info->limitations.vipRock; }
@@ -94,17 +94,17 @@ public:
 	auto loseOnePercent() const -> bool { return m_info->limitations.regularExpLoss || m_info->town || m_mobs.size() == 0; }
 	auto getContinent() const -> uint8_t { return m_info->continent; }
 	auto getForcedReturn() const -> map_id_t { return m_info->forcedReturn; }
-	auto getReturnMap() const -> map_id_t { return m_info->rm; }
+	auto getReturnMap() const -> map_id_t { return m_info->returnMap; }
 	auto getId() const -> map_id_t { return m_id; }
 	auto getDimensions() const -> Rect { return m_realDimensions; }
 	auto getMusic() const -> string_t { return m_music; }
 
 	// Footholds
-	auto findFloor(const Point &pos, Point &floorPos, coord_t yMod = 0)->SearchResult;
-	auto getFootholdAtPosition(const Point &pos)->foothold_id_t;
+	auto findFloor(const Point &pos, Point &floorPos, coord_t yMod = 0) -> SearchResult;
+	auto getFootholdAtPosition(const Point &pos) -> foothold_id_t;
 	auto isValidFoothold(foothold_id_t id) -> bool;
 	auto isVerticalFoothold(foothold_id_t id) -> bool;
-	auto getPositionAtFoothold(foothold_id_t id)->Point;
+	auto getPositionAtFoothold(foothold_id_t id) -> Point;
 
 	// Seats
 	auto seatOccupied(seat_id_t id) -> bool;
@@ -116,30 +116,30 @@ public:
 	auto getNearestSpawnPoint(const Point &pos) const -> const PortalInfo * const;
 	auto queryPortalName(const string_t &name, Player *player = nullptr) const -> const PortalInfo * const;
 	auto setPortalState(const string_t &name, bool enabled) -> void;
-	auto getPortalNames() const->vector_t<string_t>;
-	auto getTownMysticDoorPortal(Player *player) const->MysticDoorOpenResult;
-	auto getTownMysticDoorPortal(Player *player, uint8_t zeroBasedPartyIndex) const->MysticDoorOpenResult;
-	auto getMysticDoorPortal(Player *player) const->MysticDoorOpenResult;
-	auto getMysticDoorPortal(Player *player, uint8_t zeroBasedPartyIndex) const->MysticDoorOpenResult;
+	auto getPortalNames() const -> vector_t<string_t>;
+	auto getTownMysticDoorPortal(Player *player) const -> MysticDoorOpenResult;
+	auto getTownMysticDoorPortal(Player *player, uint8_t zeroBasedPartyIndex) const -> MysticDoorOpenResult;
+	auto getMysticDoorPortal(Player *player) const -> MysticDoorOpenResult;
+	auto getMysticDoorPortal(Player *player, uint8_t zeroBasedPartyIndex) const -> MysticDoorOpenResult;
 
 	// Players
 	auto addPlayer(Player *player) -> void;
-	auto getNumPlayers() const->size_t;
-	auto getPlayer(size_t playerIndex) const->Player *;
-	auto getPlayerNames()->string_t;
+	auto getNumPlayers() const -> size_t;
+	auto getPlayer(size_t playerIndex) const -> Player *;
+	auto getPlayerNames() -> string_t;
 	auto removePlayer(Player *player) -> void;
 	auto checkPlayerEquip(Player *player) -> void;
 	auto runFunctionPlayers(const Rect &dimensions, int16_t prop, function_t<void(Player *)> successFunc) -> void;
 	auto runFunctionPlayers(const Rect &dimensions, int16_t prop, int16_t count, function_t<void(Player *)> successFunc) -> void;
 	auto runFunctionPlayers(function_t<void(Player *)> successFunc) -> void;
 	auto gmHideChange(Player *player) -> void;
-	auto getAllPlayerIds() const->vector_t<player_id_t>;
+	auto getAllPlayerIds() const -> vector_t<player_id_t>;
 
 	// NPCs
-	auto addNpc(const NpcSpawnInfo &npc)->map_object_t;
+	auto addNpc(const NpcSpawnInfo &npc) -> map_object_t;
 	auto removeNpc(size_t npcIndex) -> void;
 	auto isValidNpcIndex(size_t npcIndex) const -> bool;
-	auto getNpc(size_t npcIndex) const->NpcSpawnInfo;
+	auto getNpc(size_t npcIndex) const -> NpcSpawnInfo;
 
 	// Mobs
 	auto addWebbedMob(map_object_t mapMobId) -> void;
@@ -149,11 +149,11 @@ public:
 	auto statusMobs(vector_t<StatusInfo> &statuses, const Rect &dimensions) -> void;
 	auto spawnZakum(const Point &pos, foothold_id_t foothold = 0) -> void;
 	auto convertShellToNormal(ref_ptr_t<Mob> mob) -> void;
-	auto spawnMob(mob_id_t mobId, const Point &pos, foothold_id_t foothold = 0, ref_ptr_t<Mob> owner = nullptr, int8_t summonEffect = 0)->ref_ptr_t<Mob>;
-	auto spawnMob(int32_t spawnId, const MobSpawnInfo &info)->ref_ptr_t<Mob>;
-	auto killMobs(Player *player, bool distributeExpAndDrops, mob_id_t mobId = 0)->int32_t;
-	auto countMobs(mob_id_t mobId = 0)->int32_t;
-	auto getMob(map_object_t mapMobId)->ref_ptr_t<Mob>;
+	auto spawnMob(mob_id_t mobId, const Point &pos, foothold_id_t foothold = 0, ref_ptr_t<Mob> owner = nullptr, int8_t summonEffect = 0) -> ref_ptr_t<Mob>;
+	auto spawnMob(int32_t spawnId, const MobSpawnInfo &info) -> ref_ptr_t<Mob>;
+	auto killMobs(Player *player, bool distributeExpAndDrops, mob_id_t mobId = 0) -> int32_t;
+	auto countMobs(mob_id_t mobId = 0) -> int32_t;
+	auto getMob(map_object_t mapMobId) -> ref_ptr_t<Mob>;
 	auto runFunctionMobs(function_t<void(ref_ptr_t<const Mob>)> func) -> void;
 	auto switchController(ref_ptr_t<Mob> mob, Player *newController) -> void;
 	auto mobSummonSkillUsed(ref_ptr_t<Mob> mob, const MobSkillLevelInfo * const skill) -> void;
@@ -162,12 +162,12 @@ public:
 	auto addReactor(Reactor *reactor) -> void;
 	auto removeReactor(size_t reactorIndex) -> void;
 	auto killReactors(bool showPacket = true) -> void;
-	auto getReactor(size_t reactorIndex) const->Reactor *;
-	auto getNumReactors() const->size_t;
+	auto getReactor(size_t reactorIndex) const -> Reactor *;
+	auto getNumReactors() const -> size_t;
 
 	// Drops
 	auto addDrop(Drop *drop) -> void;
-	auto getDrop(map_object_t id)->Drop *;
+	auto getDrop(map_object_t id) -> Drop *;
 	auto removeDrop(map_object_t id) -> void;
 	auto clearDrops(bool showPacket = true) -> void;
 
@@ -211,18 +211,18 @@ private:
 	auto checkMists() -> void;
 	auto clearDrops(time_point_t time) -> void;
 	auto timeMob(bool firstLoad = true) -> void;
-	auto spawnShell(mob_id_t mobId, const Point &pos, foothold_id_t foothold)->ref_ptr_t<Mob>;
+	auto spawnShell(mob_id_t mobId, const Point &pos, foothold_id_t foothold) -> ref_ptr_t<Mob>;
 	auto updateMobControl(Player *player) -> void;
 	auto updateMobControl(ref_ptr_t<Mob> mob, MobSpawnType spawn = MobSpawnType::Existing, Player *display = nullptr) -> void;
 	auto mapTick(const time_point_t &now) -> void;
 	auto getTimeMobId() const -> map_object_t { return m_timeMob; }
 	auto getTimeMob() const -> TimeMob * { return m_timeMobInfo.get(); }
-	auto getMist(mist_id_t id)->Mist *;
-	auto findController(ref_ptr_t<Mob> mob)->Player *;
+	auto getMist(mist_id_t id) -> Mist *;
+	auto findController(ref_ptr_t<Mob> mob) -> Player *;
 	auto clearMists(bool showPacket = true) -> void;
 	auto removeMist(Mist *mist) -> void;
-	auto findRandomFloorPos()->Point;
-	auto findRandomFloorPos(const Rect &area)->Point;
+	auto findRandomFloorPos() -> Point;
+	auto findRandomFloorPos(const Rect &area) -> Point;
 	auto buffPlayers(item_id_t buffId) -> void;
 
 	// Longer-lived data

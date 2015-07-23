@@ -103,7 +103,7 @@ auto CommandHandler::handleCommand(Player *player, PacketReader &reader) -> void
 				}
 			}
 			if (!found) {
-				player->send(PlayersPacket::findPlayer(name, -1, 0));
+				player->send(PlayersPacket::findPlayer(name, opt_int32_t{}, 0));
 			}
 			break;
 		}
@@ -112,13 +112,13 @@ auto CommandHandler::handleCommand(Player *player, PacketReader &reader) -> void
 			bool found = false;
 			if (receiver != nullptr) {
 				receiver->send(PlayersPacket::whisperPlayer(player->getName(), ChannelServer::getInstance().getChannelId(), chat));
-				player->send(PlayersPacket::findPlayer(receiver->getName(), -1, 1));
+				player->send(PlayersPacket::findPlayer(receiver->getName(), opt_int32_t{}, 1));
 				found = true;
 			}
 			else {
 				auto targetData = ChannelServer::getInstance().getPlayerDataProvider().getPlayerDataByName(name);
 				if (targetData != nullptr && targetData->channel.is_initialized()) {
-					player->send(PlayersPacket::findPlayer(targetData->name, -1, 1));
+					player->send(PlayersPacket::findPlayer(targetData->name, opt_int32_t{}, 1));
 					ChannelServer::getInstance().sendWorld(
 						Packets::prepend(PlayersPacket::whisperPlayer(player->getName(), ChannelServer::getInstance().getChannelId(), chat), [targetData](PacketBuilder &builder) {
 							builder.add<header_t>(IMSG_TO_CHANNEL);
@@ -130,7 +130,7 @@ auto CommandHandler::handleCommand(Player *player, PacketReader &reader) -> void
 				}
 			}
 			if (!found) {
-				player->send(PlayersPacket::findPlayer(name, -1, 0));
+				player->send(PlayersPacket::findPlayer(name, opt_int32_t{}, 0));
 			}
 			break;
 		}
@@ -148,13 +148,23 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 		case AdminOpcodes::Hide: {
 			bool hide = reader.get<bool>();
 			if (hide) {
-				if (Buffs::addBuff(player, Skills::SuperGm::Hide, player->getSkills()->getSkillLevel(Skills::SuperGm::Hide), 0) == Result::Successful) {
+				auto result = Buffs::addBuff(
+					player,
+					Skills::SuperGm::Hide,
+					1,
+					0);
+
+				if (result == Result::Successful) {
 					player->send(GmPacket::beginHide());
 					player->getMap()->gmHideChange(player);
 				}
 			}
 			else {
-				Skills::stopSkill(player, Skills::SuperGm::Hide);
+				Skills::stopSkill(
+					player,
+					BuffSource::fromSkill(
+						Skills::SuperGm::Hide,
+						1));
 			}
 			break;
 		}

@@ -176,23 +176,26 @@ auto MobHandler::handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill
 			case Skills::IlMage::ElementComposition:
 			case Skills::Sniper::Blizzard:
 			case Skills::IlArchMage::Blizzard:
-				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->time);
+				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->buffTime);
 				break;
 			case Skills::Outlaw::IceSplitter:
 				if (auto elementalBoost = player->getSkills()->getSkillInfo(Skills::Corsair::ElementalBoost)) {
 					y = elementalBoost->y;
 				}
-				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->time + y);
+				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, seconds_t{skill->buffTime.count() + y});
 				break;
 			case Skills::FpArchMage::Elquines:
 			case Skills::Marksman::Frostprey:
-				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->x);
+				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, seconds_t{skill->x});
 				break;
 		}
 		if ((GameLogicUtilities::isSword(weapon) || GameLogicUtilities::isMace(weapon)) && player->getActiveBuffs()->hasIceCharge()) {
 			// Ice charges
-			skill_id_t charge = player->getActiveBuffs()->getCharge();
-			statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, charge, player->getActiveBuffs()->getActiveSkillInfo(charge)->y);
+			auto source = player->getActiveBuffs()->getChargeSource();
+			auto &buffSource = source.get();
+			if (buffSource.getType() != BuffSourceType::Skill) throw NotImplementedException{"Charge BuffSourceType"};
+			auto skill = player->getActiveBuffs()->getBuffSkillInfo(buffSource);
+			statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, buffSource.getSkillId(), seconds_t{skill->y});
 		}
 	}
 	if (mob->canPoison() && mob->getHp() > 1) {
@@ -226,7 +229,7 @@ auto MobHandler::handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill
 					for (int8_t counter = 0; ((counter < hits) && (mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount)); ++counter) {
 						success = (Randomizer::rand<uint16_t>(99) < venom->prop);
 						if (success) {
-							statuses.emplace_back(StatusEffects::Mob::VenomousWeapon, damage, vSkill, venom->time);
+							statuses.emplace_back(StatusEffects::Mob::VenomousWeapon, damage, vSkill, venom->buffTime);
 							mob->addStatus(player->getId(), statuses);
 							statuses.clear();
 						}
@@ -243,7 +246,7 @@ auto MobHandler::handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill
 			case Skills::BlazeWizard::FlameGear:
 			case Skills::NightWalker::PoisonBomb:
 				if (success) {
-					statuses.emplace_back(StatusEffects::Mob::Poison, mob->getMaxHp() / (70 - level), skillId, skill->time);
+					statuses.emplace_back(StatusEffects::Mob::Poison, mob->getMaxHp() / (70 - level), skillId, skill->buffTime);
 				}
 				break;
 		}
@@ -252,13 +255,13 @@ auto MobHandler::handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill
 		// Seal, Stun, etc
 		switch (skillId) {
 			case Skills::Corsair::Hypnotize:
-				statuses.emplace_back(StatusEffects::Mob::Hypnotize, 1, skillId, skill->time);
+				statuses.emplace_back(StatusEffects::Mob::Hypnotize, 1, skillId, skill->buffTime);
 				break;
 			case Skills::Brawler::BackspinBlow:
 			case Skills::Brawler::DoubleUppercut:
 			case Skills::Buccaneer::Demolition:
 			case Skills::Buccaneer::Snatch:
-				statuses.emplace_back(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillId, skill->time);
+				statuses.emplace_back(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillId, skill->buffTime);
 				break;
 			case Skills::Hunter::ArrowBomb:
 			case Skills::Crusader::SwordComa:
@@ -271,54 +274,54 @@ auto MobHandler::handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill
 			case Skills::Gunslinger::BlankShot:
 			case Skills::NightLord::NinjaStorm:
 				if (success) {
-					statuses.emplace_back(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillId, skill->time);
+					statuses.emplace_back(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillId, skill->buffTime);
 				}
 				break;
 			case Skills::Ranger::SilverHawk:
 			case Skills::Sniper::GoldenEagle:
 				if (success) {
-					statuses.emplace_back(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillId, skill->x);
+					statuses.emplace_back(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillId, seconds_t{skill->x});
 				}
 				break;
 			case Skills::FpMage::Seal:
 			case Skills::IlMage::Seal:
 			case Skills::BlazeWizard::Seal:
 				if (success) {
-					statuses.emplace_back(StatusEffects::Mob::Seal, StatusEffects::Mob::Seal, skillId, skill->time);
+					statuses.emplace_back(StatusEffects::Mob::Seal, StatusEffects::Mob::Seal, skillId, skill->buffTime);
 				}
 				break;
 			case Skills::Priest::Doom:
 				if (success) {
-					statuses.emplace_back(StatusEffects::Mob::Doom, StatusEffects::Mob::Doom, skillId, skill->time);
+					statuses.emplace_back(StatusEffects::Mob::Doom, StatusEffects::Mob::Doom, skillId, skill->buffTime);
 				}
 				break;
 			case Skills::Hermit::ShadowWeb:
 			case Skills::NightWalker::ShadowWeb:
 				if (success) {
-					statuses.emplace_back(StatusEffects::Mob::ShadowWeb, level, skillId, skill->time);
+					statuses.emplace_back(StatusEffects::Mob::ShadowWeb, level, skillId, skill->buffTime);
 				}
 				break;
 			case Skills::FpArchMage::Paralyze:
 				if (mob->canPoison()) {
-					statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->time);
+					statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->buffTime);
 				}
 				break;
 			case Skills::IlArchMage::IceDemon:
 			case Skills::FpArchMage::FireDemon:
-				statuses.emplace_back(StatusEffects::Mob::Poison, mob->getMaxHp() / (70 - level), skillId, skill->time);
-				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->x);
+				statuses.emplace_back(StatusEffects::Mob::Poison, mob->getMaxHp() / (70 - level), skillId, skill->buffTime);
+				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, seconds_t{skill->x});
 				break;
 			case Skills::Shadower::Taunt:
 			case Skills::NightLord::Taunt:
 				// I know, these status effect types make no sense, that's just how it works
-				statuses.emplace_back(StatusEffects::Mob::MagicAttackUp, 100 - skill->x, skillId, skill->time);
-				statuses.emplace_back(StatusEffects::Mob::MagicDefenseUp, 100 - skill->x, skillId, skill->time);
+				statuses.emplace_back(StatusEffects::Mob::MagicAttackUp, 100 - skill->x, skillId, skill->buffTime);
+				statuses.emplace_back(StatusEffects::Mob::MagicDefenseUp, 100 - skill->x, skillId, skill->buffTime);
 				break;
 			case Skills::Outlaw::Flamethrower:
 				if (auto elementalBoost = player->getSkills()->getSkillInfo(Skills::Corsair::ElementalBoost)) {
 					y = elementalBoost->x;
 				}
-				statuses.emplace_back(StatusEffects::Mob::Poison, damage * (5 + y) / 100, skillId, skill->time);
+				statuses.emplace_back(StatusEffects::Mob::Poison, damage * (5 + y) / 100, skillId, skill->buffTime);
 				break;
 		}
 	}
@@ -326,33 +329,37 @@ auto MobHandler::handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill
 		case Skills::Shadower::NinjaAmbush:
 		case Skills::NightLord::NinjaAmbush:
 			damage = 2 * (player->getStats()->getStr(true) + player->getStats()->getLuk(true)) * skill->damage / 100;
-			statuses.emplace_back(StatusEffects::Mob::NinjaAmbush, damage, skillId, skill->time);
+			statuses.emplace_back(StatusEffects::Mob::NinjaAmbush, damage, skillId, skill->buffTime);
 			break;
 		case Skills::Rogue::Disorder:
 		case Skills::NightWalker::Disorder:
 		case Skills::Page::Threaten:
-			statuses.emplace_back(StatusEffects::Mob::Watk, skill->x, skillId, skill->time);
-			statuses.emplace_back(StatusEffects::Mob::Wdef, skill->y, skillId, skill->time);
+			statuses.emplace_back(StatusEffects::Mob::Watk, skill->x, skillId, skill->buffTime);
+			statuses.emplace_back(StatusEffects::Mob::Wdef, skill->y, skillId, skill->buffTime);
 			break;
 		case Skills::FpWizard::Slow:
 		case Skills::IlWizard::Slow:
 		case Skills::BlazeWizard::Slow:
-			statuses.emplace_back(StatusEffects::Mob::Speed, skill->x, skillId, skill->time);
+			statuses.emplace_back(StatusEffects::Mob::Speed, skill->x, skillId, skill->buffTime);
 			break;
 	}
 	if (GameLogicUtilities::isBow(weapon)) {
-		if (auto hamstring = player->getActiveBuffs()->getActiveSkillInfo(Skills::Bowmaster::Hamstring)) {
+		auto hamstring = player->getActiveBuffs()->getHamstringSource();
+		if (hamstring.is_initialized()) {
+			auto info = player->getActiveBuffs()->getBuffSkillInfo(hamstring.get());
 			// Only triggers if player has the buff
 			if (skillId != Skills::Bowmaster::Phoenix && skillId != Skills::Ranger::SilverHawk) {
-				statuses.emplace_back(StatusEffects::Mob::Speed, hamstring->x, Skills::Bowmaster::Hamstring, hamstring->y);
+				statuses.emplace_back(StatusEffects::Mob::Speed, info->x, Skills::Bowmaster::Hamstring, seconds_t{info->y});
 			}
 		}
 	}
 	else if (GameLogicUtilities::isCrossbow(weapon)) {
-		if (auto blind = player->getActiveBuffs()->getActiveSkillInfo(Skills::Marksman::Blind)) {
+		auto blind = player->getActiveBuffs()->getBlindSource();
+		if (blind.is_initialized()) {
+			auto info = player->getActiveBuffs()->getBuffSkillInfo(blind.get());
 			// Only triggers if player has the buff
 			if (skillId != Skills::Marksman::Frostprey && skillId != Skills::Sniper::GoldenEagle) {
-				statuses.emplace_back(StatusEffects::Mob::Acc, -(blind->x), Skills::Marksman::Blind, blind->y);
+				statuses.emplace_back(StatusEffects::Mob::Acc, -(info->x), Skills::Marksman::Blind, seconds_t{info->y});
 			}
 		}
 	}

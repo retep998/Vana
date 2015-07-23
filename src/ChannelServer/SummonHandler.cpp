@@ -115,8 +115,8 @@ auto SummonHandler::useSummon(Player *player, skill_id_t skillId, skill_level_t 
 		summon->resetMovement(foothold, summon->getPos(), summon->getStance());
 	}
 
-	auto time = seconds_t{ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level)->time};
-	player->getSummons()->addSummon(summon, time);
+	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
+	player->getSummons()->addSummon(summon, skill->buffTime);
 	player->sendMap(SummonsPacket::showSummon(player->getId(), summon, false));
 }
 
@@ -147,7 +147,7 @@ auto SummonHandler::moveSummon(Player *player, PacketReader &reader) -> void {
 	summon_id_t summonId = reader.get<summon_id_t>();
 
 	// I am not certain what this is, but in the Odin source they seemed to think it was original position. However, it caused AIDS.
-	reader.skip(4);
+	reader.unk<uint32_t>();
 
 	Summon *summon = player->getSummons()->getSummon(summonId);
 	if (summon == nullptr || summon->getMovementType() == Summon::Static) {
@@ -179,29 +179,28 @@ auto SummonHandler::damageSummon(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto SummonHandler::makeBuff(Player *player, item_id_t itemId) -> Buff {
-	using namespace BuffBytes;
-	Buff data;
-	data.byte = Byte1;
+auto SummonHandler::makeBuff(Player *player, item_id_t itemId) -> BuffInfo {
+	const auto &buffData = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
 	switch (itemId) {
-		case Items::BeholderHexWdef: data.type = 0x02; break;
-		case Items::BeholderHexMdef: data.type = 0x08; break;
-		case Items::BeholderHexAcc: data.type = 0x10; break;
-		case Items::BeholderHexAvo: data.type = 0x20; break;
-		case Items::BeholderHexWatk: data.type = 0x01; break;
+		case Items::BeholderHexWatk: return buffData.physicalAttack;
+		case Items::BeholderHexWdef: return buffData.physicalDefense;
+		case Items::BeholderHexMdef: return buffData.magicDefense;
+		case Items::BeholderHexAcc: return buffData.accuracy;
+		case Items::BeholderHexAvo: return buffData.avoid;
 	}
-	return data;
+	// Hacking?
+	throw std::invalid_argument{"invalid_argument"};
 }
 
-auto SummonHandler::makeActiveBuff(Player *player, const Buff &data, item_id_t itemId, const SkillLevelInfo *skillInfo) -> ActiveBuff {
-	ActiveBuff buff;
-	buff.types[data.byte] = data.type;
+auto SummonHandler::makeActiveBuff(Player *player, const BuffInfo &data, item_id_t itemId, const SkillLevelInfo *skillInfo) -> BuffPacketValues {
+	BuffPacketValues buff;
+	buff.player.types[data.getBuffByte()] = static_cast<uint8_t>(data.getBuffType());
 	switch (itemId) {
-		case Items::BeholderHexWdef: buff.vals.push_back(skillInfo->wDef); break;
-		case Items::BeholderHexMdef: buff.vals.push_back(skillInfo->mDef); break;
-		case Items::BeholderHexAcc: buff.vals.push_back(skillInfo->acc); break;
-		case Items::BeholderHexAvo: buff.vals.push_back(skillInfo->avo); break;
-		case Items::BeholderHexWatk: buff.vals.push_back(skillInfo->wAtk); break;
+		case Items::BeholderHexWdef: buff.player.values.push_back(BuffPacketValue::fromValue(2, skillInfo->wDef)); break;
+		case Items::BeholderHexMdef: buff.player.values.push_back(BuffPacketValue::fromValue(2, skillInfo->mDef)); break;
+		case Items::BeholderHexAcc: buff.player.values.push_back(BuffPacketValue::fromValue(2, skillInfo->acc)); break;
+		case Items::BeholderHexAvo: buff.player.values.push_back(BuffPacketValue::fromValue(2, skillInfo->avo)); break;
+		case Items::BeholderHexWatk: buff.player.values.push_back(BuffPacketValue::fromValue(2, skillInfo->wAtk)); break;
 	}
 	return buff;
 }
@@ -229,22 +228,11 @@ auto SummonHandler::summonSkill(Player *player, PacketReader &reader) -> void {
 				return;
 			}
 
-			// TODO FIXME buffs
 			item_id_t itemId = Items::BeholderHexWdef + buffId;
-			seconds_t duration = seconds_t(skillInfo->time);
-			Buff data = makeBuff(player, itemId);
-			ActiveBuff buff = makeActiveBuff(player, data, itemId, skillInfo);
-			ActiveMapBuff unused;
-			vector_t<Buff> parsed{data};
-
-			itemId *= -1;
-			player->sendMap(BuffsPacket::useSkill(player->getId(), itemId, duration, buff, unused, 0));
-
-			PlayerActiveBuffs *playerBuffs = player->getActiveBuffs();
-			playerBuffs->removeBuff(itemId);
-			playerBuffs->addBuffInfo(itemId, parsed);
-			playerBuffs->addBuff(itemId, duration);
-			playerBuffs->setActiveSkillLevel(itemId, 1);
+			seconds_t duration = skillInfo->buffTime;
+			if (Buffs::addBuff(player, itemId, duration) == Result::Failure) {
+				return;
+			}
 			break;
 		}
 		case Skills::DarkKnight::AuraOfBeholder:

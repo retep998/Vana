@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 LuaNpc::LuaNpc(const string_t &filename, player_id_t playerId) :
-	LuaScriptable(filename, playerId, true)
+	LuaScriptable{filename, playerId, true}
 {
 	setNpcEnvironmentVariables();
 

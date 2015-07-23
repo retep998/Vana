@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <algorithm>
 
 PlayerStorage::PlayerStorage(Player *player) :
-	m_player(player)
+	m_player{player}
 {
 	load();
 }

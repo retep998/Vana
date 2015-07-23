@@ -25,7 +25,7 @@ class PlayerVariables : public Variables {
 	NONCOPYABLE(PlayerVariables);
 	NO_DEFAULT_CONSTRUCTOR(PlayerVariables);
 public:
-	PlayerVariables(Player *p);
+	PlayerVariables(Player *player);
 	auto save() -> void;
 	auto load() -> void;
 private:

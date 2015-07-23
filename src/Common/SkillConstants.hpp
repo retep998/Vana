@@ -19,55 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.hpp"
 
-enum Action {
-	ActHeal,
-	ActHurt
-};
-
-enum SkillValues {
-	SkillNone, // Predefined value
-	SkillSpecialProc, // Special processing required
-	SkillX,
-	SkillY,
-	SkillSpeed,
-	SkillJump,
-	SkillWatk,
-	SkillWdef,
-	SkillMatk,
-	SkillMdef,
-	SkillAcc,
-	SkillAvo,
-	SkillProp,
-	SkillMorph,
-	SkillLv,
-	SkillMobCount,
-	SkillRange,
-	SkillDamage,
-};
-
-namespace BuffBytes {
+namespace Buffs {
+	const seconds_t MaxBuffTime = seconds_t{2100000};
 	const int8_t ByteQuantity = 16;
-	const int8_t EntryByteQuantity = 8;
-
-	enum ByteTypes : uint8_t {
-		Byte13,
-		Byte14,
-		Byte15,
-		Byte16,
-		Byte9,
-		Byte10,
-		Byte11,
-		Byte12,
-		Byte5,
-		Byte6,
-		Byte7,
-		Byte8,
-		Byte1,
-		Byte2,
-		Byte3,
-		Byte4
-	};
 }
+
+using buff_array_t = array_t<uint8_t, Buffs::ByteQuantity>;
 
 namespace StatusEffects {
 	namespace Mob {
@@ -175,6 +132,8 @@ namespace MobSkills {
 }
 
 namespace Skills {
+	const uint8_t MaxComboOrbs = 5;
+	const uint8_t MaxAdvancedComboOrbs = 10;
 	namespace All {
 		enum Skills : skill_id_t {
 			RegularAttack = 0

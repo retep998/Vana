@@ -43,7 +43,7 @@ auto PlayerModFunctions::modMesos(Player *player, const chat_t &args) -> ChatRes
 }
 
 auto PlayerModFunctions::heal(Player *player, const chat_t &args) -> ChatResult {
-	player->getActiveBuffs()->useDispel();
+	player->getActiveBuffs()->usePlayerDispel();
 	player->getActiveBuffs()->removeDebuff(MobSkills::Seduce);
 	player->getActiveBuffs()->removeDebuff(MobSkills::CrazySkull);
 	player->getStats()->setHp(player->getStats()->getMaxHp());

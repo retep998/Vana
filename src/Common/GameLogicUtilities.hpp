@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Point.hpp"
 #include "Rect.hpp"
 #include "SkillConstants.hpp"
+#include <algorithm>
 #include <string>
 
 namespace GameLogicUtilities {
@@ -69,7 +70,7 @@ namespace GameLogicUtilities {
 	inline auto skillMatchesJob(skill_id_t skillId, job_id_t job) -> bool { return (skillId / 1000000 == job / 100) && (skillId / 10000 <= job); }
 	inline auto itemSkillMatchesJob(skill_id_t skillId, job_id_t job) -> bool { return (skillId / 10000) == job; }
 	inline auto getMasteryDisplay(skill_level_t level) -> int8_t { return (level + 1) / 2; }
-	inline auto getBattleshipHp(skill_level_t shipLevel, player_level_t playerLevel) -> int32_t { return (4000 * shipLevel) + ((playerLevel - 120) * 2000); }
+	inline auto getBattleshipHp(skill_level_t shipLevel, player_level_t playerLevel) -> int32_t { return std::max((2 * shipLevel + (playerLevel - 120)) * 200, 2 * shipLevel * 200); }
 
 	// Mob skills
 	inline auto isMobSkill(skill_id_t skillId) -> bool { return skillId >= 100 && skillId <= 200; }
@@ -84,7 +85,7 @@ namespace GameLogicUtilities {
 		if (isCygnus(jobId)) return Jobs::JobType::Cygnus;
 		if (isLegend(jobId)) return Jobs::JobType::Legend;
 		if (isResistance(jobId)) return Jobs::JobType::Resistance;
-		throw std::invalid_argument("jobId must be a valid type");
+		throw std::invalid_argument{"jobId must be a valid type"};
 	}
 	inline auto isBeginnerJob(job_id_t jobId) -> bool {
 		for (const auto &job : Jobs::Beginners::Jobs) {
@@ -108,7 +109,7 @@ namespace GameLogicUtilities {
 				return Jobs::JobProgressions::FirstJob;
 			}
 		}
-		return Jobs::JobProgressions::SecondJob + (jobId % 10);
+		return Jobs::JobProgressions::SecondJob + jobProgression;
 	}
 	inline auto getMaxLevel(job_id_t jobId) -> player_level_t { return isCygnus(jobId) ? Stats::CygnusLevels : Stats::PlayerLevels; }
 

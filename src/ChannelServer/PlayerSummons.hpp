@@ -29,7 +29,7 @@ class PlayerSummons {
 	NONCOPYABLE(PlayerSummons);
 	NO_DEFAULT_CONSTRUCTOR(PlayerSummons);
 public:
-	PlayerSummons(Player *player) : m_player(player) { }
+	PlayerSummons(Player *player);
 
 	auto getSummon(summon_id_t summonId) -> Summon *;
 	auto addSummon(Summon *summon, seconds_t time) -> void;

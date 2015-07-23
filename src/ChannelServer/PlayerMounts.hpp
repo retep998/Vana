@@ -33,7 +33,7 @@ class PlayerMounts {
 	NONCOPYABLE(PlayerMounts);
 	NO_DEFAULT_CONSTRUCTOR(PlayerMounts);
 public:
-	PlayerMounts(Player *p);
+	PlayerMounts(Player *player);
 
 	auto save() -> void;
 	auto load() -> void;

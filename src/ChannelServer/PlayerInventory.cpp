@@ -36,9 +36,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.hpp"
 
 PlayerInventory::PlayerInventory(Player *player, const array_t<inventory_slot_count_t, Inventories::InventoryCount> &maxSlots, mesos_t mesos) :
-	m_maxSlots(maxSlots),
-	m_mesos(mesos),
-	m_player(player)
+	m_maxSlots{maxSlots},
+	m_mesos{mesos},
+	m_player{player}
 {
 	array_t<item_id_t, 2> init = {0};
 

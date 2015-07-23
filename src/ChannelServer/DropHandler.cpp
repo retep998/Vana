@@ -119,11 +119,11 @@ auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t dropping
 				}
 
 				Item f = GameLogicUtilities::isEquip(itemId) ?
-					Item(ChannelServer::getInstance().getEquipDataProvider(),
+					Item{ChannelServer::getInstance().getEquipDataProvider(),
 						itemId,
 						Items::StatVariance::Normal,
-						player != nullptr && player->hasGmBenefits()) :
-					Item(itemId, amount);
+						player != nullptr && player->hasGmBenefits()} :
+					Item{itemId, amount};
 
 				drop = new Drop(mapId, f, pos, playerId);
 
@@ -135,12 +135,14 @@ auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t dropping
 				mesos_t mesos = amount;
 				if (!isSteal) {
 					mesos *= config.rates.mobMesoRate;
-					if (player != nullptr && player->getActiveBuffs()->hasMesoUp()) {
-						// Account for Meso Up
-						mesos = (mesos * player->getActiveBuffs()->getActiveSkillInfo(Skills::Hermit::MesoUp)->x) / 100;
+					if (player != nullptr) {
+						auto mesoUp = player->getActiveBuffs()->getMesoUpSource();
+						if (mesoUp.is_initialized()) {
+							mesos = (mesos * player->getActiveBuffs()->getBuffSkillInfo(mesoUp.get())->x) / 100;
+						}
 					}
 				}
-				drop = new Drop(mapId, mesos, pos, playerId);
+				drop = new Drop{mapId, mesos, pos, playerId};
 			}
 		}
 
@@ -194,6 +196,11 @@ auto DropHandler::lootItem(Player *player, PacketReader &reader, pet_id_t petId)
 	}
 	else if (drop->getPos() - player->getPos() > 300) {
 		// Hacking
+		return;
+	}
+	else if (player->isUsingGmHide()) {
+		player->send(DropsPacket::dropNotAvailableForPickup());
+		player->send(DropsPacket::dontTake());
 		return;
 	}
 

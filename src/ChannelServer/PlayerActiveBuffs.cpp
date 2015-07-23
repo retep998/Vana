@@ -32,110 +32,371 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimerContainer.hpp"
 #include <functional>
 
-// Buff skills
-auto PlayerActiveBuffs::addBuff(skill_id_t skill, const seconds_t &time) -> void {
-	if (time.count() > 0) {
-		// Only bother with timers when there is a time
-		Timer::Id id(TimerType::BuffTimer, skill);
+struct BuffRunAction {
+	BuffRunAction(BuffSource source) :
+		source{source}
+	{
+	}
 
-		if (GameLogicUtilities::isMobSkill(skill)) {
-			mob_skill_id_t mobSkill = static_cast<mob_skill_id_t>(skill);
-			Timer::Timer::create([this, mobSkill](const time_point_t &now) { this->removeDebuff(mobSkill, true); },
-				id, m_player->getTimerContainer(), time);
-		}
-		else {
-			Timer::Timer::create([this, skill](const time_point_t &now) { Skills::stopSkill(m_player, skill, true); },
-				id, m_player->getTimerContainer(), time);
+	auto operator()(const time_point_t &now) -> void {
+		switch (act) {
+			case BuffAction::Heal: Skills::heal(player, value, source); break;
+			case BuffAction::Hurt: Skills::hurt(player, value, source); break;
+			default: throw NotImplementedException{"Action type"};
 		}
 	}
-	m_buffs.push_back(skill);
+
+	int64_t value = 0;
+	BuffSource source;
+	Player *player = nullptr;
+	BuffAction act;
+};
+
+auto PlayerActiveBuffs::LocalBuffInfo::toSource() const -> BuffSource {
+	switch (type) {
+		case BuffSourceType::Item:
+			return BuffSource::fromItem(identifier);
+		case BuffSourceType::Skill:
+			return BuffSource::fromSkill(
+				static_cast<skill_id_t>(identifier),
+				static_cast<skill_level_t>(level));
+		case BuffSourceType::MobSkill:
+			return BuffSource::fromMobSkill(
+				static_cast<mob_skill_id_t>(identifier),
+				static_cast<mob_skill_level_t>(level));
+	}
+	throw NotImplementedException{"BuffSourceType"};
 }
 
-auto PlayerActiveBuffs::removeBuff(skill_id_t skill, bool fromTimer) -> void {
-	if (!fromTimer) {
-		Timer::Id id(TimerType::BuffTimer, skill);
+PlayerActiveBuffs::PlayerActiveBuffs(Player *player) :
+	m_player{player}
+{
+}
+
+// Buff skills
+auto PlayerActiveBuffs::translateToSource(int32_t buffId) const -> BuffSource {
+	if (buffId < 0) {
+		return BuffSource::fromItem(-buffId);
+	}
+	if (GameLogicUtilities::isMobSkill(buffId)) {
+		return BuffSource::fromMobSkill(
+			buffId,
+			static_cast<mob_skill_level_t>(getBuffLevel(BuffSourceType::MobSkill, buffId)));
+	}
+	return BuffSource::fromSkill(
+		buffId,
+		static_cast<skill_level_t>(getBuffLevel(BuffSourceType::Skill, buffId)));
+}
+
+auto PlayerActiveBuffs::translateToPacket(const BuffSource &source) const -> int32_t {
+	switch (source.getType()) {
+		case BuffSourceType::Item: return -source.getId();
+		case BuffSourceType::Skill: return source.getId();
+		case BuffSourceType::MobSkill: return (source.getMobSkillLevel() << 16) | source.getId();
+	}
+	throw NotImplementedException{"BuffSourceType"};
+}
+
+auto PlayerActiveBuffs::addBuff(const BuffSource &source, const Buff &buff, const seconds_t &time) -> Result {
+	bool hasTimer = true;
+	bool displaces = true;
+	const auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	auto skill = source.getSkillData(ChannelServer::getInstance().getSkillDataProvider());
+
+	switch (source.getType()) {
+		case BuffSourceType::Item:
+			// Intentionally blank
+			break;
+		case BuffSourceType::MobSkill: {
+			mob_skill_id_t skillId = source.getMobSkillId();
+			int32_t maskBit = calculateDebuffMaskBit(skillId);
+			m_debuffMask |= maskBit;
+			break;
+		}
+		case BuffSourceType::Skill: {
+			skill_id_t skillId = source.getSkillId();
+			skill_level_t skillLevel = source.getSkillLevel();
+			switch (source.getSkillId()) {
+				case Skills::Beginner::MonsterRider:
+				case Skills::Noblesse::MonsterRider: {
+					m_mountItemId = m_player->getInventory()->getEquippedId(EquipSlots::Mount);
+					if (m_mountItemId == 0) {
+						// Hacking
+						return Result::Failure;
+					}
+					item_id_t saddle = m_player->getInventory()->getEquippedId(EquipSlots::Saddle);
+					if (saddle == 0) {
+						// Hacking
+						return Result::Failure;
+					}
+					break;
+				}
+				case Skills::Corsair::Battleship:
+					m_mountItemId = Items::BattleshipMount;
+					break;
+				case Skills::Hero::Enrage:
+					if (m_combo != Skills::MaxAdvancedComboOrbs) {
+						// Hacking
+						return Result::Failure;
+					}
+					break;
+			}
+
+			break;
+		}
+		default: throw NotImplementedException{"BuffSourceType"};
+	}
+
+	// Extract any useful bits for us
+	for (const auto &info : buff.getBuffInfo()) {
+		if (info == basics.homingBeacon) {
+			hasTimer = false;
+			displaces = false;
+		}
+		else if (info == basics.combo) {
+			m_combo = 0;
+		}
+		else if (info == basics.mapleWarrior) {
+			if (skill == nullptr) throw NotImplementedException{"Maple Warrior BuffSourceType"};
+			// Take into account Maple Warrior for tracking stats if things are equippable, damage calculations, etc.
+			m_player->getStats()->setMapleWarrior(skill->x);
+		}
+		else if (info == basics.hyperBodyHp) {
+			if (skill == nullptr) throw NotImplementedException{"Hyper Body HP BuffSourceType"};
+			m_player->getStats()->setHyperBodyHp(skill->x);
+		}
+		else if (info == basics.hyperBodyMp) {
+			if (skill == nullptr) throw NotImplementedException{"Hyper Body MP BuffSourceType"};
+			m_player->getStats()->setHyperBodyMp(skill->y);
+		}
+	}
+
+	Timer::Id buffTimerId{TimerType::BuffTimer, static_cast<int32_t>(source.getType()), source.getId()};
+	if (hasTimer) {
+		// Get rid of timers/same buff if they currently exist
+		m_player->getTimerContainer()->removeTimer(buffTimerId);
+	}
+
+	if (buff.anyActs()) {
+		for (const auto &info : buff.getBuffInfo()) {
+			if (!info.hasAct()) continue;
+			Timer::Id actId{TimerType::SkillActTimer, info.getBitPosition()};
+			m_player->getTimerContainer()->removeTimer(actId);
+		}
+	}
+
+	for (size_t i = 0; i < m_buffs.size(); i++) {
+		auto &existing = m_buffs[i];
+		if (existing.type == source.getType() && existing.identifier == source.getId()) {
+			m_buffs.erase(std::begin(m_buffs) + i);
+			break;
+		}
+	}
+
+	if (displaces) {
+		// Displace bit positions
+		// It is implicitly assumed in the buffs system that only one buff may "own" a particular bit position at once
+		// Therefore, if you use Haste and then a Speed Potion, Haste will still apply to jump while the potion will apply to speed
+		// This means that we should be keeping track of which bit positions are currently applicable to any given buff
+		for (size_t i = 0; i < m_buffs.size(); i++) {
+			auto &existing = m_buffs[i];
+			const auto &existingBuffInfo = existing.raw.getBuffInfo();
+			vector_t<uint8_t> displacedBits;
+			for (const auto &existingInfo : existingBuffInfo) {
+				for (const auto &info : buff.getBuffInfo()) {
+					if (info == existingInfo) {
+						// NOTE
+						// This code assumes that there will not be two of a particular bit position allocated currently
+						displacedBits.push_back(info.getBitPosition());
+					}
+				}
+			}
+
+			if (displacedBits.size() > 0) {
+				vector_t<BuffInfo> applicable;
+				vector_t<uint8_t> displacedActBitPositions;
+
+				for (const auto &existingInfo : existingBuffInfo) {
+					bool found = false;
+					for (auto bit : displacedBits) {
+						if (bit == existingInfo) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						applicable.push_back(existingInfo);
+					}
+					else if (existingInfo.hasAct()) {
+						displacedActBitPositions.push_back(existingInfo.getBitPosition());
+					}
+				}
+
+				for (const auto &bit : displacedActBitPositions) {
+					Timer::Id actId{TimerType::SkillActTimer, bit};
+					m_player->getTimerContainer()->removeTimer(actId);
+				}
+
+				if (applicable.size() == 0) {
+					Timer::Id id{TimerType::BuffTimer, static_cast<int32_t>(existing.type), existing.identifier};
+					m_player->getTimerContainer()->removeTimer(id);
+
+					m_buffs.erase(std::begin(m_buffs) + i);
+					i--;
+				}
+				else {
+					existing.raw = existing.raw.withBuffs(applicable);
+				}
+			}
+		}
+	}
+
+	if (hasTimer) {
+		Timer::Timer::create(
+			[this, source](const time_point_t &now) {
+				Skills::stopSkill(m_player, source, true);
+			},
+			buffTimerId,
+			m_player->getTimerContainer(),
+			time);
+
+		if (buff.anyActs()) {
+			for (const auto &info : buff.getBuffInfo()) {
+				if (!info.hasAct()) continue;
+
+				BuffRunAction runAct{source};
+				runAct.player = m_player;
+				runAct.act = info.getAct();
+				runAct.value = Buffs::getValue(
+					m_player,
+					source,
+					seconds_t{0},
+					info.getBitPosition(),
+					info.getActValue(),
+					2).value;
+
+				Timer::Id actId{TimerType::SkillActTimer, info.getBitPosition()};
+				Timer::Timer::create(
+					runAct,
+					actId,
+					m_player->getTimerContainer(),
+					seconds_t{0},
+					duration_cast<milliseconds_t>(info.getActInterval()));
+			}
+		}
+	}
+
+	LocalBuffInfo local;
+	local.raw = buff;
+	local.type = source.getType();
+	local.identifier = source.getId();
+	switch (source.getType()) {
+		case BuffSourceType::Item:
+		case BuffSourceType::Skill: local.level = source.getSkillLevel(); break;
+		case BuffSourceType::MobSkill: local.level = source.getMobSkillLevel(); break;
+		default: throw NotImplementedException{"BuffSourceType"};
+	}
+
+	m_buffs.push_back(local);
+
+	m_player->sendMap(
+		BuffsPacket::addBuff(
+			m_player->getId(),
+			translateToPacket(source),
+			time,
+			Buffs::convertToPacket(m_player, source, time, buff),
+			0));
+
+	return Result::Successful;
+}
+
+auto PlayerActiveBuffs::removeBuff(const BuffSource &source, const Buff &buff, bool fromTimer) -> void {
+  	if (!fromTimer) {
+		Timer::Id id{TimerType::BuffTimer, static_cast<int32_t>(source.getType()), source.getId()};
 		m_player->getTimerContainer()->removeTimer(id);
 	}
-	removeAction(skill);
 
-	auto iter = std::find(std::begin(m_buffs), std::end(m_buffs), skill);
-	if (iter != std::end(m_buffs)) {
-		m_buffs.erase(iter);
+	auto basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	size_t size = m_buffs.size();
+	for (size_t i = 0; i < size; i++) {
+		const auto &info = m_buffs[i];
+		if (info.type == source.getType() && info.identifier == source.getId()) {
+			m_player->sendMap(
+				BuffsPacket::endBuff(
+					m_player->getId(),
+					Buffs::convertToPacketTypes(info.raw)));
+
+			for (const auto &actInfo : info.raw.getBuffInfo()) {
+				if (!actInfo.hasAct()) continue;
+				Timer::Id actId{TimerType::SkillActTimer, actInfo.getBitPosition()};
+				m_player->getTimerContainer()->removeTimer(actId);
+			}
+
+			for (const auto &buffInfo : info.raw.getBuffInfo()) {
+				if (buffInfo == basics.mount) {
+					m_mountItemId = 0;
+				}
+				else if (buffInfo == basics.energyCharge) {
+					m_energyCharge = 0;
+				}
+				else if (buffInfo == basics.combo) {
+					m_combo = 0;
+				}
+				else if (buffInfo == basics.homingBeacon) {
+					resetHomingBeaconMob();
+				}
+				else if (buffInfo == basics.mapleWarrior) {
+					m_player->getStats()->setMapleWarrior(0);
+				}
+				else if (buffInfo == basics.hyperBodyHp) {
+					m_player->getStats()->setHyperBodyHp(0);
+				}
+				else if (buffInfo == basics.hyperBodyMp) {
+					m_player->getStats()->setHyperBodyMp(0);
+				}
+			}
+
+			switch (info.type) {
+				case BuffSourceType::MobSkill: {
+					mob_skill_id_t skillId = source.getMobSkillId();
+					int32_t maskBit = calculateDebuffMaskBit(skillId);
+					m_debuffMask -= maskBit;
+					break;
+				}
+			}
+
+			m_buffs.erase(m_buffs.begin() + i);
+			break;
+		}
 	}
 }
 
 auto PlayerActiveBuffs::removeBuffs() -> void {
-	if (hasHyperBody()) {
-		m_player->getStats()->setHyperBody(0, 0);
-		m_player->getStats()->setHp(m_player->getStats()->getHp());
-		m_player->getStats()->setMp(m_player->getStats()->getMp());
-	}
-
 	while (m_buffs.size() > 0) {
-		skill_id_t skillId = *std::begin(m_buffs);
-		removeBuff(skillId);
+		LocalBuffInfo &buff = *std::begin(m_buffs);
+		removeBuff(buff.toSource(), buff.raw);
 	}
 }
 
-auto PlayerActiveBuffs::getBuffSecondsRemaining(skill_id_t skill) const -> seconds_t {
-	Timer::Id id(TimerType::BuffTimer, skill);
+auto PlayerActiveBuffs::getBuffSecondsRemaining(BuffSourceType type, int32_t buffId) const -> seconds_t {
+	Timer::Id id{TimerType::BuffTimer, static_cast<int32_t>(type), buffId};
 	return m_player->getTimerContainer()->getRemainingTime<seconds_t>(id);
 }
 
-// Skill actions
-struct RunAction {
-	auto operator()(const time_point_t &now) -> void {
-		switch (act) {
-			case ActHeal: Skills::heal(player, value, skill); break;
-			case ActHurt: Skills::hurt(player, value, skill); break;
-		}
-	}
-
-	int16_t value = 0;
-	skill_id_t skill = 0;
-	Player *player = nullptr;
-	Action act;
-};
-
-auto PlayerActiveBuffs::addAction(skill_id_t skill, Action act, int16_t value, const milliseconds_t &time) -> void {
-	RunAction runAct;
-	runAct.player = m_player;
-	runAct.skill = skill;
-	runAct.act = act;
-	runAct.value = value;
-
-	Timer::Id id(TimerType::SkillActTimer, act);
-	Timer::Timer::create(runAct, id, getActTimer(skill), seconds_t{0}, time);
-}
-
-auto PlayerActiveBuffs::getActTimer(skill_id_t skill) -> ref_ptr_t<Timer::Container> {
-	if (m_skillActs.find(skill) == std::end(m_skillActs)) {
-		m_skillActs[skill] = make_ref_ptr<Timer::Container>();
-	}
-	return m_skillActs[skill];
-}
-
-auto PlayerActiveBuffs::removeAction(skill_id_t skill) -> void {
-	m_skillActs.erase(skill);
+auto PlayerActiveBuffs::getBuffSecondsRemaining(const BuffSource &source) const -> seconds_t {
+	return getBuffSecondsRemaining(source.getType(), source.getId());
 }
 
 // Debuffs
-auto PlayerActiveBuffs::addDebuff(mob_skill_id_t skill, mob_skill_level_t level) -> void {
-	if (!m_player->getStats()->isDead() && !hasHolyShield() && !m_player->hasGmBenefits()) {
-		int32_t maskBit = calculateDebuffMaskBit(skill);
-		if (maskBit != 0 && (m_debuffMask & maskBit) == 0) {
-			// Don't have the debuff, continue processing
-			m_debuffMask += maskBit;
-			Buffs::addDebuff(m_player, skill, level);
-		}
-	}
-}
-
-auto PlayerActiveBuffs::removeDebuff(mob_skill_id_t skill, bool fromTimer) -> void {
-	int32_t maskBit = calculateDebuffMaskBit(skill);
+auto PlayerActiveBuffs::removeDebuff(mob_skill_id_t skillId) -> void {
+	int32_t maskBit = calculateDebuffMaskBit(skillId);
 	if ((m_debuffMask & maskBit) != 0) {
-		m_debuffMask -= maskBit;
-		Skills::stopSkill(m_player, skill, fromTimer);
+		Skills::stopSkill(
+			m_player,
+			BuffSource::fromMobSkill(
+				skillId,
+				getBuffLevel(BuffSourceType::MobSkill, skillId)),
+			false);
 	}
 }
 
@@ -157,7 +418,7 @@ auto PlayerActiveBuffs::useDebuffHealingItem(int32_t mask) -> void {
 	}
 }
 
-auto PlayerActiveBuffs::useDispel() -> void {
+auto PlayerActiveBuffs::usePlayerDispel() -> void {
 	removeDebuff(MobSkills::Seal);
 	removeDebuff(MobSkills::Slow);
 	removeDebuff(MobSkills::Darkness);
@@ -166,112 +427,90 @@ auto PlayerActiveBuffs::useDispel() -> void {
 	removeDebuff(MobSkills::Poison);
 }
 
-auto PlayerActiveBuffs::calculateDebuffMaskBit(mob_skill_id_t skill) -> int32_t {
-	int32_t bitField = 0;
-	switch (skill) {
-		case MobSkills::Seal: bitField = StatusEffects::Player::Seal; break;
-		case MobSkills::Darkness: bitField = StatusEffects::Player::Darkness; break;
-		case MobSkills::Weakness: bitField = StatusEffects::Player::Weakness; break;
-		case MobSkills::Stun: bitField = StatusEffects::Player::Stun; break;
-		case MobSkills::Curse: bitField = StatusEffects::Player::Curse; break;
-		case MobSkills::Poison: bitField = StatusEffects::Player::Poison; break;
-		case MobSkills::Slow: bitField = StatusEffects::Player::Slow; break;
-		case MobSkills::Seduce: bitField = StatusEffects::Player::Seduce; break;
-		case MobSkills::Zombify: bitField = StatusEffects::Player::Zombify; break;
-		case MobSkills::CrazySkull: bitField = StatusEffects::Player::CrazySkull; break;
+auto PlayerActiveBuffs::calculateDebuffMaskBit(mob_skill_id_t skillId) const -> int32_t {
+	switch (skillId) {
+		case MobSkills::Seal: return StatusEffects::Player::Seal;
+		case MobSkills::Darkness: return StatusEffects::Player::Darkness;
+		case MobSkills::Weakness: return StatusEffects::Player::Weakness;
+		case MobSkills::Stun: return StatusEffects::Player::Stun;
+		case MobSkills::Curse: return StatusEffects::Player::Curse;
+		case MobSkills::Poison: return StatusEffects::Player::Poison;
+		case MobSkills::Slow: return StatusEffects::Player::Slow;
+		case MobSkills::Seduce: return StatusEffects::Player::Seduce;
+		case MobSkills::Zombify: return StatusEffects::Player::Zombify;
+		case MobSkills::CrazySkull: return StatusEffects::Player::CrazySkull;
 	}
-	return bitField;
+	return 0;
 }
 
-// Map entry stuff
-auto PlayerActiveBuffs::deleteMapEntryBuffInfo(const ActiveMapBuff &buff) -> void {
-	size_t vals = 0;
-	for (size_t i = 0; i < buff.bytes.size(); ++i) {
-		uint8_t byte = buff.bytes[i];
-		m_mapBuffs.types[byte] -= buff.types[i];
-		if (m_mapBuffs.values[byte].find(buff.types[i]) != std::end(m_mapBuffs.values[byte])) {
-			m_mapBuffs.values[byte].erase(buff.types[i]);
-		}
-	}
-}
+auto PlayerActiveBuffs::getMapBuffValues() -> BuffPacketStructure {
+	auto &buffProvider = ChannelServer::getInstance().getBuffDataProvider();
+	auto &basics = buffProvider.getBuffsByEffect();
+	BuffPacketStructure result;
 
-auto PlayerActiveBuffs::addMapEntryBuffInfo(const ActiveMapBuff &buff) -> void {
-	size_t vals = 0;
-	for (size_t i = 0; i < buff.bytes.size(); ++i) {
-		uint8_t byte = buff.bytes[i];
-		if ((m_mapBuffs.types[byte] & buff.types[i]) == 0) {
-			m_mapBuffs.types[byte] += buff.types[i];
-		}
-		MapEntryVals val;
-		val.use = buff.useVals[i];
-		if (val.use) {
-			if (buff.debuff) {
-				val.debuff = true;
-				val.skill = buff.values[vals++];
-				val.val = buff.values[vals++];
-			}
-			else {
-				val.val = buff.values[vals++];
+	using tuple_type = tuple_t<uint8_t, const BuffInfo *, BuffSource>;
+	vector_t<tuple_type> mapBuffs;
+
+	for (const auto &buff : m_buffs) {
+		for (const auto &info : buff.raw.getBuffInfo()) {
+			if (info.hasMapInfo()) {
+				mapBuffs.emplace_back(
+					info.getBitPosition(),
+					&info,
+					buff.toSource());
 			}
 		}
-		m_mapBuffs.values[byte][buff.types[i]] = val;
 	}
-}
 
-auto PlayerActiveBuffs::getMapEntryBuffs() -> MapEntryBuffs {
-	return m_mapBuffs;
-}
+	std::sort(std::begin(mapBuffs), std::end(mapBuffs), [](const tuple_type &a, const tuple_type &b) -> bool {
+		return std::get<0>(a) < std::get<0>(b);
+	});
 
-auto PlayerActiveBuffs::setMountInfo(skill_id_t skillId, item_id_t mountId) -> void {
-	m_mapBuffs.mountSkill = skillId;
-	m_mapBuffs.mountId = mountId;
+	for (const auto &tup : mapBuffs) {
+		const auto &info = std::get<1>(tup);
+		const auto &source = std::get<2>(tup);
+
+		result.types[info->getBuffByte()] |= info->getBuffType();
+		result.values.push_back(Buffs::getValue(
+			m_player,
+			source,
+			getBuffSecondsRemaining(source),
+			info->getBitPosition(),
+			info->getMapInfo()));
+	}
+
+	return result;
 }
 
 // Active skill levels
-auto PlayerActiveBuffs::getActiveSkillLevel(skill_id_t skillId) const -> skill_level_t {
-	return m_activeLevels.find(skillId) != std::end(m_activeLevels) ? m_activeLevels.find(skillId)->second : 0;
+auto PlayerActiveBuffs::getBuffLevel(BuffSourceType type, int32_t buffId) const -> skill_level_t {
+	for (const auto &buff : m_buffs) {
+		if (buff.type != type) continue;
+		if (buff.identifier != buffId) continue;
+		return static_cast<skill_level_t>(buff.level);
+	}
+	return 0;
 }
 
-auto PlayerActiveBuffs::setActiveSkillLevel(skill_id_t skillId, skill_level_t level) -> void {
-	m_activeLevels[skillId] = level;
+auto PlayerActiveBuffs::getBuffSkillInfo(const BuffSource &source) const -> const SkillLevelInfo * const {
+	if (source.getType() != BuffSourceType::Skill) throw std::invalid_argument{"source must be BuffSourceType::Skill"};
+	return source.getSkillData(ChannelServer::getInstance().getSkillDataProvider());
 }
 
-auto PlayerActiveBuffs::getActiveSkillInfo(skill_id_t skillId) const -> const SkillLevelInfo * const {
-	skill_level_t level = getActiveSkillLevel(skillId);
-	return level != 0 ? ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level) : nullptr;
+auto PlayerActiveBuffs::stopSkill(const BuffSource &source) -> void {
+	Skills::stopSkill(m_player, source);
 }
 
 // Buff addition/removal
-auto PlayerActiveBuffs::addBuffInfo(skill_id_t skillId, const vector_t<Buff> &buffs) -> void {
-	for (size_t i = 0; i < buffs.size(); ++i) {
-		Buff cur = buffs[i];
-		m_activeBuffsByType[cur.byte][cur.type] = skillId;
-	}
-}
-
-auto PlayerActiveBuffs::removeBuffInfo(skill_id_t skillId, const vector_t<Buff> &buffs) -> ActiveBuff {
-	ActiveBuff ret;
-	for (size_t i = 0; i < buffs.size(); ++i) {
-		Buff cur = buffs[i];
-		if (m_activeBuffsByType[cur.byte][cur.type] == skillId) {
-			// Make sure that the buff types are still affected by the skill
-			m_activeBuffsByType[cur.byte].erase(cur.type);
-			ret.types[cur.byte] += cur.type;
-		}
-	}
-	return ret;
-}
-
 auto PlayerActiveBuffs::dispelBuffs() -> void {
 	if (m_player->hasGmBenefits()) {
 		return;
 	}
-	
-	vector_t<skill_id_t> stopSkills;
-	for (const auto &kvp : m_activeLevels) {
-		if (kvp.first > 0 && !GameLogicUtilities::isMobSkill(kvp.first)) {
-			// Only want active skills and skill buffs - no item buffs or debuffs
-			stopSkills.push_back(kvp.first);
+
+	vector_t<BuffSource> stopSkills;
+	for (const auto &buff : m_buffs) {
+		if (buff.type == BuffSourceType::Skill) {
+			stopSkills.push_back(buff.toSource());
 		}
 	}
 
@@ -281,15 +520,8 @@ auto PlayerActiveBuffs::dispelBuffs() -> void {
 }
 
 // Specific skill stuff
-auto PlayerActiveBuffs::reduceBattleshipHp(uint16_t amount) -> void {
-	m_battleshipHp -= amount;
-	if (m_battleshipHp <= 0) {
-		m_battleshipHp = 0;
-		skill_id_t skillId = Skills::Corsair::Battleship;
-		int16_t coolTime = getActiveSkillInfo(skillId)->coolTime;
-		Skills::startCooldown(m_player, skillId, coolTime);
-		Skills::stopSkill(m_player, skillId);
-	}
+auto PlayerActiveBuffs::getBattleshipHp() const -> int32_t {
+	return m_battleshipHp;
 }
 
 auto PlayerActiveBuffs::resetBattleshipHp() -> void {
@@ -298,25 +530,68 @@ auto PlayerActiveBuffs::resetBattleshipHp() -> void {
 	m_battleshipHp = GameLogicUtilities::getBattleshipHp(shipLevel, playerLevel);
 }
 
-auto PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) -> void {
-	m_combo = combo;
-	if (sendPacket) {
-		skill_id_t skillId = m_player->getSkills()->getComboAttack();
-		seconds_t timeLeft = getBuffSecondsRemaining(skillId);
-		skill_level_t level = getActiveSkillLevel(skillId);
-		ActiveBuff playerSkill = Buffs::parseBuffInfo(m_player, skillId, level);
-		ActiveMapBuff mapSkill = Buffs::parseBuffMapInfo(m_player, skillId, level);
-		m_player->sendMap(BuffsPacket::useSkill(m_player->getId(), skillId, timeLeft, playerSkill, mapSkill, 0));
+auto PlayerActiveBuffs::getHomingBeaconMob() const -> map_object_t {
+	return m_markedMob;
+}
+
+auto PlayerActiveBuffs::resetHomingBeaconMob(map_object_t mapMobId) -> void {
+	Map *map = m_player->getMap();
+	if (m_markedMob != 0) {
+		if (ref_ptr_t<Mob> mob = map->getMob(mapMobId)) {
+			auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+			auto source = getBuffSource(basics.homingBeacon);
+			auto &buffSource = source.get();
+
+			mob->removeMarker(m_player);
+			m_player->sendMap(
+				BuffsPacket::endBuff(
+					m_player->getId(),
+					Buffs::convertToPacketTypes(
+						Buffs::preprocessBuff(
+							m_player,
+							buffSource,
+							seconds_t{0}))));
+		}
+	}
+	m_markedMob = mapMobId;
+	if (mapMobId != 0) {
+		map->getMob(mapMobId)->addMarker(m_player);
 	}
 }
 
+auto PlayerActiveBuffs::resetCombo() -> void {
+	setCombo(0);
+}
+
+auto PlayerActiveBuffs::setCombo(uint8_t combo) -> void {
+	m_combo = combo;
+
+	auto source = getComboSource();
+	auto &buffSource = source.get();
+	seconds_t timeLeft = getBuffSecondsRemaining(buffSource);
+
+	m_player->sendMap(
+		BuffsPacket::addBuff(
+			m_player->getId(),
+			buffSource.getId(),
+			timeLeft,
+			Buffs::convertToPacket(
+				m_player,
+				buffSource,
+				timeLeft,
+				Buffs::preprocessBuff(m_player, buffSource, timeLeft)),
+			0));
+}
+
 auto PlayerActiveBuffs::addCombo() -> void {
-	skill_id_t skillId = m_player->getSkills()->getComboAttack();
-	skill_level_t comboLevel = getActiveSkillLevel(skillId);
-	if (comboLevel > 0) {
+	auto source = getComboSource();
+	if (source.is_initialized()) {
+		auto &buffSource = source.get();
 		skill_id_t advSkill = m_player->getSkills()->getAdvancedCombo();
 		skill_level_t advCombo = m_player->getSkills()->getSkillLevel(advSkill);
-		auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(advCombo > 0 ? advSkill : skillId, advCombo > 0 ? advCombo : comboLevel);
+		auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(
+			advCombo > 0 ? advSkill : buffSource.getSkillId(),
+			advCombo > 0 ? advCombo : buffSource.getSkillLevel());
 
 		int8_t maxCombo = static_cast<int8_t>(skill->x);
 		if (m_combo == maxCombo) {
@@ -331,8 +606,16 @@ auto PlayerActiveBuffs::addCombo() -> void {
 			m_combo = maxCombo;
 		}
 
-		setCombo(m_combo, true);
+		setCombo(m_combo);
 	}
+}
+
+auto PlayerActiveBuffs::getCombo() const -> uint8_t {
+	return m_combo;
+}
+
+auto PlayerActiveBuffs::getBerserk() const -> bool {
+	return m_berserk;
 }
 
 auto PlayerActiveBuffs::checkBerserk(bool display) -> void {
@@ -359,247 +642,301 @@ auto PlayerActiveBuffs::checkBerserk(bool display) -> void {
 	}
 }
 
+auto PlayerActiveBuffs::getEnergyChargeLevel() const -> int16_t {
+	return m_energyCharge;
+}
+
 auto PlayerActiveBuffs::increaseEnergyChargeLevel(int8_t targets) -> void {
-	if (m_energyCharge != Stats::MaxEnergyChargeLevel && targets > 0) {
+	if (m_energyCharge == Stats::MaxEnergyChargeLevel) {
+		// Buff is currently engaged
+		return;
+	}
+
+	if (targets > 0) {
+		stopEnergyChargeTimer();
+
 		skill_id_t skillId = m_player->getSkills()->getEnergyCharge();
-		Timer::Id id(TimerType::BuffTimer, skillId, m_timeSeed);
-		if (m_player->getTimerContainer()->isTimerRunning(id)) {
-			stopEnergyChargeTimer();
+		auto info = m_player->getSkills()->getSkillInfo(skillId);
+		m_energyCharge += info->x * targets;
+		m_energyCharge = std::min(m_energyCharge, Stats::MaxEnergyChargeLevel);
+
+		if (m_energyCharge == Stats::MaxEnergyChargeLevel) {
+			Buffs::addBuff(m_player, skillId, m_player->getSkills()->getSkillLevel(skillId), 0);
 		}
-		startEnergyChargeTimer();
-		m_energyCharge += m_player->getSkills()->getSkillInfo(skillId)->x * targets;
-		if (m_energyCharge > Stats::MaxEnergyChargeLevel) {
-			m_energyCharge = Stats::MaxEnergyChargeLevel;
-			stopEnergyChargeTimer();
+		else {
+			startEnergyChargeTimer();
+			BuffSource source = BuffSource::fromSkill(skillId, info->level);
+			Buff buff{{ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect().energyCharge}};
+			m_player->send(
+				BuffsPacket::addBuff(
+					m_player->getId(),
+					translateToPacket(source),
+					seconds_t{0},
+					Buffs::convertToPacket(m_player, source, seconds_t{0}, buff),
+					0));
 		}
-		Buffs::addBuff(m_player, skillId, m_player->getSkills()->getSkillLevel(skillId), 0);
 	}
 }
 
 auto PlayerActiveBuffs::decreaseEnergyChargeLevel() -> void {
 	m_energyCharge -= Stats::EnergyChargeDecay;
-	skill_id_t skillId = m_player->getSkills()->getEnergyCharge();
-	if (m_energyCharge < 0) {
-		m_energyCharge = 0;
-	}
-	else {
+	m_energyCharge = std::max<int16_t>(m_energyCharge, 0);
+	if (m_energyCharge > 0) {
 		startEnergyChargeTimer();
 	}
-	Buffs::addBuff(m_player, skillId, m_player->getSkills()->getSkillLevel(skillId), 0);
-}
 
-auto PlayerActiveBuffs::resetEnergyChargeLevel() -> void {
-	m_energyCharge = 0;
+	skill_id_t skillId = m_player->getSkills()->getEnergyCharge();
+	auto info = m_player->getSkills()->getSkillInfo(skillId);
+	BuffSource source = BuffSource::fromSkill(skillId, info->level);
+	Buff buff{{ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect().energyCharge}};
+	m_player->send(
+		BuffsPacket::addBuff(
+			m_player->getId(),
+			translateToPacket(source),
+			seconds_t{0},
+			Buffs::convertToPacket(m_player, source, seconds_t{0}, buff),
+			0));
 }
 
 auto PlayerActiveBuffs::startEnergyChargeTimer() -> void {
-	m_timeSeed = static_cast<uint32_t>(clock());
 	skill_id_t skillId = m_player->getSkills()->getEnergyCharge();
-	Timer::Id id(TimerType::BuffTimer, skillId, m_timeSeed); // Causes heap errors when it's a static number, but we need it for ID
-	Timer::Timer::create([this](const time_point_t &now) { this->decreaseEnergyChargeLevel(); },
-		id, m_player->getTimerContainer(), seconds_t{10});
-}
-
-auto PlayerActiveBuffs::setEnergyChargeLevel(int16_t chargeLevel, bool startTimer) -> void {
-	m_energyCharge = chargeLevel;
-	if (startTimer) {
-		startEnergyChargeTimer();
-	}
+	m_energyChargeTimerCounter++;
+	Timer::Id id{TimerType::EnergyChargeTimer, skillId, m_energyChargeTimerCounter};
+	Timer::Timer::create(
+		[this](const time_point_t &now) {
+			this->decreaseEnergyChargeLevel();
+		},
+		id,
+		m_player->getTimerContainer(),
+		seconds_t{10});
 }
 
 auto PlayerActiveBuffs::stopEnergyChargeTimer() -> void {
 	skill_id_t skillId = m_player->getSkills()->getEnergyCharge();
-	Timer::Id id(TimerType::BuffTimer, skillId, m_timeSeed);
+	Timer::Id id{TimerType::EnergyChargeTimer, skillId, m_energyChargeTimerCounter};
 	m_player->getTimerContainer()->removeTimer(id);
 }
 
 auto PlayerActiveBuffs::stopBooster() -> void {
-	if (m_activeBooster != 0) {
-		Skills::stopSkill(m_player, m_activeBooster);
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	auto source = getBuffSource(basics.booster);
+	if (source.is_initialized()) {
+		stopSkill(source.get());
 	}
 }
 
 auto PlayerActiveBuffs::stopCharge() -> void {
-	if (m_activeCharge != 0) {
-		Skills::stopSkill(m_player, m_activeCharge);
+	auto source = getChargeSource();
+	if (source.is_initialized()) {
+		stopSkill(source.get());
 	}
 }
 
 auto PlayerActiveBuffs::stopBulletSkills() -> void {
-	if (hasBuff(Skills::Hunter::SoulArrow)) {
-		Skills::stopSkill(m_player, Skills::Hunter::SoulArrow);
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+
+	auto soulArrow = getBuffSource(basics.soulArrow);
+	if (soulArrow.is_initialized()) {
+		stopSkill(soulArrow.get());
 	}
-	else if (hasBuff(Skills::Crossbowman::SoulArrow)) {
-		Skills::stopSkill(m_player, Skills::Crossbowman::SoulArrow);
-	}
-	else if (hasBuff(Skills::WindArcher::SoulArrow)) {
-		Skills::stopSkill(m_player, Skills::WindArcher::SoulArrow);
-	}
-	else if (hasBuff(Skills::NightLord::ShadowStars)) {
-		Skills::stopSkill(m_player, Skills::NightLord::ShadowStars);
+
+	auto shadowStars = getBuffSource(basics.shadowStars);
+	if (shadowStars.is_initialized()) {
+		stopSkill(shadowStars.get());
 	}
 }
 
-auto PlayerActiveBuffs::hasBuff(skill_id_t skillId) -> bool {
-	return getActiveSkillLevel(skillId) > 0;
+auto PlayerActiveBuffs::hasBuff(BuffSourceType type, int32_t buffId) const -> bool {
+	for (const auto &buff : m_buffs) {
+		if (buff.type != type) continue;
+		if (buff.identifier != buffId) continue;
+		return true;
+	}
+	return false;
+}
+
+auto PlayerActiveBuffs::hasBuff(const BuffInfo &buff) const -> bool {
+	return hasBuff(buff.getBitPosition());
+}
+
+auto PlayerActiveBuffs::hasBuff(uint8_t bitPosition) const -> bool {
+	for (const auto &buff : m_buffs) {
+		for (const auto &info : buff.raw.getBuffInfo()) {
+			if (bitPosition == info) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+auto PlayerActiveBuffs::getBuffSource(const BuffInfo &buff) const -> optional_t<BuffSource> {
+	return getBuff(buff.getBitPosition());
+}
+
+auto PlayerActiveBuffs::getBuff(uint8_t bitPosition) const -> optional_t<BuffSource> {
+	for (const auto &buff : m_buffs) {
+		for (const auto &info : buff.raw.getBuffInfo()) {
+			if (bitPosition == info) {
+				return buff.toSource();
+			}
+		}
+	}
+	return optional_t<BuffSource>{};
 }
 
 auto PlayerActiveBuffs::hasIceCharge() const -> bool {
-	return m_activeCharge == Skills::WhiteKnight::BwIceCharge || m_activeCharge == Skills::WhiteKnight::SwordIceCharge;
+	auto source = getChargeSource();
+	if (!source.is_initialized()) return false;
+	auto &buffSource = source.get();
+	if (buffSource.getType() != BuffSourceType::Skill) throw NotImplementedException{"Ice charge BuffSourceType"};
+	skill_id_t skillId = buffSource.getSkillId();
+	return
+		skillId == Skills::WhiteKnight::BwIceCharge ||
+		skillId == Skills::WhiteKnight::SwordIceCharge;
 }
 
-auto PlayerActiveBuffs::hasInfinity() -> bool {
-	return hasBuff(Skills::FpArchMage::Infinity) || hasBuff(Skills::IlArchMage::Infinity) || hasBuff(Skills::Bishop::Infinity);
+auto PlayerActiveBuffs::getPickpocketCounter() -> int32_t {
+	return ++m_pickpocketCounter;
 }
 
-auto PlayerActiveBuffs::hasMesoUp() -> bool {
-	return hasBuff(Skills::Hermit::MesoUp);
+auto PlayerActiveBuffs::hasInfinity() const -> bool {
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	return hasBuff(basics.infinity);
 }
 
-auto PlayerActiveBuffs::hasMagicGuard() -> bool {
-	return getMagicGuard() != 0;
+auto PlayerActiveBuffs::isUsingGmHide() const -> bool {
+	return hasBuff(BuffSourceType::Skill, Skills::SuperGm::Hide);
 }
 
-auto PlayerActiveBuffs::hasMesoGuard() -> bool {
-	return getMesoGuard() != 0;
+auto PlayerActiveBuffs::hasShadowPartner() const -> bool {
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	return hasBuff(basics.shadowPartner);
 }
 
-auto PlayerActiveBuffs::hasHolySymbol() -> bool {
-	return getHolySymbol() != 0;
+auto PlayerActiveBuffs::hasShadowStars() const -> bool {
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	return hasBuff(basics.shadowStars);
 }
 
-auto PlayerActiveBuffs::hasPowerStance() -> bool {
-	return getPowerStance() != 0;
+auto PlayerActiveBuffs::hasSoulArrow() const -> bool {
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	return hasBuff(basics.soulArrow);
 }
 
-auto PlayerActiveBuffs::hasHyperBody() -> bool {
-	return getHyperBody() != 0;
+auto PlayerActiveBuffs::hasHolyShield() const -> bool {
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	return hasBuff(basics.holyShield);
 }
 
-auto PlayerActiveBuffs::isUsingGmHide() -> bool {
-	return hasBuff(Skills::SuperGm::Hide);
-}
-
-auto PlayerActiveBuffs::hasShadowPartner() -> bool {
-	return hasBuff(Skills::Hermit::ShadowPartner) || hasBuff(Skills::NightWalker::ShadowPartner);
-}
-
-auto PlayerActiveBuffs::hasShadowStars() -> bool {
-	return hasBuff(Skills::NightLord::ShadowStars);
-}
-
-auto PlayerActiveBuffs::hasSoulArrow() -> bool {
-	return hasBuff(Skills::Hunter::SoulArrow) || hasBuff(Skills::Crossbowman::SoulArrow) || hasBuff(Skills::WindArcher::SoulArrow);
-}
-
-auto PlayerActiveBuffs::hasHolyShield() -> bool {
-	return (hasBuff(Skills::Bishop::HolyShield));
-}
-
-auto PlayerActiveBuffs::isCursed() -> bool {
+auto PlayerActiveBuffs::isCursed() const -> bool {
 	return (m_debuffMask & StatusEffects::Player::Curse) > 0;
 }
 
-auto PlayerActiveBuffs::isZombified() -> bool {
+auto PlayerActiveBuffs::isZombified() const -> bool {
 	return (m_debuffMask & StatusEffects::Player::Zombify) > 0;
 }
 
-auto PlayerActiveBuffs::getHolySymbolRate() -> int16_t {
+auto PlayerActiveBuffs::getHolySymbolRate() const -> int16_t {
 	int16_t val = 0;
-	if (hasHolySymbol()) {
-		skill_id_t hsSkill = getHolySymbol();
-		val = getActiveSkillInfo(hsSkill)->x;
+	auto source = getHolySymbolSource();
+	if (source.is_initialized()) {
+		auto &buffSource = source.get();
+		if (buffSource.getType() != BuffSourceType::Skill) throw NotImplementedException{"Holy Symbol BuffSourceType"};
+		val = getBuffSkillInfo(buffSource)->x;
 	}
 	return val;
 }
 
-auto PlayerActiveBuffs::getMagicGuard() -> skill_id_t {
-	skill_id_t id = 0;
-	if (hasBuff(Skills::Magician::MagicGuard)) {
-		id = Skills::Magician::MagicGuard;
-	}
-	else if (hasBuff(Skills::BlazeWizard::MagicGuard)) {
-		id = Skills::BlazeWizard::MagicGuard;
-	}
-	return id;
+auto PlayerActiveBuffs::getMagicGuardSource() const -> optional_t<BuffSource> {
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	return getBuffSource(basics.magicGuard);
 }
 
-auto PlayerActiveBuffs::getMesoGuard() -> skill_id_t {
-	skill_id_t id = 0;
-	if (hasBuff(Skills::ChiefBandit::MesoGuard)) {
-		id = Skills::ChiefBandit::MesoGuard;
-	}
-	return id;
+auto PlayerActiveBuffs::getMesoGuardSource() const -> optional_t<BuffSource> {
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	return getBuffSource(basics.mesoGuard);
 }
 
-auto PlayerActiveBuffs::getHolySymbol() -> skill_id_t {
-	skill_id_t id = 0;
-	if (hasBuff(Skills::Priest::HolySymbol)) {
-		id = Skills::Priest::HolySymbol;
-	}
-	else if (hasBuff(Skills::SuperGm::HolySymbol)) {
-		id = Skills::SuperGm::HolySymbol;
-	}
-	return id;
+auto PlayerActiveBuffs::getMesoUpSource() const -> optional_t<BuffSource> {
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	return getBuffSource(basics.mesoUp);
 }
 
-auto PlayerActiveBuffs::getPowerStance() -> skill_id_t {
-	skill_id_t skillId = 0;
-	if (hasBuff(Skills::Hero::PowerStance)) {
-		skillId = Skills::Hero::PowerStance;
-	}
-	else if (hasBuff(Skills::Paladin::PowerStance)) {
-		skillId = Skills::Paladin::PowerStance;
-	}
-	else if (hasBuff(Skills::DarkKnight::PowerStance)) {
-		skillId = Skills::DarkKnight::PowerStance;
-	}
-	else if (hasBuff(Skills::Marauder::EnergyCharge)) {
-		skillId = Skills::Marauder::EnergyCharge;
-	}
-	else if (hasBuff(Skills::ThunderBreaker::EnergyCharge)) {
-		skillId = Skills::ThunderBreaker::EnergyCharge;
-	}
-	return skillId;
+auto PlayerActiveBuffs::getHomingBeaconSource() const -> optional_t<BuffSource> {
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	return getBuffSource(basics.homingBeacon);
 }
 
-auto PlayerActiveBuffs::getHyperBody() -> skill_id_t {
-	skill_id_t id = 0;
-	if (hasBuff(Skills::Spearman::HyperBody)) {
-		id = Skills::Spearman::HyperBody;
-	}
-	else if (hasBuff(Skills::SuperGm::HyperBody)) {
-		id = Skills::SuperGm::HyperBody;
-	}
-	return id;
+auto PlayerActiveBuffs::getComboSource() const -> optional_t<BuffSource> {
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	return getBuffSource(basics.combo);
 }
 
-auto PlayerActiveBuffs::getHomingBeacon() -> skill_id_t {
-	skill_id_t id = 0;
-	if (hasBuff(Skills::Outlaw::HomingBeacon)) {
-		id = Skills::Outlaw::HomingBeacon;
-	}
-	else if (hasBuff(Skills::Corsair::Bullseye)) {
-		id = Skills::Corsair::Bullseye;
-	}
-	return id;
+auto PlayerActiveBuffs::getChargeSource() const -> optional_t<BuffSource> {
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	return getBuffSource(basics.charge);
 }
 
-auto PlayerActiveBuffs::getCurrentMorph() -> skill_id_t {
-	skill_id_t morphId = 0;
-	if (m_activeBuffsByType.find(BuffBytes::Byte5) != std::end(m_activeBuffsByType)) {
-		hash_map_t<uint8_t, skill_id_t> byte = m_activeBuffsByType[BuffBytes::Byte5];
-		if (byte.find(0x02) != std::end(byte)) {
-			morphId = byte[0x02];
-		}
-	}
-	return morphId;
+auto PlayerActiveBuffs::getDarkSightSource() const -> optional_t<BuffSource> {
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	auto darkSight = getBuffSource(basics.darkSight);
+	if (darkSight.is_initialized()) return darkSight;
+	return getBuffSource(basics.windWalk);
+}
+
+auto PlayerActiveBuffs::getPickpocketSource() const -> optional_t<BuffSource> {
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	return getBuffSource(basics.pickpocket);
+}
+
+auto PlayerActiveBuffs::getHamstringSource() const -> optional_t<BuffSource> {
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	return getBuffSource(basics.hamstring);
+}
+
+auto PlayerActiveBuffs::getBlindSource() const -> optional_t<BuffSource> {
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	return getBuffSource(basics.blind);
+}
+
+auto PlayerActiveBuffs::getConcentrateSource() const -> optional_t<BuffSource> {
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	return getBuffSource(basics.concentrate);
+}
+
+auto PlayerActiveBuffs::getHolySymbolSource() const -> optional_t<BuffSource> {
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	return getBuffSource(basics.holySymbol);
+}
+
+auto PlayerActiveBuffs::getPowerStanceSource() const -> optional_t<BuffSource> {
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	auto ret = getBuffSource(basics.powerStance);
+	if (ret.is_initialized()) return ret;
+	ret = getBuffSource(basics.energyCharge);
+	return ret;
+}
+
+auto PlayerActiveBuffs::getHyperBodyHpSource() const -> optional_t<BuffSource> {
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	return getBuffSource(basics.hyperBodyHp);
+}
+
+auto PlayerActiveBuffs::getHyperBodyMpSource() const -> optional_t<BuffSource> {
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	return getBuffSource(basics.hyperBodyMp);
+}
+
+auto PlayerActiveBuffs::getMountItemId() const -> item_id_t {
+	return m_mountItemId;
 }
 
 auto PlayerActiveBuffs::endMorph() -> void {
-	skill_id_t morphId = getCurrentMorph();
-	if (morphId != 0) {
-		Skills::stopSkill(m_player, morphId);
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	auto source = getBuffSource(basics.morph);
+	if (source.is_initialized()) {
+		stopSkill(source.get());
 	}
 }
 
@@ -609,118 +946,154 @@ auto PlayerActiveBuffs::swapWeapon() -> void {
 	stopBulletSkills();
 }
 
+auto PlayerActiveBuffs::takeDamage(damage_t damage) -> void {
+	if (damage <= 0) return;
+
+	auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+	auto source = getBuffSource(basics.morph);
+	if (source.is_initialized()) {
+		auto &buffSource = source.get();
+		if (buffSource.getType() == BuffSourceType::Item) {
+			stopSkill(buffSource);
+		}
+	}
+
+	auto battleshipLevel = getBuffLevel(BuffSourceType::Skill, Skills::Corsair::Battleship);
+	if (battleshipLevel > 0) {
+		m_battleshipHp -= damage / 10;
+		auto source = BuffSource::fromSkill(Skills::Corsair::Battleship, battleshipLevel);
+
+		if (m_battleshipHp <= 0) {
+			m_battleshipHp = 0;
+			seconds_t coolTime = getBuffSkillInfo(source)->coolTime;
+			Skills::startCooldown(m_player, source.getSkillId(), coolTime);
+			stopSkill(source);
+		}
+		else {
+			BuffsPacket::addBuff(
+				m_player->getId(),
+				source.getSkillId(),
+				seconds_t{0},
+				Buffs::convertToPacket(
+					m_player,
+					source,
+					seconds_t{0},
+					Buffs::preprocessBuff(m_player, source, seconds_t{0})),
+				0);
+		}
+	}
+}
+
 auto PlayerActiveBuffs::getTransferPacket() const -> PacketBuilder {
 	PacketBuilder builder;
-	// Map entry buff info
-	builder.add<int8_t>(getCombo());
-	builder.add<int16_t>(getEnergyChargeLevel());
-	builder.add<skill_id_t>(getCharge());
-	builder.add<skill_id_t>(getBooster());
-	builder.add<int32_t>(getBattleshipHp());
-	builder.add<int32_t>(getDebuffMask());
-	builder.add<item_id_t>(m_mapBuffs.mountId);
-	builder.add<skill_id_t>(m_mapBuffs.mountSkill);
-	for (int8_t i = 0; i < BuffBytes::ByteQuantity; ++i) {
-		builder.add<uint8_t>(m_mapBuffs.types[i]);
-		auto foundValue = m_mapBuffs.values.find(i);
-		if (foundValue == std::end(m_mapBuffs.values)) {
-			builder.add<uint8_t>(0);
-			continue;
-		}
-		auto &values = foundValue->second;
-		builder.add<uint8_t>(static_cast<uint8_t>(values.size()));
-		for (const auto &kvp : values) {
-			const MapEntryVals &info = kvp.second;
-			builder.add<uint8_t>(kvp.first);
-			builder.add<bool>(info.debuff);
-			if (kvp.second.debuff) {
-				builder.add<int16_t>(info.skill);
-				builder.add<int16_t>(info.val);
-			}
-			else {
-				builder.add<bool>(info.use);
-				builder.add<int16_t>(info.val);
-			}
-		}
-	}
+	builder
+		.add<int8_t>(m_combo)
+		.add<int16_t>(m_energyCharge)
+		.add<int32_t>(m_battleshipHp)
+		.add<int32_t>(m_debuffMask)
+		.add<item_id_t>(m_mountItemId);
+
 	// Current buff info (IDs, times, levels)
-	builder.add<uint8_t>(static_cast<uint8_t>(m_buffs.size()));
-	for (const auto &buffId : m_buffs) {
-		builder.add<skill_id_t>(buffId);
-		builder.add<seconds_t>(getBuffSecondsRemaining(buffId));
-		builder.add<skill_level_t>(getActiveSkillLevel(buffId));
-	}
-	// Current buffs by type info
-	for (int8_t i = 0; i < BuffBytes::ByteQuantity; ++i) {
-		auto foundByte = m_activeBuffsByType.find(i);
-		if (foundByte == std::end(m_activeBuffsByType)) {
-			builder.add<uint8_t>(0);
-			continue;
+	builder.add<uint16_t>(static_cast<uint16_t>(m_buffs.size()));
+	for (const auto &buff : m_buffs) {
+		auto &raw = buff.raw;
+
+		builder.add<BuffSourceType>(buff.type);
+		builder.add<int32_t>(buff.identifier);
+		switch (buff.type) {
+			case BuffSourceType::Item:
+			case BuffSourceType::Skill:
+				builder.add<skill_level_t>(buff.level);
+				break;
+			case BuffSourceType::MobSkill:
+				builder.add<mob_skill_level_t>(static_cast<mob_skill_level_t>(buff.level));
+				break;
+			default: throw NotImplementedException{"BuffSourceType"};
 		}
-		auto &currentByte = foundByte->second;
-		builder.add<uint8_t>(static_cast<uint8_t>(currentByte.size()));
-		for (const auto &kvp : currentByte) {
-			builder.add<uint8_t>(kvp.first);
-			builder.add<skill_id_t>(kvp.second);
+		builder.add<seconds_t>(getBuffSecondsRemaining(buff.type, buff.identifier));
+
+		auto &buffs = raw.getBuffInfo();
+		builder.add<uint8_t>(static_cast<uint8_t>(buffs.size()));
+		for (const auto &info : buffs) {
+			builder.add<uint8_t>(info.getBitPosition());
 		}
 	}
+
 	return builder;
 }
 
 auto PlayerActiveBuffs::parseTransferPacket(PacketReader &reader) -> void {
 	// Map entry buff info
-	setCombo(reader.get<uint8_t>(), false);
-	setEnergyChargeLevel(reader.get<int16_t>());
-	setCharge(reader.get<skill_id_t>());
-	setBooster(reader.get<skill_id_t>());
-	setBattleshipHp(reader.get<int32_t>());
-	setDebuffMask(reader.get<int32_t>());
-	m_mapBuffs.mountId = reader.get<item_id_t>();
-	m_mapBuffs.mountSkill = reader.get<skill_id_t>();
-	MapEntryVals values;
-	for (int8_t i = 0; i < BuffBytes::ByteQuantity; ++i) {
-		m_mapBuffs.types[i] = reader.get<uint8_t>();
-		uint8_t size = reader.get<uint8_t>();
-		for (uint8_t f = 0; f < size; f++) {
-			uint8_t type = reader.get<uint8_t>();
-			values.debuff = reader.get<bool>();
-			if (values.debuff) {
-				values.skill = reader.get<int16_t>();
-				values.val = reader.get<int16_t>();
+	m_combo = reader.get<uint8_t>();
+	m_energyCharge = reader.get<int16_t>();
+	m_battleshipHp = reader.get<int32_t>();
+	m_debuffMask = reader.get<int32_t>();
+	m_mountItemId = reader.get<item_id_t>();
+
+	// Current player skill/item buff info
+	size_t size = reader.get<uint16_t>();
+	for (size_t i = 0; i < size; ++i) {
+		BuffSourceType type = reader.get<BuffSourceType>();
+		int32_t identifier = reader.get<int32_t>();
+		int32_t level = 0;
+		switch (type) {
+			case BuffSourceType::Item:
+			case BuffSourceType::Skill: {
+				level = reader.get<skill_level_t>();
+				break;
 			}
-			else {
-				values.use = reader.get<bool>();
-				values.val = reader.get<int16_t>();
+			case BuffSourceType::MobSkill: {
+				level = reader.get<mob_skill_level_t>();
+				break;
 			}
-			m_mapBuffs.values[i][type] = values;
+			default: throw NotImplementedException{"BuffSourceType"};
 		}
-	}
-	// Current buff info
-	uint8_t nBuffs = reader.get<uint8_t>();
-	for (uint8_t i = 0; i < nBuffs; ++i) {
-		skill_id_t skillId = reader.get<skill_id_t>();
+
+		LocalBuffInfo buff;
+		buff.type = type;
+		buff.identifier = identifier;
+		buff.level = level;
+
 		seconds_t timeLeft = reader.get<seconds_t>();
-		skill_level_t level = reader.get<skill_level_t>();
-		addBuff(skillId, timeLeft);
-		setActiveSkillLevel(skillId, level);
-		Buffs::doAction(m_player, skillId, level);
-	}
-	// Current buffs by type
-	hash_map_t<uint8_t, skill_id_t> currentByte;
-	for (int8_t i = 0; i < BuffBytes::ByteQuantity; ++i) {
-		uint8_t size = reader.get<uint8_t>();
-		for (uint8_t f = 0; f < size; f++) {
-			uint8_t key = reader.get<uint8_t>();
-			skill_id_t value = reader.get<skill_id_t>();
-			currentByte[key] = value;
+		vector_t<uint8_t> validBits;
+		uint8_t validBitSize = reader.get<uint8_t>();
+		for (uint8_t i = 0; i < validBitSize; i++) {
+			validBits.push_back(reader.get<uint8_t>());
 		}
-		m_activeBuffsByType[i] = currentByte;
+
+		BuffSource source = buff.toSource();
+		int32_t packetSkillId = translateToPacket(source);
+		buff.raw = Buffs::preprocessBuff(
+			Buffs::preprocessBuff(
+				m_player,
+				source,
+				timeLeft),
+			validBits);
+
+		m_buffs.push_back(buff);
+
+		Timer::Id id{TimerType::BuffTimer, static_cast<int32_t>(buff.type), buff.identifier};
+		Timer::Timer::create(
+			[this, packetSkillId](const time_point_t &now) {
+				Skills::stopSkill(m_player, translateToSource(packetSkillId), true);
+			},
+			id,
+			m_player->getTimerContainer(),
+			timeLeft);
 	}
 
-	if (hasHyperBody()) {
-		skill_id_t skillId = getHyperBody();
-		skill_level_t hbLevel = getActiveSkillLevel(skillId);
-		auto hb = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, hbLevel);
-		m_player->getStats()->setHyperBody(hb->x, hb->y);
+	if (m_energyCharge > 0 && m_energyCharge != Stats::MaxEnergyChargeLevel) {
+		startEnergyChargeTimer();
+	}
+
+	auto hyperBodyHpSource = getHyperBodyHpSource();
+	if (hyperBodyHpSource.is_initialized()) {
+		auto skill = getBuffSkillInfo(hyperBodyHpSource.get());
+		m_player->getStats()->setHyperBodyHp(skill->x);
+	}
+	auto hyperBodyMpSource = getHyperBodyMpSource();
+	if (hyperBodyMpSource.is_initialized()) {
+		auto skill = getBuffSkillInfo(hyperBodyMpSource.get());
+		m_player->getStats()->setHyperBodyMp(skill->y);
 	}
 }

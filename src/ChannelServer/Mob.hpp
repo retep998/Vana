@@ -59,6 +59,8 @@ public:
 	auto getStatusBits() const -> int32_t;
 	auto getStatusInfo() const -> const ord_map_t<int32_t, StatusInfo> &;
 
+	auto addMarker(Player *player) -> void;
+	auto removeMarker(Player *player) -> void;
 	auto chooseRandomSkill(mob_skill_id_t &skillId, mob_skill_level_t &skillLevel) -> void;
 	auto getSkillFeasibility() const -> bool { return m_skillFeasible; }
 	auto getAnticipatedSkill() const -> mob_skill_id_t { return m_anticipatedSkill; }
@@ -138,6 +140,7 @@ private:
 	view_ptr_t<Mob> m_owner;
 	view_ptr_t<Mob> m_sponge;
 	const ref_ptr_t<MobInfo> m_info;
+	vector_t<Player *> m_markers;
 	ord_map_t<int32_t, StatusInfo> m_statuses;
 	hash_map_t<player_id_t, uint64_t> m_damages;
 	hash_map_t<uint8_t, time_point_t> m_skillUse;

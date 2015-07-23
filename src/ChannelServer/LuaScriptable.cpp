@@ -58,15 +58,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 string_t LuaScriptable::sApiVersion = "1.0.0";
 
 LuaScriptable::LuaScriptable(const string_t &filename, player_id_t playerId) :
-	LuaEnvironment(filename),
-	m_playerId(playerId)
+	LuaEnvironment{filename},
+	m_playerId{playerId}
 {
 	initialize();
 }
 
 LuaScriptable::LuaScriptable(const string_t &filename, player_id_t playerId, bool useThread) :
-	LuaEnvironment(filename, useThread),
-	m_playerId(playerId)
+	LuaEnvironment{filename, useThread},
+	m_playerId{playerId}
 {
 	initialize();
 }
@@ -436,7 +436,7 @@ auto LuaExports::obtainSetVariablePair(lua_State *luaVm, LuaEnvironment &env) ->
 		case LuaType::Bool: ret.second = env.get<bool>(luaVm, 2) ? "true" : "false"; break;
 		case LuaType::Number: ret.second = StringUtilities::lexical_cast<string_t>(env.get<int32_t>(luaVm, 2)); break;
 		case LuaType::String: ret.second = env.get<string_t>(luaVm, 2); break;
-		default: throw std::exception("Invalid Lua datatype");
+		default: throw NotImplementedException{"Lua datatype"};
 	}
 	return ret;
 }
@@ -445,30 +445,28 @@ auto LuaExports::pushGetVariableData(lua_State *luaVm, LuaEnvironment &env, cons
 	if (value == "nil") {
 		env.pushNil(luaVm);
 	}
-	else if (returnType == VariableType::Bool) {
-		env.push<bool>(luaVm, value == "true");
-	}
-	else if (returnType == VariableType::Number) {
-		if (value.empty()) {
-			env.pushNil(luaVm);
-		}
-		else {
-			env.push<double>(luaVm, StringUtilities::lexical_cast<double>(value));
-		}
-	}
-	else if (returnType == VariableType::Integer) {
-		if (value.empty()) {
-			env.pushNil(luaVm);
-		}
-		else {
-			env.push<int32_t>(luaVm, StringUtilities::lexical_cast<int32_t>(value));
-		}
-	}
-	else if (returnType == VariableType::String) {
-		env.push<string_t>(luaVm, value);
-	}
 	else {
-		throw new std::invalid_argument("returnType must be a type_ constant");
+		switch (returnType) {
+			case VariableType::Bool: env.push<bool>(luaVm, value == "true"); break;
+			case VariableType::Number:
+				if (value.empty()) {
+					env.pushNil(luaVm);
+				}
+				else {
+					env.push<double>(luaVm, StringUtilities::lexical_cast<double>(value));
+				}
+				break;
+			case VariableType::Integer:
+				if (value.empty()) {
+					env.pushNil(luaVm);
+				}
+				else {
+					env.push<int32_t>(luaVm, StringUtilities::lexical_cast<int32_t>(value));
+				}
+				break;
+			case VariableType::String: env.push<string_t>(luaVm, value); break;
+			default: throw std::invalid_argument{"returnType must be a valid type_ constant"};
+		}
 	}
 	return 1;
 }
@@ -709,7 +707,7 @@ auto LuaExports::runNpc(lua_State *luaVm) -> lua_return_t {
 	else {
 		script = ChannelServer::getInstance().getScriptDataProvider().getScript(npcId, ScriptTypes::Npc);
 	}
-	Npc *npc = new Npc(npcId, getPlayer(luaVm, env), script);
+	Npc *npc = new Npc{npcId, getPlayer(luaVm, env), script};
 	npc->run();
 	return 0;
 }
@@ -1236,13 +1234,24 @@ auto LuaExports::giveSp(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::isActiveItem(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.push<bool>(luaVm, getPlayer(luaVm, env)->getActiveBuffs()->getActiveSkillLevel(-1 * env.get<item_id_t>(luaVm, 1)) > 0);
+	item_id_t item = env.get<item_id_t>(luaVm, 1);
+	bool hasBuff = getPlayer(luaVm, env)->getActiveBuffs()->hasBuff(
+		BuffSourceType::Item,
+		item);
+
+	env.push<bool>(luaVm, hasBuff);
 	return 1;
 }
 
 auto LuaExports::isActiveSkill(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.push<bool>(luaVm, getPlayer(luaVm, env)->getActiveBuffs()->getActiveSkillLevel(env.get<skill_id_t>(luaVm, 1)) > 0);
+	skill_id_t skill = env.get<skill_id_t>(luaVm, 1);
+	bool hasBuff = getPlayer(luaVm, env)->getActiveBuffs()->hasBuff(
+		GameLogicUtilities::isMobSkill(skill) ?
+			BuffSourceType::MobSkill :
+			BuffSourceType::Skill,
+		skill);
+	env.push<bool>(luaVm, hasBuff);
 	return 1;
 }
 
@@ -1338,7 +1347,6 @@ auto LuaExports::setMap(lua_State *luaVm) -> lua_return_t {
 			env.set<bool>(luaVm, "player_map_changed", true);
 		}
 	}
-
 
 	return 0;
 }
@@ -1753,7 +1761,7 @@ auto LuaExports::mobDropItem(lua_State *luaVm) -> lua_return_t {
 	}
 	auto mob = Maps::getMap(mapId)->getMob(mapMobId);
 	if (mob != nullptr) {
-		Item f(itemId, amount);
+		Item f{itemId, amount};
 		Drop *drop = new Drop(mapId, f, mob->getPos(), 0);
 		drop->setTime(0);
 		drop->doDrop(mob->getPos());

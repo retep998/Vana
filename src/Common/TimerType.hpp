@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 enum class TimerType : uint32_t {
 	BuffTimer,
+	EnergyChargeTimer,
 	CoolTimer,
 	InstanceTimer,
 	MapleTvTimer,

@@ -81,6 +81,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_MYSTIC_DOOR_ENTRY 0x83
 #define CMSG_KEYMAP 0x85
 #define CMSG_MTS 0x9a
+#define CMSG_BUFF_ITEM_USE 0x9f
 #define CMSG_PET_MOVEMENT 0xa1
 #define CMSG_PET_CHAT 0xa2
 #define CMSG_PET_COMMAND 0xa3

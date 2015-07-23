@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.hpp"
 
 PlayerMonsterBook::PlayerMonsterBook(Player *player) :
-	m_player(player)
+	m_player{player}
 {
 	load();
 }

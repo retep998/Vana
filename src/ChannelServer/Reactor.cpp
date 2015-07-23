@@ -22,10 +22,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReactorPacket.hpp"
 
 Reactor::Reactor(map_id_t mapId, reactor_id_t reactorId, const Point &pos, bool facesLeft) :
-	m_reactorId(reactorId),
-	m_mapId(mapId),
-	m_pos(pos),
-	m_facesLeft(facesLeft)
+	m_reactorId{reactorId},
+	m_mapId{mapId},
+	m_pos{pos},
+	m_facesLeft{facesLeft}
 {
 	Maps::getMap(mapId)->addReactor(this);
 }

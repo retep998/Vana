@@ -135,15 +135,15 @@ PACKET_IMPL(whisperPlayer, const string_t &whispererName, channel_id_t channel, 
 	return builder;
 }
 
-PACKET_IMPL(findPlayer, const string_t &name, int32_t map, uint8_t is, bool isChannel) {
+PACKET_IMPL(findPlayer, const string_t &name, opt_int32_t map, uint8_t is, bool isChannel) {
 	PacketBuilder builder;
 	builder.add<header_t>(SMSG_COMMAND);
-	if (map != -1) {
+	if (map.is_initialized()) {
 		builder
 			.add<int8_t>(0x09)
 			.add<string_t>(name)
 			.add<int8_t>(isChannel ? 0x03 : 0x01)
-			.add<int32_t>(map)
+			.add<int32_t>(map.get())
 			.unk<int32_t>()
 			.unk<int32_t>();
 	}

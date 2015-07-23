@@ -66,9 +66,8 @@ struct MapInfo {
 	int8_t regenRate = 0;
 	int8_t shipKind = -1;
 	player_level_t minLevel = 0;
-	uint8_t decHp = 0;
-	uint16_t dps = 0;
-	map_id_t rm = 0;
+	uint8_t regularHpDecrease = 0;
+	map_id_t returnMap = 0;
 	map_id_t forcedReturn = 0;
 	map_id_t link = 0;
 	int32_t timeLimit = 0;

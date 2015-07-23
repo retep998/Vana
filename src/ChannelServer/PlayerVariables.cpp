@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.hpp"
 #include "Player.hpp"
 
-PlayerVariables::PlayerVariables(Player *p) :
-	m_player(p)
+PlayerVariables::PlayerVariables(Player *player) :
+	m_player{player}
 {
 	load();
 }

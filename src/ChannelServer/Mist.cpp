@@ -21,27 +21,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.hpp"
 #include "SkillDataProvider.hpp"
 
-Mist::Mist(map_id_t mapId, Player *owner, int32_t time, const Rect &area, skill_id_t skillId, skill_level_t level, bool isPoison) :
-	m_ownerMap(mapId),
-	m_ownerId(owner->getId()),
-	m_skill(skillId),
-	m_level(level),
-	m_area(area),
-	m_time(static_cast<int16_t>(time)),
-	m_delay(8),
-	m_isMobMist(false),
-	m_poison(isPoison)
+Mist::Mist(map_id_t mapId, Player *owner, seconds_t time, const Rect &area, skill_id_t skillId, skill_level_t level, bool isPoison) :
+	m_ownerMap{mapId},
+	m_ownerId{owner->getId()},
+	m_skill{skillId},
+	m_level{level},
+	m_area{area},
+	m_time{time},
+	m_delay{8},
+	m_isMobMist{false},
+	m_poison{isPoison}
 {
 	Maps::getMap(mapId)->addMist(this);
 }
 
-Mist::Mist(map_id_t mapId, Mob *owner, int16_t time, const Rect &area, mob_skill_id_t skillId, mob_skill_level_t level) :
-	m_ownerMap(mapId),
-	m_ownerId(owner->getMapMobId()),
-	m_skill(skillId),
-	m_level(level),
-	m_area(area),
-	m_time(time)
+Mist::Mist(map_id_t mapId, Mob *owner, seconds_t time, const Rect &area, mob_skill_id_t skillId, mob_skill_level_t level) :
+	m_ownerMap{mapId},
+	m_ownerId{owner->getMapMobId()},
+	m_skill{skillId},
+	m_level{level},
+	m_area{area},
+	m_time{time}
 {
 	Maps::getMap(mapId)->addMist(this);
 }

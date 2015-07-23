@@ -24,22 +24,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.hpp"
 
 auto Fame::handleFame(Player *player, PacketReader &reader) -> void {
-	player_id_t playerId = reader.get<player_id_t>();
+	player_id_t targetId = reader.get<player_id_t>();
 	uint8_t type = reader.get<uint8_t>();
-	if (player->getId() > 0) {
-		if (player->getId() == playerId) {
+	if (targetId > 0) {
+		if (player->getId() == targetId) {
 			// Hacking
 			return;
 		}
-		int32_t checkResult = canFame(player, playerId);
+		int32_t checkResult = canFame(player, targetId);
 		if (checkResult != 0) {
 			player->send(FamePacket::sendError(checkResult));
 		}
 		else {
-			Player *famee = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId);
+			Player *famee = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(targetId);
 			fame_t newFame = famee->getStats()->getFame() + (type == 1 ? 1 : -1);
 			famee->getStats()->setFame(newFame);
-			addFameLog(player->getId(), playerId);
+			addFameLog(player->getId(), targetId);
 			player->send(FamePacket::sendFame(famee->getName(), type, newFame));
 			famee->send(FamePacket::receiveFame(player->getName(), type));
 		}
@@ -92,7 +92,9 @@ auto Fame::getLastFameLog(player_id_t from) -> SearchResult {
 		soci::use(fameTime, "fameTime"),
 		soci::into(time);
 
-	return time.is_initialized() ? SearchResult::Found : SearchResult::NotFound;
+	return time.is_initialized() ?
+		SearchResult::Found :
+		SearchResult::NotFound;
 }
 
 auto Fame::getLastFameSpLog(player_id_t from, player_id_t to) -> SearchResult {
@@ -117,5 +119,7 @@ auto Fame::getLastFameSpLog(player_id_t from, player_id_t to) -> SearchResult {
 		soci::use(fameResetTime, "fameResetTime"),
 		soci::into(time);
 
-	return time.is_initialized() ? SearchResult::Found : SearchResult::NotFound;
+	return time.is_initialized() ?
+		SearchResult::Found :
+		SearchResult::NotFound;
 }

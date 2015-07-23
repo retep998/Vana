@@ -229,8 +229,8 @@ auto Inventory::useItem(Player *player, item_id_t itemId) -> void {
 	if (item->ailment > 0) {
 		player->getActiveBuffs()->useDebuffHealingItem(item->ailment);
 	}
-	if (item->time > 0 && item->mcProb == 0) {
-		seconds_t time(item->time * potency / 100);
+	if (item->buffTime.count() > 0 && item->mcProb == 0) {
+		seconds_t time{item->buffTime.count() * potency / 100};
 		Buffs::addBuff(player, itemId, time);
 	}
 	if (GameLogicUtilities::isMonsterCard(itemId)) {
@@ -240,7 +240,7 @@ auto Inventory::useItem(Player *player, item_id_t itemId) -> void {
 			player->sendMap(MonsterBookPacket::addCardEffect(player->getId()));
 		}
 		if (item->mcProb != 0 && Randomizer::rand<uint16_t>(99) < item->mcProb) {
-			Buffs::addBuff(player, itemId, seconds_t{item->time});
+			Buffs::addBuff(player, itemId, item->buffTime);
 		}
 	}
 }

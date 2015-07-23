@@ -185,14 +185,14 @@ auto Characters::checkCharacterName(UserConnection *user, PacketReader &reader) 
 auto Characters::createItem(item_id_t itemId, UserConnection *user, player_id_t charId, inventory_slot_t slot, slot_qty_t amount) -> void {
 	soci::session &sql = Database::getCharDb();
 	inventory_t inventory = GameLogicUtilities::getInventory(itemId);
-	ItemDbInformation info(slot, charId, user->getUserId(), user->getWorldId(), Item::Inventory);
+	ItemDbInformation info{slot, charId, user->getUserId(), user->getWorldId(), Item::Inventory};
 
 	if (inventory == Inventories::EquipInventory) {
-		Item equip(LoginServer::getInstance().getEquipDataProvider(), itemId, Items::StatVariance::None, false);
+		Item equip{LoginServer::getInstance().getEquipDataProvider(), itemId, Items::StatVariance::None, false};
 		equip.databaseInsert(sql, info);
 	}
 	else {
-		Item item(itemId, amount);
+		Item item{itemId, amount};
 		item.databaseInsert(sql, info);
 	}
 }

@@ -46,7 +46,6 @@ private:
 	auto loadScrolls() -> void;
 	auto loadConsumes(BuffDataProvider &provider) -> void;
 	auto loadMapRanges() -> void;
-	auto loadMultiMorphs() -> void;
 	auto loadMonsterCardData() -> void;
 	auto loadItemSkills() -> void;
 	auto loadSummonBags() -> void;

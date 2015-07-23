@@ -72,4 +72,8 @@ auto KeyMaps::getMax() -> int32_t {
 }
 
 inline
-KeyMaps::KeyMap::KeyMap(int8_t type, int32_t action) : type(type), action(action) { }
+KeyMaps::KeyMap::KeyMap(int8_t type, int32_t action) :
+	type{type},
+	action{action}
+{
+}

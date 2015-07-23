@@ -34,6 +34,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer.hpp"
 #include "TimerId.hpp"
 
+PlayerSkills::PlayerSkills(Player *player) :
+	m_player{player}
+{
+	load();
+}
+
 auto PlayerSkills::load() -> void {
 	soci::session &sql = Database::getCharDb();
 	PlayerSkillInfo skill;
@@ -52,7 +58,7 @@ auto PlayerSkills::load() -> void {
 			continue;
 		}
 
-		skill = PlayerSkillInfo();
+		skill = PlayerSkillInfo{};
 		skill.level = row.get<skill_level_t>("points");
 		skill.maxSkillLevel = ChannelServer::getInstance().getSkillDataProvider().getMaxLevel(skillId);
 		skill.playerMaxSkillLevel = row.get<skill_level_t>("max_level");
@@ -67,7 +73,7 @@ auto PlayerSkills::load() -> void {
 
 	for (const auto &row : rs) {
 		skill_id_t skillId = row.get<skill_id_t>("skill_id");
-		int16_t timeLeft = row.get<int16_t>("remaining_time");
+		seconds_t timeLeft = seconds_t{row.get<int16_t>("remaining_time")};
 		Skills::startCooldown(m_player, skillId, timeLeft, true);
 		m_cooldowns[skillId] = timeLeft;
 	}
@@ -97,7 +103,7 @@ auto PlayerSkills::load() -> void {
 		soci::into(blessingPlayerLevel);
 
 	if (blessingPlayerLevel.is_initialized()) {
-		skill = PlayerSkillInfo();
+		skill = PlayerSkillInfo{};
 		skill.maxSkillLevel = ChannelServer::getInstance().getSkillDataProvider().getMaxLevel(skillId);
 		skill.level = std::min<skill_level_t>(blessingPlayerLevel.get() / 10, skill.maxSkillLevel);
 		m_blessingPlayer = blessingPlayerName.get();
@@ -291,17 +297,6 @@ auto PlayerSkills::getEnergyCharge() const -> skill_id_t {
 	return skillId;
 }
 
-auto PlayerSkills::getComboAttack() const -> skill_id_t {
-	skill_id_t skillId = 0;
-	switch (m_player->getStats()->getJob()) {
-		case Jobs::JobIds::Crusader:
-		case Jobs::JobIds::Hero: skillId = Skills::Crusader::ComboAttack; break;
-		case Jobs::JobIds::DawnWarrior3:
-		case Jobs::JobIds::DawnWarrior4: skillId = Skills::DawnWarrior::ComboAttack; break;
-	}
-	return skillId;
-}
-
 auto PlayerSkills::getAdvancedCombo() const -> skill_id_t {
 	skill_id_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
@@ -319,27 +314,6 @@ auto PlayerSkills::getAlchemist() const -> skill_id_t {
 		case Jobs::JobIds::NightLord: skillId = Skills::Hermit::Alchemist; break;
 		case Jobs::JobIds::NightWalker3:
 		case Jobs::JobIds::NightWalker4: skillId = Skills::NightWalker::Alchemist; break;
-	}
-	return skillId;
-}
-
-auto PlayerSkills::getDarkSight() const -> skill_id_t {
-	skill_id_t skillId = 0;
-	switch (m_player->getStats()->getJob()) {
-		case Jobs::JobIds::Rogue:
-		case Jobs::JobIds::Assassin:
-		case Jobs::JobIds::Hermit:
-		case Jobs::JobIds::NightLord:
-		case Jobs::JobIds::Bandit:
-		case Jobs::JobIds::ChiefBandit:
-		case Jobs::JobIds::Shadower: skillId = Skills::Rogue::DarkSight; break;
-		case Jobs::JobIds::NightWalker1:
-		case Jobs::JobIds::NightWalker2:
-		case Jobs::JobIds::NightWalker3:
-		case Jobs::JobIds::NightWalker4: skillId = Skills::NightWalker::DarkSight; break;
-		case Jobs::JobIds::WindArcher2:
-		case Jobs::JobIds::WindArcher3:
-		case Jobs::JobIds::WindArcher4: skillId = Skills::WindArcher::WindWalk; break;
 	}
 	return skillId;
 }
@@ -501,7 +475,7 @@ auto PlayerSkills::getRechargeableBonus() const -> slot_qty_t {
 	return bonus;
 }
 
-auto PlayerSkills::addCooldown(skill_id_t skillId, int16_t time) -> void {
+auto PlayerSkills::addCooldown(skill_id_t skillId, seconds_t time) -> void {
 	m_cooldowns[skillId] = time;
 }
 
@@ -529,7 +503,7 @@ auto PlayerSkills::openMysticDoor(const Point &pos, seconds_t doorTime) -> Mysti
 	if (party != nullptr) {
 		zeroBasedPartyIndex = party->getZeroBasedIndexByMember(m_player);
 	}
-	
+
 	MysticDoorOpenResult result = party == nullptr ?
 		m_player->getMap()->getTownMysticDoorPortal(m_player) :
 		m_player->getMap()->getTownMysticDoorPortal(m_player, zeroBasedPartyIndex);
@@ -537,7 +511,7 @@ auto PlayerSkills::openMysticDoor(const Point &pos, seconds_t doorTime) -> Mysti
 	if (result.result != MysticDoorResult::Success) {
 		return result.result;
 	}
-	
+
 	if (isDisplacement) {
 		if (party != nullptr) {
 			party->runFunction([&](Player *partyMember) {
@@ -577,8 +551,13 @@ auto PlayerSkills::openMysticDoor(const Point &pos, seconds_t doorTime) -> Mysti
 		m_player->send(MapPacket::spawnPortal(m_mysticDoor, m_player->getMapId()));
 	}
 
-	Timer::Timer::create([this](const time_point_t &now) { this->closeMysticDoor(true); },
-		Timer::Id{TimerType::DoorTimer}, m_player->getTimerContainer(), m_mysticDoor->getDoorTime());
+	Timer::Timer::create(
+		[this](const time_point_t &now) {
+			this->closeMysticDoor(true);
+		},
+		Timer::Id{TimerType::DoorTimer},
+		m_player->getTimerContainer(),
+		m_mysticDoor->getDoorTime());
 
 	return MysticDoorResult::Success;
 }
@@ -790,7 +769,7 @@ auto PlayerSkills::connectData(PacketBuilder &packet) const -> void {
 	packet.add<uint16_t>(static_cast<uint16_t>(m_cooldowns.size()));
 	for (const auto &kvp : m_cooldowns) {
 		packet.add<skill_id_t>(kvp.first);
-		packet.add<int16_t>(kvp.second);
+		packet.add<int16_t>(static_cast<int16_t>(kvp.second.count()));
 	}
 }
 

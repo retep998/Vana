@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.hpp"
 
 LuaInstance::LuaInstance(const string_t &name, player_id_t playerId) :
-	LuaScriptable(ChannelServer::getInstance().getScriptDataProvider().buildScriptPath(ScriptTypes::Instance, name), playerId)
+	LuaScriptable{ChannelServer::getInstance().getScriptDataProvider().buildScriptPath(ScriptTypes::Instance, name), playerId}
 {
 	set<string_t>("system_instance_name", name);
 

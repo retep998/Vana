@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameConstants.hpp"
 #include "Player.hpp"
 
-PlayerMounts::PlayerMounts(Player *p) :
-	m_player(p)
+PlayerMounts::PlayerMounts(Player *player) :
+	m_player{player}
 {
 	load();
 }

@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapPacket.hpp"
 #include "Buffs.hpp"
+#include "BuffsPacketHelper.hpp"
 #include "ChannelServer.hpp"
 #include "Inventory.hpp"
 #include "Map.hpp"
@@ -37,7 +38,6 @@ namespace MapPacket {
 
 PACKET_IMPL(playerPacket, Player *player) {
 	PacketBuilder builder;
-	auto &enter = player->getActiveBuffs()->getMapEntryBuffs();
 
 	builder
 		.add<header_t>(SMSG_MAP_PLAYER_SPAWN)
@@ -47,112 +47,26 @@ PACKET_IMPL(playerPacket, Player *player) {
 		.add<int16_t>(0) // Guild icon garbage
 		.add<int8_t>(0) // Guild icon garbage
 		.add<int16_t>(0) // Guild icon garbage
-		.add<int8_t>(0) // Guild icon garbage
-		.add<int32_t>(0)
-		.add<uint8_t>(0xf8)
-		.add<int8_t>(3)
-		.add<int16_t>(0);
+		.add<int8_t>(0); // Guild icon garbage
 
-	{
-		using namespace BuffBytes;
-		builder
-			.add<uint8_t>(enter.types[Byte5])
-			.add<uint8_t>(enter.types[Byte6])
-			.add<uint8_t>(enter.types[Byte7])
-			.add<uint8_t>(enter.types[Byte8])
-			.add<uint8_t>(enter.types[Byte1])
-			.add<uint8_t>(enter.types[Byte2])
-			.add<uint8_t>(enter.types[Byte3])
-			.add<uint8_t>(enter.types[Byte4]);
+	PacketBuilder ref = BuffsPacketHelper::addMapValues(player->getActiveBuffs()->getMapBuffValues());
+	builder.addBuffer(ref);
 
-		const int8_t byteorder[EntryByteQuantity] = { Byte1, Byte2, Byte3, Byte4, Byte5, Byte6, Byte7, Byte8 };
-
-		for (int8_t i = 0; i < EntryByteQuantity; i++) {
-			int8_t cbyte = byteorder[i]; // Values are sorted by lower bytes first
-			if (enter.types[cbyte] != 0) {
-				for (const auto &kvp : enter.values[cbyte]) {
-					const MapEntryVals &info = kvp.second;
-					if (info.debuff) {
-						if (!(kvp.first == 0x01 && cbyte == Byte5)) {
-							// Glitch in global, Slow doesn't display properly and if you try, it error 38s
-							builder
-								.add<int16_t>(info.skill)
-								.add<int16_t>(info.val);
-						}
-					}
-					else if (info.use) {
-						int16_t value = info.val;
-						if (cbyte == Byte3) {
-							if (kvp.first == 0x20) {
-								builder.add<int8_t>(player->getActiveBuffs()->getCombo() + 1);
-							}
-							if (kvp.first == 0x40) {
-								builder.add<skill_id_t>(player->getActiveBuffs()->getCharge());
-							}
-						}
-						else if (cbyte == Byte5) {
-							builder.add<int16_t>(value);
-						}
-						else {
-							builder.add<int8_t>(static_cast<int8_t>(value));
-						}
-					}
-				}
-			}
-		}
-	}
-
-	int32_t unk = 1065638850;
 	builder
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int16_t>(0)
-		.add<int32_t>(unk)
-		.add<int16_t>(0)
-		.add<int8_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(unk)
-		.add<int16_t>(0)
-		.add<int8_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(unk)
-		.add<int16_t>(0)
-		.add<int8_t>(0)
-		.add<item_id_t>(enter.mountId) // No point to having an if, these are 0 when not in use
-		.add<skill_id_t>(enter.mountSkill)
-		.add<int32_t>(unk)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int8_t>(0)
-		.add<int32_t>(unk)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(unk)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int8_t>(0)
-		.add<int32_t>(unk)
-		.add<int16_t>(0)
-		.add<int8_t>(0)
 		.add<job_id_t>(player->getStats()->getJob())
 		.addBuffer(PlayerPacketHelper::addPlayerDisplay(player))
-		.add<int32_t>(0)
+		.unk<int32_t>()
 		.add<item_id_t>(player->getItemEffect())
 		.add<item_id_t>(player->getChair())
 		.add<Point>(player->getPos())
 		.add<int8_t>(player->getStance())
 		.add<foothold_id_t>(player->getFoothold())
-		.add<int8_t>(0);
+		.unk<int8_t>();
 
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
 			builder
-				.add<int8_t>(1)
+				.add<bool>(true)
 				.add<item_id_t>(pet->getItemId())
 				.add<string_t>(pet->getName())
 				.add<pet_id_t>(pet->getId())
@@ -164,7 +78,7 @@ PACKET_IMPL(playerPacket, Player *player) {
 		}
 	}
 	// End of pets
-	builder.add<int8_t>(0);
+	builder.add<bool>(false);
 
 	player->getMounts()->mountInfoMapSpawnPacket(builder);
 
@@ -180,9 +94,9 @@ PACKET_IMPL(playerPacket, Player *player) {
 		.add<int8_t>(0) // Rings (crush)
 		.add<int8_t>(0) // Rings (friends)
 		.add<int8_t>(0) // Ring (marriage)
-		.add<int8_t>(0)
-		.add<int8_t>(0)
-		.add<int8_t>(0);
+		.unk<int8_t>()
+		.unk<int8_t>()
+		.unk<int8_t>();
 	return builder;
 }
 
@@ -216,7 +130,7 @@ PACKET_IMPL(changeMap, Player *player, bool spawnByPosition, const Point &spawnP
 		.add<portal_id_t>(player->getMapPos())
 		.add<health_t>(player->getStats()->getHp())
 		.add<bool>(spawnByPosition);
-	
+
 	if (spawnByPosition) {
 		builder.add<WidePoint>(WidePoint{spawnPosition});
 	}
@@ -229,8 +143,8 @@ PACKET_IMPL(portalBlocked) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PLAYER_UPDATE)
-		.add<int8_t>(0x01)
-		.add<int32_t>(0x00);
+		.unk<int8_t>(1)
+		.unk<int32_t>();
 	return builder;
 }
 
@@ -250,7 +164,7 @@ PACKET_IMPL(showTimer, const seconds_t &sec) {
 	if (sec.count() > 0) {
 		builder
 			.add<header_t>(SMSG_TIMER)
-			.add<int8_t>(0x02)
+			.unk<int8_t>(0x02)
 			.add<int32_t>(static_cast<int32_t>(sec.count()));
 	}
 	else {
@@ -269,7 +183,7 @@ PACKET_IMPL(showEventInstructions) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_EVENT_INSTRUCTION)
-		.add<int8_t>(0x00);
+		.unk<int8_t>();
 	return builder;
 }
 
@@ -285,7 +199,7 @@ PACKET_IMPL(spawnMist, Mist *mist, bool mapEntry) {
 		.add<int16_t>(mapEntry ? 0 : mist->getDelay())
 		.add<WidePoint>(WidePoint{mist->getArea().leftTop()})
 		.add<WidePoint>(WidePoint{mist->getArea().rightBottom()})
-		.add<int32_t>(0);
+		.unk<int32_t>();
 	return builder;
 }
 

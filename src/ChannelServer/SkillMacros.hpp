@@ -73,10 +73,10 @@ auto SkillMacros::getMax() -> int8_t {
 
 inline
 SkillMacros::SkillMacro::SkillMacro(const string_t &name, bool shout, skill_id_t skill1, skill_id_t skill2, skill_id_t skill3) :
-	name(name),
-	shout(shout),
-	skill1(skill1),
-	skill2(skill2),
-	skill3(skill3)
+	name{name},
+	shout{shout},
+	skill1{skill1},
+	skill2{skill2},
+	skill3{skill3}
 {
 }

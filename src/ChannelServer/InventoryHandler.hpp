@@ -36,6 +36,7 @@ namespace InventoryHandler {
 	auto useSummonBag(Player *player, PacketReader &reader) -> void;
 	auto useReturnScroll(Player *player, PacketReader &reader) -> void;
 	auto useScroll(Player *player, PacketReader &reader) -> void;
+	auto useBuffItem(Player *player, PacketReader &reader) -> void;
 	auto useCashItem(Player *player, PacketReader &reader) -> void;
 	auto handleRockFunctions(Player *player, PacketReader &reader) -> void;
 	auto handleRockTeleport(Player *player, item_id_t itemId, PacketReader &reader) -> bool;

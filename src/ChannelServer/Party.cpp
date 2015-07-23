@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectPacket.hpp"
 
 Party::Party(party_id_t partyId) :
-	m_partyId(partyId)
+	m_partyId{partyId}
 {
 }
 

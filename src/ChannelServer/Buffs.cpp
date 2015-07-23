@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Buffs.hpp"
+#include "Algorithm.hpp"
 #include "BuffDataProvider.hpp"
 #include "BuffsPacket.hpp"
 #include "ChannelServer.hpp"
@@ -26,577 +27,374 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillDataProvider.hpp"
 #include "SummonHandler.hpp"
 
-auto Buffs::getValue(int8_t value, skill_id_t skillId, skill_level_t level) -> int16_t {
-	int16_t rValue = 0;
-	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
-	switch (value) {
-		case SkillX: rValue = skill->x; break;
-		case SkillY: rValue = skill->y; break;
-		case SkillSpeed: rValue = skill->speed; break;
-		case SkillJump: rValue = skill->jump; break;
-		case SkillWatk: rValue = skill->wAtk; break;
-		case SkillWdef: rValue = skill->wDef; break;
-		case SkillMatk: rValue = skill->mAtk; break;
-		case SkillMdef: rValue = skill->mDef; break;
-		case SkillAcc: rValue = skill->acc; break;
-		case SkillAvo: rValue = skill->avo; break;
-		case SkillProp: rValue = skill->prop; break;
-		case SkillMorph: rValue = skill->morph; break;
-		case SkillLv: rValue = level; break;
-		case SkillMobCount: rValue = skill->mobCount; break;
-		case SkillRange: rValue = skill->range; break;
-		case SkillDamage: rValue = skill->damage; break;
-	}
-	return rValue;
-}
-
-auto Buffs::getMobSkillValue(int8_t value, mob_skill_id_t skillId, mob_skill_level_t level) -> int16_t {
-	int16_t rValue = 0;
-	auto skill = ChannelServer::getInstance().getSkillDataProvider().getMobSkill(skillId, level);
-	switch (value) {
-		case SkillX: rValue = static_cast<int16_t>(skill->x); break;
-		case SkillY: rValue = static_cast<int16_t>(skill->y); break;
-		case SkillProp: rValue = skill->prop; break;
-		case SkillLv: rValue = level; break;
-	}
-	return rValue;
-}
-
-auto Buffs::parseMountInfo(Player *player, skill_id_t skillId, skill_level_t level) -> skill_id_t {
-	skill_id_t mountId = 0;
-	switch (skillId) {
-		case Skills::Beginner::MonsterRider:
-		case Skills::Noblesse::MonsterRider:
-			mountId = player->getInventory()->getEquippedId(EquipSlots::Mount);
-			break;
-		case Skills::Corsair::Battleship:
-			mountId = Items::BattleshipMount;
-			break;
-	}
-	return mountId;
-}
-
-auto Buffs::parseBuffInfo(Player *player, skill_id_t skillId, skill_level_t level) -> ActiveBuff {
-	ActiveBuff playerSkill;
-	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
-	auto &skillsInfo = ChannelServer::getInstance().getBuffDataProvider().getSkillInfo(skillId);
-
-	for (const auto &buffInfo : skillsInfo.player) {
-		const auto &buff = buffInfo.buff;
-		int8_t val = buff.value;
-		if (!Buffs::buffMayApply(skillId, level, val)) {
-			continue;
-		}
-		playerSkill.types[buff.byte] += buff.type;
-		int16_t value = 0;
-		if (buffInfo.hasMapVal) {
-			playerSkill.hasMapBuff = true;
-		}
-		if (val == SkillNone) {
-			value = buffInfo.itemVal;
-		}
-		else {
-			switch (skillId) {
-				case Skills::Bowmaster::SharpEyes:
-				case Skills::Marksman::SharpEyes:
-				case Skills::Hermit::ShadowPartner:
-				case Skills::NightWalker::ShadowPartner:
-					value = (skill->x << 8) | skill->y;
-					break;
-				case Skills::Crusader::ComboAttack:
-				case Skills::DawnWarrior::ComboAttack:
-					value = player->getActiveBuffs()->getCombo() + 1;
-					break;
-				case Skills::NightLord::ShadowStars:
-					value = (player->getInventory()->doShadowStars() % 10000) + 1;
-					break;
-				case Skills::Marauder::Transformation:
-				case Skills::Buccaneer::SuperTransformation:
-				case Skills::WindArcher::EagleEye:
-				case Skills::ThunderBreaker::Transformation:
-					value = getValue(val, skillId, level);
-					if (val == SkillMorph) {
-						value += player->getGender() == Gender::Male ?
-							0 :
-							100;
-					}
-					break;
-				case Skills::Marauder::EnergyCharge:
-				case Skills::ThunderBreaker::EnergyCharge:
-					value = player->getActiveBuffs()->getEnergyChargeLevel();
-					break;
-				default:
-					value = getValue(val, skillId, level);
-					break;
-			}
-		}
-		playerSkill.vals.push_back(value);
-	}
-	return playerSkill;
-}
-
-auto Buffs::parseBuffMapInfo(Player *player, skill_id_t skillId, skill_level_t level) -> ActiveMapBuff {
-	ActiveMapBuff mapSkill;
-	int32_t maps = 0;
-	auto &skillsInfo = ChannelServer::getInstance().getBuffDataProvider().getSkillInfo(skillId);
-
-	for (const auto &buffInfo : skillsInfo.player) {
-		if (!buffInfo.hasMapVal) {
-			continue;
-		}
-		const auto &map = skillsInfo.map[maps++];
-		const auto &buff = map.buff;
-		int8_t val = buff.value;
-		if (!Buffs::buffMayApply(skillId, level, val)) {
-			continue;
-		}
-		mapSkill.bytes.push_back(buff.byte);
-		mapSkill.types.push_back(buff.type);
-		mapSkill.typeList[buff.byte] += buff.type;
-		mapSkill.useVals.push_back(map.useVal);
-		if (map.useVal) {
-			int16_t value = 0;
-			if (val == SkillNone) {
-				value = buffInfo.itemVal;
-			}
-			else {
-				switch (skillId) {
-					case Skills::Crusader::ComboAttack:
-					case Skills::DawnWarrior::ComboAttack:
-						value = player->getActiveBuffs()->getCombo() + 1;
-						break;
-					default:
-						value = getValue(val, skillId, level);
-						break;
-				}
-			}
-			mapSkill.values.push_back(value);
-		}
-	}
-	return mapSkill;
-}
-
-auto Buffs::parseBuffMapEntryInfo(Player *player, skill_id_t skillId, skill_level_t level) -> ActiveMapBuff {
-	ActiveMapBuff mapSkill;
-	int8_t mapCounter = 0;
-	auto &skillsInfo = ChannelServer::getInstance().getBuffDataProvider().getSkillInfo(skillId);
-
-	for (const auto &buffInfo : skillsInfo.player) {
-		if (!buffInfo.hasMapEntry) {
-			continue;
-		}
-
-		const auto &map = skillsInfo.map[mapCounter++];
-		const auto &buff = map.buff;
-		int8_t val = buff.value;
-		if (!Buffs::buffMayApply(skillId, level, val)) {
-			continue;
-		}
-		mapSkill.bytes.push_back(buff.byte);
-		mapSkill.types.push_back(buff.type);
-		mapSkill.typeList[buff.byte] += buff.type;
-		mapSkill.useVals.push_back(map.useVal);
-		if (map.useVal) {
-			int16_t value = 0;
-			if (val == SkillNone) {
-				value = buffInfo.itemVal;
-			}
-			else {
-				switch (skillId) {
-					case Skills::Crusader::ComboAttack:
-					case Skills::DawnWarrior::ComboAttack:
-						value = player->getActiveBuffs()->getCombo() + 1;
-						break;
-					default:
-						value = getValue(val, skillId, level);
-						break;
-				}
-			}
-			mapSkill.values.push_back(value);
-		}
-	}
-	return mapSkill;
-}
-
-auto Buffs::parseBuffs(skill_id_t skillId, skill_level_t level) -> vector_t<Buff> {
-	vector_t<Buff> ret;
-	auto &skillsInfo = ChannelServer::getInstance().getBuffDataProvider().getSkillInfo(skillId);
-
-	for (const auto &buffInfo : skillsInfo.player) {
-		if (!Buffs::buffMayApply(skillId, level, buffInfo.buff.value)) {
-			continue;
-		}
-		ret.push_back(buffInfo.buff);
-	}
-	return ret;
-}
-
-auto Buffs::parseMobBuffInfo(Player *player, mob_skill_id_t skillId, mob_skill_level_t level) -> ActiveBuff {
-	ActiveBuff playerSkill;
-	auto &mobSkillsInfo = ChannelServer::getInstance().getBuffDataProvider().getMobSkillInfo(skillId);
-
-	for (const auto &buffInfo : mobSkillsInfo.mob) {
-		const auto &buff = buffInfo.buff;
-		int8_t val = buff.value;
-		playerSkill.types[buff.byte] += buff.type;
-		playerSkill.hasMapBuff = true;
-		int16_t value = (val == SkillNone ? (skillId == MobSkills::Seal ? 2 : 1) : getMobSkillValue(val, skillId, level));
-		playerSkill.vals.push_back(value);
-	}
-	return playerSkill;
-}
-
-auto Buffs::parseMobBuffMapInfo(Player *player, mob_skill_id_t skillId, mob_skill_level_t level) -> ActiveMapBuff {
-	ActiveMapBuff mapSkill;
-	auto &mobSkillsInfo = ChannelServer::getInstance().getBuffDataProvider().getMobSkillInfo(skillId);
-
-	for (const auto &buffInfo : mobSkillsInfo.mob) {
-		const auto &buff = buffInfo.buff;
-		int8_t val = buff.value;
-		mapSkill.bytes.push_back(buff.byte);
-		mapSkill.types.push_back(buff.type);
-		mapSkill.typeList[buff.byte] += buff.type;
-		mapSkill.useVals.push_back(buffInfo.useVal);
-		int16_t value = (val == SkillNone ? 1 : getMobSkillValue(val, skillId, level));
-		mapSkill.values.push_back(value);
-	}
-	return mapSkill;
-}
-
-auto Buffs::parseMobBuffMapEntryInfo(Player *player, mob_skill_id_t skillId, mob_skill_level_t level) -> ActiveMapBuff {
-	ActiveMapBuff mapSkill;
-	auto &mobSkillsInfo = ChannelServer::getInstance().getBuffDataProvider().getMobSkillInfo(skillId);
-
-	for (const auto &buffInfo : mobSkillsInfo.mob) {
-		const auto &buff = buffInfo.buff;
-		int8_t val = buff.value;
-		mapSkill.bytes.push_back(buff.byte);
-		mapSkill.types.push_back(buff.type);
-		mapSkill.typeList[buff.byte] += buff.type;
-		mapSkill.useVals.push_back(true);
-		mapSkill.useVals.push_back(false);
-		mapSkill.values.push_back(skillId);
-		mapSkill.values.push_back(level);
-	}
-	mapSkill.debuff = true;
-	return mapSkill;
-}
-
-auto Buffs::parseMobBuffs(mob_skill_id_t skillId) -> vector_t<Buff> {
-	vector_t<Buff> ret;
-	auto &mobSkillsInfo = ChannelServer::getInstance().getBuffDataProvider().getMobSkillInfo(skillId);
-
-	for (const auto &buffInfo : mobSkillsInfo.mob) {
-		ret.push_back(buffInfo.buff);
-	}
-	return ret;
-}
-
 auto Buffs::addBuff(Player *player, skill_id_t skillId, skill_level_t level, int16_t addedInfo, map_object_t mapMobId) -> Result {
-	if (!ChannelServer::getInstance().getBuffDataProvider().isBuff(skillId)) {
+	auto source = BuffSource::fromSkill(skillId, level);
+	auto &buffProvider = ChannelServer::getInstance().getBuffDataProvider();
+	if (!buffProvider.isBuff(source)) {
 		return Result::Failure;
 	}
 
-	skill_id_t mountId = parseMountInfo(player, skillId, level);
-	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
-	seconds_t time{skill->time};
-
+	auto skill = source.getSkillData(ChannelServer::getInstance().getSkillDataProvider());
+	seconds_t time = skill->buffTime;
 	switch (skillId) {
 		case Skills::DragonKnight::DragonRoar:
 			time = seconds_t{skill->y};
 			break;
-		case Skills::Beginner::MonsterRider:
-		case Skills::Noblesse::MonsterRider:
-		case Skills::Corsair::Battleship:
-			if (mountId == 0) {
-				// Hacking
-				return Result::Failure;
-			}
-			player->getActiveBuffs()->setMountInfo(skillId, mountId);
-			break;
 		case Skills::SuperGm::Hide:
-			time = seconds_t{2100000}; // Make sure that it doesn't end any time soon
-			break;
-		case Skills::Spearman::HyperBody:
-		case Skills::SuperGm::HyperBody:
-			player->getStats()->setHyperBody(skill->x, skill->y);
-			break;
-		case Skills::Crusader::ComboAttack:
-		case Skills::DawnWarrior::ComboAttack:
-			player->getActiveBuffs()->setCombo(0, false);
-			break;
-		case Skills::Hero::Enrage:
-			if (player->getActiveBuffs()->getCombo() != 10) {
-				return Result::Failure;
-			}
-			player->getActiveBuffs()->setCombo(0, true);
-			break;
-		case Skills::Fighter::SwordBooster:
-		case Skills::Fighter::AxeBooster:
-		case Skills::Page::SwordBooster:
-		case Skills::Page::BwBooster:
-		case Skills::Spearman::SpearBooster:
-		case Skills::Spearman::PolearmBooster:
-		case Skills::FpMage::SpellBooster:
-		case Skills::IlMage::SpellBooster:
-		case Skills::Hunter::BowBooster:
-		case Skills::Crossbowman::CrossbowBooster:
-		case Skills::Assassin::ClawBooster:
-		case Skills::Bandit::DaggerBooster:
-		case Skills::Brawler::KnucklerBooster:
-		case Skills::Gunslinger::GunBooster:
-		case Skills::DawnWarrior::SwordBooster:
-		case Skills::BlazeWizard::SpellBooster:
-		case Skills::WindArcher::BowBooster:
-		case Skills::NightWalker::ClawBooster:
-		case Skills::ThunderBreaker::KnucklerBooster:
-			player->getActiveBuffs()->setBooster(skillId); // Makes switching equips MUCH easier
-			break;
-		case Skills::WhiteKnight::BwFireCharge:
-		case Skills::WhiteKnight::BwIceCharge:
-		case Skills::WhiteKnight::BwLitCharge:
-		case Skills::WhiteKnight::SwordFireCharge:
-		case Skills::WhiteKnight::SwordIceCharge:
-		case Skills::WhiteKnight::SwordLitCharge:
-		case Skills::Paladin::BwHolyCharge:
-		case Skills::Paladin::SwordHolyCharge:
-		case Skills::DawnWarrior::SoulCharge:
-		case Skills::ThunderBreaker::LightningCharge:
-			player->getActiveBuffs()->setCharge(skillId); // Makes switching equips/Charged Blow easier
-			break;
-		case Skills::Hero::MapleWarrior:
-		case Skills::Paladin::MapleWarrior:
-		case Skills::DarkKnight::MapleWarrior:
-		case Skills::FpArchMage::MapleWarrior:
-		case Skills::IlArchMage::MapleWarrior:
-		case Skills::Bishop::MapleWarrior:
-		case Skills::Bowmaster::MapleWarrior:
-		case Skills::Marksman::MapleWarrior:
-		case Skills::NightLord::MapleWarrior:
-		case Skills::Shadower::MapleWarrior:
-		case Skills::Buccaneer::MapleWarrior:
-		case Skills::Corsair::MapleWarrior:
-			player->getStats()->setMapleWarrior(skill->x); // Take into account Maple Warrior for tracking stats if things are equippable, damage calculations, or w/e else
+			time = Buffs::MaxBuffTime;
 			break;
 	}
 
-	vector_t<Buff> buffs = parseBuffs(skillId, level);
-	ActiveBuff playerSkill = parseBuffInfo(player, skillId, level);
-	ActiveMapBuff mapSkill = parseBuffMapInfo(player, skillId, level);
-	ActiveMapBuff enterSkill = parseBuffMapEntryInfo(player, skillId, level);
+	auto buffs = preprocessBuff(player, source, time);
+	if (!buffs.anyBuffs()) return Result::Failure;
 
-	if (mountId > 0) {
-		player->sendMap(BuffsPacket::useMount(player->getId(), skillId, time, playerSkill, mapSkill, addedInfo, mountId));
-	}
-	else {
-		switch (skillId) {
-			case Skills::Pirate::Dash:
-			case Skills::ThunderBreaker::Dash:
-				player->sendMap(BuffsPacket::usePirateBuff(player->getId(), skillId, time, playerSkill, mapSkill));
-				break;
-			case Skills::Marauder::EnergyCharge:
-			case Skills::ThunderBreaker::EnergyCharge:
-				player->sendMap(BuffsPacket::usePirateBuff(player->getId(), 0, (player->getActiveBuffs()->getEnergyChargeLevel() == Stats::MaxEnergyChargeLevel ? time : seconds_t{0}), playerSkill, mapSkill));
-				break;
-			case Skills::Buccaneer::SpeedInfusion:
-			case Skills::ThunderBreaker::SpeedInfusion:
-				player->sendMap(BuffsPacket::useSpeedInfusion(player->getId(), skillId, time, playerSkill, mapSkill, addedInfo));
-				break;
-			case Skills::Outlaw::HomingBeacon:
-			case Skills::Corsair::Bullseye:
-				if (player->getActiveBuffs()->hasMarkedMonster()) {
-					// Otherwise the animation appears above numerous
-					player->sendMap(BuffsPacket::endSkill(player->getId(), playerSkill));
-				}
-				player->getActiveBuffs()->setMarkedMonster(mapMobId);
-				player->send(BuffsPacket::useHomingBeacon(skillId, playerSkill, mapMobId));
-				break;
-			default:
-				player->sendMap(BuffsPacket::useSkill(player->getId(), skillId, time, playerSkill, mapSkill, addedInfo));
+	auto &basics = buffProvider.getBuffsByEffect();
+	for (const auto &buffInfo : buffs.getBuffInfo()) {
+		if (buffInfo == basics.homingBeacon) {
+			if (mapMobId == player->getActiveBuffs()->getHomingBeaconMob()) return Result::Failure;
+			player->getActiveBuffs()->resetHomingBeaconMob(mapMobId);
+			break;
 		}
 	}
 
-	if (skillId != player->getSkills()->getEnergyCharge() || player->getActiveBuffs()->getEnergyChargeLevel() == Stats::MaxEnergyChargeLevel) {
-		PlayerActiveBuffs *playerBuffs = player->getActiveBuffs();
-		playerBuffs->addBuffInfo(skillId, buffs);
-		playerBuffs->addMapEntryBuffInfo(enterSkill);
-		playerBuffs->setActiveSkillLevel(skillId, level);
-		playerBuffs->removeBuff(skillId);
-		playerBuffs->addBuff(skillId, time);
-		doAction(player, skillId, level);
-	}
-
-	return Result::Successful;
+	return player->getActiveBuffs()->addBuff(source, buffs, time);
 }
 
-auto Buffs::addBuff(Player *player, item_id_t itemId, const seconds_t &time) -> void {
-	itemId *= -1; // Make the Item ID negative for the packet and to discern from skill buffs
-	auto buffs = parseBuffs(itemId, 0);
-	auto playerSkill = parseBuffInfo(player, itemId, 0);
-	auto mapSkill = parseBuffMapInfo(player, itemId, 0);
-	auto enterSkill = parseBuffMapEntryInfo(player, itemId, 0);
-
-	player->sendMap(BuffsPacket::useSkill(player->getId(), itemId, time, playerSkill, mapSkill, 0));
-
-	PlayerActiveBuffs *playerBuffs = player->getActiveBuffs();
-	playerBuffs->removeBuff(itemId);
-	playerBuffs->addBuffInfo(itemId, buffs);
-	playerBuffs->addBuff(itemId, time);
-	playerBuffs->addMapEntryBuffInfo(enterSkill);
-	playerBuffs->setActiveSkillLevel(itemId, 1);
-}
-
-auto Buffs::endBuff(Player *player, skill_id_t skill) -> void {
-	PlayerActiveBuffs *playerBuffs = player->getActiveBuffs();
-	switch (skill) {
-		case Skills::Beginner::MonsterRider:
-		case Skills::Noblesse::MonsterRider:
-		case Skills::Corsair::Battleship:
-			playerBuffs->setMountInfo(0, 0);
-			break;
-		case Skills::Crusader::ComboAttack:
-		case Skills::DawnWarrior::ComboAttack:
-			playerBuffs->setCombo(0, false);
-			break;
-		case Skills::Spearman::HyperBody:
-		case Skills::SuperGm::HyperBody:
-			player->getStats()->setHyperBody(0, 0);
-			player->getStats()->setHp(player->getStats()->getHp());
-			player->getStats()->setMp(player->getStats()->getMp());
-			break;
-		case Skills::Marauder::EnergyCharge:
-		case Skills::ThunderBreaker::EnergyCharge:
-			playerBuffs->resetEnergyChargeLevel();
-			break;
-		case Skills::Fighter::SwordBooster:
-		case Skills::Fighter::AxeBooster:
-		case Skills::Page::SwordBooster:
-		case Skills::Page::BwBooster:
-		case Skills::Spearman::SpearBooster:
-		case Skills::Spearman::PolearmBooster:
-		case Skills::FpMage::SpellBooster:
-		case Skills::IlMage::SpellBooster:
-		case Skills::Hunter::BowBooster:
-		case Skills::Crossbowman::CrossbowBooster:
-		case Skills::Assassin::ClawBooster:
-		case Skills::Bandit::DaggerBooster:
-		case Skills::Brawler::KnucklerBooster:
-		case Skills::Gunslinger::GunBooster:
-		case Skills::DawnWarrior::SwordBooster:
-		case Skills::BlazeWizard::SpellBooster:
-		case Skills::WindArcher::BowBooster:
-		case Skills::NightWalker::ClawBooster:
-		case Skills::ThunderBreaker::KnucklerBooster:
-			playerBuffs->setBooster(0);
-			break;
-		case Skills::WhiteKnight::BwFireCharge:
-		case Skills::WhiteKnight::BwIceCharge:
-		case Skills::WhiteKnight::BwLitCharge:
-		case Skills::WhiteKnight::SwordFireCharge:
-		case Skills::WhiteKnight::SwordIceCharge:
-		case Skills::WhiteKnight::SwordLitCharge:
-		case Skills::Paladin::BwHolyCharge:
-		case Skills::Paladin::SwordHolyCharge:
-		case Skills::DawnWarrior::SoulCharge:
-		case Skills::ThunderBreaker::LightningCharge:
-			playerBuffs->setCharge(0);
-			break;
-		case Skills::Outlaw::HomingBeacon:
-		case Skills::Corsair::Bullseye:
-			playerBuffs->setMarkedMonster(0);
-			break;
-		case Skills::Hero::MapleWarrior:
-		case Skills::Paladin::MapleWarrior:
-		case Skills::DarkKnight::MapleWarrior:
-		case Skills::FpArchMage::MapleWarrior:
-		case Skills::IlArchMage::MapleWarrior:
-		case Skills::Bishop::MapleWarrior:
-		case Skills::Bowmaster::MapleWarrior:
-		case Skills::Marksman::MapleWarrior:
-		case Skills::NightLord::MapleWarrior:
-		case Skills::Shadower::MapleWarrior:
-		case Skills::Buccaneer::MapleWarrior:
-		case Skills::Corsair::MapleWarrior:
-			player->getStats()->setMapleWarrior(0);
-			break;
+auto Buffs::addBuff(Player *player, item_id_t itemId, const seconds_t &time) -> Result {
+	auto source = BuffSource::fromItem(itemId);
+	if (!ChannelServer::getInstance().getBuffDataProvider().isBuff(source)) {
+		return Result::Failure;
 	}
 
-	if (skill < 0) {
-		// Items
-		item_id_t itemId = -skill;
+	auto buffs = preprocessBuff(player, source, time);
+	if (!buffs.anyBuffs()) return Result::Failure;
+
+	return player->getActiveBuffs()->addBuff(source, buffs, time);
+}
+
+auto Buffs::addBuff(Player *player, mob_skill_id_t skillId, mob_skill_level_t level, milliseconds_t delay) -> Result {
+	auto source = BuffSource::fromMobSkill(skillId, level);
+	if (!ChannelServer::getInstance().getBuffDataProvider().isDebuff(source)) {
+		return Result::Failure;
+	}
+
+	if (player->getStats()->isDead() || player->getActiveBuffs()->hasHolyShield() || player->hasGmBenefits()) {
+		return Result::Failure;
+	}
+
+	auto skill = source.getMobSkillData(ChannelServer::getInstance().getSkillDataProvider());
+	seconds_t time{skill->time};
+
+	auto buffs = preprocessBuff(player, source, time);
+	if (!buffs.anyBuffs()) return Result::Failure;
+
+	return player->getActiveBuffs()->addBuff(source, buffs.withDelay(delay), time);
+}
+
+auto Buffs::endBuff(Player *player, const BuffSource &source, bool fromTimer) -> void {
+	player->getActiveBuffs()->removeBuff(source, preprocessBuff(player, source, seconds_t{0}), fromTimer);
+}
+
+auto Buffs::buffMayApply(Player *player, const BuffSource &source, const seconds_t &time, const BuffInfo &buff) -> bool {
+	switch (source.getType()) {
+		case BuffSourceType::Skill: {
+			skill_id_t skillId = source.getSkillId();
+			skill_level_t skillLevel = source.getSkillLevel();
+			if (GameLogicUtilities::isDarkSight(skillId)) {
+				return
+					buff.getValue() != BuffSkillValue::Speed ||
+					skillLevel != ChannelServer::getInstance().getSkillDataProvider().getMaxLevel(skillId);
+			}
+			return true;
+		}
+		case BuffSourceType::MobSkill: {
+			mob_skill_id_t skillId = source.getMobSkillId();
+			return player->getActiveBuffs()->getBuffSource(buff).is_initialized() ?
+				false :
+				true;
+		}
+		case BuffSourceType::Item: {
+			item_id_t itemId = source.getItemId();
+			return true;
+		}
+	}
+	throw NotImplementedException{"BuffSourceType"};
+}
+
+auto Buffs::preprocessBuff(Player *player, skill_id_t skillId, skill_level_t level, const seconds_t &time) -> Buff {
+	auto source = BuffSource::fromSkill(skillId, level);
+	return preprocessBuff(player, source, time);
+}
+
+auto Buffs::preprocessBuff(Player *player, item_id_t itemId, const seconds_t &time) -> Buff {
+	auto source = BuffSource::fromItem(itemId);
+	return preprocessBuff(player, source, time);
+}
+
+auto Buffs::preprocessBuff(Player *player, mob_skill_id_t skillId, mob_skill_level_t level, const seconds_t &time) -> Buff {
+	auto source = BuffSource::fromMobSkill(skillId, level);
+	return preprocessBuff(player, source, time);
+}
+
+auto Buffs::preprocessBuff(Player *player, const BuffSource &source, const seconds_t &time) -> Buff {
+	auto &buffProvider = ChannelServer::getInstance().getBuffDataProvider();
+
+	if (source.getType() == BuffSourceType::Item) {
+		item_id_t itemId = source.getItemId();
 		switch (itemId) {
 			case Items::BeholderHexWdef:
 			case Items::BeholderHexMdef:
 			case Items::BeholderHexAcc:
 			case Items::BeholderHexAvo:
-			case Items::BeholderHexWatk:
-				// Handled specially
-				Buff data = SummonHandler::makeBuff(player, itemId);
-				vector_t<Buff> parsed{data};
-				auto playerSkill = playerBuffs->removeBuffInfo(skill, parsed);
-				player->sendMap(BuffsPacket::endSkill(player->getId(), playerSkill));
-				playerBuffs->setActiveSkillLevel(skill, 0);
-				return;
+			case Items::BeholderHexWatk: {
+				BuffInfo data = SummonHandler::makeBuff(player, itemId);
+				Buff parsed{data};
+				return preprocessBuff(player, source, time, parsed);
+			}
+		}
+	}
+	auto &skillsInfo = buffProvider.getInfo(source);
+	return preprocessBuff(player, source, time, skillsInfo);
+}
+
+auto Buffs::preprocessBuff(Player *player, const BuffSource &source, const seconds_t &time, const Buff &buff) -> Buff {
+	vector_t<BuffInfo> applicableBuffs;
+	vector_t<BuffInfo> existingBuffs;
+	if (buff.isSelectionBuff()) {
+		int16_t chance = Randomizer::rand<int16_t>(99);
+		for (const auto &buffInfo : buff.getBuffInfo()) {
+			if (chance < buffInfo.getChance()) {
+				existingBuffs.push_back(buffInfo);
+				break;
+			}
+			else chance -= buffInfo.getChance();
+		}
+	}
+	else {
+		existingBuffs = buff.getBuffInfo();
+	}
+
+	for (auto &info : existingBuffs) {
+		if (!buffMayApply(player, source, time, info)) continue;
+		applicableBuffs.push_back(info);
+	}
+
+	return buff.withBuffs(applicableBuffs);
+}
+
+auto Buffs::preprocessBuff(const Buff &buff, const vector_t<uint8_t> &bitPositionsToInclude) -> Buff {
+	vector_t<BuffInfo> applicable;
+	for (const auto &info : buff.getBuffInfo()) {
+		bool found = false;
+		for (const auto &bitPosition : bitPositionsToInclude) {
+			if (bitPosition == info) {
+				found = true;
+				break;
+			}
+		}
+		if (found) {
+			applicable.push_back(info);
+		}
+	}
+	return buff.withBuffs(applicable);
+}
+
+auto Buffs::convertToPacketTypes(const Buff &buff) -> BuffPacketValues {
+	BuffPacketValues ret;
+	for (const auto &buffInfo : buff.getBuffInfo()) {
+		ret.player.types[buffInfo.getBuffByte()] |= buffInfo.getBuffType();
+		if (buffInfo.isMovementAffecting()) ret.player.anyMovementBuffs = true;
+		if (buffInfo.hasMapInfo()) {
+			if (!ret.map.is_initialized()) {
+				ret.map = BuffPacketStructure{};
+			}
+			ret.map.get().types[buffInfo.getBuffByte()] |= buffInfo.getBuffType();
+		}
+	}
+	return ret;
+}
+
+auto Buffs::convertToPacket(Player *player, const BuffSource &source, const seconds_t &time, const Buff &buff) -> BuffPacketValues {
+	BuffPacketValues ret;
+	bool anyMap = false;
+	for (const auto &buffInfo : buff.getBuffInfo()) {
+		ret.player.types[buffInfo.getBuffByte()] |= buffInfo.getBuffType();
+		if (buffInfo.isMovementAffecting()) ret.player.anyMovementBuffs = true;
+		if (buffInfo.hasMapInfo()) {
+			auto mapValue = buffInfo.getMapInfo();
+			if (!anyMap) {
+				ret.map = BuffPacketStructure{};
+				anyMap = true;
+			}
+
+			auto &map = ret.map.get();
+			map.types[buffInfo.getBuffByte()] |= buffInfo.getBuffType();
+			map.values.push_back(getValue(player, source, time, buffInfo.getBitPosition(), mapValue));
+		}
+
+		ret.player.values.push_back(getValue(player, source, time, buffInfo));
+	}
+	ret.delay = buff.getDelay();
+	return ret;
+}
+
+auto Buffs::getValue(Player *player, const BuffSource &source, const seconds_t &time, const BuffInfo &buff) -> BuffPacketValue {
+	if (buff.getValue() == BuffSkillValue::Predefined) {
+		return BuffPacketValue::fromValue(2, buff.getPredefinedValue());
+	}
+	return getValue(player, source, time, buff.getBitPosition(), buff.getValue(), 2);
+}
+
+auto Buffs::getValue(Player *player, const BuffSource &source, const seconds_t &time, uint8_t bitPosition, const BuffMapInfo &buff) -> BuffPacketValue {
+	if (buff.getValue() == BuffSkillValue::Predefined) {
+		return BuffPacketValue::fromValue(buff.getSize(), buff.getPredefinedValue());
+	}
+	return getValue(player, source, time, bitPosition, buff.getValue(), buff.getSize());
+}
+
+auto Buffs::getValue(Player *player, const BuffSource &source, const seconds_t &time, uint8_t bitPosition, BuffSkillValue value, uint8_t buffValueSize) -> BuffPacketValue {
+	switch (source.getType()) {
+		case BuffSourceType::Item: {
+			throw NotImplementedException{"Item BuffSkillValue type"};
+		}
+		case BuffSourceType::MobSkill: {
+			mob_skill_id_t skillId = source.getMobSkillId();
+			mob_skill_level_t skillLevel = source.getMobSkillLevel();
+			auto skill = source.getMobSkillData(ChannelServer::getInstance().getSkillDataProvider());
+			switch (value) {
+				case BuffSkillValue::X: return BuffPacketValue::fromValue(buffValueSize, skill->x);
+				case BuffSkillValue::Y: return BuffPacketValue::fromValue(buffValueSize, skill->y);
+				case BuffSkillValue::Prop: return BuffPacketValue::fromValue(buffValueSize, skill->prop);
+				case BuffSkillValue::Level: return BuffPacketValue::fromValue(buffValueSize, skillLevel);
+				case BuffSkillValue::SkillId: return BuffPacketValue::fromValue(buffValueSize, skillId);
+				case BuffSkillValue::BitpackedSkillAndLevel32: return BuffPacketValue::fromValue(buffValueSize, (static_cast<int32_t>(skillLevel) << 16) | skillId);
+				case BuffSkillValue::SpecialProcessing: {
+					switch (skillId) {
+						// This unusual skill has two "values"
+						case MobSkills::Poison: {
+							PacketBuilder data;
+							data.add<int16_t>(static_cast<int16_t>(skill->x));
+							data.add<int16_t>(skillId);
+							data.add<int16_t>(skillLevel);
+							return BuffPacketValue::fromPacket(data);
+						}
+					}
+					throw NotImplementedException{"SpecialProcessing mob skill"};
+				}
+			}
+			throw NotImplementedException{"Mob BuffSkillValue type"};
+		}
+		case BuffSourceType::Skill: {
+			skill_id_t skillId = source.getSkillId();
+			skill_level_t skillLevel = source.getSkillLevel();
+			auto skill = source.getSkillData(ChannelServer::getInstance().getSkillDataProvider());
+
+			switch (value) {
+				case BuffSkillValue::X: return BuffPacketValue::fromValue(buffValueSize, skill->x);
+				case BuffSkillValue::Y: return BuffPacketValue::fromValue(buffValueSize, skill->y);
+				case BuffSkillValue::Speed: return BuffPacketValue::fromValue(buffValueSize, skill->speed);
+				case BuffSkillValue::Jump: return BuffPacketValue::fromValue(buffValueSize, skill->jump);
+				case BuffSkillValue::Watk: return BuffPacketValue::fromValue(buffValueSize, skill->wAtk);
+				case BuffSkillValue::Wdef: return BuffPacketValue::fromValue(buffValueSize, skill->wDef);
+				case BuffSkillValue::Matk: return BuffPacketValue::fromValue(buffValueSize, skill->mAtk);
+				case BuffSkillValue::Mdef: return BuffPacketValue::fromValue(buffValueSize, skill->mDef);
+				case BuffSkillValue::Accuracy: return BuffPacketValue::fromValue(buffValueSize, skill->acc);
+				case BuffSkillValue::Avoid: return BuffPacketValue::fromValue(buffValueSize, skill->avo);
+				case BuffSkillValue::Prop: return BuffPacketValue::fromValue(buffValueSize, skill->prop);
+				case BuffSkillValue::Morph: return BuffPacketValue::fromValue(buffValueSize, skill->morph);
+				case BuffSkillValue::Level: return BuffPacketValue::fromValue(buffValueSize, skillLevel);
+				case BuffSkillValue::SkillId: return BuffPacketValue::fromValue(buffValueSize, skillId);
+				case BuffSkillValue::MobCount: return BuffPacketValue::fromValue(buffValueSize, skill->mobCount);
+				case BuffSkillValue::Range: return BuffPacketValue::fromValue(buffValueSize, skill->range);
+				case BuffSkillValue::Damage: return BuffPacketValue::fromValue(buffValueSize, skill->damage);
+				case BuffSkillValue::BitpackedXy16: return BuffPacketValue::fromValue(buffValueSize, (skill->x << 8) | skill->y);
+
+				case BuffSkillValue::SpecialProcessing:
+					switch (skillId) {
+						case Skills::Crusader::ComboAttack:
+						case Skills::DawnWarrior::ComboAttack:
+							return BuffPacketValue::fromValue(
+								buffValueSize,
+								player->getActiveBuffs()->getCombo() + 1
+							);
+						case Skills::NightLord::ShadowStars:
+							return BuffPacketValue::fromValue(
+								buffValueSize,
+								(player->getInventory()->doShadowStars() % 10000) + 1
+							);
+						case Skills::SuperGm::Hide:
+							// TODO FIXME BUFFS
+							return BuffPacketValue::fromValue(buffValueSize, 1);
+					}
+
+					throw NotImplementedException{"SpecialProcessing skill"};
+
+				case BuffSkillValue::SpecialPacket: {
+					auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+
+					PacketBuilder data;
+					if (bitPosition == basics.energyCharge) {
+						data.add<int32_t>(player->getActiveBuffs()->getEnergyChargeLevel());
+					}
+					else if (bitPosition == basics.dashSpeed) {
+						data.add<int32_t>(skill->x);
+					}
+					else if (bitPosition == basics.dashJump) {
+						data.add<int32_t>(skill->y);
+					}
+					else if (bitPosition == basics.mount) {
+						data.add<item_id_t>(player->getActiveBuffs()->getMountItemId());
+					}
+					else if (bitPosition == basics.speedInfusion) {
+						data.add<int32_t>(skill->x);
+					}
+					else if (bitPosition == basics.homingBeacon) {
+						data.unk<int32_t>(1);
+					}
+					else throw NotImplementedException{"SpecialPacket skill"};
+
+					data.add<int32_t>(
+						bitPosition == basics.energyCharge ?
+							0 :
+							skillId);
+					data.unk<int32_t>();
+					data.unk<int8_t>();
+
+					if (bitPosition == basics.energyCharge) {
+						data.add<int16_t>(static_cast<int16_t>(time.count()));
+					}
+					else if (bitPosition == basics.dashSpeed) {
+						data.add<int16_t>(static_cast<int16_t>(time.count()));
+					}
+					else if (bitPosition == basics.dashJump) {
+						data.add<int16_t>(static_cast<int16_t>(time.count()));
+					}
+					else if (bitPosition == basics.mount) {
+						// Intentionally blank
+					}
+					else if (bitPosition == basics.speedInfusion) {
+						data.unk<int32_t>();
+						data.unk<int8_t>();
+						data.add<int16_t>(static_cast<int16_t>(time.count()));
+					}
+					else if (bitPosition == basics.homingBeacon) {
+						data.add<map_object_t>(player->getActiveBuffs()->getHomingBeaconMob());
+					}
+
+					return BuffPacketValue::fromSpecialPacket(data);
+				}
+
+				case BuffSkillValue::GenderSpecificMorph:
+					return BuffPacketValue::fromValue(
+						buffValueSize,
+						skill->morph +
+						(player->getGender() == Gender::Male ? 0 : 100)
+					);
+			}
+
+			throw NotImplementedException{"Skill BuffSkillValue type"};
 		}
 	}
 
-	skill_level_t level = playerBuffs->getActiveSkillLevel(skill);
-	auto buffs = parseBuffs(skill, level);
-	auto enterSkill = parseBuffMapEntryInfo(player, skill, level);
-	auto playerSkill = playerBuffs->removeBuffInfo(skill, buffs);
-
-	player->sendMap(BuffsPacket::endSkill(player->getId(), playerSkill));
-
-	playerBuffs->deleteMapEntryBuffInfo(enterSkill);
-	playerBuffs->setActiveSkillLevel(skill, 0);
-}
-
-auto Buffs::doAction(Player *player, skill_id_t skillId, skill_level_t level) -> void {
-	auto &skillsInfo = ChannelServer::getInstance().getBuffDataProvider().getSkillInfo(skillId);
-
-	if (skillsInfo.hasAction) {
-		int16_t value = getValue(skillsInfo.act.value, skillId, level);
-		player->getActiveBuffs()->addAction(skillId, skillsInfo.act.type, value, milliseconds_t(skillsInfo.act.time));
-	}
-}
-
-auto Buffs::addDebuff(Player *player, mob_skill_id_t skillId, mob_skill_level_t level) -> void {
-	if (!ChannelServer::getInstance().getBuffDataProvider().isDebuff(skillId)) {
-		return;
-	}
-
-	seconds_t time(ChannelServer::getInstance().getSkillDataProvider().getMobSkill(skillId, level)->time);
-	auto &mobSkillsInfo = ChannelServer::getInstance().getBuffDataProvider().getMobSkillInfo(skillId);
-
-	auto buffs = parseMobBuffs(skillId);
-	auto playerSkill = parseMobBuffInfo(player, skillId, level);
-	auto mapSkill = parseMobBuffMapInfo(player, skillId, level);
-	auto enterSkill = parseMobBuffMapEntryInfo(player, skillId, level);
-
-	player->sendMap(BuffsPacket::giveDebuff(player->getId(), skillId, level, time, mobSkillsInfo.delay, playerSkill, mapSkill));
-
-	PlayerActiveBuffs *playerBuffs = player->getActiveBuffs();
-	playerBuffs->setActiveSkillLevel(skillId, level);
-	playerBuffs->addBuffInfo(skillId, buffs);
-	playerBuffs->addMapEntryBuffInfo(enterSkill);
-	playerBuffs->addBuff(skillId, time);
-}
-
-auto Buffs::endDebuff(Player *player, mob_skill_id_t skill) -> void {
-	PlayerActiveBuffs *playerBuffs = player->getActiveBuffs();
-	auto buffs = parseMobBuffs(skill);
-	auto enterSkill = parseMobBuffMapEntryInfo(player, skill, 1);
-	auto playerSkill = playerBuffs->removeBuffInfo(skill, buffs);
-
-	player->sendMap(BuffsPacket::endSkill(player->getId(), playerSkill));
-
-	playerBuffs->deleteMapEntryBuffInfo(enterSkill);
-	playerBuffs->setActiveSkillLevel(skill, 0);
-}
-
-auto Buffs::buffMayApply(skill_id_t skillId, skill_level_t level, int8_t buffValue) -> bool {
-	if (GameLogicUtilities::isDarkSight(skillId)) {
-		return buffValue != SkillSpeed || level != ChannelServer::getInstance().getSkillDataProvider().getMaxLevel(skillId);
-	}
-	return true;
+	throw NotImplementedException{"BuffSourceType"};
 }

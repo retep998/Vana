@@ -147,12 +147,12 @@ SPLIT_PACKET_IMPL(showMagnetSuccess, map_object_t mapMobId, uint8_t success) {
 	return builder;
 }
 
-PACKET_IMPL(sendCooldown, skill_id_t skillId, int16_t time) {
+PACKET_IMPL(sendCooldown, skill_id_t skillId, seconds_t time) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_SKILL_COOLDOWN)
 		.add<skill_id_t>(skillId)
-		.add<int16_t>(time);
+		.add<int16_t>(static_cast<int16_t>(time.count()));
 	return builder;
 }
 

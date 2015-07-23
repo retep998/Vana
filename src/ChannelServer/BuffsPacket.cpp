@@ -26,203 +26,74 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace BuffsPacket {
 
-SPLIT_PACKET_IMPL(useSkill, player_id_t playerId, skill_id_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo) {
+SPLIT_PACKET_IMPL(addBuff, player_id_t playerId, int32_t buffId, const seconds_t &time, const BuffPacketValues &buff, int16_t addedInfo) {
 	SplitPacketBuilder builder;
 	builder.player
 		.add<header_t>(SMSG_SKILL_USE)
-		.addBuffer(BuffsPacketHelper::addBytes(playerSkill.types));
+		.addBuffer(BuffsPacketHelper::addBytes(buff.player.types));
 
-	for (const auto &val : playerSkill.vals) {
+	for (const auto &val : buff.player.values) {
+		if (val.type == BuffPacketValueType::SpecialPacket) continue;
+		if (val.type == BuffPacketValueType::Packet) {
+			builder.player.addBuffer(val.packet);
+			continue;
+		}
+		if (val.type != BuffPacketValueType::Value) throw NotImplementedException{"BuffPacketValueType"};
+
+		switch (val.valueSize) {
+			case 1: builder.player.add<int8_t>(static_cast<int8_t>(val.value)); break;
+			case 2: builder.player.add<int16_t>(static_cast<int16_t>(val.value)); break;
+			case 4: builder.player.add<int32_t>(static_cast<int32_t>(val.value)); break;
+			case 8: builder.player.add<int64_t>(val.value); break;
+			default: throw NotImplementedException{"valueSize"};
+		}
 		builder.player
-			.add<int16_t>(val)
-			.add<skill_id_t>(skillId)
+			.add<int32_t>(buffId)
 			.add<int32_t>(static_cast<int32_t>(time.count() * 1000));
 	}
 
 	builder.player
-		.add<int16_t>(0)
-		.add<int16_t>(addedInfo)
-		.add<int8_t>(0); // Number of times you've been buffed total - only certain skills have this part
+		.unk<int8_t>()
+		.unk<int8_t>();
 
-	if (playerSkill.hasMapBuff) {
+	for (const auto &val : buff.player.values) {
+		if (val.type != BuffPacketValueType::SpecialPacket) continue;
+		builder.player.addBuffer(val.packet);
+	}
+
+	builder.player.add<int16_t>(static_cast<int16_t>(buff.delay.count()));
+
+	if (buff.player.anyMovementBuffs) {
+		builder.player.unk<int8_t>();
+	}
+
+	if (buff.map.is_initialized()) {
+		const auto &mapBuff = buff.map.get();
 		builder.map
 			.add<header_t>(SMSG_3RD_PARTY_SKILL)
 			.add<player_id_t>(playerId)
-			.addBuffer(BuffsPacketHelper::addBytes(mapSkill.typeList));
+			.addBuffer(BuffsPacketHelper::addMapValues(mapBuff));
 
-		if ((mapSkill.typeList[BuffBytes::Byte3] & 0x40) > 0) {
-			builder.map.add<skill_id_t>(skillId);
-		}
-		else {
-			for (size_t i = 0; i < mapSkill.values.size(); i++) {
-				uint8_t byte = mapSkill.bytes[i];
-				int16_t val = mapSkill.values[i];
-				if (byte == BuffBytes::Byte5) {
-					builder.map.add<int16_t>(val);
-				}
-				else {
-					builder.map.add<int8_t>(static_cast<int8_t>(val));
-				}
-			}
-		}
-		builder.map
-			.add<int16_t>(0)
-			.add<int16_t>(addedInfo);
+		builder.map.add<int16_t>(static_cast<int16_t>(buff.delay.count()));
 	}
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(giveDebuff, player_id_t playerId, mob_skill_id_t skillId, mob_skill_level_t level, const seconds_t &time, int16_t delay, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill) {
+SPLIT_PACKET_IMPL(endBuff, player_id_t playerId, const BuffPacketValues &buff) {
 	SplitPacketBuilder builder;
-	builder.player
-		.add<header_t>(SMSG_SKILL_USE)
-		.addBuffer(BuffsPacketHelper::addBytes(playerSkill.types));
-
-	for (const auto &val : playerSkill.vals) {
-		builder.player
-			.add<int16_t>(val)
-			.add<uint16_t>(skillId)
-			.add<uint16_t>(level)
-			.add<int32_t>(static_cast<int32_t>(time.count() * 1000));
-	}
-
-	builder.player
-		.add<int16_t>(0)
-		.add<int16_t>(delay)
-		.add<int8_t>(0);
-
-	builder.map
-		.add<header_t>(SMSG_3RD_PARTY_SKILL)
-		.add<player_id_t>(playerId)
-		.addBuffer(BuffsPacketHelper::addBytes(mapSkill.typeList));
-
-	for (const auto &val : mapSkill.values) {
-		if (skillId == MobSkills::Poison) {
-			builder.map.add<int16_t>(val);
-		}
-		builder.map
-			.add<uint16_t>(skillId)
-			.add<uint16_t>(level);
-	}
-	
-	builder.map
-		.add<int16_t>(0)
-		.add<int16_t>(delay);
-	return builder;
-}
-
-SPLIT_PACKET_IMPL(endSkill, player_id_t playerId, const ActiveBuff &playerSkill) {
-	SplitPacketBuilder builder;
-	PacketBuilder packet;
-	packet.addBuffer(BuffsPacketHelper::addBytes(playerSkill.types));
 
 	builder.player
 		.add<header_t>(SMSG_SKILL_CANCEL)
-		.addBuffer(packet)
-		.add<int8_t>(0);
+		.addBuffer(BuffsPacketHelper::addBytes(buff.player.types))
+		.unk<int8_t>();
 
-	builder.map
-		.add<header_t>(SMSG_3RD_PARTY_BUFF_END)
-		.add<player_id_t>(playerId)
-		.addBuffer(packet);
-	return builder;
-}
-
-SPLIT_PACKET_IMPL(usePirateBuff, player_id_t playerId, skill_id_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill) {
-	SplitPacketBuilder builder;
-	PacketBuilder packet;
-	packet.add<int16_t>(0);
-
-	for (const auto &val : playerSkill.vals) {
-		packet
-			.add<int16_t>(val)
-			.add<int16_t>(0)
-			.add<skill_id_t>(skillId)
-			.add<int32_t>(0) // No idea, seems to be server tick count in ms
-			.add<int8_t>(0)
-			.add<int16_t>(static_cast<int16_t>(time.count()));
+	if (buff.map.is_initialized()) {
+		builder.map
+			.add<header_t>(SMSG_3RD_PARTY_BUFF_END)
+			.add<player_id_t>(playerId)
+			.addBuffer(BuffsPacketHelper::addBytes(buff.map.get().types));
 	}
 
-	packet.add<int16_t>(0);
-
-	builder.player
-		.add<header_t>(SMSG_SKILL_USE)
-		.addBuffer(BuffsPacketHelper::addBytes(playerSkill.types))
-		.addBuffer(packet)
-		.add<int8_t>(0); // Number of times you've been buffed total - only certain skills have this part
-
-	builder.map
-		.add<header_t>(SMSG_3RD_PARTY_SKILL)
-		.add<player_id_t>(playerId)
-		.addBuffer(BuffsPacketHelper::addBytes(mapSkill.typeList))
-		.addBuffer(packet);
-	return builder;
-}
-
-SPLIT_PACKET_IMPL(useSpeedInfusion, player_id_t playerId, skill_id_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo) {
-	SplitPacketBuilder builder;
-	PacketBuilder packet;
-	packet
-		.add<int16_t>(0)
-		.add<int32_t>(playerSkill.vals[0])
-		.add<skill_id_t>(skillId)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int16_t>(0)
-		.add<int16_t>(static_cast<int16_t>(time.count()))
-		.add<int16_t>(addedInfo);
-
-	builder.player
-		.add<header_t>(SMSG_SKILL_USE)
-		.addBuffer(BuffsPacketHelper::addBytes(playerSkill.types))
-		.addBuffer(packet);
-
-	builder.map
-		.add<header_t>(SMSG_3RD_PARTY_SKILL)
-		.add<player_id_t>(playerId)
-		.addBuffer(BuffsPacketHelper::addBytes(mapSkill.typeList))
-		.addBuffer(packet);
-	return builder;
-}
-
-SPLIT_PACKET_IMPL(useMount, player_id_t playerId, skill_id_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo, item_id_t mountId) {
-	SplitPacketBuilder builder;
-	PacketBuilder packet;
-	packet
-		.add<int16_t>(0)
-		.add<item_id_t>(mountId)
-		.add<skill_id_t>(skillId)
-		.add<int32_t>(0) // Server tick value
-		.add<int16_t>(0)
-		.add<int8_t>(0)
-		.add<int8_t>(0); // Number of times you've been buffed total
-
-	builder.player
-		.add<header_t>(SMSG_SKILL_USE)
-		.addBuffer(BuffsPacketHelper::addBytes(playerSkill.types))
-		.addBuffer(packet);
-
-	builder.map
-		.add<header_t>(SMSG_3RD_PARTY_SKILL)
-		.add<player_id_t>(playerId)
-		.addBuffer(BuffsPacketHelper::addBytes(mapSkill.typeList))
-		.addBuffer(packet);
-	return builder;
-}
-
-PACKET_IMPL(useHomingBeacon, skill_id_t skillId, const ActiveBuff &playerSkill, map_object_t mapMobId) {
-	PacketBuilder builder;
-	builder
-		.add<header_t>(SMSG_SKILL_USE)
-		.addBuffer(BuffsPacketHelper::addBytes(playerSkill.types))
-		.add<int16_t>(0)
-		.add<vector_t<int16_t>>(playerSkill.vals, playerSkill.vals.size())
-		.add<int16_t>(0)
-		.add<skill_id_t>(skillId)
-		.add<int32_t>(0) // Time
-		.add<int8_t>(0)
-		.add<map_object_t>(mapMobId)
-		.add<int16_t>(0);
 	return builder;
 }
 

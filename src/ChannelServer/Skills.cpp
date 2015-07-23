@@ -59,11 +59,12 @@ auto Skills::addSkill(Player *player, PacketReader &reader) -> void {
 }
 
 auto Skills::cancelSkill(Player *player, PacketReader &reader) -> void {
-	stopSkill(player, reader.get<skill_id_t>());
-}
+	int32_t identifier = reader.get<int32_t>();
 
-auto Skills::stopSkill(Player *player, skill_id_t skillId, bool fromTimer) -> void {
-	switch (skillId) {
+	// Both buffs and "standing" skills e.g. Hurricane go through this packet
+	// Handle "standing" skills here, otherwise dispatch to buffs
+
+	switch (identifier) {
 		case Skills::Bowmaster::Hurricane:
 		case Skills::WindArcher::Hurricane:
 		case Skills::Marksman::PiercingArrow:
@@ -72,27 +73,35 @@ auto Skills::stopSkill(Player *player, skill_id_t skillId, bool fromTimer) -> vo
 		case Skills::Bishop::BigBang:
 		case Skills::Corsair::RapidFire:
 			player->sendMap(SkillsPacket::endChargeOrStationarySkill(player->getId(), player->getChargeOrStationarySkillInfo()));
-			player->setChargeOrStationarySkill(ChargeOrStationarySkillInfo());
-			break;
-		default:
-			if (player->getActiveBuffs()->getActiveSkillLevel(skillId) == 0) {
+			player->setChargeOrStationarySkill(ChargeOrStationarySkillInfo{});
+			return;
+	}
+
+	stopSkill(player, player->getActiveBuffs()->translateToSource(identifier));
+}
+
+auto Skills::stopSkill(Player *player, const BuffSource &source, bool fromTimer) -> void {
+	switch (source.getType()) {
+		case BuffSourceType::Item:
+		case BuffSourceType::Skill:
+			if (source.getSkillLevel() == 0) {
 				// Hacking
 				return;
 			}
-			player->getActiveBuffs()->removeBuff(skillId, fromTimer);
-			if (GameLogicUtilities::isMobSkill(skillId)) {
-				Buffs::endDebuff(player, static_cast<mob_skill_id_t>(skillId));
-			}
-			else {
-				Buffs::endBuff(player, skillId);
-			}
-
-			if (skillId == Skills::SuperGm::Hide) {
-				player->send(GmPacket::endHide());
-				player->getMap()->gmHideChange(player);
-			}
-
 			break;
+		case BuffSourceType::MobSkill:
+			if (source.getMobSkillLevel() == 0) {
+				// Hacking
+				return;
+			}
+			break;
+	}
+
+	Buffs::endBuff(player, source, fromTimer);
+
+	if (source.getSkillId() == Skills::SuperGm::Hide) {
+		player->send(GmPacket::endHide());
+		player->getMap()->gmHideChange(player);
 	}
 }
 
@@ -139,7 +148,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
 	if (skillId == Skills::Priest::MysticDoor) {
 		Point origin = reader.get<Point>();
-		MysticDoorResult result = player->getSkills()->openMysticDoor(origin, seconds_t{skill->time});
+		MysticDoorResult result = player->getSkills()->openMysticDoor(origin, skill->buffTime);
 		if (result == MysticDoorResult::Hacking) {
 			return;
 		}
@@ -168,10 +177,17 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 		}
 		case Skills::Shadower::Smokescreen: {
 			Point origin = reader.get<Point>();
-			Mist *m = new Mist(player->getMapId(), player, skill->time, skill->dimensions.move(player->getPos()), skillId, level);
+			Mist *m = new Mist{
+				player->getMapId(),
+				player,
+				skill->buffTime,
+				skill->dimensions.move(player->getPos()),
+				skillId,
+				level};
 			break;
 		}
 		case Skills::Corsair::Battleship:
+			// TODO FIXME hacking? Remove?
 			if (player->getActiveBuffs()->getBattleshipHp() == 0) {
 				player->getActiveBuffs()->resetBattleshipHp();
 			}
@@ -196,9 +212,9 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 		case Skills::Paladin::MonsterMagnet:
 		case Skills::DarkKnight::MonsterMagnet: {
 			int32_t mobs = reader.get<int32_t>();
-			for (int8_t k = 0; k < mobs; k++) {
+			for (int32_t k = 0; k < mobs; k++) {
 				map_object_t mapMobId = reader.get<map_object_t>();
-				uint8_t success = reader.get<int8_t>();
+				uint8_t success = reader.get<uint8_t>();
 				player->sendMap(SkillsPacket::showMagnetSuccess(mapMobId, success));
 			}
 			direction = reader.get<uint8_t>();
@@ -243,7 +259,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 			break;
 		case Skills::Priest::Dispel: {
 			int8_t affected = reader.get<int8_t>();
-			player->getActiveBuffs()->useDispel();
+			player->getActiveBuffs()->usePlayerDispel();
 			if (Party *party = player->getParty()) {
 				const auto members = getAffectedPartyMembers(party, affected, party->getMembersCount());
 				for (const auto &partyMember : members) {
@@ -251,7 +267,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 						if (Randomizer::rand<uint16_t>(99) < skill->prop) {
 							partyMember->send(SkillsPacket::showSkill(partyMember->getId(), skillId, level, direction, true, true));
 							partyMember->sendMap(SkillsPacket::showSkill(partyMember->getId(), skillId, level, direction, true));
-							partyMember->getActiveBuffs()->useDispel();
+							partyMember->getActiveBuffs()->usePlayerDispel();
 						}
 					}
 				}
@@ -277,11 +293,10 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 			}
 			Party *party = player->getParty();
 			int8_t partyPlayers = (party != nullptr ? party->getMembersCount() : 1);
-			experience_t expIncrease = 0;
-
 			health_t heal = (healRate * player->getStats()->getMaxHp() / 100) / partyPlayers;
 
 			if (party != nullptr) {
+				experience_t expIncrease = 0;
 				const auto members = party->getPartyMembers(player->getMapId());
 				for (const auto &partyMember : members) {
 					health_t chp = partyMember->getStats()->getHp();
@@ -361,7 +376,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 		case Skills::SuperGm::HyperBody:
 		case Skills::SuperGm::HealPlusDispel:
 		case Skills::SuperGm::Resurrection: {
-			uint8_t players = reader.get<int8_t>();
+			uint8_t players = reader.get<uint8_t>();
 			function_t<bool(Player *)> doAction;
 			function_t<void(Player *)> action;
 			switch (skillId) {
@@ -370,23 +385,26 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 					action = [](Player *target) {
 						target->getStats()->setHp(target->getStats()->getMaxHp());
 						target->getStats()->setMp(target->getStats()->getMaxMp());
-						target->getActiveBuffs()->useDispel();
+						target->getActiveBuffs()->usePlayerDispel();
 					};
 					break;
 				case Skills::SuperGm::Resurrection:
 					doAction = [](Player *target) { return target->getStats()->isDead(); };
-					action = [](Player *target) { target->getStats()->setHp(target->getStats()->getMaxHp()); };
+					action = [](Player *target) {
+						target->getStats()->setHp(target->getStats()->getMaxHp());
+					};
 					break;
 				default:
 					doAction = [](Player *target) { return true; };
-					action = [skillId, level](Player *target) { Buffs::addBuff(target, skillId, level, 0); };
+					action = [skillId, level](Player *target) {
+						Buffs::addBuff(target, skillId, level, 0);
+					};
 			}
 			for (uint8_t i = 0; i < players; i++) {
 				player_id_t playerId = reader.get<player_id_t>();
 				Player *target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId);
 				if (target != nullptr && target != player && doAction(target)) {
 					player->send(SkillsPacket::showSkill(player->getId(), skillId, level, direction, true, true));
-
 					player->sendMap(SkillsPacket::showSkill(player->getId(), skillId, level, direction, true));
 
 					action(target);
@@ -430,14 +448,16 @@ auto Skills::applySkillCosts(Player *player, skill_id_t skillId, skill_level_t l
 	}
 
 	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
-	int16_t coolTime = skill->coolTime;
+	seconds_t coolTime = skill->coolTime;
 	health_t mpUse = skill->mp;
 	health_t hpUse = skill->hp;
 	int16_t moneyConsume = skill->moneyConsume;
 	item_id_t item = skill->item;
 	if (mpUse > 0) {
-		if (auto concentrate = player->getActiveBuffs()->getActiveSkillInfo(Skills::Bowmaster::Concentrate)) {
-			mpUse = (mpUse * concentrate->x) / 100;
+		auto concentrate = player->getActiveBuffs()->getConcentrateSource();
+		if (concentrate.is_initialized()) {
+			auto skill = player->getActiveBuffs()->getBuffSkillInfo(concentrate.get());
+			mpUse = (mpUse * skill->x) / 100;
 		}
 		else if (elementalAmp && player->getSkills()->hasElementalAmp()) {
 			mpUse = (mpUse * player->getSkills()->getSkillInfo(player->getSkills()->getElementalAmp())->x) / 100;
@@ -463,7 +483,7 @@ auto Skills::applySkillCosts(Player *player, skill_id_t skillId, skill_level_t l
 		}
 		Inventory::takeItem(player, item, skill->itemCount);
 	}
-	if (coolTime > 0 && skillId != Skills::Corsair::Battleship) {
+	if (coolTime.count() > 0 && skillId != Skills::Corsair::Battleship) {
 		if (isCooling(player, skillId)) {
 			return Result::Failure;
 		}
@@ -591,24 +611,27 @@ auto Skills::useAttackSkillRanged(Player *player, skill_id_t skillId, inventory_
 	return Result::Successful;
 }
 
-auto Skills::heal(Player *player, health_t value, skill_id_t skillId) -> void {
+auto Skills::heal(Player *player, int64_t value, const BuffSource &source) -> void {
 	if (player->getStats()->getHp() < player->getStats()->getMaxHp() && player->getStats()->getHp() > 0) {
-		player->getStats()->modifyHp(value);
-		player->send(SkillsPacket::healHp(value));
+		health_t val = static_cast<health_t>(value);
+		player->getStats()->modifyHp(val);
+		player->send(SkillsPacket::healHp(val));
 	}
 }
 
-auto Skills::hurt(Player *player, health_t value, skill_id_t skillId) -> void {
-	if (player->getStats()->getHp() - value > 1) {
-		player->getStats()->modifyHp(-value);
-		player->sendMap(SkillsPacket::showSkillEffect(player->getId(), skillId));
+auto Skills::hurt(Player *player, int64_t value, const BuffSource &source) -> void {
+	health_t val = static_cast<health_t>(value);
+	if (source.getType() != BuffSourceType::Skill) throw NotImplementedException{"hurt BuffSourceType"};
+	if (player->getStats()->getHp() - val > 1) {
+		player->getStats()->modifyHp(-val);
+		player->sendMap(SkillsPacket::showSkillEffect(player->getId(), source.getSkillId()));
 	}
 	else {
-		Buffs::endBuff(player, skillId);
+		Buffs::endBuff(player, source);
 	}
 }
 
-auto Skills::startCooldown(Player *player, skill_id_t skillId, int16_t coolTime, bool initialLoad) -> void {
+auto Skills::startCooldown(Player *player, skill_id_t skillId, seconds_t coolTime, bool initialLoad) -> void {
 	if (isCooling(player, skillId)) {
 		// Hacking
 		return;
@@ -618,33 +641,37 @@ auto Skills::startCooldown(Player *player, skill_id_t skillId, int16_t coolTime,
 		player->getSkills()->addCooldown(skillId, coolTime);
 	}
 	Timer::Timer::create(
-		[player, skillId](const time_point_t &now) { Skills::stopCooldown(player, skillId); },
+		[player, skillId](const time_point_t &now) {
+			Skills::stopCooldown(player, skillId);
+		},
 		Timer::Id{TimerType::CoolTimer, skillId},
-		player->getTimerContainer(), seconds_t{coolTime});
+		player->getTimerContainer(),
+		seconds_t{coolTime});
 }
 
 auto Skills::stopCooldown(Player *player, skill_id_t skillId) -> void {
 	player->getSkills()->removeCooldown(skillId);
-	player->send(SkillsPacket::sendCooldown(skillId, 0));
+	player->send(SkillsPacket::sendCooldown(skillId, seconds_t{0}));
 	if (skillId == Skills::Corsair::Battleship) {
 		player->getActiveBuffs()->resetBattleshipHp();
 	}
 
-	Timer::Id id(TimerType::CoolTimer, skillId);
-	if (player->getTimerContainer()->isTimerRunning(id)) {
-		player->getTimerContainer()->removeTimer(id);
+	Timer::Id id{TimerType::CoolTimer, skillId};
+	auto container = player->getTimerContainer();
+	if (container->isTimerRunning(id)) {
+		container->removeTimer(id);
 	}
 }
 
 auto Skills::isCooling(Player *player, skill_id_t skillId) -> bool {
-	Timer::Id id(TimerType::CoolTimer, skillId);
+	Timer::Id id{TimerType::CoolTimer, skillId};
 	return player->getTimerContainer()->isTimerRunning(id);
 }
 
 auto Skills::getCooldownTimeLeft(Player *player, skill_id_t skillId) -> int16_t {
 	int16_t coolTime = 0;
 	if (isCooling(player, skillId)) {
-		Timer::Id id(TimerType::CoolTimer, skillId);
+		Timer::Id id{TimerType::CoolTimer, skillId};
 		coolTime = static_cast<int16_t>(player->getTimerContainer()->getRemainingTime<seconds_t>(id).count());
 	}
 	return coolTime;

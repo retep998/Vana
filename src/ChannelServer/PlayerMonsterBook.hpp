@@ -26,7 +26,7 @@ class Player;
 
 struct MonsterCard {
 	MonsterCard() = default;
-	MonsterCard(item_id_t id, uint8_t level) : id(id), level(level) { }
+	MonsterCard(item_id_t id, uint8_t level) : id{id}, level{level} { }
 
 	item_id_t id = 0;
 	uint8_t level = 0;

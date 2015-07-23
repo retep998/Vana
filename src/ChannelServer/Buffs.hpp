@@ -17,67 +17,87 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "Buff.hpp"
+#include "BuffInfo.hpp"
+#include "BuffSource.hpp"
+#include "PacketBuilder.hpp"
+#include "SkillConstants.hpp"
 #include "Types.hpp"
-#include "BuffDataProvider.hpp"
 #include <array>
 #include <vector>
 
 class Player;
 
-struct ActiveBuff {
-	ActiveBuff()
-	{
-		for (size_t i = 0; i < BuffBytes::ByteQuantity; i++) {
-			types[i] = 0;
-		}
-	}
-
-	bool hasMapBuff = false;
-	array_t<uint8_t, BuffBytes::ByteQuantity> types;
-	vector_t<int16_t> vals;
+enum class BuffPacketValueType {
+	Value,
+	Packet,
+	SpecialPacket,
 };
 
-struct ActiveMapBuff {
-	ActiveMapBuff()
-	{
-		for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++) {
-			typeList[i] = 0;
-		}
+struct BuffPacketValue {
+	static BuffPacketValue fromValue(uint8_t size, int64_t value) {
+		BuffPacketValue ret;
+		ret.valueSize = size;
+		ret.value = value;
+		ret.type = BuffPacketValueType::Value;
+		return ret;
 	}
 
-	bool debuff = false;
-	array_t<uint8_t, BuffBytes::ByteQuantity> typeList;
-	vector_t<uint8_t> bytes;
-	vector_t<int8_t> types;
-	vector_t<int16_t> values;
-	vector_t<bool> useVals;
+	static BuffPacketValue fromPacket(PacketBuilder packet) {
+		BuffPacketValue ret;
+		ret.packet = packet;
+		ret.type = BuffPacketValueType::Packet;
+		return ret;
+	}
+
+	static BuffPacketValue fromSpecialPacket(PacketBuilder packet) {
+		BuffPacketValue ret;
+		ret.packet = packet;
+		ret.type = BuffPacketValueType::SpecialPacket;
+		return ret;
+	}
+
+	uint8_t valueSize = 0;
+	int64_t value = 0;
+	int32_t time = 0;
+	BuffPacketValueType type;
+	PacketBuilder packet;
+private:
+	BuffPacketValue() = default;
 };
 
-struct MapEntryVals {
-	bool use = false;
-	bool debuff = false;
-	int16_t val = 0;
-	int16_t skill = 0;
+struct BuffPacketStructure {
+	BuffPacketStructure()
+	{
+		std::fill(std::begin(types), std::end(types), 0);
+	}
+
+	bool anyMovementBuffs = false;
+	buff_array_t types;
+	vector_t<BuffPacketValue> values;
+};
+
+struct BuffPacketValues {
+	BuffPacketStructure player;
+	optional_t<BuffPacketStructure> map;
+	milliseconds_t delay = milliseconds_t{0};
 };
 
 namespace Buffs {
-	auto addBuff(Player *player, item_id_t itemId, const seconds_t &time) -> void;
+	auto addBuff(Player *player, item_id_t itemId, const seconds_t &time) -> Result;
 	auto addBuff(Player *player, skill_id_t skillId, skill_level_t level, int16_t addedInfo, map_object_t mapMobId = 0) -> Result;
-	auto endBuff(Player *player, skill_id_t skill) -> void;
-	auto doAction(Player *player, skill_id_t skillId, skill_level_t level) -> void;
-	auto addDebuff(Player *player, mob_skill_id_t skillId, mob_skill_level_t level) -> void;
-	auto endDebuff(Player *player, mob_skill_id_t skillId) -> void;
-	auto buffMayApply(skill_id_t skillId, skill_level_t level, int8_t buffValue) -> bool;
-
-	auto parseBuffInfo(Player *player, skill_id_t skillId, skill_level_t level) -> ActiveBuff;
-	auto parseBuffMapInfo(Player *player, skill_id_t skillId, skill_level_t level) -> ActiveMapBuff;
-	auto parseBuffs(int32_t skillId, mob_skill_id_t level) -> vector_t<Buff>;
-	auto parseMobBuffInfo(Player *player, mob_skill_id_t skillId, mob_skill_level_t level) -> ActiveBuff;
-	auto parseMobBuffMapInfo(Player *player, mob_skill_id_t skillId, mob_skill_level_t level) -> ActiveMapBuff;
-	auto parseMobBuffs(uint8_t skillId) -> vector_t<Buff>;
-	auto parseBuffMapEntryInfo(Player *player, skill_id_t skillId, skill_level_t level) -> ActiveMapBuff;
-	auto parseMobBuffMapEntryInfo(Player *player, mob_skill_id_t skillId, mob_skill_level_t level) -> ActiveMapBuff;
-	auto getValue(int8_t value, skill_id_t skillId, skill_level_t level) -> int16_t;
-	auto getMobSkillValue(int8_t value, mob_skill_id_t skillId, mob_skill_level_t level) -> int16_t;
-	auto parseMountInfo(Player *player, skill_id_t skillId, skill_level_t level) -> skill_id_t;
+	auto addBuff(Player *player, mob_skill_id_t skillId, mob_skill_level_t level, milliseconds_t delay) -> Result;
+	auto endBuff(Player *player, const BuffSource &source, bool fromTimer = false) -> void;
+	auto preprocessBuff(Player *player, skill_id_t skillId, skill_level_t level, const seconds_t &time) -> Buff;
+	auto preprocessBuff(Player *player, item_id_t itemId, const seconds_t &time) -> Buff;
+	auto preprocessBuff(Player *player, mob_skill_id_t skillId, mob_skill_level_t level, const seconds_t &time) -> Buff;
+	auto preprocessBuff(Player *player, const BuffSource &source, const seconds_t &time) -> Buff;
+	auto preprocessBuff(Player *player, const BuffSource &source, const seconds_t &time, const Buff &buff) -> Buff;
+	auto preprocessBuff(const Buff &buff, const vector_t<uint8_t> &bitPositionsToInclude) -> Buff;
+	auto convertToPacketTypes(const Buff &buff) -> BuffPacketValues;
+	auto convertToPacket(Player *player, const BuffSource &source, const seconds_t &time, const Buff &buff) -> BuffPacketValues;
+	auto buffMayApply(Player *player, const BuffSource &source, const seconds_t &time, const BuffInfo &buff) -> bool;
+	auto getValue(Player *player, const BuffSource &source, const seconds_t &time, const BuffInfo &buff) -> BuffPacketValue;
+	auto getValue(Player *player, const BuffSource &source, const seconds_t &time, uint8_t bitPosition, const BuffMapInfo &buff) -> BuffPacketValue;
+	auto getValue(Player *player, const BuffSource &source, const seconds_t &time, uint8_t bitPosition, BuffSkillValue value, uint8_t buffValueSize) -> BuffPacketValue;
 }

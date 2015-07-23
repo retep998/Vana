@@ -95,7 +95,7 @@ public:
 	auto getMapPos() const -> portal_id_t { return m_mapPos; }
 	auto getFallCounter() const -> int8_t { return m_fallCounter; }
 	auto getBuddyListSize() const -> uint8_t { return m_buddylistSize; }
-	auto getPortalCount(bool add = false) -> uint8_t;
+	auto getPortalCount(bool add = false) -> portal_count_t;
 	auto getMapChair() const -> seat_id_t { return m_mapChair; }
 	auto getId() const -> player_id_t { return m_id; }
 	auto getUserId() const -> account_id_t { return m_userId; }
@@ -172,7 +172,7 @@ private:
 	skin_id_t m_skin = 0;
 	int8_t m_fallCounter = 0;
 	uint8_t m_buddylistSize = 0;
-	uint8_t m_portalCount = 0;
+	portal_count_t m_portalCount = 0;
 	seat_id_t m_mapChair = 0;
 	player_id_t m_id = 0;
 	account_id_t m_userId = 0;

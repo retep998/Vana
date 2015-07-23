@@ -43,22 +43,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 PlayerStats::PlayerStats(Player *player, player_level_t level, job_id_t job, fame_t fame, stat_t str, stat_t dex, stat_t intt, stat_t luk, stat_t ap, health_ap_t hpMpAp, stat_t sp, health_t hp, health_t maxHp, health_t mp, health_t maxMp, experience_t exp) :
-	m_player(player),
-	m_level(level),
-	m_job(job),
-	m_fame(fame),
-	m_str(str),
-	m_dex(dex),
-	m_int(intt),
-	m_luk(luk),
-	m_ap(ap),
-	m_hpMpAp(hpMpAp),
-	m_sp(sp),
-	m_hp(hp),
-	m_maxHp(maxHp),
-	m_mp(mp),
-	m_maxMp(maxMp),
-	m_exp(exp)
+	m_player{player},
+	m_level{level},
+	m_job{job},
+	m_fame{fame},
+	m_str{str},
+	m_dex{dex},
+	m_int{intt},
+	m_luk{luk},
+	m_ap{ap},
+	m_hpMpAp{hpMpAp},
+	m_sp{sp},
+	m_hp{hp},
+	m_maxHp{maxHp},
+	m_mp{mp},
+	m_maxMp{maxMp},
+	m_exp{exp}
 {
 	if (isDead()) {
 		m_hp = Stats::DefaultHp;
@@ -89,9 +89,13 @@ auto PlayerStats::updateBonuses(bool updateEquips, bool isLoading) -> void {
 		}
 	}
 
-	if (m_hyperBodyX > 0 && m_hyperBodyY > 0) {
-		setHyperBody(m_hyperBodyX, m_hyperBodyY);
+	if (m_hyperBodyX > 0) {
+		setHyperBodyHp(m_hyperBodyX);
 	}
+	if (m_hyperBodyY > 0) {
+		setHyperBodyMp(m_hyperBodyY);
+	}
+
 	if (!isLoading) {
 		// Adjust current HP/MP down if necessary
 		if (getHp() > getMaxHp()) {
@@ -303,13 +307,13 @@ auto PlayerStats::setLuk(stat_t luk) -> void {
 	m_player->send(PlayerPacket::updateStat(Stats::Luk, luk));
 }
 
-auto PlayerStats::setMapleWarrior(int16_t xMod) -> void {
-	m_buffBonuses.str = (m_str * xMod) / 100;
-	m_buffBonuses.dex = (m_dex * xMod) / 100;
-	m_buffBonuses.intt = (m_int * xMod) / 100;
-	m_buffBonuses.luk = (m_luk * xMod) / 100;
-	if (m_mapleWarrior != xMod) {
-		m_mapleWarrior = xMod;
+auto PlayerStats::setMapleWarrior(int16_t mod) -> void {
+	m_buffBonuses.str = (m_str * mod) / 100;
+	m_buffBonuses.dex = (m_dex * mod) / 100;
+	m_buffBonuses.intt = (m_int * mod) / 100;
+	m_buffBonuses.luk = (m_luk * mod) / 100;
+	if (m_mapleWarrior != mod) {
+		m_mapleWarrior = mod;
 		updateBonuses();
 	}
 }
@@ -325,17 +329,26 @@ auto PlayerStats::setMaxMp(health_t maxMp) -> void {
 	m_player->send(PlayerPacket::updateStat(Stats::MaxMp, m_maxMp));
 }
 
-auto PlayerStats::setHyperBody(int16_t xMod, int16_t yMod) -> void {
-	m_hyperBodyX = xMod;
-	m_hyperBodyY = yMod;
-	m_buffBonuses.hp = std::min<uint16_t>((m_maxHp + m_equipBonuses.hp) * xMod / 100, Stats::MaxMaxHp);
-	m_buffBonuses.mp = std::min<uint16_t>((m_maxMp + m_equipBonuses.mp) * yMod / 100, Stats::MaxMaxMp);
+auto PlayerStats::setHyperBodyHp(int16_t mod) -> void {
+	m_hyperBodyX = mod;
+	m_buffBonuses.hp = std::min<uint16_t>((m_maxHp + m_equipBonuses.hp) * mod / 100, Stats::MaxMaxHp);
 	m_player->send(PlayerPacket::updateStat(Stats::MaxHp, m_maxHp));
-	m_player->send(PlayerPacket::updateStat(Stats::MaxMp, m_maxMp));
+	if (mod == 0) {
+		setHp(getHp());
+	}
 	if (Party *p = m_player->getParty()) {
 		p->showHpBar(m_player);
 	}
 	m_player->getActiveBuffs()->checkBerserk();
+}
+
+auto PlayerStats::setHyperBodyMp(int16_t mod) -> void {
+	m_hyperBodyY = mod;
+	m_buffBonuses.mp = std::min<uint16_t>((m_maxMp + m_equipBonuses.mp) * mod / 100, Stats::MaxMaxMp);
+	m_player->send(PlayerPacket::updateStat(Stats::MaxMp, m_maxMp));
+	if (mod == 0) {
+		setMp(getMp());
+	}
 }
 
 auto PlayerStats::modifyMaxHp(health_t mod) -> void {
@@ -481,22 +494,27 @@ auto PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) -> void {
 		}
 
 		if (curExp >= getExp(level)) {
-			// If the desired number of level ups have passed and they're still above, set it to where it should be
+			// If the desired number of level ups have passed and they're still above, we chop
 			curExp = getExp(level) - 1;
 		}
 
+		// Check if the m_player has leveled up at all, it is possible that the user hasn't leveled up if multi-level limit is 0
 		if (levelsGained) {
-			// Check if the m_player has leveled up at all, it is possible that the user hasn't leveled up if multi-level limit is 0
 			modifyMaxHp(hpGain);
 			modifyMaxMp(mpGain);
 			setLevel(level);
 			setAp(getAp() + apGain);
 			setSp(getSp() + spGain);
-			// Let Hyper Body remain on if on during a level up, as it should
-			if (m_player->getActiveBuffs()->hasHyperBody()) {
-				skill_id_t skillId = m_player->getActiveBuffs()->getHyperBody();
-				auto hb = m_player->getActiveBuffs()->getActiveSkillInfo(skillId);
-				setHyperBody(hb->x, hb->y);
+
+			// Let Hyper Body remain on during a level up, as it should
+			auto activeBuffs = m_player->getActiveBuffs();
+			auto hyperBodyHp = activeBuffs->getHyperBodyHpSource();
+			auto hyperBodyMp = activeBuffs->getHyperBodyMpSource();
+			if (hyperBodyHp.is_initialized()) {
+				setHyperBodyHp(activeBuffs->getBuffSkillInfo(hyperBodyHp.get())->x);
+			}
+			if (hyperBodyMp.is_initialized()) {
+				setHyperBodyMp(activeBuffs->getBuffSkillInfo(hyperBodyHp.get())->y);
 			}
 
 			setHp(getMaxHp());
@@ -639,10 +657,15 @@ auto PlayerStats::addStat(int32_t type, int16_t mod, bool isReset) -> void {
 				case Stats::MaxHp: modifyMaxHp(hpGain); break;
 				case Stats::MaxMp: modifyMaxMp(mpGain); break;
 			}
-			if (m_player->getActiveBuffs()->hasHyperBody()) {
-				skill_id_t skillId = m_player->getActiveBuffs()->getHyperBody();
-				auto hb = m_player->getActiveBuffs()->getActiveSkillInfo(skillId);
-				setHyperBody(hb->x, hb->y);
+
+			auto activeBuffs = m_player->getActiveBuffs();
+			auto hyperBodyHp = activeBuffs->getHyperBodyHpSource();
+			auto hyperBodyMp = activeBuffs->getHyperBodyMpSource();
+			if (hyperBodyHp.is_initialized()) {
+				setHyperBodyHp(activeBuffs->getBuffSkillInfo(hyperBodyHp.get())->x);
+			}
+			if (hyperBodyMp.is_initialized()) {
+				setHyperBodyMp(activeBuffs->getBuffSkillInfo(hyperBodyHp.get())->y);
 			}
 
 			setHp(getHp());

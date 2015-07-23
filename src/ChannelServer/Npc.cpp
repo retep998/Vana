@@ -27,23 +27,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 Npc::Npc(npc_id_t npcId, Player *player, quest_id_t questId, bool isStart) :
-	m_player(player),
-	m_npcId(npcId)
+	m_player{player},
+	m_npcId{npcId}
 {
 	initScript(getScript(questId, isStart));
 }
 
 Npc::Npc(npc_id_t npcId, Player *player, const Point &pos, quest_id_t questId, bool isStart) :
-	m_pos(pos),
-	m_player(player),
-	m_npcId(npcId)
+	m_pos{pos},
+	m_player{player},
+	m_npcId{npcId}
 {
 	initScript(getScript(questId, isStart));
 }
 
 Npc::Npc(npc_id_t npcId, Player *player, const string_t &script) :
-	m_player(player),
-	m_npcId(npcId)
+	m_player{player},
+	m_npcId{npcId}
 {
 	initScript(script);
 }
@@ -54,7 +54,7 @@ auto Npc::hasScript(int32_t npcId, quest_id_t questId, bool start) -> bool {
 		script = ChannelServer::getInstance().getScriptDataProvider().getScript(npcId, ScriptTypes::Npc);
 	}
 	else {
-		script = ChannelServer::getInstance().getScriptDataProvider().getQuestScript(questId, (start ? 0 : 1));
+		script = ChannelServer::getInstance().getScriptDataProvider().getQuestScript(questId, start ? 0 : 1);
 	}
 	return FileUtilities::fileExists(script);
 }
@@ -63,7 +63,7 @@ auto Npc::getScript(quest_id_t questId, bool start) -> string_t {
 	if (questId == 0) {
 		return ChannelServer::getInstance().getScriptDataProvider().getScript(m_npcId, ScriptTypes::Npc);
 	}
-	return ChannelServer::getInstance().getScriptDataProvider().getQuestScript(questId, (start ? 0 : 1));
+	return ChannelServer::getInstance().getScriptDataProvider().getQuestScript(questId, start ? 0 : 1);
 }
 
 auto Npc::initScript(const string_t &filename) -> void {
@@ -84,7 +84,7 @@ auto Npc::setEndScript(npc_id_t npcId, const string_t &fullscript) -> void {
 auto Npc::checkEnd() -> bool {
 	if (isEnd()) {
 		if (m_nextNpc != 0) {
-			Npc *npc = new Npc(m_nextNpc, m_player, m_script);
+			Npc *npc = new Npc{m_nextNpc, m_player, m_script};
 			npc->run();
 		}
 		m_player->setNpc(nullptr);

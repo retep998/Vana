@@ -162,7 +162,7 @@ auto Map::addTimeMob(ref_ptr_t<TimeMob> info) -> void {
 
 	Timer::Timer::create([this](const time_point_t &now) { this->timeMob(true); },
 		Timer::Id{TimerType::MapTimer, getId(), 2},
-		getTimers(), seconds_t(3)); // First check
+		getTimers(), seconds_t{3}); // First check
 
 	m_timeMobInfo = info;
 }
@@ -259,6 +259,8 @@ auto Map::removePlayer(Player *player) -> void {
 		}
 	}
 
+	player->getActiveBuffs()->resetHomingBeaconMob();
+
 	player->getSummons()->forEach([player](Summon *summon) {
 		SummonHandler::removeSummon(player, summon->getId(), true, SummonMessages::None);
 	});
@@ -352,7 +354,7 @@ auto Map::removeReactor(size_t id) -> void {
 	ReactorSpawnInfo &info = m_reactorSpawns[id];
 	if (info.time >= 0) {
 		// We don't want to respawn -1s, leave that to some script
-		time_point_t reactorRespawn = TimeUtilities::getNowWithTimeAdded(seconds_t(info.time));
+		time_point_t reactorRespawn = TimeUtilities::getNowWithTimeAdded(seconds_t{info.time});
 		m_reactorRespawns.emplace_back(id, reactorRespawn);
 	}
 }
@@ -564,7 +566,7 @@ auto Map::getTownMysticDoorPortal(Player *player, uint8_t zeroBasedPartyIndex) c
 		return MysticDoorOpenResult{MysticDoorResult::Hacking};
 	}
 
-	map_id_t townId = m_info->rm;
+	map_id_t townId = m_info->returnMap;
 	if (townId == Maps::NoMap) {
 		std::cerr << "Mystic Door used on a map that has no return map: " << m_id << std::endl;
 		return MysticDoorOpenResult{MysticDoorResult::Hacking};
@@ -734,7 +736,7 @@ auto Map::mobDeath(ref_ptr_t<Mob> mob, bool fromExplosion) -> void {
 		if (mob->hasStatus(StatusEffects::Mob::ShadowWeb)) {
 			removeWebbedMob(mapMobId);
 		}
-	
+
 		if (mob->isSponge()) {
 			for (const auto &kvp : mob->m_spawns) {
 				if (auto spawn = kvp.second.lock()) {
@@ -776,7 +778,7 @@ auto Map::mobDeath(ref_ptr_t<Mob> mob, bool fromExplosion) -> void {
 					parts.push_back(spawnMob(summonId, mob->getPos(), mob->getFoothold(), mob));
 				}
 			}
-	
+
 			for (const auto &part : parts) {
 				part->m_sponge = sponge;
 				sponge->addSpawn(part->getMapMobId(), part);
@@ -808,7 +810,6 @@ auto Map::mobDeath(ref_ptr_t<Mob> mob, bool fromExplosion) -> void {
 			owner->m_spawns.erase(mapMobId);
 		}
 
-
 		send(MobsPacket::dieMob(mapMobId, fromExplosion ? 4 : 1));
 		if (mob->m_info->buff != 0) {
 			buffPlayers(mob->m_info->buff);
@@ -820,7 +821,7 @@ auto Map::mobDeath(ref_ptr_t<Mob> mob, bool fromExplosion) -> void {
 			if (spawn.time != -1) {
 				// Add spawn point to respawns if mob was spawned by a spawn point
 				// Randomly spawn between 1x and 2x the spawn time
-				seconds_t timeModifier = seconds_t(spawn.time * (Randomizer::rand<int32_t>(200, 100)) / 100);
+				seconds_t timeModifier = seconds_t{spawn.time * (Randomizer::rand<int32_t>(200, 100)) / 100};
 				time_point_t spawnTime = TimeUtilities::getNowWithTimeAdded<seconds_t>(timeModifier);
 				m_mobRespawns.emplace_back(spawnId, spawnTime);
 				spawn.spawned = false;
@@ -955,7 +956,7 @@ auto Map::runFunctionMobs(function_t<void(ref_ptr_t<const Mob>)> func) -> void {
 
 // Drops
 auto Map::addDrop(Drop *drop) -> void {
-	owned_lock_t<recursive_mutex_t> l(m_dropsMutex);
+	owned_lock_t<recursive_mutex_t> l{m_dropsMutex};
 	map_object_t id = m_objectIds.lease();
 	drop->setId(id);
 	Point foundPosition = drop->getPos();
@@ -965,7 +966,7 @@ auto Map::addDrop(Drop *drop) -> void {
 }
 
 auto Map::removeDrop(map_object_t id) -> void {
-	owned_lock_t<recursive_mutex_t> l(m_dropsMutex);
+	owned_lock_t<recursive_mutex_t> l{m_dropsMutex};
 	auto drop = m_drops.find(id);
 	if (drop != std::end(m_drops)) {
 		m_drops.erase(drop);
@@ -974,13 +975,13 @@ auto Map::removeDrop(map_object_t id) -> void {
 }
 
 auto Map::getDrop(map_object_t id) -> Drop * {
-	owned_lock_t<recursive_mutex_t> l(m_dropsMutex);
+	owned_lock_t<recursive_mutex_t> l{m_dropsMutex};
 	auto drop = m_drops.find(id);
 	return drop != std::end(m_drops) ? drop->second : nullptr;
 }
 
 auto Map::clearDrops(bool showPacket) -> void {
-	owned_lock_t<recursive_mutex_t> l(m_dropsMutex);
+	owned_lock_t<recursive_mutex_t> l{m_dropsMutex};
 	auto copy = m_drops;
 	for (const auto &drop : copy) {
 		drop.second->removeDrop(showPacket);
@@ -1083,7 +1084,7 @@ auto Map::respawn(int8_t types) -> void {
 }
 
 auto Map::checkSpawn(time_point_t time) -> void {
-	if (duration_cast<seconds_t>(time - m_lastSpawn) < seconds_t(8)) return;
+	if (duration_cast<seconds_t>(time - m_lastSpawn) < seconds_t{8}) return;
 
 	Respawnable *respawn;
 
@@ -1151,9 +1152,9 @@ auto Map::checkMists() -> void {
 
 auto Map::clearDrops(time_point_t time) -> void {
 	// Clear drops based on how long they have been in the map
-	owned_lock_t<recursive_mutex_t> l(m_dropsMutex);
+	owned_lock_t<recursive_mutex_t> l{m_dropsMutex};
 
-	time -= minutes_t(3); // Drops disappear after 3 minutes
+	time -= minutes_t{3}; // Drops disappear after 3 minutes
 
 	hash_map_t<map_object_t, Drop *> drops = m_drops;
 	for (const auto &kvp : drops) {
@@ -1226,7 +1227,7 @@ auto Map::timeMob(bool firstLoad) -> void {
 
 auto Map::setMapTimer(const seconds_t &timer) -> void {
 	if (timer.count() > 0 && m_timer.count() != 0) {
-		throw std::runtime_error("Timer already executing on map " + StringUtilities::lexical_cast<string_t>(getId()));
+		throw std::runtime_error{"Timer already executing on map " + StringUtilities::lexical_cast<string_t>(getId())};
 	}
 
 	m_timer = timer;
@@ -1295,7 +1296,7 @@ auto Map::showObjects(Player *player) -> void {
 
 	// Drops
 	{
-		owned_lock_t<recursive_mutex_t> l(m_dropsMutex);
+		owned_lock_t<recursive_mutex_t> l{m_dropsMutex};
 		for (const auto &kvp : m_drops) {
 			if (Drop *drop = kvp.second) {
 				drop->showDrop(player);
@@ -1349,15 +1350,20 @@ auto Map::send(const SplitPacketBuilder &builder, Player *sender) -> void {
 }
 
 auto Map::createWeather(Player *player, bool adminWeather, int32_t time, int32_t itemId, const string_t &message) -> bool {
-	Timer::Id timerId(TimerType::WeatherTimer); // Just to check if there's already a weather item running and adding a new one
+	Timer::Id timerId{TimerType::WeatherTimer}; // Just to check if there's already a weather item running and adding a new one
 	if (getTimers()->isTimerRunning(timerId)) {
 		// Hacking
 		return false;
 	}
 
 	send(MapPacket::changeWeather(adminWeather, itemId, message));
-	Timer::Timer::create([this, adminWeather](const time_point_t &now) { this->send(MapPacket::changeWeather(adminWeather, 0, "")); },
-		timerId, getTimers(), seconds_t(time));
+	Timer::Timer::create(
+		[this, adminWeather](const time_point_t &now) {
+			this->send(MapPacket::changeWeather(adminWeather, 0, ""));
+		},
+		timerId,
+		getTimers(),
+		seconds_t{time});
 	return true;
 }
 

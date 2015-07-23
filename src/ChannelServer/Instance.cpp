@@ -34,10 +34,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <utility>
 
 Instance::Instance(const string_t &name, map_id_t map, player_id_t playerId, const duration_t &time, const duration_t &persistent, bool showTimer) :
-	m_name(name),
-	m_persistent(persistent),
-	m_showTimer(showTimer),
-	m_start(TimeUtilities::getNow())
+	m_name{name},
+	m_persistent{persistent},
+	m_showTimer{showTimer},
+	m_start{TimeUtilities::getNow()}
 {
 	m_variables = make_owned_ptr<Variables>();
 	m_luaInstance = make_owned_ptr<LuaInstance>(name, playerId);
@@ -185,7 +185,7 @@ auto Instance::addSecondOfHourTimer(const string_t &timerName, int16_t secondOfH
 }
 
 auto Instance::getTimerSecondsRemaining(const string_t &timerName) -> seconds_t {
-	seconds_t timeLeft(0);
+	seconds_t timeLeft{0};
 	auto kvp = m_timerActions.find(timerName);
 	if (kvp != std::end(m_timerActions)) {
 		auto &timer = kvp->second;

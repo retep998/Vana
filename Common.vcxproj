@@ -91,6 +91,10 @@
   <ItemGroup>
     <ClCompile Include="src\Common\AbstractServerAcceptConnection.cpp" />
     <ClCompile Include="src\Common\AbstractServerConnection.cpp" />
+    <ClCompile Include="src\Common\Buff.cpp" />
+    <ClCompile Include="src\Common\BuffInfo.cpp" />
+    <ClCompile Include="src\Common\BuffMapInfo.cpp" />
+    <ClCompile Include="src\Common\BuffSource.cpp" />
     <ClCompile Include="src\Common\ClientIp.cpp" />
     <ClCompile Include="src\Common\ConsoleLogger.cpp" />
     <ClCompile Include="src\Common\CurseDataProvider.cpp" />
@@ -156,7 +160,15 @@
     <ClInclude Include="src\Common\AbstractServerAcceptConnection.hpp" />
     <ClInclude Include="src\Common\AbstractServerConnection.hpp" />
     <ClInclude Include="src\Common\Algorithm.hpp" />
+    <ClInclude Include="src\Common\BuffInfoByEffect.hpp" />
     <ClInclude Include="src\Common\BitUtilities.hpp" />
+    <ClInclude Include="src\Common\Buff.hpp" />
+    <ClInclude Include="src\Common\BuffAction.hpp" />
+    <ClInclude Include="src\Common\BuffInfo.hpp" />
+    <ClInclude Include="src\Common\BuffMapInfo.hpp" />
+    <ClInclude Include="src\Common\BuffSkillValue.hpp" />
+    <ClInclude Include="src\Common\BuffSource.hpp" />
+    <ClInclude Include="src\Common\BuffSourceType.hpp" />
     <ClInclude Include="src\Common\CaseInsensitiveEquals.hpp" />
     <ClInclude Include="src\Common\CaseInsensitiveHash.hpp" />
     <ClInclude Include="src\Common\ClientIp.hpp" />

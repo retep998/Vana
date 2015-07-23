@@ -25,20 +25,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.hpp"
 
 Drop::Drop(map_id_t mapId, mesos_t mesos, const Point &pos, player_id_t owner, bool playerDrop) :
-	m_owner(owner),
-	m_mapId(mapId),
-	m_mesos(mesos),
-	m_playerDrop(playerDrop),
-	m_pos(pos)
+	m_owner{owner},
+	m_mapId{mapId},
+	m_mesos{mesos},
+	m_playerDrop{playerDrop},
+	m_pos{pos}
 {
 }
 
 Drop::Drop(map_id_t mapId, const Item &item, const Point &pos, player_id_t owner, bool playerDrop) :
-	m_owner(owner),
-	m_mapId(mapId),
-	m_playerDrop(playerDrop),
-	m_pos(pos),
-	m_item(item)
+	m_owner{owner},
+	m_mapId{mapId},
+	m_playerDrop{playerDrop},
+	m_pos{pos},
+	m_item{item}
 {
 }
 

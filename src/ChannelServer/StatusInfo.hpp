@@ -22,9 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 struct StatusInfo {
 	// TODO FIXME it appears that a review of reflection/skill ID are needed - some had 0, some had -1 for both
 	StatusInfo() = default;
-	StatusInfo(int32_t status, int32_t val, int32_t skillId, int32_t timeInSeconds);
-	StatusInfo(int32_t status, int32_t val, int16_t mobSkill, int16_t level, int32_t timeInSeconds);
-	StatusInfo(int32_t status, int32_t val, int16_t mobSkill, int16_t level, int32_t reflect, int32_t timeInSeconds);
+	StatusInfo(int32_t status, int32_t val, int32_t skillId, seconds_t time);
+	StatusInfo(int32_t status, int32_t val, int16_t mobSkill, int16_t level, seconds_t time);
+	StatusInfo(int32_t status, int32_t val, int16_t mobSkill, int16_t level, int32_t reflect, seconds_t time);
 
 	int16_t mobSkill = 0;
 	int16_t level = 0;

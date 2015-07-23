@@ -28,7 +28,7 @@ class PlayerPets {
 	NONCOPYABLE(PlayerPets);
 	NO_DEFAULT_CONSTRUCTOR(PlayerPets);
 public:
-	PlayerPets(Player *player) : m_player(player) { }
+	PlayerPets(Player *player);
 
 	auto save() -> void;
 	auto petInfoPacket(PacketBuilder &packet) -> void;

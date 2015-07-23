@@ -37,7 +37,6 @@ auto ItemDataProvider::loadData(BuffDataProvider &provider) -> void {
 
 	loadItems();
 	loadConsumes(provider);
-	loadMultiMorphs();
 	loadMapRanges();
 	loadScrolls();
 	loadMonsterCardData();
@@ -57,7 +56,7 @@ auto ItemDataProvider::loadItems() -> void {
 		<< "SELECT id.*, s.label "
 		<< "FROM " << Database::makeDataTable("item_data") << " id "
 		<< "LEFT JOIN " << Database::makeDataTable("strings") << " s ON id.itemId = s.objectid AND s.object_type = :item",
-		soci::use(string_t("item"), "item"));
+		soci::use(string_t{"item"}, "item"));
 
 	for (const auto &row : rs) {
 		ItemInfo item;
@@ -127,7 +126,19 @@ auto ItemDataProvider::loadScrolls() -> void {
 auto ItemDataProvider::loadConsumes(BuffDataProvider &provider) -> void {
 	m_consumeInfo.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_consume_data"));
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_random_morphs"));
+
+	hash_map_t<item_id_t, vector_t<Morph>> morphData;
+	for (const auto &row : rs) {
+		Morph morph;
+		item_id_t itemId = row.get<item_id_t>("itemid");
+		morph.morph = row.get<morph_id_t>("morphid");
+		morph.chance = row.get<int8_t>("success");
+
+		morphData[itemId].push_back(morph);
+	}
+
+	rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_consume_data"));
 
 	for (const auto &row : rs) {
 		ConsumeInfo item;
@@ -142,7 +153,7 @@ auto ItemDataProvider::loadConsumes(BuffDataProvider &provider) -> void {
 		item.decFatigue = row.get<uint8_t>("decrease_fatigue");
 		item.cp = row.get<uint8_t>("carnival_points");
 		item.mcProb = row.get<uint16_t>("prob");
-		item.time = row.get<int32_t>("buff_time");
+		item.buffTime = seconds_t{row.get<int32_t>("buff_time")};
 		item.wAtk = row.get<stat_t>("weapon_attack");
 		item.mAtk = row.get<stat_t>("magic_attack");
 		item.wDef = row.get<stat_t>("weapon_defense");
@@ -158,6 +169,14 @@ auto ItemDataProvider::loadConsumes(BuffDataProvider &provider) -> void {
 			morph.morph = morphId;
 			morph.chance = 100;
 			item.morphs.push_back(morph);
+		}
+		else {
+			auto iter = morphData.find(itemId);
+			if (iter != std::end(morphData)) {
+				for (const auto &morph : iter->second) {
+					item.morphs.push_back(morph);
+				}
+			}
 		}
 
 		item.iceResist = row.get<int16_t>("defense_vs_ice");
@@ -217,19 +236,6 @@ auto ItemDataProvider::loadMapRanges() -> void {
 		range.endMap = row.get<map_id_t>("end_map");
 
 		m_consumeInfo[itemId].mapRanges.push_back(range);
-	}
-}
-
-auto ItemDataProvider::loadMultiMorphs() -> void {
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_random_morphs"));
-
-	for (const auto &row : rs) {
-		Morph morph;
-		item_id_t itemId = row.get<item_id_t>("itemid");
-		morph.morph = row.get<morph_id_t>("morphid");
-		morph.chance = row.get<int8_t>("success");
-
-		m_consumeInfo[itemId].morphs.push_back(morph);
 	}
 }
 

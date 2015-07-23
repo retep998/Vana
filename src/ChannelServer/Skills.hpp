@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <vector>
 
+class BuffSource;
 class PacketReader;
 class Party;
 class Player;
@@ -34,10 +35,10 @@ namespace Skills {
 	auto applySkillCosts(Player *player, skill_id_t skillId, skill_level_t level, bool elementalAmp = false) -> Result;
 	auto useAttackSkill(Player *player, skill_id_t skillId) -> Result;
 	auto useAttackSkillRanged(Player *player, skill_id_t skillId, inventory_slot_t projectilePos, inventory_slot_t cashProjectilePos, item_id_t projectileId) -> Result;
-	auto heal(Player *player, health_t value, skill_id_t skillId) -> void;
-	auto hurt(Player *player, health_t value, skill_id_t skillId) -> void;
-	auto stopSkill(Player *player, skill_id_t skillId, bool fromTimer = false) -> void;
-	auto startCooldown(Player *player, skill_id_t skillId, int16_t coolTime, bool initialLoad = false) -> void;
+	auto heal(Player *player, int64_t value, const BuffSource &source) -> void;
+	auto hurt(Player *player, int64_t value, const BuffSource &source) -> void;
+	auto stopSkill(Player *player, const BuffSource &source, bool fromTimer = false) -> void;
+	auto startCooldown(Player *player, skill_id_t skillId, seconds_t coolTime, bool initialLoad = false) -> void;
 	auto stopCooldown(Player *player, skill_id_t skillId) -> void;
 	auto isCooling(Player *player, skill_id_t skillId) -> bool;
 	auto getCooldownTimeLeft(Player *player, skill_id_t skillId) -> int16_t;

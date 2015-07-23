@@ -64,7 +64,7 @@ auto MapDataProvider::loadData() -> void {
 }
 
 auto MapDataProvider::loadMap(map_id_t mapId, Map *&map) -> void {
-	owned_lock_t<mutex_t> l(m_loadMutex);
+	owned_lock_t<mutex_t> l{m_loadMutex};
 
 	map_id_t checkMap = loadMapData(mapId, map);
 	if (checkMap != -1) {
@@ -119,7 +119,7 @@ auto MapDataProvider::loadMapData(map_id_t mapId, Map *&map) -> map_id_t {
 		});
 
 		mapInfo->continent = getContinent(mapId);
-		mapInfo->rm = row.get<map_id_t>("return_map");
+		mapInfo->returnMap = row.get<map_id_t>("return_map");
 		mapInfo->forcedReturn = row.get<map_id_t>("forced_return_map");
 		mapInfo->spawnRate = row.get<double>("mob_rate");
 		mapInfo->defaultMusic = row.get<string_t>("default_bgm");
@@ -128,8 +128,7 @@ auto MapDataProvider::loadMapData(map_id_t mapId, Map *&map) -> map_id_t {
 			Point{row.get<coord_t>("map_rbx"), row.get<coord_t>("map_rby")}
 		};
 		mapInfo->shuffleName = row.get<string_t>("shuffle_name");
-		mapInfo->decHp = row.get<uint8_t>("decrease_hp");
-		mapInfo->dps = row.get<uint16_t>("damage_per_second");
+		mapInfo->regularHpDecrease = row.get<uint8_t>("decrease_hp");
 		mapInfo->traction = row.get<double>("default_traction");
 		mapInfo->regenRate = row.get<int8_t>("regen_rate");
 		mapInfo->minLevel = row.get<player_level_t>("min_level_limit");

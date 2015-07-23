@@ -22,6 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <array>
 
+struct BuffPacketStructure;
+
 namespace BuffsPacketHelper {
-	PACKET(addBytes, const array_t<uint8_t, BuffBytes::ByteQuantity> &bytes);
+	PACKET(addBytes, const buff_array_t &bytes);
+	PACKET(addMapValues, const BuffPacketStructure &buff);
 }

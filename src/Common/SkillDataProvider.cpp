@@ -59,10 +59,11 @@ auto SkillDataProvider::loadPlayerSkillLevels() -> void {
 		skill_id_t skillId = row.get<skill_id_t>("skillid");
 		skill_level_t skillLevel = row.get<skill_level_t>("skill_level");
 
+		level.level = skillLevel;
 		level.mobCount = row.get<int8_t>("mob_count");
 		level.hitCount = row.get<int8_t>("hit_count");
 		level.range = row.get<int16_t>("range");
-		level.time = row.get<int32_t>("buff_time");
+		level.buffTime = seconds_t{row.get<int32_t>("buff_time")};
 		level.mp = row.get<health_t>("mp_cost");
 		level.hp = row.get<health_t>("hp_cost");
 		level.damage = row.get<int16_t>("damage");
@@ -93,7 +94,7 @@ auto SkillDataProvider::loadPlayerSkillLevels() -> void {
 			Point{row.get<coord_t>("ltx"), row.get<coord_t>("lty")},
 			Point{row.get<coord_t>("rbx"), row.get<coord_t>("rby")}
 		};
-		level.coolTime = row.get<int16_t>("cooldown_time");
+		level.coolTime = seconds_t{row.get<int32_t>("cooldown_time")};
 
 		m_skillLevels[skillId][skillLevel] = level;
 		if (m_skillMaxLevels.find(skillId) == std::end(m_skillMaxLevels) || m_skillMaxLevels[skillId] < skillLevel) {
@@ -111,7 +112,9 @@ auto SkillDataProvider::loadMobSkills() -> void {
 		MobSkillLevelInfo mobLevel;
 		mob_skill_id_t skillId = row.get<mob_skill_id_t>("skillid");
 		mob_skill_level_t level = row.get<mob_skill_level_t>("skill_level");
-		mobLevel.time = row.get<int16_t>("buff_time");
+
+		mobLevel.level = level;
+		mobLevel.time = seconds_t{row.get<int16_t>("buff_time")};
 		mobLevel.mp = row.get<uint8_t>("mp_cost");
 		mobLevel.x = row.get<int32_t>("x_property");
 		mobLevel.y = row.get<int32_t>("y_property");
@@ -188,7 +191,7 @@ auto SkillDataProvider::getMaxLevel(skill_id_t skillId) const -> skill_level_t {
 	return m_skillMaxLevels.find(skillId)->second;
 }
 
-auto SkillDataProvider::getSkill(skill_id_t skill, mob_skill_level_t level) const -> const SkillLevelInfo * const {
+auto SkillDataProvider::getSkill(skill_id_t skill, skill_level_t level) const -> const SkillLevelInfo * const {
 	return ext::find_value_ptr(
 		ext::find_value_ptr(m_skillLevels, skill), level);
 }

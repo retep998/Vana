@@ -30,6 +30,7 @@ struct SkillLevelInfo {
 	int8_t hitCount = 0;
 	int8_t mastery = 0;
 	uint8_t criticalDamage = 0;
+	skill_level_t level = 0;
 	health_t mp = 0;
 	health_t hp = 0;
 	slot_qty_t itemCount = 0;
@@ -46,7 +47,6 @@ struct SkillLevelInfo {
 	stat_t mDef = 0;
 	stat_t acc = 0;
 	stat_t avo = 0;
-	int16_t coolTime = 0;
 	int16_t morph = 0;
 	int16_t damage = 0;
 	int16_t range = 0;
@@ -55,8 +55,9 @@ struct SkillLevelInfo {
 	uint16_t prop = 0;
 	damage_t fixedDamage = 0;
 	item_id_t item = 0;
-	int32_t time = 0;
 	item_id_t optionalItem = 0;
+	seconds_t buffTime = seconds_t{0};
+	seconds_t coolTime = seconds_t{0};
 	Rect dimensions;
 };
 
@@ -88,12 +89,13 @@ struct MobSkillLevelInfo {
 	uint8_t mp = 0;
 	uint8_t hp = 0;
 	uint8_t count = 0;
+	mob_skill_level_t level = 0;
 	int16_t cooldown = 0;
 	int16_t prop = 0;
 	int16_t limit = 0;
-	int16_t time = 0;
 	int32_t x = 0;
 	int32_t y = 0;
+	seconds_t time = seconds_t{0};
 	Rect dimensions;
 	vector_t<mob_id_t> summons;
 };
@@ -117,7 +119,7 @@ enum class SkillType {
 	Ranged,
 	Magic,
 	Summon,
-	EnergyCharge
+	EnergyCharge,
 };
 
 struct Attack {

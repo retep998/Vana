@@ -29,6 +29,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.hpp"
 #include <functional>
 
+PlayerSummons::PlayerSummons(Player *player) :
+	m_player{player}
+{
+}
+
 auto PlayerSummons::addSummon(Summon *summon, seconds_t time) -> void {
 	summon_id_t summonId = summon->getId();
 	Timer::Id id{TimerType::BuffTimer, summonId, 1};

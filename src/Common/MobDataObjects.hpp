@@ -43,7 +43,7 @@ struct MobAttackInfo {
 struct MobSkillInfo {
 	mob_skill_id_t skillId = 0;
 	mob_skill_level_t level = 0;
-	int16_t effectAfter = 0;
+	milliseconds_t effectAfter = milliseconds_t{0};
 };
 
 struct MobInfo {

@@ -111,8 +111,8 @@ struct ConsumeInfo {
 	uint16_t mcProb = 0;
 	item_id_t dropUpItem = 0;
 	map_id_t moveTo = 0;
-	int32_t time = 0;
 	int32_t ailment = 0;
+	seconds_t buffTime = seconds_t{0};
 	vector_t<Morph> morphs;
 	vector_t<CardMapRange> mapRanges;
 };

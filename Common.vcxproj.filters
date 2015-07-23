@@ -49,6 +49,12 @@
     <Filter Include="Scripting">
       <UniqueIdentifier>{85f3d2b9-0abc-48fd-859b-b64510037e12}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data Structures\Buffs">
+      <UniqueIdentifier>{5a37ba2d-f8d3-41ff-a03e-3d544f0867f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data Structures\Geometry">
+      <UniqueIdentifier>{eaf70071-4599-44a6-b113-02ac270b0bdf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Common\BuffDataProvider.cpp">
@@ -199,12 +205,6 @@
     <ClCompile Include="src\Common\ExternalIpResolver.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\Rect.cpp">
-      <Filter>Data Structures</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\Line.cpp">
-      <Filter>Data Structures</Filter>
-    </ClCompile>
     <ClCompile Include="src\Common\PacketBuilder.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
@@ -223,6 +223,24 @@
     <ClCompile Include="src\Common\ExitCodes.cpp" />
     <ClCompile Include="src\Common\VanaMain.cpp" />
     <ClCompile Include="src\Common\ThreadPool.cpp" />
+    <ClCompile Include="src\Common\Buff.cpp">
+      <Filter>Data Structures\Buffs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\BuffInfo.cpp">
+      <Filter>Data Structures\Buffs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\BuffSource.cpp">
+      <Filter>Data Structures\Buffs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Line.cpp">
+      <Filter>Data Structures\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Rect.cpp">
+      <Filter>Data Structures\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\BuffMapInfo.cpp">
+      <Filter>Data Structures\Buffs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common\GameConstants.hpp">
@@ -458,9 +476,6 @@
     <ClInclude Include="src\Common\StopWatch.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Rect.hpp">
-      <Filter>Data Structures</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\make_unique.hpp">
       <Filter>Lib</Filter>
     </ClInclude>
@@ -474,9 +489,6 @@
       <Filter>Timer</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\VanaMain.hpp" />
-    <ClInclude Include="src\Common\Line.hpp">
-      <Filter>Data Structures</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\Algorithm.hpp">
       <Filter>Lib</Filter>
     </ClInclude>
@@ -514,11 +526,41 @@
     <ClInclude Include="src\Common\ObjectPool.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="src\Common\Buff.hpp">
+      <Filter>Data Structures\Buffs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\BuffAction.hpp">
+      <Filter>Data Structures\Buffs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\BuffInfo.hpp">
+      <Filter>Data Structures\Buffs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\BuffSkillValue.hpp">
+      <Filter>Data Structures\Buffs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\BuffSourceType.hpp">
+      <Filter>Data Structures\Buffs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\BuffSource.hpp">
+      <Filter>Data Structures\Buffs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Line.hpp">
+      <Filter>Data Structures\Geometry</Filter>
+    </ClInclude>
     <ClInclude Include="src\Common\Point.hpp">
-      <Filter>Data Structures</Filter>
+      <Filter>Data Structures\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Rect.hpp">
+      <Filter>Data Structures\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\WidePoint.hpp">
-      <Filter>Data Structures</Filter>
+      <Filter>Data Structures\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\BuffInfoByEffect.hpp">
+      <Filter>Data Structures\Buffs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\BuffMapInfo.hpp">
+      <Filter>Data Structures\Buffs</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -77,7 +77,7 @@ auto MobDataProvider::loadSkills() -> void {
 		mob_id_t mobId = row.get<mob_id_t>("mobid");
 		mobSkill.skillId = row.get<mob_skill_id_t>("skillid");
 		mobSkill.level = row.get<mob_skill_level_t>("skill_level");
-		mobSkill.effectAfter = row.get<int16_t>("effect_delay");
+		mobSkill.effectAfter = milliseconds_t{row.get<int16_t>("effect_delay")};
 
 		m_skills[mobId].push_back(mobSkill);
 	}

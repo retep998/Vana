@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.hpp"
 
 LuaPortal::LuaPortal(const string_t &filename, player_id_t playerId, map_id_t mapId, const PortalInfo * const portal) :
-	LuaScriptable(filename, playerId)
+	LuaScriptable{filename, playerId}
 {
 	set<portal_id_t>("system_portal_id", portal->id);
 	set<string_t>("system_portal_name", portal->name);

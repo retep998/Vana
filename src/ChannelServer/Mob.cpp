@@ -39,14 +39,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <initializer_list>
 
 Mob::Mob(map_object_t mapMobId, map_id_t mapId, mob_id_t mobId, view_ptr_t<Mob> owner, const Point &pos, int32_t spawnId, bool facesLeft, foothold_id_t foothold, MobControlStatus controlStatus) :
-	MovableLife(foothold, pos, facesLeft ? 1 : 2),
-	m_mapMobId(mapMobId),
-	m_mapId(mapId),
-	m_spawnId(spawnId),
-	m_mobId(mobId),
-	m_owner(owner),
-	m_info(ChannelServer::getInstance().getMobDataProvider().getMobInfo(mobId)),
-	m_controlStatus(controlStatus)
+	MovableLife{foothold, pos, facesLeft ? 1 : 2},
+	m_mapMobId{mapMobId},
+	m_mapId{mapId},
+	m_spawnId{spawnId},
+	m_mobId{mobId},
+	m_owner{owner},
+	m_info{ChannelServer::getInstance().getMobDataProvider().getMobInfo(mobId)},
+	m_controlStatus{controlStatus}
 {
 	m_hp = getMaxHp();
 	m_mp = getMaxMp();
@@ -57,7 +57,7 @@ Mob::Mob(map_object_t mapMobId, map_id_t mapId, mob_id_t mobId, view_ptr_t<Mob> 
 	m_totalHealth = m_hp;
 
 	m_status = StatusEffects::Mob::Empty;
-	StatusInfo empty = StatusInfo(StatusEffects::Mob::Empty, 0, 0, 0);
+	StatusInfo empty{StatusEffects::Mob::Empty, 0, 0, seconds_t{0}};
 	m_statuses[empty.status] = empty;
 
 	if (m_info->hpRecovery > 0 || m_info->mpRecovery > 0) {
@@ -332,6 +332,19 @@ auto Mob::die(Player *player, bool fromExplosion) -> void {
 
 	endControl();
 
+	while (m_markers.size() > 0) {
+		Player *marker = m_markers[0];
+		auto source = marker->getActiveBuffs()->getHomingBeaconSource();
+		if (source.is_initialized()) {
+			auto &buffSource = source.get();
+			marker->getActiveBuffs()->removeBuff(
+				buffSource,
+				Buffs::preprocessBuff(marker, buffSource, seconds_t{0}));
+		}
+
+		m_markers.erase(m_markers.begin());
+	}
+
 	player_id_t highestDamager = distributeExpAndGetDropRecipient(player);
 
 	// Ending of death stuff
@@ -529,13 +542,27 @@ auto Mob::mpEat(Player *player, MpEaterInfo *mp) -> void {
 	}
 }
 
+auto Mob::addMarker(Player *player) -> void {
+	m_markers.push_back(player);
+}
+
+auto Mob::removeMarker(Player *player) -> void {
+	for (size_t i = 0; i < m_markers.size(); i++) {
+		Player *test = m_markers[i];
+		if (test == player) {
+			m_markers.erase(m_markers.begin() + i);
+			return;
+		}
+	}
+}
+
 auto Mob::chooseRandomSkill(mob_skill_id_t &skillId, mob_skill_level_t &skillLevel) -> void {
 	if (m_info->skillCount == 0 || m_anticipatedSkill != 0 || !canCastSkills()) {
 		return;
 	}
 
 	time_point_t now = TimeUtilities::getNow();
-	if (TimeUtilities::getDistanceInSeconds(now, m_lastSkillUse) < seconds_t(3)) {
+	if (TimeUtilities::getDistanceInSeconds(now, m_lastSkillUse) < seconds_t{3}) {
 		return;
 	}
 
@@ -582,7 +609,7 @@ auto Mob::chooseRandomSkill(mob_skill_id_t &skillId, mob_skill_level_t &skillLev
 
 		auto kvp = m_skillUse.find(info.skillId);
 		if (kvp != std::end(m_skillUse)) {
-			time_point_t targetTime = kvp->second + seconds_t(mobSkill->cooldown);
+			time_point_t targetTime = kvp->second + seconds_t{mobSkill->cooldown};
 			stop = now < targetTime;
 		}
 
@@ -627,6 +654,16 @@ auto Mob::useAnticipatedSkill() -> Result {
 	m_lastSkillUse = now;
 
 	auto skillLevelInfo = ChannelServer::getInstance().getSkillDataProvider().getMobSkill(skillId, level);
+
+	auto &skills = ChannelServer::getInstance().getMobDataProvider().getSkills(m_mobId);
+	milliseconds_t delay = milliseconds_t{0};
+	for (const auto &skill : skills) {
+		if (skill.skillId == skillId && skill.level == level) {
+			delay = skill.effectAfter;
+			break;
+		}
+	}
+
 	consumeMp(skillLevelInfo->mp);
 
 	Rect skillArea = skillLevelInfo->dimensions.move(getPos());
@@ -668,8 +705,8 @@ auto Mob::useAnticipatedSkill() -> Result {
 		case MobSkills::Seduce:
 		case MobSkills::CrazySkull:
 		case MobSkills::Zombify: {
-			auto func = [&skillId, &level](Player *player) {
-				player->getActiveBuffs()->addDebuff(skillId, level);
+			auto func = [skillId, level, delay](Player *player) {
+				Buffs::addBuff(player, skillId, level, delay);
 			};
 			map->runFunctionPlayers(skillArea, skillLevelInfo->prop, skillLevelInfo->count, func);
 			break;
@@ -701,7 +738,7 @@ auto Mob::useAnticipatedSkill() -> Result {
 			break;
 		}
 		case MobSkills::PoisonMist:
-			new Mist(getMapId(), this, skillLevelInfo->time, skillArea, skillId, level);
+			new Mist{getMapId(), this, seconds_t{skillLevelInfo->time}, skillArea, skillId, level};
 			break;
 		case MobSkills::WeaponImmunity:
 			statuses.emplace_back(StatusEffects::Mob::WeaponImmunity, skillLevelInfo->x, skillId, level, skillLevelInfo->time);

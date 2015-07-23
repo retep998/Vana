@@ -87,9 +87,9 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 	const int8_t BumpDamage = -1;
 	const int8_t MapDamage = -2;
 
-	tick_count_t ticks = reader.get<tick_count_t>();
+	reader.skip<tick_count_t>();
 	int8_t type = reader.get<int8_t>();
-	reader.skip(1); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
+	reader.skip<uint8_t>(); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
 	damage_t damage = reader.get<damage_t>();
 	bool damageApplied = false;
 	bool deadlyAttack = false;
@@ -130,7 +130,7 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 
 		hit = reader.get<uint8_t>(); // Knock direction
 		pgmr.reduction = reader.get<uint8_t>();
-		reader.skip(1); // I think reduction is a short, but it's a byte in the S -> C packet, so..
+		reader.unk<uint8_t>(); // I think reduction is a short, but it's a byte in the S -> C packet, so..
 		if (pgmr.reduction != 0) {
 			pgmr.isPhysical = reader.get<bool>();
 			pgmr.mapMobId = reader.get<map_object_t>();
@@ -138,8 +138,8 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 				// Hacking
 				return;
 			}
-			reader.skip(1); // 0x06 for Power Guard, 0x00 for Mana Reflection?
-			reader.skip(4); // Mob position garbage
+			reader.skip<int8_t>(); // 0x06 for Power Guard, 0x00 for Mana Reflection?
+			reader.skip<Point>(); // Mob position garbage
 			pgmr.pos = reader.get<Point>();
 			pgmr.damage = damage;
 			if (pgmr.isPhysical) {
@@ -156,7 +156,8 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 	}
 	else {
 		stance = reader.get<int8_t>(); // Power Stance
-		if (stance > 0 && !player->getActiveBuffs()->hasPowerStance()) {
+		auto powerStance = player->getActiveBuffs()->getPowerStanceSource();
+		if (stance > 0 && !powerStance.is_initialized()) {
 			// Hacking
 			return;
 		}
@@ -172,7 +173,7 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 
 	if (disease > 0 && damage != 0) {
 		// Fake/Guardian don't prevent disease
-		player->getActiveBuffs()->addDebuff(disease, level);
+		Buffs::addBuff(player, disease, level, milliseconds_t{0});
 	}
 
 	health_t mp = player->getStats()->getMp();
@@ -188,9 +189,10 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 	};
 
 	if (damage > 0 && !player->hasGmBenefits()) {
-		if (player->getActiveBuffs()->hasMesoGuard() && player->getInventory()->getMesos() > 0) {
-			skill_id_t skillId = player->getActiveBuffs()->getMesoGuard();
-			int16_t mesoRate = player->getActiveBuffs()->getActiveSkillInfo(skillId)->x; // Meso Guard meso %
+		auto mesoGuard = player->getActiveBuffs()->getMesoGuardSource();
+		if (mesoGuard.is_initialized() && player->getInventory()->getMesos() > 0) {
+			auto &source = mesoGuard.get();
+			int16_t mesoRate = player->getActiveBuffs()->getBuffSkillInfo(source)->x; // Meso Guard meso %
 			int16_t mesoLoss = static_cast<int16_t>(mesoRate * damage / 2 / 100);
 			mesos_t mesos = player->getInventory()->getMesos();
 			mesos_t newMesos = mesos - mesoLoss;
@@ -218,10 +220,11 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 			}
 			damageApplied = true;
 
-			player->sendMap(SkillsPacket::showSkillEffect(player->getId(), skillId));
+			player->sendMap(SkillsPacket::showSkillEffect(player->getId(), source.getSkillId()));
 		}
 
-		if (player->getActiveBuffs()->hasMagicGuard()) {
+		auto magicGuard = player->getActiveBuffs()->getMagicGuardSource();
+		if (magicGuard.is_initialized()) {
 			if (deadlyAttack) {
 				deadlyAttackFunc(true);
 			}
@@ -230,8 +233,7 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 				player->getStats()->damageHp(static_cast<uint16_t>(damage));
 			}
 			else {
-				skill_id_t skillId = player->getActiveBuffs()->getMagicGuard();
-				int16_t reduc = player->getActiveBuffs()->getActiveSkillInfo(skillId)->x;
+				int16_t reduc = player->getActiveBuffs()->getBuffSkillInfo(magicGuard.get())->x;
 				int32_t mpDamage = (damage * reduc) / 100;
 				int32_t hpDamage = damage - mpDamage;
 
@@ -274,15 +276,9 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 			if (mpBurn > 0) {
 				player->getStats()->damageMp(mpBurn);
 			}
+		}
 
-			if (player->getActiveBuffs()->getActiveSkillLevel(Skills::Corsair::Battleship) > 0) {
-				player->getActiveBuffs()->reduceBattleshipHp(static_cast<uint16_t>(damage));
-			}
-		}
-		skill_id_t morph = player->getActiveBuffs()->getCurrentMorph();
-		if (morph < 0 || (morph != 0 && player->getStats()->isDead())) {
-			player->getActiveBuffs()->endMorph();
-		}
+		player->getActiveBuffs()->takeDamage(damage);
 	}
 	player->sendMap(PlayersPacket::damagePlayer(player->getId(), damage, mobId, hit, type, stance, noDamageId, pgmr));
 }
@@ -293,7 +289,7 @@ auto PlayerHandler::handleFacialExpression(Player *player, PacketReader &reader)
 }
 
 auto PlayerHandler::handleGetInfo(Player *player, PacketReader &reader) -> void {
-	tick_count_t ticks = reader.get<tick_count_t>();
+	reader.skip<tick_count_t>();
 	player_id_t playerId = reader.get<player_id_t>();
 	if (Player *info = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId)) {
 		player->send(PlayersPacket::showInfo(info, reader.get<bool>()));
@@ -301,7 +297,7 @@ auto PlayerHandler::handleGetInfo(Player *player, PacketReader &reader) -> void 
 }
 
 auto PlayerHandler::handleHeal(Player *player, PacketReader &reader) -> void {
-	tick_count_t ticks = reader.get<tick_count_t>();
+	reader.skip<tick_count_t>();
 	health_t hp = reader.get<health_t>();
 	health_t mp = reader.get<health_t>();
 	if (player->getStats()->isDead() || hp > 400 || mp > 1000 || (hp > 0 && mp > 0)) {
@@ -430,7 +426,7 @@ auto PlayerHandler::handleAdminMessenger(Player *player, PacketReader &reader) -
 	if (sort == 1) {
 		out_stream_t output;
 		output << player->getMedalName() << " : " << line1 << line2 << line3 << line4 << line5;
-		
+
 		auto &basePacket = InventoryPacket::showSuperMegaphone(output.str(), useWhisper);
 		ChannelServer::getInstance().sendWorld(
 			Packets::prepend(basePacket, [](PacketBuilder &builder) {
@@ -479,11 +475,13 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 	player->sendMap(PlayersPacket::useMeleeAttack(player->getId(), masteryId, player->getSkills()->getSkillLevel(masteryId), attack));
 
 	map_id_t map = player->getMapId();
-	uint8_t ppLevel = player->getActiveBuffs()->getActiveSkillLevel(Skills::ChiefBandit::Pickpocket); // Check for active pickpocket level
-	bool ppok = !attack.isMesoExplosion && ppLevel > 0;
-	auto picking = ChannelServer::getInstance().getSkillDataProvider().getSkill(Skills::ChiefBandit::Pickpocket, ppLevel);
+	auto pickpocket = player->getActiveBuffs()->getPickpocketSource();
+	bool ppok = !attack.isMesoExplosion && pickpocket.is_initialized();
 	Point origin;
 	vector_t<damage_t> ppDamages;
+	auto picking = !pickpocket.is_initialized() ?
+		nullptr :
+		player->getActiveBuffs()->getBuffSkillInfo(pickpocket.get());
 
 	for (const auto &target : attack.damages) {
 		damage_t targetTotal = 0;
@@ -538,13 +536,20 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 			Point ppPos = origin;
 			ppPos.x += (ppSize % 2 == 0 ? 5 : 0) + (ppSize / 2) - 20 * ((ppSize / 2) - pickpocket);
 
-			int32_t ppMesos = ((ppDamages[pickpocket] * picking->x) / 10000); // TODO FIXME formula
-			Drop *ppDrop = new Drop(player->getMapId(), ppMesos, ppPos, player->getId(), true);
+			int32_t ppMesos = (ppDamages[pickpocket] * picking->x) / 10000; // TODO FIXME formula
+			Drop *ppDrop = new Drop{player->getMapId(), ppMesos, ppPos, player->getId(), true};
 			ppDrop->setTime(100);
 			Timer::Timer::create(
-				[ppDrop, origin](const time_point_t &now) { ppDrop->doDrop(origin); },
-				Timer::Id{TimerType::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()},
-				nullptr, milliseconds_t{175 * pickpocket});
+				[ppDrop, origin](const time_point_t &now) {
+					ppDrop->doDrop(origin);
+				},
+				Timer::Id{
+					TimerType::PickpocketTimer,
+					player->getId(),
+					player->getActiveBuffs()->getPickpocketCounter()
+				},
+				nullptr,
+				milliseconds_t{175 * pickpocket});
 		}
 		ppDamages.clear();
 	}
@@ -554,10 +559,9 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 	}
 
 	if (player->getSkills()->hasDarkSightInterruptionSkill()) {
-		skill_id_t darkSightId = player->getSkills()->getDarkSight();
-		skill_level_t darkSight = player->getActiveBuffs()->getActiveSkillLevel(darkSightId);
-		if (darkSight > 0) {
-			Skills::stopSkill(player, darkSightId);
+		auto source = player->getActiveBuffs()->getDarkSightSource();
+		if (source.is_initialized()) {
+			Skills::stopSkill(player, source.get());
 		}
 	}
 
@@ -567,7 +571,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 			Map *map = player->getMap();
 			for (uint8_t i = 0; i < items; i++) {
 				map_object_t objId = reader.get<map_object_t>();
-				reader.skip(1); // Some value
+				reader.unk<uint8_t>();
 				if (Drop *drop = map->getDrop(objId)) {
 					if (!drop->isMesos()) {
 						// Hacking
@@ -597,11 +601,11 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 		case Skills::Crusader::AxeComa:
 		case Skills::DawnWarrior::Panic:
 		case Skills::DawnWarrior::Coma:
-			player->getActiveBuffs()->setCombo(0, true);
+			player->getActiveBuffs()->resetCombo();
 			break;
 		case Skills::NightWalker::PoisonBomb: {
 			auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
-			Mist *mist = new Mist(player->getMapId(), player, skill->time, skill->dimensions.move(attack.projectilePos), skillId, level, true);
+			Mist *mist = new Mist{player->getMapId(), player, skill->buffTime, skill->dimensions.move(attack.projectilePos), skillId, level, true};
 			break;
 		}
 		case Skills::Crusader::Shout:
@@ -625,7 +629,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 			if (attack.totalDamage > 0) {
 				int16_t xProperty = player->getSkills()->getSkillInfo(skillId)->x;
 				int32_t hpDamage = static_cast<int32_t>(attack.totalDamage * xProperty / 100);
-				if (hpDamage > player->getStats()->getHp()) {
+				if (hpDamage >= player->getStats()->getHp()) {
 					hpDamage = player->getStats()->getHp() - 1;
 				}
 				if (hpDamage > 0) {
@@ -719,13 +723,14 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 					damage = mob->getHp();
 				}
 			}
-			else if (skillId == Skills::Outlaw::HomingBeacon || skillId == Skills::Corsair::Bullseye) {
-				Buffs::addBuff(player, skillId, level, 0, mapMobId);
-			}
+
 			int32_t tempHp = mob->getHp();
 			mob->applyDamage(player->getId(), damage);
 			if (tempHp <= damage) {
 				mob = nullptr;
+			}
+			else if (skillId == Skills::Outlaw::HomingBeacon || skillId == Skills::Corsair::Bullseye) {
+				Buffs::addBuff(player, skillId, level, 0, mapMobId);
 			}
 		}
 		if (targetTotal > 0) {
@@ -744,10 +749,9 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 	}
 
 	if (player->getSkills()->hasDarkSightInterruptionSkill()) {
-		skill_id_t darkSightId = player->getSkills()->getDarkSight();
-		skill_level_t darkSight = player->getActiveBuffs()->getActiveSkillLevel(darkSightId);
-		if (darkSight > 0) {
-			Skills::stopSkill(player, darkSightId);
+		auto source = player->getActiveBuffs()->getDarkSightSource();
+		if (source.is_initialized()) {
+			Skills::stopSkill(player, source.get());
 		}
 	}
 
@@ -851,7 +855,7 @@ auto PlayerHandler::useSpellAttack(Player *player, PacketReader &reader) -> void
 		case Skills::FpMage::PoisonMist:
 		case Skills::BlazeWizard::FlameGear: {
 			auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
-			Mist *mist = new Mist(player->getMapId(), player, skill->time, skill->dimensions.move(player->getPos()), skillId, level, true);
+			Mist *mist = new Mist{player->getMapId(), player, skill->buffTime, skill->dimensions.move(player->getPos()), skillId, level, true};
 			break;
 		}
 	}
@@ -959,10 +963,10 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &reader, SkillTyp
 			attack.skillLevel = player->getSkills()->getSkillLevel(skillId);
 		}
 
-		reader.skip(4); // Unk, strange constant that doesn't seem to change
+		reader.skip<checksum_t>(); // Unk, strange constant that doesn't seem to change
 		// Things atttemped: Map changes, character changes, job changes, skill changes, position changes, hitting enemies
 		// It appears as 0xF9B16E60 which is 4189154912 unsigned, -105812384 signed, doesn't seem to be a size, probably a CRC
-		reader.skip(4); // Unk, strange constant dependent on skill, probably a CRC
+		reader.skip<checksum_t>();
 
 		switch (skillId) {
 			case Skills::Hermit::ShadowMeso:
@@ -1011,7 +1015,7 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &reader, SkillTyp
 		inventory_slot_t csStar = reader.get<inventory_slot_t>();
 		attack.starPos = starSlot;
 		attack.cashStarPos = csStar;
-		reader.skip(1); // 0x00 = AoE?
+		reader.unk<uint8_t>(); // 0x00 = AoE?
 		if (!shadowMeso) {
 			if (player->getActiveBuffs()->hasShadowStars() && skillId != Skills::NightLord::Taunt) {
 				attack.starId = reader.get<int32_t>();
@@ -1035,10 +1039,11 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &reader, SkillTyp
 
 	for (int8_t i = 0; i < targets; ++i) {
 		map_object_t mapMobId = reader.get<map_object_t>();
-		reader.skip(4); // Always 0x06, <two bytes of some kind>, 0x01
-		reader.skip(8); // Mob pos, damage pos
+		reader.unk<uint32_t>(); // Always 0x06, <two bytes of some kind>, 0x01
+		reader.skip<Point>(); // Mob pos
+		reader.skip<Point>(); // Damage pos
 		if (!mesoExplosion) {
-			reader.skip(2); // Distance
+			reader.skip<uint16_t>(); // Distance, I think
 		}
 		else {
 			hits = reader.get<int8_t>(); // Hits for Meso Explosion
@@ -1049,7 +1054,7 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &reader, SkillTyp
 			attack.totalDamage += damage;
 		}
 		if (skillType != SkillType::Summon) {
-			reader.skip(4); // 4 bytes of unknown purpose, differs by the mob, probably a CRC
+			reader.skip<checksum_t>();
 		}
 	}
 

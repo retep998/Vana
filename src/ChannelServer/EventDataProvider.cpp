@@ -144,7 +144,7 @@ auto EventDataProvider::clearInstances() -> void {
 }
 
 auto EventDataProvider::startInstance(const string_t &name, const duration_t &time, const duration_t &repeat) -> void {
-	Instance *instance = new Instance(name, 0, 0, time, repeat, false);
+	Instance *instance = new Instance{name, 0, 0, time, repeat, false};
 	ChannelServer::getInstance().getInstances().addInstance(instance);
 	instance->beginInstance();
 }

@@ -24,7 +24,13 @@ class MovableLife {
 	NONCOPYABLE(MovableLife);
 	NO_DEFAULT_CONSTRUCTOR(MovableLife);
 public:
-	MovableLife(foothold_id_t foothold, const Point &pos, int8_t stance) : m_stance(stance), m_foothold(foothold), m_pos(pos) { }
+	MovableLife(foothold_id_t foothold, const Point &pos, int8_t stance) :
+		m_stance{stance},
+		m_foothold{foothold},
+		m_pos{pos}
+	{
+	}
+
 	virtual ~MovableLife() = default;
 
 	auto isFacingRight() const -> bool { return m_stance % 2 == 0; }

@@ -20,11 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <string>
 
+class BuffInfo;
 class PacketReader;
 class Player;
 template <typename T> class IdPool;
-struct ActiveBuff;
-struct Buff;
+struct BuffPacketValues;
 struct SkillLevelInfo;
 
 namespace SummonMessages {
@@ -43,7 +43,7 @@ namespace SummonHandler {
 	auto showSummons(Player *fromPlayer, Player *toPlayer) -> void;
 	auto moveSummon(Player *player, PacketReader &reader) -> void;
 	auto damageSummon(Player *player, PacketReader &reader) -> void;
-	auto makeBuff(Player *player, item_id_t itemId) -> Buff;
-	auto makeActiveBuff(Player *player, const Buff &data, item_id_t itemId, const SkillLevelInfo *skillInfo) -> ActiveBuff;
+	auto makeBuff(Player *player, item_id_t itemId) -> BuffInfo;
+	auto makeActiveBuff(Player *player, const BuffInfo &data, item_id_t itemId, const SkillLevelInfo *skillInfo) -> BuffPacketValues;
 	auto summonSkill(Player *player, PacketReader &reader) -> void;
 }

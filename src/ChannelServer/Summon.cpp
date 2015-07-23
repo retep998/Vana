@@ -21,10 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillDataProvider.hpp"
 
 Summon::Summon(summon_id_t id, skill_id_t summonId, skill_level_t level, bool isFacingLeft, const Point &position, foothold_id_t foothold) :
-	MovableLife(foothold, position, 4),
-	m_id(id),
-	m_summonId(summonId),
-	m_level(level)
+	MovableLife{foothold, position, 4},
+	m_id{id},
+	m_summonId{summonId},
+	m_level{level}
 {
 	m_actionType = Attack;
 	switch (summonId) {

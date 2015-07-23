@@ -29,8 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 LuaReactor::LuaReactor(const string_t &filename, player_id_t playerId, reactor_id_t reactorId, map_id_t mapId) :
-	LuaScriptable(filename, playerId),
-	m_reactorId(reactorId)
+	LuaScriptable{filename, playerId},
+	m_reactorId{reactorId}
 {
 	set<reactor_id_t>("system_reactor_id", reactorId);
 	set<map_id_t>("system_map_id", mapId);

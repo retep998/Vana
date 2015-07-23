@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "BuffDataProvider.hpp"
+#include "BuffSource.hpp"
 #include "GameConstants.hpp"
 #include "GameLogicUtilities.hpp"
 #include "InitializeCommon.hpp"
@@ -23,875 +24,683 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
+auto BuffDataProvider::processSkills(Buff value, const init_list_t<skill_id_t> &skills) -> void {
+	for (const auto &s : skills) {
+		if (m_buffs.find(s) != std::end(m_buffs)) throw std::invalid_argument{"skill is already present"};
+		m_buffs[s] = value;
+	}
+}
+
 auto BuffDataProvider::loadData() -> void {
-	using namespace BuffBytes;
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Buffs... ";
 
-	Buff buff;
-	BuffAct act;
-	BuffInfo player;
-	BuffMapInfo map;
-	MobAilmentInfo mob;
+	auto physicalAttack = BuffInfo::fromPlayerOnly(1, BuffSkillValue::Watk);
+	auto physicalDefense = BuffInfo::fromPlayerOnly(2, BuffSkillValue::Wdef);
+	auto magicAttack = BuffInfo::fromPlayerOnly(3, BuffSkillValue::Matk);
+	auto magicDefense = BuffInfo::fromPlayerOnly(4, BuffSkillValue::Mdef);
+	auto accuracy = BuffInfo::fromPlayerOnly(5, BuffSkillValue::Accuracy);
+	auto avoid = BuffInfo::fromPlayerOnly(6, BuffSkillValue::Avoid);
+	// 7 - ???
+	auto speed = BuffInfo::fromMapMovement(8, BuffSkillValue::Speed, BuffMapInfo{1, BuffSkillValue::Speed});
+	auto jump = BuffInfo::fromPlayerOnlyMovement(9, BuffSkillValue::Jump);
+	auto magicGuard = BuffInfo::fromPlayerOnly(10, BuffSkillValue::X);
+	auto darkSight = BuffInfo::fromMapNoMovement(11, BuffSkillValue::X, BuffMapInfo{});
+	auto booster = BuffInfo::fromPlayerOnly(12, BuffSkillValue::X);
+	auto powerGuard = BuffInfo::fromPlayerOnly(13, BuffSkillValue::X);
+	auto hyperBodyHp = BuffInfo::fromPlayerOnly(14, BuffSkillValue::X);
+	auto hyperBodyMp = BuffInfo::fromPlayerOnly(15, BuffSkillValue::Y);
+	auto invincible = BuffInfo::fromPlayerOnly(16, BuffSkillValue::X);
+	auto soulArrow = BuffInfo::fromMapNoMovement(17, BuffSkillValue::X, BuffMapInfo{});
+	auto stun = BuffInfo::fromMapMovement(18, 1, BuffMapInfo{4, BuffSkillValue::BitpackedSkillAndLevel32});
+	auto poison = BuffInfo::fromMapNoMovement(19, BuffSkillValue::X, BuffMapInfo{BuffSkillValue::SpecialProcessing});
+	auto seal = BuffInfo::fromMapNoMovement(20, 2, BuffMapInfo{4, BuffSkillValue::BitpackedSkillAndLevel32});
+	auto darkness = BuffInfo::fromMapNoMovement(21, 1, BuffMapInfo{4, BuffSkillValue::BitpackedSkillAndLevel32});
+	auto combo = BuffInfo::fromMapNoMovement(22, BuffSkillValue::SpecialProcessing, BuffMapInfo{1, BuffSkillValue::SpecialProcessing});
+	auto charge = BuffInfo::fromMapNoMovement(23, BuffSkillValue::Matk, BuffMapInfo{4, BuffSkillValue::SkillId});
+	auto timedHurt = BuffInfo::fromPlayerOnly(24, BuffSkillValue::Level);
+	auto holySymbol = BuffInfo::fromPlayerOnly(25, BuffSkillValue::X);
+	auto mesoUp = BuffInfo::fromPlayerOnly(26, BuffSkillValue::X);
+	auto shadowPartner = BuffInfo::fromMapNoMovement(27, BuffSkillValue::BitpackedXy16, BuffMapInfo{});
+	auto pickpocket = BuffInfo::fromPlayerOnly(28, BuffSkillValue::X);
+	auto mesoGuard = BuffInfo::fromPlayerOnly(29, BuffSkillValue::X);
+	// 30 - ???
+	auto weakness = BuffInfo::fromMapMovement(31, 1, BuffMapInfo{4, BuffSkillValue::BitpackedSkillAndLevel32});
+	auto curse = BuffInfo::fromMapNoMovement(32, 1, BuffMapInfo{4, BuffSkillValue::BitpackedSkillAndLevel32});
+	auto slow = BuffInfo::fromPlayerOnlyMovement(33, BuffSkillValue::X);
+	auto morph = BuffInfo::fromMapMovement(34, BuffSkillValue::Morph, BuffMapInfo{2, BuffSkillValue::Morph});
+	auto timedHeal = BuffInfo::fromPlayerOnly(35, BuffSkillValue::X);
+	// No, I have no idea why Maple Warrior is a "movement" buff
+	auto mapleWarrior = BuffInfo::fromPlayerOnlyMovement(36, BuffSkillValue::X);
+	auto powerStance = BuffInfo::fromPlayerOnly(37, BuffSkillValue::Prop);
+	auto sharpEyes = BuffInfo::fromPlayerOnly(38, BuffSkillValue::BitpackedXy16);
+	auto manaReflection = BuffInfo::fromPlayerOnly(39, BuffSkillValue::Level);
+	auto seduce = BuffInfo::fromMapMovement(40, BuffSkillValue::X, BuffMapInfo{4, BuffSkillValue::BitpackedSkillAndLevel32});
+	auto shadowStars = BuffInfo::fromMapNoMovement(41, BuffSkillValue::SpecialProcessing, BuffMapInfo{4, BuffSkillValue::SpecialProcessing});
+	auto infinity = BuffInfo::fromPlayerOnly(42, BuffSkillValue::X);
+	auto holyShield = BuffInfo::fromPlayerOnly(43, BuffSkillValue::X);
+	auto hamstring = BuffInfo::fromPlayerOnly(44, BuffSkillValue::X);
+	auto blind = BuffInfo::fromPlayerOnly(45, BuffSkillValue::X);
+	auto concentrate = BuffInfo::fromPlayerOnly(46, BuffSkillValue::X);
+	auto zombify = BuffInfo::fromMapNoMovement(47, BuffSkillValue::X, BuffMapInfo{4, BuffSkillValue::BitpackedSkillAndLevel32});
+	auto echo = BuffInfo::fromPlayerOnly(48, BuffSkillValue::X);
+	// 49 - ???
+	// 50 - ???
+	// 51 - ???
+	auto crazySkull = BuffInfo::fromMapNoMovement(52, BuffSkillValue::X, BuffMapInfo{4, BuffSkillValue::BitpackedSkillAndLevel32});
+	// 53 - ???
+	// 54 - ???
+	// 55 - ???
+	// 56 - ???
+	// ??? - not sure what normally goes here, I use it for GM Hide because it appears to have no ill effects
+	auto unk = BuffInfo::fromPlayerOnly(57, BuffSkillValue::SpecialProcessing);
+	// 58 - ???
+	// 59 - ???
+	// 60 - ???
+	// 61 - ???
+	auto spark = BuffInfo::fromPlayerOnly(62, BuffSkillValue::X);
+	// 63 - ???
+	auto dawnFinalAttack = BuffInfo::fromPlayerOnly(64, 1);
+	auto windFinalAttack = BuffInfo::fromPlayerOnly(65, 1);
+	auto elementalReset = BuffInfo::fromPlayerOnly(66, BuffSkillValue::X);
+	auto windWalk = BuffInfo::fromMapNoMovement(67, 1, BuffMapInfo{});
+	auto energyCharge = BuffInfo::fromMapNoMovement(68, BuffSkillValue::SpecialPacket, BuffMapInfo{BuffSkillValue::SpecialPacket});
+	auto dashSpeed = BuffInfo::fromMapMovement(69, BuffSkillValue::SpecialPacket, BuffMapInfo{BuffSkillValue::SpecialPacket});
+	auto dashJump = BuffInfo::fromMapMovement(70, BuffSkillValue::SpecialPacket, BuffMapInfo{BuffSkillValue::SpecialPacket});
+	auto mount = BuffInfo::fromMapMovement(71, BuffSkillValue::SpecialPacket, BuffMapInfo{BuffSkillValue::SpecialPacket});
+	auto speedInfusion = BuffInfo::fromPlayerOnly(72, BuffSkillValue::SpecialPacket);
+	auto homingBeacon = BuffInfo::fromPlayerOnly(73, BuffSkillValue::SpecialPacket);
 
-	// Boosters
-	buff.type = 0x08;
-	buff.byte = Byte2;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_skillInfo[Skills::Fighter::SwordBooster].player.push_back(player);
-	m_skillInfo[Skills::Fighter::AxeBooster].player.push_back(player);
-	m_skillInfo[Skills::Page::SwordBooster].player.push_back(player);
-	m_skillInfo[Skills::Page::BwBooster].player.push_back(player);
-	m_skillInfo[Skills::Spearman::SpearBooster].player.push_back(player);
-	m_skillInfo[Skills::Spearman::PolearmBooster].player.push_back(player);
-	m_skillInfo[Skills::FpMage::SpellBooster].player.push_back(player);
-	m_skillInfo[Skills::IlMage::SpellBooster].player.push_back(player);
-	m_skillInfo[Skills::Hunter::BowBooster].player.push_back(player);
-	m_skillInfo[Skills::Crossbowman::CrossbowBooster].player.push_back(player);
-	m_skillInfo[Skills::Assassin::ClawBooster].player.push_back(player);
-	m_skillInfo[Skills::Bandit::DaggerBooster].player.push_back(player);
-	m_skillInfo[Skills::Brawler::KnucklerBooster].player.push_back(player);
-	m_skillInfo[Skills::Gunslinger::GunBooster].player.push_back(player);
-	m_skillInfo[Skills::DawnWarrior::SwordBooster].player.push_back(player);
-	m_skillInfo[Skills::BlazeWizard::SpellBooster].player.push_back(player);
-	m_skillInfo[Skills::WindArcher::BowBooster].player.push_back(player);
-	m_skillInfo[Skills::NightWalker::ClawBooster].player.push_back(player);
-	m_skillInfo[Skills::ThunderBreaker::KnucklerBooster].player.push_back(player);
+	processSkills(
+		Buff{{
+			magicGuard,
+		}}, {
+			Skills::Magician::MagicGuard,
+			Skills::BlazeWizard::MagicGuard,
+		});
 
-	// Speed Infusion
-	buff.type = 0x80;
-	buff.byte = Byte9;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_skillInfo[Skills::Buccaneer::SpeedInfusion].player.push_back(player);
-	m_skillInfo[Skills::ThunderBreaker::SpeedInfusion].player.push_back(player);
+	processSkills(
+		Buff{{
+			speed,
+			darkSight,
+		}}, {
+			Skills::Rogue::DarkSight,
+			Skills::NightWalker::DarkSight,
+		});
 
-	// Maple Warriors
-	buff.type = 0x08;
-	buff.byte = Byte5;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_skillInfo[Skills::Hero::MapleWarrior].player.push_back(player);
-	m_skillInfo[Skills::Paladin::MapleWarrior].player.push_back(player);
-	m_skillInfo[Skills::DarkKnight::MapleWarrior].player.push_back(player);
-	m_skillInfo[Skills::FpArchMage::MapleWarrior].player.push_back(player);
-	m_skillInfo[Skills::IlArchMage::MapleWarrior].player.push_back(player);
-	m_skillInfo[Skills::Bishop::MapleWarrior].player.push_back(player);
-	m_skillInfo[Skills::Bowmaster::MapleWarrior].player.push_back(player);
-	m_skillInfo[Skills::Marksman::MapleWarrior].player.push_back(player);
-	m_skillInfo[Skills::NightLord::MapleWarrior].player.push_back(player);
-	m_skillInfo[Skills::Shadower::MapleWarrior].player.push_back(player);
-	m_skillInfo[Skills::Buccaneer::MapleWarrior].player.push_back(player);
-	m_skillInfo[Skills::Corsair::MapleWarrior].player.push_back(player);
+	processSkills(
+		Buff{{
+			booster,
+		}}, {
+			Skills::Fighter::SwordBooster,
+			Skills::Fighter::AxeBooster,
+			Skills::Page::SwordBooster,
+			Skills::Page::BwBooster,
+			Skills::Spearman::SpearBooster,
+			Skills::Spearman::PolearmBooster,
+			Skills::FpMage::SpellBooster,
+			Skills::IlMage::SpellBooster,
+			Skills::Hunter::BowBooster,
+			Skills::Crossbowman::CrossbowBooster,
+			Skills::Assassin::ClawBooster,
+			Skills::Bandit::DaggerBooster,
+			Skills::Brawler::KnucklerBooster,
+			Skills::Gunslinger::GunBooster,
+			Skills::DawnWarrior::SwordBooster,
+			Skills::BlazeWizard::SpellBooster,
+			Skills::WindArcher::BowBooster,
+			Skills::NightWalker::ClawBooster,
+			Skills::ThunderBreaker::KnucklerBooster,
+		});
 
-	// Magic Guard
-	buff.type = 0x02;
-	buff.byte = Byte2;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_skillInfo[Skills::Magician::MagicGuard].player.push_back(player);
-	m_skillInfo[Skills::BlazeWizard::MagicGuard].player.push_back(player);
+	processSkills(
+		Buff{{
+			powerGuard,
+		}}, {
+			Skills::Fighter::PowerGuard,
+			Skills::Page::PowerGuard,
+		});
 
-	// Magic Armor, Iron Body
-	buff.type = 0x02;
-	buff.byte = Byte1;
-	buff.value = SkillWdef;
-	player.buff = buff;
-	m_skillInfo[Skills::Magician::MagicArmor].player.push_back(player);
-	m_skillInfo[Skills::Swordsman::IronBody].player.push_back(player);
-	m_skillInfo[Skills::BlazeWizard::MagicArmor].player.push_back(player);
-	m_skillInfo[Skills::DawnWarrior::IronBody].player.push_back(player);
+	processSkills(
+		Buff{{
+			hyperBodyHp,
+			hyperBodyMp,
+		}}, {
+			Skills::Spearman::HyperBody,
+			Skills::SuperGm::HyperBody,
+		});
 
-	// Focus
-	buff.type = 0x10;
-	buff.byte = Byte1;
-	buff.value = SkillAcc;
-	player.buff = buff;
-	m_skillInfo[Skills::Archer::Focus].player.push_back(player);
-	m_skillInfo[Skills::WindArcher::Focus].player.push_back(player);
-	buff.type = 0x20;
-	buff.byte = Byte1;
-	buff.value = SkillAvo;
-	player.buff = buff;
-	m_skillInfo[Skills::Archer::Focus].player.push_back(player);
-	m_skillInfo[Skills::WindArcher::Focus].player.push_back(player);
+	processSkills(
+		Buff{{
+			invincible,
+		}}, {
+			Skills::Cleric::Invincible,
+		});
 
-	// Rage
-	buff.type = 0x01;
-	buff.byte = Byte1;
-	buff.value = SkillWatk;
-	player.buff = buff;
-	m_skillInfo[Skills::Fighter::Rage].player.push_back(player);
-	m_skillInfo[Skills::DawnWarrior::Rage].player.push_back(player);
-	buff.type = 0x02;
-	buff.byte = Byte1;
-	buff.value = SkillWdef;
-	player.buff = buff;
-	m_skillInfo[Skills::Fighter::Rage].player.push_back(player);
-	m_skillInfo[Skills::DawnWarrior::Rage].player.push_back(player);
+	processSkills(
+		Buff{{
+			soulArrow,
+		}}, {
+			Skills::Hunter::SoulArrow,
+			Skills::Crossbowman::SoulArrow,
+			Skills::WindArcher::SoulArrow,
+		});
 
-	// Power Guard
-	buff.type = 0x10;
-	buff.byte = Byte2;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_skillInfo[Skills::Fighter::PowerGuard].player.push_back(player);
-	m_skillInfo[Skills::Page::PowerGuard].player.push_back(player);
+	processSkills(
+		Buff{{
+			combo,
+		}}, {
+			Skills::Crusader::ComboAttack,
+			Skills::DawnWarrior::ComboAttack,
+		});
 
-	// Iron Will
-	buff.type = 0x02;
-	buff.byte = Byte1;
-	buff.value = SkillWdef;
-	player.buff = buff;
-	m_skillInfo[Skills::Spearman::IronWill].player.push_back(player);
-	buff.type = 0x08;
-	buff.byte = Byte1;
-	buff.value = SkillMdef;
-	player.buff = buff;
-	m_skillInfo[Skills::Spearman::IronWill].player.push_back(player);
+	processSkills(
+		Buff{{
+			magicAttack,
+			charge,
+		}}, {
+			Skills::WhiteKnight::BwFireCharge,
+			Skills::WhiteKnight::BwIceCharge,
+			Skills::WhiteKnight::BwLitCharge,
+			Skills::WhiteKnight::SwordFireCharge,
+			Skills::WhiteKnight::SwordIceCharge,
+			Skills::WhiteKnight::SwordLitCharge,
+			Skills::Paladin::BwHolyCharge,
+			Skills::Paladin::SwordHolyCharge,
+			Skills::DawnWarrior::SoulCharge,
+			Skills::ThunderBreaker::LightningCharge,
+		});
 
-	// Hyper Body, Gm Hyper Body
-	buff.type = 0x20;
-	buff.byte = Byte2;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_skillInfo[Skills::Spearman::HyperBody].player.push_back(player);
-	m_skillInfo[Skills::SuperGm::HyperBody].player.push_back(player);
-	buff.type = 0x40;
-	buff.byte = Byte2;
-	buff.value = SkillY;
-	player.buff = buff;
-	m_skillInfo[Skills::Spearman::HyperBody].player.push_back(player);
-	m_skillInfo[Skills::SuperGm::HyperBody].player.push_back(player);
+	processSkills(
+		Buff{{
+			physicalAttack,
+			timedHurt.
+				withAct(BuffAction::Hurt, BuffSkillValue::X, seconds_t{4}),
+		}}, {
+			Skills::DragonKnight::DragonBlood,
+		});
 
-	// Meditation
-	buff.type = 0x04;
-	buff.byte = Byte1;
-	buff.value = SkillMatk;
-	player.buff = buff;
-	m_skillInfo[Skills::FpWizard::Meditation].player.push_back(player);
-	m_skillInfo[Skills::IlWizard::Meditation].player.push_back(player);
-	m_skillInfo[Skills::BlazeWizard::Meditation].player.push_back(player);
+	processSkills(
+		Buff{{
+			holySymbol,
+		}}, {
+			Skills::Priest::HolySymbol,
+			Skills::SuperGm::HolySymbol,
+		});
 
-	// Invincible
-	buff.type = 0x80;
-	buff.byte = Byte2;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_skillInfo[Skills::Cleric::Invincible].player.push_back(player);
+	processSkills(
+		Buff{{
+			mesoUp,
+		}}, {
+			Skills::Hermit::MesoUp,
+		});
 
-	// Bless, Gm Bless
-	buff.type = 0x01;
-	buff.byte = Byte1;
-	buff.value = SkillWatk;
-	player.buff = buff;
-	m_skillInfo[Skills::SuperGm::Bless].player.push_back(player);
-	buff.type = 0x02;
-	buff.byte = Byte1;
-	buff.value = SkillWdef;
-	player.buff = buff;
-	m_skillInfo[Skills::Cleric::Bless].player.push_back(player);
-	m_skillInfo[Skills::SuperGm::Bless].player.push_back(player);
-	buff.type = 0x04;
-	buff.byte = Byte1;
-	buff.value = SkillMatk;
-	player.buff = buff;
-	m_skillInfo[Skills::SuperGm::Bless].player.push_back(player);
-	buff.type = 0x08;
-	buff.byte = Byte1;
-	buff.value = SkillMdef;
-	player.buff = buff;
-	m_skillInfo[Skills::Cleric::Bless].player.push_back(player);
-	m_skillInfo[Skills::SuperGm::Bless].player.push_back(player);
-	buff.type = 0x10;
-	buff.byte = Byte1;
-	buff.value = SkillAcc;
-	player.buff = buff;
-	m_skillInfo[Skills::Cleric::Bless].player.push_back(player);
-	m_skillInfo[Skills::SuperGm::Bless].player.push_back(player);
-	buff.type = 0x20;
-	buff.byte = Byte1;
-	buff.value = SkillAvo;
-	player.buff = buff;
-	m_skillInfo[Skills::Cleric::Bless].player.push_back(player);
-	m_skillInfo[Skills::SuperGm::Bless].player.push_back(player);
+	processSkills(
+		Buff{{
+			shadowPartner,
+		}}, {
+			Skills::Hermit::ShadowPartner,
+			Skills::NightWalker::ShadowPartner,
+		});
 
-	// GM Hide
-	buff.type = 0x01;
-	buff.byte = Byte8;
-	buff.value = SkillSpecialProc;
-	player.buff = buff;
-	m_skillInfo[Skills::SuperGm::Hide].player.push_back(player);
+	processSkills(
+		Buff{{
+			pickpocket,
+		}}, {
+			Skills::ChiefBandit::Pickpocket,
+		});
 
-	// Meso Guard
-	buff.type = 0x10;
-	buff.byte = Byte4;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_skillInfo[Skills::ChiefBandit::MesoGuard].player.push_back(player);
+	processSkills(
+		Buff{{
+			mesoGuard,
+		}}, {
+			Skills::ChiefBandit::MesoGuard,
+		});
 
-	// Sharp Eyes
-	buff.type = 0x20;
-	buff.byte = Byte5;
-	buff.value = SkillSpecialProc;
-	player.buff = buff;
-	m_skillInfo[Skills::Bowmaster::SharpEyes].player.push_back(player);
-	m_skillInfo[Skills::Marksman::SharpEyes].player.push_back(player);
+	processSkills(
+		Buff{{
+			timedHeal.
+				withAct(BuffAction::Heal, BuffSkillValue::X, milliseconds_t{4900}),
+		}}, {
+			Skills::Beginner::Recovery,
+			Skills::Noblesse::Recovery,
+		});
 
-	// Holy Symbol
-	buff.type = 0x01;
-	buff.byte = Byte4;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_skillInfo[Skills::Priest::HolySymbol].player.push_back(player);
-	m_skillInfo[Skills::SuperGm::HolySymbol].player.push_back(player);
+	processSkills(
+		Buff{{
+			mapleWarrior,
+		}}, {
+			Skills::Hero::MapleWarrior,
+			Skills::Paladin::MapleWarrior,
+			Skills::DarkKnight::MapleWarrior,
+			Skills::FpArchMage::MapleWarrior,
+			Skills::IlArchMage::MapleWarrior,
+			Skills::Bishop::MapleWarrior,
+			Skills::Bowmaster::MapleWarrior,
+			Skills::Marksman::MapleWarrior,
+			Skills::NightLord::MapleWarrior,
+			Skills::Shadower::MapleWarrior,
+			Skills::Buccaneer::MapleWarrior,
+			Skills::Corsair::MapleWarrior,
+		});
 
-	// Enrage
-	buff.type = 0x01;
-	buff.byte = Byte1;
-	buff.value = SkillWatk;
-	player.buff = buff;
-	m_skillInfo[Skills::Hero::Enrage].player.push_back(player);
+	processSkills(
+		Buff{{
+			powerStance,
+		}}, {
+			Skills::Hero::PowerStance,
+			Skills::Paladin::PowerStance,
+			Skills::DarkKnight::PowerStance,
+		});
 
-	// Concentrate
-	buff.type = 0x01;
-	buff.byte = Byte1;
-	buff.value = SkillWatk;
-	player.buff = buff;
-	m_skillInfo[Skills::Bowmaster::Concentrate].player.push_back(player);
-	buff.type = 0x20;
-	buff.byte = Byte6;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_skillInfo[Skills::Bowmaster::Concentrate].player.push_back(player);
+	processSkills(
+		Buff{{
+			sharpEyes,
+		}}, {
+			Skills::Bowmaster::SharpEyes,
+			Skills::Marksman::SharpEyes,
+		});
 
-	// Pickpocket/Meso Up
-	buff.type = 0x08;
-	buff.byte = Byte4;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_skillInfo[Skills::ChiefBandit::Pickpocket].player.push_back(player);
-	m_skillInfo[Skills::Hermit::MesoUp].player.push_back(player);
+	processSkills(
+		Buff{{
+			manaReflection,
+		}}, {
+			Skills::FpArchMage::ManaReflection,
+			Skills::IlArchMage::ManaReflection,
+			Skills::Bishop::ManaReflection,
+		});
 
-	// Infinity
-	buff.type = 0x02;
-	buff.byte = Byte6;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_skillInfo[Skills::FpArchMage::Infinity].player.push_back(player);
-	m_skillInfo[Skills::IlArchMage::Infinity].player.push_back(player);
-	m_skillInfo[Skills::Bishop::Infinity].player.push_back(player);
+	processSkills(
+		Buff{{
+			shadowStars,
+		}}, {
+			Skills::NightLord::ShadowStars,
+		});
 
-	// Echo of Hero
-	buff.type = 0x80;
-	buff.byte = Byte6;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_skillInfo[Skills::Beginner::EchoOfHero].player.push_back(player);
-	m_skillInfo[Skills::Noblesse::EchoOfHero].player.push_back(player);
+	processSkills(
+		Buff{{
+			infinity,
+		}}, {
+			Skills::FpArchMage::Infinity,
+			Skills::IlArchMage::Infinity,
+			Skills::Bishop::Infinity,
+		});
 
-	// Power Stance
-	buff.type = 0x10;
-	buff.byte = Byte5;
-	buff.value = SkillProp;
-	player.buff = buff;
-	m_skillInfo[Skills::Hero::PowerStance].player.push_back(player);
-	m_skillInfo[Skills::Paladin::PowerStance].player.push_back(player);
-	m_skillInfo[Skills::DarkKnight::PowerStance].player.push_back(player);
+	processSkills(
+		Buff{{
+			holyShield,
+		}}, {
+			Skills::Bishop::HolyShield,
+		});
 
-	// Mana Reflection
-	buff.type = 0x40;
-	buff.byte = Byte5;
-	buff.value = SkillLv;
-	player.buff = buff;
-	m_skillInfo[Skills::FpArchMage::ManaReflection].player.push_back(player);
-	m_skillInfo[Skills::IlArchMage::ManaReflection].player.push_back(player);
-	m_skillInfo[Skills::Bishop::ManaReflection].player.push_back(player);
+	processSkills(
+		Buff{{
+			hamstring,
+		}}, {
+			Skills::Bowmaster::Hamstring,
+		});
 
-	// Hamstring
-	buff.type = 0x08;
-	buff.byte = Byte6;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_skillInfo[Skills::Bowmaster::Hamstring].player.push_back(player);
+	processSkills(
+		Buff{{
+			blind,
+		}}, {
+			Skills::Marksman::Blind,
+		});
 
-	// Blind
-	buff.type = 0x10;
-	buff.byte = Byte6;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_skillInfo[Skills::Marksman::Blind].player.push_back(player);
+	processSkills(
+		Buff{{
+			physicalAttack,
+			concentrate,
+		}}, {
+			Skills::Bowmaster::Concentrate,
+		});
 
-	// Dragon Roar
-	buff.type = 0x02;
-	buff.byte = Byte3;
-	buff.value = SkillNone;
-	player.buff = buff;
-	player.itemVal = 1;
-	m_skillInfo[Skills::DragonKnight::DragonRoar].player.push_back(player);
+	processSkills(
+		Buff{{
+			physicalAttack,
+			echo,
+		}}, {
+			Skills::Beginner::EchoOfHero,
+			Skills::Noblesse::EchoOfHero,
+		});
 
-	// Holy Shield
-	buff.type = 0x04;
-	buff.byte = Byte6;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_skillInfo[Skills::Bishop::HolyShield].player.push_back(player);
+	processSkills(
+		Buff{{
+			unk,
+		}}, {
+			Skills::SuperGm::Hide,
+		});
 
-	// Spark
-	buff.type = 0x20;
-	buff.byte = Byte8;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_skillInfo[Skills::ThunderBreaker::Spark].player.push_back(player);
+	processSkills(
+		Buff{{
+			spark,
+		}}, {
+			Skills::ThunderBreaker::Spark,
+		});
 
-	// Dawn Warrior Final Attack
-	buff.type = 0x80;
-	buff.byte = Byte8;
-	buff.value = SkillNone;
-	player.buff = buff;
-	m_skillInfo[Skills::DawnWarrior::FinalAttack].player.push_back(player);
+	processSkills(
+		Buff{{
+			dawnFinalAttack,
+		}}, {
+			Skills::DawnWarrior::FinalAttack,
+		});
 
-	// Wind Walker Final Attack
-	buff.type = 0x01;
-	buff.byte = Byte9;
-	buff.value = SkillNone;
-	player.buff = buff;
-	m_skillInfo[Skills::WindArcher::FinalAttack].player.push_back(player);
+	processSkills(
+		Buff{{
+			windFinalAttack,
+		}}, {
+			Skills::WindArcher::FinalAttack,
+		});
 
-	// Elemental Reset
-	buff.type = 0x02;
-	buff.byte = Byte9;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_skillInfo[Skills::BlazeWizard::ElementalReset].player.push_back(player);
-	// End regular buffs
+	processSkills(
+		Buff{{
+			elementalReset,
+		}}, {
+			Skills::BlazeWizard::ElementalReset,
+		});
 
-	// Begin map buffs
-	// Nimble Feet
-	buff.type = 0x80;
-	buff.byte = Byte1;
-	buff.value = SkillSpeed;
-	player.buff = buff;
-	player.hasMapVal = true;
-	player.hasMapEntry = true;
-	m_skillInfo[Skills::Beginner::NimbleFeet].player.push_back(player);
-	m_skillInfo[Skills::Noblesse::NimbleFeet].player.push_back(player);
-	map.buff = buff;
-	map.useVal = true;
-	m_skillInfo[Skills::Beginner::NimbleFeet].map.push_back(map);
-	m_skillInfo[Skills::Noblesse::NimbleFeet].map.push_back(map);
+	processSkills(
+		Buff{{
+			speed,
+			windWalk,
+		}}, {
+			Skills::WindArcher::WindWalk,
+		});
 
-	// Shadow Stars
-	buff.type = 0x01;
-	buff.byte = Byte6;
-	buff.value = SkillSpecialProc;
-	player.buff = buff;
-	player.hasMapVal = true;
-	player.hasMapEntry = false;
-	m_skillInfo[Skills::NightLord::ShadowStars].player.push_back(player);
-	buff.type = 0x00;
-	map.buff = buff;
-	map.useVal = false;
-	m_skillInfo[Skills::NightLord::ShadowStars].map.push_back(map);
+	processSkills(
+		Buff{{
+			energyCharge,
+		}}, {
+			Skills::Marauder::EnergyCharge,
+			Skills::ThunderBreaker::EnergyCharge,
+		});
 
-	// Skill Charges
-	buff.type = 0x04;
-	buff.byte = Byte1;
-	buff.value = SkillMatk;
-	player.buff = buff;
-	player.hasMapVal = false;
-	player.hasMapEntry = false;
-	m_skillInfo[Skills::WhiteKnight::BwFireCharge].player.push_back(player);
-	m_skillInfo[Skills::WhiteKnight::BwIceCharge].player.push_back(player);
-	m_skillInfo[Skills::WhiteKnight::BwLitCharge].player.push_back(player);
-	m_skillInfo[Skills::WhiteKnight::SwordFireCharge].player.push_back(player);
-	m_skillInfo[Skills::WhiteKnight::SwordIceCharge].player.push_back(player);
-	m_skillInfo[Skills::WhiteKnight::SwordLitCharge].player.push_back(player);
-	m_skillInfo[Skills::Paladin::BwHolyCharge].player.push_back(player);
-	m_skillInfo[Skills::Paladin::SwordHolyCharge].player.push_back(player);
-	m_skillInfo[Skills::DawnWarrior::SoulCharge].player.push_back(player);
-	m_skillInfo[Skills::ThunderBreaker::LightningCharge].player.push_back(player);
-	buff.type = 0x40;
-	buff.byte = Byte3;
-	buff.value = SkillMatk;
-	player.buff = buff;
-	player.hasMapVal = true;
-	player.hasMapEntry = true;
-	m_skillInfo[Skills::WhiteKnight::BwFireCharge].player.push_back(player);
-	m_skillInfo[Skills::WhiteKnight::BwIceCharge].player.push_back(player);
-	m_skillInfo[Skills::WhiteKnight::BwLitCharge].player.push_back(player);
-	m_skillInfo[Skills::WhiteKnight::SwordFireCharge].player.push_back(player);
-	m_skillInfo[Skills::WhiteKnight::SwordIceCharge].player.push_back(player);
-	m_skillInfo[Skills::WhiteKnight::SwordLitCharge].player.push_back(player);
-	m_skillInfo[Skills::Paladin::BwHolyCharge].player.push_back(player);
-	m_skillInfo[Skills::Paladin::SwordHolyCharge].player.push_back(player);
-	m_skillInfo[Skills::DawnWarrior::SoulCharge].player.push_back(player);
-	m_skillInfo[Skills::ThunderBreaker::LightningCharge].player.push_back(player);
-	map.buff = buff;
-	map.useVal = true;
-	m_skillInfo[Skills::WhiteKnight::BwFireCharge].map.push_back(map);
-	m_skillInfo[Skills::WhiteKnight::BwIceCharge].map.push_back(map);
-	m_skillInfo[Skills::WhiteKnight::BwLitCharge].map.push_back(map);
-	m_skillInfo[Skills::WhiteKnight::SwordFireCharge].map.push_back(map);
-	m_skillInfo[Skills::WhiteKnight::SwordIceCharge].map.push_back(map);
-	m_skillInfo[Skills::WhiteKnight::SwordLitCharge].map.push_back(map);
-	m_skillInfo[Skills::Paladin::BwHolyCharge].map.push_back(map);
-	m_skillInfo[Skills::Paladin::SwordHolyCharge].map.push_back(map);
-	m_skillInfo[Skills::DawnWarrior::SoulCharge].map.push_back(map);
-	m_skillInfo[Skills::ThunderBreaker::LightningCharge].map.push_back(map);
+	processSkills(
+		Buff{{
+			dashSpeed,
+			dashJump,
+		}}, {
+			Skills::Pirate::Dash,
+			Skills::ThunderBreaker::Dash,
+		});
 
-	// Wind Walk
-	buff.type = 0x80;
-	buff.byte = Byte1;
-	buff.value = SkillSpeed;
-	player.buff = buff;
-	player.hasMapVal = true;
-	player.hasMapEntry = true;
-	m_skillInfo[Skills::WindArcher::WindWalk].player.push_back(player);
-	map.buff = buff;
-	map.useVal = true;
-	m_skillInfo[Skills::WindArcher::WindWalk].map.push_back(map);
-	buff.type = 0x04;
-	buff.byte = Byte9;
-	buff.value = SkillNone;
-	player.buff = buff;
-	player.hasMapVal = true;
-	m_skillInfo[Skills::WindArcher::WindWalk].player.push_back(player);
-	map.buff = buff;
-	map.useVal = false;
-	m_skillInfo[Skills::WindArcher::WindWalk].map.push_back(map);
+	processSkills(
+		Buff{{
+			mount,
+		}}, {
+			Skills::Beginner::MonsterRider,
+			Skills::Noblesse::MonsterRider,
+		});
 
-	// Dash
-	buff.type = 0x10;
-	buff.byte = Byte9;
-	buff.value = SkillX;
-	player.buff = buff;
-	player.hasMapVal = true;
-	m_skillInfo[Skills::Pirate::Dash].player.push_back(player);
-	m_skillInfo[Skills::ThunderBreaker::Dash].player.push_back(player);
-	buff.type = 0x20;
-	map.buff = buff;
-	map.useVal = true;
-	m_skillInfo[Skills::Pirate::Dash].map.push_back(map);
-	m_skillInfo[Skills::ThunderBreaker::Dash].map.push_back(map);
-	buff.type = 0x20;
-	buff.byte = Byte9;
-	buff.value = SkillY;
-	player.buff = buff;
-	player.hasMapVal = true;
-	m_skillInfo[Skills::Pirate::Dash].player.push_back(player);
-	m_skillInfo[Skills::ThunderBreaker::Dash].player.push_back(player);
-	buff.type = 0x40;
-	map.buff = buff;
-	map.useVal = true;
-	m_skillInfo[Skills::Pirate::Dash].map.push_back(map);
-	m_skillInfo[Skills::ThunderBreaker::Dash].map.push_back(map);
+	processSkills(
+		Buff{{
+			speedInfusion,
+		}}, {
+			Skills::Buccaneer::SpeedInfusion,
+			Skills::ThunderBreaker::SpeedInfusion,
+		});
 
-	// Haste
-	buff.type = 0x80;
-	buff.byte = Byte1;
-	buff.value = SkillSpeed;
-	player.buff = buff;
-	player.hasMapVal = true;
-	player.hasMapEntry = true;
-	m_skillInfo[Skills::Assassin::Haste].player.push_back(player);
-	m_skillInfo[Skills::Bandit::Haste].player.push_back(player);
-	m_skillInfo[Skills::Gm::Haste].player.push_back(player);
-	m_skillInfo[Skills::SuperGm::Haste].player.push_back(player);
-	m_skillInfo[Skills::NightWalker::Haste].player.push_back(player);
-	map.buff = buff;
-	map.useVal = true;
-	m_skillInfo[Skills::Assassin::Haste].map.push_back(map);
-	m_skillInfo[Skills::Bandit::Haste].map.push_back(map);
-	m_skillInfo[Skills::Gm::Haste].map.push_back(map);
-	m_skillInfo[Skills::SuperGm::Haste].map.push_back(map);
-	m_skillInfo[Skills::NightWalker::Haste].map.push_back(map);
-	buff.type = 0x01;
-	buff.byte = Byte2;
-	buff.value = SkillJump;
-	player.buff = buff;
-	player.hasMapVal = false;
-	player.hasMapEntry = false;
-	m_skillInfo[Skills::Assassin::Haste].player.push_back(player);
-	m_skillInfo[Skills::Bandit::Haste].player.push_back(player);
-	m_skillInfo[Skills::Gm::Haste].player.push_back(player);
-	m_skillInfo[Skills::SuperGm::Haste].player.push_back(player);
-	m_skillInfo[Skills::NightWalker::Haste].player.push_back(player);
+	processSkills(
+		Buff{{
+			homingBeacon,
+		}}, {
+			Skills::Outlaw::HomingBeacon,
+			Skills::Corsair::Bullseye,
+		});
 
-	// Dark Sight
-	buff.type = 0x80;
-	buff.byte = Byte1;
-	buff.value = SkillSpeed;
-	player.buff = buff;
-	player.hasMapVal = true;
-	player.hasMapEntry = true;
-	m_skillInfo[Skills::Rogue::DarkSight].player.push_back(player);
-	m_skillInfo[Skills::NightWalker::DarkSight].player.push_back(player);
-	map.buff = buff;
-	map.useVal = true;
-	m_skillInfo[Skills::Rogue::DarkSight].map.push_back(map);
-	m_skillInfo[Skills::NightWalker::DarkSight].map.push_back(map);
-	buff.type = 0x04;
-	buff.byte = Byte2;
-	buff.value = SkillX;
-	player.buff = buff;
-	player.hasMapVal = true;
-	player.hasMapEntry = true;
-	m_skillInfo[Skills::Rogue::DarkSight].player.push_back(player);
-	m_skillInfo[Skills::NightWalker::DarkSight].player.push_back(player);
-	map.buff = buff;
-	map.useVal = false;
-	m_skillInfo[Skills::Rogue::DarkSight].map.push_back(map);
-	m_skillInfo[Skills::NightWalker::DarkSight].map.push_back(map);
+	processSkills(
+		Buff{{
+			physicalDefense,
+		}}, {
+			Skills::Magician::MagicArmor,
+			Skills::Swordsman::IronBody,
+			Skills::BlazeWizard::MagicArmor,
+			Skills::DawnWarrior::IronBody,
+		});
 
-	// Soul Arrow
-	buff.type = 0x01;
-	buff.byte = Byte3;
-	buff.value = SkillX;
-	player.buff = buff;
-	player.hasMapVal = true;
-	player.hasMapEntry = true;
-	m_skillInfo[Skills::Hunter::SoulArrow].player.push_back(player);
-	m_skillInfo[Skills::Crossbowman::SoulArrow].player.push_back(player);
-	m_skillInfo[Skills::WindArcher::SoulArrow].player.push_back(player);
-	map.buff = buff;
-	map.useVal = false;
-	m_skillInfo[Skills::Hunter::SoulArrow].map.push_back(map);
-	m_skillInfo[Skills::Crossbowman::SoulArrow].map.push_back(map);
-	m_skillInfo[Skills::WindArcher::SoulArrow].map.push_back(map);
+	processSkills(
+		Buff{{
+			accuracy,
+			avoid,
+		}}, {
+			Skills::Archer::Focus,
+			Skills::WindArcher::Focus,
+		});
 
-	// Energy Charge
-	buff.type = 0x08;
-	buff.byte = Byte9;
-	buff.value = SkillSpecialProc;
-	player.buff = buff;
-	player.hasMapVal = true;
-	player.hasMapEntry = true;
-	m_skillInfo[Skills::Marauder::EnergyCharge].player.push_back(player);
-	m_skillInfo[Skills::ThunderBreaker::EnergyCharge].player.push_back(player);
-	map.buff = buff;
-	map.useVal = false;
-	m_skillInfo[Skills::Marauder::EnergyCharge].map.push_back(map);
-	m_skillInfo[Skills::ThunderBreaker::EnergyCharge].map.push_back(map);
+	processSkills(
+		Buff{{
+			physicalAttack,
+			physicalDefense,
+		}}, {
+			Skills::Fighter::Rage,
+			Skills::DawnWarrior::Rage,
+		});
 
-	// Oak Barrel
-	buff.type = 0x02;
-	buff.byte = Byte5;
-	buff.value = SkillMorph;
-	player.buff = buff;
-	player.hasMapVal = true;
-	player.hasMapEntry = true;
-	m_skillInfo[Skills::Brawler::OakBarrel].player.push_back(player);
-	map.buff = buff;
-	map.useVal = true;
-	m_skillInfo[Skills::Brawler::OakBarrel].map.push_back(map);
+	processSkills(
+		Buff{{
+			physicalDefense,
+			magicDefense,
+		}}, {
+			Skills::Spearman::IronWill,
+		});
 
-	// Transformation, Super Transformation, Eagle Eye
-	buff.type = 0x02;
-	buff.byte = Byte1;
-	buff.value = SkillWdef;
-	player.buff = buff;
-	player.hasMapVal = false;
-	player.hasMapEntry = false;
-	m_skillInfo[Skills::Marauder::Transformation].player.push_back(player);
-	m_skillInfo[Skills::Buccaneer::SuperTransformation].player.push_back(player);
-	m_skillInfo[Skills::WindArcher::EagleEye].player.push_back(player);
-	m_skillInfo[Skills::ThunderBreaker::Transformation].player.push_back(player);
-	buff.type = 0x08;
-	buff.byte = Byte1;
-	buff.value = SkillMdef;
-	player.buff = buff;
-	player.hasMapVal = false;
-	player.hasMapEntry = false;
-	m_skillInfo[Skills::Marauder::Transformation].player.push_back(player);
-	m_skillInfo[Skills::Buccaneer::SuperTransformation].player.push_back(player);
-	m_skillInfo[Skills::WindArcher::EagleEye].player.push_back(player);
-	m_skillInfo[Skills::ThunderBreaker::Transformation].player.push_back(player);
-	buff.type = 0x80;
-	buff.byte = Byte1;
-	buff.value = SkillSpeed;
-	player.buff = buff;
-	player.hasMapVal = true;
-	player.hasMapEntry = true;
-	m_skillInfo[Skills::Marauder::Transformation].player.push_back(player);
-	m_skillInfo[Skills::Buccaneer::SuperTransformation].player.push_back(player);
-	m_skillInfo[Skills::WindArcher::EagleEye].player.push_back(player);
-	m_skillInfo[Skills::ThunderBreaker::Transformation].player.push_back(player);
-	map.buff = buff;
-	map.useVal = true;
-	m_skillInfo[Skills::Marauder::Transformation].map.push_back(map);
-	m_skillInfo[Skills::Buccaneer::SuperTransformation].map.push_back(map);
-	m_skillInfo[Skills::WindArcher::EagleEye].map.push_back(map);
-	m_skillInfo[Skills::ThunderBreaker::Transformation].map.push_back(map);
-	buff.type = 0x01;
-	buff.byte = Byte2;
-	buff.value = SkillJump;
-	player.buff = buff;
-	player.hasMapVal = false;
-	player.hasMapEntry = false;
-	m_skillInfo[Skills::Marauder::Transformation].player.push_back(player);
-	m_skillInfo[Skills::Buccaneer::SuperTransformation].player.push_back(player);
-	m_skillInfo[Skills::WindArcher::EagleEye].player.push_back(player);
-	m_skillInfo[Skills::ThunderBreaker::Transformation].player.push_back(player);
-	buff.type = 0x02;
-	buff.byte = Byte5;
-	buff.value = SkillMorph;
-	player.buff = buff;
-	player.hasMapVal = true;
-	player.hasMapEntry = true;
-	m_skillInfo[Skills::Marauder::Transformation].player.push_back(player);
-	m_skillInfo[Skills::Buccaneer::SuperTransformation].player.push_back(player);
-	m_skillInfo[Skills::WindArcher::EagleEye].player.push_back(player);
-	m_skillInfo[Skills::ThunderBreaker::Transformation].player.push_back(player);
-	map.buff = buff;
-	map.useVal = true;
-	m_skillInfo[Skills::Marauder::Transformation].map.push_back(map);
-	m_skillInfo[Skills::Buccaneer::SuperTransformation].map.push_back(map);
-	m_skillInfo[Skills::WindArcher::EagleEye].map.push_back(map);
-	m_skillInfo[Skills::ThunderBreaker::Transformation].map.push_back(map);
+	processSkills(
+		Buff{{
+			magicAttack,
+		}}, {
+			Skills::FpWizard::Meditation,
+			Skills::IlWizard::Meditation,
+			Skills::BlazeWizard::Meditation,
+		});
 
-	// Shadow Partner
-	buff.type = 0x04;
-	buff.byte = Byte4;
-	buff.value = SkillSpecialProc;
-	player.buff = buff;
-	player.hasMapVal = true;
-	player.hasMapEntry = true;
-	m_skillInfo[Skills::Hermit::ShadowPartner].player.push_back(player);
-	m_skillInfo[Skills::NightWalker::ShadowPartner].player.push_back(player);
-	map.buff = buff;
-	map.useVal = false;
-	m_skillInfo[Skills::Hermit::ShadowPartner].map.push_back(map);
-	m_skillInfo[Skills::NightWalker::ShadowPartner].map.push_back(map);
+	processSkills(
+		Buff{{
+			physicalAttack,
+			physicalDefense,
+			magicDefense,
+			accuracy,
+			avoid,
+		}}, {
+			Skills::Cleric::Bless,
+		});
 
-	// Combo Attack
-	buff.type = 0x20;
-	buff.byte = Byte3;
-	buff.value = SkillSpecialProc;
-	player.buff = buff;
-	player.hasMapVal = true;
-	player.hasMapEntry = true;
-	m_skillInfo[Skills::Crusader::ComboAttack].player.push_back(player);
-	m_skillInfo[Skills::DawnWarrior::ComboAttack].player.push_back(player);
-	map.buff = buff;
-	map.useVal = true;
-	m_skillInfo[Skills::Crusader::ComboAttack].map.push_back(map);
-	m_skillInfo[Skills::DawnWarrior::ComboAttack].map.push_back(map);
-	// End map buffs
+	processSkills(
+		Buff{{
+			physicalAttack,
+			physicalDefense,
+			magicAttack,
+			magicDefense,
+			accuracy,
+			avoid,
+		}}, {
+			Skills::SuperGm::Bless,
+		});
 
-	// Begin mount buffs
-	player = BuffInfo(); // Placed to clear any previous value pushes
+	processSkills(
+		Buff{{
+			physicalAttack,
+		}}, {
+			Skills::Hero::Enrage,
+		});
 
-	// Monster Rider
-	buff.type = 0x40;
-	buff.byte = Byte9;
-	buff.value = SkillSpecialProc;
-	player.buff = buff;
-	player.hasMapVal = true;
-	m_skillInfo[Skills::Beginner::MonsterRider].player.push_back(player);
-	m_skillInfo[Skills::Noblesse::MonsterRider].player.push_back(player);
-	buff.type = 0x40;
-	map.buff = buff;
-	m_skillInfo[Skills::Beginner::MonsterRider].map.push_back(map);
-	m_skillInfo[Skills::Noblesse::MonsterRider].map.push_back(map);
+	processSkills(
+		Buff{{
+			stun.
+				withPredefinedValue(1).
+				withMapInfo({}),
+		}}, {
+			Skills::DragonKnight::DragonRoar,
+		});
 
-	// Battleship
-	buff.type = 0x40;
-	buff.byte = Byte9;
-	buff.value = SkillSpecialProc;
-	player.buff = buff;
-	player.hasMapVal = true;
-	m_skillInfo[Skills::Corsair::Battleship].player.push_back(player);
-	buff.type = 0x40;
-	map.buff = buff;
-	m_skillInfo[Skills::Corsair::Battleship].map.push_back(map);
-	// End mount buffs
+	processSkills(
+		Buff{{
+			speed,
+		}}, {
+			Skills::Beginner::NimbleFeet,
+			Skills::Noblesse::NimbleFeet,
+		});
 
-	// Begin very unusual buffs
-	player = BuffInfo(); // Placed to clear any previous value pushes
+	processSkills(
+		Buff{{
+			speed,
+			jump,
+		}}, {
+			Skills::Assassin::Haste,
+			Skills::Bandit::Haste,
+			Skills::NightWalker::Haste,
+			Skills::Gm::Haste,
+			Skills::SuperGm::Haste,
+		});
 
-	// Homing Beacon/Bullseye
-	buff.type = 0x01;
-	buff.byte = Byte10;
-	buff.value = SkillNone;
-	player.buff = buff;
-	player.itemVal = 1;
-	m_skillInfo[Skills::Outlaw::HomingBeacon].player.push_back(player);
-	m_skillInfo[Skills::Corsair::Bullseye].player.push_back(player);
-	// End very unusual buffs
+	processSkills(
+		Buff{{
+			morph,
+		}}, {
+			Skills::Brawler::OakBarrel,
+		});
 
-	// Begin act buffs
-	// Recovery
-	buff.type = 0x04;
-	buff.byte = Byte5;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_skillInfo[Skills::Beginner::Recovery].player.push_back(player);
-	m_skillInfo[Skills::Noblesse::Recovery].player.push_back(player);
-	act.type = ActHeal;
-	act.time = 4900;
-	act.value = SkillX;
-	m_skillInfo[Skills::Beginner::Recovery].act = act;
-	m_skillInfo[Skills::Beginner::Recovery].hasAction = true;
-	m_skillInfo[Skills::Noblesse::Recovery].act = act;
-	m_skillInfo[Skills::Noblesse::Recovery].hasAction = true;
+	processSkills(
+		Buff{{
+			physicalDefense,
+			magicDefense,
+			speed,
+			jump,
+			morph.
+				withValue(BuffSkillValue::GenderSpecificMorph).
+				withMapInfo(BuffMapInfo{2, BuffSkillValue::GenderSpecificMorph}),
+		}}, {
+			Skills::Marauder::Transformation,
+			Skills::Buccaneer::SuperTransformation,
+			Skills::WindArcher::EagleEye,
+			Skills::ThunderBreaker::Transformation,
+		});
 
-	// Dragon Blood
-	buff.type = 0x01;
-	buff.byte = Byte1;
-	buff.value = SkillWatk;
-	player.buff = buff;
-	m_skillInfo[Skills::DragonKnight::DragonBlood].player.push_back(player);
-	buff.type = 0x80;
-	buff.byte = Byte3;
-	buff.value = SkillLv;
-	player.buff = buff;
-	m_skillInfo[Skills::DragonKnight::DragonBlood].player.push_back(player);
-	act.type = ActHurt;
-	act.time = 4000;
-	act.value = SkillX;
-	m_skillInfo[Skills::DragonKnight::DragonBlood].act = act;
-	m_skillInfo[Skills::DragonKnight::DragonBlood].hasAction = true;
-	// End act buffs
+	processSkills(
+		Buff{{
+			physicalDefense,
+			magicDefense,
+			mount,
+		}}, {
+			Skills::Corsair::Battleship,
+		});
 
-	// Debuffs
-	// Stun
-	buff.type = 0x02;
-	buff.byte = Byte3;
-	buff.value = SkillNone;
-	player.buff = buff;
-	m_mobSkillInfo[MobSkills::Stun].mob.push_back(player);
-	m_mobSkillInfo[MobSkills::Stun].delay = 0;
+	m_mobSkillInfo[MobSkills::Stun] = Buff{stun};
+	m_mobSkillInfo[MobSkills::Poison] = Buff{poison};
+	m_mobSkillInfo[MobSkills::Seal] = Buff{seal};
+	m_mobSkillInfo[MobSkills::Darkness] = Buff{darkness};
+	m_mobSkillInfo[MobSkills::Weakness] = Buff{weakness};
+	m_mobSkillInfo[MobSkills::Curse] = Buff{curse};
+	m_mobSkillInfo[MobSkills::Slow] = Buff{slow};
+	m_mobSkillInfo[MobSkills::Seduce] = Buff{seduce};
+	m_mobSkillInfo[MobSkills::CrazySkull] = Buff{crazySkull};
+	m_mobSkillInfo[MobSkills::Zombify] = Buff{zombify};
 
-	// Poison
-	buff.type = 0x04;
-	buff.byte = Byte3;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_mobSkillInfo[MobSkills::Poison].mob.push_back(player);
-	m_mobSkillInfo[MobSkills::Poison].delay = 500;
-
-	// Seal
-	buff.type = 0x08;
-	buff.byte = Byte3;
-	buff.value = SkillNone;
-	player.buff = buff;
-	m_mobSkillInfo[MobSkills::Seal].mob.push_back(player);
-	m_mobSkillInfo[MobSkills::Seal].delay = 900;
-
-	// Darkness
-	buff.type = 0x10;
-	buff.byte = Byte3;
-	buff.value = SkillNone;
-	player.buff = buff;
-	m_mobSkillInfo[MobSkills::Darkness].mob.push_back(player);
-	m_mobSkillInfo[MobSkills::Darkness].delay = 900;
-
-	// Weakness
-	buff.type = 0x40;
-	buff.byte = Byte4;
-	buff.value = SkillNone;
-	player.buff = buff;
-	m_mobSkillInfo[MobSkills::Weakness].mob.push_back(player);
-	m_mobSkillInfo[MobSkills::Weakness].delay = 900;
-
-	// Curse
-	buff.type = 0x80;
-	buff.byte = Byte4;
-	buff.value = SkillNone;
-	player.buff = buff;
-	m_mobSkillInfo[MobSkills::Curse].mob.push_back(player);
-	m_mobSkillInfo[MobSkills::Curse].delay = 900;
-
-	// Slow
-	buff.type = 0x01;
-	buff.byte = Byte5;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_mobSkillInfo[MobSkills::Slow].mob.push_back(player);
-	m_mobSkillInfo[MobSkills::Slow].delay = 900;
-
-	// Seduce
-	buff.type = 0x80;
-	buff.byte = Byte5;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_mobSkillInfo[MobSkills::Seduce].mob.push_back(player);
-	m_mobSkillInfo[MobSkills::Seduce].delay = 900;
-
-	// Zombify
-	buff.type = 0x40;
-	buff.byte = Byte6;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_mobSkillInfo[MobSkills::Zombify].mob.push_back(player);
-	m_mobSkillInfo[MobSkills::Zombify].delay = 900;
-
-	// Crazy Skull
-	buff.type = 0x08;
-	buff.byte = Byte7;
-	buff.value = SkillX;
-	player.buff = buff;
-	m_mobSkillInfo[MobSkills::CrazySkull].mob.push_back(player);
-	m_mobSkillInfo[MobSkills::CrazySkull].delay = 900;
+	m_basics.physicalAttack = physicalAttack;
+	m_basics.physicalDefense = physicalDefense;
+	m_basics.magicAttack = magicAttack;
+	m_basics.magicDefense = magicDefense;
+	m_basics.accuracy = accuracy;
+	m_basics.avoid = avoid;
+	m_basics.speed = speed;
+	m_basics.jump = jump;
+	m_basics.magicGuard = magicGuard;
+	m_basics.darkSight = darkSight;
+	m_basics.booster = booster;
+	m_basics.powerGuard = powerGuard;
+	m_basics.hyperBodyHp = hyperBodyHp;
+	m_basics.hyperBodyMp = hyperBodyMp;
+	m_basics.invincible = invincible;
+	m_basics.soulArrow = soulArrow;
+	m_basics.stun = stun;
+	m_basics.poison = poison;
+	m_basics.seal = seal;
+	m_basics.darkness = darkness;
+	m_basics.combo = combo;
+	m_basics.charge = charge;
+	m_basics.timedHurt = timedHurt;
+	m_basics.holySymbol = holySymbol;
+	m_basics.mesoUp = mesoUp;
+	m_basics.shadowPartner = shadowPartner;
+	m_basics.pickpocket = pickpocket;
+	m_basics.mesoGuard = mesoGuard;
+	m_basics.weakness = weakness;
+	m_basics.curse = curse;
+	m_basics.slow = slow;
+	m_basics.morph = morph;
+	m_basics.timedHeal = timedHeal;
+	m_basics.mapleWarrior = mapleWarrior;
+	m_basics.powerStance = powerStance;
+	m_basics.sharpEyes = sharpEyes;
+	m_basics.manaReflection = manaReflection;
+	m_basics.seduce = seduce;
+	m_basics.shadowStars = shadowStars;
+	m_basics.infinity = infinity;
+	m_basics.holyShield = holyShield;
+	m_basics.hamstring = hamstring;
+	m_basics.blind = blind;
+	m_basics.concentrate = concentrate;
+	m_basics.zombify = zombify;
+	m_basics.echo = echo;
+	m_basics.spark = spark;
+	m_basics.dawnWarriorFinalAttack = dawnFinalAttack;
+	m_basics.windWalkerFinalAttack = windFinalAttack;
+	m_basics.elementalReset = elementalReset;
+	m_basics.windWalk = windWalk;
+	m_basics.energyCharge = energyCharge;
+	m_basics.dashSpeed = dashSpeed;
+	m_basics.dashJump = dashJump;
+	m_basics.mount = mount;
+	m_basics.speedInfusion = speedInfusion;
+	m_basics.homingBeacon = homingBeacon;
 
 	std::cout << "DONE" << std::endl;
 }
 
 auto BuffDataProvider::addItemInfo(item_id_t itemId, const ConsumeInfo &cons) -> void {
-	using namespace BuffBytes;
-	vector_t<uint8_t> types;
-	vector_t<int8_t> bytes;
-	vector_t<int16_t> values;
+	vector_t<BuffInfo> values;
 
 	if (cons.wAtk > 0) {
-		types.push_back(0x01);
-		bytes.push_back(Byte1);
-		values.push_back(cons.wAtk);
+		values.push_back(m_basics.physicalAttack.withPredefinedValue(cons.wAtk));
 	}
 	if (cons.wDef > 0) {
-		types.push_back(0x02);
-		bytes.push_back(Byte1);
-		values.push_back(cons.wDef);
+		values.push_back(m_basics.physicalDefense.withPredefinedValue(cons.wDef));
 	}
 	if (cons.mAtk > 0) {
-		types.push_back(0x04);
-		bytes.push_back(Byte1);
-		values.push_back(cons.mAtk);
+		values.push_back(m_basics.magicAttack.withPredefinedValue(cons.mAtk));
 	}
 	if (cons.mDef > 0) {
-		types.push_back(0x08);
-		bytes.push_back(Byte1);
-		values.push_back(cons.mDef);
+		values.push_back(m_basics.magicDefense.withPredefinedValue(cons.mDef));
 	}
 	if (cons.acc > 0) {
-		types.push_back(0x10);
-		bytes.push_back(Byte1);
-		values.push_back(cons.acc);
+		values.push_back(m_basics.accuracy.withPredefinedValue(cons.acc));
 	}
 	if (cons.avo > 0) {
-		types.push_back(0x20);
-		bytes.push_back(Byte1);
-		values.push_back(cons.avo);
+		values.push_back(m_basics.avoid.withPredefinedValue(cons.avo));
 	}
 	if (cons.speed > 0) {
-		types.push_back(0x80);
-		bytes.push_back(Byte1);
-		values.push_back(cons.speed);
+		values.push_back(m_basics.speed.
+			withPredefinedValue(cons.speed).
+			withMapInfo(BuffMapInfo{1, cons.speed}));
 	}
 	if (cons.jump > 0) {
-		types.push_back(0x01);
-		bytes.push_back(Byte2);
-		values.push_back(cons.jump);
+		values.push_back(m_basics.jump.withPredefinedValue(cons.jump));
 	}
 	if (cons.morphs.size() > 0) {
-		types.push_back(0x02);
-		bytes.push_back(Byte5);
-		// TODO FIXME buffs
-		// TEMPORARY HACK UNTIL BUFF SYSTEM IS RESTRUCTURED
-		values.push_back(cons.morphs[0].morph);
+		for (const auto &m : cons.morphs) {
+			values.push_back(m_basics.morph.
+				withPredefinedValue(m.morph).
+				withChance(m.chance).
+				withMapInfo(BuffMapInfo{2, m.morph}));
+		}
 	}
+
+	// TODO FIXME buffs
 	// Need some buff bytes/types for ALL of the following
+	if (cons.preventDrown) {
+
+	}
+	if (cons.preventFreeze) {
+
+	}
 	if (cons.iceResist > 0) {
 
 	}
@@ -928,6 +737,9 @@ auto BuffDataProvider::addItemInfo(item_id_t itemId, const ConsumeInfo &cons) ->
 	if (cons.mesoUp) {
 
 	}
+	if (cons.partyDropUp) {
+
+	}
 	if (cons.dropUp) {
 		switch (cons.dropUp) {
 			case 1: // Regular drop rate increase for all items, the only one I can parse at the moment
@@ -937,56 +749,34 @@ auto BuffDataProvider::addItemInfo(item_id_t itemId, const ConsumeInfo &cons) ->
 		}
 	}
 
-	if (bytes.size()) {
-		Buff buff;
-		BuffInfo player;
-		BuffMapInfo map;
-
-		itemId *= -1;
-
-		if (isBuff(itemId)) {
-			// Already loaded, don't want doubles
-			m_skillInfo[itemId].player.clear();
-			m_skillInfo[itemId].map.clear();
-		}
-
-		for (size_t i = 0; i < types.size(); i++) {
-			buff = Buff();
-			player = BuffInfo();
-			map = BuffMapInfo();
-			buff.byte = bytes[i];
-			buff.type = types[i];
-			buff.value = SkillNone;
-			player.buff = buff;
-			player.itemVal = values[i];
-			player.useVal = true;
-			if ((buff.byte == Byte1 && (buff.type & 0x80) > 0) || buff.byte == Byte5) {
-				player.hasMapVal = true;
-				player.hasMapEntry = true;
-				m_skillInfo[itemId].player.push_back(player);
-				map.buff = buff;
-				map.useVal = true;
-				m_skillInfo[itemId].map.push_back(map);
-			}
-			else {
-				m_skillInfo[itemId].player.push_back(player);
-			}
-		}
+	if (values.size() > 0) {
+		m_items[itemId] = Buff{values};
 	}
 }
 
-auto BuffDataProvider::isBuff(skill_id_t skillId) const -> bool {
-	return m_skillInfo.find(skillId) != std::end(m_skillInfo);
+auto BuffDataProvider::isBuff(const BuffSource &source) const -> bool {
+	switch (source.getType()) {
+		case BuffSourceType::Skill: return m_buffs.find(source.getSkillId()) != std::end(m_buffs);
+		case BuffSourceType::MobSkill: return m_mobSkillInfo.find(source.getMobSkillId()) != std::end(m_mobSkillInfo);
+		case BuffSourceType::Item: return m_items.find(source.getItemId()) != std::end(m_items);
+	}
+	throw NotImplementedException{"BuffSourceType"};
 }
 
-auto BuffDataProvider::isDebuff(mob_skill_id_t skillId) const -> bool {
-	return m_mobSkillInfo.find(skillId) != std::end(m_mobSkillInfo);
+auto BuffDataProvider::isDebuff(const BuffSource &source) const -> bool {
+	if (source.getType() != BuffSourceType::MobSkill) return false;
+	return m_mobSkillInfo.find(source.getMobSkillId()) != std::end(m_mobSkillInfo);
 }
 
-auto BuffDataProvider::getSkillInfo(skill_id_t skillId) const -> const SkillInfo & {
-	return m_skillInfo.find(skillId)->second;
+auto BuffDataProvider::getInfo(const BuffSource &source) const -> const Buff & {
+	switch (source.getType()) {
+		case BuffSourceType::Skill: return m_buffs.find(source.getSkillId())->second;
+		case BuffSourceType::MobSkill: return m_mobSkillInfo.find(source.getMobSkillId())->second;
+		case BuffSourceType::Item: return m_items.find(source.getItemId())->second;
+	}
+	throw NotImplementedException{"BuffSourceType"};
 }
 
-auto BuffDataProvider::getMobSkillInfo(mob_skill_id_t skillId) const -> const MobAilmentInfo & {
-	return m_mobSkillInfo.find(skillId)->second;
+auto BuffDataProvider::getBuffsByEffect() const -> const BuffInfoByEffect & {
+	return m_basics;
 }

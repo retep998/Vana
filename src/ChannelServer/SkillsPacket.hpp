@@ -33,6 +33,6 @@ namespace SkillsPacket {
 	SPLIT_PACKET(showChargeOrStationarySkill, player_id_t playerId, const ChargeOrStationarySkillInfo &info);
 	SPLIT_PACKET(endChargeOrStationarySkill, player_id_t playerId, const ChargeOrStationarySkillInfo &info);
 	SPLIT_PACKET(showMagnetSuccess, map_object_t mapMobId, uint8_t success);
-	PACKET(sendCooldown, skill_id_t skillId, int16_t time);
+	PACKET(sendCooldown, skill_id_t skillId, seconds_t time);
 	SPLIT_PACKET(showBerserk, player_id_t playerId, skill_level_t level, bool on);
 }

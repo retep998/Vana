@@ -34,7 +34,7 @@ namespace PlayersPacket {
 	PACKET(showChat, player_id_t playerId, bool isGm, const string_t &msg, bool bubbleOnly);
 	SPLIT_PACKET(damagePlayer, player_id_t playerId, damage_t dmg, mob_id_t mob, uint8_t hit, int8_t type, uint8_t stance, skill_id_t noDamageSkill, const ReturnDamageInfo &pgmr);
 	PACKET(showInfo, Player *getInfo, bool isSelf);
-	PACKET(findPlayer, const string_t &name, int32_t map, uint8_t is = 0, bool isChannel = false);
+	PACKET(findPlayer, const string_t &name, opt_int32_t map, uint8_t is = 0, bool isChannel = false);
 	PACKET(whisperPlayer, const string_t &whispererName, channel_id_t channel, const string_t &message);
 	SPLIT_PACKET(useMeleeAttack, player_id_t playerId, skill_id_t masterySkillId, skill_level_t masteryLevel, const Attack &attack);
 	SPLIT_PACKET(useRangedAttack, player_id_t playerId, skill_id_t masterySkillId, skill_level_t masteryLevel, const Attack &attack);
