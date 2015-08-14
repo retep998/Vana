@@ -32,7 +32,25 @@ namespace MiscUtilities {
 	auto hashPassword(const string_t &password, const string_t &salt) -> string_t;
 	auto generateSalt(size_t length) -> string_t;
 
-	template <class TElement>
+	template <typename TElement>
+	auto convertLinearScale(
+		const TElement &pValue,
+		const TElement &pValueDomainMin,
+		const TElement &pValueDomainMax,
+		const TElement &pNewDomainMin,
+		const TElement &pNewDomainMax) -> TElement
+	{
+		if (pValueDomainMin >= pValueDomainMax) throw std::invalid_argument{"Domain min must be below domain max"};
+		if (pNewDomainMin >= pNewDomainMax) throw std::invalid_argument{"Domain min must be below domain max"};
+		if (pValue < pValueDomainMin || pValue > pValueDomainMax) throw std::invalid_argument{"Value must be within domain"};
+		double valueRange = pValueDomainMax - pValueDomainMin;
+		double newRange = pNewDomainMax - pNewDomainMin;
+		return static_cast<TElement>(
+			((static_cast<double>(pValue) - pValueDomainMin) / valueRange) *
+			newRange + pNewDomainMin);
+	}
+
+	template <typename TElement>
 	auto getOptional(const TElement &testVal, NullableMode mode, init_list_t<TElement> nullableVals) -> optional_t<TElement> {
 		optional_t<TElement> ret;
 		if (mode == NullableMode::NullIfFound) {

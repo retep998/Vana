@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.hpp"
+#include "UnixTime.hpp"
 #include <mutex>
 #include <string>
 #include <vector>
@@ -35,7 +36,7 @@ namespace RankingCalculator {
 		fame_t fameStat;
 		experience_t expStat;
 		player_id_t charId;
-		unix_time_t levelTime;
+		UnixTime levelTime;
 		Rank overall;
 		Rank world;
 		Rank job;

@@ -81,7 +81,7 @@ auto Fame::getLastFameLog(player_id_t from) -> SearchResult {
 	}
 
 	soci::session &sql = Database::getCharDb();
-	opt_unix_time_t time;
+	optional_t<UnixTime> time;
 
 	sql.once
 		<< "SELECT fame_time "
@@ -107,7 +107,7 @@ auto Fame::getLastFameSpLog(player_id_t from, player_id_t to) -> SearchResult {
 	}
 
 	soci::session &sql = Database::getCharDb();
-	opt_unix_time_t time;
+	optional_t<UnixTime> time;
 
 	sql.once
 		<< "SELECT fame_time "

@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include "StringUtilities.hpp"
 #include "TimeUtilities.hpp"
+#include "UnixTime.hpp"
 #include "UserConnection.hpp"
 #include "VanaConstants.hpp"
 #include <iostream>
@@ -115,7 +116,7 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 				valid = false;
 			}
 			else if (row.get<bool>("banned") && (!row.get<bool>("admin") || row.get<int32_t>("gm_level") == 0)) {
-				int64_t time = TimeUtilities::timeToTick(row.get<unix_time_t>("ban_expire"));
+				int64_t time = TimeUtilities::timeToTick(row.get<UnixTime>("ban_expire"));
 				user->send(LoginPacket::loginBan(row.get<int8_t>("ban_reason"), time));
 				valid = false;
 			}
@@ -156,7 +157,7 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 			user->setGender(gender.get());
 		}
 
-		opt_unix_time_t quietBan = row.get<opt_unix_time_t>("quiet_ban_expire");
+		optional_t<UnixTime> quietBan = row.get<optional_t<UnixTime>>("quiet_ban_expire");
 		if (quietBan.is_initialized()) {
 			time_t banTime = quietBan.get();
 			if (time(nullptr) > banTime) {
@@ -172,7 +173,7 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 			}
 		}
 
-		user->setCreationTime(TimeUtilities::timeToTick(row.get<unix_time_t>("creation_date")));
+		user->setCreationTime(TimeUtilities::timeToTick(row.get<UnixTime>("creation_date")));
 		user->setCharDeletePassword(row.get<opt_int32_t>("char_delete_password"));
 		user->setAdmin(row.get<bool>("admin"));
 		user->setGmLevel(row.get<int32_t>("gm_level"));
