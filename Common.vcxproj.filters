@@ -55,6 +55,9 @@
     <Filter Include="Data Structures\Geometry">
       <UniqueIdentifier>{eaf70071-4599-44a6-b113-02ac270b0bdf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data Structures\Time">
+      <UniqueIdentifier>{ab3f74f9-bf9f-47be-8625-57e2444990b6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Common\BuffDataProvider.cpp">
@@ -561,6 +564,9 @@
     </ClInclude>
     <ClInclude Include="src\Common\BuffMapInfo.hpp">
       <Filter>Data Structures\Buffs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\UnixTime.hpp">
+      <Filter>Data Structures\Time</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

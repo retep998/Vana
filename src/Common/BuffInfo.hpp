@@ -187,7 +187,7 @@ auto operator <=(const BuffInfo &a, uint8_t b) -> bool {
 
 namespace std {
 
-template<>
+template <>
 struct hash<BuffInfo> {
 	auto operator()(const BuffInfo &v) const -> size_t {
 		return MiscUtilities::hash_combinator(v.getBitPosition());

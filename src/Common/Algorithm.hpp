@@ -105,12 +105,12 @@ namespace ext {
 		return map.erase(std::remove(std::begin(map), std::end(map), value), std::end(map));
 	}
 
-	template <class TElement>
+	template <typename TElement>
 	auto in_range_inclusive(const TElement val, const TElement min, const TElement max) -> bool {
 		return !(val < min || val > max);
 	}
 
-	template <class TElement>
+	template <typename TElement>
 	auto constrain_range(const TElement val, const TElement min, const TElement max) -> TElement {
 		return std::min(std::max(val, min), max);
 	}

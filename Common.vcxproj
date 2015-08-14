@@ -242,6 +242,7 @@
     <ClInclude Include="src\Common\ScriptDataProvider.hpp" />
     <ClInclude Include="src\Common\ShopDataProvider.hpp" />
     <ClInclude Include="src\Common\SkillDataProvider.hpp" />
+    <ClInclude Include="src\Common\UnixTime.hpp" />
     <ClInclude Include="src\Common\ValidCharDataProvider.hpp" />
     <ClInclude Include="src\Common\ConfigFile.hpp" />
     <ClInclude Include="src\Common\Database.hpp" />

@@ -19,14 +19,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "optional.hpp"
 #include "Types.hpp"
+#include "UnixTime.hpp"
 #include <soci.h>
 #include <string>
 
 namespace soci {
 	template <>
-	struct type_conversion<unix_time_t> {
+	struct type_conversion<UnixTime> {
 		using base_type = std::tm;
-		using target_type = unix_time_t;
+		using target_type = UnixTime;
 
 		static void from_base(const base_type &in, indicator &ind, target_type &out) {
 			if (ind == i_null) {

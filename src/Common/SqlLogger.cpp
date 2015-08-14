@@ -50,7 +50,7 @@ auto SqlLogger::flush() -> void {
 		// For GCC, GCC doesn't interpret operators very well
 		identifier = "";
 		string_t message = "";
-		unix_time_t logTime;
+		UnixTime logTime;
 
 		soci::statement st = (sql.prepare
 			<< "INSERT INTO " << Database::makeCharTable("logs") << " (log_time, origin, info_type, identifier, message) "

@@ -42,28 +42,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <utility>
 #include <vector>
 
-// Thin wrapper around time_t so we could write a SOCI extension for it
-// time_t on its own is defined as __int64_t on MSVC which was conflicting with the SOCI extension for int64_t
-class unix_time_t {
-public:
-	unix_time_t() { m_time = time(nullptr); }
-	unix_time_t(time_t t) { m_time = t; }
-	unix_time_t(const unix_time_t &t) { m_time = t.m_time; }
-	operator time_t() const { return m_time; }
-	auto operator =(const time_t &t) -> unix_time_t & { m_time = t; return *this; }
-	auto operator =(const unix_time_t &right) -> unix_time_t & { m_time = right.m_time; return *this; }
-	auto operator +=(const time_t &t) -> unix_time_t & { m_time += t; return *this; }
-	auto operator +=(const unix_time_t &right) -> unix_time_t & { m_time += right.m_time; return *this; }
-	auto operator -=(const time_t &t) -> unix_time_t & { m_time -= t; return *this; }
-	auto operator -=(const unix_time_t &right) -> unix_time_t & { m_time -= right.m_time; return *this; }
-	auto operator +(const time_t &t) const -> unix_time_t { return unix_time_t{m_time + t}; }
-	auto operator +(const unix_time_t &right) const -> unix_time_t { return unix_time_t{m_time + right.m_time}; }
-	auto operator -(const time_t &t) const -> unix_time_t { return unix_time_t{m_time - t}; }
-	auto operator -(const unix_time_t &right) const -> unix_time_t { return unix_time_t{m_time - right.m_time}; }
-private:
-	time_t m_time;
-};
-
 enum class HandleResult {
 	Handled,
 	Unhandled,

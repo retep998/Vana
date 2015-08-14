@@ -104,5 +104,4 @@ using opt_uint32_t = optional_t<uint32_t>;
 using opt_int64_t = optional_t<int64_t>;
 using opt_uint64_t = optional_t<uint64_t>;
 using opt_double = optional_t<double>;
-using opt_unix_time_t = optional_t<unix_time_t>;
 using opt_string_t = optional_t<string_t>;
