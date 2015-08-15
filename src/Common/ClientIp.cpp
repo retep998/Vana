@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 #include "ClientIp.hpp"
 #include "PacketBuilder.hpp"
-#include <boost/asio.hpp>
+#include <asio.hpp>
 #include <stdexcept>
 
 ClientIp::ClientIp(const Ip &ip) :

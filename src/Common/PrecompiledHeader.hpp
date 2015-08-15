@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <array>
 #include <algorithm>
-#include <boost/asio.hpp>
+#include <asio.hpp>
 #include <chrono>
 #include <cmath>
 #include <cstdint>

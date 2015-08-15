@@ -25,8 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 #include <iostream>
 
-namespace asio = boost::asio;
-
 Session::Session(asio::io_service &ioService, ConnectionManager &manager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string_t &subversion) :
 	m_manager{manager},
 	m_socket{ioService},
@@ -38,7 +36,7 @@ Session::Session(asio::io_service &ioService, ConnectionManager &manager, Abstra
 {
 }
 
-auto Session::getSocket() -> boost::asio::ip::tcp::socket & {
+auto Session::getSocket() -> asio::ip::tcp::socket & {
 	return m_socket;
 }
 
@@ -68,7 +66,7 @@ auto Session::start() -> void {
 auto Session::disconnect() -> void {
 	m_manager.stop(shared_from_this());
 
-	boost::system::error_code ec;
+	asio::error_code ec;
 	m_socket.close(ec);
 	if (ec) {
 		std::cerr << "FAILURE TO CLOSE SESSION (" << ec.value() << "): " << ec.message() << std::endl;
@@ -117,14 +115,14 @@ auto Session::startReadHeader() -> void {
 			std::placeholders::_2));
 }
 
-auto Session::handleWrite(const boost::system::error_code &error, size_t bytesTransferred) -> void {
+auto Session::handleWrite(const asio::error_code &error, size_t bytesTransferred) -> void {
 	owned_lock_t<mutex_t> l{m_sendMutex};
 	if (error) {
 		disconnect();
 	}
 }
 
-auto Session::handleReadHeader(const boost::system::error_code &error, size_t bytesTransferred) -> void {
+auto Session::handleReadHeader(const asio::error_code &error, size_t bytesTransferred) -> void {
 	if (!error) {
 		// TODO FIXME
 		// Figure out how to distinguish between client versions and server versions, can use this after
@@ -154,7 +152,7 @@ auto Session::handleReadHeader(const boost::system::error_code &error, size_t by
 	}
 }
 
-auto Session::handleReadBody(const boost::system::error_code &error, size_t bytesTransferred) -> void {
+auto Session::handleReadBody(const asio::error_code &error, size_t bytesTransferred) -> void {
 	if (!error) {
 		m_decoder.decrypt(m_buffer.get(), bytesTransferred, headerLen);
 

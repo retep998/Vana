@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ConfigFile.hpp"
 #include "ExitCodes.hpp"
 #include "ThreadPool.hpp"
-#include <boost/asio.hpp>
+#include <asio.hpp>
 #include <botan/botan.h>
 #include <csignal>
 #include <cstdlib>
@@ -35,13 +35,13 @@ namespace Vana {
 	template <typename TAbstractServer>
 	auto main() -> exit_code_t {
 		Botan::LibraryInitializer init{"thread_safe=true"};
-		boost::asio::io_service s;
-		boost::asio::signal_set signals{s, SIGINT};
+		asio::io_service s;
+		asio::signal_set signals{s, SIGINT};
 
 		try {
 			AbstractServer &server = TAbstractServer::getInstance();
 
-			signals.async_wait([&server](const boost::system::error_code &ec, int handlerId) {
+			signals.async_wait([&server](const asio::error_code &ec, int handlerId) {
 				server.shutdown();
 			});
 

@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 #include "Ip.hpp"
 #include "PacketBuilder.hpp"
-#include <boost/asio.hpp>
+#include <asio.hpp>
 #include <stdexcept>
 
 Ip::Ip(const string_t &addr, Ip::Type type) :
@@ -37,21 +37,21 @@ Ip::Ip(uint32_t ipv4) :
 }
 
 auto Ip::stringToIpv4(const string_t &name) -> uint32_t {
-	boost::asio::io_service ioService;
-	boost::asio::ip::tcp::resolver resolver{ioService};
-	boost::asio::ip::tcp::resolver::query query{boost::asio::ip::tcp::v4(), name, "http"};
-	boost::asio::ip::tcp::resolver::iterator iter = resolver.resolve(query);
-	boost::asio::ip::tcp::resolver::iterator end;
+	asio::io_service ioService;
+	asio::ip::tcp::resolver resolver{ioService};
+	asio::ip::tcp::resolver::query query{asio::ip::tcp::v4(), name, "http"};
+	asio::ip::tcp::resolver::iterator iter = resolver.resolve(query);
+	asio::ip::tcp::resolver::iterator end;
 
-	// boost::asio throws an exception if the name cannot be resolved
+	// asio throws an exception if the name cannot be resolved
 
-	boost::asio::ip::tcp::endpoint ep = *iter;
+	asio::ip::tcp::endpoint ep = *iter;
 	return ep.address().to_v4().to_ulong();
 }
 
 auto Ip::toString() const -> string_t {
 	if (m_type == Ip::Type::Ipv4) {
-		return boost::asio::ip::address_v4(m_ipv4).to_string();
+		return asio::ip::address_v4(m_ipv4).to_string();
 	}
 	throw std::invalid_argument{"m_type"};
 }

@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Ip.hpp"
 #include "Types.hpp"
 #include <atomic>
-#include <boost/asio.hpp>
+#include <asio.hpp>
 #include <memory>
 #include <string>
 #include <thread>
@@ -45,11 +45,11 @@ private:
 		bool isPinging = true;
 		bool isEncrypted = true;
 		string_t subversion;
-		boost::asio::ip::tcp::acceptor acceptor;
+		asio::ip::tcp::acceptor acceptor;
 		function_t<AbstractConnection *()> connectionCreator;
 
 		Listener() = delete;
-		Listener(boost::asio::io_service &ioService, const boost::asio::ip::tcp::endpoint &endpoint, function_t<AbstractConnection *()> createConnection, const InterServerConfig &config, bool isServer, const string_t &subversion);
+		Listener(asio::io_service &ioService, const asio::ip::tcp::endpoint &endpoint, function_t<AbstractConnection *()> createConnection, const InterServerConfig &config, bool isServer, const string_t &subversion);
 	};
 
 	auto acceptConnection(ref_ptr_t<Listener> listener) -> void;
@@ -57,6 +57,6 @@ private:
 	vector_t<ref_ptr_t<Listener>> m_servers;
 	hash_set_t<ref_ptr_t<Session>> m_sessions;
 	ref_ptr_t<thread_t> m_thread;
-	owned_ptr_t<boost::asio::io_service::work> m_work;
-	boost::asio::io_service m_ioService;
+	owned_ptr_t<asio::io_service::work> m_work;
+	asio::io_service m_ioService;
 };

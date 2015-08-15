@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 ConnectionManager::ConnectionManager()
 {
-	m_work = make_owned_ptr<boost::asio::io_service::work>(m_ioService);
+	m_work = make_owned_ptr<asio::io_service::work>(m_ioService);
 }
 
 ConnectionManager::~ConnectionManager() {
@@ -33,7 +33,7 @@ ConnectionManager::~ConnectionManager() {
 	m_thread.reset();
 }
 
-ConnectionManager::Listener::Listener(boost::asio::io_service &ioService, const boost::asio::ip::tcp::endpoint &endpoint, function_t<AbstractConnection *()> createConnection, const InterServerConfig &config, bool isServer, const string_t &subversion) :
+ConnectionManager::Listener::Listener(asio::io_service &ioService, const asio::ip::tcp::endpoint &endpoint, function_t<AbstractConnection *()> createConnection, const InterServerConfig &config, bool isServer, const string_t &subversion) :
 	acceptor{ioService, endpoint},
 	isPinging{isServer ? config.serverPing : config.clientPing},
 	isEncrypted{config.clientEncryption || isServer},
@@ -44,10 +44,10 @@ ConnectionManager::Listener::Listener(boost::asio::io_service &ioService, const 
 }
 
 auto ConnectionManager::accept(const Ip::Type &ipType, port_t port, function_t<AbstractConnection *()> createConnection, const InterServerConfig &config, bool isServer, const string_t &subversion) -> void {
-	boost::asio::ip::tcp::endpoint endpoint{
+	asio::ip::tcp::endpoint endpoint{
 		ipType == Ip::Type::Ipv4 ?
-			boost::asio::ip::tcp::v4() :
-			boost::asio::ip::tcp::v6(),
+			asio::ip::tcp::v4() :
+			asio::ip::tcp::v6(),
 		port};
 
 	auto listener = make_ref_ptr<Listener>(m_ioService, endpoint, createConnection, config, isServer, subversion);
@@ -93,7 +93,7 @@ auto ConnectionManager::acceptConnection(ref_ptr_t<Listener> listener) -> void {
 		listener->subversion);
 
 	m_sessions.insert(newSession);
-	listener->acceptor.async_accept(newSession->getSocket(), [this, listener, newSession](const boost::system::error_code &error) mutable {
+	listener->acceptor.async_accept(newSession->getSocket(), [this, listener, newSession](const asio::error_code &error) mutable {
 		if (!error) {
 			newSession->start();
 			this->acceptConnection(listener);

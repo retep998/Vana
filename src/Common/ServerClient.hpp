@@ -21,14 +21,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include "Types.hpp"
 #include <string>
-#include <boost/asio.hpp>
+#include <asio.hpp>
 
 class AbstractConnection;
 class ConnectionManager;
 
 class ServerClient : public Session {
 public:
-	ServerClient(boost::asio::io_service &ioService, const Ip &serverIp, port_t serverPort, ConnectionManager &manager, AbstractConnection *connection, bool ping);
+	ServerClient(asio::io_service &ioService, const Ip &serverIp, port_t serverPort, ConnectionManager &manager, AbstractConnection *connection, bool ping);
 private:
 	friend class ConnectionManager;
 	auto startConnect() -> Result;
@@ -36,5 +36,5 @@ private:
 
 	port_t m_port = 0;
 	Ip m_server;
-	boost::asio::ip::tcp::resolver m_resolver;
+	asio::ip::tcp::resolver m_resolver;
 };

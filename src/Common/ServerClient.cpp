@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
-ServerClient::ServerClient(boost::asio::io_service &ioService, const Ip &serverIp, port_t serverPort, ConnectionManager &manager, AbstractConnection *connection, bool ping) :
+ServerClient::ServerClient(asio::io_service &ioService, const Ip &serverIp, port_t serverPort, ConnectionManager &manager, AbstractConnection *connection, bool ping) :
 	Session{ioService, manager, connection, false, true, ping, MapleVersion::LoginSubversion},
 	m_server{serverIp},
 	m_port{serverPort},
@@ -36,16 +36,16 @@ ServerClient::ServerClient(boost::asio::io_service &ioService, const Ip &serverI
 auto ServerClient::startConnect() -> Result {
 	// Synchronously connect and process the connect packet
 
-	boost::asio::ip::address endAddress;
+	asio::ip::address endAddress;
 	if (m_server.getType() == Ip::Type::Ipv4) {
-		endAddress = boost::asio::ip::address_v4{m_server.asIpv4()};
+		endAddress = asio::ip::address_v4{m_server.asIpv4()};
 	}
 	else {
 		throw std::invalid_argument{"IPv6 unsupported"};
 	}
-	boost::asio::ip::tcp::endpoint endpoint{endAddress, m_port};
+	asio::ip::tcp::endpoint endpoint{endAddress, m_port};
 
-	boost::system::error_code error;
+	asio::error_code error;
 	getSocket().connect(endpoint, error);
 
 	if (!error) {
@@ -71,14 +71,14 @@ auto ServerClient::startConnect() -> Result {
 }
 
 auto ServerClient::readConnectPacket() -> void {
-	boost::system::error_code error;
+	asio::error_code error;
 
 	auto &buffer = getBuffer();
 	buffer.reset(new unsigned char[maxBufferLen]);
 
-	size_t packetSize = boost::asio::read(getSocket(),
-		boost::asio::buffer(buffer.get(), maxBufferLen),
-		boost::asio::transfer_at_least(10), // May require maintenance if the IV packet ever dips below 10 bytes
+	size_t packetSize = asio::read(getSocket(),
+		asio::buffer(buffer.get(), maxBufferLen),
+		asio::transfer_at_least(10), // May require maintenance if the IV packet ever dips below 10 bytes
 		error);
 
 	if (error) {
