@@ -422,23 +422,16 @@ auto PlayerQuests::connectData(PacketBuilder &packet) -> void {
 	}
 }
 
-#include "SmsgHeader.hpp"
 auto PlayerQuests::setQuestData(quest_id_t id, const string_t &data) -> void {
 	// TODO FIXME figure out how this works
 	// e.g. Battleship quest
-
+	/*
 	if (!isQuestActive(id)) {
-		PacketBuilder test;
-		test
-			.add<header_t>(SMSG_NOTICE)
-			.add<int8_t>(0xB)
-			.add<quest_id_t>(3507)
-			.add<string_t>(data);
-
-		m_quests[id] = ActiveQuest();
-		m_player->send(test);
-		//m_player->send(QuestsPacket::updateQuest(m_quests[3507]));
+		m_quests[id] = ActiveQuest{};
+		m_player->send(QuestsPacket::acceptQuest(id, 0));
+		m_player->send(QuestsPacket::acceptQuestNotice(id));
 	}
+	*/
 
 	auto &quest = m_quests[id];
 	quest.data = data;
