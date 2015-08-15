@@ -71,7 +71,9 @@ auto DatabaseUpdater::loadDatabaseInfo() -> void {
 	bool retrievedData = false;
 
 	try {
-		soci::session &sql = Database::getCharDb();
+		soci::session &sql = m_update ?
+			Database::initCharDb() :
+			Database::getCharDb();
 		m_dbAvailable = true;
 	}
 	catch (soci::soci_error &) {
@@ -80,12 +82,24 @@ auto DatabaseUpdater::loadDatabaseInfo() -> void {
 
 	try {
 		soci::session &sql = Database::getCharDb();
+		opt_string_t table;
 		sql.once
-			<< "SELECT version "
-			<< "FROM " << Database::makeCharTable("vana_info"),
-			soci::into(version);
+			<< "SELECT table_name "
+			<< "FROM INFORMATION_SCHEMA.TABLES "
+			<< "WHERE TABLE_SCHEMA = :schema AND TABLE_NAME = :table "
+			<< "LIMIT 1",
+			soci::use(Database::getCharSchema(), "schema"),
+			soci::use(Database::makeCharTable("vana_info"), "table"),
+			soci::into(table);
 
-		retrievedData = sql.got_data();
+		if (table.is_initialized()) {
+			sql.once
+				<< "SELECT version "
+				<< "FROM " << Database::makeCharTable("vana_info"),
+				soci::into(version);
+
+			retrievedData = sql.got_data();
+		}
 	}
 	catch (soci::soci_error &) { }
 

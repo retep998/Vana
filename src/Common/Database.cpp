@@ -20,34 +20,70 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Configuration.hpp"
 #include <soci-mysql.h>
 
-thread_local soci::session * Database::m_chardb = nullptr;
-thread_local soci::session * Database::m_datadb = nullptr;
+thread_local owned_ptr_t<soci::session> Database::m_chardb{nullptr};
+thread_local owned_ptr_t<soci::session> Database::m_datadb{nullptr};
+string_t Database::m_charDatabase;
 string_t Database::m_charTablePrefix;
 string_t Database::m_dataTablePrefix;
+
+auto Database::initCharDb() -> soci::session & {
+	if (m_chardb != nullptr) throw std::logic_error{"Must not call initCharDb after the database is already initialized"};
+
+	ConfigFile config{"conf/database.lua"};
+	config.run();
+	DbConfig conf = config.get<DbConfig>("chardb");
+	m_chardb = make_owned_ptr<soci::session>(soci::mysql, buildConnectionString(conf, false));
+	m_chardb->reconnect();
+	opt_string_t database;
+	m_chardb->once
+		<< "SELECT SCHEMA_NAME "
+		<< "FROM INFORMATION_SCHEMA.SCHEMATA "
+		<< "WHERE SCHEMA_NAME = :schema "
+		<< "LIMIT 1",
+		soci::use(conf.database, "schema"),
+		soci::into(database);
+
+	if (!database.is_initialized()) {
+		m_chardb->once <<
+			"CREATE DATABASE " << conf.database;
+	}
+
+	m_chardb.release();
+	return getCharDb();
+}
+
+auto Database::getCharSchema() -> string_t {
+	return m_charDatabase;
+}
 
 auto Database::connectCharDb() -> void {
 	ConfigFile config{"conf/database.lua"};
 	config.run();
 	DbConfig conf = config.get<DbConfig>("chardb");
-	m_chardb = new soci::session{soci::mysql, buildConnectionString(conf)};
+	m_chardb = make_owned_ptr<soci::session>(soci::mysql, buildConnectionString(conf, true));
 	m_chardb->reconnect();
 	m_charTablePrefix = conf.tablePrefix;
+	m_charDatabase = conf.database;
 }
 
 auto Database::connectDataDb() -> void {
 	ConfigFile config{"conf/database.lua"};
 	config.run();
 	DbConfig conf = config.get<DbConfig>("datadb");
-	m_datadb = new soci::session{soci::mysql, buildConnectionString(conf)};
+	m_datadb = make_owned_ptr<soci::session>(soci::mysql, buildConnectionString(conf, true));
 	m_datadb->reconnect();
 	m_dataTablePrefix = conf.tablePrefix;
 }
 
-auto Database::buildConnectionString(const DbConfig &conf) -> string_t {
+auto Database::buildConnectionString(const DbConfig &conf, bool includeDatabase) -> string_t {
 	out_stream_t str;
 
-	str << "dbname=" << conf.database
-		<< " user=" << conf.username
+	if (includeDatabase) {
+		str << "dbname=" << conf.database << " ";
+	}
+
+	str
+		<< "user=" << conf.username
 		<< " password='" << conf.password << "'"
 		<< " host=" << conf.host
 		<< " port=" << conf.port;

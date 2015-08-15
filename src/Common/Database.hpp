@@ -32,7 +32,9 @@ struct DbConfig;
 class Database {
 public:
 	static auto getCharDb() -> soci::session &;
+	static auto getCharSchema() -> string_t;
 	static auto getDataDb() -> soci::session &;
+	static auto initCharDb() -> soci::session &;
 	template <typename TIdentifier>
 	static auto getLastId(soci::session &sql) -> TIdentifier;
 	static auto makeCharTable(const string_t &table) -> string_t;
@@ -40,10 +42,11 @@ public:
 private:
 	static auto connectCharDb() -> void;
 	static auto connectDataDb() -> void;
-	static auto buildConnectionString(const DbConfig &conf) -> string_t;
+	static auto buildConnectionString(const DbConfig &conf, bool includeDatabase) -> string_t;
 
-	static thread_local soci::session *m_chardb;
-	static thread_local soci::session *m_datadb;
+	static thread_local owned_ptr_t<soci::session> m_chardb;
+	static thread_local owned_ptr_t<soci::session> m_datadb;
+	static string_t m_charDatabase;
 	static string_t m_charTablePrefix;
 	static string_t m_dataTablePrefix;
 };
