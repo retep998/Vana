@@ -157,16 +157,16 @@ auto AbstractServer::createLogger(const LogConfig &conf) -> void {
 }
 
 auto AbstractServer::initializeLoggingConstants(ConfigFile &conf) const -> void {
-	conf.set<int32_t>("LOG_NONE", LogDestinations::None);
-	conf.set<int32_t>("LOG_ALL", LogDestinations::All);
+	conf.set<int32_t>("system_log_none", LogDestinations::None);
+	conf.set<int32_t>("system_log_all", LogDestinations::All);
 
 	hash_map_t<string_t, int32_t> constants;
-	constants["CONSOLE"] = LogDestinations::Console;
-	constants["FILE"] = LogDestinations::File;
-	constants["SQL"] = LogDestinations::Sql;
+	constants["console"] = LogDestinations::Console;
+	constants["file"] = LogDestinations::File;
+	constants["sql"] = LogDestinations::Sql;
 	// If you add more location constants, be sure to add them to this map
 
-	loggerOptions(constants, conf, "LOG", 0, 0);
+	loggerOptions(constants, conf, "system_log", 0, 0);
 }
 
 auto AbstractServer::loggerOptions(const hash_map_t<string_t, int32_t> &constants, ConfigFile &conf, const string_t &base, int32_t val, uint32_t depth) const -> void {

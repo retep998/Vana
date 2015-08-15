@@ -35,8 +35,8 @@ log_time_format = "%MM/%DD/%YY %MI:%II:%SS";
 -- All replacement identifiers are case-sensitive
 
 -- Logging options
--- *_log_destination: the place you wish to log to; options are LOG_NONE, LOG_ALL, LOG_FILE, LOG_SQL, and LOG_CONSOLE
--- You may combine specific log types by doing something such as LOG_FILE_SQL_CONSOLE or any variation thereof
+-- *_log_destination: the place you wish to log to; options are system_log_none, system_log_all, system_log_file, system_log_sql, and system_log_console
+-- You may combine specific log types by doing something such as system_log_file_sql_console or any variation thereof
 
 -- *_log_buffer_size: buffer for limited resources like SQL and files, log items are cached until these are full
 
@@ -53,31 +53,31 @@ log_time_format = "%MM/%DD/%YY %MI:%II:%SS";
 -- *_log_file: the path/file that you wish to log to, supports all above replacements (time and format)
 
 -- Login logging
-login_log_destination = LOG_CONSOLE;
+login_log_destination = system_log_console;
 login_log_buffer_size = 40;
 login_log_format = "[%e (%t)] - %msg";
 login_log_file = "logs/%orig/%YY%MM%DD.log";
 
 -- World logging
-world_log_destination = LOG_CONSOLE;
+world_log_destination = system_log_console;
 world_log_buffer_size = 40;
 world_log_format = "[%e (%t)] %id - %msg";
 world_log_file = "logs/%orig/%YY%MM%DD.log";
 
 -- Channel logging
-channel_log_destination = LOG_CONSOLE;
+channel_log_destination = system_log_console;
 channel_log_buffer_size = 40;
 channel_log_format = "[%e (%t)] %id - %msg";
 channel_log_file = "logs/%orig/%YY%MM%DD.log";
 
 -- Cash logging
-cash_log_destination = LOG_SQL;
+cash_log_destination = system_log_sql;
 cash_log_buffer_size = 40;
 cash_log_format = "%msg";
 cash_log_file = "logs/%orig/%YY%MM%DD.log";
 
 -- MTS logging
-mts_log_destination = LOG_FILE;
+mts_log_destination = system_log_file;
 mts_log_buffer_size = 40;
 mts_log_format = "[%e (%t)] %id - %msg";
 mts_log_file = "logs/%orig/%YY%MM%DD.log";
