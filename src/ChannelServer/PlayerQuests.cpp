@@ -29,18 +29,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <array>
 
 PlayerQuests::PlayerQuests(Player *player) :
-	m_player(player)
+	m_player{player}
 {
 	load();
 }
 
 auto PlayerQuests::save() -> void {
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	player_id_t charId = m_player->getId();
 	quest_id_t questId = 0;
 
-	sql.once << "DELETE FROM " << Database::makeCharTable("active_quests") << " WHERE character_id = :char", soci::use(charId, "char");
-	sql.once << "DELETE FROM " << Database::makeCharTable("completed_quests") << " WHERE character_id = :char", soci::use(charId, "char");
+	sql.once << "DELETE FROM " << db.makeTable("active_quests") << " WHERE character_id = :char", soci::use(charId, "char");
+	sql.once << "DELETE FROM " << db.makeTable("completed_quests") << " WHERE character_id = :char", soci::use(charId, "char");
 
 	if (m_quests.size() > 0) {
 		mob_id_t mobId = 0;
@@ -51,14 +52,14 @@ auto PlayerQuests::save() -> void {
 		data = "";
 
 		soci::statement st = (sql.prepare
-			<< "INSERT INTO " << Database::makeCharTable("active_quests") << " (character_id, quest_id, data) "
+			<< "INSERT INTO " << db.makeTable("active_quests") << " (character_id, quest_id, data) "
 			<< "VALUES (:char, :quest, :data)",
 			soci::use(charId, "char"),
 			soci::use(questId, "quest"),
 			soci::use(data, "data"));
 
 		soci::statement stMobs = (sql.prepare
-			<< "INSERT INTO " << Database::makeCharTable("active_quests_mobs") << " (active_quest_id, mob_id, quantity_killed) "
+			<< "INSERT INTO " << db.makeTable("active_quests_mobs") << " (active_quest_id, mob_id, quantity_killed) "
 			<< "VALUES (:id, :mob, :killed)",
 			soci::use(id, "id"),
 			soci::use(mobId, "mob"),
@@ -76,7 +77,7 @@ auto PlayerQuests::save() -> void {
 			st.execute(true);
 
 			if (kvp.second.kills.size() > 0) {
-				id = Database::getLastId<int64_t>(sql);
+				id = db.getLastId<int64_t>();
 				for (const auto &killPair : kvp.second.kills) {
 					mobId = killPair.first;
 					killed = killPair.second;
@@ -90,7 +91,7 @@ auto PlayerQuests::save() -> void {
 		int64_t time = 0;
 
 		soci::statement st = (sql.prepare
-			<< "INSERT INTO " << Database::makeCharTable("completed_quests") << " "
+			<< "INSERT INTO " << db.makeTable("completed_quests") << " "
 			<< "VALUES (:char, :quest, :time)",
 			soci::use(charId, "char"),
 			soci::use(questId, "quest"),
@@ -105,7 +106,8 @@ auto PlayerQuests::save() -> void {
 }
 
 auto PlayerQuests::load() -> void {
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	player_id_t charId = m_player->getId();
 	quest_id_t previous = 0;
 	quest_id_t current = 0;
@@ -114,8 +116,8 @@ auto PlayerQuests::load() -> void {
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT a.quest_id, am.mob_id, am.quantity_killed, a.data "
-		<< "FROM " << Database::makeCharTable("active_quests") << " a "
-		<< "LEFT OUTER JOIN " << Database::makeCharTable("active_quests_mobs") << " am ON am.active_quest_id = a.id "
+		<< "FROM " << db.makeTable("active_quests") << " a "
+		<< "LEFT OUTER JOIN " << db.makeTable("active_quests_mobs") << " am ON am.active_quest_id = a.id "
 		<< "WHERE a.character_id = :char ORDER BY a.quest_id ASC",
 		soci::use(charId, "char"));
 
@@ -146,7 +148,7 @@ auto PlayerQuests::load() -> void {
 		m_quests[previous] = curQuest;
 	}
 
-	rs = (sql.prepare << "SELECT c.quest_id, c.end_time FROM " << Database::makeCharTable("completed_quests") << " c WHERE c.character_id = :char", soci::use(charId, "char"));
+	rs = (sql.prepare << "SELECT c.quest_id, c.end_time FROM " << db.makeTable("completed_quests") << " c WHERE c.character_id = :char", soci::use(charId, "char"));
 
 	for (const auto &row : rs) {
 		m_completed[row.get<quest_id_t>("quest_id")] = row.get<int64_t>("end_time");
@@ -425,11 +427,12 @@ auto PlayerQuests::setQuestData(quest_id_t id, const string_t &data) -> void {
 	// e.g. Battleship quest
 	/*
 	if (!isQuestActive(id)) {
-		m_quests[id] = ActiveQuest();
+		m_quests[id] = ActiveQuest{};
 		m_player->send(QuestsPacket::acceptQuest(id, 0));
 		m_player->send(QuestsPacket::acceptQuestNotice(id));
 	}
 	*/
+
 	auto &quest = m_quests[id];
 	quest.data = data;
 	m_player->send(QuestsPacket::updateQuest(quest));
