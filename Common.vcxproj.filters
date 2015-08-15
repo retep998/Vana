@@ -244,6 +244,9 @@
     <ClCompile Include="src\Common\BuffMapInfo.cpp">
       <Filter>Data Structures\Buffs</Filter>
     </ClCompile>
+    <ClCompile Include="src\Common\FileTime.cpp">
+      <Filter>Data Structures\Time</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common\GameConstants.hpp">
@@ -566,6 +569,9 @@
       <Filter>Data Structures\Buffs</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\UnixTime.hpp">
+      <Filter>Data Structures\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\FileTime.hpp">
       <Filter>Data Structures\Time</Filter>
     </ClInclude>
   </ItemGroup>

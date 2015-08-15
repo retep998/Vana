@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerPacketHelper.hpp"
+#include "FileTime.hpp"
 #include "GameLogicUtilities.hpp"
 #include "Inventory.hpp"
 #include "ItemConstants.hpp"
@@ -53,7 +54,7 @@ PACKET_IMPL(addItemInfo, inventory_slot_t slot, Item *item, bool shortSlot) {
 	else {
 		builder.add<int8_t>(0);
 	}
-	builder.add<int64_t>(item->getExpirationTime());
+	builder.add<FileTime>(item->getExpirationTime());
 	if (equip) {
 		builder
 			.add<int8_t>(item->getSlots())

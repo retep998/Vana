@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "FileTime.hpp"
 #include "Quest.hpp"
 #include "QuestDataProvider.hpp"
 #include "Quests.hpp"
@@ -83,5 +84,5 @@ private:
 	Player *m_player = nullptr;
 	hash_map_t<mob_id_t, vector_t<quest_id_t>> m_mobToQuestMapping;
 	ord_map_t<quest_id_t, ActiveQuest> m_quests;
-	ord_map_t<quest_id_t, int64_t> m_completed;
+	ord_map_t<quest_id_t, FileTime> m_completed;
 };

@@ -672,7 +672,7 @@ auto PlayerInventory::wishListPacket(PacketBuilder &packet) -> void {
 
 auto PlayerInventory::checkExpiredItems() -> void {
 	vector_t<item_id_t> expiredItemIds;
-	int64_t serverTime = TimeUtilities::getServerTime();
+	FileTime serverTime{};
 
 	for (inventory_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; ++i) {
 		for (inventory_slot_count_t s = 1; s <= getMaxSlots(i); ++s) {

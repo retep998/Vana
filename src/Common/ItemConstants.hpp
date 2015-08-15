@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "FileTime.hpp"
 #include "Types.hpp"
 #include <limits>
 
@@ -95,7 +96,7 @@ namespace EquipSlots {
 }
 
 namespace Items {
-	const int64_t NoExpiration = 150842304000000000LL;
+	const FileTime NoExpiration = FileTime{150842304000000000LL};
 	const int32_t MaxHammers = 2;
 	const int32_t WeatherTime = 30;
 	const slot_qty_t ShadowStarsCost = 200;

@@ -50,14 +50,14 @@ PACKET_IMPL(acceptQuestNotice, quest_id_t questId) {
 	return builder;
 }
 
-PACKET_IMPL(completeQuestNotice, quest_id_t questId, int64_t time) {
+PACKET_IMPL(completeQuestNotice, quest_id_t questId, FileTime time) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_NOTICE)
 		.add<int8_t>(1)
 		.add<quest_id_t>(questId)
 		.unk<int8_t>(2)
-		.add<int64_t>(time);
+		.add<FileTime>(time);
 	return builder;
 }
 

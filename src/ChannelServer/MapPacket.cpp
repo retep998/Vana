@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Buffs.hpp"
 #include "BuffsPacketHelper.hpp"
 #include "ChannelServer.hpp"
+#include "FileTime.hpp"
 #include "Inventory.hpp"
 #include "Map.hpp"
 #include "Maps.hpp"
@@ -135,7 +136,7 @@ PACKET_IMPL(changeMap, Player *player, bool spawnByPosition, const Point &spawnP
 		builder.add<WidePoint>(WidePoint{spawnPosition});
 	}
 
-	builder.add<int64_t>(TimeUtilities::getServerTime());
+	builder.add<FileTime>(FileTime{});
 	return builder;
 }
 

@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "FileTime.hpp"
 #include "PacketBuilder.hpp"
 #include "SplitPacketBuilder.hpp"
 #include "Types.hpp"
@@ -35,7 +36,7 @@ namespace QuestsPacket {
 
 	PACKET(acceptQuest, quest_id_t questId, npc_id_t npcId);
 	PACKET(acceptQuestNotice, quest_id_t questId);
-	PACKET(completeQuestNotice, quest_id_t questId, int64_t time);
+	PACKET(completeQuestNotice, quest_id_t questId, FileTime time);
 	PACKET(completeQuest, quest_id_t questId, npc_id_t npcId, quest_id_t nextQuest);
 	SPLIT_PACKET(completeQuestAnimation, player_id_t playerId);
 	PACKET(updateQuest, const ActiveQuest &quest);

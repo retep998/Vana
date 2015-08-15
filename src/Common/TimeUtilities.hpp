@@ -23,8 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 namespace TimeUtilities {
-	auto getServerTime() -> int64_t;
-	auto timeToTick(time_t time) -> int64_t;
 	auto getDate(time_t ctime = time(nullptr)) -> int32_t;
 	auto getMonth(time_t ctime = time(nullptr)) -> int32_t;
 	auto getYear(bool twoDigit, time_t ctime = time(nullptr)) -> int32_t;

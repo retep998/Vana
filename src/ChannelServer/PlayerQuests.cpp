@@ -99,7 +99,7 @@ auto PlayerQuests::save() -> void {
 
 		for (const auto &kvp : m_completed) {
 			questId = kvp.first;
-			time = kvp.second;
+			time = kvp.second.getValue();
 			st.execute(true);
 		}
 	}
@@ -133,7 +133,7 @@ auto PlayerQuests::load() -> void {
 		}
 		else if (previous != -1 && current != previous) {
 			m_quests[previous] = curQuest;
-			curQuest = ActiveQuest();
+			curQuest = ActiveQuest{};
 			curQuest.id = current;
 			curQuest.data = data;
 		}
@@ -151,7 +151,7 @@ auto PlayerQuests::load() -> void {
 	rs = (sql.prepare << "SELECT c.quest_id, c.end_time FROM " << db.makeTable("completed_quests") << " c WHERE c.character_id = :char", soci::use(charId, "char"));
 
 	for (const auto &row : rs) {
-		m_completed[row.get<quest_id_t>("quest_id")] = row.get<int64_t>("end_time");
+		m_completed[row.get<quest_id_t>("quest_id")] = FileTime{row.get<int64_t>("end_time")};
 	}
 }
 
@@ -255,7 +255,7 @@ auto PlayerQuests::finishQuest(quest_id_t questId, npc_id_t npcId) -> void {
 	});
 
 	m_quests.erase(questId);
-	int64_t endTime = TimeUtilities::getServerTime();
+	FileTime endTime{};
 	m_completed[questId] = endTime;
 	m_player->send(QuestsPacket::completeQuestNotice(questId, endTime));
 	m_player->send(QuestsPacket::completeQuest(questId, npcId, questInfo.getNextQuest()));
@@ -418,7 +418,7 @@ auto PlayerQuests::connectData(PacketBuilder &packet) -> void {
 	packet.add<uint16_t>(static_cast<uint16_t>(m_completed.size()));
 	for (const auto &kvp : m_completed) {
 		packet.add<quest_id_t>(kvp.first);
-		packet.add<int64_t>(kvp.second);
+		packet.add<FileTime>(kvp.second);
 	}
 }
 

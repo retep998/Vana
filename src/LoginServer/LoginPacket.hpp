@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "FileTime.hpp"
 #include "PacketBuilder.hpp"
 #include "Types.hpp"
 #include <vector>
@@ -53,7 +54,7 @@ namespace LoginPacket {
 	}
 
 	PACKET(loginError, int16_t errorId);
-	PACKET(loginBan, int8_t reason, int64_t expire);
+	PACKET(loginBan, int8_t reason, FileTime expire);
 	PACKET(loginProcess, int8_t id);
 	PACKET(loginConnect, UserConnection *user, const string_t &username);
 	PACKET(pinAssigned);

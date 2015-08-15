@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.hpp"
 #include "ChannelServer.hpp"
 #include "ClientIp.hpp"
+#include "FileTime.hpp"
 #include "InterHeader.hpp"
 #include "KeyMaps.hpp"
 #include "Pet.hpp"
@@ -90,7 +91,7 @@ PACKET_IMPL(connectData, Player *player) {
 		.unk<int16_t>() 
 		.add<int16_t>(0) // Amount of pquests (or extended quests? Maybe related to Battleship?), for every quest: quest_id_t questId, string_t questdata
 		.unk<int16_t>()
-		.add<int64_t>(TimeUtilities::getServerTime());
+		.add<FileTime>(FileTime{});
 	return builder;
 }
 

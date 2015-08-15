@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PetsPacket.hpp"
+#include "FileTime.hpp"
 #include "GameConstants.hpp"
 #include "Item.hpp"
 #include "ItemConstants.hpp"
@@ -188,7 +189,7 @@ PACKET_IMPL(addInfo, Pet *pet, Item *petItem) {
 		.add<int8_t>(pet->getLevel())
 		.add<int16_t>(pet->getCloseness())
 		.add<int8_t>(pet->getFullness())
-		.add<int64_t>(petItem->getExpirationTime())
+		.add<FileTime>(petItem->getExpirationTime())
 		.unk<int32_t>()
 		.add<int32_t>(0); // Time to expire (for trial pet)
 	return builder;

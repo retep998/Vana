@@ -104,6 +104,7 @@
     <ClCompile Include="src\Common\ExternalIp.cpp" />
     <ClCompile Include="src\Common\ExternalIpResolver.cpp" />
     <ClCompile Include="src\Common\FileLogger.cpp" />
+    <ClCompile Include="src\Common\FileTime.cpp" />
     <ClCompile Include="src\Common\Ip.cpp" />
     <ClCompile Include="src\Common\Item.cpp" />
     <ClCompile Include="src\Common\BlockCipherIv.cpp" />
@@ -183,6 +184,7 @@
     <ClInclude Include="src\Common\ExternalIp.hpp" />
     <ClInclude Include="src\Common\ExternalIpResolver.hpp" />
     <ClInclude Include="src\Common\FileLogger.hpp" />
+    <ClInclude Include="src\Common\FileTime.hpp" />
     <ClInclude Include="src\Common\GameConstants.hpp" />
     <ClInclude Include="src\Common\hash_combine.hpp" />
     <ClInclude Include="src\Common\IdLooper.hpp" />

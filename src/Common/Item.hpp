@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "FileTime.hpp"
 #include "ItemConstants.hpp"
 #include "Types.hpp"
 #include <string>
@@ -101,7 +102,7 @@ public:
 	auto getId() const -> item_id_t { return m_id; }
 	auto getHammers() const -> int32_t { return m_hammers; }
 	auto getPetId() const -> pet_id_t { return m_petId; }
-	auto getExpirationTime() const -> int64_t { return m_expiration; }
+	auto getExpirationTime() const -> FileTime { return m_expiration; }
 	auto getName() const -> const string_t & { return m_name; }
 
 	auto setPreventSlip(bool prevent) -> void;
@@ -184,6 +185,6 @@ private:
 	item_id_t m_id = 0;
 	int32_t m_hammers = 0;
 	pet_id_t m_petId = 0;
-	int64_t m_expiration = Items::NoExpiration;
+	FileTime m_expiration = Items::NoExpiration;
 	string_t m_name;
 };

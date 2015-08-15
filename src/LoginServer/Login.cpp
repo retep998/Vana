@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Login.hpp"
 #include "Algorithm.hpp"
 #include "Database.hpp"
+#include "FileTime.hpp"
 #include "GameConstants.hpp"
 #include "LoginPacket.hpp"
 #include "LoginServer.hpp"
@@ -79,7 +80,7 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 			banTime.tm_year = 7100;
 			banTime.tm_mon = 0;
 			banTime.tm_mday = 1;
-			int64_t time = TimeUtilities::timeToTick(mktime(&banTime));
+			auto time = FileTime{UnixTime{mktime(&banTime)}};
 			user->send(LoginPacket::loginBan(0, time));
 			valid = false;
 		}
@@ -117,7 +118,7 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 				valid = false;
 			}
 			else if (row.get<bool>("banned") && (!row.get<bool>("admin") || row.get<int32_t>("gm_level") == 0)) {
-				int64_t time = TimeUtilities::timeToTick(row.get<UnixTime>("ban_expire"));
+				auto time = FileTime{row.get<UnixTime>("ban_expire")};
 				user->send(LoginPacket::loginBan(row.get<int8_t>("ban_reason"), time));
 				valid = false;
 			}
@@ -169,12 +170,12 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 					soci::use(userId, "user");
 			}
 			else {
-				user->setQuietBanTime(TimeUtilities::timeToTick(banTime));
+				user->setQuietBanTime(FileTime{UnixTime{banTime}});
 				user->setQuietBanReason(row.get<int8_t>("quiet_ban_reason"));
 			}
 		}
 
-		user->setCreationTime(TimeUtilities::timeToTick(row.get<UnixTime>("creation_date")));
+		user->setCreationTime(FileTime{row.get<UnixTime>("creation_date")});
 		user->setCharDeletePassword(row.get<opt_int32_t>("char_delete_password"));
 		user->setAdmin(row.get<bool>("admin"));
 		user->setGmLevel(row.get<int32_t>("gm_level"));

@@ -315,7 +315,9 @@ auto Item::initializeItem(const soci::row &row) -> void {
 	m_jump = jump.get(0);
 	m_hammers = hammers.get(0);
 	m_flags = flags.get(0);
-	m_expiration = expiration.get(Items::NoExpiration);
+	m_expiration = expiration.is_initialized() ?
+		FileTime{expiration.get()} :
+		Items::NoExpiration;
 	m_petId = petId.get(0);
 	m_name = name.get("");
 }
@@ -337,7 +339,7 @@ auto Item::databaseInsert(Database &db, const vector_t<ItemDbRecord> &items) -> 
 	static init_list_t<int16_t> nullsInt16 = {0};
 	static init_list_t<int32_t> nullsInt32 = {0};
 	static init_list_t<int64_t> nullsInt64 = {0};
-	static init_list_t<int64_t> nullsExpiration = {0, Items::NoExpiration};
+	static init_list_t<int64_t> nullsExpiration = {0, Items::NoExpiration.getValue()};
 	static init_list_t<string_t> nullsString = {""};
 
 	using opt_stat_t = optional_t<stat_t>;
@@ -449,7 +451,7 @@ auto Item::databaseInsert(Database &db, const vector_t<ItemDbRecord> &items) -> 
 		hammers = getOptional(item->m_hammers, nulls, nullsInt32);
 		petId = getOptional(item->m_petId, nulls, nullsInt64);
 		name = getOptional(item->m_name, nulls, nullsString);
-		expiration = getOptional(item->m_expiration, nulls, nullsExpiration);
+		expiration = getOptional(item->m_expiration.getValue(), nulls, nullsExpiration);
 
 		st.execute(true);
 	}

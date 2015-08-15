@@ -36,14 +36,14 @@ PACKET_IMPL(loginError, int16_t errorId) {
 	return builder;
 }
 
-PACKET_IMPL(loginBan, int8_t reason, int64_t expire) {
+PACKET_IMPL(loginBan, int8_t reason, FileTime expire) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_AUTHENTICATION)
 		.add<int16_t>(2)
 		.unk<int32_t>()
 		.add<int8_t>(reason)
-		.add<int64_t>(expire);
+		.add<FileTime>(expire);
 	// Expiration will be a permanent ban if it's more than 2 years over the current year
 	// However, the cutoff is Jan1
 	// So if it's June, 2008 on the client's system, sending Jan 1 2011 = permanent ban
@@ -84,8 +84,8 @@ PACKET_IMPL(loginConnect, UserConnection *user, const string_t &username) {
 		.add<string_t>(username)
 		.unk<int8_t>()
 		.add<int8_t>(user->getQuietBanReason())
-		.add<int64_t>(user->getQuietBanTime())
-		.add<int64_t>(user->getCreationTime())
+		.add<FileTime>(user->getQuietBanTime())
+		.add<FileTime>(user->getCreationTime())
 		.unk<int32_t>();
 	return builder;
 }

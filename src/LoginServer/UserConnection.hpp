@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "AbstractConnection.hpp"
+#include "FileTime.hpp"
 #include "PlayerStatus.hpp"
 #include "Types.hpp"
 
@@ -38,8 +39,8 @@ public:
 	auto setPin(int32_t pin) -> void { m_pin = pin; }
 	auto setCharDeletePassword(opt_int32_t charDeletePassword) -> void { m_charDeletePassword = charDeletePassword; }
 	auto setQuietBanReason(int8_t reason) -> void { m_quietBanReason = reason; }
-	auto setQuietBanTime(int64_t banTime) -> void { m_quietBanTime = banTime; }
-	auto setCreationTime(int64_t creationTime) -> void { m_userCreation = creationTime; }
+	auto setQuietBanTime(FileTime banTime) -> void { m_quietBanTime = banTime; }
+	auto setCreationTime(FileTime creationTime) -> void { m_userCreation = creationTime; }
 	auto setGmLevel(int32_t gmLevel) -> void { m_gmLevel = gmLevel; }
 
 	auto getGender() const -> gender_id_t { return m_gender; }
@@ -52,8 +53,8 @@ public:
 	auto getPin() const -> int32_t { return m_pin; }
 	auto getCharDeletePassword() const -> opt_int32_t { return m_charDeletePassword; }
 	auto getQuietBanReason() const -> int8_t { return m_quietBanReason; }
-	auto getQuietBanTime() const -> int64_t { return m_quietBanTime; }
-	auto getCreationTime() const -> int64_t { return m_userCreation; }
+	auto getQuietBanTime() const -> FileTime { return m_quietBanTime; }
+	auto getCreationTime() const -> FileTime { return m_userCreation; }
 
 	auto addInvalidLogin() -> int32_t { return ++m_invalidLogins; }
 	auto setOnline(bool online) -> void;
@@ -71,7 +72,7 @@ private:
 	int32_t m_invalidLogins = 0;
 	int32_t m_gmLevel = 0;
 	opt_int32_t m_charDeletePassword;
-	int64_t m_quietBanTime = 0;
-	int64_t m_userCreation = 0;
+	FileTime m_quietBanTime = 0;
+	FileTime m_userCreation = 0;
 	PlayerStatus::PlayerStatus m_status = PlayerStatus::NotLoggedIn;
 };

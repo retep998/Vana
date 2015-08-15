@@ -46,7 +46,7 @@ PACKET_IMPL(showDrop, Drop *drop, int8_t type, const Point &origin) {
 			.unk<int16_t>();
 	}
 	if (!drop->isMesos()) {
-		builder.add<int64_t>(Items::NoExpiration);
+		builder.add<FileTime>(Items::NoExpiration);
 	}
 	builder.add<bool>(!drop->isPlayerDrop()); // Determines whether pets can pick item up or not
 	return builder;
