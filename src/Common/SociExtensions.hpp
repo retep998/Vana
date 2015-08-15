@@ -31,7 +31,7 @@ namespace soci {
 
 		static void from_base(const base_type &in, indicator &ind, target_type &out) {
 			if (ind == i_null) {
-				out = time(nullptr);
+				out = UnixTime{0};
 			}
 			else {
 				out = mktime(&const_cast<std::tm &>(in));
