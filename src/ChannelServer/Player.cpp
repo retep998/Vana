@@ -225,7 +225,8 @@ auto Player::handleRequest(PacketReader &reader) -> void {
 				case CMSG_MAP_TELEPORT:
 					// Do nothing
 					break;
-				default: std::cout << "Unhandled 0x" << std::hex << std::setw(4) << header << ": " << reader << std::endl;
+				default:
+					std::cout << "Unhandled 0x" << std::hex << std::setw(4) << header << ": " << reader << std::endl;
 #endif
 			}
 		}
@@ -257,12 +258,13 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 	}
 
 	m_id = id;
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	soci::row row;
 	sql.once
 		<< "SELECT c.*, u.gm_level, u.admin "
-		<< "FROM " << Database::makeCharTable("characters") << " c "
-		<< "INNER JOIN " << Database::makeCharTable("user_accounts") << " u ON c.user_id = u.user_id "
+		<< "FROM " << db.makeTable("characters") << " c "
+		<< "INNER JOIN " << db.makeTable("user_accounts") << " u ON c.user_id = u.user_id "
 		<< "WHERE c.character_id = :char",
 		soci::use(id, "char"),
 		soci::into(row);
@@ -645,8 +647,10 @@ auto Player::saveStats() -> void {
 		cover = rawCover;
 	}
 
-	Database::getCharDb().once
-		<< "UPDATE " << Database::makeCharTable("characters") << " "
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
+	sql.once
+		<< "UPDATE " << db.makeTable("characters") << " "
 		<< "SET "
 		<< "	level = :level, "
 		<< "	job = :job, "
@@ -724,9 +728,11 @@ auto Player::saveAll(bool saveCooldowns) -> void {
 
 auto Player::setOnline(bool online) -> void {
 	int32_t onlineId = online ? ChannelServer::getInstance().getOnlineId() : 0;
-	Database::getCharDb().once
-		<< "UPDATE " << Database::makeCharTable("user_accounts") << " u "
-		<< "INNER JOIN " << Database::makeCharTable("characters") << " c ON u.user_id = c.user_id "
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
+	sql.once
+		<< "UPDATE " << db.makeTable("user_accounts") << " u "
+		<< "INNER JOIN " << db.makeTable("characters") << " c ON u.user_id = c.user_id "
 		<< "SET "
 		<< "	u.online = :onlineId, "
 		<< "	c.online = :online "
@@ -737,7 +743,9 @@ auto Player::setOnline(bool online) -> void {
 }
 
 auto Player::setLevelDate() -> void {
-	Database::getCharDb().once << "UPDATE " << Database::makeCharTable("characters") << " c SET c.time_level = NOW() WHERE c.character_id = :char", soci::use(m_id, "char");
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
+	sql.once << "UPDATE " << db.makeTable("characters") << " c SET c.time_level = NOW() WHERE c.character_id = :char", soci::use(m_id, "char");
 }
 
 auto Player::acceptDeath(bool wheel) -> void {

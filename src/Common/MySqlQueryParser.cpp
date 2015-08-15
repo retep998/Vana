@@ -31,6 +31,7 @@ auto MySqlQueryParser::parseQueries(const string_t &filename) -> vector_t<string
 
 	filestream.open(filename.c_str());
 
+	auto &db = Database::getCharDb();
 	string_t content;
 	// Read whole file
 	{
@@ -41,7 +42,7 @@ auto MySqlQueryParser::parseQueries(const string_t &filename) -> vector_t<string
 			contentStream << line << std::endl;
 		}
 
-		content = StringUtilities::replace(contentStream.str(), "%%PREFIX%%", Database::makeCharTable(""));
+		content = StringUtilities::replace(contentStream.str(), "%%PREFIX%%", db.getTablePrefix());
 	}
 
 	// Parse each SQL statement

@@ -154,7 +154,7 @@ auto MobHandler::monsterControl(Player *player, PacketReader &reader) -> void {
 
 	mob->setSkillFeasibility(nextMovementCouldBeSkill);
 	if (nextMovementCouldBeSkill) {
-		mob->chooseRandomSkill(nextCastSkill, nextCastSkillLevel);
+		mob->chooseRandomSkill(player, nextCastSkill, nextCastSkillLevel);
 	}
 
 	player->send(MobsPacket::moveMobResponse(mobId, moveId, nextMovementCouldBeSkill, mob->getMp(), nextCastSkill, nextCastSkillLevel));

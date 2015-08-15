@@ -31,28 +31,37 @@ struct DbConfig;
 
 class Database {
 public:
-	static auto getCharDb() -> soci::session &;
-	static auto getCharSchema() -> string_t;
-	static auto getDataDb() -> soci::session &;
-	static auto initCharDb() -> soci::session &;
+	Database(const DbConfig &conf, bool includeDatabase);
+
+	static auto getCharDb() -> Database &;
+	static auto getDataDb() -> Database &;
+	static auto initCharDb() -> Database &;
+
+	auto getSession() -> soci::session &;
+	auto getSchema() const -> string_t;
+	auto getTablePrefix() const -> string_t;
+	auto makeTable(const string_t &table) const -> string_t;
 	template <typename TIdentifier>
-	static auto getLastId(soci::session &sql) -> TIdentifier;
-	static auto makeCharTable(const string_t &table) -> string_t;
-	static auto makeDataTable(const string_t &table) -> string_t;
+	auto getLastId() -> TIdentifier;
+	auto tableExists(const string_t &table) -> bool;
+
+	static auto schemaExists(soci::session &sql, const string_t &schema) -> bool;
+	static auto tableExists(soci::session &sql, const string_t &schema, const string_t &table) -> bool;
 private:
+	owned_ptr_t<soci::session> m_session;
+	string_t m_schema;
+	string_t m_tablePrefix;
+
 	static auto connectCharDb() -> void;
 	static auto connectDataDb() -> void;
 	static auto buildConnectionString(const DbConfig &conf, bool includeDatabase) -> string_t;
 
-	static thread_local owned_ptr_t<soci::session> m_chardb;
-	static thread_local owned_ptr_t<soci::session> m_datadb;
-	static string_t m_charDatabase;
-	static string_t m_charTablePrefix;
-	static string_t m_dataTablePrefix;
+	static thread_local owned_ptr_t<Database> m_chardb;
+	static thread_local owned_ptr_t<Database> m_datadb;
 };
 
 inline
-auto Database::getCharDb() -> soci::session & {
+auto Database::getCharDb() -> Database & {
 	if (m_chardb == nullptr) {
 		connectCharDb();
 	}
@@ -60,7 +69,7 @@ auto Database::getCharDb() -> soci::session & {
 }
 
 inline
-auto Database::getDataDb() -> soci::session & {
+auto Database::getDataDb() -> Database & {
 	if (m_datadb == nullptr) {
 		connectDataDb();
 	}
@@ -68,8 +77,8 @@ auto Database::getDataDb() -> soci::session & {
 }
 
 template <typename TIdentifier>
-auto Database::getLastId(soci::session &sql) -> TIdentifier {
+auto Database::getLastId() -> TIdentifier {
 	TIdentifier val;
-	sql.once << "SELECT LAST_INSERT_ID()", soci::into(val);
+	getSession().once << "SELECT LAST_INSERT_ID()", soci::into(val);
 	return val;
 }

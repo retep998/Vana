@@ -27,18 +27,19 @@ PlayerMounts::PlayerMounts(Player *player) :
 }
 
 auto PlayerMounts::save() -> void {
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	player_id_t charId = m_player->getId();
 	item_id_t itemId = 0;
 	int16_t exp = 0;
 	uint8_t tiredness = 0;
 	uint8_t level = 0;
 
-	sql.once << "DELETE FROM " << Database::makeCharTable("mounts") << " WHERE character_id = :char", soci::use(charId, "char");
+	sql.once << "DELETE FROM " << db.makeTable("mounts") << " WHERE character_id = :char", soci::use(charId, "char");
 
 	if (m_mounts.size() > 0) {
 		soci::statement st = (sql.prepare
-			<< "INSERT INTO " << Database::makeCharTable("mounts") << " "
+			<< "INSERT INTO " << db.makeTable("mounts") << " "
 			<< "VALUES (:char, :item, :exp, :level, :tiredness) ",
 			soci::use(charId, "char"),
 			soci::use(itemId, "item"),
@@ -58,10 +59,11 @@ auto PlayerMounts::save() -> void {
 }
 
 auto PlayerMounts::load() -> void {
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	player_id_t charId = m_player->getId();
 
-	soci::rowset<> rs = (sql.prepare << "SELECT m.* FROM " << Database::makeCharTable("mounts") << " m WHERE m.character_id = :char ", soci::use(charId, "char"));
+	soci::rowset<> rs = (sql.prepare << "SELECT m.* FROM " << db.makeTable("mounts") << " m WHERE m.character_id = :char ", soci::use(charId, "char"));
 
 	for (const auto &row : rs) {
 		MountData c;

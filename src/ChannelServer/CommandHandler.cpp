@@ -235,9 +235,11 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 			int32_t length = reader.get<int32_t>();
 			chat_t reasonMessage = reader.get<chat_t>();
 			if (Player *receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(victim)) {
-				Database::getCharDb().once
-					<< "UPDATE " << Database::makeCharTable("user_accounts") << " u "
-					<< "INNER JOIN " << Database::makeCharTable("characters") << " c ON u.user_id = c.user_id "
+				auto &db = Database::getCharDb();
+				auto &sql = db.getSession();
+				sql.once
+					<< "UPDATE " << db.makeTable("user_accounts") << " u "
+					<< "INNER JOIN " << db.makeTable("characters") << " c ON u.user_id = c.user_id "
 					<< "SET "
 					<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL :expire DAY),"
 					<< "	u.ban_reason = :reason,"

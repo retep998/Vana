@@ -36,7 +36,9 @@ auto ReactorDataProvider::loadData() -> void {
 auto ReactorDataProvider::loadReactors() -> void {
 	m_reactorInfo.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("reactor_data"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("reactor_data"));
 
 	for (const auto &row : rs) {
 		ReactorData reactor;
@@ -54,7 +56,9 @@ auto ReactorDataProvider::loadReactors() -> void {
 }
 
 auto ReactorDataProvider::loadStates() -> void {
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("reactor_events") << " ORDER BY reactorId, state ASC");
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("reactor_events") << " ORDER BY reactorId, state ASC");
 
 	for (const auto &row : rs) {
 		ReactorStateInfo state;
@@ -84,7 +88,9 @@ auto ReactorDataProvider::loadStates() -> void {
 }
 
 auto ReactorDataProvider::loadTriggerSkills() -> void {
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("reactor_event_trigger_skills"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("reactor_event_trigger_skills"));
 
 	for (const auto &row : rs) {
 		reactor_id_t id = row.get<reactor_id_t>("reactorid");

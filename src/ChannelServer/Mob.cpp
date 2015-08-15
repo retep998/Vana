@@ -316,6 +316,7 @@ auto Mob::setController(Player *control, MobSpawnType spawn, Player *display) ->
 
 	m_anticipatedSkill = 0;
 	m_anticipatedSkillLevel = 0;
+	m_anticipatedSkillPlayerId = 0;
 	m_skillFeasible = false;
 }
 
@@ -556,7 +557,7 @@ auto Mob::removeMarker(Player *player) -> void {
 	}
 }
 
-auto Mob::chooseRandomSkill(mob_skill_id_t &skillId, mob_skill_level_t &skillLevel) -> void {
+auto Mob::chooseRandomSkill(Player *player, mob_skill_id_t &skillId, mob_skill_level_t &skillLevel) -> void {
 	if (m_info->skillCount == 0 || m_anticipatedSkill != 0 || !canCastSkills()) {
 		return;
 	}
@@ -632,11 +633,13 @@ auto Mob::chooseRandomSkill(mob_skill_id_t &skillId, mob_skill_level_t &skillLev
 	skillLevel = skill->level;
 	m_anticipatedSkill = skillId;
 	m_anticipatedSkillLevel = skillLevel;
+	m_anticipatedSkillPlayerId = player->getId();
 }
 
 auto Mob::resetAnticipatedSkill() -> void {
 	m_anticipatedSkill = 0;
 	m_anticipatedSkillLevel = 0;
+	m_anticipatedSkillPlayerId = 0;
 }
 
 auto Mob::useAnticipatedSkill() -> Result {
@@ -653,9 +656,10 @@ auto Mob::useAnticipatedSkill() -> Result {
 	m_skillUse[skillId] = now;
 	m_lastSkillUse = now;
 
-	auto skillLevelInfo = ChannelServer::getInstance().getSkillDataProvider().getMobSkill(skillId, level);
+	auto &channel = ChannelServer::getInstance();
+	auto skillLevelInfo = channel.getSkillDataProvider().getMobSkill(skillId, level);
 
-	auto &skills = ChannelServer::getInstance().getMobDataProvider().getSkills(m_mobId);
+	auto &skills = channel.getMobDataProvider().getSkills(m_mobId);
 	milliseconds_t delay = milliseconds_t{0};
 	for (const auto &skill : skills) {
 		if (skill.skillId == skillId && skill.level == level) {
@@ -718,7 +722,7 @@ auto Mob::useAnticipatedSkill() -> Result {
 			break;
 		}
 		case MobSkills::SendToTown: {
-			if (auto banishInfo = ChannelServer::getInstance().getSkillDataProvider().getBanishData(getMobId())) {
+			if (auto banishInfo = channel.getSkillDataProvider().getBanishData(getMobId())) {
 				map_id_t field = banishInfo->field;
 				string_t message = banishInfo->message;
 				const PortalInfo * const portal = Maps::getMap(field)->queryPortalName(banishInfo->portal);
@@ -732,7 +736,12 @@ auto Mob::useAnticipatedSkill() -> Result {
 				map->runFunctionPlayers(skillArea, skillLevelInfo->prop, skillLevelInfo->count, func);
 			}
 			else {
-				std::cerr << "SendToTown used on an invalid mob?" << std::endl;
+				player_id_t playerId = m_anticipatedSkillPlayerId;
+				mob_id_t mobId = getMobIdOrLink();
+				channel.log(LogType::Hacking, [&](out_stream_t &str) {
+					str << "Likely hacking by player ID " << playerId << ". "
+						<< "SendToTown used on an invalid mob: " << mobId;
+				});
 				return Result::Failure;
 			}
 			break;

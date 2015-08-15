@@ -558,12 +558,13 @@ auto ManagementFunctions::ban(Player *player, const chat_t &args) -> ChatResult 
 		int8_t reason = reasonString.empty() ? 1 : atoi(reasonString.c_str());
 
 		// Ban account
-		string_t expire("2130-00-00 00:00:00");
+		string_t expire{"2130-00-00 00:00:00"};
 
-		soci::session &sql = Database::getCharDb();
+		auto &db = Database::getCharDb();
+		auto &sql = db.getSession();
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << Database::makeCharTable("user_accounts") << " u "
-			<< "INNER JOIN " << Database::makeCharTable("characters") << " c ON u.user_id = c.user_id "
+			<< "UPDATE " << db.makeTable("user_accounts") << " u "
+			<< "INNER JOIN " << db.makeTable("characters") << " c ON u.user_id = c.user_id "
 			<< "SET "
 			<< "	u.banned = 1, "
 			<< "	u.ban_expire = :expire, "
@@ -605,10 +606,11 @@ auto ManagementFunctions::tempBan(Player *player, const chat_t &args) -> ChatRes
 		int8_t reason = reasonString.empty() ? 1 : atoi(reasonString.c_str());
 
 		// Ban account
-		soci::session &sql = Database::getCharDb();
+		auto &db = Database::getCharDb();
+		auto &sql = db.getSession();
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << Database::makeCharTable("user_accounts") << " u "
-			<< "INNER JOIN " << Database::makeCharTable("characters") << " c ON u.user_id = c.user_id "
+			<< "UPDATE " << db.makeTable("user_accounts") << " u "
+			<< "INNER JOIN " << db.makeTable("characters") << " c ON u.user_id = c.user_id "
 			<< "SET "
 			<< "	u.banned = 1, "
 			<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL :expire DAY), "
@@ -652,8 +654,9 @@ auto ManagementFunctions::ipBan(Player *player, const chat_t &args) -> ChatResul
 			int8_t reason = reasonString.empty() ? 1 : atoi(reasonString.c_str());
 
 			// IP ban
-			soci::session &sql = Database::getCharDb();
-			soci::statement st = (sql.prepare << "INSERT INTO " << Database::makeCharTable("ip_bans") << " (ip) VALUES (:ip)", soci::use(targetIp, "ip"));
+			auto &db = Database::getCharDb();
+			auto &sql = db.getSession();
+			soci::statement st = (sql.prepare << "INSERT INTO " << db.makeTable("ip_bans") << " (ip) VALUES (:ip)", soci::use(targetIp, "ip"));
 
 			st.execute();
 
@@ -683,10 +686,11 @@ auto ManagementFunctions::ipBan(Player *player, const chat_t &args) -> ChatResul
 auto ManagementFunctions::unban(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		// Unban account
-		soci::session &sql = Database::getCharDb();
+		auto &db = Database::getCharDb();
+		auto &sql = db.getSession();
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << Database::makeCharTable("user_accounts") << " u "
-			<< "INNER JOIN " << Database::makeCharTable("characters") << " c ON u.user_id = c.user_id "
+			<< "UPDATE " << db.makeTable("user_accounts") << " u "
+			<< "INNER JOIN " << db.makeTable("characters") << " c ON u.user_id = c.user_id "
 			<< "SET "
 			<< "	u.banned = 0, "
 			<< "	u.ban_reason = NULL, "

@@ -52,10 +52,12 @@ auto ItemDataProvider::loadData(BuffDataProvider &provider) -> void {
 auto ItemDataProvider::loadItems() -> void {
 	m_itemInfo.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare
 		<< "SELECT id.*, s.label "
-		<< "FROM " << Database::makeDataTable("item_data") << " id "
-		<< "LEFT JOIN " << Database::makeDataTable("strings") << " s ON id.itemId = s.objectid AND s.object_type = :item",
+		<< "FROM " << db.makeTable("item_data") << " id "
+		<< "LEFT JOIN " << db.makeTable("strings") << " s ON id.itemId = s.objectid AND s.object_type = :item",
 		soci::use(string_t{"item"}, "item"));
 
 	for (const auto &row : rs) {
@@ -90,7 +92,9 @@ auto ItemDataProvider::loadItems() -> void {
 auto ItemDataProvider::loadScrolls() -> void {
 	m_scrollInfo.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_scroll_data"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("item_scroll_data"));
 
 	for (const auto &row : rs) {
 		ScrollInfo item;
@@ -126,7 +130,9 @@ auto ItemDataProvider::loadScrolls() -> void {
 auto ItemDataProvider::loadConsumes(BuffDataProvider &provider) -> void {
 	m_consumeInfo.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_random_morphs"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("item_random_morphs"));
 
 	hash_map_t<item_id_t, vector_t<Morph>> morphData;
 	for (const auto &row : rs) {
@@ -138,7 +144,7 @@ auto ItemDataProvider::loadConsumes(BuffDataProvider &provider) -> void {
 		morphData[itemId].push_back(morph);
 	}
 
-	rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_consume_data"));
+	rs = (sql.prepare << "SELECT * FROM " << db.makeTable("item_consume_data"));
 
 	for (const auto &row : rs) {
 		ConsumeInfo item;
@@ -227,7 +233,9 @@ auto ItemDataProvider::loadConsumes(BuffDataProvider &provider) -> void {
 }
 
 auto ItemDataProvider::loadMapRanges() -> void {
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_monster_card_map_ranges"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("item_monster_card_map_ranges"));
 
 	for (const auto &row : rs) {
 		CardMapRange range;
@@ -243,7 +251,9 @@ auto ItemDataProvider::loadMonsterCardData() -> void {
 	m_cardsToMobs.clear();
 	m_mobsToCards.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("monster_card_data"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("monster_card_data"));
 
 	for (const auto &row : rs) {
 		item_id_t cardId = row.get<item_id_t>("cardid");
@@ -257,7 +267,9 @@ auto ItemDataProvider::loadMonsterCardData() -> void {
 auto ItemDataProvider::loadItemSkills() -> void {
 	m_skillbooks.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_skills"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("item_skills"));
 
 	for (const auto &row : rs) {
 		Skillbook skill;
@@ -274,7 +286,9 @@ auto ItemDataProvider::loadItemSkills() -> void {
 auto ItemDataProvider::loadSummonBags() -> void {
 	m_summonBags.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_summons"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("item_summons"));
 
 	for (const auto &row : rs) {
 		SummonBag summon;
@@ -289,7 +303,9 @@ auto ItemDataProvider::loadSummonBags() -> void {
 auto ItemDataProvider::loadItemRewards() -> void {
 	m_itemRewards.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_reward_data"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("item_reward_data"));
 
 	for (const auto &row : rs) {
 		ItemRewardInfo reward;
@@ -306,7 +322,9 @@ auto ItemDataProvider::loadItemRewards() -> void {
 auto ItemDataProvider::loadPets() -> void {
 	m_petInfo.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_pet_data"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("item_pet_data"));
 
 	for (const auto &row : rs) {
 		PetInfo pet;
@@ -330,7 +348,9 @@ auto ItemDataProvider::loadPets() -> void {
 auto ItemDataProvider::loadPetInteractions() -> void {
 	m_petInteractInfo.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_pet_interactions"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("item_pet_interactions"));
 
 	for (const auto &row : rs) {
 		PetInteractInfo interaction;
@@ -343,20 +363,18 @@ auto ItemDataProvider::loadPetInteractions() -> void {
 	}
 }
 
-auto ItemDataProvider::getCardId(mob_id_t mobId) const -> item_id_t {
+auto ItemDataProvider::getCardId(mob_id_t mobId) const -> optional_t<item_id_t> {
 	auto kvp = m_mobsToCards.find(mobId);
 	if (kvp == std::end(m_mobsToCards)) {
-		std::cerr << "Mob out of range for mob ID " << mobId << std::endl;
-		return 0;
+		return {};
 	}
 	return kvp->second;
 }
 
-auto ItemDataProvider::getMobId(item_id_t cardId) const -> mob_id_t {
+auto ItemDataProvider::getMobId(item_id_t cardId) const -> optional_t<mob_id_t> {
 	auto kvp = m_cardsToMobs.find(cardId);
 	if (kvp == std::end(m_cardsToMobs)) {
-		std::cerr << "Card out of range for card ID " << cardId << std::endl;
-		return 0;
+		return {};
 	}
 	return kvp->second;
 }

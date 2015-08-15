@@ -905,17 +905,18 @@ auto InventoryHandler::handleScriptItem(Player *player, PacketReader &reader) ->
 		return;
 	}
 
-	string_t scriptName = ChannelServer::getInstance().getScriptDataProvider().getScript(itemId, ScriptTypes::Item);
+	auto &channel = ChannelServer::getInstance();
+	string_t scriptName = channel.getScriptDataProvider().getScript(&channel, itemId, ScriptTypes::Item);
 	if (scriptName.empty()) {
 		// Hacking or no script for item found
 		player->send(InventoryPacket::blankUpdate());
 		return;
 	}
 
-	npc_id_t npcId = ChannelServer::getInstance().getItemDataProvider().getItemInfo(itemId)->npc;
+	npc_id_t npcId = channel.getItemDataProvider().getItemInfo(itemId)->npc;
 
 	// Let's run the NPC
-	Npc *npc = new Npc(npcId, player, scriptName);
+	Npc *npc = new Npc{npcId, player, scriptName};
 	if (!npc->checkEnd()) {
 		// NPC is running/script found
 		// Delete the item used

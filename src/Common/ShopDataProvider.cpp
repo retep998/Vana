@@ -40,8 +40,9 @@ auto ShopDataProvider::loadData() -> void {
 auto ShopDataProvider::loadShops() -> void {
 	m_shops.clear();
 
-	soci::session &sql = Database::getDataDb();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << Database::makeDataTable("shop_data"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("shop_data"));
 
 	for (const auto &row : rs) {
 		ShopInfo shop;
@@ -51,7 +52,7 @@ auto ShopDataProvider::loadShops() -> void {
 		m_shops[shopId] = shop;
 	}
 
-	rs = (sql.prepare << "SELECT * FROM " << Database::makeDataTable("shop_items") << " ORDER BY shopid, sort DESC");
+	rs = (sql.prepare << "SELECT * FROM " << db.makeTable("shop_items") << " ORDER BY shopid, sort DESC");
 
 	for (const auto &row : rs) {
 		ShopItemInfo item;
@@ -65,8 +66,9 @@ auto ShopDataProvider::loadShops() -> void {
 }
 
 auto ShopDataProvider::loadUserShops() -> void {
-	soci::session &sql = Database::getDataDb();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << Database::makeDataTable("user_shop_data"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("user_shop_data"));
 
 	for (const auto &row : rs) {
 		ShopInfo shop;
@@ -80,7 +82,7 @@ auto ShopDataProvider::loadUserShops() -> void {
 		m_shops[shopId] = shop;
 	}
 
-	rs = (sql.prepare << "SELECT * FROM " << Database::makeDataTable("user_shop_items") << " ORDER BY shopid, sort DESC");
+	rs = (sql.prepare << "SELECT * FROM " << db.makeTable("user_shop_items") << " ORDER BY shopid, sort DESC");
 
 	for (const auto &row : rs) {
 		ShopItemInfo item;
@@ -96,7 +98,9 @@ auto ShopDataProvider::loadUserShops() -> void {
 auto ShopDataProvider::loadRechargeTiers() -> void {
 	m_rechargeCosts.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("shop_recharge_data"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("shop_recharge_data"));
 
 	for (const auto &row : rs) {
 		int8_t rechargeTier = row.get<int8_t>("tierid");

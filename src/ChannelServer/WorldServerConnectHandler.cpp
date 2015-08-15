@@ -45,11 +45,10 @@ auto WorldServerConnectHandler::connectLogin(WorldServerConnection *player, Pack
 	if (worldId != -1) {
 		Ip ip = reader.get<Ip>();
 		port_t port = reader.get<port_t>();
-		std::cout << "Connecting to world " << static_cast<int32_t>(worldId) << std::endl;
 		ChannelServer::getInstance().connectToWorld(worldId, port, ip);
 	}
 	else {
-		std::cerr << "ERROR: No world server to connect" << std::endl;
+		ChannelServer::getInstance().log(LogType::CriticalError, "ERROR: No world server to connect");
 		ExitCodes::exit(ExitCodes::ServerConnectionError);
 	}
 }
@@ -59,11 +58,10 @@ auto WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 	if (channel != -1) {
 		port_t port = reader.get<port_t>();
 		WorldConfig conf = reader.get<WorldConfig>();
-		std::cout << "Handling channel " << static_cast<int32_t>(channel) << " on port " << port << std::endl;
 		ChannelServer::getInstance().establishedWorldConnection(channel, port, conf);
 	}
 	else {
-		std::cerr << "ERROR: No channel to handle" << std::endl;
+		ChannelServer::getInstance().log(LogType::CriticalError, "ERROR: No channel to handle");
 		ChannelServer::getInstance().shutdown();
 	}
 }

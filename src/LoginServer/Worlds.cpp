@@ -110,6 +110,7 @@ auto Worlds::addWorldServer(LoginServerAcceptConnection *connection) -> world_id
 		}
 	}
 
+	auto &server = LoginServer::getInstance();
 	world_id_t worldId = -1;
 	if (world != nullptr) {
 		worldId = world->getId();
@@ -119,11 +120,11 @@ auto Worlds::addWorldServer(LoginServerAcceptConnection *connection) -> world_id
 
 		connection->send(LoginServerAcceptPacket::connect(world));
 
-		LoginServer::getInstance().log(LogType::ServerConnect, [&](out_stream_t &log) { log << "World " << static_cast<int32_t>(worldId); });
+		server.log(LogType::ServerConnect, [&](out_stream_t &log) { log << "World " << static_cast<int32_t>(worldId); });
 	}
 	else {
 		connection->send(LoginServerAcceptPacket::noMoreWorld());
-		std::cerr << "ERROR: No more worlds to assign." << std::endl;
+		server.log(LogType::Error, "ERROR: No more worlds to assign.");
 		connection->disconnect();
 	}
 	return worldId;
@@ -146,8 +147,8 @@ auto Worlds::addChannelServer(LoginServerAcceptConnection *connection) -> world_
 		connection->send(LoginServerAcceptPacket::connectChannel(worldId, worldIp, validWorld->getPort()));
 	}
 	else {
-		connection->send(LoginServerAcceptPacket::connectChannel(worldId, Ip(0), 0));
-		std::cerr << "ERROR: No more channels to assign." << std::endl;
+		connection->send(LoginServerAcceptPacket::connectChannel(worldId, Ip{0}, 0));
+		LoginServer::getInstance().log(LogType::Error, "ERROR: No more channels to assign.");
 	}
 	connection->disconnect();
 	return worldId;

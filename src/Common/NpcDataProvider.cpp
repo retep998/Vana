@@ -28,7 +28,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 auto NpcDataProvider::loadData() -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing NPCs... ";
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("npc_data"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("npc_data"));
 
 	for (const auto &row : rs) {
 		NpcData npc;

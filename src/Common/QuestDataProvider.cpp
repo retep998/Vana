@@ -40,7 +40,9 @@ auto QuestDataProvider::loadData() -> void {
 auto QuestDataProvider::loadQuestData() -> void {
 	m_quests.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("quest_data"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("quest_data"));
 
 	for (const auto &row : rs) {
 		Quest quest;
@@ -57,7 +59,9 @@ auto QuestDataProvider::loadRequests() -> void {
 	// TODO FIXME quest
 	// Process the state when you add quest requests
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("quest_requests"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("quest_requests"));
 
 	for (const auto &row : rs) {
 		quest_id_t questId = row.get<quest_id_t>("questid");
@@ -90,7 +94,9 @@ auto QuestDataProvider::loadRequests() -> void {
 }
 
 auto QuestDataProvider::loadRequiredJobs() -> void {
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("quest_required_jobs"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("quest_required_jobs"));
 
 	for (const auto &row : rs) {
 		quest_id_t questId = row.get<quest_id_t>("questid");
@@ -103,7 +109,9 @@ auto QuestDataProvider::loadRequiredJobs() -> void {
 }
 
 auto QuestDataProvider::loadRewards() -> void {
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("quest_rewards"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("quest_rewards"));
 
 	for (const auto &row : rs) {
 		quest_id_t questId = row.get<quest_id_t>("questid");

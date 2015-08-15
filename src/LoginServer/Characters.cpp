@@ -38,9 +38,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 
 auto Characters::loadEquips(player_id_t id, vector_t<CharEquip> &vec) -> void {
-	soci::rowset<> rs = (Database::getCharDb().prepare
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare
 		<< "SELECT i.item_id, i.slot "
-		<< "FROM " << Database::makeCharTable("items") << " i "
+		<< "FROM " << db.makeTable("items") << " i "
 		<< "WHERE "
 		<< "	i.character_id = :id "
 		<< "	AND i.inv = :inv "
@@ -98,9 +100,11 @@ auto Characters::loadCharacter(Character &charc, const soci::row &row) -> void {
 }
 
 auto Characters::showAllCharacters(UserConnection *user) -> void {
-	soci::rowset<> rs = (Database::getCharDb().prepare
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare
 		<< "SELECT * "
-		<< "FROM " << Database::makeCharTable("characters") << " c "
+		<< "FROM " << db.makeTable("characters") << " c "
 		<< "WHERE c.user_id = :user ",
 		soci::use(user->getUserId(), "user"));
 
@@ -130,13 +134,14 @@ auto Characters::showAllCharacters(UserConnection *user) -> void {
 }
 
 auto Characters::showCharacters(UserConnection *user) -> void {
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	world_id_t worldId = user->getWorldId();
 	account_id_t userId = user->getUserId();
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT * "
-		<< "FROM " << Database::makeCharTable("characters") << " c "
+		<< "FROM " << db.makeTable("characters") << " c "
 		<< "WHERE c.user_id = :user AND c.world_id = :world ",
 		soci::use(userId, "user"),
 		soci::use(worldId, "world"));
@@ -151,7 +156,7 @@ auto Characters::showCharacters(UserConnection *user) -> void {
 	opt_int32_t max;
 	sql.once
 		<< "SELECT s.char_slots "
-		<< "FROM " << Database::makeCharTable("storage") << " s "
+		<< "FROM " << db.makeTable("storage") << " s "
 		<< "WHERE s.user_id = :user AND s.world_id = :world ",
 		soci::use(userId, "user"),
 		soci::use(worldId, "world"),
@@ -183,17 +188,17 @@ auto Characters::checkCharacterName(UserConnection *user, PacketReader &reader) 
 }
 
 auto Characters::createItem(item_id_t itemId, UserConnection *user, player_id_t charId, inventory_slot_t slot, slot_qty_t amount) -> void {
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
 	inventory_t inventory = GameLogicUtilities::getInventory(itemId);
 	ItemDbInformation info{slot, charId, user->getUserId(), user->getWorldId(), Item::Inventory};
 
 	if (inventory == Inventories::EquipInventory) {
 		Item equip{LoginServer::getInstance().getEquipDataProvider(), itemId, Items::StatVariance::None, false};
-		equip.databaseInsert(sql, info);
+		equip.databaseInsert(db, info);
 	}
 	else {
 		Item item{itemId, amount};
-		item.databaseInsert(sql, info);
+		item.databaseInsert(db, info);
 	}
 }
 
@@ -239,10 +244,11 @@ auto Characters::createCharacter(UserConnection *user, PacketReader &reader) -> 
 	stat_t intt = 4;
 	stat_t luk = 4;
 
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 
 	sql.once
-		<< "INSERT INTO " << Database::makeCharTable("characters") << " (name, user_id, world_id, face, hair, skin, gender, str, dex, `int`, luk) "
+		<< "INSERT INTO " << db.makeTable("characters") << " (name, user_id, world_id, face, hair, skin, gender, str, dex, `int`, luk) "
 		<< "VALUES (:name, :user, :world, :face, :hair, :skin, :gender, :str, :dex, :int, :luk)",
 		soci::use(name, "name"),
 		soci::use(user->getUserId(), "user"),
@@ -256,7 +262,7 @@ auto Characters::createCharacter(UserConnection *user, PacketReader &reader) -> 
 		soci::use(intt, "int"),
 		soci::use(luk, "luk");
 
-	player_id_t id = Database::getLastId<player_id_t>(sql);
+	player_id_t id = db.getLastId<player_id_t>();
 
 	createItem(top, user, id, -EquipSlots::Top);
 	createItem(bottom, user, id, -EquipSlots::Bottom);
@@ -267,7 +273,7 @@ auto Characters::createCharacter(UserConnection *user, PacketReader &reader) -> 
 	soci::row row;
 	sql.once
 		<< "SELECT * "
-		<< "FROM " << Database::makeCharTable("characters") << " c "
+		<< "FROM " << db.makeTable("characters") << " c "
 		<< "WHERE c.character_id = :id",
 		soci::use(id, "id"),
 		soci::into(row);
@@ -299,12 +305,13 @@ auto Characters::deleteCharacter(UserConnection *user, PacketReader &reader) -> 
 	};
 
 	uint8_t result = Success;
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	optional_t<world_id_t> worldId;
 
 	sql.once
 		<< "SELECT world_id "
-		<< "FROM " << Database::makeCharTable("characters") << " c "
+		<< "FROM " << db.makeTable("characters") << " c "
 		<< "WHERE c.character_id = :char ",
 		soci::use(id, "char"),
 		soci::into(worldId);
@@ -326,8 +333,8 @@ auto Characters::deleteCharacter(UserConnection *user, PacketReader &reader) -> 
 			return false;
 		});
 
-		sql.once << "DELETE p FROM " << Database::makeCharTable("pets") << " p INNER JOIN " << Database::makeCharTable("items") << " i ON p.pet_id = i.pet_id WHERE i.character_id = :char ", soci::use(id, "char");
-		sql.once << "DELETE FROM " << Database::makeCharTable("characters") << " WHERE character_id = :char ", soci::use(id, "char");
+		sql.once << "DELETE p FROM " << db.makeTable("pets") << " p INNER JOIN " << db.makeTable("items") << " i ON p.pet_id = i.pet_id WHERE i.character_id = :char ", soci::use(id, "char");
+		sql.once << "DELETE FROM " << db.makeTable("characters") << " WHERE character_id = :char ", soci::use(id, "char");
 	}
 	else {
 		result = IncorrectBirthday;
@@ -380,10 +387,11 @@ auto Characters::connectGameWorldFromViewAllCharacters(UserConnection *user, Pac
 	// And another to ensure that the world matches the expected world
 	optional_t<world_id_t> charWorldId;
 	optional_t<account_id_t> accountId;
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	sql.once
 		<< "SELECT world_id, user_id "
-		<< "FROM " << Database::makeCharTable("characters") << " c "
+		<< "FROM " << db.makeTable("characters") << " c "
 		<< "WHERE c.character_id = :char ",
 		soci::use(id, "char"),
 		soci::into(charWorldId),
@@ -417,12 +425,13 @@ auto Characters::connectGameWorldFromViewAllCharacters(UserConnection *user, Pac
 }
 
 auto Characters::ownerCheck(UserConnection *user, int32_t id) -> bool {
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	opt_int32_t exists;
 
 	sql.once
 		<< "SELECT 1 "
-		<< "FROM " << Database::makeCharTable("characters") << " c "
+		<< "FROM " << db.makeTable("characters") << " c "
 		<< "WHERE c.character_id = :char AND c.user_id = :user "
 		<< "LIMIT 1 ",
 		soci::use(id, "char"),
@@ -433,12 +442,13 @@ auto Characters::ownerCheck(UserConnection *user, int32_t id) -> bool {
 }
 
 auto Characters::nameTaken(const string_t &name) -> bool {
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	opt_int32_t exists;
 
 	sql.once
 		<< "SELECT 1 "
-		<< "FROM " << Database::makeCharTable("characters") << " c "
+		<< "FROM " << db.makeTable("characters") << " c "
 		<< "WHERE c.name = :name "
 		<< "LIMIT 1",
 		soci::use(name, "name"),

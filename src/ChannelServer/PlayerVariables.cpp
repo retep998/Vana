@@ -26,17 +26,18 @@ PlayerVariables::PlayerVariables(Player *player) :
 }
 
 auto PlayerVariables::save() -> void {
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	player_id_t charId = m_player->getId();
 
-	sql.once << "DELETE FROM " << Database::makeCharTable("character_variables") << " WHERE character_id = :char", soci::use(charId, "char");
+	sql.once << "DELETE FROM " << db.makeTable("character_variables") << " WHERE character_id = :char", soci::use(charId, "char");
 
 	if (m_variables.size() > 0) {
 		string_t key = "";
 		string_t value = "";
 
 		soci::statement st = (sql.prepare
-			<< "INSERT INTO " << Database::makeCharTable("character_variables") << " "
+			<< "INSERT INTO " << db.makeTable("character_variables") << " "
 			<< "VALUES (:char, :key, :value)",
 			soci::use(charId, "char"),
 			soci::use(key, "key"),
@@ -51,7 +52,9 @@ auto PlayerVariables::save() -> void {
 }
 
 auto PlayerVariables::load() -> void {
-	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT * FROM " << Database::makeCharTable("character_variables") << " WHERE character_id = :char", soci::use(m_player->getId(), "char"));
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("character_variables") << " WHERE character_id = :char", soci::use(m_player->getId(), "char"));
 
 	for (const auto &row : rs) {
 		m_variables[row.get<string_t>("key")] = row.get<string_t>("value");

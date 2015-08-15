@@ -22,9 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
+class Database;
 namespace soci {
 	class row;
-	class session;
 }
 class EquipDataProvider;
 class Item;
@@ -110,7 +110,7 @@ public:
 	auto setKarma(bool karma) -> void;
 	auto setTradeBlock(bool block) -> void;
 
-	auto databaseInsert(soci::session &sql, const ItemDbInformation &info) -> void;
+	auto databaseInsert(Database &db, const ItemDbInformation &info) -> void;
 	auto setSlots(int8_t slots) -> void;
 	auto setStr(stat_t strength) -> void;
 	auto setDex(stat_t dexterity) -> void;
@@ -152,7 +152,7 @@ public:
 	auto decSlots(int8_t dec = 1) -> void { m_slots -= dec; }
 	auto incScrolls() -> void { m_scrolls++; }
 
-	static auto databaseInsert(soci::session &sql, const vector_t<ItemDbRecord> &items) -> void;
+	static auto databaseInsert(Database &db, const vector_t<ItemDbRecord> &items) -> void;
 
 	const static string_t Inventory;
 	const static string_t Storage;

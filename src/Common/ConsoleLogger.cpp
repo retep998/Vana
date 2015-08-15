@@ -26,5 +26,17 @@ ConsoleLogger::ConsoleLogger(const string_t &filename, const string_t &format, c
 }
 
 auto ConsoleLogger::log(LogType type, const opt_string_t &identifier, const string_t &message) -> void {
-	std::cout << Logger::formatLog(getFormat(), type, this, identifier, message) << std::endl;
+	switch (type) {
+		case LogType::CriticalError:
+		case LogType::DebugError:
+		case LogType::Error:
+		case LogType::ServerAuthFailure:
+		case LogType::Warning:
+		case LogType::MalformedPacket:
+			std::cerr << Logger::formatLog(getFormat(), type, this, identifier, message) << std::endl;
+			break;
+		default:
+			std::cout << Logger::formatLog(getFormat(), type, this, identifier, message) << std::endl;
+			break;
+	}
 }

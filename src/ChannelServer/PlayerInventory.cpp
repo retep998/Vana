@@ -58,14 +58,15 @@ PlayerInventory::~PlayerInventory() {
 
 auto PlayerInventory::load() -> void {
 	using namespace soci;
-	session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	player_id_t charId = m_player->getId();
 	string_t location = "inventory";
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT i.*, p.index, p.name AS pet_name, p.level, p.closeness, p.fullness "
-		<< "FROM " << Database::makeCharTable("items") << " i "
-		<< "LEFT OUTER JOIN " << Database::makeCharTable("pets") << " p ON i.pet_id = p.pet_id "
+		<< "FROM " << db.makeTable("items") << " i "
+		<< "LEFT OUTER JOIN " << db.makeTable("pets") << " p ON i.pet_id = p.pet_id "
 		<< "WHERE i.location = :location AND i.character_id = :char",
 		soci::use(m_player->getId(), "char"),
 		soci::use(location, "location"));
@@ -80,7 +81,7 @@ auto PlayerInventory::load() -> void {
 		}
 	}
 
-	rs = (sql.prepare << "SELECT t.map_index, t.map_id FROM " << Database::makeCharTable("teleport_rock_locations") << " t WHERE t.character_id = :char", soci::use(m_player->getId(), "char"));
+	rs = (sql.prepare << "SELECT t.map_index, t.map_id FROM " << db.makeTable("teleport_rock_locations") << " t WHERE t.character_id = :char", soci::use(m_player->getId(), "char"));
 
 	for (const auto &row : rs) {
 		int8_t index = row.get<int8_t>("map_index");
@@ -98,16 +99,17 @@ auto PlayerInventory::load() -> void {
 
 auto PlayerInventory::save() -> void {
 	using namespace soci;
-	session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	player_id_t charId = m_player->getId();
 
-	sql.once << "DELETE FROM " << Database::makeCharTable("teleport_rock_locations") << " WHERE character_id = :char", use(charId, "char");
+	sql.once << "DELETE FROM " << db.makeTable("teleport_rock_locations") << " WHERE character_id = :char", use(charId, "char");
 	if (m_rockLocations.size() > 0 || m_vipLocations.size() > 0) {
 		map_id_t mapId = 0;
 		size_t rockIndex = 0;
 
 		statement st = (sql.prepare
-			<< "INSERT INTO " << Database::makeCharTable("teleport_rock_locations") << " "
+			<< "INSERT INTO " << db.makeTable("teleport_rock_locations") << " "
 			<< "VALUES (:char, :i, :map)",
 			use(charId, "char"),
 			use(mapId, "map"),
@@ -127,7 +129,7 @@ auto PlayerInventory::save() -> void {
 	}
 
 	sql.once
-		<< "DELETE FROM " << Database::makeCharTable("items") << " "
+		<< "DELETE FROM " << db.makeTable("items") << " "
 		<< "WHERE location = :inv AND character_id = :char",
 		use(charId, "char"),
 		use(Item::Inventory, "inv");
@@ -141,7 +143,7 @@ auto PlayerInventory::save() -> void {
 		}
 	}
 
-	Item::databaseInsert(sql, v);
+	Item::databaseInsert(db, v);
 }
 
 auto PlayerInventory::addMaxSlots(inventory_t inventory, inventory_slot_count_t rows) -> void {

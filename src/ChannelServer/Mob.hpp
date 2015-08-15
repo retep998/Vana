@@ -61,7 +61,7 @@ public:
 
 	auto addMarker(Player *player) -> void;
 	auto removeMarker(Player *player) -> void;
-	auto chooseRandomSkill(mob_skill_id_t &skillId, mob_skill_level_t &skillLevel) -> void;
+	auto chooseRandomSkill(Player *player, mob_skill_id_t &skillId, mob_skill_level_t &skillLevel) -> void;
 	auto getSkillFeasibility() const -> bool { return m_skillFeasible; }
 	auto getAnticipatedSkill() const -> mob_skill_id_t { return m_anticipatedSkill; }
 	auto getAnticipatedSkillLevel() const -> mob_skill_level_t { return m_anticipatedSkillLevel; }
@@ -123,6 +123,7 @@ private:
 	skill_level_t m_webLevel = 0;
 	mob_skill_id_t m_anticipatedSkill = 0;
 	mob_skill_level_t m_anticipatedSkillLevel = 0;
+	player_id_t m_anticipatedSkillPlayerId = 0;
 	foothold_id_t m_originFoothold = 0;
 	int32_t m_tauntEffect = 100;
 	map_object_t m_mapMobId = 0;

@@ -64,8 +64,10 @@ auto Fame::canFame(Player *player, player_id_t to) -> int32_t {
 }
 
 auto Fame::addFameLog(player_id_t from, player_id_t to) -> void {
-	Database::getCharDb().once
-		<< "INSERT INTO " << Database::makeCharTable("fame_log") << " (from_character_id, to_character_id, fame_time) "
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
+	sql.once
+		<< "INSERT INTO " << db.makeTable("fame_log") << " (from_character_id, to_character_id, fame_time) "
 		<< "VALUES (:from, :to, NOW())",
 		soci::use(from, "from"),
 		soci::use(to, "to");
@@ -80,12 +82,13 @@ auto Fame::getLastFameLog(player_id_t from) -> SearchResult {
 		return SearchResult::NotFound;
 	}
 
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	optional_t<UnixTime> time;
 
 	sql.once
 		<< "SELECT fame_time "
-		<< "FROM " << Database::makeCharTable("fame_log") << " "
+		<< "FROM " << db.makeTable("fame_log") << " "
 		<< "WHERE from_character_id = :from AND UNIX_TIMESTAMP(fame_time) > UNIX_TIMESTAMP() - :fameTime "
 		<< "ORDER BY fame_time DESC",
 		soci::use(from, "from"),
@@ -106,12 +109,13 @@ auto Fame::getLastFameSpLog(player_id_t from, player_id_t to) -> SearchResult {
 		return SearchResult::NotFound;
 	}
 
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	optional_t<UnixTime> time;
 
 	sql.once
 		<< "SELECT fame_time "
-		<< "FROM " << Database::makeCharTable("fame_log") << " "
+		<< "FROM " << db.makeTable("fame_log") << " "
 		<< "WHERE from_character_id = :from AND to_character_id = :to AND UNIX_TIMESTAMP(fame_time) > UNIX_TIMESTAMP() - :fameResetTime "
 		<< "ORDER BY fame_time DESC",
 		soci::use(from, "from"),

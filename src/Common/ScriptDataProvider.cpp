@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ScriptDataProvider.hpp"
+#include "AbstractServer.hpp"
 #include "Algorithm.hpp"
 #include "Database.hpp"
 #include "FileUtilities.hpp"
@@ -36,7 +37,9 @@ auto ScriptDataProvider::loadData() -> void {
 	m_firstMapEntryScripts.clear();
 	m_itemScripts.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("scripts"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("scripts"));
 
 	for (const auto &row : rs) {
 		int32_t objectId = row.get<int32_t>("objectid");
@@ -56,27 +59,27 @@ auto ScriptDataProvider::loadData() -> void {
 	std::cout << "DONE" << std::endl;
 }
 
-auto ScriptDataProvider::getScript(int32_t objectId, ScriptTypes type) const -> string_t {
+auto ScriptDataProvider::getScript(AbstractServer *server, int32_t objectId, ScriptTypes type) const -> string_t {
 	if (hasScript(objectId, type)) {
 		string_t s = buildScriptPath(type, resolve(type).find(objectId)->second);
 		if (FileUtilities::fileExists(s)) {
 			return s;
 		}
 #ifdef DEBUG
-		else std::cerr << "Missing script '" << s << "'" << std::endl;
+		else server->log(LogType::DebugError, "Missing script '" + s + "'");
 #endif
 	}
 	return buildScriptPath(type, std::to_string(objectId));
 }
 
-auto ScriptDataProvider::getQuestScript(quest_id_t questId, int8_t state) const -> string_t {
+auto ScriptDataProvider::getQuestScript(AbstractServer *server, quest_id_t questId, int8_t state) const -> string_t {
 	if (hasQuestScript(questId, state)) {
 		string_t s = buildScriptPath(ScriptTypes::Quest, m_questScripts.find(questId)->second.find(state)->second);
 		if (FileUtilities::fileExists(s)) {
 			return s;
 		}
 #ifdef DEBUG
-		else std::cerr << "Missing quest script '" << s << "'" << std::endl;
+		else server->log(LogType::DebugError, "Missing quest script '" + s + "'");
 #endif
 	}
 	return buildScriptPath(ScriptTypes::Quest, std::to_string(questId) + (state == 0 ? "s" : "e"));

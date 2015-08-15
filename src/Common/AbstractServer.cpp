@@ -36,26 +36,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 AbstractServer::AbstractServer(ServerType type) :
-	m_serverType{type}
+	m_serverType{type},
+	m_connectionManager{this}
 {
 }
 
 auto AbstractServer::initialize() -> Result {
 	m_startTime = TimeUtilities::getNow();
 
-	ConfigFile config("conf/connection_properties.lua");
+	loadLogConfig();
+
+	ConfigFile config{"conf/connection_properties.lua"};
 	config.run();
 
 	m_interPassword = config.get<string_t>("inter_password");
 	m_salt = config.get<string_t>("inter_salt");
 
 	if (m_interPassword == "changeme") {
-		std::cerr << "ERROR: inter_password is not changed." << std::endl;
+		log(LogType::CriticalError, "ERROR: inter_password is not changed.");
 		ExitCodes::exit(ExitCodes::ConfigError);
 		return Result::Failure;
 	}
 	if (m_salt == "changeme") {
-		std::cerr << "ERROR: inter_salt is not changed." << std::endl;
+		log(LogType::CriticalError, "ERROR: inter_salt is not changed.");
 		ExitCodes::exit(ExitCodes::ConfigError);
 		return Result::Failure;
 	}
@@ -65,7 +68,7 @@ auto AbstractServer::initialize() -> Result {
 		auto ipValue = pair.find("ip");
 		auto maskValue = pair.find("mask");
 		if (ipValue == std::end(pair) || maskValue == std::end(pair)) {
-			std::cerr << "ERROR: External IP configuration is malformed!" << std::endl;
+			log(LogType::CriticalError, "ERROR: External IP configuration is malformed!");
 			ExitCodes::exit(ExitCodes::ConfigError);
 			return Result::Failure;
 		}
@@ -80,7 +83,6 @@ auto AbstractServer::initialize() -> Result {
 	if (loadConfig() == Result::Failure) {
 		return Result::Failure;
 	}
-	loadLogConfig();
 
 	if (loadData() == Result::Failure) {
 		return Result::Failure;
@@ -93,7 +95,7 @@ auto AbstractServer::initialize() -> Result {
 }
 
 auto AbstractServer::loadLogConfig() -> void {
-	ConfigFile conf("conf/logger.lua");
+	ConfigFile conf{"conf/logger.lua"};
 	initializeLoggingConstants(conf);
 	conf.run();
 

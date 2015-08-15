@@ -37,7 +37,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sstream>
 
 auto ReactorHandler::hitReactor(Player *player, PacketReader &reader) -> void {
-	size_t id = Map::makeReactorId(reader.get<map_object_t>());
+	map_object_t id = Map::makeReactorId(reader.get<map_object_t>());
 
 	Map *map = player->getMap();
 	Reactor *reactor = map->getReactor(id);
@@ -55,10 +55,11 @@ auto ReactorHandler::hitReactor(Player *player, PacketReader &reader) -> void {
 				return;
 			}
 			else {
-				string_t filename = ChannelServer::getInstance().getScriptDataProvider().getScript(reactor->getReactorId(), ScriptTypes::Reactor);
+				auto &channel = ChannelServer::getInstance();
+				string_t filename = channel.getScriptDataProvider().getScript(&channel, reactor->getReactorId(), ScriptTypes::Reactor);
 
 				if (FileUtilities::fileExists(filename)) {
-					LuaReactor(filename, player->getId(), id, reactor->getMapId());
+					LuaReactor{filename, player->getId(), id, reactor->getMapId()};
 				}
 				else {
 					// Default action of dropping an item
@@ -92,8 +93,11 @@ struct Reaction {
 	auto operator()(const time_point_t &now) -> void {
 		reactor->setState(state, true);
 		drop->removeDrop();
-		string_t filename = ChannelServer::getInstance().getScriptDataProvider().getScript(reactor->getReactorId(), ScriptTypes::Reactor);
-		LuaReactor(filename, player->getId(), Map::makeReactorId(reactor->getId()), reactor->getMapId());
+		auto &channel = ChannelServer::getInstance();
+		string_t filename = channel.getScriptDataProvider().getScript(&channel, reactor->getReactorId(), ScriptTypes::Reactor);
+		// TODO FIXME reactor
+		// Not sure if this reactor identifier dispatch is correct
+		LuaReactor{filename, player->getId(), static_cast<map_object_t>(Map::makeReactorId(reactor->getId())), reactor->getMapId()};
 	}
 
 	Reactor *reactor = nullptr;

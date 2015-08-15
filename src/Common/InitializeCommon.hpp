@@ -20,10 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <string>
 
+class AbstractServer;
+
 namespace Initializing {
-	auto checkSchemaVersion(bool update = false) -> Result;
-	auto checkMcdbVersion() -> Result;
-	auto setUsersOffline(int32_t onlineId) -> void;
+	auto checkSchemaVersion(AbstractServer *server, bool update = false) -> Result;
+	auto checkMcdbVersion(AbstractServer *server) -> Result;
+	auto setUsersOffline(AbstractServer *server, int32_t onlineId) -> void;
 
 	const int32_t OutputWidth = 27;
 	const int32_t McdbVersion = 4;

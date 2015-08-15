@@ -37,11 +37,16 @@ auto EquipDataProvider::loadData() -> void {
 
 auto EquipDataProvider::loadEquips() -> void {
 	m_equipInfo.clear();
+
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
 	// Ugly hack to get the integers instead of scientific notation
 	// Note: This is MySQL's crappy behavior
 	// It displays scientific notation for only very large values, meaning it's wildly inconsistent and hard to parse
 	// We just use the string and send it to a translation function
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT *, REPLACE(FORMAT(equip_slots + 0, 0), \",\", \"\") AS equip_slot_flags FROM " << Database::makeDataTable("item_equip_data"));
+	soci::rowset<> rs = (sql.prepare
+		<< "SELECT *, REPLACE(FORMAT(equip_slots + 0, 0), \",\", \"\") AS equip_slot_flags "
+		<< "FROM " << db.makeTable("item_equip_data"));
 
 	for (const auto &row : rs) {
 		EquipInfo equip;

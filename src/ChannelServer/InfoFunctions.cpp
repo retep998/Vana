@@ -90,7 +90,8 @@ auto InfoFunctions::lookup(Player *player, const chat_t &args) -> ChatResult {
 			return ChatResult::HandledDisplay;
 		};
 
-		soci::session &sql = Database::getDataDb();
+		auto &db = Database::getDataDb();
+		auto &sql = db.getSession();
 		auto displayFunc = [&sql, &player](const soci::rowset<> &rs, function_t<void(const soci::row &row, out_stream_t &str)> formatMessage, const string_t &query) {
 			// Bug in the behavior of SOCI
 			// In the case where you use dynamic resultset binding, got_data() will not properly report that it got results
@@ -127,8 +128,8 @@ auto InfoFunctions::lookup(Player *player, const chat_t &args) -> ChatResult {
 				q = "%" + q + "%";
 				soci::rowset<> rs = (sql.prepare
 					<< "SELECT s.objectid, s.`label` "
-					<< "FROM " << Database::makeDataTable("strings") << " s "
-					<< "INNER JOIN " << Database::makeDataTable("item_data") << " i ON s.objectid = i.itemid "
+					<< "FROM " << db.makeTable("strings") << " s "
+					<< "INNER JOIN " << db.makeTable("item_data") << " i ON s.objectid = i.itemid "
 					<< "WHERE s.object_type = :type AND s.label LIKE :q AND i.inventory = :subtype",
 					soci::use(q, "q"),
 					soci::use(type, "type"),
@@ -140,7 +141,7 @@ auto InfoFunctions::lookup(Player *player, const chat_t &args) -> ChatResult {
 				q = "%" + q + "%";
 				soci::rowset<> rs = (sql.prepare
 					<< "SELECT objectid, `label` "
-					<< "FROM " << Database::makeDataTable("strings") << " "
+					<< "FROM " << db.makeTable("strings") << " "
 					<< "WHERE object_type = :type AND label LIKE :q",
 					soci::use(q, "q"),
 					soci::use(type, "type"));
@@ -161,7 +162,7 @@ auto InfoFunctions::lookup(Player *player, const chat_t &args) -> ChatResult {
 				str << row.get<int32_t>(0) << " (" << row.get<string_t>(2) << ") : " << row.get<string_t>(1);
 			};
 
-			soci::rowset<> rs = (sql.prepare << "SELECT objectid, `label`, object_type FROM " << Database::makeDataTable("strings") << " WHERE objectid = :q", soci::use(q, "q"));
+			soci::rowset<> rs = (sql.prepare << "SELECT objectid, `label`, object_type FROM " << db.makeTable("strings") << " WHERE objectid = :q", soci::use(q, "q"));
 			displayFunc(rs, format, matches[2]);
 		}
 		else if (rawType == "continent") {
@@ -172,7 +173,13 @@ auto InfoFunctions::lookup(Player *player, const chat_t &args) -> ChatResult {
 
 			if (Maps::getMap(mapId) != nullptr) {
 				ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) {
-					message << "Continent ID of " << mapId << " : " << static_cast<int32_t>(ChannelServer::getInstance().getMapDataProvider().getContinent(mapId));
+					auto cont = ChannelServer::getInstance().getMapDataProvider().getContinent(mapId);
+					if (!cont.is_initialized()) {
+						message << mapId << " does not have a continent ID";
+					}
+					else {
+						message << "Continent ID of " << mapId << " : " << static_cast<int32_t>(cont.get());
+					}
 				});
 			}
 			else {
@@ -190,14 +197,14 @@ auto InfoFunctions::lookup(Player *player, const chat_t &args) -> ChatResult {
 			}
 			if (rawType == "scriptbyname") {
 				q = "%" + q + "%";
-				soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM " << Database::makeDataTable("scripts") << " WHERE script LIKE :q", soci::use(q, "q"));
+				soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM " << db.makeTable("scripts") << " WHERE script LIKE :q", soci::use(q, "q"));
 				displayFunc(rs, format, matches[2]);
 			}
 			else if (rawType == "scriptbyid") {
 				if (!isIntegerString(q)) {
 					return shouldBeIdOnly("scriptbyid", q);
 				}
-				soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM " << Database::makeDataTable("scripts") << " WHERE objectid = :q", soci::use(q, "q"));
+				soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM " << db.makeTable("scripts") << " WHERE objectid = :q", soci::use(q, "q"));
 				displayFunc(rs, format, matches[2]);
 			}
 		}
@@ -216,13 +223,13 @@ auto InfoFunctions::lookup(Player *player, const chat_t &args) -> ChatResult {
 
 			soci::rowset<> rs = (sql.prepare
 				<< "SELECT d.dropperid, s.label "
-				<< "FROM " << Database::makeDataTable("drop_data") << " d "
-				<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = d.dropperid AND s.object_type = 'mob' "
-				<< "WHERE d.dropperid NOT IN (SELECT DISTINCT dropperid FROM " << Database::makeDataTable("user_drop_data") << ") AND d.itemid = :q "
+				<< "FROM " << db.makeTable("drop_data") << " d "
+				<< "INNER JOIN " << db.makeTable("strings") << " s ON s.objectid = d.dropperid AND s.object_type = 'mob' "
+				<< "WHERE d.dropperid NOT IN (SELECT DISTINCT dropperid FROM " << db.makeTable("user_drop_data") << ") AND d.itemid = :q "
 				<< "UNION ALL "
 				<< "SELECT d.dropperid, s.label "
-				<< "FROM " << Database::makeDataTable("user_drop_data") << " d "
-				<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = d.dropperid AND s.object_type = 'mob' "
+				<< "FROM " << db.makeTable("user_drop_data") << " d "
+				<< "INNER JOIN " << db.makeTable("strings") << " s ON s.objectid = d.dropperid AND s.object_type = 'mob' "
 				<< "WHERE d.itemid = :q ",
 				soci::use(q, "q"));
 
@@ -243,11 +250,11 @@ auto InfoFunctions::lookup(Player *player, const chat_t &args) -> ChatResult {
 				if (option == "portal") {
 					soci::rowset<> rs = (sql.prepare
 						<< "SELECT m.mapid, s.label "
-						<< "FROM " << Database::makeDataTable("map_data") << " m "
-						<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = m.mapid AND s.object_type = 'map' "
+						<< "FROM " << db.makeTable("map_data") << " m "
+						<< "INNER JOIN " << db.makeTable("strings") << " s ON s.objectid = m.mapid AND s.object_type = 'map' "
 						<< "WHERE m.mapid IN ("
 						<< "	SELECT mp.mapid "
-						<< "	FROM " << Database::makeDataTable("map_portals") << " mp "
+						<< "	FROM " << db.makeTable("map_portals") << " mp "
 						<< "	WHERE mp.script = :query "
 						<< ")",
 						soci::use(test, "query"));
@@ -263,11 +270,11 @@ auto InfoFunctions::lookup(Player *player, const chat_t &args) -> ChatResult {
 
 					soci::rowset<> rs = (sql.prepare
 						<< "SELECT m.mapid, s.label "
-						<< "FROM " << Database::makeDataTable("map_data") << " m "
-						<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = m.mapid AND s.object_type = 'map' "
+						<< "FROM " << db.makeTable("map_data") << " m "
+						<< "INNER JOIN " << db.makeTable("strings") << " s ON s.objectid = m.mapid AND s.object_type = 'map' "
 						<< "WHERE m.mapid IN ("
 						<< "	SELECT ml.mapid "
-						<< "	FROM " << Database::makeDataTable("map_life") << " ml "
+						<< "	FROM " << db.makeTable("map_life") << " ml "
 						<< "	WHERE ml.lifeid = :objectId "
 						<< "	" << option
 						<< ")",
@@ -297,7 +304,7 @@ auto InfoFunctions::lookup(Player *player, const chat_t &args) -> ChatResult {
 			q = "%" + q + "%";
 			soci::rowset<> rs = (sql.prepare
 				<< "SELECT DISTINCT m.default_bgm "
-				<< "FROM " << Database::makeDataTable("map_data") << " m "
+				<< "FROM " << db.makeTable("map_data") << " m "
 				<< "WHERE m.default_bgm LIKE :q",
 				soci::use(q, "q"));
 
@@ -318,13 +325,13 @@ auto InfoFunctions::lookup(Player *player, const chat_t &args) -> ChatResult {
 
 			soci::rowset<> rs = (sql.prepare
 				<< "SELECT d.itemid, s.label, d.chance "
-				<< "FROM " << Database::makeDataTable("drop_data") << " d "
-				<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = d.itemid AND s.object_type = 'item' "
-				<< "WHERE d.dropperid NOT IN (SELECT DISTINCT dropperid FROM " << Database::makeDataTable("user_drop_data") << ") AND d.dropperid = :q "
+				<< "FROM " << db.makeTable("drop_data") << " d "
+				<< "INNER JOIN " << db.makeTable("strings") << " s ON s.objectid = d.itemid AND s.object_type = 'item' "
+				<< "WHERE d.dropperid NOT IN (SELECT DISTINCT dropperid FROM " << db.makeTable("user_drop_data") << ") AND d.dropperid = :q "
 				<< "UNION ALL "
 				<< "SELECT d.itemid, s.label, d.chance "
-				<< "FROM " << Database::makeDataTable("user_drop_data") << " d "
-				<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = d.itemid AND s.object_type = 'item' "
+				<< "FROM " << db.makeTable("user_drop_data") << " d "
+				<< "INNER JOIN " << db.makeTable("strings") << " s ON s.objectid = d.itemid AND s.object_type = 'item' "
 				<< "WHERE d.dropperid = :q "
 				<< "ORDER BY itemid",
 				soci::use(q, "q"));

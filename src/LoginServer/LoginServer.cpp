@@ -41,13 +41,13 @@ auto LoginServer::listen() -> void {
 }
 
 auto LoginServer::loadData() -> Result {
-	if (Initializing::checkSchemaVersion(true) == Result::Failure) {
+	if (Initializing::checkSchemaVersion(this, true) == Result::Failure) {
 		return Result::Failure;
 	}
-	if (Initializing::checkMcdbVersion() == Result::Failure) {
+	if (Initializing::checkMcdbVersion(this) == Result::Failure) {
 		return Result::Failure;
 	}
-	Initializing::setUsersOffline(1);
+	Initializing::setUsersOffline(this, 1);
 
 	m_validCharDataProvider.loadData();
 	m_equipDataProvider.loadData();
@@ -60,7 +60,7 @@ auto LoginServer::loadData() -> Result {
 }
 
 auto LoginServer::loadConfig() -> Result {
-	ConfigFile config("conf/loginserver.lua");
+	ConfigFile config{"conf/loginserver.lua"};
 	config.run();
 	m_pinEnabled = config.get<bool>("pin");
 	m_port = config.get<port_t>("port");
@@ -77,7 +77,7 @@ auto LoginServer::initComplete() -> void {
 
 auto LoginServer::makeLogIdentifier() const -> opt_string_t {
 	// Login needs no special identifier; there's only one
-	return opt_string_t();
+	return opt_string_t{};
 }
 
 auto LoginServer::getLogPrefix() const -> string_t {
@@ -121,7 +121,7 @@ auto LoginServer::getWorlds() -> Worlds & {
 }
 
 auto LoginServer::loadWorlds() -> void {
-	ConfigFile config("conf/worlds.lua");
+	ConfigFile config{"conf/worlds.lua"};
 	config.run();
 	WorldConfig conf;
 	out_stream_t stream;

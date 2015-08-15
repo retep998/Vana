@@ -102,7 +102,7 @@ auto WorldServerAcceptConnection::authenticated(ServerType type) -> void {
 		}
 		else {
 			send(WorldServerAcceptPacket::connect(-1, 0));
-			std::cerr << "ERROR: No more channels to assign." << std::endl;
+			server.log(LogType::Error, "ERROR: No more channels to assign.");
 			disconnect();
 		}
 	}

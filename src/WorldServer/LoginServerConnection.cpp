@@ -28,13 +28,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 LoginServerConnection::LoginServerConnection() :
-	AbstractServerConnection(ServerType::World)
+	AbstractServerConnection{ServerType::World}
 {
 }
 
 LoginServerConnection::~LoginServerConnection() {
 	if (WorldServer::getInstance().isConnected()) {
-		std::cout << "Disconnected from the LoginServer. Shutting down..." << std::endl;
+		WorldServer::getInstance().log(LogType::ServerDisconnect, "Disconnected from the LoginServer. Shutting down...");
 		ExitCodes::exit(ExitCodes::ServerDisconnection);
 	}
 }

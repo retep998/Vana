@@ -39,15 +39,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <algorithm>
 
 auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t droppingLevel, int32_t droppingId, const Point &origin, bool explosive, bool ffa, int32_t taunt, bool isSteal) -> void {
-	auto &globalDrops = ChannelServer::getInstance().getDropDataProvider().getGlobalDrops();
-	if (!ChannelServer::getInstance().getDropDataProvider().hasDrops(droppingId) && globalDrops.size() == 0) {
+	auto &channel = ChannelServer::getInstance();
+	auto &globalDrops = channel.getDropDataProvider().getGlobalDrops();
+	if (!channel.getDropDataProvider().hasDrops(droppingId) && globalDrops.size() == 0) {
 		return;
 	}
 
 	// Make a copy of the data so we can modify the object with global drops
-	auto drops = ChannelServer::getInstance().getDropDataProvider().getDrops(droppingId);
+	auto drops = channel.getDropDataProvider().getDrops(droppingId);
 
-	Player *player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId);
+	Player *player = channel.getPlayerDataProvider().getPlayer(playerId);
 	coord_t dropPosCounter = 0;
 	party_id_t partyId = 0;
 	Point pos;
@@ -59,7 +60,7 @@ auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t dropping
 	}
 	if (droppingLevel != 0 && globalDrops.size() != 0) {
 		DropInfo d;
-		int8_t continent = ChannelServer::getInstance().getMapDataProvider().getContinent(mapId);
+		int8_t continent = channel.getMapDataProvider().getContinent(mapId).get(0);
 
 		for (const auto &globalDrop : globalDrops) {
 			if (droppingLevel >= globalDrop.minLevel && droppingLevel <= globalDrop.maxLevel) {
@@ -80,7 +81,7 @@ auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t dropping
 	Randomizer::shuffle(drops);
 
 	coord_t mod = explosive ? 35 : 25;
-	auto &config = ChannelServer::getInstance().getConfig();
+	auto &config = channel.getConfig();
 
 	for (const auto &dropInfo : drops) {
 		slot_qty_t amount = static_cast<slot_qty_t>(Randomizer::rand<int32_t>(dropInfo.maxAmount, dropInfo.minAmount));
@@ -125,7 +126,7 @@ auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t dropping
 						player != nullptr && player->hasGmBenefits()} :
 					Item{itemId, amount};
 
-				drop = new Drop(mapId, f, pos, playerId);
+				drop = new Drop{mapId, f, pos, playerId};
 
 				if (questId > 0) {
 					drop->setQuest(questId);

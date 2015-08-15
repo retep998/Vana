@@ -41,7 +41,9 @@ auto SkillDataProvider::loadPlayerSkills() -> void {
 	m_skillLevels.clear();
 	m_skillMaxLevels.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("skill_player_data"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("skill_player_data"));
 
 	for (const auto &row : rs) {
 		skill_id_t skillId = row.get<skill_id_t>("skillid");
@@ -52,7 +54,9 @@ auto SkillDataProvider::loadPlayerSkills() -> void {
 }
 
 auto SkillDataProvider::loadPlayerSkillLevels() -> void {
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("skill_player_level_data"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("skill_player_level_data"));
 
 	for (const auto &row : rs) {
 		SkillLevelInfo level;
@@ -106,7 +110,9 @@ auto SkillDataProvider::loadPlayerSkillLevels() -> void {
 auto SkillDataProvider::loadMobSkills() -> void {
 	m_mobSkills.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("skill_mob_data"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("skill_mob_data"));
 
 	for (const auto &row : rs) {
 		MobSkillLevelInfo mobLevel;
@@ -134,7 +140,9 @@ auto SkillDataProvider::loadMobSkills() -> void {
 }
 
 auto SkillDataProvider::loadMobSummons() -> void {
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("skill_mob_summons"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("skill_mob_summons"));
 
 	for (const auto &row : rs) {
 		mob_skill_level_t level = row.get<mob_skill_level_t>("level");
@@ -147,7 +155,9 @@ auto SkillDataProvider::loadMobSummons() -> void {
 auto SkillDataProvider::loadBanishData() -> void {
 	m_banishInfo.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("skill_mob_banish_data"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("skill_mob_banish_data"));
 
 	for (const auto &row : rs) {
 		BanishField banish;
@@ -164,7 +174,9 @@ auto SkillDataProvider::loadBanishData() -> void {
 auto SkillDataProvider::loadMorphs() -> void {
 	m_morphInfo.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("morph_data"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("morph_data"));
 
 	for (const auto &row : rs) {
 		MorphData morph;

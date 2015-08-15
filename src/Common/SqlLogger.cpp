@@ -43,7 +43,8 @@ auto SqlLogger::log(LogType type, const opt_string_t &identifier, const string_t
 
 auto SqlLogger::flush() -> void {
 	if (m_buffer.size() > 0) {
-		soci::session &sql = Database::getCharDb();
+		auto &db = Database::getCharDb();
+		auto &sql = db.getSession();
 		server_type_t serverType = static_cast<server_type_t>(getServerType());
 		int32_t logType = 0;
 		opt_string_t identifier;
@@ -53,7 +54,7 @@ auto SqlLogger::flush() -> void {
 		UnixTime logTime;
 
 		soci::statement st = (sql.prepare
-			<< "INSERT INTO " << Database::makeCharTable("logs") << " (log_time, origin, info_type, identifier, message) "
+			<< "INSERT INTO " << db.makeTable("logs") << " (log_time, origin, info_type, identifier, message) "
 			<< "VALUES (:time, :origin, :infoType, :identifier, :message)",
 			soci::use(logTime, "time"),
 			soci::use(serverType, "origin"),

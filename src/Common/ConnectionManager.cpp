@@ -21,7 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ServerClient.hpp"
 #include "ThreadPool.hpp"
 
-ConnectionManager::ConnectionManager()
+ConnectionManager::ConnectionManager(AbstractServer *server) :
+	m_server{server}
 {
 	m_work = make_owned_ptr<asio::io_service::work>(m_ioService);
 }
@@ -75,6 +76,10 @@ auto ConnectionManager::stop() -> void {
 
 auto ConnectionManager::stop(ref_ptr_t<Session> session) -> void {
 	m_sessions.erase(session);
+}
+
+auto ConnectionManager::getServer() -> AbstractServer * {
+	return m_server;
 }
 
 auto ConnectionManager::run() -> void {

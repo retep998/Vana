@@ -75,14 +75,15 @@ auto PlayerStorage::changeMesos(mesos_t mesos) -> void {
 }
 
 auto PlayerStorage::load() -> void {
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	soci::row row;
 	account_id_t userId = m_player->getUserId();
 	world_id_t worldId = m_player->getWorldId();
 
 	sql.once
 		<< "SELECT s.slots, s.mesos, s.char_slots "
-		<< "FROM " << Database::makeCharTable("storage") << " s "
+		<< "FROM " << db.makeTable("storage") << " s "
 		<< "WHERE s.user_id = :user AND s.world_id = :world "
 		<< "LIMIT 1",
 		soci::use(userId, "user"),
@@ -100,7 +101,7 @@ auto PlayerStorage::load() -> void {
 		m_mesos = 0;
 		m_charSlots = config.defaultChars;
 		sql.once
-			<< "INSERT INTO " << Database::makeCharTable("storage") << " (user_id, world_id, slots, mesos, char_slots) "
+			<< "INSERT INTO " << db.makeTable("storage") << " (user_id, world_id, slots, mesos, char_slots) "
 			<< "VALUES (:user, :world, :slots, :mesos, :chars)",
 			soci::use(userId, "user"),
 			soci::use(worldId, "world"),
@@ -115,7 +116,7 @@ auto PlayerStorage::load() -> void {
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT i.* "
-		<< "FROM " << Database::makeCharTable("items") << " i "
+		<< "FROM " << db.makeTable("items") << " i "
 		<< "WHERE i.location = :location AND i.user_id = :user AND i.world_id = :world "
 		<< "ORDER BY i.slot ASC",
 		soci::use(location, "location"),
@@ -123,7 +124,7 @@ auto PlayerStorage::load() -> void {
 		soci::use(worldId, "world"));
 
 	for (const auto &row : rs) {
-		Item *item = new Item(row);
+		Item *item = new Item{row};
 		addItem(item);
 	}
 }
@@ -134,9 +135,10 @@ auto PlayerStorage::save() -> void {
 	account_id_t userId = m_player->getUserId();
 	player_id_t playerId = m_player->getId();
 
-	session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	sql.once
-		<< "UPDATE " << Database::makeCharTable("storage") << " "
+		<< "UPDATE " << db.makeTable("storage") << " "
 		<< "SET slots = :slots, mesos = :mesos, char_slots = :chars "
 		<< "WHERE user_id = :user AND world_id = :world",
 		use(userId, "user"),
@@ -146,7 +148,7 @@ auto PlayerStorage::save() -> void {
 		use(m_charSlots, "chars");
 
 	sql.once
-		<< "DELETE FROM " << Database::makeCharTable("items") << " "
+		<< "DELETE FROM " << db.makeTable("items") << " "
 		<< "WHERE location = :location AND user_id = :user AND world_id = :world",
 		use(Item::Storage, "location"),
 		use(userId, "user"),
@@ -160,6 +162,6 @@ auto PlayerStorage::save() -> void {
 			ItemDbRecord rec(i, playerId, userId, worldId, Item::Storage, getItem(i));
 			v.push_back(rec);
 		}
-		Item::databaseInsert(sql, v);
+		Item::databaseInsert(db, v);
 	}
 }

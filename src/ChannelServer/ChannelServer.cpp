@@ -40,7 +40,7 @@ ChannelServer::ChannelServer() :
 
 auto ChannelServer::listen() -> void {
 	getConnectionManager().accept(Ip::Type::Ipv4, m_port, [] { return new Player(); }, getInterServerConfig(), false, MapleVersion::ChannelSubversion);
-	Initializing::setUsersOffline(getOnlineId());
+	Initializing::setUsersOffline(this, getOnlineId());
 }
 
 auto ChannelServer::shutdown() -> void {
@@ -50,10 +50,10 @@ auto ChannelServer::shutdown() -> void {
 }
 
 auto ChannelServer::loadData() -> Result {
-	if (Initializing::checkSchemaVersion() == Result::Failure) {
+	if (Initializing::checkSchemaVersion(this) == Result::Failure) {
 		return Result::Failure;
 	}
-	if (Initializing::checkMcdbVersion() == Result::Failure) {
+	if (Initializing::checkMcdbVersion(this) == Result::Failure) {
 		return Result::Failure;
 	}
 
@@ -136,6 +136,11 @@ auto ChannelServer::connectToWorld(world_id_t worldId, port_t port, const Ip &ip
 
 auto ChannelServer::establishedWorldConnection(channel_id_t channelId, port_t port, const WorldConfig &config) -> void {
 	m_channelId = channelId;
+
+	log(LogType::ServerConnect, [&](out_stream_t &str) {
+		str << "Handling channel " << static_cast<int32_t>(channelId) << " on port " << port;
+	});
+
 	m_port = port;
 	m_config = config;
 	Map::setMapUnloadTime(config.mapUnloadTime);

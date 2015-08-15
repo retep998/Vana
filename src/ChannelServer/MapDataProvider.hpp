@@ -87,7 +87,7 @@ public:
 	auto loadData() -> void;
 	auto getMap(map_id_t mapId) -> Map *;
 	auto unloadMap(map_id_t mapId) -> void;
-	auto getContinent(map_id_t mapId) const -> int8_t;
+	auto getContinent(map_id_t mapId) const -> opt_int8_t;
 private:
 	auto loadMapData(map_id_t mapId, Map *&map) -> map_id_t;
 	auto loadMapTimeMob(Map *map) -> void;

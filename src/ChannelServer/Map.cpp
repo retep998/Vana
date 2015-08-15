@@ -568,7 +568,10 @@ auto Map::getTownMysticDoorPortal(Player *player, uint8_t zeroBasedPartyIndex) c
 
 	map_id_t townId = m_info->returnMap;
 	if (townId == Maps::NoMap) {
-		std::cerr << "Mystic Door used on a map that has no return map: " << m_id << std::endl;
+		ChannelServer::getInstance().log(LogType::Hacking, [&](out_stream_t &str) {
+			str << "Likely hacking by player ID " << player->getId() << ". "
+				<< "Mystic Door used on a map that has no return map: " << m_id;
+		});
 		return MysticDoorOpenResult{MysticDoorResult::Hacking};
 	}
 

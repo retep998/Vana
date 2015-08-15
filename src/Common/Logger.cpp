@@ -159,7 +159,9 @@ auto Logger::LogReplacements::getLevelString(LogType type) -> string_t {
 		case LogType::Warning: return "WARNING";
 		case LogType::Debug: return "DEBUG";
 		case LogType::Error: return "ERROR";
+		case LogType::DebugError: return "DEBUG ERROR";
 		case LogType::CriticalError: return "CRITICAL ERROR";
+		case LogType::Hacking: return "HACKING";
 		case LogType::ServerConnect: return "SERVER CONNECT";
 		case LogType::ServerDisconnect: return "SERVER DISCONNECT";
 		case LogType::ServerAuthFailure: return "SERVER AUTH FAILURE";
@@ -180,7 +182,7 @@ auto Logger::LogReplacements::getLevelString(LogType type) -> string_t {
 		case LogType::MalformedPacket: return "MALFORMED PACKET";
 		case LogType::ScriptLog: return "SCRIPT";
 	}
-	return "UNSUPPORTED";
+	throw NotImplementedException{"LogType"};
 }
 
 auto Logger::LogReplacements::getServerTypeString(ServerType type) -> string_t {

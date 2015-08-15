@@ -47,12 +47,13 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 		return;
 	}
 
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	soci::row row;
 
 	sql.once
 		<< "SELECT u.* "
-		<< "FROM " << Database::makeCharTable("user_accounts") << " u "
+		<< "FROM " << db.makeTable("user_accounts") << " u "
 		<< "WHERE u.username = :user",
 		soci::use(username, "user"),
 		soci::into(row);
@@ -68,7 +69,7 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 
 		sql.once
 			<< "SELECT i.ip_ban_id "
-			<< "FROM " << Database::makeCharTable("ip_bans") << " i "
+			<< "FROM " << db.makeTable("ip_bans") << " i "
 			<< "WHERE i.ip = :ip",
 			soci::use(ip, "ip"),
 			soci::into(ipBanned);
@@ -99,7 +100,7 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 					string_t hashedPassword = MiscUtilities::hashPassword(password, salt.get());
 
 					sql.once
-						<< "UPDATE " << Database::makeCharTable("user_accounts") << " u "
+						<< "UPDATE " << db.makeTable("user_accounts") << " u "
 						<< "SET u.password = :password, u.salt = :salt "
 						<< "WHERE u.user_id = :user",
 						soci::use(hashedPassword, "password"),
@@ -162,7 +163,7 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 			time_t banTime = quietBan.get();
 			if (time(nullptr) > banTime) {
 				sql.once
-					<< "UPDATE " << Database::makeCharTable("user_accounts") << " u "
+					<< "UPDATE " << db.makeTable("user_accounts") << " u "
 					<< "SET u.quiet_ban_expire = NULL, u.quiet_ban_reason = NULL "
 					<< "WHERE u.user_id = :user",
 					soci::use(userId, "user");
@@ -197,8 +198,10 @@ auto Login::setGender(UserConnection *user, PacketReader &reader) -> void {
 
 		user->setStatus(PlayerStatus::NotLoggedIn);
 
-		Database::getCharDb().once
-			<< "UPDATE " << Database::makeCharTable("user_accounts") << " u "
+		auto &db = Database::getCharDb();
+		auto &sql = db.getSession();
+		sql.once
+			<< "UPDATE " << db.makeTable("user_accounts") << " u "
 			<< "SET u.gender = :gender "
 			<< "WHERE u.user_id = :user",
 			soci::use(gender, "gender"),
@@ -283,8 +286,12 @@ auto Login::registerPin(UserConnection *user, PacketReader &reader) -> void {
 	}
 	int32_t pin = StringUtilities::lexical_cast<int32_t>(reader.get<string_t>());
 	user->setStatus(PlayerStatus::NotLoggedIn);
-	Database::getCharDb().once
-		<< "UPDATE " << Database::makeCharTable("user_accounts") << " u "
+
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
+
+	sql.once
+		<< "UPDATE " << db.makeTable("user_accounts") << " u "
 		<< "SET u.pin = :pin "
 		<< "WHERE u.user_id = :user",
 		soci::use(pin, "pin"),

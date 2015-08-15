@@ -51,7 +51,9 @@ auto MapDataProvider::loadData() -> void {
 	int8_t mapCluster;
 	int8_t continent;
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("map_continent_data"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("map_continent_data"));
 
 	for (const auto &row : rs) {
 		mapCluster = row.get<int8_t>("map_cluster");
@@ -79,7 +81,9 @@ auto MapDataProvider::loadMap(map_id_t mapId, Map *&map) -> void {
 auto MapDataProvider::loadMapData(map_id_t mapId, Map *&map) -> map_id_t {
 	map_id_t link = 0;
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("map_data") << " WHERE mapid = :map", soci::use(mapId, "map"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("map_data") << " WHERE mapid = :map", soci::use(mapId, "map"));
 
 	for (const auto &row : rs) {
 		ref_ptr_t<MapInfo> mapInfo = make_ref_ptr<MapInfo>();
@@ -118,7 +122,7 @@ auto MapDataProvider::loadMapData(map_id_t mapId, Map *&map) -> map_id_t {
 			else if (cmp == "chalkboard") limitations->chalkboard = true;
 		});
 
-		mapInfo->continent = getContinent(mapId);
+		mapInfo->continent = getContinent(mapId).get(0);
 		mapInfo->returnMap = row.get<map_id_t>("return_map");
 		mapInfo->forcedReturn = row.get<map_id_t>("forced_return_map");
 		mapInfo->spawnRate = row.get<double>("mob_rate");
@@ -149,7 +153,9 @@ auto MapDataProvider::loadMapData(map_id_t mapId, Map *&map) -> map_id_t {
 
 auto MapDataProvider::loadSeats(Map *map, map_id_t link) -> void {
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("map_seats") << " WHERE mapid = :map", soci::use(link, "map"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("map_seats") << " WHERE mapid = :map", soci::use(link, "map"));
 
 	for (const auto &row : rs) {
 		SeatInfo chair;
@@ -162,8 +168,9 @@ auto MapDataProvider::loadSeats(Map *map, map_id_t link) -> void {
 }
 
 auto MapDataProvider::loadPortals(Map *map, map_id_t link) -> void {
-
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("map_portals") << " WHERE mapid = :map", soci::use(link, "map"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("map_portals") << " WHERE mapid = :map", soci::use(link, "map"));
 
 	for (const auto &row : rs) {
 		PortalInfo portal;
@@ -189,10 +196,12 @@ auto MapDataProvider::loadMapLife(Map *map, map_id_t link) -> void {
 	SpawnInfo life;
 	string_t type;
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("map_life") << " WHERE mapid = :map", soci::use(link, "map"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("map_life") << " WHERE mapid = :map", soci::use(link, "map"));
 
 	for (const auto &row : rs) {
-		life = SpawnInfo();
+		life = SpawnInfo{};
 		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&life](const string_t &cmp) {
 			if (cmp == "faces_left") life.facesLeft = true;
 		});
@@ -204,19 +213,19 @@ auto MapDataProvider::loadMapLife(Map *map, map_id_t link) -> void {
 		life.time = row.get<int32_t>("respawn_time");
 
 		if (type == "npc") {
-			npc = NpcSpawnInfo();
+			npc = NpcSpawnInfo{};
 			npc.setSpawnInfo(life);
 			npc.rx0 = row.get<coord_t>("min_click_pos");
 			npc.rx1 = row.get<coord_t>("max_click_pos");
 			map->addNpc(npc);
 		}
 		else if (type == "mob") {
-			spawn = MobSpawnInfo();
+			spawn = MobSpawnInfo{};
 			spawn.setSpawnInfo(life);
 			map->addMobSpawn(spawn);
 		}
 		else if (type == "reactor") {
-			reactor = ReactorSpawnInfo();
+			reactor = ReactorSpawnInfo{};
 			reactor.setSpawnInfo(life);
 			reactor.name = row.get<string_t>("life_name");
 			map->addReactorSpawn(reactor);
@@ -225,8 +234,9 @@ auto MapDataProvider::loadMapLife(Map *map, map_id_t link) -> void {
 }
 
 auto MapDataProvider::loadFootholds(Map *map, map_id_t link) -> void {
-
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("map_footholds") << " WHERE mapid = :map", soci::use(link, "map"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("map_footholds") << " WHERE mapid = :map", soci::use(link, "map"));
 
 	for (const auto &row : rs) {
 		FootholdInfo foot;
@@ -247,7 +257,9 @@ auto MapDataProvider::loadFootholds(Map *map, map_id_t link) -> void {
 }
 
 auto MapDataProvider::loadMapTimeMob(Map *map) -> void {
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("map_time_mob") << " WHERE mapid = :map", soci::use(map->getId(), "map"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("map_time_mob") << " WHERE mapid = :map", soci::use(map->getId(), "map"));
 
 	for (const auto &row : rs) {
 		ref_ptr_t<TimeMob> info = make_ref_ptr<TimeMob>();
@@ -259,12 +271,11 @@ auto MapDataProvider::loadMapTimeMob(Map *map) -> void {
 	}
 }
 
-auto MapDataProvider::getContinent(map_id_t mapId) const -> int8_t {
+auto MapDataProvider::getContinent(map_id_t mapId) const -> opt_int8_t {
 	int8_t cluster = GameLogicUtilities::getMapCluster(mapId);
 	auto kvp = m_continents.find(cluster);
 	if (kvp == std::end(m_continents)) {
-		std::cerr << "Attempted to get a continent ID that does not exist for map ID " << mapId << std::endl;
-		return 0;
+		return {};
 	}
 	return kvp->second;
 }

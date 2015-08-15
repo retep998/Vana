@@ -61,9 +61,11 @@ auto PlayerDataProvider::getChannelConnectPacket(PacketBuilder &packet) -> void 
 auto PlayerDataProvider::loadPlayers(world_id_t worldId) -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Players... ";
 
-	soci::rowset<> rs = (Database::getCharDb().prepare
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare
 		<< "SELECT c.character_id, c.name "
-		<< "FROM " << Database::makeCharTable("characters") << " c "
+		<< "FROM " << db.makeTable("characters") << " c "
 		<< "WHERE c.world_id = :world",
 		soci::use(worldId, "world"));
 
@@ -82,9 +84,11 @@ auto PlayerDataProvider::loadPlayer(player_id_t playerId) -> void {
 		return;
 	}
 
-	soci::rowset<> rs = (Database::getCharDb().prepare
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare
 		<< "SELECT c.character_id, c.name "
-		<< "FROM " << Database::makeCharTable("characters") << " c "
+		<< "FROM " << db.makeTable("characters") << " c "
 		<< "WHERE c.character_id = :char",
 		soci::use(playerId, "char"));
 
@@ -516,8 +520,10 @@ auto PlayerDataProvider::buddyInvite(PacketReader &reader) -> void {
 
 	if (!invitee.channel.is_initialized()) {
 		// Make new pending buddy in the database
-		Database::getCharDb().once
-			<< "INSERT INTO " << Database::makeCharTable("buddylist_pending") << " "
+		auto &db = Database::getCharDb();
+		auto &sql = db.getSession();
+		sql.once
+			<< "INSERT INTO " << db.makeTable("buddylist_pending") << " "
 			<< "VALUES (:invitee, :name, :inviter)",
 			soci::use(inviteeId, "invitee"),
 			soci::use(inviter.name, "name"),

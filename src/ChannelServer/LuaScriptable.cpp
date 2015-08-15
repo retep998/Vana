@@ -385,12 +385,11 @@ auto LuaScriptable::setEnvironmentVariables() -> void {
 }
 
 auto LuaScriptable::handleError(const string_t &filename, const string_t &error) -> void {
-	Player *player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(m_playerId);
+	auto &channel = ChannelServer::getInstance();
+	Player *player = channel.getPlayerDataProvider().getPlayer(m_playerId);
 
-	ChannelServer::getInstance().log(LogType::ScriptLog, error);
-
+	channel.log(LogType::ScriptLog, "Script error in " + filename + ": " + error);
 	if (player == nullptr) {
-		std::cerr << "Script error in " << filename << ": " << error << std::endl;
 		return;
 	}
 
@@ -699,13 +698,14 @@ auto LuaExports::runNpc(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	npc_id_t npcId = env.get<npc_id_t>(luaVm, 1);
 	string_t script;
+	auto &channel = ChannelServer::getInstance();
 	if (env.is(luaVm, 2, LuaType::String)) {
 		// We already have our script name
 		string_t specified = env.get<string_t>(luaVm, 2);
-		script = ChannelServer::getInstance().getScriptDataProvider().buildScriptPath(ScriptTypes::Npc, specified);
+		script = channel.getScriptDataProvider().buildScriptPath(ScriptTypes::Npc, specified);
 	}
 	else {
-		script = ChannelServer::getInstance().getScriptDataProvider().getScript(npcId, ScriptTypes::Npc);
+		script = channel.getScriptDataProvider().getScript(&channel, npcId, ScriptTypes::Npc);
 	}
 	Npc *npc = new Npc{npcId, getPlayer(luaVm, env), script};
 	npc->run();

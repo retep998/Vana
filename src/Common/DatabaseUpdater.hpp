@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <map>
 #include <string>
 
+class AbstractServer;
+
 enum class VersionCheckResult {
 	FullyUpdated,
 	NeedsUpdate,
@@ -29,12 +31,12 @@ enum class VersionCheckResult {
 
 class DatabaseUpdater {
 public:
-	DatabaseUpdater(bool update);
+	DatabaseUpdater(AbstractServer *server, bool update);
 	auto checkVersion() -> VersionCheckResult;
 	auto update() -> void;
 private:
 	auto loadDatabaseInfo() -> void;
-	auto loadSqlFiles() -> void;
+	auto loadSqlFiles() const -> pair_t<size_t, ord_map_t<int32_t, string_t>>;
 	auto update(size_t version) -> void;
 	auto runQueries(const string_t &filename) -> void;
 	static auto createInfoTable() -> void;
@@ -44,5 +46,5 @@ private:
 	size_t m_sqlVersion = 0;
 	bool m_update = false;
 	bool m_dbAvailable = false;
-	ord_map_t<int32_t, string_t> m_sqlFiles;
+	AbstractServer *m_server = nullptr;
 };

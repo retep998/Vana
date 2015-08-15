@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MovementHandler.hpp"
+#include "ChannelServer.hpp"
 #include "MovableLife.hpp"
 #include "Point.hpp"
 #include "PacketReader.hpp"
@@ -28,6 +29,7 @@ auto MovementHandler::parseMovement(MovableLife *life, PacketReader &reader) -> 
 	coord_t x = 0;
 	coord_t y = 0;
 	uint8_t movementCount = reader.get<uint8_t>();
+	bool breakLoop = false;
 
 	enum MovementTypes {
 		NormalMovement = 0,
@@ -125,12 +127,21 @@ auto MovementHandler::parseMovement(MovableLife *life, PacketReader &reader) -> 
 				stance = reader.get<int8_t>();
 				break;
 			default:
-				std::cerr << "New type of movement: 0x" << std::hex << static_cast<int16_t>(type) << std::endl;
+				// This is a tough call
+				// Might be a packet processing issue, might be hacking
+				breakLoop = true;
+				ChannelServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &str) {
+					str << "New type of movement: 0x" << std::hex << static_cast<int16_t>(type);
+				});
 				break;
+		}
+
+		if (breakLoop) {
+			break;
 		}
 	}
 
-	Point pos(x, y);
+	Point pos{x, y};
 	life->resetMovement(foothold, pos, stance);
 	return pos;
 }

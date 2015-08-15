@@ -70,8 +70,10 @@ auto UserConnection::handleRequest(PacketReader &reader) -> void {
 }
 
 auto UserConnection::setOnline(bool online) -> void {
-	Database::getCharDb()
-		<< "UPDATE " << Database::makeCharTable("user_accounts") << " u "
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
+	sql.once
+		<< "UPDATE " << db.makeTable("user_accounts") << " u "
 		<< "SET "
 		<< "	u.online = :online,"
 		<< "	u.last_login = NOW() "

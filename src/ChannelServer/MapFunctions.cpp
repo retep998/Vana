@@ -146,10 +146,11 @@ auto MapFunctions::listPortals(Player *player, const chat_t &args) -> ChatResult
 		return ChatResult::HandledDisplay;
 	}
 
-	soci::session &sql = Database::getDataDb();
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT mp.id, mp.label, mp.destination, mp.destination_label, mp.script "
-		<< "FROM " << Database::makeDataTable("map_portals") << " mp "
+		<< "FROM " << db.makeTable("map_portals") << " mp "
 		<< "WHERE mp.mapid = :mapId",
 		soci::use(mapId, "mapId"));
 
@@ -210,11 +211,12 @@ auto MapFunctions::listReactors(Player *player, const chat_t &args) -> ChatResul
 		return ChatResult::HandledDisplay;
 	}
 
-	soci::session &sql = Database::getDataDb();
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT ml.lifeid, sc.script "
-		<< "FROM " << Database::makeDataTable("map_life") << " ml "
-		<< "LEFT OUTER JOIN " << Database::makeDataTable("scripts") << " sc ON sc.objectid = ml.lifeid AND sc.script_type = 'reactor' "
+		<< "FROM " << db.makeTable("map_life") << " ml "
+		<< "LEFT OUTER JOIN " << db.makeTable("scripts") << " sc ON sc.objectid = ml.lifeid AND sc.script_type = 'reactor' "
 		<< "WHERE ml.life_type = 'reactor' AND ml.mapid = :mapId",
 		soci::use(mapId, "mapId"));
 
@@ -258,12 +260,13 @@ auto MapFunctions::listNpcs(Player *player, const chat_t &args) -> ChatResult {
 		return ChatResult::HandledDisplay;
 	}
 
-	soci::session &sql = Database::getDataDb();
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT ml.lifeid, st.label, sc.script "
-		<< "FROM " << Database::makeDataTable("map_life") << " ml "
-		<< "INNER JOIN " << Database::makeDataTable("strings") << " st ON st.objectid = ml.lifeid AND st.object_type = 'npc' "
-		<< "LEFT OUTER JOIN " << Database::makeDataTable("scripts") << " sc ON sc.objectid = ml.lifeid AND sc.script_type = 'npc' "
+		<< "FROM " << db.makeTable("map_life") << " ml "
+		<< "INNER JOIN " << db.makeTable("strings") << " st ON st.objectid = ml.lifeid AND st.object_type = 'npc' "
+		<< "LEFT OUTER JOIN " << db.makeTable("scripts") << " sc ON sc.objectid = ml.lifeid AND sc.script_type = 'npc' "
 		<< "WHERE ml.life_type = 'npc' AND ml.mapid = :mapId",
 		soci::use(mapId, "mapId"));
 
@@ -332,7 +335,8 @@ auto MapFunctions::music(Player *player, const chat_t &args) -> ChatResult {
 		ChatHandlerFunctions::showInfo(player, "Current music: " + player->getMap()->getMusic());
 	}
 	else {
-		soci::session &sql = Database::getDataDb();
+		auto &db = Database::getDataDb();
+		auto &sql = db.getSession();
 		string_t music;
 
 		if (args == "default") {
@@ -341,7 +345,7 @@ auto MapFunctions::music(Player *player, const chat_t &args) -> ChatResult {
 		else {
 			sql
 				<< "SELECT m.default_bgm "
-				<< "FROM " << Database::makeDataTable("map_data") << " m "
+				<< "FROM " << db.makeTable("map_data") << " m "
 				<< "WHERE m.default_bgm = :q "
 				<< "LIMIT 1",
 				soci::use(args, "q"),

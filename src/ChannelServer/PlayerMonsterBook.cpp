@@ -31,12 +31,13 @@ PlayerMonsterBook::PlayerMonsterBook(Player *player) :
 }
 
 auto PlayerMonsterBook::load() -> void {
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	player_id_t charId = m_player->getId();
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT b.card_id, b.level "
-		<< "FROM " << Database::makeCharTable("monster_book") << " b "
+		<< "FROM " << db.makeTable("monster_book") << " b "
 		<< "WHERE b.character_id = :char "
 		<< "ORDER BY b.card_id ASC",
 		soci::use(charId, "char"));
@@ -49,17 +50,18 @@ auto PlayerMonsterBook::load() -> void {
 }
 
 auto PlayerMonsterBook::save() -> void {
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	player_id_t charId = m_player->getId();
 
-	sql.once << "DELETE FROM " << Database::makeCharTable("monster_book") << " WHERE character_id = :char", soci::use(charId, "char");
+	sql.once << "DELETE FROM " << db.makeTable("monster_book") << " WHERE character_id = :char", soci::use(charId, "char");
 
 	if (m_cards.size() > 0) {
 		item_id_t cardId = 0;
 		uint8_t level = 0;
 
 		soci::statement st = (sql.prepare
-			<< "INSERT INTO " << Database::makeCharTable("monster_book") << " "
+			<< "INSERT INTO " << db.makeTable("monster_book") << " "
 			<< "VALUES (:char, :card, :level) ",
 			soci::use(charId, "char"),
 			soci::use(cardId, "card"),
@@ -109,7 +111,20 @@ auto PlayerMonsterBook::addCard(int32_t cardId, uint8_t level, bool initialLoad)
 }
 
 auto PlayerMonsterBook::connectData(PacketBuilder &packet) -> void {
-	packet.add<int32_t>(getCover() != 0 ? ChannelServer::getInstance().getItemDataProvider().getCardId(getCover()) : 0);
+	if (getCover() != 0) {
+		optional_t<item_id_t> coverId = ChannelServer::getInstance().getItemDataProvider().getCardId(getCover());
+		if (coverId.is_initialized()) {
+			packet.add<int32_t>(coverId.get());
+		}
+		else {
+			// ???
+			// Shouldn't happen, server screwed up in modification somewhere
+			packet.add<int32_t>(0);
+		}
+	}
+	else {
+		packet.add<int32_t>(0);
+	}
 	packet.unk<int8_t>();
 
 	packet.add<uint16_t>(static_cast<uint16_t>(m_cards.size()));

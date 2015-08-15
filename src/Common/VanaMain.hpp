@@ -40,7 +40,6 @@ namespace Vana {
 
 		try {
 			AbstractServer &server = TAbstractServer::getInstance();
-
 			signals.async_wait([&server](const asio::error_code &ec, int handlerId) {
 				server.shutdown();
 			});

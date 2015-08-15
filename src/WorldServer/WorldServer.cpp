@@ -40,7 +40,7 @@ auto WorldServer::listen() -> void {
 }
 
 auto WorldServer::loadData() -> Result {
-	Initializing::checkSchemaVersion();
+	Initializing::checkSchemaVersion(this);
 
 	m_loginConnection = new LoginServerConnection();
 	auto &config = getInterServerConfig();
@@ -61,6 +61,11 @@ auto WorldServer::rehashConfig(const WorldConfig &config) -> void {
 
 auto WorldServer::establishedLoginConnection(world_id_t worldId, port_t port, const WorldConfig &conf) -> void {
 	m_worldId = worldId;
+
+	log(LogType::ServerConnect, [&](out_stream_t &str) {
+		str << "Handling world " << static_cast<int32_t>(worldId);
+	});
+
 	m_port = port;
 	m_config = conf;
 	m_defaultRates = conf.rates;

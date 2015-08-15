@@ -20,7 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MiscUtilities.hpp"
 
 auto SkillMacros::load(player_id_t charId) -> void {
-	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT s.* FROM " << Database::makeCharTable("skill_macros") << " s WHERE s.character_id = :char", soci::use(charId, "char"));
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT s.* FROM " << db.makeTable("skill_macros") << " s WHERE s.character_id = :char", soci::use(charId, "char"));
 
 	for (const auto &row : rs) {
 		add(row.get<int8_t>("pos"), new SkillMacro(row.get<string_t>("name"), row.get<bool>("shout"), row.get<skill_id_t>("skill_1"), row.get<skill_id_t>("skill_2"), row.get<skill_id_t>("skill_3")));
@@ -38,8 +40,10 @@ auto SkillMacros::save(player_id_t charId) -> void {
 	optional_t<skill_id_t> skill2 = 0;
 	optional_t<skill_id_t> skill3 = 0;
 
-	soci::statement st = (Database::getCharDb().prepare
-		<< "REPLACE INTO " << Database::makeCharTable("skill_macros") << " "
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
+	soci::statement st = (sql.prepare
+		<< "REPLACE INTO " << db.makeTable("skill_macros") << " "
 		<< "VALUES (:char, :key, :name, :shout, :skill1, :skill2, :skill3)",
 		soci::use(charId, "char"),
 		soci::use(i, "key"),

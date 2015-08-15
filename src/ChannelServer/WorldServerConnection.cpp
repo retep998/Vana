@@ -36,7 +36,7 @@ WorldServerConnection::WorldServerConnection() :
 
 WorldServerConnection::~WorldServerConnection() {
 	if (ChannelServer::getInstance().isConnected()) {
-		std::cout << "Disconnected from the WorldServer. Shutting down..." << std::endl;
+		ChannelServer::getInstance().log(LogType::ServerDisconnect, "Disconnected from the WorldServer. Shutting down...");
 		ExitCodes::exit(ExitCodes::ServerDisconnection);
 	}
 }

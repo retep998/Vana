@@ -28,7 +28,9 @@ auto CurseDataProvider::loadData() -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Curse Info... ";
 
 	m_curseWords.clear();
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("curse_data"));
+	auto &db = Database::getDataDb();
+	auto &sql = db.getSession();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("curse_data"));
 
 	for (const auto &row : rs) {
 		m_curseWords.push_back(row.get<string_t>("word"));

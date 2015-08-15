@@ -59,6 +59,7 @@ auto AbstractConnection::baseHandleRequest(PacketReader &reader) -> void {
 		handleRequest(reader);
 	}
 	catch (std::exception &e) {
+		// TODO FIXME log
 		std::cerr << "ERROR: " << e.what() << std::endl;
 	}
 }

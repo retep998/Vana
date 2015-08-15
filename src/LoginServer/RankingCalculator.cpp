@@ -62,12 +62,13 @@ auto RankingCalculator::all() -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Calculating rankings... " << std::endl;
 	StopWatch sw;
 
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	RankPlayer out;
 	soci::statement statement = (sql.prepare
 		<< "SELECT c.character_id, c.exp, c.fame, c.job, c.level, c.world_id, c.time_level, c.fame_cpos, c.world_cpos, c.job_cpos, c.overall_cpos "
-		<< "FROM " << Database::makeCharTable("characters") << " c "
-		<< "INNER JOIN " << Database::makeCharTable("user_accounts") << " u ON u.user_id = c.user_id "
+		<< "FROM " << db.makeTable("characters") << " c "
+		<< "INNER JOIN " << db.makeTable("user_accounts") << " u ON u.user_id = c.user_id "
 		<< "WHERE "
 		<< "	(u.banned = 0 OR u.ban_expire >= NOW()) "
 		<< "	AND u.gm_level IS NULL "
@@ -117,7 +118,7 @@ auto RankingCalculator::all() -> void {
 		int32_t cOverall = 0;
 
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << Database::makeCharTable("characters") << " "
+			<< "UPDATE " << db.makeTable("characters") << " "
 			<< "SET "
 			<< "	fame_opos = :ofame,"
 			<< "	fame_cpos = :cfame,"
@@ -152,7 +153,9 @@ auto RankingCalculator::all() -> void {
 		}
 	}
 
-	std::cout << "Calculating rankings completed in " << std::setprecision(3) << sw.elapsed<milliseconds_t>() / 1000.f << " seconds!" << std::endl;
+	LoginServer::getInstance().log(LogType::Info, [&](out_stream_t &str) {
+		str << "Calculating rankings completed in " << std::setprecision(3) << sw.elapsed<milliseconds_t>() / 1000.f << " seconds!";
+	});
 
 	l.unlock();
 }

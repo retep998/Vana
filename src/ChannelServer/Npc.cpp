@@ -50,20 +50,22 @@ Npc::Npc(npc_id_t npcId, Player *player, const string_t &script) :
 
 auto Npc::hasScript(int32_t npcId, quest_id_t questId, bool start) -> bool {
 	string_t script = "";
+	auto &channel = ChannelServer::getInstance();
 	if (questId == 0) {
-		script = ChannelServer::getInstance().getScriptDataProvider().getScript(npcId, ScriptTypes::Npc);
+		script = channel.getScriptDataProvider().getScript(&channel, npcId, ScriptTypes::Npc);
 	}
 	else {
-		script = ChannelServer::getInstance().getScriptDataProvider().getQuestScript(questId, start ? 0 : 1);
+		script = channel.getScriptDataProvider().getQuestScript(&channel, questId, start ? 0 : 1);
 	}
 	return FileUtilities::fileExists(script);
 }
 
 auto Npc::getScript(quest_id_t questId, bool start) -> string_t {
+	auto &channel = ChannelServer::getInstance();
 	if (questId == 0) {
-		return ChannelServer::getInstance().getScriptDataProvider().getScript(m_npcId, ScriptTypes::Npc);
+		return channel.getScriptDataProvider().getScript(&channel, m_npcId, ScriptTypes::Npc);
 	}
-	return ChannelServer::getInstance().getScriptDataProvider().getQuestScript(questId, start ? 0 : 1);
+	return channel.getScriptDataProvider().getQuestScript(&channel, questId, start ? 0 : 1);
 }
 
 auto Npc::initScript(const string_t &filename) -> void {

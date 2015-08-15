@@ -20,59 +20,90 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Configuration.hpp"
 #include <soci-mysql.h>
 
-thread_local owned_ptr_t<soci::session> Database::m_chardb{nullptr};
-thread_local owned_ptr_t<soci::session> Database::m_datadb{nullptr};
-string_t Database::m_charDatabase;
-string_t Database::m_charTablePrefix;
-string_t Database::m_dataTablePrefix;
+thread_local owned_ptr_t<Database> Database::m_chardb{nullptr};
+thread_local owned_ptr_t<Database> Database::m_datadb{nullptr};
 
-auto Database::initCharDb() -> soci::session & {
+auto Database::initCharDb() -> Database & {
 	if (m_chardb != nullptr) throw std::logic_error{"Must not call initCharDb after the database is already initialized"};
 
 	ConfigFile config{"conf/database.lua"};
 	config.run();
 	DbConfig conf = config.get<DbConfig>("chardb");
-	m_chardb = make_owned_ptr<soci::session>(soci::mysql, buildConnectionString(conf, false));
-	m_chardb->reconnect();
-	opt_string_t database;
-	m_chardb->once
-		<< "SELECT SCHEMA_NAME "
-		<< "FROM INFORMATION_SCHEMA.SCHEMATA "
-		<< "WHERE SCHEMA_NAME = :schema "
-		<< "LIMIT 1",
-		soci::use(conf.database, "schema"),
-		soci::into(database);
+	m_chardb = make_owned_ptr<Database>(conf, false);
+	auto &sql = m_chardb->getSession();
 
-	if (!database.is_initialized()) {
-		m_chardb->once <<
-			"CREATE DATABASE " << conf.database;
+	if (!schemaExists(sql, conf.database)) {
+		sql.once << "CREATE DATABASE " << conf.database;
 	}
 
 	m_chardb.release();
 	return getCharDb();
 }
 
-auto Database::getCharSchema() -> string_t {
-	return m_charDatabase;
+Database::Database(const DbConfig &conf, bool includeDatabase) {
+	m_session = make_owned_ptr<soci::session>(soci::mysql, buildConnectionString(conf, includeDatabase));
+	m_session->reconnect();
+	m_schema = conf.database;
+	m_tablePrefix = conf.tablePrefix;
+}
+
+auto Database::getSession() -> soci::session & {
+	return *m_session;
+}
+
+auto Database::getSchema() const -> string_t {
+	return m_schema;
+}
+
+auto Database::getTablePrefix() const -> string_t {
+	return m_tablePrefix;
+}
+
+auto Database::makeTable(const string_t &table) const -> string_t {
+	return m_tablePrefix + table;
+}
+
+auto Database::tableExists(const string_t &table) -> bool {
+	return tableExists(getSession(), m_schema, makeTable(table));
+}
+
+auto Database::schemaExists(soci::session &sql, const string_t &schema) -> bool {
+	opt_string_t database;
+	sql.once
+		<< "SELECT SCHEMA_NAME "
+		<< "FROM INFORMATION_SCHEMA.SCHEMATA "
+		<< "WHERE SCHEMA_NAME = :schema "
+		<< "LIMIT 1",
+		soci::use(schema, "schema"),
+		soci::into(database);
+	return database.is_initialized();
+}
+
+auto Database::tableExists(soci::session &sql, const string_t &schema, const string_t &table) -> bool {
+	opt_string_t databaseTable;
+	sql.once
+		<< "SELECT TABLE_NAME "
+		<< "FROM INFORMATION_SCHEMA.TABLES "
+		<< "WHERE TABLE_SCHEMA = :schema AND TABLE_NAME = :table "
+		<< "LIMIT 1",
+		soci::use(schema, "schema"),
+		soci::use(table, "table"),
+		soci::into(databaseTable);
+	return databaseTable.is_initialized();
 }
 
 auto Database::connectCharDb() -> void {
 	ConfigFile config{"conf/database.lua"};
 	config.run();
 	DbConfig conf = config.get<DbConfig>("chardb");
-	m_chardb = make_owned_ptr<soci::session>(soci::mysql, buildConnectionString(conf, true));
-	m_chardb->reconnect();
-	m_charTablePrefix = conf.tablePrefix;
-	m_charDatabase = conf.database;
+	m_chardb = make_owned_ptr<Database>(conf, true);
 }
 
 auto Database::connectDataDb() -> void {
 	ConfigFile config{"conf/database.lua"};
 	config.run();
 	DbConfig conf = config.get<DbConfig>("datadb");
-	m_datadb = make_owned_ptr<soci::session>(soci::mysql, buildConnectionString(conf, true));
-	m_datadb->reconnect();
-	m_dataTablePrefix = conf.tablePrefix;
+	m_datadb = make_owned_ptr<Database>(conf, true);
 }
 
 auto Database::buildConnectionString(const DbConfig &conf, bool includeDatabase) -> string_t {
@@ -89,12 +120,4 @@ auto Database::buildConnectionString(const DbConfig &conf, bool includeDatabase)
 		<< " port=" << conf.port;
 
 	return str.str();
-}
-
-auto Database::makeCharTable(const string_t &table) -> string_t {
-	return m_charTablePrefix + table;
-}
-
-auto Database::makeDataTable(const string_t &table) -> string_t {
-	return m_dataTablePrefix + table;
 }

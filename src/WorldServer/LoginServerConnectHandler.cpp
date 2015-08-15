@@ -31,11 +31,10 @@ auto LoginServerConnectHandler::connect(LoginServerConnection *connection, Packe
 	if (worldId != -1) {
 		port_t port = reader.get<port_t>();
 		WorldConfig conf = reader.get<WorldConfig>();
-		std::cout << "Handling world " << static_cast<int32_t>(worldId) << std::endl;
 		WorldServer::getInstance().establishedLoginConnection(worldId, port, conf);
 	}
 	else {
-		std::cerr << "ERROR: No world to handle" << std::endl;
+		WorldServer::getInstance().log(LogType::CriticalError, "ERROR: No world to handle");
 		ExitCodes::exit(ExitCodes::ServerConnectionError);
 	}
 }

@@ -24,11 +24,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
+class Database;
 class PacketBuilder;
 class Player;
 namespace soci {
 	class row;
-	class session;
 }
 
 struct Buddy {
@@ -63,7 +63,7 @@ public:
 	auto buddyAccepted(player_id_t buddyId) -> void;
 	auto removePendingBuddy(player_id_t id, bool accepted) -> void;
 private:
-	auto addBuddy(soci::session &sql, const soci::row &row) -> void;
+	auto addBuddy(Database &db, const soci::row &row) -> void;
 	auto load() -> void;
 
 	bool m_sentRequest = false;

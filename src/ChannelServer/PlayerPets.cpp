@@ -47,7 +47,8 @@ auto PlayerPets::getSummoned(int8_t index) -> Pet * {
 
 auto PlayerPets::save() -> void {
 	if (m_pets.size() > 0) {
-		soci::session &sql = Database::getCharDb();
+		auto &db = Database::getCharDb();
+		auto &sql = db.getSession();
 		opt_int8_t index = 0;
 		string_t name = "";
 		int8_t level = 0;
@@ -56,7 +57,7 @@ auto PlayerPets::save() -> void {
 		pet_id_t petId = 0;
 
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << Database::makeCharTable("pets") << " "
+			<< "UPDATE " << db.makeTable("pets") << " "
 			<< "SET "
 			<< "	`index` = :index, "
 			<< "	name = :name, "

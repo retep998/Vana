@@ -63,7 +63,10 @@ Summon::Summon(summon_id_t id, skill_id_t summonId, skill_level_t level, bool is
 			m_movementType = Follow;
 			break;
 		default:
-			std::cerr << "Summon not accounted for in the types: " << summonId << std::endl;
+			// Might be a processing problem or it might be a hacking problem
+			ChannelServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &str) {
+				str << "Summon not accounted for in the types: " << summonId;
+			});
 			break;
 	}
 }

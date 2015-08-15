@@ -41,14 +41,15 @@ PlayerSkills::PlayerSkills(Player *player) :
 }
 
 auto PlayerSkills::load() -> void {
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 	PlayerSkillInfo skill;
 	player_id_t playerId = m_player->getId();
 	skill_id_t skillId = 0;
 
-	soci::rowset<> rs = (Database::getCharDb().prepare
+	soci::rowset<> rs = (sql.prepare
 		<< "SELECT s.skill_id, s.points, s.max_level "
-		<< "FROM " << Database::makeCharTable("skills") << " s "
+		<< "FROM " << db.makeTable("skills") << " s "
 		<< "WHERE s.character_id = :char",
 		soci::use(playerId, "char"));
 
@@ -65,9 +66,9 @@ auto PlayerSkills::load() -> void {
 		m_skills[skillId] = skill;
 	}
 
-	rs = (Database::getCharDb().prepare
+	rs = (sql.prepare
 		<< "SELECT c.* "
-		<< "FROM " << Database::makeCharTable("cooldowns") << " c "
+		<< "FROM " << db.makeTable("cooldowns") << " c "
 		<< "WHERE c.character_id = :char",
 		soci::use(playerId, "char"));
 
@@ -90,9 +91,9 @@ auto PlayerSkills::load() -> void {
 	// Allow Cygnus <-> Adventurer selection here or allow it to be ignored
 	// That is, some versions only allowed Adv. Blessing to be populated by Cygnus levels and vice versa
 	// Some later versions lifted this restriction entirely
-	Database::getCharDb().once
+	sql.once
 		<< "SELECT c.name, c.level "
-		<< "FROM " << Database::makeCharTable("characters") << " c "
+		<< "FROM " << db.makeTable("characters") << " c "
 		<< "WHERE c.world_id = :world AND c.user_id = :account AND c.character_id <> :char "
 		<< "ORDER BY c.level DESC "
 		<< "LIMIT 1 ",
@@ -114,13 +115,14 @@ auto PlayerSkills::load() -> void {
 auto PlayerSkills::save(bool saveCooldowns) -> void {
 	using namespace soci;
 	player_id_t playerId = m_player->getId();
-	session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 
 	skill_id_t skillId = 0;
 	skill_level_t level = 0;
 	skill_level_t maxLevel = 0;
 	statement st = (sql.prepare
-		<< "REPLACE INTO " << Database::makeCharTable("skills") << " VALUES (:player, :skill, :level, :maxLevel)",
+		<< "REPLACE INTO " << db.makeTable("skills") << " VALUES (:player, :skill, :level, :maxLevel)",
 		use(playerId, "player"),
 		use(skillId, "skill"),
 		use(level, "level"),
@@ -137,12 +139,12 @@ auto PlayerSkills::save(bool saveCooldowns) -> void {
 	}
 
 	if (saveCooldowns) {
-		sql.once << "DELETE FROM " << Database::makeCharTable("cooldowns") << " WHERE character_id = :char", soci::use(playerId, "char");
+		sql.once << "DELETE FROM " << db.makeTable("cooldowns") << " WHERE character_id = :char", soci::use(playerId, "char");
 
 		if (m_cooldowns.size() > 0) {
 			int16_t remainingTime = 0;
 			st = (sql.prepare
-				<< "INSERT INTO " << Database::makeCharTable("cooldowns") << " (character_id, skill_id, remaining_time) "
+				<< "INSERT INTO " << db.makeTable("cooldowns") << " (character_id, skill_id, remaining_time) "
 				<< "VALUES (:char, :skill, :time)",
 				use(playerId, "char"),
 				use(skillId, "skill"),

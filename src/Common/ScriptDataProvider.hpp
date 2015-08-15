@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <unordered_map>
 
+class AbstractServer;
+
 enum class ScriptTypes {
 	Npc,
 	Reactor,
@@ -36,8 +38,8 @@ class ScriptDataProvider {
 public:
 	auto loadData() -> void;
 
-	auto getQuestScript(quest_id_t questId, int8_t state) const -> string_t;
-	auto getScript(int32_t objectId, ScriptTypes type) const -> string_t;
+	auto getQuestScript(AbstractServer *server, quest_id_t questId, int8_t state) const -> string_t;
+	auto getScript(AbstractServer *server, int32_t objectId, ScriptTypes type) const -> string_t;
 	auto hasQuestScript(quest_id_t questId, int8_t state) const -> bool;
 	auto hasScript(int32_t objectId, ScriptTypes type) const -> bool;
 	auto buildScriptPath(ScriptTypes type, const string_t &location) const -> string_t;

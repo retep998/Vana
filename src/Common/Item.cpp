@@ -320,15 +320,16 @@ auto Item::initializeItem(const soci::row &row) -> void {
 	m_name = name.get("");
 }
 
-auto Item::databaseInsert(soci::session &sql, const ItemDbInformation &info) -> void {
+auto Item::databaseInsert(Database &db, const ItemDbInformation &info) -> void {
 	vector_t<ItemDbRecord> v;
 	ItemDbRecord r{info, this};
 	v.push_back(r);
-	Item::databaseInsert(sql, v);
+	Item::databaseInsert(db, v);
 }
 
-auto Item::databaseInsert(soci::session &sql, const vector_t<ItemDbRecord> &items) -> void {
+auto Item::databaseInsert(Database &db, const vector_t<ItemDbRecord> &items) -> void {
 	using namespace soci;
+	auto &sql = db.getSession();
 	using MiscUtilities::getOptional;
 	using MiscUtilities::NullableMode;
 
@@ -375,7 +376,7 @@ auto Item::databaseInsert(soci::session &sql, const vector_t<ItemDbRecord> &item
 	opt_string_t name;
 
 	statement st = (sql.prepare
-		<< "INSERT INTO " << Database::makeCharTable("items") << " (character_id, inv, slot, location, user_id, world_id, item_id, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, hammers, pet_id, name, expiration) "
+		<< "INSERT INTO " << db.makeTable("items") << " (character_id, inv, slot, location, user_id, world_id, item_id, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, hammers, pet_id, name, expiration) "
 		<< "VALUES (:char, :inv, :slot, :location, :user, :world, :itemid, :amount, :slots, :scrolls, :str, :dex, :int, :luk, :hp, :mp, :watk, :matk, :wdef, :mdef, :acc, :avo, :hands, :speed, :jump, :flags, :hammers, :pet, :name, :expiration)",
 		use(playerId, "char"),
 		use(inventory, "inv"),

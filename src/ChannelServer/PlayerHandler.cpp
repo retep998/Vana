@@ -385,7 +385,16 @@ auto PlayerHandler::handleMonsterBook(Player *player, PacketReader &reader) -> v
 	}
 	mob_id_t newCover = 0;
 	if (cardId != 0) {
-		newCover = ChannelServer::getInstance().getItemDataProvider().getMobId(cardId);
+		optional_t<mob_id_t> mobCoverId =
+			ChannelServer::getInstance().getItemDataProvider().getMobId(cardId);
+
+		if (mobCoverId.is_initialized()) {
+			newCover = mobCoverId.get();
+		}
+		else {
+			// Hacking?
+			newCover = 0;
+		}
 	}
 	player->getMonsterBook()->setCover(newCover);
 	player->send(MonsterBookPacket::changeCover(cardId));

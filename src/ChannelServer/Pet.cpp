@@ -34,11 +34,12 @@ Pet::Pet(Player *player, Item *item) :
 	m_name{ChannelServer::getInstance().getItemDataProvider().getItemInfo(m_itemId)->name},
 	m_item{item}
 {
-	soci::session &sql = Database::getCharDb();
+	auto &db = Database::getCharDb();
+	auto &sql = db.getSession();
 
-	sql.once << "INSERT INTO " << Database::makeCharTable("pets") << " (name) VALUES (:name)", soci::use(m_name, "name");
+	sql.once << "INSERT INTO " << db.makeTable("pets") << " (name) VALUES (:name)", soci::use(m_name, "name");
 
-	m_id = Database::getLastId<pet_id_t>(sql);
+	m_id = db.getLastId<pet_id_t>();
 	item->setPetId(m_id);
 }
 

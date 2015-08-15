@@ -17,8 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Session.hpp"
 #include "AbstractConnection.hpp"
+#include "AbstractServer.hpp"
 #include "ConnectionManager.hpp"
 #include "Decoder.hpp"
+#include "Logger.hpp"
 #include "PacketBuilder.hpp"
 #include "PacketReader.hpp"
 #include "Randomizer.hpp"
@@ -69,7 +71,9 @@ auto Session::disconnect() -> void {
 	asio::error_code ec;
 	m_socket.close(ec);
 	if (ec) {
-		std::cerr << "FAILURE TO CLOSE SESSION (" << ec.value() << "): " << ec.message() << std::endl;
+		m_manager.getServer()->log(LogType::Error, [&](out_stream_t &str) {
+			str << "FAILURE TO CLOSE SESSION (" << ec.value() << "): " << ec.message();
+		});
 	}
 }
 
