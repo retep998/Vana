@@ -215,7 +215,7 @@ auto PlayerDataProvider::send(const PacketBuilder &packet) -> void {
 auto PlayerDataProvider::addFollower(Player *follower, Player *target) -> void {
 	auto kvp = m_followers.find(target->getId());
 	if (kvp == std::end(m_followers)) {
-		kvp = m_followers.emplace(target->getId(), vector_t<Player *>()).first;
+		kvp = m_followers.emplace(target->getId(), vector_t<Player *>{}).first;
 	}
 	kvp->second.push_back(follower);
 	follower->setFollow(target);
@@ -228,6 +228,14 @@ auto PlayerDataProvider::stopFollowing(Player *follower) -> void {
 		m_followers.erase(kvp);
 	}
 	follower->setFollow(nullptr);
+}
+
+auto PlayerDataProvider::disconnect() -> void {
+	for (auto &kvp : m_players) {
+		if (auto player = kvp.second) {
+			player->disconnect();
+		}
+	}
 }
 
 auto PlayerDataProvider::handleGroupChat(int8_t chatType, player_id_t playerId, const vector_t<player_id_t> &receivers, const chat_t &chat) -> void {

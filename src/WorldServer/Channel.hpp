@@ -36,6 +36,7 @@ public:
 	auto getId() const -> channel_id_t;
 	auto getPort() const -> port_t;
 	auto send(const PacketBuilder &builder) -> void;
+	auto disconnect() -> void;
 private:
 	channel_id_t m_id = 0;
 	port_t m_port = 0;

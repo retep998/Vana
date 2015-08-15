@@ -37,6 +37,7 @@ WorldServerConnection::WorldServerConnection() :
 WorldServerConnection::~WorldServerConnection() {
 	if (ChannelServer::getInstance().isConnected()) {
 		ChannelServer::getInstance().log(LogType::ServerDisconnect, "Disconnected from the WorldServer. Shutting down...");
+		ChannelServer::getInstance().getPlayerDataProvider().disconnect();
 		ExitCodes::exit(ExitCodes::ServerDisconnection);
 	}
 }

@@ -36,6 +36,7 @@ public:
 	auto increasePopulation(channel_id_t channelId) -> void;
 	auto decreasePopulation(channel_id_t channelId) -> void;
 	auto getFirstAvailableChannelId() -> channel_id_t;
+	auto disconnect() -> void;
 	auto send(channel_id_t channelId, const PacketBuilder &builder) -> void;
 	auto send(const vector_t<channel_id_t> &channels, const PacketBuilder &builder) -> void;
 	auto send(const PacketBuilder &builder) -> void;

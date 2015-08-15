@@ -75,3 +75,11 @@ auto Channels::getFirstAvailableChannelId() -> channel_id_t {
 	}
 	return channelId;
 }
+
+auto Channels::disconnect() -> void {
+	for (const auto &kvp : m_channels) {
+		if (auto ref = kvp.second.get()) {
+			ref->disconnect();
+		}
+	}
+}

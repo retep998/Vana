@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptConnection.hpp"
 
 Channel::Channel(WorldServerAcceptConnection *connection, channel_id_t id, port_t port) :
-	m_connection(connection),
-	m_id(id),
-	m_port(port)
+	m_connection{connection},
+	m_id{id},
+	m_port{port}
 {
 }
 
@@ -44,4 +44,8 @@ auto Channel::getId() const -> channel_id_t {
 
 auto Channel::getPort() const -> port_t {
 	return m_port;
+}
+
+auto Channel::disconnect() -> void {
+	m_connection->disconnect();
 }

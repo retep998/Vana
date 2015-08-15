@@ -62,6 +62,7 @@ public:
 	auto send(const PacketBuilder &packet) -> void;
 	auto addFollower(Player *follower, Player *target) -> void;
 	auto stopFollowing(Player *follower) -> void;
+	auto disconnect() -> void;
 
 	// Player data
 	auto getPlayerData(player_id_t id) const -> const PlayerData * const;

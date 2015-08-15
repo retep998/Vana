@@ -35,6 +35,7 @@ LoginServerConnection::LoginServerConnection() :
 LoginServerConnection::~LoginServerConnection() {
 	if (WorldServer::getInstance().isConnected()) {
 		WorldServer::getInstance().log(LogType::ServerDisconnect, "Disconnected from the LoginServer. Shutting down...");
+		WorldServer::getInstance().getChannels().disconnect();
 		ExitCodes::exit(ExitCodes::ServerDisconnection);
 	}
 }
