@@ -71,6 +71,9 @@ auto LuaEnvironment::loadFile(const string_t &filename) -> void {
 	requireStandardLib("string", luaopen_string);
 	requireStandardLib("math", luaopen_math);
 	requireStandardLib("table", luaopen_table);
+	set<int32_t>("system_lua_version_major", 5);
+	set<int32_t>("system_lua_version_minor", 2);
+	set<string_t>("system_lua_version", "5.2");
 }
 
 auto LuaEnvironment::run() -> Result {
