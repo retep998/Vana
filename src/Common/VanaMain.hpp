@@ -53,7 +53,7 @@ namespace Vana {
 		}
 		catch (ConfigException &) { }
 		catch (std::exception &e) {
-			std::cerr << "ERROR: " << e.what() << std::endl;
+			std::cerr << "PROGRAM ERROR: " << e.what() << std::endl;
 			ExitCodes::exit(ExitCodes::ProgramException);
 		}
 

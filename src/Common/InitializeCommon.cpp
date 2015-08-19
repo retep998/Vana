@@ -33,7 +33,7 @@ auto Initializing::checkMcdbVersion(AbstractServer *server) -> Result {
 		auto &db = Database::getDataDb();
 		auto &sql = db.getSession();
 		if (!db.tableExists("mcdb_info")) {
-			server->log(LogType::CriticalError, "ERROR: mcdb_info does not exist.");
+			server->log(LogType::CriticalError, "mcdb_info does not exist.");
 			ExitCodes::exit(ExitCodes::McdbError);
 			return Result::Failure;
 		}
@@ -44,13 +44,13 @@ auto Initializing::checkMcdbVersion(AbstractServer *server) -> Result {
 			soci::into(row);
 
 		if (!sql.got_data()) {
-			server->log(LogType::CriticalError, "ERROR: mcdb_info is empty.");
+			server->log(LogType::CriticalError, "mcdb_info is empty.");
 			ExitCodes::exit(ExitCodes::McdbError);
 			return Result::Failure;
 		}
 	}
 	catch (soci::soci_error &e) {
-		server->log(LogType::CriticalError, string_t{"ERROR: "} + e.what());
+		server->log(LogType::CriticalError, string_t{e.what()});
 		ExitCodes::exit(ExitCodes::McdbError);
 		return Result::Failure;
 	}
@@ -64,7 +64,7 @@ auto Initializing::checkMcdbVersion(AbstractServer *server) -> Result {
 	if (version != McdbVersion || subversion != McdbSubVersion) {
 		server->log(LogType::CriticalError, [&](out_stream_t &str) {
 			str
-				<< "ERROR: MCDB version incompatible." << std::endl
+				<< "MCDB version incompatible." << std::endl
 				<< "Vana: " << McdbVersion << "." << McdbSubVersion << std::endl
 				<< "MCDB: " << version << "." << subversion;
 		});
@@ -83,7 +83,7 @@ auto Initializing::checkMcdbVersion(AbstractServer *server) -> Result {
 	if (mapleLocale != MapleVersion::LocaleString || testServer != MapleVersion::TestServer) {
 		server->log(LogType::CriticalError, [&](out_stream_t &str) {
 			str
-			<< "ERROR: Your MCDB is designed for different locale." << std::endl
+			<< "Your MCDB is designed for different locale." << std::endl
 			<< "Vana: " << makeLocale(MapleVersion::LocaleString, MapleVersion::TestServer) << std::endl
 			<< "MCDB: " << makeLocale(mapleLocale, testServer);
 		});
@@ -109,7 +109,7 @@ auto Initializing::checkSchemaVersion(AbstractServer *server, bool update) -> Re
 	VersionCheckResult check = db.checkVersion();
 
 	if (check == VersionCheckResult::DatabaseUnavailable) {
-		server->log(LogType::CriticalError, "ERROR: Vana database is currently inaccessible.");
+		server->log(LogType::CriticalError, "Vana database is currently inaccessible.");
 		ExitCodes::exit(ExitCodes::InfoDatabaseError);
 		return Result::Failure;
 	}
@@ -117,7 +117,7 @@ auto Initializing::checkSchemaVersion(AbstractServer *server, bool update) -> Re
 	if (check == VersionCheckResult::NeedsUpdate) {
 		if (!update) {
 			// Wrong version and we're not allowed to update, so let's quit
-			server->log(LogType::CriticalError, "ERROR: Wrong version of database, please run LoginServer to update.");
+			server->log(LogType::CriticalError, "Wrong version of database, please run LoginServer to update.");
 			ExitCodes::exit(ExitCodes::InfoDatabaseError);
 			return Result::Failure;
 		}

@@ -54,12 +54,12 @@ auto AbstractServer::initialize() -> Result {
 	m_salt = config->get<string_t>("inter_salt");
 
 	if (m_interPassword == "changeme") {
-		log(LogType::CriticalError, "ERROR: inter_password is not changed.");
+		log(LogType::CriticalError, "inter_password is not changed.");
 		ExitCodes::exit(ExitCodes::ConfigError);
 		return Result::Failure;
 	}
 	if (m_salt == "changeme") {
-		log(LogType::CriticalError, "ERROR: inter_salt is not changed.");
+		log(LogType::CriticalError, "inter_salt is not changed.");
 		ExitCodes::exit(ExitCodes::ConfigError);
 		return Result::Failure;
 	}
@@ -69,7 +69,7 @@ auto AbstractServer::initialize() -> Result {
 		auto ipValue = pair.find("ip");
 		auto maskValue = pair.find("mask");
 		if (ipValue == std::end(pair) || maskValue == std::end(pair)) {
-			log(LogType::CriticalError, "ERROR: External IP configuration is malformed!");
+			log(LogType::CriticalError, "External IP configuration is malformed!");
 			ExitCodes::exit(ExitCodes::ConfigError);
 			return Result::Failure;
 		}

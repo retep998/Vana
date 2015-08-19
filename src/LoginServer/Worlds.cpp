@@ -124,7 +124,7 @@ auto Worlds::addWorldServer(LoginServerAcceptConnection *connection) -> world_id
 	}
 	else {
 		connection->send(LoginServerAcceptPacket::noMoreWorld());
-		server.log(LogType::Error, "ERROR: No more worlds to assign.");
+		server.log(LogType::Error, "No more worlds to assign.");
 		connection->disconnect();
 	}
 	return worldId;
@@ -148,7 +148,7 @@ auto Worlds::addChannelServer(LoginServerAcceptConnection *connection) -> world_
 	}
 	else {
 		connection->send(LoginServerAcceptPacket::connectChannel(worldId, Ip{0}, 0));
-		LoginServer::getInstance().log(LogType::Error, "ERROR: No more channels to assign.");
+		LoginServer::getInstance().log(LogType::Error, "No more channels to assign.");
 	}
 	connection->disconnect();
 	return worldId;

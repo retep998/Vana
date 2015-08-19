@@ -34,7 +34,7 @@ auto LoginServerConnectHandler::connect(LoginServerConnection *connection, Packe
 		WorldServer::getInstance().establishedLoginConnection(worldId, port, conf);
 	}
 	else {
-		WorldServer::getInstance().log(LogType::CriticalError, "ERROR: No world to handle");
+		WorldServer::getInstance().log(LogType::CriticalError, "No world to handle");
 		ExitCodes::exit(ExitCodes::ServerConnectionError);
 	}
 }

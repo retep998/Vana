@@ -63,7 +63,7 @@ auto ServerClient::startConnect() -> Result {
 		}
 	}
 	else {
-		std::cerr << "ERROR: " << error.message() << std::endl;
+		std::cerr << "SERVERCLIENT ERROR: " << error.message() << std::endl;
 		ExitCodes::exit(ExitCodes::ServerConnectionError);
 	}
 

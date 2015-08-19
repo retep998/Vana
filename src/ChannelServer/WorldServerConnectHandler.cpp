@@ -48,7 +48,7 @@ auto WorldServerConnectHandler::connectLogin(WorldServerConnection *player, Pack
 		ChannelServer::getInstance().connectToWorld(worldId, port, ip);
 	}
 	else {
-		ChannelServer::getInstance().log(LogType::CriticalError, "ERROR: No world server to connect");
+		ChannelServer::getInstance().log(LogType::CriticalError, "No world server to connect");
 		ExitCodes::exit(ExitCodes::ServerConnectionError);
 	}
 }
@@ -61,7 +61,7 @@ auto WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 		ChannelServer::getInstance().establishedWorldConnection(channel, port, conf);
 	}
 	else {
-		ChannelServer::getInstance().log(LogType::CriticalError, "ERROR: No channel to handle");
+		ChannelServer::getInstance().log(LogType::CriticalError, "No channel to handle");
 		ChannelServer::getInstance().shutdown();
 	}
 }
