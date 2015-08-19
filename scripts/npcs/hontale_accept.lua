@@ -104,6 +104,7 @@ if not isInstance(signupInstance) then
 					else
 						createInstance(signupInstance, 5 * 60, true);
 						initSignup(30);
+						setInstanceVariable("master", getName());
 						showMapMessage(getName() .. " has been appointed the leader of the Horntail Expedition Squad. To those willing to participate in the Expedition Squad, APPLY NOW!", msg_blue);
 
 						addText("You have been appointed the leader of the Horntail Expedition Squad. ");
