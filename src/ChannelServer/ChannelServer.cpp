@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.hpp"
 #include "ChatHandler.hpp"
 #include "ConfigFile.hpp"
-#include "Configuration.hpp"
 #include "ConnectionManager.hpp"
 #include "InitializeCommon.hpp"
 #include "Map.hpp"
@@ -27,8 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
 #include "ServerPacket.hpp"
+#include "ServerType.hpp"
 #include "SyncPacket.hpp"
-#include "VanaConstants.hpp"
 #include "WorldServerConnection.hpp"
 #include "WorldServerConnectPacket.hpp"
 
@@ -39,7 +38,7 @@ ChannelServer::ChannelServer() :
 }
 
 auto ChannelServer::listen() -> void {
-	getConnectionManager().accept(Ip::Type::Ipv4, m_port, [] { return new Player(); }, getInterServerConfig(), false, MapleVersion::ChannelSubversion);
+	getConnectionManager().accept(Ip::Type::Ipv4, m_port, [] { return new Player{}; }, getInterServerConfig(), false, MapleVersion::ChannelSubversion);
 	Initializing::setUsersOffline(this, getOnlineId());
 }
 
@@ -268,15 +267,15 @@ auto ChannelServer::setScrollingHeader(const string_t &message) -> void {
 }
 
 auto ChannelServer::modifyRate(int32_t rateType, int32_t newValue) -> void {
-	Rates currentRates = m_config.rates;
-	if (rateType & Rates::Types::MobExpRate) currentRates.mobExpRate = newValue;
-	if (rateType & Rates::Types::MobMesoRate) currentRates.mobMesoRate = newValue;
-	if (rateType & Rates::Types::QuestExpRate) currentRates.questExpRate = newValue;
-	if (rateType & Rates::Types::DropRate) currentRates.dropRate = newValue;
+	RatesConfig currentRates = m_config.rates;
+	if (rateType & RatesConfig::Types::MobExpRate) currentRates.mobExpRate = newValue;
+	if (rateType & RatesConfig::Types::MobMesoRate) currentRates.mobMesoRate = newValue;
+	if (rateType & RatesConfig::Types::QuestExpRate) currentRates.questExpRate = newValue;
+	if (rateType & RatesConfig::Types::DropRate) currentRates.dropRate = newValue;
 	sendWorld(SyncPacket::ConfigPacket::modifyRates(currentRates));
 }
 
-auto ChannelServer::setRates(const Rates &rates) -> void {
+auto ChannelServer::setRates(const RatesConfig &rates) -> void {
 	m_config.rates = rates;
 }
 

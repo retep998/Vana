@@ -17,13 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerAcceptPacket.hpp"
 #include "Channels.hpp"
-#include "Configuration.hpp"
 #include "InterHeader.hpp"
 #include "InterHelper.hpp"
 #include "PacketReader.hpp"
 #include "PlayerDataProvider.hpp"
 #include "Session.hpp"
 #include "TimeUtilities.hpp"
+#include "WorldConfig.hpp"
 #include "WorldServer.hpp"
 #include "WorldServerAcceptConnection.hpp"
 #include <unordered_map>

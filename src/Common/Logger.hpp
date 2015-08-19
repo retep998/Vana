@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Database.hpp"
+#include "ServerType.hpp"
 #include "Types.hpp"
-#include "VanaConstants.hpp"
 #include <string>
 #include <unordered_map>
 
@@ -29,6 +29,7 @@ namespace LogDestinations {
 		File = 0x01,
 		Console = 0x02,
 		Sql = 0x04,
+		// If more constants are added, please add them to ConfigFile.cpp as well
 		FileSql = File | Sql,
 		FileConsole = File | Console,
 		SqlConsole = Sql | Console,

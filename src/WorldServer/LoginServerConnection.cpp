@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InterHeader.hpp"
 #include "PacketReader.hpp"
 #include "PacketWrapper.hpp"
+#include "ServerType.hpp"
 #include "SyncHandler.hpp"
-#include "VanaConstants.hpp"
 #include "WorldServer.hpp"
 #include <iostream>
 

@@ -23,8 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketWrapper.hpp"
 #include "PartyHandler.hpp"
 #include "PlayerDataProvider.hpp"
+#include "ServerType.hpp"
 #include "SyncHandler.hpp"
-#include "VanaConstants.hpp"
+#include "WorldConfig.hpp"
 #include "WorldServerConnectHandler.hpp"
 #include "WorldServerConnectPacket.hpp"
 #include <iostream>

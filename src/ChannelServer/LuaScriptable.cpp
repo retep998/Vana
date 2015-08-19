@@ -613,7 +613,7 @@ auto LuaExports::getMaxHorntailBattles(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::getMaxPapBattles(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.push<int16_t>(luaVm, ChannelServer::getInstance().getConfig().pap.attempts);
+	env.push<int16_t>(luaVm, ChannelServer::getInstance().getConfig().papulatus.attempts);
 	return 1;
 }
 
@@ -637,7 +637,7 @@ auto LuaExports::getMaxZakumBattles(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::getPapChannels(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.push<vector_t<channel_id_t>>(luaVm, ChannelServer::getInstance().getConfig().pap.channels);
+	env.push<vector_t<channel_id_t>>(luaVm, ChannelServer::getInstance().getConfig().papulatus.channels);
 	return 1;
 }
 
@@ -664,7 +664,7 @@ auto LuaExports::isHorntailChannel(lua_State *luaVm) -> lua_return_t {
 }
 
 auto LuaExports::isPapChannel(lua_State *luaVm) -> lua_return_t {
-	return isBossChannel(luaVm, ChannelServer::getInstance().getConfig().pap.channels);
+	return isBossChannel(luaVm, ChannelServer::getInstance().getConfig().papulatus.channels);
 }
 
 auto LuaExports::isPianusChannel(lua_State *luaVm) -> lua_return_t {
@@ -1501,7 +1501,7 @@ auto LuaExports::setMusic(lua_State *luaVm) -> lua_return_t {
 auto LuaExports::showMapEffect(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	string_t val = env.get<string_t>(luaVm, 1);
-	if (env.typeOf(luaVm, 2) == LuaType::Number) {
+	if (env.is(luaVm, 2, LuaType::Number)) {
 		map_id_t mapId = env.get<map_id_t>(luaVm, 2);
 		Maps::getMap(mapId)->send(EffectPacket::sendEffect(val));
 	}

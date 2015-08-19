@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "AbstractServer.hpp"
-#include "ConfigFile.hpp"
-#include "Configuration.hpp"
 #include "CurseDataProvider.hpp"
 #include "EquipDataProvider.hpp"
 #include "LoginServerAcceptConnection.hpp"
+#include "SaltConfig.hpp"
+#include "SaltSizeConfig.hpp"
 #include "Types.hpp"
 #include "ValidCharDataProvider.hpp"
 #include "Worlds.hpp"
@@ -37,6 +37,8 @@ public:
 	auto getEquipDataProvider() const -> const EquipDataProvider &;
 	auto getCurseDataProvider() const -> const CurseDataProvider &;
 	auto getWorlds() -> Worlds &;
+	auto getCharacterAccountSaltSize() const -> const SaltSizeConfig &;
+	auto getCharacterAccountSaltingPolicy() const -> const SaltConfig &;
 protected:
 	auto initComplete() -> void override;
 	auto loadData() -> Result override;
@@ -49,6 +51,8 @@ private:
 	bool m_pinEnabled = false;
 	port_t m_port = 0;
 	int32_t m_maxInvalidLogins = 0;
+	SaltSizeConfig m_accountSaltSize;
+	SaltConfig m_accountSaltingPolicy;
 	ValidCharDataProvider m_validCharDataProvider;
 	EquipDataProvider m_equipDataProvider;
 	CurseDataProvider m_curseDataProvider;

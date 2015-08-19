@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.hpp"
 #include "FileTime.hpp"
 #include "GameConstants.hpp"
+#include "HashUtilities.hpp"
 #include "LoginPacket.hpp"
 #include "LoginServer.hpp"
-#include "MiscUtilities.hpp"
 #include "PacketReader.hpp"
 #include "PlayerStatus.hpp"
 #include "Randomizer.hpp"
@@ -31,7 +31,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.hpp"
 #include "UnixTime.hpp"
 #include "UserConnection.hpp"
-#include "VanaConstants.hpp"
 #include <iostream>
 
 auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
@@ -88,6 +87,8 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 			userId = row.get<account_id_t>("user_id");
 			string_t dbPassword = row.get<string_t>("password");
 			opt_string_t salt = row.get<opt_string_t>("salt");
+			auto &login = LoginServer::getInstance();
+			const auto &saltingPolicy = login.getCharacterAccountSaltingPolicy();
 
 			if (!salt.is_initialized()) {
 				// We have an unsalted password
@@ -97,8 +98,9 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 				}
 				else {
 					// We have a valid password, so let's hash the password
-					salt = MiscUtilities::generateSalt(VanaConstants::SaltSize);
-					string_t hashedPassword = MiscUtilities::hashPassword(password, salt.get());
+					salt = HashUtilities::generateSalt(login.getCharacterAccountSaltSize());
+					string_t hashedPassword =
+						HashUtilities::hashPassword(password, salt.get(), saltingPolicy);
 
 					sql.once
 						<< "UPDATE " << db.makeTable("user_accounts") << " u "
@@ -109,7 +111,7 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 						soci::use(userId, "user");
 				}
 			}
-			else if (dbPassword != MiscUtilities::hashPassword(password, salt.get())) {
+			else if (dbPassword != HashUtilities::hashPassword(password, salt.get(), saltingPolicy)) {
 				user->send(LoginPacket::loginError(LoginPacket::Errors::InvalidPassword));
 				valid = false;
 			}
@@ -132,7 +134,9 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 		}
 	}
 	else {
-		LoginServer::getInstance().log(LogType::Login, [&](out_stream_t &log) { log << username << " from IP " << user->getIp(); });
+		LoginServer::getInstance().log(LogType::Login, [&](out_stream_t &log) {
+			log << username << " from IP " << user->getIp();
+		});
 
 		user->setUserId(userId);
 
@@ -145,7 +149,9 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 				user->setPin(pin.get());
 			}
 
-			user->setStatus(user->getPin() == -1 ? PlayerStatus::SetPin : PlayerStatus::AskPin);
+			user->setStatus(user->getPin() == -1 ?
+				PlayerStatus::SetPin :
+				PlayerStatus::AskPin);
 		}
 		else {
 			user->setStatus(PlayerStatus::LoggedIn);

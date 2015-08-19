@@ -19,12 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractConnection.hpp"
 #include "Channel.hpp"
 #include "Channels.hpp"
-#include "Configuration.hpp"
 #include "InterHeader.hpp"
 #include "InterHelper.hpp"
 #include "MapConstants.hpp"
 #include "PacketReader.hpp"
 #include "PlayerDataProvider.hpp"
+#include "RatesConfig.hpp"
 #include "Session.hpp"
 #include "TimeUtilities.hpp"
 #include "WorldServerAcceptConnection.hpp"
@@ -50,13 +50,13 @@ PACKET_IMPL(ConfigPacket::scrollingHeader, const string_t &message) {
 	return builder;
 }
 
-PACKET_IMPL(ConfigPacket::setRates, const Rates &rates) {
+PACKET_IMPL(ConfigPacket::setRates, const RatesConfig &rates) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Config)
 		.add<sync_t>(Sync::Config::RateSet)
-		.add<Rates>(rates);
+		.add<RatesConfig>(rates);
 	return builder;
 }
 

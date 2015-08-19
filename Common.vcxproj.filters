@@ -58,6 +58,9 @@
     <Filter Include="Data Structures\Time">
       <UniqueIdentifier>{ab3f74f9-bf9f-47be-8625-57e2444990b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Encryption">
+      <UniqueIdentifier>{258bcd9b-a4e1-4dd1-b4bd-a1bcfe942d61}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Common\BuffDataProvider.cpp">
@@ -73,9 +76,6 @@
       <Filter>Packets</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\FileUtilities.cpp">
-      <Filter>Utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\MiscUtilities.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\Randomizer.cpp">
@@ -246,6 +246,18 @@
     </ClCompile>
     <ClCompile Include="src\Common\FileTime.cpp">
       <Filter>Data Structures\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\HashUtilities.cpp">
+      <Filter>Encryption</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\LuaVariant.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\SaltTransformationConfig.cpp">
+      <Filter>Configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\PasswordTransformationConfig.cpp">
+      <Filter>Configuration</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -441,9 +453,6 @@
     <ClInclude Include="src\Common\ConfigFile.hpp">
       <Filter>Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Configuration.hpp">
-      <Filter>Configuration</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\MySqlQueryParser.hpp">
       <Filter>Database</Filter>
     </ClInclude>
@@ -459,7 +468,6 @@
     <ClInclude Include="src\Common\AbstractConnection.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\VanaConstants.hpp" />
     <ClInclude Include="src\Common\ExitCodes.hpp" />
     <ClInclude Include="src\Common\MapleVersion.hpp" />
     <ClInclude Include="src\Common\PrecompiledHeader.hpp" />
@@ -573,6 +581,61 @@
     </ClInclude>
     <ClInclude Include="src\Common\FileTime.hpp">
       <Filter>Data Structures\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\HashUtilities.hpp">
+      <Filter>Encryption</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SaltLeftoverPolicy.hpp">
+      <Filter>Encryption</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SaltModifyPolicy.hpp">
+      <Filter>Encryption</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SaltPolicy.hpp">
+      <Filter>Encryption</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\WorldConfig.hpp">
+      <Filter>Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\LogConfig.hpp">
+      <Filter>Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\DbConfig.hpp">
+      <Filter>Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\InterServerConfig.hpp">
+      <Filter>Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\RatesConfig.hpp">
+      <Filter>Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MajorBossConfig.hpp">
+      <Filter>Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ServerType.hpp" />
+    <ClInclude Include="src\Common\SaltConfig.hpp">
+      <Filter>Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\LuaVariant.hpp">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\LuaType.hpp">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SaltingConfig.hpp">
+      <Filter>Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SaltTransformationConfig.hpp">
+      <Filter>Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\PasswordTransformationConfig.hpp">
+      <Filter>Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SaltSizeConfig.hpp">
+      <Filter>Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SaltSizePolicy.hpp">
+      <Filter>Encryption</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

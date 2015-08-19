@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractConnection.hpp"
 #include "ExternalIp.hpp"
 #include "ExternalIpResolver.hpp"
+#include "ServerType.hpp"
 #include "Types.hpp"
-#include "VanaConstants.hpp"
 #include <string>
 #include <vector>
 

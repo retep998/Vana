@@ -186,15 +186,27 @@ auto LuaEnvironment::error(const string_t &text) -> void {
 	handleError(m_file, text);
 }
 
-auto LuaEnvironment::is(const string_t &value, LuaType type) -> bool {
-	return is(m_luaVm, value, type);
+auto LuaEnvironment::is(const string_t &key, LuaType type) -> bool {
+	return is(m_luaVm, key, type);
 }
 
-auto LuaEnvironment::is(lua_State *luaVm, const string_t &value, LuaType type) -> bool {
-	lua_getglobal(luaVm, value.c_str());
+auto LuaEnvironment::isAny(const string_t &key, init_list_t<LuaType> types) -> bool {
+	return std::any_of(std::begin(types), std::end(types), [&](LuaType type) -> bool {
+		return is(key, type);
+	});
+}
+
+auto LuaEnvironment::is(lua_State *luaVm, const string_t &key, LuaType type) -> bool {
+	lua_getglobal(luaVm, key.c_str());
 	bool ret = is(luaVm, -1, type);
 	lua_pop(luaVm, 1);
 	return ret;
+}
+
+auto LuaEnvironment::isAny(lua_State *luaVm, const string_t &key, init_list_t<LuaType> types) -> bool {
+	return std::any_of(std::begin(types), std::end(types), [&](LuaType type) -> bool {
+		return is(luaVm, key, type);
+	});
 }
 
 auto LuaEnvironment::pop(int count) -> void {
@@ -213,12 +225,75 @@ auto LuaEnvironment::count(lua_State *luaVm) -> int {
 	return lua_gettop(luaVm);
 }
 
+auto LuaEnvironment::validateValue(LuaType expectedType, const LuaVariant &v, const string_t &key, const string_t &prefix, bool nilIsValid) -> LuaType {
+	LuaType type = v.getType();
+	if (nilIsValid && type == LuaType::Nil) return type;
+	if (type != expectedType) {
+		string_t representation;
+		switch (type) {
+			case LuaType::Bool: representation = "bool"; break;
+			case LuaType::Number: representation = "number"; break;
+			case LuaType::String: representation = "string"; break;
+			case LuaType::Table: representation = "table"; break;
+			default: throw NotImplementedException{"LuaType"};
+		}
+		error("Key '" + key + "' on object " + prefix + " must have a " + representation + " value");
+	}
+	return type;
+}
+
+auto LuaEnvironment::validateKey(LuaType expectedType, const LuaVariant &v, const string_t &prefix) -> void {
+	LuaType type = v.getType();
+	if (type != expectedType) {
+		string_t representation;
+		switch (type) {
+			case LuaType::Bool: representation = "bool"; break;
+			case LuaType::Number: representation = "number"; break;
+			case LuaType::String: representation = "string"; break;
+			case LuaType::Table: representation = "table"; break;
+			default: throw NotImplementedException{"LuaType"};
+		}
+		error("Object " + prefix + " keys must be " + representation + "s");
+	}
+}
+
+auto LuaEnvironment::validateObject(LuaType expectedType, const LuaVariant &v, const string_t &prefix) -> void {
+	LuaType type = v.getType();
+	if (type != expectedType) {
+		string_t representation;
+		switch (type) {
+			case LuaType::Bool: representation = "bool"; break;
+			case LuaType::Number: representation = "number"; break;
+			case LuaType::String: representation = "string"; break;
+			case LuaType::Table: representation = "table"; break;
+			default: throw NotImplementedException{"LuaType"};
+		}
+		error("Object " + prefix + " must be a " + representation + " object");
+	}
+}
+
+auto LuaEnvironment::required(bool present, const string_t &key, const string_t &prefix) -> void {
+	if (!present) error("Missing required key '" + key + "' on object " + prefix);
+}
+
 auto LuaEnvironment::is(int index, LuaType type) -> bool {
 	return is(m_luaVm, index, type);
 }
 
 auto LuaEnvironment::is(lua_State *luaVm, int index, LuaType type) -> bool {
 	return lua_type(luaVm, index) == static_cast<int>(type);
+}
+
+auto LuaEnvironment::isAny(int index, init_list_t<LuaType> types) -> bool {
+	return std::any_of(std::begin(types), std::end(types), [&](LuaType type) -> bool {
+		return is(index, type);
+	});
+}
+
+auto LuaEnvironment::isAny(lua_State *luaVm, int index, init_list_t<LuaType> types) -> bool {
+	return std::any_of(std::begin(types), std::end(types), [&](LuaType type) -> bool {
+		return is(luaVm, index, type);
+	});
 }
 
 auto LuaEnvironment::typeOf(int index) -> LuaType {

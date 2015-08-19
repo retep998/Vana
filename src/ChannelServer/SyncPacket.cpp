@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SyncPacket.hpp"
 #include "ChannelServer.hpp"
-#include "Configuration.hpp"
 #include "InterHeader.hpp"
 #include "InterHelper.hpp"
 #include "Party.hpp"
 #include "Player.hpp"
+#include "RatesConfig.hpp"
 #include "Session.hpp"
 
 namespace SyncPacket {
@@ -45,13 +45,13 @@ PACKET_IMPL(ConfigPacket::resetRates) {
 	return builder;
 }
 
-PACKET_IMPL(ConfigPacket::modifyRates, const Rates &rates) {
+PACKET_IMPL(ConfigPacket::modifyRates, const RatesConfig &rates) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Config)
 		.add<sync_t>(Sync::Config::RateSet)
-		.add<Rates>(rates);
+		.add<RatesConfig>(rates);
 	return builder;
 }
 

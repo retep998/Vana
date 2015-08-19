@@ -19,13 +19,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractServerConnection.hpp"
 #include "ComboLoggers.hpp"
 #include "ConfigFile.hpp"
-#include "Configuration.hpp"
 #include "ConnectionManager.hpp"
 #include "ConsoleLogger.hpp"
 #include "ExitCodes.hpp"
 #include "FileLogger.hpp"
+#include "HashUtilities.hpp"
+#include "LogConfig.hpp"
 #include "Logger.hpp"
-#include "MiscUtilities.hpp"
+#include "SaltingConfig.hpp"
 #include "SqlLogger.hpp"
 #include "ThreadPool.hpp"
 #include "TimerThread.hpp"
@@ -46,11 +47,11 @@ auto AbstractServer::initialize() -> Result {
 
 	loadLogConfig();
 
-	ConfigFile config{"conf/connection_properties.lua"};
-	config.run();
+	auto config = ConfigFile::getConnectionPropertiesConfig();
+	config->run();
 
-	m_interPassword = config.get<string_t>("inter_password");
-	m_salt = config.get<string_t>("inter_salt");
+	m_interPassword = config->get<string_t>("inter_password");
+	m_salt = config->get<string_t>("inter_salt");
 
 	if (m_interPassword == "changeme") {
 		log(LogType::CriticalError, "ERROR: inter_password is not changed.");
@@ -63,7 +64,7 @@ auto AbstractServer::initialize() -> Result {
 		return Result::Failure;
 	}
 
-	auto rawIpMap = config.get<vector_t<hash_map_t<string_t, string_t>>>("external_ip");
+	auto rawIpMap = config->get<vector_t<hash_map_t<string_t, string_t>>>("external_ip");
 	for (const auto &pair : rawIpMap) {
 		auto ipValue = pair.find("ip");
 		auto maskValue = pair.find("mask");
@@ -75,10 +76,16 @@ auto AbstractServer::initialize() -> Result {
 
 		auto ip = Ip::stringToIpv4(ipValue->second);
 		auto mask = Ip::stringToIpv4(maskValue->second);
-		m_externalIps.push_back(ExternalIp(ip, mask));
+		m_externalIps.push_back(ExternalIp{ip, mask});
 	}
 
-	m_interServerConfig = config.get<InterServerConfig>("");
+	m_interServerConfig = config->get<InterServerConfig>("");
+
+	auto salting = ConfigFile::getSaltingConfig();
+	salting->run();
+
+	auto saltingConf = salting->get<SaltingConfig>("");
+	m_saltingPolicy = saltingConf.interserver;
 
 	if (loadConfig() == Result::Failure) {
 		return Result::Failure;
@@ -95,15 +102,13 @@ auto AbstractServer::initialize() -> Result {
 }
 
 auto AbstractServer::loadLogConfig() -> void {
-	ConfigFile conf{"conf/logger.lua"};
-	initializeLoggingConstants(conf);
-	conf.run();
+	auto conf = ConfigFile::getLoggerConfig();
+	conf->run();
 
 	string_t prefix = getLogPrefix();
-	bool enabled = conf.get<bool>("log_" + prefix);
-	if (enabled) {
-		LogConfig log;
-		log = conf.get<LogConfig>(prefix);
+	LogConfig log;
+	log = conf->get<LogConfig>(prefix);
+	if (log.log) {
 		createLogger(log);
 	}
 }
@@ -118,7 +123,11 @@ auto AbstractServer::getServerType() const -> ServerType {
 }
 
 auto AbstractServer::getInterPassword() const -> string_t {
-	return MiscUtilities::hashPassword(m_interPassword, m_salt);
+	return HashUtilities::hashPassword(m_interPassword, m_salt, m_saltingPolicy);
+}
+
+auto AbstractServer::getInterserverSaltingPolicy() const -> const SaltConfig & {
+	return m_saltingPolicy;
 }
 
 auto AbstractServer::getInterServerConfig() const -> const InterServerConfig & {
@@ -153,35 +162,6 @@ auto AbstractServer::createLogger(const LogConfig &conf) -> void {
 		case LogDestinations::FileConsole: m_logger = make_owned_ptr<DuoLogger<FileLogger, ConsoleLogger>>(file, format, timeFormat, serverType, bufferSize); break;
 		case LogDestinations::SqlConsole: m_logger = make_owned_ptr<DuoLogger<SqlLogger, ConsoleLogger>>(file, format, timeFormat, serverType, bufferSize); break;
 		case LogDestinations::FileSqlConsole: m_logger = make_owned_ptr<TriLogger<FileLogger, SqlLogger, ConsoleLogger>>(file, format, timeFormat, serverType, bufferSize); break;
-	}
-}
-
-auto AbstractServer::initializeLoggingConstants(ConfigFile &conf) const -> void {
-	conf.set<int32_t>("system_log_none", LogDestinations::None);
-	conf.set<int32_t>("system_log_all", LogDestinations::All);
-
-	hash_map_t<string_t, int32_t> constants;
-	constants["console"] = LogDestinations::Console;
-	constants["file"] = LogDestinations::File;
-	constants["sql"] = LogDestinations::Sql;
-	// If you add more location constants, be sure to add them to this map
-
-	loggerOptions(constants, conf, "system_log", 0, 0);
-}
-
-auto AbstractServer::loggerOptions(const hash_map_t<string_t, int32_t> &constants, ConfigFile &conf, const string_t &base, int32_t val, uint32_t depth) const -> void {
-	int32_t originalVal = val;
-	for (const auto &kvp : constants) {
-		if (base.find(kvp.first) != string_t::npos) continue;
-
-		string_t newBase = base + "_" + kvp.first;
-		val |= kvp.second;
-		conf.set<int32_t>(newBase, val);
-
-		if (depth < constants.size()) {
-			loggerOptions(constants, conf, newBase, val, depth + 1);
-		}
-		val = originalVal;
 	}
 }
 

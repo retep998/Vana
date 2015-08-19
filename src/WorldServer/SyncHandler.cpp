@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InterHelper.hpp"
 #include "PacketReader.hpp"
 #include "PlayerDataProvider.hpp"
+#include "RatesConfig.hpp"
 #include "Session.hpp"
 #include "SyncPacket.hpp"
 #include "WorldServer.hpp"
@@ -41,7 +42,7 @@ auto SyncHandler::handle(AbstractConnection *connection, PacketReader &reader) -
 
 auto SyncHandler::handleConfigSync(PacketReader &reader) -> void {
 	switch (reader.get<sync_t>()) {
-		case Sync::Config::RateSet: WorldServer::getInstance().setRates(reader.get<Rates>()); break;
+		case Sync::Config::RateSet: WorldServer::getInstance().setRates(reader.get<RatesConfig>()); break;
 		case Sync::Config::RateReset: WorldServer::getInstance().resetRates(); break;
 		case Sync::Config::ScrollingHeader: WorldServer::getInstance().setScrollingHeader(reader.get<string_t>()); break;
 		default: throw NotImplementedException{"ConfigSync type"};

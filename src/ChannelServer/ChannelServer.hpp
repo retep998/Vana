@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractServer.hpp"
 #include "BeautyDataProvider.hpp"
 #include "BuffDataProvider.hpp"
-#include "Configuration.hpp"
 #include "CurseDataProvider.hpp"
 #include "DropDataProvider.hpp"
 #include "EquipDataProvider.hpp"
@@ -41,6 +40,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Trades.hpp"
 #include "Types.hpp"
 #include "ValidCharDataProvider.hpp"
+#include "WorldConfig.hpp"
 #include "WorldServerConnection.hpp"
 #include <string>
 #include <vector>
@@ -48,6 +48,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Map;
 class PacketBuilder;
 class WorldServerConnection;
+struct RatesConfig;
 
 class ChannelServer final : public AbstractServer {
 	SINGLETON(ChannelServer);
@@ -61,7 +62,7 @@ public:
 	auto setScrollingHeader(const string_t &message) -> void;
 	auto modifyRate(int32_t rateType, int32_t newValue) -> void;
 	auto setConfig(const WorldConfig &config) -> void;
-	auto setRates(const Rates &rates) -> void;
+	auto setRates(const RatesConfig &rates) -> void;
 
 	auto reloadData(const string_t &args) -> void;
 

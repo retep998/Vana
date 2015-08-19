@@ -25,13 +25,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 class Player;
-struct Rates;
+struct RatesConfig;
 
 namespace SyncPacket {
 	namespace ConfigPacket {
 		PACKET(scrollingHeader, const string_t &message);
 		PACKET(resetRates);
-		PACKET(modifyRates, const Rates &rates);
+		PACKET(modifyRates, const RatesConfig &rates);
 	}
 	namespace PlayerPacket {
 		PACKET(changeChannel, Player *info, channel_id_t channel);

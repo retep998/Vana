@@ -80,6 +80,20 @@ function transform(tbl, transformType, func)
 	return result;
 end
 
+function extend(...)
+	local args = {...};
+	local result = { };
+	for i = 1, #args do
+		local tbl = args[i];
+		if type(tbl) == "table" then
+			for key, value in pairs(tbl) do
+				result[key] = value;
+			end
+		end
+	end
+	return result;
+end
+
 function findValue(tbl, needle)
 	local found = false;
 	local foundKey = nil;

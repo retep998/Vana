@@ -23,11 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.hpp"
 #include "PacketWrapper.hpp"
 #include "PlayerDataProvider.hpp"
+#include "ServerType.hpp"
 #include "Session.hpp"
 #include "StringUtilities.hpp"
 #include "SyncHandler.hpp"
 #include "SyncPacket.hpp"
-#include "VanaConstants.hpp"
 #include "WorldServer.hpp"
 #include "WorldServerAcceptPacket.hpp"
 #include <iostream>

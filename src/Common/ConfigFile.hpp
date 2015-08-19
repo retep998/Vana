@@ -29,6 +29,13 @@ class ConfigFile : public LuaEnvironment {
 	NO_DEFAULT_CONSTRUCTOR(ConfigFile);
 public:
 	ConfigFile(const string_t &filename);
+	~ConfigFile();
+	auto static getSaltingConfig() -> owned_ptr_t<ConfigFile>;
+	auto static getWorldsConfig() -> owned_ptr_t<ConfigFile>;
+	auto static getLoginServerConfig() -> owned_ptr_t<ConfigFile>;
+	auto static getLoggerConfig() -> owned_ptr_t<ConfigFile>;
+	auto static getDatabaseConfig() -> owned_ptr_t<ConfigFile>;
+	auto static getConnectionPropertiesConfig() -> owned_ptr_t<ConfigFile>;
 protected:
 	auto handleError(const string_t &filename, const string_t &error) -> void override;
 	auto handleKeyNotFound(const string_t &filename, const string_t &key) -> void override;

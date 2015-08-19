@@ -47,11 +47,11 @@ auto Decoder::encrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) -
 		a = 0;
 		for (j = size; j > 0; --j) {
 			c = buffer[size - j];
-			c = BitUtilities::RotateLeft(c, 3);
+			c = BitUtilities::rotateLeft(c, 3);
 			c = static_cast<uint8_t>(c + j); // Guess this is supposed to be right?
 			c = c ^ a;
 			a = c;
-			c = BitUtilities::RotateRight(a, j);
+			c = BitUtilities::rotateRight(a, j);
 			c = c ^ 0xFF;
 			c = c + 0x48;
 			buffer[size - j] = c;
@@ -59,12 +59,12 @@ auto Decoder::encrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) -
 		a = 0;
 		for (j = size; j > 0; --j) {
 			c = buffer[j - 1];
-			c = BitUtilities::RotateLeft(c, 4);
+			c = BitUtilities::rotateLeft(c, 4);
 			c = static_cast<uint8_t>(c + j); // Guess this is supposed to be right?
 			c = c ^ a;
 			a = c;
 			c = c ^ 0x13;
-			c = BitUtilities::RotateRight(c, 3);
+			c = BitUtilities::rotateRight(c, 3);
 			buffer[j - 1] = c;
 		}
 	}
@@ -137,12 +137,12 @@ auto Decoder::decrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) -
 		b = 0;
 		for (j = size; j > 0; j--) {
 			c = buffer[j - 1];
-			c = BitUtilities::RotateLeft(c, 3);
+			c = BitUtilities::rotateLeft(c, 3);
 			c = c ^ 0x13;
 			a = c;
 			c = c ^ b;
 			c = static_cast<uint8_t>(c - j); // Guess this is supposed to be right?
-			c = BitUtilities::RotateRight(c, 4);
+			c = BitUtilities::rotateRight(c, 4);
 			b = a;
 			buffer[j - 1] = c;
 		}
@@ -152,11 +152,11 @@ auto Decoder::decrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) -
 			c = buffer[size - j];
 			c = c - 0x48;
 			c = c ^ 0xFF;
-			c = BitUtilities::RotateLeft(c, j);
+			c = BitUtilities::rotateLeft(c, j);
 			a = c;
 			c = c ^ b;
 			c = static_cast<uint8_t>(c - j); // Guess this is supposed to be right?
-			c = BitUtilities::RotateRight(c, 3);
+			c = BitUtilities::rotateRight(c, 3);
 			b = a;
 			buffer[size - j] = c;
 		}

@@ -22,9 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.hpp"
 #include "PacketWrapper.hpp"
 #include "RankingCalculator.hpp"
+#include "ServerType.hpp"
 #include "Session.hpp"
 #include "StringUtilities.hpp"
-#include "VanaConstants.hpp"
 #include "World.hpp"
 #include "Worlds.hpp"
 

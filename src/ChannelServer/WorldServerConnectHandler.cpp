@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectHandler.hpp"
 #include "BeautyDataProvider.hpp"
 #include "ChannelServer.hpp"
-#include "Configuration.hpp"
 #include "DropDataProvider.hpp"
 #include "ExitCodes.hpp"
 #include "ItemDataProvider.hpp"
@@ -36,6 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include "ShopDataProvider.hpp"
 #include "SkillDataProvider.hpp"
+#include "WorldConfig.hpp"
 #include "WorldServerConnection.hpp"
 #include <iostream>
 #include <limits>

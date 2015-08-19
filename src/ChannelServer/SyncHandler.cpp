@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SyncHandler.hpp"
 #include "BuddyListPacket.hpp"
 #include "ChannelServer.hpp"
-#include "Configuration.hpp"
 #include "GameObjects.hpp"
 #include "InterHeader.hpp"
 #include "InterHelper.hpp"
@@ -28,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerBuddyList.hpp"
 #include "PlayerDataProvider.hpp"
 #include "PlayerPacket.hpp"
+#include "RatesConfig.hpp"
 #include "SmsgHeader.hpp"
 #include "SyncPacket.hpp"
 
@@ -41,7 +41,7 @@ auto SyncHandler::handle(PacketReader &reader) -> void {
 
 auto SyncHandler::handleConfigSync(PacketReader &reader) -> void {
 	switch (reader.get<sync_t>()) {
-		case Sync::Config::RateSet: ChannelServer::getInstance().setRates(reader.get<Rates>()); break;
+		case Sync::Config::RateSet: ChannelServer::getInstance().setRates(reader.get<RatesConfig>()); break;
 		case Sync::Config::ScrollingHeader: ChannelServer::getInstance().setScrollingHeader(reader.get<string_t>()); break;
 		default: throw NotImplementedException{"ConfigSync type"};
 	}

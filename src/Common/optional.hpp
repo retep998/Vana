@@ -28,6 +28,11 @@ namespace MiscUtilities {
 	class optional {
 	public:
 		optional() = default;
+		optional(const optional<TElement> &r) : m_initialized{r.m_initialized}, m_val{r.m_val} { }
+		optional(optional<TElement> &&r) : m_initialized{r.m_initialized}, m_val{r.m_val} {
+			r.m_initialized = false;
+			r.m_val = {};
+		}
 		optional(const TElement &val) : m_initialized{true}, m_val{val} { }
 		auto is_initialized() const -> bool { return m_initialized; }
 		auto get() const -> const TElement & { return m_val; }

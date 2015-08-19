@@ -17,12 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include <cmath>
 #include <cstdint>
 
 namespace BitUtilities {
 	template <typename TInteger>
 	inline
-	auto RotateRight(TInteger val, int32_t shifts) -> TInteger {
+	auto rotateRight(TInteger val, int32_t shifts) -> TInteger {
 		const size_t size = sizeof(TInteger) * 8;
 		shifts &= size - 1;
 		return static_cast<TInteger>((val >> shifts) | (val << (size - shifts)));
@@ -30,9 +31,25 @@ namespace BitUtilities {
 
 	template <typename TInteger>
 	inline
-	auto RotateLeft(TInteger val, int32_t shifts) -> TInteger {
+	auto rotateLeft(TInteger val, int32_t shifts) -> TInteger {
 		const size_t size = sizeof(TInteger) * 8;
 		shifts &= size - 1;
 		return static_cast<TInteger>((val << shifts) | (val >> (size - shifts)));
 	}
+
+	template <typename TInteger>
+	inline
+	auto reverse(TInteger val) -> TInteger {
+		const size_t size = sizeof(TInteger) * 8;
+		const size_t max = size / 2;
+		TInteger ret = 0;
+		for (size_t i = 0; i < max; i++) {
+			TInteger lowShift = 1 << i;
+			TInteger highShift = 1 << (size - i - 1);
+			if ((val & lowShift) == lowShift) ret |= highShift;
+			if ((val & highShift) == highShift) ret |= lowShift;
+		}
+		return ret;
+	}
+
 }

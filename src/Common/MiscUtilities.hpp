@@ -29,9 +29,6 @@ namespace MiscUtilities {
 		ForceNull = 3
 	};
 
-	auto hashPassword(const string_t &password, const string_t &salt) -> string_t;
-	auto generateSalt(size_t length) -> string_t;
-
 	template <typename TElement>
 	auto convertLinearScale(
 		const TElement &pValue,

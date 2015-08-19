@@ -2,7 +2,7 @@ CREATE TABLE `%%PREFIX%%user_accounts` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(20) NOT NULL,
   `password` char(130) NOT NULL,
-  `salt` char(10) NULL,
+  `salt` blob NULL,
   `pin` int(4) unsigned NULL,
   `gender` tinyint(1) unsigned NULL,
   `gm_level` tinyint(4) NULL,

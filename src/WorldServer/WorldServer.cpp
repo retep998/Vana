@@ -19,13 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ConnectionManager.hpp"
 #include "Channels.hpp"
 #include "InitializeCommon.hpp"
+#include "ServerType.hpp"
 #include "StringUtilities.hpp"
 #include "SyncPacket.hpp"
-#include "VanaConstants.hpp"
 #include "WorldServerAcceptPacket.hpp"
 
 WorldServer::WorldServer() :
-	AbstractServer(ServerType::World)
+	AbstractServer{ServerType::World}
 {
 }
 
@@ -36,13 +36,13 @@ auto WorldServer::shutdown() -> void {
 }
 
 auto WorldServer::listen() -> void {
-	getConnectionManager().accept(Ip::Type::Ipv4, m_port, [] { return new WorldServerAcceptConnection(); }, getInterServerConfig(), true, MapleVersion::LoginSubversion);
+	getConnectionManager().accept(Ip::Type::Ipv4, m_port, [] { return new WorldServerAcceptConnection{}; }, getInterServerConfig(), true, MapleVersion::LoginSubversion);
 }
 
 auto WorldServer::loadData() -> Result {
 	Initializing::checkSchemaVersion(this);
 
-	m_loginConnection = new LoginServerConnection();
+	m_loginConnection = new LoginServerConnection{};
 	auto &config = getInterServerConfig();
 
 	if (getConnectionManager().connect(config.loginIp, config.loginPort, config, m_loginConnection) == Result::Failure) {
@@ -76,7 +76,7 @@ auto WorldServer::establishedLoginConnection(world_id_t worldId, port_t port, co
 	displayLaunchTime();
 }
 
-auto WorldServer::setRates(const Rates &rates) -> void {
+auto WorldServer::setRates(const RatesConfig &rates) -> void {
 	m_config.rates = rates;
 	m_channels.send(SyncPacket::ConfigPacket::setRates(rates));
 }

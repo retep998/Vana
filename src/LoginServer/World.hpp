@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Channel.hpp"
-#include "Configuration.hpp"
 #include "Types.hpp"
+#include "WorldConfig.hpp"
 #include <memory>
 #include <functional>
 #include <string>
@@ -41,7 +41,7 @@ public:
 	auto setPlayerLoad(int32_t load) -> void { m_playerLoad = load; }
 	auto setConnection(LoginServerAcceptConnection *connection) -> void { m_connection = connection; }
 	auto setConfiguration(const WorldConfig &config) -> void { m_config = config; }
-	auto setEventMessage(const string_t &message) -> void { m_config.eventMsg = message; }
+	auto setEventMessage(const string_t &message) -> void { m_config.eventMessage = message; }
 	auto runChannelFunction(function_t<void (Channel *)> func) -> void;
 	auto clearChannels() -> void { m_channels.clear(); }
 	auto removeChannel(channel_id_t id) -> void { m_channels.erase(id); }
@@ -59,7 +59,7 @@ public:
 	auto matchSubnet(const Ip &test) -> Ip;
 	auto getChannelCount() const -> channel_id_t { return static_cast<channel_id_t>(m_channels.size()); }
 	auto getName() const -> string_t { return m_config.name; }
-	auto getEventMessage() const -> string_t { return m_config.eventMsg; }
+	auto getEventMessage() const -> string_t { return m_config.eventMessage; }
 	auto getChannel(channel_id_t id) -> Channel * { return m_channels.find(id) != std::end(m_channels) ? m_channels[id].get() : nullptr; }
 	auto getConfig() const -> const WorldConfig & { return m_config; }
 private:

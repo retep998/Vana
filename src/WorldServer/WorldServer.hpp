@@ -19,12 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "AbstractServer.hpp"
 #include "Channels.hpp"
-#include "ConfigFile.hpp"
-#include "Configuration.hpp"
 #include "Ip.hpp"
 #include "LoginServerConnection.hpp"
 #include "PlayerDataProvider.hpp"
+#include "RatesConfig.hpp"
 #include "Types.hpp"
+#include "WorldConfig.hpp"
 #include "WorldServerAcceptConnection.hpp"
 #include <string>
 
@@ -37,7 +37,7 @@ public:
 	auto establishedLoginConnection(world_id_t worldId, port_t port, const WorldConfig &conf) -> void;
 	auto rehashConfig(const WorldConfig &config) -> void;
 	auto setScrollingHeader(const string_t &message) -> void;
-	auto setRates(const Rates &rates) -> void;
+	auto setRates(const RatesConfig &rates) -> void;
 	auto resetRates() -> void;
 	auto getPlayerDataProvider() -> PlayerDataProvider &;
 	auto getChannels() -> Channels &;
@@ -55,7 +55,7 @@ private:
 	world_id_t m_worldId = -1;
 	port_t m_port = 0;
 	WorldConfig m_config;
-	Rates m_defaultRates;
+	RatesConfig m_defaultRates;
 	LoginServerConnection *m_loginConnection;
 	PlayerDataProvider m_playerDataProvider;
 	Channels m_channels;

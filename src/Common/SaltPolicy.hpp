@@ -15,26 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "MiscUtilities.hpp"
-#include <botan/pipe.h>
-#include <botan/filters.h>
+#pragma once
 
-auto MiscUtilities::hashPassword(const string_t &password, const string_t &salt) -> string_t {
-	string_t salted = salt + password;
-	Botan::Pipe pipe{
-		new Botan::Chain(
-			new Botan::Hash_Filter("SHA-512"),
-			new Botan::Hex_Encoder())};
+#include "Types.hpp"
 
-	pipe.process_msg(salted);
-	return pipe.read_all_as_string();
-}
-
-auto MiscUtilities::generateSalt(size_t length) -> string_t {
-	// Explicitly using () constructor style here because {} produces different behavior
-	string_t salt(length, 0);
-	for (size_t i = 0; i < length; i++) {
-		salt[i] = Randomizer::rand<uint8_t>(126, 33);
-	}
-	return salt;
-}
+enum class SaltPolicy {
+	Append,
+	Prepend,
+	ChopDistribute,
+	ChopCrossDistribute,
+	Intersperse,
+	// If more constants are added, please add them to ConfigFile.cpp as well
+};

@@ -19,16 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.hpp"
 
-namespace VanaConstants {
-	const int32_t SaltSize = 10;
-}
-
-using server_type_t = int16_t;
-enum class ServerType : server_type_t {
-	None,
-	Login = 1, // Started at 1 so it's easy to do logging
-	World,
-	Channel,
-	Cash,
-	Mts
+enum class SaltLeftoverPolicy {
+	Append,
+	Prepend,
+	Discard,
+	Rollover,
+	// If more constants are added, please add them to ConfigFile.cpp as well
 };

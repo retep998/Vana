@@ -65,7 +65,7 @@ enum class MatchResult {
 
 enum class IterationResult {
 	ContinueIterating,
-	StopIterating
+	StopIterating,
 };
 
 enum class CompletionResult {
@@ -75,7 +75,12 @@ enum class CompletionResult {
 
 enum class Result {
 	Successful,
-	Failure
+	Failure,
+};
+
+enum class ValidityResult {
+	Valid,
+	Invalid,
 };
 
 enum class HackingResult {

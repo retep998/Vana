@@ -17,18 +17,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Configuration.hpp"
 #include "ConnectionManager.hpp"
 #include "ExternalIp.hpp"
+#include "InterServerConfig.hpp"
 #include "Ip.hpp"
+#include "LogConfig.hpp"
 #include "Logger.hpp"
+#include "SaltConfig.hpp"
 #include "Types.hpp"
 #include <memory>
 #include <string>
 #include <vector>
 
 class AbstractServerConnection;
-class ConfigFile;
 struct LogConfig;
 
 class AbstractServer {
@@ -43,6 +44,7 @@ public:
 	auto log(LogType type, const char *message) -> void;
 	auto getServerType() const -> ServerType;
 	auto getInterPassword() const -> string_t;
+	auto getInterserverSaltingPolicy() const -> const SaltConfig &;
 protected:
 	AbstractServer(ServerType type);
 	virtual auto loadConfig() -> Result;
@@ -59,8 +61,6 @@ protected:
 private:
 	auto loadLogConfig() -> void;
 	auto createLogger(const LogConfig &conf) -> void;
-	auto initializeLoggingConstants(ConfigFile &conf) const -> void;
-	auto loggerOptions(const hash_map_t<string_t, int32_t> &constants, ConfigFile &conf, const string_t &base, int32_t val, uint32_t depth) const -> void;
 
 	ServerType m_serverType = ServerType::None;
 	time_point_t m_startTime;
@@ -68,6 +68,7 @@ private:
 	string_t m_salt;
 	owned_ptr_t<Logger> m_logger;
 	InterServerConfig m_interServerConfig;
+	SaltConfig m_saltingPolicy;
 	IpMatrix m_externalIps;
 	ConnectionManager m_connectionManager;
 };

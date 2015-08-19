@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Database.hpp"
 #include "ConfigFile.hpp"
-#include "Configuration.hpp"
+#include "DbConfig.hpp"
 #include <soci-mysql.h>
 
 thread_local owned_ptr_t<Database> Database::m_chardb{nullptr};
@@ -26,9 +26,9 @@ thread_local owned_ptr_t<Database> Database::m_datadb{nullptr};
 auto Database::initCharDb() -> Database & {
 	if (m_chardb != nullptr) throw std::logic_error{"Must not call initCharDb after the database is already initialized"};
 
-	ConfigFile config{"conf/database.lua"};
-	config.run();
-	DbConfig conf = config.get<DbConfig>("chardb");
+	auto config = ConfigFile::getDatabaseConfig();
+	config->run();
+	DbConfig conf = config->get<DbConfig>("chardb");
 	m_chardb = make_owned_ptr<Database>(conf, false);
 	auto &sql = m_chardb->getSession();
 
@@ -93,16 +93,16 @@ auto Database::tableExists(soci::session &sql, const string_t &schema, const str
 }
 
 auto Database::connectCharDb() -> void {
-	ConfigFile config{"conf/database.lua"};
-	config.run();
-	DbConfig conf = config.get<DbConfig>("chardb");
+	auto config = ConfigFile::getDatabaseConfig();
+	config->run();
+	DbConfig conf = config->get<DbConfig>("chardb");
 	m_chardb = make_owned_ptr<Database>(conf, true);
 }
 
 auto Database::connectDataDb() -> void {
-	ConfigFile config{"conf/database.lua"};
-	config.run();
-	DbConfig conf = config.get<DbConfig>("datadb");
+	auto config = ConfigFile::getDatabaseConfig();
+	config->run();
+	DbConfig conf = config->get<DbConfig>("datadb");
 	m_datadb = make_owned_ptr<Database>(conf, true);
 }
 

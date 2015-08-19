@@ -17,12 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerConnectHandler.hpp"
 #include "Channels.hpp"
-#include "Configuration.hpp"
 #include "ExitCodes.hpp"
 #include "LoginServerConnection.hpp"
 #include "PacketReader.hpp"
 #include "PlayerDataProvider.hpp"
 #include "SyncPacket.hpp"
+#include "WorldConfig.hpp"
 #include "WorldServer.hpp"
 #include <iostream>
 

@@ -23,27 +23,13 @@ extern "C" {
 	#include "lauxlib.h"
 }
 
+#include "LuaType.hpp"
+#include "LuaVariant.hpp"
 #include "ObjectPool.hpp"
 #include "Types.hpp"
 #include <stdexcept>
 #include <string>
 #include <vector>
-
-enum class LuaType : int {
-	None = LUA_TNONE,
-	Nil = LUA_TNIL,
-	Bool = LUA_TBOOLEAN,
-	LightUserData = LUA_TLIGHTUSERDATA,
-	Number = LUA_TNUMBER,
-	String = LUA_TSTRING,
-	Table = LUA_TTABLE,
-	Function = LUA_TFUNCTION,
-	UserData = LUA_TUSERDATA,
-	Thread = LUA_TTHREAD,
-};
-
-using lua_return_t = int;
-using lua_function_t = lua_return_t (*)(lua_State *);
 
 class LuaEnvironment;
 
@@ -77,16 +63,24 @@ public:
 
 	auto exists(const string_t &key) -> bool;
 	auto exists(lua_State *luaVm, const string_t &key) -> bool;
-	auto is(const string_t &value, LuaType type) -> bool;
-	auto is(lua_State *luaVm, const string_t &value, LuaType type) -> bool;
+	auto is(const string_t &key, LuaType type) -> bool;
+	auto is(lua_State *luaVm, const string_t &key, LuaType type) -> bool;
 	auto is(int index, LuaType type) -> bool;
 	auto is(lua_State *luaVm, int index, LuaType type) -> bool;
+	auto isAny(const string_t &key, init_list_t<LuaType> types) -> bool;
+	auto isAny(lua_State *luaVm, const string_t &key, init_list_t<LuaType> types) -> bool;
+	auto isAny(int index, init_list_t<LuaType> types) -> bool;
+	auto isAny(lua_State *luaVm, int index, init_list_t<LuaType> types) -> bool;
 	auto typeOf(int index) -> LuaType;
 	auto typeOf(lua_State *luaVm, int index) -> LuaType;
 	auto pop(int count = 1) -> void;
 	auto pop(lua_State *luaVm, int count = 1) -> void;
 	auto count() -> int;
 	auto count(lua_State *luaVm) -> int;
+	auto validateValue(LuaType expectedType, const LuaVariant &v, const string_t &key, const string_t &prefix, bool nilIsValid = false) -> LuaType;
+	auto validateKey(LuaType expectedType, const LuaVariant &v, const string_t &prefix) -> void;
+	auto validateObject(LuaType expectedType, const LuaVariant &v, const string_t &prefix) -> void;
+	auto required(bool present, const string_t &key, const string_t &prefix) -> void;
 
 	auto yield(lua_return_t numberOfReturnResultsPassedToResume) -> lua_return_t;
 	auto pushNil() -> LuaEnvironment &;
@@ -183,10 +177,14 @@ private:
 	auto pushImpl<minutes_t>(lua_State *luaVm, const minutes_t &value) -> void;
 	template <>
 	auto pushImpl<hours_t>(lua_State *luaVm, const hours_t &value) -> void;
+	template <>
+	auto pushImpl<LuaVariant>(lua_State *luaVm, const LuaVariant &value) -> void;
 	template <typename TElement>
 	auto pushImpl(lua_State *luaVm, const vector_t<TElement> &value) -> void;
 	template <typename TKey, typename TElement, typename THash = std::hash<TKey>, typename TOperation = std::equal_to<TKey>>
 	auto pushImpl(lua_State *luaVm, const hash_map_t<TKey, TElement, THash, TOperation> &value) -> void;
+	template <typename TKey, typename TElement, typename TOperation = std::less<TKey>>
+	auto pushImpl(lua_State *luaVm, const ord_map_t<TKey, TElement, TOperation> &value) -> void;
 	// End pushImpl
 
 	// Begin getImpl key
@@ -220,10 +218,14 @@ private:
 	auto getImpl<minutes_t>(lua_State *luaVm, const string_t &key, minutes_t *) -> minutes_t;
 	template <>
 	auto getImpl<hours_t>(lua_State *luaVm, const string_t &key, hours_t *) -> hours_t;
+	template <>
+	auto getImpl<LuaVariant>(lua_State *luaVm, const string_t &key, LuaVariant *) -> LuaVariant;
 	template <typename TElement>
 	auto getImpl(lua_State *luaVm, const string_t &key, vector_t<TElement> *) -> vector_t<TElement>;
 	template <typename TKey, typename TElement, typename THash = std::hash<TKey>, typename TOperation = std::equal_to<TKey>>
 	auto getImpl(lua_State *luaVm, const string_t &key, hash_map_t<TKey, TElement, THash, TOperation> *) -> hash_map_t<TKey, TElement, THash, TOperation>;
+	template <typename TKey, typename TElement, typename TOperation = std::less<TKey>>
+	auto getImpl(lua_State *luaVm, const string_t &key, ord_map_t<TKey, TElement, TOperation> *) -> ord_map_t<TKey, TElement, TOperation>;
 	// End getImpl key
 
 	// Begin getImpl index
@@ -257,10 +259,14 @@ private:
 	auto getImpl<minutes_t>(lua_State *luaVm, int index, minutes_t *) -> minutes_t;
 	template <>
 	auto getImpl<hours_t>(lua_State *luaVm, int index, hours_t *) -> hours_t;
+	template <>
+	auto getImpl<LuaVariant>(lua_State *luaVm, int index, LuaVariant *) -> LuaVariant;
 	template <typename TElement>
 	auto getImpl(lua_State *luaVm, int index, vector_t<TElement> *) -> vector_t<TElement>;
 	template <typename TKey, typename TElement, typename THash = std::hash<TKey>, typename TOperation = std::equal_to<TKey>>
 	auto getImpl(lua_State *luaVm, int index, hash_map_t<TKey, TElement, THash, TOperation> *) -> hash_map_t<TKey, TElement, THash, TOperation>;
+	template <typename TKey, typename TElement, typename TOperation = std::less<TKey>>
+	auto getImpl(lua_State *luaVm, int index, ord_map_t<TKey, TElement, TOperation> *) -> ord_map_t<TKey, TElement, TOperation>;
 	// End getImpl index
 
 	static ObjectPool<int32_t, LuaEnvironment *> s_environments;
@@ -468,6 +474,18 @@ auto LuaEnvironment::pushImpl<hours_t>(lua_State *luaVm, const hours_t &value) -
 	lua_pushinteger(luaVm, static_cast<int32_t>(value.count()));
 }
 
+template <>
+auto LuaEnvironment::pushImpl<LuaVariant>(lua_State *luaVm, const LuaVariant &value) -> void {
+	switch (value.getType()) {
+		case LuaType::Nil: pushNil(luaVm); break;
+		case LuaType::Bool: push<bool>(luaVm, value.as<bool>()); break;
+		case LuaType::String: push<string_t>(luaVm, value.as<string_t>()); break;
+		case LuaType::Number: push<double>(luaVm, value.as<double>()); break;
+		case LuaType::Table: push<hash_map_t<LuaVariant, LuaVariant>>(luaVm, value.as<hash_map_t<LuaVariant, LuaVariant>>()); break;
+		default: throw NotImplementedException{"LuaType"};
+	}
+}
+
 template <typename TElement>
 auto LuaEnvironment::pushImpl(lua_State *luaVm, const vector_t<TElement> &value) -> void {
 	lua_newtable(luaVm);
@@ -481,6 +499,17 @@ auto LuaEnvironment::pushImpl(lua_State *luaVm, const vector_t<TElement> &value)
 
 template <typename TKey, typename TElement, typename THash, typename TOperation>
 auto LuaEnvironment::pushImpl(lua_State *luaVm, const hash_map_t<TKey, TElement, THash, TOperation> &value) -> void {
+	lua_newtable(luaVm);
+	int top = lua_gettop(luaVm);
+	for (const auto &kvp : value) {
+		push<TKey>(luaVm, kvp.first);
+		push<TElement>(luaVm, kvp.second);
+		lua_settable(luaVm, top);
+	}
+}
+
+template <typename TKey, typename TElement, typename TOperation>
+auto LuaEnvironment::pushImpl(lua_State *luaVm, const ord_map_t<TKey, TElement, TOperation> &value) -> void {
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
 	for (const auto &kvp : value) {
@@ -572,6 +601,16 @@ auto LuaEnvironment::getImpl<hours_t>(lua_State *luaVm, const string_t &key, hou
 	return hours_t{getImplDefault<int32_t>(luaVm, key)};
 }
 
+template <>
+auto LuaEnvironment::getImpl<LuaVariant>(lua_State *luaVm, const string_t &key, LuaVariant *) -> LuaVariant {
+	if (is(luaVm, key, LuaType::Number)) return LuaVariant{get<double>(luaVm, key)};
+	if (is(luaVm, key, LuaType::String)) return LuaVariant{get<string_t>(luaVm, key)};
+	if (is(luaVm, key, LuaType::Bool)) return LuaVariant{get<bool>(luaVm, key)};
+	if (is(luaVm, key, LuaType::Nil)) return LuaVariant{};
+	if (is(luaVm, key, LuaType::Table)) return LuaVariant{get<hash_map_t<LuaVariant, LuaVariant>>(luaVm, key)};
+	throw NotImplementedException{"LuaType"};
+}
+
 template <typename TElement>
 auto LuaEnvironment::getImpl(lua_State *luaVm, const string_t &key, vector_t<TElement> *) -> vector_t<TElement> {
 	keyMustExist(key);
@@ -586,6 +625,15 @@ auto LuaEnvironment::getImpl(lua_State *luaVm, const string_t &key, hash_map_t<T
 	keyMustExist(key);
 	lua_getglobal(luaVm, key.c_str());
 	hash_map_t<TKey, TElement, THash, TOperation> val = get<hash_map_t<TKey, TElement, THash, TOperation>>(luaVm, -1);
+	lua_pop(luaVm, 1);
+	return val;
+}
+
+template <typename TKey, typename TElement, typename TOperation>
+auto LuaEnvironment::getImpl(lua_State *luaVm, const string_t &key, ord_map_t<TKey, TElement, TOperation> *) -> ord_map_t<TKey, TElement, TOperation> {
+	keyMustExist(key);
+	lua_getglobal(luaVm, key.c_str());
+	ord_map_t<TKey, TElement, TOperation> val = get<ord_map_t<TKey, TElement, TOperation>>(luaVm, -1);
 	lua_pop(luaVm, 1);
 	return val;
 }
@@ -672,6 +720,16 @@ auto LuaEnvironment::getImpl<hours_t>(lua_State *luaVm, int index, hours_t *) ->
 	return hours_t{getInteger<int32_t>(luaVm, index)};
 }
 
+template <>
+auto LuaEnvironment::getImpl<LuaVariant>(lua_State *luaVm, int index, LuaVariant *) -> LuaVariant {
+	if (is(luaVm, index, LuaType::Number)) return LuaVariant{get<double>(luaVm, index)};
+	if (is(luaVm, index, LuaType::String)) return LuaVariant{get<string_t>(luaVm, index)};
+	if (is(luaVm, index, LuaType::Bool)) return LuaVariant{get<bool>(luaVm, index)};
+	if (is(luaVm, index, LuaType::Nil)) return LuaVariant{};
+	if (is(luaVm, index, LuaType::Table)) return LuaVariant{get<hash_map_t<LuaVariant, LuaVariant>>(luaVm, index)};
+	throw NotImplementedException{"LuaType"};
+}
+
 template <typename TElement>
 auto LuaEnvironment::getImpl(lua_State *luaVm, int index, vector_t<TElement> *) -> vector_t<TElement> {
 	vector_t<TElement> val;
@@ -695,6 +753,29 @@ auto LuaEnvironment::getImpl(lua_State *luaVm, int index, vector_t<TElement> *) 
 template <typename TKey, typename TElement, typename THash, typename TOperation>
 auto LuaEnvironment::getImpl(lua_State *luaVm, int index, hash_map_t<TKey, TElement, THash, TOperation> *) -> hash_map_t<TKey, TElement, THash, TOperation> {
 	hash_map_t<TKey, TElement, THash, TOperation> val;
+	// Adjust index for the name
+	lua_pushvalue(luaVm, index);
+
+	pushNil(luaVm);
+	while (lua_next(luaVm, -2)) {
+		// We have to account for string conversions here, but it's only important for keys
+		lua_pushvalue(luaVm, -2);
+
+		auto key = get<TKey>(luaVm, -1);
+		auto value = get<TElement>(luaVm, -2);
+		val[key] = value;
+
+		lua_pop(luaVm, 2);
+	}
+
+	lua_pop(luaVm, 1);
+
+	return val;
+}
+
+template <typename TKey, typename TElement, typename TOperation>
+auto LuaEnvironment::getImpl(lua_State *luaVm, int index, ord_map_t<TKey, TElement, TOperation> *) -> ord_map_t<TKey, TElement, TOperation> {
+	ord_map_t<TKey, TElement, TOperation> val;
 	// Adjust index for the name
 	lua_pushvalue(luaVm, index);
 

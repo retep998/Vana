@@ -37,6 +37,13 @@ login_inter_port = 8485;
 -- Domain names are supported in the IP field
 -- By default, only the local machine can access your server
 
+function makeIp(ip, mask)
+	return {
+		["ip"] = ip,
+		["mask"] = mask,
+	};
+end
+
 external_ip = {
-	{["ip"] = "127.0.0.1", ["mask"] = "255.0.0.0"}
+	makeIp("127.0.0.1", "255.0.0.0"),
 };

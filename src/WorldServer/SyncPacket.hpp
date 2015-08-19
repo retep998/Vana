@@ -28,13 +28,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class AbstractConnection;
 class PacketBuilder;
 class PacketReader;
-struct Rates;
+struct RatesConfig;
 
 namespace SyncPacket {
 	PACKET(sendSyncData, function_t<void(PacketBuilder &)> buildSyncData);
 
 	namespace ConfigPacket {
-		PACKET(setRates, const Rates &rates);
+		PACKET(setRates, const RatesConfig &rates);
 		PACKET(scrollingHeader, const string_t &message);
 	}
 	namespace PartyPacket {

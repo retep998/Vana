@@ -1,13 +1,3 @@
--- Enable logging for a given type of server (applies to all of the given type)
-log_channel = true;
-log_world = true;
-log_login = true;
-log_cash = false; -- These servers don't exist
-log_mts = false;
-
--- The format that %t expands to
-log_time_format = "%MM/%DD/%YY %MI:%II:%SS";
-
 -- The following replacements are supported:
 -- %yy = short year (99, 00, 10)
 -- %YY = long year (1999, 2000, 2010)
@@ -34,50 +24,58 @@ log_time_format = "%MM/%DD/%YY %MI:%II:%SS";
 -- %zz = timezone (+0600, -0800, 0000)
 -- All replacement identifiers are case-sensitive
 
--- Logging options
--- *_log_destination: the place you wish to log to; options are system_log_none, system_log_all, system_log_file, system_log_sql, and system_log_console
--- You may combine specific log types by doing something such as system_log_file_sql_console or any variation thereof
+-- Logging configuration takes the form of a table
+-- Required keys
+-- log: a boolean indicating whether or not to log
+-- destination: the place you wish to log to; options are system_log_none, system_log_all, system_log_file, system_log_sql, and system_log_console
+-- -- You may combine specific log types by doing something such as system_log_file_sql_console or any variation thereof
+-- format: a string that represents the form you want the log messages to take, discarded for SQL logging
+-- -- String replacement constants:
+-- -- %orig = server name
+-- -- %e = event raised
+-- -- %t = time raised (uses time format)
+-- -- %id = additional identifier to clarify the entry
+-- -- %msg = log message
+-- -- All replacement identifiers are case-sensitive
+-- Optional keys
+-- time_format: an exclusive time format for the specific server, if not specified, the global one is used
+-- buffer_size: buffer for limited resources like SQL and files, log items are cached until these are full
+-- file: the path/file that you wish to log to, supports all above replacements (time and format)
 
--- *_log_buffer_size: buffer for limited resources like SQL and files, log items are cached until these are full
+-- The format that %t expands to (required)
+log_time_format = "%MM/%DD/%YY %MI:%II:%SS";
 
--- *_log_format: a string that represents the form you want the log messages to take, discarded for SQL logging
+-- Enable logging for a given type of server (applies to all of the given type)
+channel = {
+	["log"] = true,
+	["destination"] = system_log_console,
+	["format"] = "[%e (%t)] - %msg",
+};
 
--- String replacement constants:
--- %orig = server name
--- %e = event raised
--- %t = time raised (uses time format)
--- %id = additional identifier to clarify the entry
--- %msg = log message
--- All replacement identifiers are case-sensitive
+world = {
+	["log"] = true,
+	["destination"] = system_log_console,
+	["format"] = "[%e (%t)] - %msg",
+};
 
--- *_log_file: the path/file that you wish to log to, supports all above replacements (time and format)
+login = {
+	["log"] = true,
+	["destination"] = system_log_console,
+	["format"] = "[%e (%t)] - %msg",
+};
 
--- Login logging
-login_log_destination = system_log_console;
-login_log_buffer_size = 40;
-login_log_format = "[%e (%t)] - %msg";
-login_log_file = "logs/%orig/%YY%MM%DD.log";
+-- These servers don't exist
+cash = {
+	["log"] = false,
+	["destination"] = system_log_sql,
+	["format"] = "%msg",
+	["buffer_size"] = 40,
+};
 
--- World logging
-world_log_destination = system_log_console;
-world_log_buffer_size = 40;
-world_log_format = "[%e (%t)] %id - %msg";
-world_log_file = "logs/%orig/%YY%MM%DD.log";
-
--- Channel logging
-channel_log_destination = system_log_console;
-channel_log_buffer_size = 40;
-channel_log_format = "[%e (%t)] %id - %msg";
-channel_log_file = "logs/%orig/%YY%MM%DD.log";
-
--- Cash logging
-cash_log_destination = system_log_sql;
-cash_log_buffer_size = 40;
-cash_log_format = "%msg";
-cash_log_file = "logs/%orig/%YY%MM%DD.log";
-
--- MTS logging
-mts_log_destination = system_log_file;
-mts_log_buffer_size = 40;
-mts_log_format = "[%e (%t)] %id - %msg";
-mts_log_file = "logs/%orig/%YY%MM%DD.log";
+mts = {
+	["log"] = false,
+	["destination"] = system_log_console_file,
+	["format"] = "[%e (%t)] %id - %msg",
+	["buffer_size"] = 40,
+	["file"] = "logs/%orig/%YY%MM%DD.log",
+};

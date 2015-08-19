@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
 #include "PlayerPacket.hpp"
+#include "RatesConfig.hpp"
 #include "StringUtilities.hpp"
 #include "SyncPacket.hpp"
 #include "WorldServerConnectPacket.hpp"
@@ -745,10 +746,10 @@ auto ManagementFunctions::rates(Player *player, const chat_t &args) -> ChatResul
 			int32_t rateType = 0;
 			int32_t newAmount = value.empty() ? 1 : atoi(value.c_str());
 
-			if (type == "mobexp") rateType = Rates::Types::MobExpRate;
-			if (type == "mobmeso") rateType = Rates::Types::MobMesoRate;
-			if (type == "questexp") rateType = Rates::Types::QuestExpRate;
-			if (type == "drop") rateType = Rates::Types::DropRate;
+			if (type == "mobexp") rateType = RatesConfig::Types::MobExpRate;
+			if (type == "mobmeso") rateType = RatesConfig::Types::MobMesoRate;
+			if (type == "questexp") rateType = RatesConfig::Types::QuestExpRate;
+			if (type == "drop") rateType = RatesConfig::Types::DropRate;
 			ChannelServer::getInstance().modifyRate(rateType, newAmount);
 			ChatHandlerFunctions::showInfo(player, "Sent request to modify rate");
 		}
