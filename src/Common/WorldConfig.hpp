@@ -91,7 +91,7 @@ struct LuaVariantInto<WorldConfig> {
 			else if (key == "id") {
 				hasId = true;
 				config.validateValue(LuaType::Number, value.second, key, prefix);
-				ret.basePort = value.second.as<world_id_t>();
+				ret.id = value.second.as<world_id_t>();
 			}
 			else if (key == "port") {
 				hasPort = true;
