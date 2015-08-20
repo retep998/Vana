@@ -25,18 +25,18 @@ function beginInstance()
 end
 
 function playerDisconnect(playerId, isPartyLeader)
-	cleanUpPap();
+	cleanUpPapulatus();
 end
 
 function changeMap(playerId, newMap, oldMap, isPartyLeader)
 	if not isInstanceMap(newMap) then
 		-- Player probably died, want to make sure this doesn't keep the room full
 		removeInstancePlayer(playerId);
-		cleanUpPap();
+		cleanUpPapulatus();
 	end
 end
 
-function cleanUpPap()
+function cleanUpPapulatus()
 	if getInstancePlayerCount() == 0 then
 		setReactorState(220080000, 2208001, 0);
 		setReactorState(220080000, 2208003, 0);

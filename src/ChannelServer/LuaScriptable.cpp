@@ -105,16 +105,16 @@ auto LuaScriptable::initialize() -> void {
 	// Bosses
 	expose("getHorntailChannels", &LuaExports::getHorntailChannels);
 	expose("getMaxHorntailBattles", &LuaExports::getMaxHorntailBattles);
-	expose("getMaxPapBattles", &LuaExports::getMaxPapBattles);
+	expose("getMaxPapulatusBattles", &LuaExports::getMaxPapulatusBattles);
 	expose("getMaxPianusBattles", &LuaExports::getMaxPianusBattles);
 	expose("getMaxPinkBeanBattles", &LuaExports::getMaxPinkBeanBattles);
 	expose("getMaxZakumBattles", &LuaExports::getMaxZakumBattles);
-	expose("getPapChannels", &LuaExports::getPapChannels);
+	expose("getPapulatusChannels", &LuaExports::getPapulatusChannels);
 	expose("getPianusChannels", &LuaExports::getPianusChannels);
 	expose("getPinkBeanChannels", &LuaExports::getPinkBeanChannels);
 	expose("getZakumChannels", &LuaExports::getZakumChannels);
 	expose("isHorntailChannel", &LuaExports::isHorntailChannel);
-	expose("isPapChannel", &LuaExports::isPapChannel);
+	expose("isPapulatusChannel", &LuaExports::isPapulatusChannel);
 	expose("isPianusChannel", &LuaExports::isPianusChannel);
 	expose("isPinkBeanChannel", &LuaExports::isPinkBeanChannel);
 	expose("isZakumChannel", &LuaExports::isZakumChannel);
@@ -611,7 +611,7 @@ auto LuaExports::getMaxHorntailBattles(lua_State *luaVm) -> lua_return_t {
 	return 1;
 }
 
-auto LuaExports::getMaxPapBattles(lua_State *luaVm) -> lua_return_t {
+auto LuaExports::getMaxPapulatusBattles(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	env.push<int16_t>(luaVm, ChannelServer::getInstance().getConfig().papulatus.attempts);
 	return 1;
@@ -635,7 +635,7 @@ auto LuaExports::getMaxZakumBattles(lua_State *luaVm) -> lua_return_t {
 	return 1;
 }
 
-auto LuaExports::getPapChannels(lua_State *luaVm) -> lua_return_t {
+auto LuaExports::getPapulatusChannels(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	env.push<vector_t<channel_id_t>>(luaVm, ChannelServer::getInstance().getConfig().papulatus.channels);
 	return 1;
@@ -663,7 +663,7 @@ auto LuaExports::isHorntailChannel(lua_State *luaVm) -> lua_return_t {
 	return isBossChannel(luaVm, ChannelServer::getInstance().getConfig().horntail.channels);
 }
 
-auto LuaExports::isPapChannel(lua_State *luaVm) -> lua_return_t {
+auto LuaExports::isPapulatusChannel(lua_State *luaVm) -> lua_return_t {
 	return isBossChannel(luaVm, ChannelServer::getInstance().getConfig().papulatus.channels);
 }
 

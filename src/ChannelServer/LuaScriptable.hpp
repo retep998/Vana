@@ -81,16 +81,16 @@ namespace LuaExports {
 	// Bosses
 	auto getHorntailChannels(lua_State *luaVm) -> lua_return_t;
 	auto getMaxHorntailBattles(lua_State *luaVm) -> lua_return_t;
-	auto getMaxPapBattles(lua_State *luaVm) -> lua_return_t;
+	auto getMaxPapulatusBattles(lua_State *luaVm) -> lua_return_t;
 	auto getMaxPianusBattles(lua_State *luaVm) -> lua_return_t;
 	auto getMaxPinkBeanBattles(lua_State *luaVm) -> lua_return_t;
 	auto getMaxZakumBattles(lua_State *luaVm) -> lua_return_t;
-	auto getPapChannels(lua_State *luaVm) -> lua_return_t;
+	auto getPapulatusChannels(lua_State *luaVm) -> lua_return_t;
 	auto getPianusChannels(lua_State *luaVm) -> lua_return_t;
 	auto getPinkBeanChannels(lua_State *luaVm) -> lua_return_t;
 	auto getZakumChannels(lua_State *luaVm) -> lua_return_t;
 	auto isHorntailChannel(lua_State *luaVm) -> lua_return_t;
-	auto isPapChannel(lua_State *luaVm) -> lua_return_t;
+	auto isPapulatusChannel(lua_State *luaVm) -> lua_return_t;
 	auto isPianusChannel(lua_State *luaVm) -> lua_return_t;
 	auto isPinkBeanChannel(lua_State *luaVm) -> lua_return_t;
 	auto isZakumChannel(lua_State *luaVm) -> lua_return_t;
