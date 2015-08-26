@@ -19,8 +19,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <cmath>
 
-auto Line::slope() const -> float {
-	return static_cast<float>(pt1.y - pt2.y) / static_cast<float>(pt1.x - pt2.x);
+Line::Line(const Point &pt1, const Point &pt2) :
+	pt1{pt1},
+	pt2{pt2}
+{
+}
+
+auto Line::slope() const -> Ratio {
+	coord_t rise = pt2.y - pt1.y;
+	coord_t run = pt2.x - pt1.x;
+	return Ratio{rise, run};
 }
 
 auto Line::contains(const Point &pos) const -> bool {
@@ -30,36 +38,92 @@ auto Line::contains(const Point &pos) const -> bool {
 }
 
 auto Line::slopeContains(const Point &pos) const -> bool {
-	return static_cast<int32_t>(pt2.x - pt1.x) * static_cast<int32_t>(pos.y - pt1.y) == static_cast<int32_t>(pos.x - pt1.x) * static_cast<int32_t>(pt2.y - pt1.y);
+	// Tests for colinearity
+	auto slope1 = static_cast<int32_t>(pt2.x - pt1.x) * static_cast<int32_t>(pos.y - pt1.y);
+	auto slope2 = static_cast<int32_t>(pos.x - pt1.x) * static_cast<int32_t>(pt2.y - pt1.y);
+	return slope1 == slope2;
 }
 
 auto Line::withinRangeX(coord_t xValue) const -> bool {
-	return (pt1.x < xValue && xValue <= pt2.x) || (pt2.x < xValue && xValue <= pt1.x);
+	return
+		(pt1.x < xValue && xValue <= pt2.x) ||
+		(pt2.x < xValue && xValue <= pt1.x);
 }
 
 auto Line::withinRangeY(coord_t yValue) const -> bool {
-	return (pt1.y < yValue && yValue <= pt2.y) || (pt2.y < yValue && yValue <= pt1.y);
+	return
+		(pt1.y < yValue && yValue <= pt2.y) ||
+		(pt2.y < yValue && yValue <= pt1.y);
 }
 
-auto Line::interpolateForX(coord_t yValue) const -> coord_t {
-	return static_cast<coord_t>(slope() * (yValue - pt1.y) + pt1.x);
+auto Line::interpolateForX(coord_t yValue) const -> optional_t<coord_t> {
+	auto lineSlope = slope();
+	// Both x values are the same, there is no slope, we have no sensible interpolation for this particular value
+	if (!lineSlope.isDefined()) {
+		// Unless the y value happens to be within our range
+		if (withinRangeY(yValue)) {
+			return pt1.x;
+		}
+		return {};
+	}
+	int32_t difference = yValue - pt1.y;
+	difference *= lineSlope.bottom();
+	difference /= lineSlope.top();
+	if (lineSlope.isNegative()) difference *= -1;
+	return static_cast<coord_t>(difference + pt1.x);
 }
 
-auto Line::interpolateForY(coord_t xValue) const -> coord_t {
-	return static_cast<coord_t>(slope() * (xValue - pt1.x) + pt1.y);
+auto Line::interpolateForY(coord_t xValue) const -> optional_t<coord_t> {
+	auto lineSlope = slope();
+	// Both y values are the same, there is no slope, we have no sensible interpolation for this particular value
+	if (lineSlope.isZero()) {
+		// Unless the x value happens to be within our range
+		if (withinRangeX(xValue)) {
+			return pt1.y;
+		}
+		return {};
+	}
+	int32_t difference = xValue - pt1.x;
+	difference *= lineSlope.top();
+	difference /= lineSlope.bottom();
+	if (lineSlope.isNegative()) difference *= -1;
+	return static_cast<coord_t>(difference + pt1.y);
+}
+
+auto Line::offset(coord_t xOffset, coord_t yOffset) const -> Line {
+	return Line{
+		pt1.offset(xOffset, yOffset),
+		pt2.offset(xOffset, yOffset)
+	};
+}
+
+auto Line::offsetX(coord_t xOffset) const -> Line {
+	return Line{
+		pt1.offsetX(xOffset),
+		pt2.offsetX(xOffset)
+	};
+}
+
+auto Line::offsetY(coord_t yOffset) const -> Line {
+	return Line{
+		pt1.offsetY(yOffset),
+		pt2.offsetY(yOffset)
+	};
 }
 
 auto Line::center() const -> Point {
-	Point ret{(pt2.x + pt1.x) / 2, (pt2.y + pt1.y) / 2};
-	return ret;
+	return Point{
+		(pt2.x + pt1.x) / 2,
+		(pt2.y + pt1.y) / 2
+	};;
 }
 
 auto Line::length() const -> int32_t {
-	return abs(pt1 - pt2);
+	return std::abs(pt1 - pt2);
 }
 
 auto Line::makeRect() const -> Rect {
-	return Rect(pt1, pt2).normalize();
+	return Rect{pt1, pt2}.normalize();
 }
 
 auto Line::isVertical() const -> bool {
@@ -75,7 +139,8 @@ auto Line::isOrigin() const -> bool {
 }
 
 auto Line::isEdge(const Point &pt) -> bool {
-	return (pt.x == pt1.x && pt.y == pt1.y) ||
+	return
+		(pt.x == pt1.x && pt.y == pt1.y) ||
 		(pt.x == pt2.x && pt.y == pt2.y);
 }
 

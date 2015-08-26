@@ -34,7 +34,7 @@ PACKET_IMPL(addItemInfo, inventory_slot_t slot, Item *item, bool shortSlot) {
 			builder.add<inventory_slot_t>(slot);
 		}
 		else {
-			slot = abs(slot);
+			slot = std::abs(slot);
 			if (slot > 100) {
 				slot -= 100;
 			}

@@ -265,7 +265,7 @@ auto PlayerInventory::getItemAmountBySlot(inventory_t inv, inventory_slot_t slot
 }
 
 auto PlayerInventory::addEquipped(inventory_slot_t slot, item_id_t itemId) -> void {
-	if (abs(slot) == EquipSlots::Mount) {
+	if (std::abs(slot) == EquipSlots::Mount) {
 		m_player->getMounts()->setCurrentMount(itemId);
 	}
 

@@ -515,7 +515,7 @@ auto ChatHandlerFunctions::initialize() -> void {
 	sCommandList["shop"] = command.addToMap();
 
 	command.command = &InfoFunctions::pos;
-	command.notes.push_back("Displays your current position and foothold on the map");
+	command.notes.push_back("Displays your current position and foothold on the map. The format is {X, Y} [Foothold]");
 	sCommandList["pos"] = command.addToMap();
 
 	command.command = &MapFunctions::mapDimensions;
@@ -575,8 +575,8 @@ auto ChatHandlerFunctions::initialize() -> void {
 	sCommandList["listmobs"] = command.addToMap();
 
 	command.command = &MapFunctions::listPortals;
-	command.syntax = "[{$map string | #map ID}]";
-	command.notes.push_back("Lists all the non-spawn/non-Mystic Door portals on the map");
+	command.syntax = "[{$map string | #map ID}] [{$portal filter|tp|sp}]";
+	command.notes.push_back("Lists all the non-spawn/non-Mystic Door portals on the map unless the filter argument is specified - otherwise, it will give all portals matching the specified portal label");
 	sCommandList["listportals"] = command.addToMap();
 
 	command.command = &MapFunctions::listReactors;

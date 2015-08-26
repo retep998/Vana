@@ -35,7 +35,7 @@ struct WidePoint {
 	WidePoint() = default;
 
 	auto operator-(const WidePoint &p) const -> int32_t {
-		return static_cast<int32_t>(sqrt(pow(static_cast<float>(x - p.x), 2) + pow(static_cast<float>(y - p.y), 2)));
+		return static_cast<int32_t>(std::sqrt(std::pow(static_cast<float>(x - p.x), 2) + std::pow(static_cast<float>(y - p.y), 2)));
 	}
 
 	int32_t x = 0;

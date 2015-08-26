@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Point.hpp"
+#include "MapPosition.hpp"
 
 // A base class for player, mobs that can move
 class MovableLife {
@@ -38,6 +39,7 @@ public:
 	auto getStance() const -> int8_t { return m_stance; }
 	auto getFoothold() const -> foothold_id_t { return m_foothold; }
 	virtual auto getPos() const -> Point { return m_pos; }
+	auto getMapPosition() const -> MapPosition { return MapPosition{getPos(), m_foothold}; }
 
 	auto setPos(const Point &val) -> void { m_pos = val; }
 	auto resetMovement(foothold_id_t foothold, const Point &pos, int8_t stance) -> void {

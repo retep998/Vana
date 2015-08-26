@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MobConstants.hpp"
 #include "Player.hpp"
 #include "PlayerPacket.hpp"
+#include "MapPosition.hpp"
 #include "StringUtilities.hpp"
 #include <chrono>
 #include <iostream>
@@ -44,7 +45,7 @@ auto MapFunctions::instruction(Player *player, const chat_t &args) -> ChatResult
 
 auto MapFunctions::timer(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
-		seconds_t time(atoi(args.c_str()));
+		seconds_t time{atoi(args.c_str())};
 		out_stream_t msg;
 		msg << "Stopped map timer";
 		if (time.count() > 0) {
@@ -126,8 +127,8 @@ auto MapFunctions::listMobs(Player *player, const chat_t &args) -> ChatResult {
 				<< " (ID: " << mob->getMobId()
 				<< ", HP: " << mob->getHp()
 				<< "/" << mob->getMaxHp()
-				<< " [" << static_cast<int64_t>(mob->getHp()) * 100 / mob->getMaxHp()
-				<< "%])";
+				<< " ~ " << static_cast<int64_t>(mob->getHp()) * 100 / mob->getMaxHp()
+				<< "%) " << mob->getMapPosition();
 
 			ChatHandlerFunctions::showInfo(player, message.str());
 		});
@@ -139,7 +140,23 @@ auto MapFunctions::listMobs(Player *player, const chat_t &args) -> ChatResult {
 }
 
 auto MapFunctions::listPortals(Player *player, const chat_t &args) -> ChatResult {
-	map_id_t mapId = args.empty() ? player->getMapId() : ChatHandlerFunctions::getMap(args, player);
+	match_t matches;
+	auto result = args.empty() ?
+		MatchResult::NoMatches :
+		ChatHandlerFunctions::runRegexPattern(args, R"((\w+)? ?(\w+)?)", matches);
+
+	map_id_t mapId = result == MatchResult::NoMatches ?
+		player->getMapId() :
+		ChatHandlerFunctions::getMap(matches[1], player);
+
+	opt_string_t filter;
+	if (result == MatchResult::AnyMatches) {
+		string_t matchFilter = matches[2];
+		if (!matchFilter.empty()) {
+			filter = matchFilter;
+		}
+	}
+
 	Map *map = Maps::getMap(mapId);
 	if (map == nullptr) {
 		ChatHandlerFunctions::showError(player, "Invalid map: " + args);
@@ -149,15 +166,17 @@ auto MapFunctions::listPortals(Player *player, const chat_t &args) -> ChatResult
 	auto &db = Database::getDataDb();
 	auto &sql = db.getSession();
 	soci::rowset<> rs = (sql.prepare
-		<< "SELECT mp.id, mp.label, mp.destination, mp.destination_label, mp.script "
+		<< "SELECT mp.id, mp.label, mp.destination, mp.destination_label, mp.script, mp.x_pos, mp.y_pos "
 		<< "FROM " << db.makeTable("map_portals") << " mp "
 		<< "WHERE mp.mapid = :mapId",
 		soci::use(mapId, "mapId"));
 
-	auto format = [](const soci::row &row, out_stream_t &str) {
+	auto format = [&map](const soci::row &row, out_stream_t &str) {
 		map_id_t destination = row.get<map_id_t>(2);
 		opt_string_t destinationLabel = row.get<opt_string_t>(3);
 		opt_string_t portalScript = row.get<opt_string_t>(4);
+		coord_t x = row.get<coord_t>(5);
+		coord_t y = row.get<coord_t>(6);
 
 		str << row.get<map_id_t>(0) << " : " << row.get<string_t>(1);
 		if (destination != Maps::NoMap) {
@@ -177,15 +196,36 @@ auto MapFunctions::listPortals(Player *player, const chat_t &args) -> ChatResult
 				str << " (script '" << script << "')";
 			}
 		}
+
+		auto pos = Point{x, y};
+		auto searchRect = Rect{x - 25, y - 20, 50, 70};
+		Point floorPos;
+		foothold_id_t foothold = 0;
+		if (map->findFloor(pos, floorPos, -20, searchRect) == SearchResult::NotFound) {
+			foothold = map->getFootholdAtPosition(pos);
+		}
+		else {
+			foothold = map->getFootholdAtPosition(floorPos);
+		}
+		str << " " << MapPosition{pos, foothold};
 	};
 
-	ChatHandlerFunctions::showInfo(player, "Portals for Map " + std::to_string(mapId));
-
-	out_stream_t str("");
+	if (filter.is_initialized()) {
+		ChatHandlerFunctions::showInfo(player, "Portals with label '" + filter.get() + "' for Map " + std::to_string(mapId));
+	}
+	else {
+		ChatHandlerFunctions::showInfo(player, "Portals for Map " + std::to_string(mapId));
+	}
+	out_stream_t str{""};
 	bool found = false;
 	for (const auto &row : rs) {
 		string_t portalLabel = row.get<string_t>(1);
-		if (portalLabel == "sp" || portalLabel == "tp") {
+		if (filter.is_initialized()) {
+			if (StringUtilities::noCaseCompare(filter.get(), portalLabel) != 0) {
+				continue;
+			}
+		}
+		else if (portalLabel == "sp" || portalLabel == "tp") {
 			continue;
 		}
 		found = true;
@@ -214,7 +254,7 @@ auto MapFunctions::listReactors(Player *player, const chat_t &args) -> ChatResul
 	auto &db = Database::getDataDb();
 	auto &sql = db.getSession();
 	soci::rowset<> rs = (sql.prepare
-		<< "SELECT ml.lifeid, sc.script "
+		<< "SELECT ml.lifeid, sc.script, ml.x_pos, ml.y_pos, ml.foothold "
 		<< "FROM " << db.makeTable("map_life") << " ml "
 		<< "LEFT OUTER JOIN " << db.makeTable("scripts") << " sc ON sc.objectid = ml.lifeid AND sc.script_type = 'reactor' "
 		<< "WHERE ml.life_type = 'reactor' AND ml.mapid = :mapId",
@@ -222,6 +262,9 @@ auto MapFunctions::listReactors(Player *player, const chat_t &args) -> ChatResul
 
 	auto format = [](const soci::row &row, out_stream_t &str) {
 		opt_string_t reactorScript = row.get<opt_string_t>(1);
+		coord_t x = row.get<coord_t>(2);
+		coord_t y = row.get<coord_t>(3);
+		foothold_id_t foothold = row.get<foothold_id_t>(4);
 
 		str << row.get<reactor_id_t>(0);
 		if (reactorScript.is_initialized()) {
@@ -230,11 +273,13 @@ auto MapFunctions::listReactors(Player *player, const chat_t &args) -> ChatResul
 				str << " (script '" << script << "')";
 			}
 		}
+
+		str << " " << MapPosition{Point{x, y}, foothold};
 	};
 
 	ChatHandlerFunctions::showInfo(player, "Reactors for Map " + std::to_string(mapId));
 
-	out_stream_t str("");
+	out_stream_t str{""};
 	bool found = false;
 	for (const auto &row : rs) {
 		found = true;
@@ -263,7 +308,7 @@ auto MapFunctions::listNpcs(Player *player, const chat_t &args) -> ChatResult {
 	auto &db = Database::getDataDb();
 	auto &sql = db.getSession();
 	soci::rowset<> rs = (sql.prepare
-		<< "SELECT ml.lifeid, st.label, sc.script "
+		<< "SELECT ml.lifeid, st.label, sc.script, ml.x_pos, ml.y_pos, ml.foothold "
 		<< "FROM " << db.makeTable("map_life") << " ml "
 		<< "INNER JOIN " << db.makeTable("strings") << " st ON st.objectid = ml.lifeid AND st.object_type = 'npc' "
 		<< "LEFT OUTER JOIN " << db.makeTable("scripts") << " sc ON sc.objectid = ml.lifeid AND sc.script_type = 'npc' "
@@ -273,14 +318,20 @@ auto MapFunctions::listNpcs(Player *player, const chat_t &args) -> ChatResult {
 	auto format = [](const soci::row &row, out_stream_t &str) {
 		str << row.get<npc_id_t>(0) << " : " << row.get<string_t>(1);
 		opt_string_t script = row.get<opt_string_t>(2);
+		coord_t x = row.get<coord_t>(3);
+		coord_t y = row.get<coord_t>(4);
+		foothold_id_t foothold = row.get<foothold_id_t>(5);
+
 		if (script.is_initialized()) {
 			str << " (script '" << script.get() << "')";
 		}
+
+		str << " " << MapPosition{Point{x, y}, foothold};
 	};
 
 	ChatHandlerFunctions::showInfo(player, "NPCs for Map " + std::to_string(mapId));
 
-	out_stream_t str("");
+	out_stream_t str{""};
 	bool found = false;
 	for (const auto &row : rs) {
 		found = true;
@@ -399,6 +450,8 @@ auto MapFunctions::clearDrops(Player *player, const chat_t &args) -> ChatResult 
 
 auto MapFunctions::killAllMobs(Player *player, const chat_t &args) -> ChatResult {
 	int32_t killed = player->getMap()->killMobs(player, true);
-	ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) { message << "Killed " << killed << " mobs"; });
+	ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) {
+		message << "Killed " << killed << " mobs";
+	});
 	return ChatResult::HandledDisplay;
 }

@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
 #include "PlayerPacket.hpp"
+#include "MapPosition.hpp"
 #include <iostream>
 
 auto InfoFunctions::help(Player *player, const chat_t &args) -> ChatResult {
@@ -98,7 +99,7 @@ auto InfoFunctions::lookup(Player *player, const chat_t &args) -> ChatResult {
 
 			ChatHandlerFunctions::showInfo(player, "Search for '" + query + "'");
 
-			out_stream_t str("");
+			out_stream_t str{""};
 			bool found = false;
 			for (const auto &row : rs) {
 				found = true;
@@ -347,7 +348,7 @@ auto InfoFunctions::lookup(Player *player, const chat_t &args) -> ChatResult {
 }
 
 auto InfoFunctions::pos(Player *player, const chat_t &args) -> ChatResult {
-	ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) { message << "{X, Y} [Foothold]: " << player->getPos() << " [" << player->getFoothold() << "]"; });
+	ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) { message << player->getMapPosition(); });
 	return ChatResult::HandledDisplay;
 }
 

@@ -371,28 +371,40 @@ auto Map::killReactors(bool showPacket) -> void {
 }
 
 // Footholds
-auto Map::findFloor(const Point &pos, Point &floorPos, coord_t yMod) -> SearchResult {
+auto Map::findFloor(const Point &pos, Point &floorPos, coord_t startHeightModifier, const Rect &searchArea) -> SearchResult {
 	// Determines where a drop falls using the footholds data
 	// to check the platforms and find the correct one.
 	coord_t x = pos.x;
-	coord_t y = pos.y + yMod;
+	coord_t y = pos.y + startHeightModifier;
 	coord_t closestValue = std::numeric_limits<coord_t>::max();
 	bool anyFound = false;
+	FootholdInfo const * foundFoothold = nullptr;
 
 	for (const auto &foothold : m_footholds) {
 		const Line &line = foothold.line;
 
 		if (line.withinRangeX(x)) {
-			coord_t yInterpolation = line.interpolateForY(x);
-			if (yInterpolation <= closestValue && yInterpolation >= y) {
-				closestValue = yInterpolation;
-				anyFound = true;
+			if (searchArea.area() != 0) {
+				if (!searchArea.containsAnyPartOfLine(line)) {
+					continue;
+				}
+			}
+
+			optional_t<coord_t> yInterpolation = line.interpolateForY(x);
+			if (yInterpolation.is_initialized()) {
+				auto value = yInterpolation.get();
+				if (value <= closestValue && value >= y) {
+					closestValue = value;
+					anyFound = true;
+					foundFoothold = &foothold;
+				}
 			}
 		}
 	}
 
 	if (anyFound) {
-		floorPos.x = x;
+		// We interpolate for X here because otherwise, the X value may not be on the same slope as the foothold
+		floorPos.x = foundFoothold->line.interpolateForX(closestValue).get(x);
 		floorPos.y = closestValue;
 	}
 
@@ -448,10 +460,13 @@ auto Map::findRandomFloorPos(const Rect &area) -> Point {
 
 		for (const auto &foothold : validFootholds) {
 			if (foothold->line.withinRangeX(x)) {
-				coord_t yInterpolation = foothold->line.interpolateForY(x);
-				if (yInterpolation <= closestValue && yInterpolation >= y) {
-					closestValue = yInterpolation;
-					anyFound = true;
+				optional_t<coord_t> yInterpolation = foothold->line.interpolateForY(x);
+				if (yInterpolation.is_initialized()) {
+					auto value = yInterpolation.get();
+					if (value <= closestValue && value >= y) {
+						closestValue = value;
+						anyFound = true;
+					}
 				}
 			}
 		}

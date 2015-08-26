@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Point.hpp"
+#include "Ratio.hpp"
 #include "Types.hpp"
 #include <cmath>
 #include <ostream>
@@ -29,15 +30,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Be VERY careful when dealing with things that require the Y position
 struct Line {
 	Line() = default;
-	Line(const Point &pt1, const Point &pt2) : pt1{pt1}, pt2{pt2} { }
+	Line(const Point &pt1, const Point &pt2);
 
-	auto slope() const -> float;
+	auto slope() const -> Ratio;
 	auto contains(const Point &pos) const -> bool;
 	auto slopeContains(const Point &pos) const -> bool;
 	auto withinRangeX(coord_t xValue) const -> bool;
 	auto withinRangeY(coord_t yValue) const -> bool;
-	auto interpolateForX(coord_t yValue) const -> coord_t;
-	auto interpolateForY(coord_t xValue) const -> coord_t;
+	auto interpolateForX(coord_t yValue) const -> optional_t<coord_t>;
+	auto interpolateForY(coord_t xValue) const -> optional_t<coord_t>;
+	auto offset(coord_t xOffset, coord_t yOffset) const -> Line;
+	auto offsetX(coord_t xOffset) const -> Line;
+	auto offsetY(coord_t yOffset) const -> Line;
 	auto center() const -> Point;
 	auto length() const -> int32_t;
 	auto makeRect() const -> Rect;

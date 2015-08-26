@@ -108,7 +108,7 @@ auto PlayerStats::updateBonuses(bool updateEquips, bool isLoading) -> void {
 }
 
 auto PlayerStats::setEquip(inventory_slot_t slot, Item *equip, bool isLoading) -> void {
-	slot = abs(slot);
+	slot = std::abs(slot);
 	if (equip != nullptr) {
 		m_equipStats[slot].id = equip->getId();
 		m_equipStats[slot].hp = equip->getHp();

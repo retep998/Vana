@@ -24,10 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 auto StringUtilities::noCaseCompare(const string_t &s1, const string_t &s2) -> int32_t {
 	size_t l1 = s1.size();
 	size_t l2 = s2.size();
-	if (l1 == l2) {
-		return 0;
-	}
-
 	auto iter1 = std::begin(s1);
 	auto iter2 = std::begin(s2);
 	auto end1 = std::end(s1);
@@ -39,6 +35,10 @@ auto StringUtilities::noCaseCompare(const string_t &s1, const string_t &s2) -> i
 		}
 		++iter1;
 		++iter2;
+	}
+
+	if (l1 == l2) {
+		return 0;
 	}
 
 	return (l1 < l2) ? -1 : 1;

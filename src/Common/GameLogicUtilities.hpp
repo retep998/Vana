@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Rect.hpp"
 #include "SkillConstants.hpp"
 #include <algorithm>
+#include <cmath>
 #include <string>
 
 namespace GameLogicUtilities {
@@ -53,8 +54,8 @@ namespace GameLogicUtilities {
 	inline auto isMount(item_id_t itemId) -> bool { return getItemType(itemId) == Items::Types::Mount; }
 	inline auto isMedal(item_id_t itemId) -> bool { return getItemType(itemId) == Items::Types::Medal; }
 	inline auto isValidInventory(inventory_t inv) -> bool { return inv > 0 && inv <= Inventories::InventoryCount; }
-	inline auto isCashSlot(inventory_slot_t slot) -> bool { return abs(slot) > 100; }
-	inline auto stripCashSlot(inventory_slot_t slot) -> inventory_slot_t { return static_cast<inventory_slot_t>(isCashSlot(slot) ? abs(slot) - 100 : abs(slot)); }
+	inline auto isCashSlot(inventory_slot_t slot) -> bool { return std::abs(slot) > 100; }
+	inline auto stripCashSlot(inventory_slot_t slot) -> inventory_slot_t { return static_cast<inventory_slot_t>(isCashSlot(slot) ? std::abs(slot) - 100 : std::abs(slot)); }
 	inline auto isGmEquip(item_id_t itemId) -> bool { return itemId == Items::GmBottom || itemId == Items::GmHat || itemId == Items::GmTop || itemId == Items::GmWeapon; }
 
 	// Player

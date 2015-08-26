@@ -100,7 +100,7 @@ public:
 	auto getMusic() const -> string_t { return m_music; }
 
 	// Footholds
-	auto findFloor(const Point &pos, Point &floorPos, coord_t yMod = 0) -> SearchResult;
+	auto findFloor(const Point &pos, Point &floorPos, coord_t startHeightModifier = 0, const Rect &searchArea = Rect{}) -> SearchResult;
 	auto getFootholdAtPosition(const Point &pos) -> foothold_id_t;
 	auto isValidFoothold(foothold_id_t id) -> bool;
 	auto isVerticalFoothold(foothold_id_t id) -> bool;

@@ -259,6 +259,12 @@
     <ClCompile Include="src\Common\PasswordTransformationConfig.cpp">
       <Filter>Configuration</Filter>
     </ClCompile>
+    <ClCompile Include="src\Common\Point.cpp">
+      <Filter>Data Structures\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Ratio.cpp">
+      <Filter>Data Structures\Geometry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common\GameConstants.hpp">
@@ -636,6 +642,12 @@
     </ClInclude>
     <ClInclude Include="src\Common\SaltSizePolicy.hpp">
       <Filter>Encryption</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MapPosition.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Ratio.hpp">
+      <Filter>Data Structures\Geometry</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

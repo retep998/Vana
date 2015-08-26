@@ -51,7 +51,7 @@ PACKET_IMPL(showStorage, Player *player, npc_id_t npcId) {
 
 PACKET_IMPL(addItem, Player *player, inventory_t inv) {
 	PacketBuilder builder;
-	int8_t type = static_cast<int8_t>(pow(2.f, static_cast<int32_t>(inv))) * 2; // Gotta work some magic on type, which starts as inventory
+	int8_t type = static_cast<int8_t>(std::pow(2.f, static_cast<int32_t>(inv))) * 2; // Gotta work some magic on type, which starts as inventory
 	builder
 		.add<header_t>(SMSG_STORAGE)
 		.add<int8_t>(0x0d)
@@ -71,7 +71,7 @@ PACKET_IMPL(addItem, Player *player, inventory_t inv) {
 
 PACKET_IMPL(takeItem, Player *player, int8_t inv) {
 	PacketBuilder builder;
-	int8_t type = static_cast<int8_t>(pow(2.f, static_cast<int32_t>(inv))) * 2;
+	int8_t type = static_cast<int8_t>(std::pow(2.f, static_cast<int32_t>(inv))) * 2;
 	builder
 		.add<header_t>(SMSG_STORAGE)
 		.add<int8_t>(0x09)

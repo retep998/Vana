@@ -117,6 +117,7 @@
     <ClCompile Include="src\Common\PacketBuilder.cpp" />
     <ClCompile Include="src\Common\PasswordTransformationConfig.cpp" />
     <ClCompile Include="src\Common\PingPacket.cpp" />
+    <ClCompile Include="src\Common\Point.cpp" />
     <ClCompile Include="src\Common\PrecompiledHeader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -131,6 +132,7 @@
     <ClCompile Include="src\Common\MySqlQueryParser.cpp" />
     <ClCompile Include="src\Common\Quest.cpp" />
     <ClCompile Include="src\Common\QuestDataProvider.cpp" />
+    <ClCompile Include="src\Common\Ratio.cpp" />
     <ClCompile Include="src\Common\ReactorDataProvider.cpp" />
     <ClCompile Include="src\Common\Rect.cpp" />
     <ClCompile Include="src\Common\SaltTransformationConfig.cpp" />
@@ -223,10 +225,12 @@
     <ClInclude Include="src\Common\PasswordTransformationConfig.hpp" />
     <ClInclude Include="src\Common\PlayerObjects.hpp" />
     <ClInclude Include="src\Common\Point.hpp" />
+    <ClInclude Include="src\Common\MapPosition.hpp" />
     <ClInclude Include="src\Common\PrecompiledHeader.hpp" />
     <ClInclude Include="src\Common\MySqlQueryParser.hpp" />
     <ClInclude Include="src\Common\Quest.hpp" />
     <ClInclude Include="src\Common\RatesConfig.hpp" />
+    <ClInclude Include="src\Common\Ratio.hpp" />
     <ClInclude Include="src\Common\Rect.hpp" />
     <ClInclude Include="src\Common\SaltConfig.hpp" />
     <ClInclude Include="src\Common\SaltingConfig.hpp" />

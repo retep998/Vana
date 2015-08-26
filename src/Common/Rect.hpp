@@ -34,6 +34,8 @@ class Rect {
 public:
 	Rect() = default;
 	Rect(const Point &leftTop, const Point &rightBottom);
+	Rect(const Point &leftTop, coord_t width, coord_t height);
+	Rect(coord_t leftTopX, coord_t leftTopY, coord_t width, coord_t height);
 
 	auto left() const -> Line;
 	auto right() const -> Line;
