@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.hpp"
 #include "MapPacket.hpp"
 #include "MobConstants.hpp"
+#include "Party.hpp"
 #include "Player.hpp"
 #include "PlayerPacket.hpp"
 #include "MapPosition.hpp"
@@ -117,9 +118,19 @@ auto MapFunctions::getMobHp(Player *player, const chat_t &args) -> ChatResult {
 }
 
 auto MapFunctions::listMobs(Player *player, const chat_t &args) -> ChatResult {
-	if (player->getMap()->countMobs(0) > 0) {
+	map_id_t mapId = args.empty() ?
+		player->getMapId() :
+		ChatHandlerFunctions::getMap(args, player);
+	Map *map = Maps::getMap(mapId);
+	if (map == nullptr) {
+		ChatHandlerFunctions::showError(player, "Invalid map: " + args);
+		return ChatResult::HandledDisplay;
+	}
+
+	ChatHandlerFunctions::showInfo(player, "Mobs for Map " + std::to_string(mapId));
+	if (map->countMobs(0) > 0) {
 		out_stream_t message;
-		player->getMap()->runFunctionMobs([&message, &player](ref_ptr_t<const Mob> mob) {
+		map->runFunctionMobs([&message, &player](ref_ptr_t<const Mob> mob) {
 			message.str("");
 			message.clear();
 
@@ -134,7 +145,7 @@ auto MapFunctions::listMobs(Player *player, const chat_t &args) -> ChatResult {
 		});
 	}
 	else {
-		ChatHandlerFunctions::showError(player, "No mobs exist on the current map");
+		ChatHandlerFunctions::showError(player, "No results");
 	}
 	return ChatResult::HandledDisplay;
 }
@@ -243,8 +254,54 @@ auto MapFunctions::listPortals(Player *player, const chat_t &args) -> ChatResult
 	return ChatResult::HandledDisplay;
 }
 
+auto MapFunctions::listPlayers(Player *player, const chat_t &args) -> ChatResult {
+	map_id_t mapId = args.empty() ?
+		player->getMapId() :
+		ChatHandlerFunctions::getMap(args, player);
+	Map *map = Maps::getMap(mapId);
+	if (map == nullptr) {
+		ChatHandlerFunctions::showError(player, "Invalid map: " + args);
+		return ChatResult::HandledDisplay;
+	}
+
+	ChatHandlerFunctions::showInfo(player, "Players for Map " + std::to_string(mapId));
+
+	out_stream_t str{""};
+	bool found = false;
+	map->runFunctionPlayers([&](Player *target) {
+		if (target->isUsingGmHide()) {
+			return;
+		}
+
+		found = true;
+		str.str("");
+		str.clear();
+
+		str << StringUtilities::toUpper(target->getName())
+			<< " (ID: " << target->getId() << ", ";
+
+		if (Party *party = target->getParty()) {
+			str << "Party ID: " << party->getId() << ", ";
+		}
+			
+		str << "HP: " << target->getStats()->getHp() << "/" << target->getStats()->getMaxHp() << " ~ "
+			<< target->getStats()->getHp() * 100 / target->getStats()->getMaxHp() << "%) "
+			<< target->getMapPosition();
+
+		ChatHandlerFunctions::showInfo(player, str.str());
+	});
+
+	if (!found) {
+		ChatHandlerFunctions::showError(player, "No results");
+	}
+
+	return ChatResult::HandledDisplay;
+}
+
 auto MapFunctions::listReactors(Player *player, const chat_t &args) -> ChatResult {
-	map_id_t mapId = args.empty() ? player->getMapId() : ChatHandlerFunctions::getMap(args, player);
+	map_id_t mapId = args.empty() ?
+		player->getMapId() :
+		ChatHandlerFunctions::getMap(args, player);
 	Map *map = Maps::getMap(mapId);
 	if (map == nullptr) {
 		ChatHandlerFunctions::showError(player, "Invalid map: " + args);

@@ -30,6 +30,7 @@ namespace MapFunctions {
 	auto listMobs(Player *player, const chat_t &args) -> ChatResult;
 	auto listPortals(Player *player, const chat_t &args) -> ChatResult;
 	auto listReactors(Player *player, const chat_t &args) -> ChatResult;
+	auto listPlayers(Player *player, const chat_t &args) -> ChatResult;
 	auto listNpcs(Player *player, const chat_t &args) -> ChatResult;
 	auto mapDimensions(Player *player, const chat_t &args) -> ChatResult;
 	auto zakum(Player *player, const chat_t &args) -> ChatResult;

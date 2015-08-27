@@ -571,6 +571,7 @@ auto ChatHandlerFunctions::initialize() -> void {
 	sCommandList["killnpc"] = command.addToMap();
 
 	command.command = &MapFunctions::listMobs;
+	command.syntax = "[{$map string | #map ID}]";
 	command.notes.push_back("Lists all the mobs on the map");
 	sCommandList["listmobs"] = command.addToMap();
 
@@ -578,6 +579,11 @@ auto ChatHandlerFunctions::initialize() -> void {
 	command.syntax = "[{$map string | #map ID}] [{$portal filter|tp|sp}]";
 	command.notes.push_back("Lists all the non-spawn/non-Mystic Door portals on the map unless the filter argument is specified - otherwise, it will give all portals matching the specified portal label");
 	sCommandList["listportals"] = command.addToMap();
+
+	command.command = &MapFunctions::listPlayers;
+	command.syntax = "[{$map string | #map ID}]";
+	command.notes.push_back("Lists all players on the map");
+	sCommandList["listplayers"] = command.addToMap();
 
 	command.command = &MapFunctions::listReactors;
 	command.syntax = "[{$map string | #map ID}]";
