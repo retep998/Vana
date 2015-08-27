@@ -492,7 +492,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 	auto picking = !pickpocket.is_initialized() ?
 		nullptr :
 		player->getActiveBuffs()->getBuffSkillInfo(pickpocket.get());
-	bool reflectApplied = false;
+	bool reflectApplied = player->hasGmBenefits();
 
 	for (const auto &target : attack.damages) {
 		damage_t targetTotal = 0;
@@ -710,7 +710,7 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 
 	int32_t maxHp = 0;
 	damage_t firstHit = 0;
-	bool reflectApplied = false;
+	bool reflectApplied = player->hasGmBenefits();
 	for (const auto &target : attack.damages) {
 		map_object_t mapMobId = target.first;
 		auto mob = player->getMap()->getMob(mapMobId);
@@ -836,7 +836,7 @@ auto PlayerHandler::useSpellAttack(Player *player, PacketReader &reader) -> void
 		eater.x = skillInfo->x;
 	}
 
-	bool reflectApplied = false;
+	bool reflectApplied = player->hasGmBenefits();
 	for (const auto &target : attack.damages) {
 		damage_t targetTotal = 0;
 		map_object_t mapMobId = target.first;
@@ -899,7 +899,7 @@ auto PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &reader) 
 
 	skill_id_t skillId = attack.skillId;
 	skill_level_t level = attack.skillLevel;
-	bool reflectApplied = false;
+	bool reflectApplied = player->hasGmBenefits();
 
 	for (const auto &target : attack.damages) {
 		damage_t targetTotal = 0;
