@@ -649,5 +649,6 @@
     <ClInclude Include="src\Common\Ratio.hpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClInclude>
+    <ClInclude Include="src\Common\McdbVersion.hpp" />
   </ItemGroup>
 </Project>

@@ -37,20 +37,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define MAPLE_LOCALE_TAIWAN_TEST 0x06
 #define MAPLE_LOCALE_GLOBAL_TEST 0x05
 
-// MCDB constants - used for verification
-#define MAPLE_LOCALE_STRING_GLOBAL "global"
-#define MAPLE_LOCALE_STRING_KOREA "korea"
-#define MAPLE_LOCALE_STRING_JAPAN "japan"
-#define MAPLE_LOCALE_STRING_CHINA "china"
-#define MAPLE_LOCALE_STRING_EUROPE "europe"
-#define MAPLE_LOCALE_STRING_THAILAND "thailand"
-#define MAPLE_LOCALE_STRING_TAIWAN "taiwan"
-#define MAPLE_LOCALE_STRING_SEA "sea"
-#define MAPLE_LOCALE_STRING_BRAZIL "brazil"
-
 // Use preprocessors ONLY for version-specific code purposes, prefer the strongly typed members of MapleVersion namespace otherwise
 #define MAPLE_LOCALE MAPLE_LOCALE_GLOBAL
-#define MAPLE_LOCALE_STRING MAPLE_LOCALE_STRING_GLOBAL
 #define MAPLE_VERSION 75
 
 namespace MapleVersion {
@@ -58,6 +46,4 @@ namespace MapleVersion {
 	const string_t LoginSubversion = "0";
 	const string_t ChannelSubversion = "";
 	const game_locale_t Locale = static_cast<game_locale_t>(MAPLE_LOCALE);
-	const string_t LocaleString = MAPLE_LOCALE_STRING;
-	const bool TestServer = false;
 }

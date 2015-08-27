@@ -215,6 +215,7 @@
     <ClInclude Include="src\Common\MapConstants.hpp" />
     <ClInclude Include="src\Common\MapleVersion.hpp" />
     <ClInclude Include="src\Common\MapObjects.hpp" />
+    <ClInclude Include="src\Common\McdbVersion.hpp" />
     <ClInclude Include="src\Common\MobConstants.hpp" />
     <ClInclude Include="src\Common\MobDataObjects.hpp" />
     <ClInclude Include="src\Common\NpcDataProvider.hpp" />

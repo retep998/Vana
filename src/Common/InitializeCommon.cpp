@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DatabaseUpdater.hpp"
 #include "ExitCodes.hpp"
 #include "MapleVersion.hpp"
+#include "McdbVersion.hpp"
 #include "TimeUtilities.hpp"
 #include <cstdio>
 #include <iomanip>
@@ -61,11 +62,11 @@ auto Initializing::checkMcdbVersion(AbstractServer *server) -> Result {
 	bool testServer = row.get<bool>("test_server");
 	string_t mapleLocale = row.get<string_t>("maple_locale");
 
-	if (version != McdbVersion || subversion != McdbSubVersion) {
+	if (version != Mcdb::MajorVersion || subversion != Mcdb::SubVersion) {
 		server->log(LogType::CriticalError, [&](out_stream_t &str) {
 			str
 				<< "MCDB version incompatible." << std::endl
-				<< "Vana: " << McdbVersion << "." << McdbSubVersion << std::endl
+				<< "Vana: " << Mcdb::MajorVersion << "." << Mcdb::SubVersion << std::endl
 				<< "MCDB: " << version << "." << subversion;
 		});
 		ExitCodes::exit(ExitCodes::McdbIncompatible);
@@ -80,11 +81,11 @@ auto Initializing::checkMcdbVersion(AbstractServer *server) -> Result {
 		return loc;
 	};
 
-	if (mapleLocale != MapleVersion::LocaleString || testServer != MapleVersion::TestServer) {
+	if (mapleLocale != Mcdb::Locale || testServer != Mcdb::IsTestServer) {
 		server->log(LogType::CriticalError, [&](out_stream_t &str) {
 			str
 			<< "Your MCDB is designed for different locale." << std::endl
-			<< "Vana: " << makeLocale(MapleVersion::LocaleString, MapleVersion::TestServer) << std::endl
+			<< "Vana: " << makeLocale(Mcdb::Locale, Mcdb::IsTestServer) << std::endl
 			<< "MCDB: " << makeLocale(mapleLocale, testServer);
 		});
 		ExitCodes::exit(ExitCodes::McdbLocaleIncompatible);

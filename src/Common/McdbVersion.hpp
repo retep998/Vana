@@ -20,12 +20,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <string>
 
-class AbstractServer;
+namespace Mcdb {
+	namespace Locales {
+		const string_t Global = "global";
+		const string_t Korea = "korea";
+		const string_t Japan = "japan";
+		const string_t China = "china";
+		const string_t Europe = "europe";
+		const string_t Thailand = "thailand";
+		const string_t Taiwan = "taiwan";
+		const string_t Sea = "sea";
+		const string_t Brazil = "brazil";
+	}
 
-namespace Initializing {
-	auto checkSchemaVersion(AbstractServer *server, bool update = false) -> Result;
-	auto checkMcdbVersion(AbstractServer *server) -> Result;
-	auto setUsersOffline(AbstractServer *server, int32_t onlineId) -> void;
-
-	const int32_t OutputWidth = 27;
+	const int32_t MajorVersion = 4;
+	const int32_t SubVersion = 3;
+	const string_t Locale = Locales::Global;
+	const bool IsTestServer = false;
 }

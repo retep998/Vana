@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemDataProvider.hpp"
 #include "MapPacket.hpp"
 #include "Maps.hpp"
+#include "McdbVersion.hpp"
 #include "Mob.hpp"
 #include "Npc.hpp"
 #include "NpcHandler.hpp"
@@ -369,20 +370,20 @@ auto LuaScriptable::setEnvironmentVariables() -> void {
 
 	set<item_id_t>("item_mesos", Items::SackOfMoney);
 
-	set<string_t>("locale_global", MAPLE_LOCALE_STRING_GLOBAL);
-	set<string_t>("locale_korea", MAPLE_LOCALE_STRING_KOREA);
-	set<string_t>("locale_japan", MAPLE_LOCALE_STRING_JAPAN);
-	set<string_t>("locale_china", MAPLE_LOCALE_STRING_CHINA);
-	set<string_t>("locale_europe", MAPLE_LOCALE_STRING_EUROPE);
-	set<string_t>("locale_thailand", MAPLE_LOCALE_STRING_THAILAND);
-	set<string_t>("locale_tawian", MAPLE_LOCALE_STRING_TAIWAN);
-	set<string_t>("locale_sea", MAPLE_LOCALE_STRING_SEA);
-	set<string_t>("locale_brazil", MAPLE_LOCALE_STRING_BRAZIL);
+	set<string_t>("locale_global", Mcdb::Locales::Global);
+	set<string_t>("locale_korea", Mcdb::Locales::Korea);
+	set<string_t>("locale_japan", Mcdb::Locales::Japan);
+	set<string_t>("locale_china", Mcdb::Locales::China);
+	set<string_t>("locale_europe", Mcdb::Locales::Europe);
+	set<string_t>("locale_thailand", Mcdb::Locales::Thailand);
+	set<string_t>("locale_tawian", Mcdb::Locales::Taiwan);
+	set<string_t>("locale_sea", Mcdb::Locales::Sea);
+	set<string_t>("locale_brazil", Mcdb::Locales::Brazil);
 
 	set<version_t>("env_version", MapleVersion::Version);
 	set<string_t>("env_subversion", MapleVersion::LoginSubversion);
-	set<bool>("env_is_test_server", MapleVersion::TestServer);
-	set<string_t>("env_locale", MapleVersion::LocaleString);
+	set<bool>("env_is_test_server", Mcdb::IsTestServer);
+	set<string_t>("env_locale", Mcdb::Locale);
 	set<string_t>("env_api_version", sApiVersion);
 }
 
