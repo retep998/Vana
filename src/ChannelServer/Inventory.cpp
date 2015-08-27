@@ -169,8 +169,8 @@ auto Inventory::takeItem(Player *player, item_id_t itemId, slot_qty_t howMany) -
 	}
 }
 
-auto Inventory::takeItemSlot(Player *player, inventory_t inv, inventory_slot_t slot, slot_qty_t amount, bool takeStar) -> void {
-	if (player->hasGmBenefits()) {
+auto Inventory::takeItemSlot(Player *player, inventory_t inv, inventory_slot_t slot, slot_qty_t amount, bool takeStar, bool overrideGmBenefits) -> void {
+	if (!overrideGmBenefits && player->hasGmBenefits()) {
 		return;
 	}
 

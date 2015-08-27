@@ -29,5 +29,5 @@ namespace Inventory {
 	auto addNewItem(Player *player, item_id_t itemId, slot_qty_t amount, Items::StatVariance variancePolicy = Items::StatVariance::None) -> void;
 	auto takeItem(Player *player, item_id_t itemId, slot_qty_t howMany) -> void;
 	auto useItem(Player *player, item_id_t itemId) -> void;
-	auto takeItemSlot(Player *player, inventory_t inv, inventory_slot_t slot, slot_qty_t amount, bool takeStar = false) -> void;
+	auto takeItemSlot(Player *player, inventory_t inv, inventory_slot_t slot, slot_qty_t amount, bool takeStar = false, bool overrideGmBenefits = false) -> void;
 }

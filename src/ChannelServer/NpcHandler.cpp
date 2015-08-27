@@ -278,7 +278,7 @@ auto NpcHandler::useStorage(Player *player, PacketReader &reader) -> void {
 				// Hacking
 				return;
 			}
-			Inventory::addItem(player, new Item(item));
+			Inventory::addItem(player, new Item{item});
 			player->getStorage()->takeItem(slot);
 			player->send(StoragePacket::takeItem(player, inv));
 			break;
@@ -319,12 +319,25 @@ auto NpcHandler::useStorage(Player *player, PacketReader &reader) -> void {
 				// Must validate the Karma state of items here
 			}
 
-			player->getStorage()->addItem(!GameLogicUtilities::isStackable(itemId) ? new Item(item) : new Item(itemId, amount));
+			player->getStorage()->addItem(
+				!GameLogicUtilities::isStackable(itemId) ?
+					new Item{item} :
+					new Item{itemId, amount});
+
 			// For equips or rechargeable items (stars/bullets) we create a
 			// new object for storage with the inventory object, and allow
 			// the one in the inventory to go bye bye.
 			// Else: For items we just create a new item based on the ID and amount.
-			Inventory::takeItemSlot(player, inv, slot, GameLogicUtilities::isRechargeable(itemId) ? item->getAmount() : amount, true);
+			Inventory::takeItemSlot(
+				player,
+				inv,
+				slot,
+				GameLogicUtilities::isRechargeable(itemId) ?
+					item->getAmount() :
+					amount,
+				true,
+				true);
+
 			player->getInventory()->modifyMesos(-cost);
 			player->send(StoragePacket::addItem(player, inv));
 			break;
