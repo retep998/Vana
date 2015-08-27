@@ -787,13 +787,18 @@ auto ManagementFunctions::rates(Player *player, const chat_t &args) -> ChatResul
 			}
 
 			int32_t rateType = 0;
-			int32_t newAmount = value.empty() ? 1 : atoi(value.c_str());
 			if (classification == "mobexp") rateType = RatesConfig::Types::mobExpRate;
 			else if (classification == "drop") rateType = RatesConfig::Types::dropRate;
 			else if (classification == "dropmeso") rateType = RatesConfig::Types::dropMeso;
 			else if (classification == "questexp") rateType = RatesConfig::Types::questExpRate;
 			else if (classification == "globaldrop") rateType = RatesConfig::Types::globalDropRate;
 			else if (classification == "globaldropmeso") rateType = RatesConfig::Types::globalDropMeso;
+			int32_t newAmount = value.empty() ?
+				((rateType & RatesConfig::Types::global) != 0 ?
+					RatesConfig::consistentRateBetweenGlobalAndRegular :
+					1) :
+				atoi(value.c_str());
+
 			ChannelServer::getInstance().modifyRate(rateType, newAmount);
 			ChatHandlerFunctions::showInfo(player, "Sent request to modify rate");
 		}

@@ -35,6 +35,10 @@ struct RatesConfig {
 		static const int32_t globalDropRate = 0x10;
 		static const int32_t globalDropMeso = 0x20;
 
+		static const int32_t global =
+			globalDropRate |
+			globalDropMeso;
+
 		static const int32_t all =
 			mobExpRate |
 			questExpRate |
