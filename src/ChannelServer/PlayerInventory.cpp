@@ -138,7 +138,7 @@ auto PlayerInventory::save() -> void {
 	for (inventory_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; ++i) {
 		const auto &itemsInv = m_items[i - 1];
 		for (const auto &kvp : itemsInv) {
-			ItemDbRecord rec(kvp.first, charId, m_player->getUserId(), m_player->getWorldId(), Item::Inventory, kvp.second);
+			ItemDbRecord rec(kvp.first, charId, m_player->getAccountId(), m_player->getWorldId(), Item::Inventory, kvp.second);
 			v.push_back(rec);
 		}
 	}

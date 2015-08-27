@@ -98,7 +98,7 @@ public:
 	auto getPortalCount(bool add = false) -> portal_count_t;
 	auto getMapChair() const -> seat_id_t { return m_mapChair; }
 	auto getId() const -> player_id_t { return m_id; }
-	auto getUserId() const -> account_id_t { return m_userId; }
+	auto getAccountId() const -> account_id_t { return m_accountId; }
 	auto getFace() const -> face_id_t { return m_face; }
 	auto getHair() const -> hair_id_t { return m_hair; }
 	auto getMapId() const -> map_id_t { return m_map; }
@@ -175,7 +175,7 @@ private:
 	portal_count_t m_portalCount = 0;
 	seat_id_t m_mapChair = 0;
 	player_id_t m_id = 0;
-	account_id_t m_userId = 0;
+	account_id_t m_accountId = 0;
 	face_id_t m_face = 0;
 	hair_id_t m_hair = 0;
 	map_id_t m_map = 0;

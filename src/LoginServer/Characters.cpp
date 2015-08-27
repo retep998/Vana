@@ -105,8 +105,8 @@ auto Characters::showAllCharacters(UserConnection *user) -> void {
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT * "
 		<< "FROM " << db.makeTable("characters") << " c "
-		<< "WHERE c.user_id = :user ",
-		soci::use(user->getUserId(), "user"));
+		<< "WHERE c.account_id = :account ",
+		soci::use(user->getAccountId(), "account"));
 
 	hash_map_t<world_id_t, vector_t<Character>> chars;
 	uint32_t charsNum = 0;
@@ -137,13 +137,13 @@ auto Characters::showCharacters(UserConnection *user) -> void {
 	auto &db = Database::getCharDb();
 	auto &sql = db.getSession();
 	world_id_t worldId = user->getWorldId();
-	account_id_t userId = user->getUserId();
+	account_id_t accountId = user->getAccountId();
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT * "
 		<< "FROM " << db.makeTable("characters") << " c "
-		<< "WHERE c.user_id = :user AND c.world_id = :world ",
-		soci::use(userId, "user"),
+		<< "WHERE c.account_id = :account AND c.world_id = :world ",
+		soci::use(accountId, "account"),
 		soci::use(worldId, "world"));
 
 	vector_t<Character> chars;
@@ -157,8 +157,8 @@ auto Characters::showCharacters(UserConnection *user) -> void {
 	sql.once
 		<< "SELECT s.char_slots "
 		<< "FROM " << db.makeTable("storage") << " s "
-		<< "WHERE s.user_id = :user AND s.world_id = :world ",
-		soci::use(userId, "user"),
+		<< "WHERE s.account_id = :account AND s.world_id = :world ",
+		soci::use(accountId, "account"),
 		soci::use(worldId, "world"),
 		soci::into(max);
 
@@ -190,7 +190,7 @@ auto Characters::checkCharacterName(UserConnection *user, PacketReader &reader) 
 auto Characters::createItem(item_id_t itemId, UserConnection *user, player_id_t charId, inventory_slot_t slot, slot_qty_t amount) -> void {
 	auto &db = Database::getCharDb();
 	inventory_t inventory = GameLogicUtilities::getInventory(itemId);
-	ItemDbInformation info{slot, charId, user->getUserId(), user->getWorldId(), Item::Inventory};
+	ItemDbInformation info{slot, charId, user->getAccountId(), user->getWorldId(), Item::Inventory};
 
 	if (inventory == Inventories::EquipInventory) {
 		Item equip{LoginServer::getInstance().getEquipDataProvider(), itemId, Items::StatVariance::None, false};
@@ -248,10 +248,10 @@ auto Characters::createCharacter(UserConnection *user, PacketReader &reader) -> 
 	auto &sql = db.getSession();
 
 	sql.once
-		<< "INSERT INTO " << db.makeTable("characters") << " (name, user_id, world_id, face, hair, skin, gender, str, dex, `int`, luk) "
-		<< "VALUES (:name, :user, :world, :face, :hair, :skin, :gender, :str, :dex, :int, :luk)",
+		<< "INSERT INTO " << db.makeTable("characters") << " (name, account_id, world_id, face, hair, skin, gender, str, dex, `int`, luk) "
+		<< "VALUES (:name, :account, :world, :face, :hair, :skin, :gender, :str, :dex, :int, :luk)",
 		soci::use(name, "name"),
-		soci::use(user->getUserId(), "user"),
+		soci::use(user->getAccountId(), "account"),
 		soci::use(user->getWorldId(), "world"),
 		soci::use(face, "face"),
 		soci::use(hair + hairColor, "hair"),
@@ -390,7 +390,7 @@ auto Characters::connectGameWorldFromViewAllCharacters(UserConnection *user, Pac
 	auto &db = Database::getCharDb();
 	auto &sql = db.getSession();
 	sql.once
-		<< "SELECT world_id, user_id "
+		<< "SELECT world_id, account_id "
 		<< "FROM " << db.makeTable("characters") << " c "
 		<< "WHERE c.character_id = :char ",
 		soci::use(id, "char"),
@@ -403,7 +403,7 @@ auto Characters::connectGameWorldFromViewAllCharacters(UserConnection *user, Pac
 		return;
 	}
 
-	if (accountId != user->getUserId() || charWorldId != worldId) {
+	if (accountId != user->getAccountId() || charWorldId != worldId) {
 		// Hacking
 		return;
 	}
@@ -432,10 +432,10 @@ auto Characters::ownerCheck(UserConnection *user, int32_t id) -> bool {
 	sql.once
 		<< "SELECT 1 "
 		<< "FROM " << db.makeTable("characters") << " c "
-		<< "WHERE c.character_id = :char AND c.user_id = :user "
+		<< "WHERE c.character_id = :char AND c.account_id = :account "
 		<< "LIMIT 1 ",
 		soci::use(id, "char"),
-		soci::use(user->getUserId(), "user"),
+		soci::use(user->getAccountId(), "account"),
 		soci::into(exists);
 
 	return sql.got_data() && exists.is_initialized();

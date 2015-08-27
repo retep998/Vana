@@ -350,7 +350,7 @@ auto Item::databaseInsert(Database &db, const vector_t<ItemDbRecord> &items) -> 
 	item_id_t itemId = 0;
 	inventory_slot_t slot = 0;
 	world_id_t worldId = 0;
-	account_id_t userId = 0;
+	account_id_t accountId = 0;
 	player_id_t playerId = 0;
 	string_t location = "";
 
@@ -378,13 +378,13 @@ auto Item::databaseInsert(Database &db, const vector_t<ItemDbRecord> &items) -> 
 	opt_string_t name;
 
 	statement st = (sql.prepare
-		<< "INSERT INTO " << db.makeTable("items") << " (character_id, inv, slot, location, user_id, world_id, item_id, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, hammers, pet_id, name, expiration) "
-		<< "VALUES (:char, :inv, :slot, :location, :user, :world, :itemid, :amount, :slots, :scrolls, :str, :dex, :int, :luk, :hp, :mp, :watk, :matk, :wdef, :mdef, :acc, :avo, :hands, :speed, :jump, :flags, :hammers, :pet, :name, :expiration)",
+		<< "INSERT INTO " << db.makeTable("items") << " (character_id, inv, slot, location, account_id, world_id, item_id, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, hammers, pet_id, name, expiration) "
+		<< "VALUES (:char, :inv, :slot, :location, :account, :world, :itemid, :amount, :slots, :scrolls, :str, :dex, :int, :luk, :hp, :mp, :watk, :matk, :wdef, :mdef, :acc, :avo, :hands, :speed, :jump, :flags, :hammers, :pet, :name, :expiration)",
 		use(playerId, "char"),
 		use(inventory, "inv"),
 		use(slot, "slot"),
 		use(location, "location"),
-		use(userId, "user"),
+		use(accountId, "account"),
 		use(worldId, "world"),
 		use(itemId, "itemid"),
 		use(amount, "amount"),
@@ -415,7 +415,7 @@ auto Item::databaseInsert(Database &db, const vector_t<ItemDbRecord> &items) -> 
 		Item *item = rec.item;
 
 		location = rec.location;
-		userId = rec.userId;
+		accountId = rec.userId;
 		playerId = rec.charId;
 		worldId = rec.worldId;
 		slot = rec.slot;

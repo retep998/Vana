@@ -61,7 +61,7 @@ auto UserConnection::handleRequest(PacketReader &reader) -> void {
 
 		reader.reset();
 		LoginServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &log) {
-			log << "User ID: " << getUserId()
+			log << "User ID: " << getAccountId()
 				<< "; Packet: " << reader
 				<< "; Error: " << e.what();
 		});
@@ -73,11 +73,11 @@ auto UserConnection::setOnline(bool online) -> void {
 	auto &db = Database::getCharDb();
 	auto &sql = db.getSession();
 	sql.once
-		<< "UPDATE " << db.makeTable("user_accounts") << " u "
+		<< "UPDATE " << db.makeTable("accounts") << " u "
 		<< "SET "
 		<< "	u.online = :online,"
 		<< "	u.last_login = NOW() "
-		<< "WHERE u.user_id = :id",
+		<< "WHERE u.account_id = :id",
 		soci::use((online ? 1 : 0), "online"),
-		soci::use(m_userId, "id");
+		soci::use(m_accountId, "id");
 }

@@ -78,15 +78,15 @@ auto PlayerStorage::load() -> void {
 	auto &db = Database::getCharDb();
 	auto &sql = db.getSession();
 	soci::row row;
-	account_id_t userId = m_player->getUserId();
+	account_id_t accountId = m_player->getAccountId();
 	world_id_t worldId = m_player->getWorldId();
 
 	sql.once
 		<< "SELECT s.slots, s.mesos, s.char_slots "
 		<< "FROM " << db.makeTable("storage") << " s "
-		<< "WHERE s.user_id = :user AND s.world_id = :world "
+		<< "WHERE s.account_id = :account AND s.world_id = :world "
 		<< "LIMIT 1",
-		soci::use(userId, "user"),
+		soci::use(accountId, "account"),
 		soci::use(worldId, "world"),
 		soci::into(row);
 
@@ -101,9 +101,9 @@ auto PlayerStorage::load() -> void {
 		m_mesos = 0;
 		m_charSlots = config.defaultChars;
 		sql.once
-			<< "INSERT INTO " << db.makeTable("storage") << " (user_id, world_id, slots, mesos, char_slots) "
-			<< "VALUES (:user, :world, :slots, :mesos, :chars)",
-			soci::use(userId, "user"),
+			<< "INSERT INTO " << db.makeTable("storage") << " (account_id, world_id, slots, mesos, char_slots) "
+			<< "VALUES (:account, :world, :slots, :mesos, :chars)",
+			soci::use(accountId, "account"),
 			soci::use(worldId, "world"),
 			soci::use(m_slots, "slots"),
 			soci::use(m_mesos, "mesos"),
@@ -117,10 +117,10 @@ auto PlayerStorage::load() -> void {
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT i.* "
 		<< "FROM " << db.makeTable("items") << " i "
-		<< "WHERE i.location = :location AND i.user_id = :user AND i.world_id = :world "
+		<< "WHERE i.location = :location AND i.account_id = :account AND i.world_id = :world "
 		<< "ORDER BY i.slot ASC",
 		soci::use(location, "location"),
-		soci::use(userId, "user"),
+		soci::use(accountId, "account"),
 		soci::use(worldId, "world"));
 
 	for (const auto &row : rs) {
@@ -132,7 +132,7 @@ auto PlayerStorage::load() -> void {
 auto PlayerStorage::save() -> void {
 	using namespace soci;
 	world_id_t worldId = m_player->getWorldId();
-	account_id_t userId = m_player->getUserId();
+	account_id_t accountId = m_player->getAccountId();
 	player_id_t playerId = m_player->getId();
 
 	auto &db = Database::getCharDb();
@@ -140,8 +140,8 @@ auto PlayerStorage::save() -> void {
 	sql.once
 		<< "UPDATE " << db.makeTable("storage") << " "
 		<< "SET slots = :slots, mesos = :mesos, char_slots = :chars "
-		<< "WHERE user_id = :user AND world_id = :world",
-		use(userId, "user"),
+		<< "WHERE account_id = :account AND world_id = :world",
+		use(accountId, "account"),
 		use(worldId, "world"),
 		use(m_slots, "slots"),
 		use(m_mesos, "mesos"),
@@ -149,9 +149,9 @@ auto PlayerStorage::save() -> void {
 
 	sql.once
 		<< "DELETE FROM " << db.makeTable("items") << " "
-		<< "WHERE location = :location AND user_id = :user AND world_id = :world",
+		<< "WHERE location = :location AND account_id = :account AND world_id = :world",
 		use(Item::Storage, "location"),
-		use(userId, "user"),
+		use(accountId, "account"),
 		use(worldId, "world");
 
 	storage_slot_t max = getNumItems();
@@ -159,7 +159,7 @@ auto PlayerStorage::save() -> void {
 	if (max > 0) {
 		vector_t<ItemDbRecord> v;
 		for (storage_slot_t i = 0; i < max; ++i) {
-			ItemDbRecord rec(i, playerId, userId, worldId, Item::Storage, getItem(i));
+			ItemDbRecord rec{i, playerId, accountId, worldId, Item::Storage, getItem(i)};
 			v.push_back(rec);
 		}
 		Item::databaseInsert(db, v);

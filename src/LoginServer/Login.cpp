@@ -53,13 +53,13 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 
 	sql.once
 		<< "SELECT u.* "
-		<< "FROM " << db.makeTable("user_accounts") << " u "
+		<< "FROM " << db.makeTable("accounts") << " u "
 		<< "WHERE u.username = :user",
 		soci::use(username, "user"),
 		soci::into(row);
 
 	bool valid = true;
-	account_id_t userId = 0;
+	account_id_t accountId = 0;
 	if (!sql.got_data()) {
 		user->send(LoginPacket::loginError(LoginPacket::Errors::InvalidUsername));
 		valid = false;
@@ -84,7 +84,7 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 			valid = false;
 		}
 		else {
-			userId = row.get<account_id_t>("user_id");
+			accountId = row.get<account_id_t>("account_id");
 			string_t dbPassword = row.get<string_t>("password");
 			opt_string_t salt = row.get<opt_string_t>("salt");
 			auto &login = LoginServer::getInstance();
@@ -103,12 +103,12 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 						HashUtilities::hashPassword(password, salt.get(), saltingPolicy);
 
 					sql.once
-						<< "UPDATE " << db.makeTable("user_accounts") << " u "
+						<< "UPDATE " << db.makeTable("accounts") << " u "
 						<< "SET u.password = :password, u.salt = :salt "
-						<< "WHERE u.user_id = :user",
+						<< "WHERE u.account_id = :account",
 						soci::use(hashedPassword, "password"),
 						soci::use(salt.get(), "salt"),
-						soci::use(userId, "user");
+						soci::use(accountId, "account");
 				}
 			}
 			else if (dbPassword != HashUtilities::hashPassword(password, salt.get(), saltingPolicy)) {
@@ -138,7 +138,7 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 			log << username << " from IP " << user->getIp();
 		});
 
-		user->setUserId(userId);
+		user->setAccountId(accountId);
 
 		if (LoginServer::getInstance().getPinEnabled()) {
 			opt_int32_t pin = row.get<opt_int32_t>("pin");
@@ -170,10 +170,10 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 			time_t banTime = quietBan.get();
 			if (time(nullptr) > banTime) {
 				sql.once
-					<< "UPDATE " << db.makeTable("user_accounts") << " u "
+					<< "UPDATE " << db.makeTable("accounts") << " u "
 					<< "SET u.quiet_ban_expire = NULL, u.quiet_ban_reason = NULL "
-					<< "WHERE u.user_id = :user",
-					soci::use(userId, "user");
+					<< "WHERE u.account_id = :account",
+					soci::use(accountId, "account");
 			}
 			else {
 				user->setQuietBanTime(FileTime{UnixTime{banTime}});
@@ -208,11 +208,11 @@ auto Login::setGender(UserConnection *user, PacketReader &reader) -> void {
 		auto &db = Database::getCharDb();
 		auto &sql = db.getSession();
 		sql.once
-			<< "UPDATE " << db.makeTable("user_accounts") << " u "
+			<< "UPDATE " << db.makeTable("accounts") << " u "
 			<< "SET u.gender = :gender "
-			<< "WHERE u.user_id = :user",
+			<< "WHERE u.account_id = :account",
 			soci::use(gender, "gender"),
-			soci::use(user->getUserId(), "user");
+			soci::use(user->getAccountId(), "account");
 
 		user->setGender(gender);
 
@@ -298,11 +298,11 @@ auto Login::registerPin(UserConnection *user, PacketReader &reader) -> void {
 	auto &sql = db.getSession();
 
 	sql.once
-		<< "UPDATE " << db.makeTable("user_accounts") << " u "
+		<< "UPDATE " << db.makeTable("accounts") << " u "
 		<< "SET u.pin = :pin "
-		<< "WHERE u.user_id = :user",
+		<< "WHERE u.account_id = :account",
 		soci::use(pin, "pin"),
-		soci::use(user->getUserId(), "user");
+		soci::use(user->getAccountId(), "account");
 
 	user->send(LoginPacket::pinAssigned());
 }

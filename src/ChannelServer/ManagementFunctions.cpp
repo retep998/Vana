@@ -564,8 +564,8 @@ auto ManagementFunctions::ban(Player *player, const chat_t &args) -> ChatResult 
 		auto &db = Database::getCharDb();
 		auto &sql = db.getSession();
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << db.makeTable("user_accounts") << " u "
-			<< "INNER JOIN " << db.makeTable("characters") << " c ON u.user_id = c.user_id "
+			<< "UPDATE " << db.makeTable("accounts") << " u "
+			<< "INNER JOIN " << db.makeTable("characters") << " c ON u.account_id = c.account_id "
 			<< "SET "
 			<< "	u.banned = 1, "
 			<< "	u.ban_expire = :expire, "
@@ -610,8 +610,8 @@ auto ManagementFunctions::tempBan(Player *player, const chat_t &args) -> ChatRes
 		auto &db = Database::getCharDb();
 		auto &sql = db.getSession();
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << db.makeTable("user_accounts") << " u "
-			<< "INNER JOIN " << db.makeTable("characters") << " c ON u.user_id = c.user_id "
+			<< "UPDATE " << db.makeTable("accounts") << " u "
+			<< "INNER JOIN " << db.makeTable("characters") << " c ON u.account_id = c.account_id "
 			<< "SET "
 			<< "	u.banned = 1, "
 			<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL :expire DAY), "
@@ -690,8 +690,8 @@ auto ManagementFunctions::unban(Player *player, const chat_t &args) -> ChatResul
 		auto &db = Database::getCharDb();
 		auto &sql = db.getSession();
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << db.makeTable("user_accounts") << " u "
-			<< "INNER JOIN " << db.makeTable("characters") << " c ON u.user_id = c.user_id "
+			<< "UPDATE " << db.makeTable("accounts") << " u "
+			<< "INNER JOIN " << db.makeTable("characters") << " c ON u.account_id = c.account_id "
 			<< "SET "
 			<< "	u.banned = 0, "
 			<< "	u.ban_reason = NULL, "

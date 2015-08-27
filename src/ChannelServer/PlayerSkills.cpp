@@ -84,7 +84,7 @@ auto PlayerSkills::load() -> void {
 	opt_string_t blessingPlayerName;
 	optional_t<player_level_t> blessingPlayerLevel;
 
-	account_id_t accountId = m_player->getUserId();
+	account_id_t accountId = m_player->getAccountId();
 	world_id_t worldId = m_player->getWorldId();
 
 	// TODO FIXME skill
@@ -94,7 +94,7 @@ auto PlayerSkills::load() -> void {
 	sql.once
 		<< "SELECT c.name, c.level "
 		<< "FROM " << db.makeTable("characters") << " c "
-		<< "WHERE c.world_id = :world AND c.user_id = :account AND c.character_id <> :char "
+		<< "WHERE c.world_id = :world AND c.account_id = :account AND c.character_id <> :char "
 		<< "ORDER BY c.level DESC "
 		<< "LIMIT 1 ",
 		soci::use(accountId, "account"),

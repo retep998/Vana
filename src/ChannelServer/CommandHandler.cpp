@@ -238,8 +238,8 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 				auto &db = Database::getCharDb();
 				auto &sql = db.getSession();
 				sql.once
-					<< "UPDATE " << db.makeTable("user_accounts") << " u "
-					<< "INNER JOIN " << db.makeTable("characters") << " c ON u.user_id = c.user_id "
+					<< "UPDATE " << db.makeTable("accounts") << " u "
+					<< "INNER JOIN " << db.makeTable("characters") << " c ON u.account_id = c.account_id "
 					<< "SET "
 					<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL :expire DAY),"
 					<< "	u.ban_reason = :reason,"

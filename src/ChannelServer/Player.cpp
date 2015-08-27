@@ -264,7 +264,7 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 	sql.once
 		<< "SELECT c.*, u.gm_level, u.admin "
 		<< "FROM " << db.makeTable("characters") << " c "
-		<< "INNER JOIN " << db.makeTable("user_accounts") << " u ON c.user_id = u.user_id "
+		<< "INNER JOIN " << db.makeTable("accounts") << " u ON c.account_id = u.account_id "
 		<< "WHERE c.character_id = :char",
 		soci::use(id, "char"),
 		soci::into(row);
@@ -276,7 +276,7 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 	}
 
 	m_name = row.get<string_t>("name");
-	m_userId = row.get<account_id_t>("user_id");
+	m_accountId = row.get<account_id_t>("account_id");
 	m_map = row.get<map_id_t>("map");
 	m_gmLevel = row.get<int32_t>("gm_level");
 	m_admin = row.get<bool>("admin");
@@ -731,8 +731,8 @@ auto Player::setOnline(bool online) -> void {
 	auto &db = Database::getCharDb();
 	auto &sql = db.getSession();
 	sql.once
-		<< "UPDATE " << db.makeTable("user_accounts") << " u "
-		<< "INNER JOIN " << db.makeTable("characters") << " c ON u.user_id = c.user_id "
+		<< "UPDATE " << db.makeTable("accounts") << " u "
+		<< "INNER JOIN " << db.makeTable("characters") << " c ON u.account_id = c.account_id "
 		<< "SET "
 		<< "	u.online = :onlineId, "
 		<< "	c.online = :online "

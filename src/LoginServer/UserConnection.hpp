@@ -34,7 +34,7 @@ public:
 	auto setWorldId(world_id_t worldId) -> void { m_worldId = worldId; }
 	auto setAdmin(bool value) -> void { m_admin = value; }
 	auto setChannel(channel_id_t channel) -> void {	m_channel = channel; }
-	auto setUserId(account_id_t id) -> void { m_userId = id; }
+	auto setAccountId(account_id_t id) -> void { m_accountId = id; }
 	auto setStatus(PlayerStatus::PlayerStatus status) -> void { m_status = status; }
 	auto setPin(int32_t pin) -> void { m_pin = pin; }
 	auto setCharDeletePassword(opt_int32_t charDeletePassword) -> void { m_charDeletePassword = charDeletePassword; }
@@ -47,7 +47,7 @@ public:
 	auto getWorldId() const -> world_id_t { return m_worldId; }
 	auto isAdmin() const -> bool { return m_admin; }
 	auto getChannel() const -> channel_id_t { return m_channel; }
-	auto getUserId() const -> account_id_t { return m_userId; }
+	auto getAccountId() const -> account_id_t { return m_accountId; }
 	auto getGmLevel() const -> int32_t { return m_gmLevel; }
 	auto getStatus() const -> PlayerStatus::PlayerStatus { return m_status; }
 	auto getPin() const -> int32_t { return m_pin; }
@@ -67,7 +67,7 @@ private:
 	world_id_t m_worldId = -1;
 	int8_t m_quietBanReason = 0;
 	channel_id_t m_channel = 0;
-	account_id_t m_userId = 0;
+	account_id_t m_accountId = 0;
 	int32_t m_pin = 0;
 	int32_t m_invalidLogins = 0;
 	int32_t m_gmLevel = 0;

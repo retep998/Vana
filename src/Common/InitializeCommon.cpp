@@ -141,8 +141,8 @@ auto Initializing::setUsersOffline(AbstractServer *server, int32_t onlineId) -> 
 	auto &db = Database::getCharDb();
 	auto &sql = db.getSession();
 	sql.once
-		<< "UPDATE " << db.makeTable("user_accounts") << " u "
-		<< "INNER JOIN " << db.makeTable("characters") << " c ON u.user_id = c.user_id "
+		<< "UPDATE " << db.makeTable("accounts") << " u "
+		<< "INNER JOIN " << db.makeTable("characters") << " c ON u.account_id = c.account_id "
 		<< "SET "
 		<< "	u.online = 0,"
 		<< "	c.online = 0 "

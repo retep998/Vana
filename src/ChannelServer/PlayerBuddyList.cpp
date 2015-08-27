@@ -41,7 +41,7 @@ auto PlayerBuddyList::load() -> void {
 		<< "SELECT bl.id, bl.buddy_character_id, bl.name AS name_cache, c.name, bl.group_name, CASE WHEN c.online = 1 THEN u.online ELSE 0 END AS `online` "
 		<< "FROM " << db.makeTable("buddylist") << " bl "
 		<< "LEFT JOIN " << db.makeTable("characters") << " c ON bl.buddy_character_id = c.character_id "
-		<< "LEFT JOIN " << db.makeTable("user_accounts") << " u ON c.user_id = u.user_id "
+		<< "LEFT JOIN " << db.makeTable("accounts") << " u ON c.account_id = u.account_id "
 		<< "WHERE bl.character_id = :char",
 		soci::use(m_player->getId(), "char"));
 
@@ -88,7 +88,7 @@ auto PlayerBuddyList::addBuddy(const string_t &name, const string_t &group, bool
 		<< "	WHERE b.character_id = c.character_id"
 		<< ") AS buddylist_size "
 		<< "FROM " << db.makeTable("characters") << " c "
-		<< "INNER JOIN " << db.makeTable("user_accounts") << " u ON c.user_id = u.user_id "
+		<< "INNER JOIN " << db.makeTable("accounts") << " u ON c.account_id = u.account_id "
 		<< "WHERE c.name = :name AND c.world_id = :world ",
 		soci::use(name, "name"),
 		soci::use(ChannelServer::getInstance().getWorldId(), "world"),
@@ -147,7 +147,7 @@ auto PlayerBuddyList::addBuddy(const string_t &name, const string_t &group, bool
 			<< "SELECT bl.id, bl.buddy_character_id, bl.name AS name_cache, c.name, bl.group_name, CASE WHEN c.online = 1 THEN u.online ELSE 0 END AS `online` "
 			<< "FROM " << db.makeTable("buddylist") << " bl "
 			<< "LEFT JOIN " << db.makeTable("characters") << " c ON bl.buddy_character_id = c.character_id "
-			<< "LEFT JOIN " << db.makeTable("user_accounts") << " u ON c.user_id = u.user_id "
+			<< "LEFT JOIN " << db.makeTable("accounts") << " u ON c.account_id = u.account_id "
 			<< "WHERE bl.id = :row",
 			soci::use(rowId, "row"),
 			soci::into(row);

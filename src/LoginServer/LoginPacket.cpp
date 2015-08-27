@@ -56,7 +56,7 @@ PACKET_IMPL(loginConnect, UserConnection *user, const string_t &username) {
 		.add<header_t>(SMSG_AUTHENTICATION)
 		.add<int16_t>(0)
 		.unk<int32_t>()
-		.add<account_id_t>(user->getUserId());
+		.add<account_id_t>(user->getAccountId());
 
 	switch (user->getStatus()) {
 		case PlayerStatus::SetGender:

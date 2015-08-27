@@ -68,7 +68,7 @@ auto RankingCalculator::all() -> void {
 	soci::statement statement = (sql.prepare
 		<< "SELECT c.character_id, c.exp, c.fame, c.job, c.level, c.world_id, c.time_level, c.fame_cpos, c.world_cpos, c.job_cpos, c.overall_cpos "
 		<< "FROM " << db.makeTable("characters") << " c "
-		<< "INNER JOIN " << db.makeTable("user_accounts") << " u ON u.user_id = c.user_id "
+		<< "INNER JOIN " << db.makeTable("accounts") << " u ON u.account_id = c.account_id "
 		<< "WHERE "
 		<< "	(u.banned = 0 OR u.ban_expire >= NOW()) "
 		<< "	AND u.gm_level IS NULL "
