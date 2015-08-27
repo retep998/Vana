@@ -38,7 +38,7 @@ public:
 	auto rehashConfig(const WorldConfig &config) -> void;
 	auto setScrollingHeader(const string_t &message) -> void;
 	auto setRates(const RatesConfig &rates) -> void;
-	auto resetRates() -> void;
+	auto resetRates(int32_t flags) -> void;
 	auto getPlayerDataProvider() -> PlayerDataProvider &;
 	auto getChannels() -> Channels &;
 	auto isConnected() const -> bool;

@@ -259,9 +259,11 @@ namespace LuaExports {
 	auto isDst(lua_State *luaVm) -> lua_return_t;
 
 	// Rates
+	auto getDropMeso(lua_State *luaVm) -> lua_return_t;
 	auto getDropRate(lua_State *luaVm) -> lua_return_t;
 	auto getExpRate(lua_State *luaVm) -> lua_return_t;
-	auto getMesoRate(lua_State *luaVm) -> lua_return_t;
+	auto getGlobalDropMeso(lua_State *luaVm) -> lua_return_t;
+	auto getGlobalDropRate(lua_State *luaVm) -> lua_return_t;
 	auto getQuestExpRate(lua_State *luaVm) -> lua_return_t;
 
 	// Party

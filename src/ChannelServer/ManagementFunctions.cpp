@@ -726,30 +726,74 @@ auto ManagementFunctions::rehash(Player *player, const chat_t &args) -> ChatResu
 auto ManagementFunctions::rates(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (!args.empty()) {
-		if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) ?(\d+)?)", matches) == MatchResult::NoMatches) {
+		if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) ?(\w+)? ?(\-?\d+)?)", matches) == MatchResult::NoMatches) {
 			return ChatResult::ShowSyntax;
 		}
 		string_t type = matches[1];
+		string_t classification = matches[2];
+		if (!classification.empty()) {
+			if (classification != "mobexp" &&
+				classification != "questexp" &&
+				classification != "drop" &&
+				classification != "dropmeso" &&
+				classification != "globaldrop" &&
+				classification != "globaldropmeso") {
+				return ChatResult::ShowSyntax;
+			}
+		}
+		string_t value = matches[3];
 		if (type == "view") {
 			auto display = [player](const string_t &type, int32_t rate) {
 				ChatHandlerFunctions::showInfo(player, type + " rate: " + StringUtilities::lexical_cast<string_t>(rate) + "x");
 			};
-			ChatHandlerFunctions::showInfo(player, "Current rates");
+
+			ChatHandlerFunctions::showInfo(player, "Current Rates");
 			auto &config = ChannelServer::getInstance().getConfig();
-			display("Mob EXP", config.rates.mobExpRate);
-			display("Mob meso", config.rates.mobMesoRate);
-			display("Quest EXP", config.rates.questExpRate);
-			display("Drop", config.rates.dropRate);
+			if (classification.empty() || classification == "mobexp") display("Mob EXP", config.rates.mobExpRate);
+			if (classification.empty() || classification == "questexp") display("Quest EXP", config.rates.questExpRate);
+			if (classification.empty() || classification == "drop") display("Drop", config.rates.dropRate);
+			if (classification.empty() || classification == "dropmeso") display("Drop meso", config.rates.dropMeso);
+			if (classification.empty() || classification == "globaldrop") {
+				display("Global drop", config.rates.isGlobalDropConsistentWithRegularDropRate() ?
+					config.rates.dropRate :
+					config.rates.globalDropRate);
+			}
+			if (classification.empty() || classification == "globaldropmeso") {
+				display("Global drop meso", config.rates.isGlobalDropMesoConsistentWithRegularDropMesoRate() ?
+					config.rates.dropMeso :
+					config.rates.globalDropMeso);
+			}
 		}
-		else if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (\d+))", matches) == MatchResult::AnyMatches) {
-			string_t value = matches[2];
+		else if (type == "reset") {
+			if (classification.empty()) {
+				ChatHandlerFunctions::showInfo(player, "Sent request to reset all rates");
+				ChannelServer::getInstance().sendWorld(SyncPacket::ConfigPacket::resetRates(RatesConfig::Types::all));
+			}
+			else {
+				int32_t rateType = 0;
+				if (classification == "mobexp") rateType = RatesConfig::Types::mobExpRate;
+				else if (classification == "drop") rateType = RatesConfig::Types::dropRate;
+				else if (classification == "dropmeso") rateType = RatesConfig::Types::dropMeso;
+				else if (classification == "questexp") rateType = RatesConfig::Types::questExpRate;
+				else if (classification == "globaldrop") rateType = RatesConfig::Types::globalDropRate;
+				else if (classification == "globaldropmeso") rateType = RatesConfig::Types::globalDropMeso;
+				ChatHandlerFunctions::showInfo(player, "Sent request to reset specified rate");
+				ChannelServer::getInstance().sendWorld(SyncPacket::ConfigPacket::resetRates(rateType));
+			}
+		}
+		else if (type == "set") {
+			if (classification.empty()) {
+				return ChatResult::ShowSyntax;
+			}
+
 			int32_t rateType = 0;
 			int32_t newAmount = value.empty() ? 1 : atoi(value.c_str());
-
-			if (type == "mobexp") rateType = RatesConfig::Types::MobExpRate;
-			if (type == "mobmeso") rateType = RatesConfig::Types::MobMesoRate;
-			if (type == "questexp") rateType = RatesConfig::Types::QuestExpRate;
-			if (type == "drop") rateType = RatesConfig::Types::DropRate;
+			if (classification == "mobexp") rateType = RatesConfig::Types::mobExpRate;
+			else if (classification == "drop") rateType = RatesConfig::Types::dropRate;
+			else if (classification == "dropmeso") rateType = RatesConfig::Types::dropMeso;
+			else if (classification == "questexp") rateType = RatesConfig::Types::questExpRate;
+			else if (classification == "globaldrop") rateType = RatesConfig::Types::globalDropRate;
+			else if (classification == "globaldropmeso") rateType = RatesConfig::Types::globalDropMeso;
 			ChannelServer::getInstance().modifyRate(rateType, newAmount);
 			ChatHandlerFunctions::showInfo(player, "Sent request to modify rate");
 		}
@@ -758,8 +802,7 @@ auto ManagementFunctions::rates(Player *player, const chat_t &args) -> ChatResul
 		}
 	}
 	else {
-		ChatHandlerFunctions::showInfo(player, "Sent request to reset rates");
-		ChannelServer::getInstance().sendWorld(SyncPacket::ConfigPacket::resetRates());
+		return ChatResult::ShowSyntax;
 	}
 	return ChatResult::HandledDisplay;
 }

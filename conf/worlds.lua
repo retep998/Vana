@@ -17,6 +17,9 @@ function generateWorld(props)
 			["quest_exp"] = 1,
 			["mob_meso"] = 1,
 			["drop_rate"] = 1,
+			-- -1 means that the global drop rate should use the regular drop rate, including when it's modified at runtime
+			["global_drop_rate"] = -1,
+			["global_drop_meso"] = -1,
 		},
 		-- Max allowed character slots (between 1 and 6)
 		["max_characters"] = 6,

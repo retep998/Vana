@@ -355,7 +355,9 @@ auto MapFunctions::listReactors(Player *player, const chat_t &args) -> ChatResul
 }
 
 auto MapFunctions::listNpcs(Player *player, const chat_t &args) -> ChatResult {
-	map_id_t mapId = args.empty() ? player->getMapId() : ChatHandlerFunctions::getMap(args, player);
+	map_id_t mapId = args.empty() ?
+		player->getMapId() :
+		ChatHandlerFunctions::getMap(args, player);
 	Map *map = Maps::getMap(mapId);
 	if (map == nullptr) {
 		ChatHandlerFunctions::showError(player, "Invalid map: " + args);
@@ -407,7 +409,9 @@ auto MapFunctions::listNpcs(Player *player, const chat_t &args) -> ChatResult {
 }
 
 auto MapFunctions::mapDimensions(Player *player, const chat_t &args) -> ChatResult {
-	map_id_t mapId = args.empty() ? player->getMapId() : ChatHandlerFunctions::getMap(args, player);
+	map_id_t mapId = args.empty() ?
+		player->getMapId() :
+		ChatHandlerFunctions::getMap(args, player);
 	Map *map = Maps::getMap(mapId);
 	if (map == nullptr) {
 		ChatHandlerFunctions::showError(player, "Invalid map: " + args);

@@ -58,32 +58,56 @@ auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t dropping
 			partyId = party->getId();
 		}
 	}
+
+	auto &config = channel.getConfig();
+	int32_t dropRate = config.rates.dropRate;
+	int32_t globalDropRate = config.rates.globalDropRate;
+	int32_t mesoRate = config.rates.dropMeso;
+	int32_t globalMesoRate = config.rates.globalDropMeso;
+	if (config.rates.isGlobalDropConsistentWithRegularDropRate()) {
+		globalDropRate = dropRate;
+	}
+	if (config.rates.isGlobalDropMesoConsistentWithRegularDropMesoRate()) {
+		globalMesoRate = mesoRate;
+	}
+
 	if (droppingLevel != 0 && globalDrops.size() != 0) {
 		DropInfo d;
 		int8_t continent = channel.getMapDataProvider().getContinent(mapId).get(0);
 
-		for (const auto &globalDrop : globalDrops) {
-			if (droppingLevel >= globalDrop.minLevel && droppingLevel <= globalDrop.maxLevel) {
-				if (globalDrop.continent == 0 || (continent == globalDrop.continent)) {
-					d = DropInfo();
-					d.chance = globalDrop.chance;
-					d.isMesos = globalDrop.isMesos;
-					d.itemId = globalDrop.itemId;
-					d.minAmount = globalDrop.minAmount;
-					d.maxAmount = globalDrop.maxAmount;
-					d.questId = globalDrop.questId;
-					drops.push_back(d);
+		if (globalDropRate > 0) {
+			for (const auto &globalDrop : globalDrops) {
+				if (droppingLevel >= globalDrop.minLevel && droppingLevel <= globalDrop.maxLevel) {
+					if (globalDrop.continent == 0 || (continent == globalDrop.continent)) {
+						d = DropInfo{};
+						d.isGlobal = true;
+						d.chance = globalDrop.chance;
+						d.isMesos = globalDrop.isMesos;
+						d.itemId = globalDrop.itemId;
+						d.minAmount = globalDrop.minAmount;
+						d.maxAmount = globalDrop.maxAmount;
+						d.questId = globalDrop.questId;
+						drops.push_back(d);
+					}
 				}
 			}
 		}
 	}
 
+	if (config.rates.dropRate == 0) {
+		return;
+	}
+
 	Randomizer::shuffle(drops);
-
 	coord_t mod = explosive ? 35 : 25;
-	auto &config = channel.getConfig();
-
 	for (const auto &dropInfo : drops) {
+		if (dropInfo.isMesos && mesoRate == 0) {
+			continue;
+		}
+		if (dropInfo.isGlobal && dropInfo.isMesos && globalMesoRate == 0) {
+			continue;
+		}
+
 		slot_qty_t amount = static_cast<slot_qty_t>(Randomizer::rand<int32_t>(dropInfo.maxAmount, dropInfo.minAmount));
 		Drop *drop = nullptr;
 		uint32_t chance = dropInfo.chance;
@@ -93,7 +117,9 @@ auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t dropping
 		}
 		else {
 			chance = chance * taunt / 100;
-			chance *= config.rates.dropRate;
+			chance *= dropInfo.isGlobal ?
+				globalDropRate :
+				dropRate;
 		}
 
 		if (Randomizer::rand<uint32_t>(999999) < chance) {
@@ -135,7 +161,10 @@ auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t dropping
 			else {
 				mesos_t mesos = amount;
 				if (!isSteal) {
-					mesos *= config.rates.mobMesoRate;
+					mesos *= dropInfo.isGlobal ?
+						globalMesoRate :
+						mesoRate;
+
 					if (player != nullptr) {
 						auto mesoUp = player->getActiveBuffs()->getMesoUpSource();
 						if (mesoUp.is_initialized()) {

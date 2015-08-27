@@ -268,10 +268,12 @@ auto ChannelServer::setScrollingHeader(const string_t &message) -> void {
 
 auto ChannelServer::modifyRate(int32_t rateType, int32_t newValue) -> void {
 	RatesConfig currentRates = m_config.rates;
-	if (rateType & RatesConfig::Types::MobExpRate) currentRates.mobExpRate = newValue;
-	if (rateType & RatesConfig::Types::MobMesoRate) currentRates.mobMesoRate = newValue;
-	if (rateType & RatesConfig::Types::QuestExpRate) currentRates.questExpRate = newValue;
-	if (rateType & RatesConfig::Types::DropRate) currentRates.dropRate = newValue;
+	if (rateType & RatesConfig::Types::mobExpRate) currentRates.mobExpRate = newValue;
+	if (rateType & RatesConfig::Types::questExpRate) currentRates.questExpRate = newValue;
+	if (rateType & RatesConfig::Types::dropRate) currentRates.dropRate = newValue;
+	if (rateType & RatesConfig::Types::dropMeso) currentRates.dropMeso = newValue;
+	if (rateType & RatesConfig::Types::globalDropRate) currentRates.globalDropRate = newValue;
+	if (rateType & RatesConfig::Types::globalDropMeso) currentRates.globalDropMeso = newValue;
 	sendWorld(SyncPacket::ConfigPacket::modifyRates(currentRates));
 }
 

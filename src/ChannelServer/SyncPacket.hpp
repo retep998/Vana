@@ -30,7 +30,7 @@ struct RatesConfig;
 namespace SyncPacket {
 	namespace ConfigPacket {
 		PACKET(scrollingHeader, const string_t &message);
-		PACKET(resetRates);
+		PACKET(resetRates, int32_t flags);
 		PACKET(modifyRates, const RatesConfig &rates);
 	}
 	namespace PlayerPacket {

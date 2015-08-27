@@ -81,8 +81,32 @@ auto WorldServer::setRates(const RatesConfig &rates) -> void {
 	m_channels.send(SyncPacket::ConfigPacket::setRates(rates));
 }
 
-auto WorldServer::resetRates() -> void {
-	setRates(m_defaultRates);
+auto WorldServer::resetRates(int32_t flags) -> void {
+	if ((flags & RatesConfig::Types::all) == RatesConfig::Types::all) {
+		setRates(m_defaultRates);
+	}
+	else {
+		RatesConfig newRates = m_config.rates;
+		if ((flags & RatesConfig::Types::mobExpRate) == RatesConfig::Types::mobExpRate) {
+			newRates.mobExpRate = m_defaultRates.mobExpRate;
+		}
+		if ((flags & RatesConfig::Types::questExpRate) == RatesConfig::Types::questExpRate) {
+			newRates.questExpRate = m_defaultRates.questExpRate;
+		}
+		if ((flags & RatesConfig::Types::dropRate) == RatesConfig::Types::dropRate) {
+			newRates.dropRate = m_defaultRates.dropRate;
+		}
+		if ((flags & RatesConfig::Types::dropMeso) == RatesConfig::Types::dropMeso) {
+			newRates.dropMeso = m_defaultRates.dropMeso;
+		}
+		if ((flags & RatesConfig::Types::globalDropRate) == RatesConfig::Types::globalDropRate) {
+			newRates.globalDropRate = m_defaultRates.globalDropRate;
+		}
+		if ((flags & RatesConfig::Types::globalDropMeso) == RatesConfig::Types::globalDropMeso) {
+			newRates.globalDropMeso = m_defaultRates.globalDropMeso;
+		}
+		setRates(newRates);
+	}
 }
 
 auto WorldServer::getPlayerDataProvider() -> PlayerDataProvider & {

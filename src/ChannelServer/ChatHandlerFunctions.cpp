@@ -629,7 +629,7 @@ auto ChatHandlerFunctions::initialize() -> void {
 	sCommandList["rehash"] = command.addToMap();
 
 	command.command = &ManagementFunctions::rates;
-	command.syntax = "<${view | mobexp | mobmeso | questexp | drop}> [#new rate]";
+	command.syntax = "<${view | reset | set}> <${mobexp | dropmeso | questexp | drop | globaldrop | globaldropmeso}> [#new rate]";
 	command.notes.push_back("Allows the viewing or setting of rates on the current world");
 	sCommandList["rates"] = command.addToMap();
 	#pragma endregion

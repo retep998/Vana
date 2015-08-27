@@ -283,9 +283,11 @@ auto LuaScriptable::initialize() -> void {
 	expose("isDst", &LuaExports::isDst);
 
 	// Rates
+	expose("getDropMeso", &LuaExports::getDropMeso);
 	expose("getDropRate", &LuaExports::getDropRate);
 	expose("getExpRate", &LuaExports::getExpRate);
-	expose("getMesoRate", &LuaExports::getMesoRate);
+	expose("getGlobalDropMeso", &LuaExports::getGlobalDropMeso);
+	expose("getGlobalDropRate", &LuaExports::getGlobalDropRate);
 	expose("getQuestExpRate", &LuaExports::getQuestExpRate);
 
 	// Party
@@ -1856,6 +1858,12 @@ auto LuaExports::isDst(lua_State *luaVm) -> lua_return_t {
 }
 
 // Rates
+auto LuaExports::getDropMeso(lua_State *luaVm) -> lua_return_t {
+	auto &env = getEnvironment(luaVm);
+	env.push<int32_t>(luaVm, ChannelServer::getInstance().getConfig().rates.dropMeso);
+	return 1;
+}
+
 auto LuaExports::getDropRate(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	env.push<int32_t>(luaVm, ChannelServer::getInstance().getConfig().rates.dropRate);
@@ -1868,15 +1876,21 @@ auto LuaExports::getExpRate(lua_State *luaVm) -> lua_return_t {
 	return 1;
 }
 
-auto LuaExports::getQuestExpRate(lua_State *luaVm) -> lua_return_t {
+auto LuaExports::getGlobalDropMeso(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.push<int32_t>(luaVm, ChannelServer::getInstance().getConfig().rates.questExpRate);
+	env.push<int32_t>(luaVm, ChannelServer::getInstance().getConfig().rates.globalDropMeso);
 	return 1;
 }
 
-auto LuaExports::getMesoRate(lua_State *luaVm) -> lua_return_t {
+auto LuaExports::getGlobalDropRate(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	env.push<int32_t>(luaVm, ChannelServer::getInstance().getConfig().rates.mobMesoRate);
+	env.push<int32_t>(luaVm, ChannelServer::getInstance().getConfig().rates.globalDropRate);
+	return 1;
+}
+
+auto LuaExports::getQuestExpRate(lua_State *luaVm) -> lua_return_t {
+	auto &env = getEnvironment(luaVm);
+	env.push<int32_t>(luaVm, ChannelServer::getInstance().getConfig().rates.questExpRate);
 	return 1;
 }
 

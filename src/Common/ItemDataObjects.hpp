@@ -199,6 +199,7 @@ struct EquipInfo {
 };
 
 struct DropInfo {
+	bool isGlobal = false;
 	bool isMesos = false;
 	item_id_t itemId = 0;
 	int32_t minAmount = 0;

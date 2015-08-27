@@ -36,12 +36,13 @@ PACKET_IMPL(ConfigPacket::scrollingHeader, const string_t &message) {
 	return builder;
 }
 
-PACKET_IMPL(ConfigPacket::resetRates) {
+PACKET_IMPL(ConfigPacket::resetRates, int32_t flags) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Config)
-		.add<sync_t>(Sync::Config::RateReset);
+		.add<sync_t>(Sync::Config::RateReset)
+		.add<int32_t>(flags);
 	return builder;
 }
 
