@@ -15,7 +15,7 @@ function generateWorld(props)
 		["rates"] = {
 			["mob_exp"] = 1,
 			["quest_exp"] = 1,
-			["mob_meso"] = 1,
+			["drop_meso"] = 1,
 			["drop_rate"] = 1,
 			-- -1 means that the global drop rate should use the regular drop rate, including when it's modified at runtime
 			["global_drop_rate"] = -1,
