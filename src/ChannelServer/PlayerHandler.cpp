@@ -44,6 +44,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillDataProvider.hpp"
 #include "Skills.hpp"
 #include "SkillsPacket.hpp"
+#include "StatusInfo.hpp"
 #include "Summon.hpp"
 #include "SummonHandler.hpp"
 #include "TimeUtilities.hpp"
@@ -491,6 +492,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 	auto picking = !pickpocket.is_initialized() ?
 		nullptr :
 		player->getActiveBuffs()->getBuffSkillInfo(pickpocket.get());
+	bool reflectApplied = false;
 
 	for (const auto &target : attack.damages) {
 		damage_t targetTotal = 0;
@@ -499,6 +501,13 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 		if (mob == nullptr) {
 			continue;
 		}
+		if (mob->hasWeaponReflection() && !reflectApplied) {
+			auto &reflect = mob->getWeaponReflection().get();
+			int32_t amount = Randomizer::range<int32_t>(reflect.val, reflect.reflection);
+			player->getStats()->modifyHp(-amount);
+			reflectApplied = true;
+		}
+
 		origin = mob->getPos(); // Info for pickpocket before mob is set to nullptr (in the case that mob dies)
 		for (const auto &hit : target.second) {
 			damage_t damage = hit;
@@ -701,12 +710,18 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 
 	int32_t maxHp = 0;
 	damage_t firstHit = 0;
-
+	bool reflectApplied = false;
 	for (const auto &target : attack.damages) {
 		map_object_t mapMobId = target.first;
 		auto mob = player->getMap()->getMob(mapMobId);
 		if (mob == nullptr) {
 			continue;
+		}
+		if (mob->hasWeaponReflection() && !reflectApplied) {
+			auto &reflect = mob->getWeaponReflection().get();
+			int32_t amount = Randomizer::range<int32_t>(reflect.val, reflect.reflection);
+			player->getStats()->modifyHp(-amount);
+			reflectApplied = true;
 		}
 		damage_t targetTotal = 0;
 		int8_t connectedHits = 0;
@@ -821,6 +836,7 @@ auto PlayerHandler::useSpellAttack(Player *player, PacketReader &reader) -> void
 		eater.x = skillInfo->x;
 	}
 
+	bool reflectApplied = false;
 	for (const auto &target : attack.damages) {
 		damage_t targetTotal = 0;
 		map_object_t mapMobId = target.first;
@@ -832,6 +848,12 @@ auto PlayerHandler::useSpellAttack(Player *player, PacketReader &reader) -> void
 		if (attack.isHeal && !mob->isUndead()) {
 			// Hacking
 			return;
+		}
+		if (mob->hasMagicReflection() && !reflectApplied) {
+			auto &reflect = mob->getMagicReflection().get();
+			int32_t amount = Randomizer::range<int32_t>(reflect.val, reflect.reflection);
+			player->getStats()->modifyHp(-amount);
+			reflectApplied = true;
 		}
 
 		for (const auto &hit : target.second) {
@@ -877,6 +899,7 @@ auto PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &reader) 
 
 	skill_id_t skillId = attack.skillId;
 	skill_level_t level = attack.skillLevel;
+	bool reflectApplied = false;
 
 	for (const auto &target : attack.damages) {
 		damage_t targetTotal = 0;
@@ -885,6 +908,12 @@ auto PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &reader) 
 		auto mob = player->getMap()->getMob(mapMobId);
 		if (mob == nullptr) {
 			continue;
+		}
+		if (mob->hasWeaponReflection() && !reflectApplied) {
+			auto &reflect = mob->getWeaponReflection().get();
+			int32_t amount = Randomizer::range<int32_t>(reflect.val, reflect.reflection);
+			player->getStats()->modifyHp(-amount);
+			reflectApplied = true;
 		}
 
 		for (const auto &hit : target.second) {

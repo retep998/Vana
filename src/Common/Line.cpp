@@ -90,24 +90,24 @@ auto Line::interpolateForY(coord_t xValue) const -> optional_t<coord_t> {
 	return static_cast<coord_t>(difference + pt1.y);
 }
 
-auto Line::offset(coord_t xOffset, coord_t yOffset) const -> Line {
+auto Line::move(coord_t xOffset, coord_t yOffset) const -> Line {
 	return Line{
-		pt1.offset(xOffset, yOffset),
-		pt2.offset(xOffset, yOffset)
+		pt1.move(xOffset, yOffset),
+		pt2.move(xOffset, yOffset)
 	};
 }
 
-auto Line::offsetX(coord_t xOffset) const -> Line {
+auto Line::moveX(coord_t xOffset) const -> Line {
 	return Line{
-		pt1.offsetX(xOffset),
-		pt2.offsetX(xOffset)
+		pt1.moveX(xOffset),
+		pt2.moveX(xOffset)
 	};
 }
 
-auto Line::offsetY(coord_t yOffset) const -> Line {
+auto Line::moveY(coord_t yOffset) const -> Line {
 	return Line{
-		pt1.offsetY(yOffset),
-		pt2.offsetY(yOffset)
+		pt1.moveY(yOffset),
+		pt2.moveY(yOffset)
 	};
 }
 

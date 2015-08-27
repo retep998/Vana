@@ -34,9 +34,9 @@ struct Point {
 	Point() = default;
 
 	auto isOrigin() const -> bool;
-	auto offset(coord_t x, coord_t y) const -> Point;
-	auto offsetX(coord_t x) const -> Point;
-	auto offsetY(coord_t y) const -> Point;
+	auto move(coord_t x, coord_t y) const -> Point;
+	auto moveX(coord_t x) const -> Point;
+	auto moveY(coord_t y) const -> Point;
 
 	auto operator-(const Point &p) const -> int32_t {
 		return static_cast<int32_t>(std::sqrt(std::pow(static_cast<float>(x - p.x), 2) + std::pow(static_cast<float>(y - p.y), 2)));

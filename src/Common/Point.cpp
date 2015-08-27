@@ -27,14 +27,14 @@ auto Point::isOrigin() const -> bool {
 	return x == 0 && y == 0;
 }
 
-auto Point::offset(coord_t x, coord_t y) const -> Point {
+auto Point::move(coord_t x, coord_t y) const -> Point {
 	return Point{this->x + x, this->y + y};
 }
 
-auto Point::offsetX(coord_t x) const -> Point {
+auto Point::moveX(coord_t x) const -> Point {
 	return Point{this->x + x, this->y};
 }
 
-auto Point::offsetY(coord_t y) const -> Point {
+auto Point::moveY(coord_t y) const -> Point {
 	return Point{this->x, this->y + y};
 }

@@ -42,6 +42,20 @@ public:
 	}
 
 	template <typename TNumber>
+	static auto range(TNumber base, TNumber modifier) -> std::enable_if_t<std::is_integral<TNumber>::value, TNumber> {
+		TNumber min = base - (modifier / 2);
+		TNumber max = base + (modifier / 2);
+		return s_rand.rand(max, min);
+	}
+
+	template <typename TNumber>
+	static auto range(TNumber base, TNumber modifier) -> std::enable_if_t<std::is_floating_point<TNumber>::value, TNumber> {
+		TNumber min = base - (modifier / 2);
+		TNumber max = base + (modifier / 2);
+		return s_rand.rand(max, min);
+	}
+
+	template <typename TNumber>
 	static auto rand(TNumber max, TNumber min = 0) -> std::enable_if_t<std::is_integral<TNumber>::value, TNumber> {
 		return s_rand.rand(max, min);
 	}

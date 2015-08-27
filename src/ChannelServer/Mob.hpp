@@ -58,6 +58,10 @@ public:
 	auto resetAnticipatedSkill() -> void;
 	auto getStatusBits() const -> int32_t;
 	auto getStatusInfo() const -> const ord_map_t<int32_t, StatusInfo> &;
+	auto hasWeaponReflection() const -> bool;
+	auto hasMagicReflection() const -> bool;
+	auto getWeaponReflection() -> optional_t<StatusInfo>;
+	auto getMagicReflection() -> optional_t<StatusInfo>;
 
 	auto addMarker(Player *player) -> void;
 	auto removeMarker(Player *player) -> void;
@@ -108,9 +112,7 @@ private:
 	auto endControl() -> void;
 	auto addSpawn(map_object_t mapMobId, view_ptr_t<Mob> mob) -> void { m_spawns[mapMobId] = mob; }
 	auto setOwner(view_ptr_t<Mob> owner) -> void { m_owner = owner; }
-	auto getStatusValue(int32_t status) -> int32_t;
-	auto getWeaponReflection() -> int32_t;
-	auto getMagicReflection() -> int32_t;
+	auto getStatusValue(int32_t status) -> optional_t<StatusInfo>;
 	auto hasImmunity() const -> bool;
 	auto hasStatus(int32_t status) const -> bool;
 	auto canCastSkills() const -> bool;

@@ -145,7 +145,7 @@ public:
 	auto addWebbedMob(map_object_t mapMobId) -> void;
 	auto removeWebbedMob(map_object_t mapMobId) -> void;
 	auto mobDeath(ref_ptr_t<Mob> mob, bool fromExplosion) -> void;
-	auto healMobs(int32_t hp, int32_t mp, const Rect &dimensions) -> void;
+	auto healMobs(int32_t baseHp, int32_t hpRange, const Rect &dimensions) -> void;
 	auto statusMobs(vector_t<StatusInfo> &statuses, const Rect &dimensions) -> void;
 	auto spawnZakum(const Point &pos, foothold_id_t foothold = 0) -> void;
 	auto convertShellToNormal(ref_ptr_t<Mob> mob) -> void;

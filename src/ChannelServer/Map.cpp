@@ -912,13 +912,13 @@ auto Map::countMobs(mob_id_t mobId) -> int32_t {
 	return mobCount;
 }
 
-auto Map::healMobs(int32_t hp, int32_t mp, const Rect &dimensions) -> void {
+auto Map::healMobs(int32_t baseHp, int32_t healRange, const Rect &dimensions) -> void {
 	// Iterator invalidation
 	auto mobMap = m_mobs;
 	for (const auto &kvp : mobMap) {
 		if (auto mob = kvp.second) {
 			if (dimensions.contains(mob->getPos())) {
-				mob->skillHeal(hp, mp);
+				mob->skillHeal(baseHp, healRange);
 			}
 		}
 	}

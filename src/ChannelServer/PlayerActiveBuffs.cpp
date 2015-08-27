@@ -101,7 +101,9 @@ auto PlayerActiveBuffs::addBuff(const BuffSource &source, const Buff &buff, cons
 	bool hasTimer = true;
 	bool displaces = true;
 	const auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
-	auto skill = source.getSkillData(ChannelServer::getInstance().getSkillDataProvider());
+	auto &skillProvider = ChannelServer::getInstance().getSkillDataProvider();
+	auto skill = source.getSkillData(skillProvider);
+	auto mobSkill = source.getMobSkillData(skillProvider);
 
 	switch (source.getType()) {
 		case BuffSourceType::Item:
@@ -155,6 +157,10 @@ auto PlayerActiveBuffs::addBuff(const BuffSource &source, const Buff &buff, cons
 		}
 		else if (info == basics.combo) {
 			m_combo = 0;
+		}
+		else if (info == basics.zombify) {
+			if (mobSkill == nullptr) throw NotImplementedException{"Zombify BuffSourceType"};
+			m_zombifyPotency = mobSkill->x;
 		}
 		else if (info == basics.mapleWarrior) {
 			if (skill == nullptr) throw NotImplementedException{"Maple Warrior BuffSourceType"};
@@ -311,7 +317,7 @@ auto PlayerActiveBuffs::addBuff(const BuffSource &source, const Buff &buff, cons
 }
 
 auto PlayerActiveBuffs::removeBuff(const BuffSource &source, const Buff &buff, bool fromTimer) -> void {
-  	if (!fromTimer) {
+	if (!fromTimer) {
 		Timer::Id id{TimerType::BuffTimer, static_cast<int32_t>(source.getType()), source.getId()};
 		m_player->getTimerContainer()->removeTimer(id);
 	}
@@ -341,6 +347,9 @@ auto PlayerActiveBuffs::removeBuff(const BuffSource &source, const Buff &buff, b
 				}
 				else if (buffInfo == basics.combo) {
 					m_combo = 0;
+				}
+				else if (buffInfo == basics.zombify) {
+					m_zombifyPotency = 0;
 				}
 				else if (buffInfo == basics.homingBeacon) {
 					resetHomingBeaconMob();
@@ -416,6 +425,16 @@ auto PlayerActiveBuffs::useDebuffHealingItem(int32_t mask) -> void {
 	if ((mask & StatusEffects::Player::Weakness) != 0) {
 		removeDebuff(MobSkills::Weakness);
 	}
+}
+
+auto PlayerActiveBuffs::getZombifiedPotency(int16_t basePotency) -> int16_t {
+	if ((m_debuffMask & StatusEffects::Player::Zombify) != 0) {
+		return static_cast<int16_t>(
+			static_cast<int32_t>(basePotency)
+			* m_zombifyPotency
+			/ 100);
+	}
+	return basePotency;
 }
 
 auto PlayerActiveBuffs::usePlayerDispel() -> void {
@@ -831,10 +850,6 @@ auto PlayerActiveBuffs::hasHolyShield() const -> bool {
 
 auto PlayerActiveBuffs::isCursed() const -> bool {
 	return (m_debuffMask & StatusEffects::Player::Curse) > 0;
-}
-
-auto PlayerActiveBuffs::isZombified() const -> bool {
-	return (m_debuffMask & StatusEffects::Player::Zombify) > 0;
 }
 
 auto PlayerActiveBuffs::getHolySymbolRate() const -> int16_t {

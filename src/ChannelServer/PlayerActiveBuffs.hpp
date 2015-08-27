@@ -55,6 +55,7 @@ public:
 	// Debuffs
 	auto usePlayerDispel() -> void;
 	auto useDebuffHealingItem(int32_t mask) -> void;
+	auto getZombifiedPotency(int16_t basePotency) -> int16_t;
 	auto removeDebuff(mob_skill_id_t skillId) -> void;
 
 	// Combo Attack
@@ -94,7 +95,6 @@ public:
 	auto hasBuff(BuffSourceType type, int32_t buffId) const -> bool;
 	auto isUsingGmHide() const -> bool;
 	auto isCursed() const -> bool;
-	auto isZombified() const -> bool;
 	auto getHolySymbolRate() const -> int16_t;
 	auto getMountItemId() const -> item_id_t;
 	auto getHolySymbolSource() const -> optional_t<BuffSource>;
@@ -149,6 +149,7 @@ private:
 	uint8_t m_combo = 0;
 	uint8_t m_energyChargeTimerCounter = 0;
 	int16_t m_energyCharge = 0;
+	int16_t m_zombifyPotency = 0;
 	item_id_t m_mountItemId = 0;
 	int32_t m_pickpocketCounter = 0;
 	int32_t m_battleshipHp = 0;

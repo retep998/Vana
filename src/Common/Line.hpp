@@ -39,9 +39,9 @@ struct Line {
 	auto withinRangeY(coord_t yValue) const -> bool;
 	auto interpolateForX(coord_t yValue) const -> optional_t<coord_t>;
 	auto interpolateForY(coord_t xValue) const -> optional_t<coord_t>;
-	auto offset(coord_t xOffset, coord_t yOffset) const -> Line;
-	auto offsetX(coord_t xOffset) const -> Line;
-	auto offsetY(coord_t yOffset) const -> Line;
+	auto move(coord_t xOffset, coord_t yOffset) const -> Line;
+	auto moveX(coord_t xOffset) const -> Line;
+	auto moveY(coord_t yOffset) const -> Line;
 	auto center() const -> Point;
 	auto length() const -> int32_t;
 	auto makeRect() const -> Rect;

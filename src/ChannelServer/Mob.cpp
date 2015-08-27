@@ -268,6 +268,16 @@ auto Mob::removeStatus(int32_t status, bool fromTimer) -> void {
 	}
 }
 
+auto Mob::hasWeaponReflection() const -> bool {
+	int32_t mask = StatusEffects::Mob::WeaponDamageReflect;
+	return (m_status & mask) != 0;
+}
+
+auto Mob::hasMagicReflection() const -> bool {
+	int32_t mask = StatusEffects::Mob::MagicDamageReflect;
+	return (m_status & mask) != 0;
+}
+
 auto Mob::hasImmunity() const -> bool {
 	int32_t mask = StatusEffects::Mob::WeaponImmunity | StatusEffects::Mob::MagicImmunity | StatusEffects::Mob::WeaponDamageReflect | StatusEffects::Mob::MagicDamageReflect;
 	return (m_status & mask) != 0;
@@ -277,9 +287,9 @@ auto Mob::hasStatus(int32_t status) const -> bool {
 	return (m_status & status) != 0;
 }
 
-auto Mob::getStatusValue(int32_t status) -> int32_t {
+auto Mob::getStatusValue(int32_t status) -> optional_t<StatusInfo> {
 	auto kvp = m_statuses.find(status);
-	return kvp != std::end(m_statuses) ? kvp->second.val : 0;
+	return kvp != std::end(m_statuses) ? kvp->second : optional_t<StatusInfo>{};
 }
 
 auto Mob::getStatusBits() const -> int32_t {
@@ -290,11 +300,11 @@ auto Mob::getStatusInfo() const -> const ord_map_t<int32_t, StatusInfo> & {
 	return m_statuses;
 }
 
-auto Mob::getMagicReflection() -> int32_t {
+auto Mob::getMagicReflection() -> optional_t<StatusInfo> {
 	return getStatusValue(StatusEffects::Mob::MagicDamageReflect);
 }
 
-auto Mob::getWeaponReflection() -> int32_t {
+auto Mob::getWeaponReflection() -> optional_t<StatusInfo> {
 	return getStatusValue(StatusEffects::Mob::WeaponDamageReflect);
 }
 
@@ -483,9 +493,7 @@ auto Mob::skillHeal(int32_t healHp, int32_t healRange) -> void {
 	if (isSponge()) {
 		return;
 	}
-	int32_t min = (healHp - (healRange / 2));
-	int32_t max = (healHp + (healRange / 2));
-	int32_t amount = Randomizer::rand<int32_t>(max, min);
+	int32_t amount = Randomizer::range<int32_t>(healHp, healRange);
 	int32_t original = amount;
 
 	if (m_hp + amount > getMaxHp()) {

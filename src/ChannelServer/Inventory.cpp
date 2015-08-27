@@ -112,13 +112,18 @@ auto Inventory::addNewItem(Player *player, item_id_t itemId, slot_qty_t amount, 
 
 	Item *item = nullptr;
 	if (GameLogicUtilities::isEquip(itemId)) {
-		item = new Item(ChannelServer::getInstance().getEquipDataProvider(), itemId, variancePolicy, player->hasGmBenefits());
+		item = new Item{
+			ChannelServer::getInstance().getEquipDataProvider(),
+			itemId,
+			variancePolicy,
+			player->hasGmBenefits()
+		};
 		if (GameLogicUtilities::isMount(itemId)) {
 			player->getMounts()->addMount(itemId);
 		}
 	}
 	else {
-		item = new Item(itemId, thisAmount);
+		item = new Item{itemId, thisAmount};
 	}
 	if (addItem(player, item, GameLogicUtilities::isPet(itemId)) == 0 && amount > 0) {
 		addNewItem(player, itemId, amount);
@@ -209,10 +214,9 @@ auto Inventory::useItem(Player *player, item_id_t itemId) -> void {
 		potency = player->getSkills()->getSkillInfo(alchemist)->x;
 	}
 
-	bool zombie = player->getActiveBuffs()->isZombified();
-
+	auto buffs = player->getActiveBuffs();
 	if (item->hp > 0) {
-		player->getStats()->modifyHp(item->hp * (zombie ? (potency / 2) : potency) / 100);
+		player->getStats()->modifyHp(item->hp * buffs->getZombifiedPotency(potency) / 100);
 	}
 	if (item->mp > 0) {
 		player->getStats()->modifyMp(item->mp * potency / 100);
@@ -221,7 +225,7 @@ auto Inventory::useItem(Player *player, item_id_t itemId) -> void {
 		player->getStats()->setMp(player->getStats()->getMp(), true);
 	}
 	if (item->hpr != 0) {
-		player->getStats()->modifyHp(item->hpr * (zombie ? (player->getStats()->getMaxHp() / 2) : player->getStats()->getMaxHp()) / 100);
+		player->getStats()->modifyHp(item->hpr * buffs->getZombifiedPotency(player->getStats()->getMaxHp()) / 100);
 	}
 	if (item->mpr != 0) {
 		player->getStats()->modifyMp(item->mpr * player->getStats()->getMaxMp() / 100);
