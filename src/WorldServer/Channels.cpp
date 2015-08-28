@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer.hpp"
 #include "WorldServerAcceptConnection.hpp"
 
+namespace Vana {
+
 auto Channels::registerChannel(WorldServerAcceptConnection *connection, channel_id_t channelId, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void {
 	ref_ptr_t<Channel> chan = make_ref_ptr<Channel>(connection, channelId, port);
 	chan->setExternalIpInformation(channelIp, extIp);
@@ -57,11 +59,11 @@ auto Channels::send(const PacketBuilder &builder) -> void {
 }
 
 auto Channels::increasePopulation(channel_id_t channel) -> void {
-	WorldServer::getInstance().sendLogin(LoginServerConnectPacket::updateChannelPop(channel, getChannel(channel)->increasePlayers()));
+	WorldServer::getInstance().sendLogin(Packets::updateChannelPop(channel, getChannel(channel)->increasePlayers()));
 }
 
 auto Channels::decreasePopulation(channel_id_t channel) -> void {
-	WorldServer::getInstance().sendLogin(LoginServerConnectPacket::updateChannelPop(channel, getChannel(channel)->decreasePlayers()));
+	WorldServer::getInstance().sendLogin(Packets::updateChannelPop(channel, getChannel(channel)->decreasePlayers()));
 }
 
 auto Channels::getFirstAvailableChannelId() -> channel_id_t {
@@ -82,4 +84,6 @@ auto Channels::disconnect() -> void {
 			ref->disconnect();
 		}
 	}
+}
+
 }

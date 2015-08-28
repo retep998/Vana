@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MonsterBookPacket.hpp"
 #include "Player.hpp"
 
+namespace Vana {
+
 PlayerMonsterBook::PlayerMonsterBook(Player *player) :
 	m_player{player}
 {
@@ -162,4 +164,6 @@ auto PlayerMonsterBook::getCard(int32_t cardId) -> MonsterCard * {
 auto PlayerMonsterBook::isFull(int32_t cardId) -> bool {
 	auto kvp = m_cards.find(cardId);
 	return kvp != std::end(m_cards) ? (kvp->second.level == MonsterCards::MaxCardLevel) : false;
+}
+
 }

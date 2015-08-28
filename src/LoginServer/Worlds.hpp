@@ -22,32 +22,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <map>
 #include <string>
 
-class Channel;
-class LoginServerAcceptConnection;
-class PacketBuilder;
-class PacketReader;
-class UserConnection;
-class World;
+namespace Vana {
+	class Channel;
+	class LoginServerAcceptConnection;
+	class PacketBuilder;
+	class PacketReader;
+	class UserConnection;
+	class World;
 
-class Worlds {
-public:
-	auto channelSelect(UserConnection *user, PacketReader &reader) -> void;
-	auto selectWorld(UserConnection *user, PacketReader &reader) -> void;
-	auto showWorld(UserConnection *user) -> void;
-	auto send(world_id_t id, const PacketBuilder &builder) -> void;
-	auto send(const vector_t<world_id_t> &worlds, const PacketBuilder &builder) -> void;
-	auto send(const PacketBuilder &builder) -> void;
+	class Worlds {
+	public:
+		auto channelSelect(UserConnection *user, PacketReader &reader) -> void;
+		auto selectWorld(UserConnection *user, PacketReader &reader) -> void;
+		auto showWorld(UserConnection *user) -> void;
+		auto send(world_id_t id, const PacketBuilder &builder) -> void;
+		auto send(const vector_t<world_id_t> &worlds, const PacketBuilder &builder) -> void;
+		auto send(const PacketBuilder &builder) -> void;
 
-	auto addWorld(World *world) -> void;
-	auto calculatePlayerLoad(World *world) -> void;
-	auto runFunction(function_t<bool (World *)> func) -> void;
-	auto setEventMessages(const string_t &message) -> void;
+		auto addWorld(World *world) -> void;
+		auto calculatePlayerLoad(World *world) -> void;
+		auto runFunction(function_t<bool (World *)> func) -> void;
+		auto setEventMessages(const string_t &message) -> void;
 
-	auto getWorld(world_id_t id) -> World *;
+		auto getWorld(world_id_t id) -> World *;
 
-	// Inter-server
-	auto addWorldServer(LoginServerAcceptConnection *connection) -> world_id_t;
-	auto addChannelServer(LoginServerAcceptConnection *connection) -> world_id_t;
-private:
-	ord_map_t<world_id_t, World *> m_worlds;
-};
+		// Inter-server
+		auto addWorldServer(LoginServerAcceptConnection *connection) -> world_id_t;
+		auto addChannelServer(LoginServerAcceptConnection *connection) -> world_id_t;
+	private:
+		ord_map_t<world_id_t, World *> m_worlds;
+	};
+}

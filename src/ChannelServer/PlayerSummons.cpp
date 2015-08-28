@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.hpp"
 #include <functional>
 
+namespace Vana {
+
 PlayerSummons::PlayerSummons(Player *player) :
 	m_player{player}
 {
@@ -113,7 +115,9 @@ auto PlayerSummons::parseTransferPacket(PacketReader &reader) -> void {
 			Summon *summon = new Summon{SummonHandler::summonIds.lease(), skillId, level, m_player->isFacingLeft(), m_player->getPos()};
 			summon->setPos(m_player->getPos());
 			addSummon(summon, timeLeft);
-			m_player->sendMap(SummonsPacket::showSummon(m_player->getId(), summon, false));
+			m_player->sendMap(Packets::showSummon(m_player->getId(), summon, false));
 		}
 	}
+}
+
 }

@@ -20,11 +20,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketBuilder.hpp"
 #include "Types.hpp"
 
-class Player;
-class Reactor;
+namespace Vana {
+	class Player;
+	class Reactor;
 
-namespace ReactorPacket {
-	PACKET(spawnReactor, Reactor *reactor);
-	PACKET(triggerReactor, Reactor *reactor);
-	PACKET(destroyReactor, Reactor *reactor);
+	namespace Packets {
+		PACKET(spawnReactor, Reactor *reactor);
+		PACKET(triggerReactor, Reactor *reactor);
+		PACKET(destroyReactor, Reactor *reactor);
+	}
 }

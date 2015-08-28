@@ -36,6 +36,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <memory>
 #include <thread>
 
+namespace Vana {
+
 mutex_t RankingCalculator::RankingsMutex;
 
 auto RankingCalculator::setTimer() -> void {
@@ -328,4 +330,6 @@ auto RankingCalculator::fame(vector_t<RankPlayer> &v) -> void {
 		first = false;
 		lastFame = p.fameStat;
 	}
+}
+
 }

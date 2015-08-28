@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectPacket.hpp"
 #include <algorithm>
 
+namespace Vana {
+
 auto ChatHandler::initializeCommands() -> void {
 	ChatHandlerFunctions::initialize();
 }
@@ -43,7 +45,7 @@ auto ChatHandler::handleChat(Player *player, PacketReader &reader) -> void {
 			return;
 		}
 
-		player->sendMap(PlayersPacket::showChat(player->getId(), player->isGm(), message, bubbleOnly));
+		player->sendMap(Packets::Players::showChat(player->getId(), player->isGm(), message, bubbleOnly));
 	}
 }
 
@@ -87,4 +89,6 @@ auto ChatHandler::handleGroupChat(Player *player, PacketReader &reader) -> void 
 	if (ChatHandler::handleCommand(player, chat) == HandleResult::Unhandled) {
 		ChannelServer::getInstance().getPlayerDataProvider().handleGroupChat(type, player->getId(), receivers, chat);
 	}
+}
+
 }

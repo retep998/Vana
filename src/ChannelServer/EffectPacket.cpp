@@ -20,7 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.hpp"
 #include "SmsgHeader.hpp"
 
-namespace EffectPacket {
+namespace Vana {
+namespace Packets {
 
 PACKET_IMPL(playMusic, const string_t &music) {
 	PacketBuilder builder;
@@ -96,4 +97,5 @@ SPLIT_PACKET_IMPL(sendMobItemBuffEffect, player_id_t playerId, item_id_t itemId)
 	return builder;
 }
 
+}
 }

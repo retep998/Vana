@@ -40,6 +40,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer.hpp"
 #include <functional>
 
+namespace Vana {
+
 auto Skills::addSkill(Player *player, PacketReader &reader) -> void {
 	reader.skip<tick_count_t>();
 	skill_id_t skillId = reader.get<skill_id_t>();
@@ -72,7 +74,7 @@ auto Skills::cancelSkill(Player *player, PacketReader &reader) -> void {
 		case Skills::IlArchMage::BigBang:
 		case Skills::Bishop::BigBang:
 		case Skills::Corsair::RapidFire:
-			player->sendMap(SkillsPacket::endChargeOrStationarySkill(player->getId(), player->getChargeOrStationarySkillInfo()));
+			player->sendMap(Packets::Skills::endChargeOrStationarySkill(player->getId(), player->getChargeOrStationarySkillInfo()));
 			player->setChargeOrStationarySkill(ChargeOrStationarySkillInfo{});
 			return;
 	}
@@ -100,7 +102,7 @@ auto Skills::stopSkill(Player *player, const BuffSource &source, bool fromTimer)
 	Buffs::endBuff(player, source, fromTimer);
 
 	if (source.getSkillId() == Skills::SuperGm::Hide) {
-		player->send(GmPacket::endHide());
+		player->send(Packets::Gm::endHide());
 		player->getMap()->gmHideChange(player);
 	}
 }
@@ -215,7 +217,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 			for (int32_t k = 0; k < mobs; k++) {
 				map_object_t mapMobId = reader.get<map_object_t>();
 				uint8_t success = reader.get<uint8_t>();
-				player->sendMap(SkillsPacket::showMagnetSuccess(mapMobId, success));
+				player->sendMap(Packets::Skills::showMagnetSuccess(mapMobId, success));
 			}
 			direction = reader.get<uint8_t>();
 			break;
@@ -265,8 +267,8 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 				for (const auto &partyMember : members) {
 					if (partyMember != nullptr && partyMember != player && partyMember->getMap() == player->getMap()) {
 						if (Randomizer::rand<uint16_t>(99) < skill->prop) {
-							partyMember->send(SkillsPacket::showSkill(partyMember->getId(), skillId, level, direction, true, true));
-							partyMember->sendMap(SkillsPacket::showSkill(partyMember->getId(), skillId, level, direction, true));
+							partyMember->send(Packets::Skills::showSkill(partyMember->getId(), skillId, level, direction, true, true));
+							partyMember->sendMap(Packets::Skills::showSkill(partyMember->getId(), skillId, level, direction, true));
 							partyMember->getActiveBuffs()->usePlayerDispel();
 						}
 					}
@@ -356,8 +358,8 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 				const auto members = getAffectedPartyMembers(party, affected, party->getMembersCount());
 				for (const auto &partyMember : members) {
 					if (partyMember != nullptr && partyMember != player && partyMember->getMap() == player->getMap()) {
-						partyMember->send(SkillsPacket::showSkill(partyMember->getId(), skillId, level, direction, true, true));
-						partyMember->sendMap(SkillsPacket::showSkill(partyMember->getId(), skillId, level, direction, true));
+						partyMember->send(Packets::Skills::showSkill(partyMember->getId(), skillId, level, direction, true, true));
+						partyMember->sendMap(Packets::Skills::showSkill(partyMember->getId(), skillId, level, direction, true));
 						Buffs::addBuff(partyMember, skillId, level, 0);
 						if (skillId == Skills::Buccaneer::TimeLeap) {
 							partyMember->getSkills()->removeAllCooldowns();
@@ -404,8 +406,8 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 				player_id_t playerId = reader.get<player_id_t>();
 				Player *target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId);
 				if (target != nullptr && target != player && doAction(target)) {
-					player->send(SkillsPacket::showSkill(player->getId(), skillId, level, direction, true, true));
-					player->sendMap(SkillsPacket::showSkill(player->getId(), skillId, level, direction, true));
+					player->send(Packets::Skills::showSkill(player->getId(), skillId, level, direction, true, true));
+					player->sendMap(Packets::Skills::showSkill(player->getId(), skillId, level, direction, true));
 
 					action(target);
 				}
@@ -422,11 +424,11 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 			break;
 	}
 
-	player->sendMap(SkillsPacket::showSkill(player->getId(), skillId, level, direction));
+	player->sendMap(Packets::Skills::showSkill(player->getId(), skillId, level, direction));
 
 	if (Buffs::addBuff(player, skillId, level, addedInfo) == Result::Successful) {
 		if (skillId == Skills::SuperGm::Hide) {
-			player->send(GmPacket::beginHide());
+			player->send(Packets::Gm::beginHide());
 			player->getMap()->gmHideChange(player);
 		}
 
@@ -615,7 +617,7 @@ auto Skills::heal(Player *player, int64_t value, const BuffSource &source) -> vo
 	if (player->getStats()->getHp() < player->getStats()->getMaxHp() && player->getStats()->getHp() > 0) {
 		health_t val = static_cast<health_t>(value);
 		player->getStats()->modifyHp(val);
-		player->send(SkillsPacket::healHp(val));
+		player->send(Packets::Skills::healHp(val));
 	}
 }
 
@@ -624,7 +626,7 @@ auto Skills::hurt(Player *player, int64_t value, const BuffSource &source) -> vo
 	if (source.getType() != BuffSourceType::Skill) throw NotImplementedException{"hurt BuffSourceType"};
 	if (player->getStats()->getHp() - val > 1) {
 		player->getStats()->modifyHp(-val);
-		player->sendMap(SkillsPacket::showSkillEffect(player->getId(), source.getSkillId()));
+		player->sendMap(Packets::Skills::showSkillEffect(player->getId(), source.getSkillId()));
 	}
 	else {
 		Buffs::endBuff(player, source);
@@ -637,7 +639,7 @@ auto Skills::startCooldown(Player *player, skill_id_t skillId, seconds_t coolTim
 		return;
 	}
 	if (!initialLoad) {
-		player->send(SkillsPacket::sendCooldown(skillId, coolTime));
+		player->send(Packets::Skills::sendCooldown(skillId, coolTime));
 		player->getSkills()->addCooldown(skillId, coolTime);
 	}
 	Timer::Timer::create(
@@ -651,7 +653,7 @@ auto Skills::startCooldown(Player *player, skill_id_t skillId, seconds_t coolTim
 
 auto Skills::stopCooldown(Player *player, skill_id_t skillId) -> void {
 	player->getSkills()->removeCooldown(skillId);
-	player->send(SkillsPacket::sendCooldown(skillId, seconds_t{0}));
+	player->send(Packets::Skills::sendCooldown(skillId, seconds_t{0}));
 	if (skillId == Skills::Corsair::Battleship) {
 		player->getActiveBuffs()->resetBattleshipHp();
 	}
@@ -675,4 +677,6 @@ auto Skills::getCooldownTimeLeft(Player *player, skill_id_t skillId) -> int16_t 
 		coolTime = static_cast<int16_t>(player->getTimerContainer()->getRemainingTime<seconds_t>(id).count());
 	}
 	return coolTime;
+}
+
 }

@@ -31,6 +31,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SmsgHeader.hpp"
 #include "SyncPacket.hpp"
 
+namespace Vana {
+
 auto SyncHandler::handle(PacketReader &reader) -> void {
 	sync_t type = reader.get<sync_t>();
 	switch (type) {
@@ -45,4 +47,6 @@ auto SyncHandler::handleConfigSync(PacketReader &reader) -> void {
 		case Sync::Config::ScrollingHeader: ChannelServer::getInstance().setScrollingHeader(reader.get<string_t>()); break;
 		default: throw NotImplementedException{"ConfigSync type"};
 	}
+}
+
 }

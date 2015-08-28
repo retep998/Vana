@@ -40,6 +40,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <limits>
 
+namespace Vana {
+
 auto WorldServerConnectHandler::connectLogin(WorldServerConnection *player, PacketReader &reader) -> void {
 	world_id_t worldId = reader.get<world_id_t>();
 	if (worldId != -1) {
@@ -69,4 +71,6 @@ auto WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 auto WorldServerConnectHandler::reloadMcdb(PacketReader &reader) -> void {
 	string_t args = reader.get<string_t>();
 	ChannelServer::getInstance().reloadData(args);
+}
+
 }

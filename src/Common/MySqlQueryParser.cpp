@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "tokenizer.hpp"
 #include <fstream>
 
+namespace Vana {
+
 auto MySqlQueryParser::parseQueries(const string_t &filename) -> vector_t<string_t> {
 	if (!FileUtilities::fileExists(filename)) {
 		throw std::runtime_error{"Query file doesn't exist: " + filename};
@@ -59,4 +61,6 @@ auto MySqlQueryParser::parseQueries(const string_t &filename) -> vector_t<string
 	}
 
 	return queries;
+}
+
 }

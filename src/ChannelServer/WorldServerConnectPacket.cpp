@@ -23,7 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SmsgHeader.hpp"
 #include "WorldServerConnection.hpp"
 
-namespace WorldServerConnectPacket {
+namespace Vana {
+namespace Packets {
+namespace Interserver {
 
 PACKET_IMPL(rankingCalculation) {
 	PacketBuilder builder;
@@ -50,4 +52,6 @@ PACKET_IMPL(rehashConfig) {
 	return builder;
 }
 
+}
+}
 }

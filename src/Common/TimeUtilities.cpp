@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <sstream>
 
+namespace Vana {
+
 auto TimeUtilities::getDate(time_t ctime) -> int32_t {
 	std::tm *timeInfo = localtime(&ctime);
 	int32_t result = timeInfo->tm_mday;
@@ -161,4 +163,6 @@ auto TimeUtilities::addDaysToTime(int16_t days) -> time_t {
 auto TimeUtilities::addDaysToTicks(int64_t ticks, int16_t days) -> int64_t {
 	// For expiration time increases
 	return ticks + (days * 24 * 60 * 60);
+}
+
 }

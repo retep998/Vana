@@ -24,22 +24,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-class BuffSource;
-struct ConsumeInfo;
+namespace Vana {
+	class BuffSource;
+	struct ConsumeInfo;
 
-class BuffDataProvider {
-public:
-	auto loadData() -> void;
-	auto addItemInfo(item_id_t itemId, const ConsumeInfo &cons) -> void;
+	class BuffDataProvider {
+	public:
+		auto loadData() -> void;
+		auto addItemInfo(item_id_t itemId, const ConsumeInfo &cons) -> void;
 
-	auto isBuff(const BuffSource &source) const -> bool;
-	auto isDebuff(const BuffSource &source) const -> bool;
-	auto getInfo(const BuffSource &source) const -> const Buff &;
-	auto getBuffsByEffect() const -> const BuffInfoByEffect &;
-private:
-	auto processSkills(Buff value, const init_list_t<skill_id_t> &skills) -> void;
-	hash_map_t<skill_id_t, Buff> m_buffs;
-	hash_map_t<item_id_t, Buff> m_items;
-	hash_map_t<mob_skill_id_t, Buff> m_mobSkillInfo;
-	BuffInfoByEffect m_basics;
-};
+		auto isBuff(const BuffSource &source) const -> bool;
+		auto isDebuff(const BuffSource &source) const -> bool;
+		auto getInfo(const BuffSource &source) const -> const Buff &;
+		auto getBuffsByEffect() const -> const BuffInfoByEffect &;
+	private:
+		auto processSkills(Buff value, const init_list_t<skill_id_t> &skills) -> void;
+		hash_map_t<skill_id_t, Buff> m_buffs;
+		hash_map_t<item_id_t, Buff> m_items;
+		hash_map_t<mob_skill_id_t, Buff> m_mobSkillInfo;
+		BuffInfoByEffect m_basics;
+	};
+}

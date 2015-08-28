@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
+namespace Vana {
+
 auto CurseDataProvider::loadData() -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Curse Info... ";
 
@@ -44,4 +46,6 @@ auto CurseDataProvider::isCurseWord(const string_t &cmp) const -> bool {
 	return ext::any_of(m_curseWords, [&c](const string_t &s) -> bool {
 		return c.find(s, 0) != string_t::npos;
 	});
+}
+
 }

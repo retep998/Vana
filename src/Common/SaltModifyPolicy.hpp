@@ -19,22 +19,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.hpp"
 
-enum class SaltModifyPolicy {
-	None = 0,
-	XorByteCipher,
-	XorCipher,
-	BitRotateCipher,
-	OverallBitRotateCipher,
-	ByteRotateCipher,
-	BitReverseCipher,
-	ReverseCipher,
-	OverwriteCipher,
-	AddCipher,
-	SubtractCipher,
-	MultiplyCipher,
-	DivideCipher,
-	Append,
-	Prepend,
-	Intersperse,
-	// If more constants are added, please add them to ConfigFile.cpp as well
-};
+namespace Vana {
+	enum class SaltModifyPolicy {
+		None = 0,
+		XorByteCipher,
+		XorCipher,
+		BitRotateCipher,
+		OverallBitRotateCipher,
+		ByteRotateCipher,
+		BitReverseCipher,
+		ReverseCipher,
+		OverwriteCipher,
+		AddCipher,
+		SubtractCipher,
+		MultiplyCipher,
+		DivideCipher,
+		Append,
+		Prepend,
+		Intersperse,
+		// If more constants are added, please add them to ConfigFile.cpp as well
+	};
+}

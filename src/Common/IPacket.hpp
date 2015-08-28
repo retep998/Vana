@@ -19,17 +19,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.hpp"
 
-class PacketBuilder;
-class PacketReader;
+namespace Vana {
+	class PacketBuilder;
+	class PacketReader;
 
-template <typename T>
-struct PacketSerialize {
-	auto read(PacketReader &reader) -> T {
-		static_assert(false, "T is not appropriately specialized for that type");
-		throw std::logic_error{"T is not appropriately specialized for that type"};
+	template <typename T>
+	struct PacketSerialize {
+		auto read(PacketReader &reader) -> T {
+			static_assert(false, "T is not appropriately specialized for that type");
+			throw std::logic_error{"T is not appropriately specialized for that type"};
+		};
+		auto write(PacketBuilder &builder, const T &obj) -> void {
+			static_assert(false, "T is not appropriately specialized for that type");
+			throw std::logic_error{"T is not appropriately specialized for that type"};
+		};
 	};
-	auto write(PacketBuilder &builder, const T &obj) -> void {
-		static_assert(false, "T is not appropriately specialized for that type");
-		throw std::logic_error{"T is not appropriately specialized for that type"};
-	};
-};
+}

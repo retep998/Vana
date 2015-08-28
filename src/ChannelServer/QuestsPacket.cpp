@@ -24,7 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace QuestsPacket {
+namespace Vana {
+namespace Packets {
+namespace Quests {
 
 PACKET_IMPL(acceptQuest, quest_id_t questId, npc_id_t npcId) {
 	PacketBuilder builder;
@@ -161,4 +163,6 @@ PACKET_IMPL(giveFame, fame_t amount) {
 	return builder;
 }
 
+}
+}
 }

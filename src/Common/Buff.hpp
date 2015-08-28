@@ -21,25 +21,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BuffSkillValue.hpp"
 #include "Types.hpp"
 
-class Buff {
-public:
-	Buff();
-	Buff(const init_list_t<BuffInfo> &buffInfo);
-	Buff(const vector_t<BuffInfo> &buffInfo);
+namespace Vana {
+	class Buff {
+	public:
+		Buff();
+		Buff(const init_list_t<BuffInfo> &buffInfo);
+		Buff(const vector_t<BuffInfo> &buffInfo);
 
-	auto getDelay() const -> milliseconds_t;
-	auto getBuffInfo() const -> const vector_t<BuffInfo> &;
-	auto isSelectionBuff() const -> bool;
-	auto anyBuffs() const -> bool;
-	auto anyActs() const -> bool;
-	auto withBuffs(const vector_t<BuffInfo> &buffInfo) const -> Buff;
-	auto withDelay(milliseconds_t value) const -> Buff;
-private:
-	auto parseBuffsForData() -> void;
-	auto sort() -> void;
+		auto getDelay() const -> milliseconds_t;
+		auto getBuffInfo() const -> const vector_t<BuffInfo> &;
+		auto isSelectionBuff() const -> bool;
+		auto anyBuffs() const -> bool;
+		auto anyActs() const -> bool;
+		auto withBuffs(const vector_t<BuffInfo> &buffInfo) const -> Buff;
+		auto withDelay(milliseconds_t value) const -> Buff;
+	private:
+		auto parseBuffsForData() -> void;
+		auto sort() -> void;
 
-	bool m_isSelectionBuff = false;
-	bool m_anyActs = false;
-	milliseconds_t m_delay = milliseconds_t{0};
-	vector_t<BuffInfo> m_buffInfo;
-};
+		bool m_isSelectionBuff = false;
+		bool m_anyActs = false;
+		milliseconds_t m_delay = milliseconds_t{0};
+		vector_t<BuffInfo> m_buffInfo;
+	};
+}

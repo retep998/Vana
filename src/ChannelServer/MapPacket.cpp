@@ -35,9 +35,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WidePoint.hpp"
 #include <unordered_map>
 
-namespace MapPacket {
+namespace Vana {
+namespace Packets {
+namespace Map {
 
-PACKET_IMPL(playerPacket, Player *player) {
+PACKET_IMPL(playerPacket, Vana::Player *player) {
 	PacketBuilder builder;
 
 	builder
@@ -50,12 +52,12 @@ PACKET_IMPL(playerPacket, Player *player) {
 		.add<int16_t>(0) // Guild icon garbage
 		.add<int8_t>(0); // Guild icon garbage
 
-	PacketBuilder ref = BuffsPacketHelper::addMapValues(player->getActiveBuffs()->getMapBuffValues());
+	PacketBuilder ref = Helpers::addBuffMapValues(player->getActiveBuffs()->getMapBuffValues());
 	builder.addBuffer(ref);
 
 	builder
 		.add<job_id_t>(player->getStats()->getJob())
-		.addBuffer(PlayerPacketHelper::addPlayerDisplay(player))
+		.addBuffer(Helpers::addPlayerDisplay(player))
 		.unk<int32_t>()
 		.add<item_id_t>(player->getItemEffect())
 		.add<item_id_t>(player->getChair())
@@ -109,7 +111,7 @@ PACKET_IMPL(removePlayer, player_id_t playerId) {
 	return builder;
 }
 
-PACKET_IMPL(changeMap, Player *player, bool spawnByPosition, const Point &spawnPosition) {
+PACKET_IMPL(changeMap, Vana::Player *player, bool spawnByPosition, const Point &spawnPosition) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_CHANGE_MAP)
@@ -294,4 +296,6 @@ PACKET_IMPL(changeWeather, bool adminWeather, item_id_t itemId, const string_t &
 	return builder;
 }
 
+}
+}
 }

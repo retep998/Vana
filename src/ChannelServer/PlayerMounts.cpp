@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameConstants.hpp"
 #include "Player.hpp"
 
+namespace Vana {
+
 PlayerMounts::PlayerMounts(Player *player) :
 	m_player{player}
 {
@@ -153,4 +155,6 @@ auto PlayerMounts::mountInfoMapSpawnPacket(PacketBuilder &packet) -> void {
 		packet.add<int32_t>(0);
 		packet.add<int32_t>(0);
 	}
+}
+
 }

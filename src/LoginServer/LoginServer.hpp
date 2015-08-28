@@ -27,34 +27,36 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ValidCharDataProvider.hpp"
 #include "Worlds.hpp"
 
-class LoginServer final : public AbstractServer {
-	SINGLETON(LoginServer);
-public:
-	auto getPinEnabled() const -> bool;
-	auto rehashConfig() -> void;
-	auto getInvalidLoginThreshold() const -> int32_t;
-	auto getValidCharDataProvider() const -> const ValidCharDataProvider &;
-	auto getEquipDataProvider() const -> const EquipDataProvider &;
-	auto getCurseDataProvider() const -> const CurseDataProvider &;
-	auto getWorlds() -> Worlds &;
-	auto getCharacterAccountSaltSize() const -> const SaltSizeConfig &;
-	auto getCharacterAccountSaltingPolicy() const -> const SaltConfig &;
-protected:
-	auto initComplete() -> void override;
-	auto loadData() -> Result override;
-	auto loadConfig() -> Result override;
-	auto listen() -> void;
-	auto loadWorlds() -> void;
-	auto makeLogIdentifier() const -> opt_string_t override;
-	auto getLogPrefix() const -> string_t override;
-private:
-	bool m_pinEnabled = false;
-	port_t m_port = 0;
-	int32_t m_maxInvalidLogins = 0;
-	SaltSizeConfig m_accountSaltSize;
-	SaltConfig m_accountSaltingPolicy;
-	ValidCharDataProvider m_validCharDataProvider;
-	EquipDataProvider m_equipDataProvider;
-	CurseDataProvider m_curseDataProvider;
-	Worlds m_worlds;
-};
+namespace Vana {
+	class LoginServer final : public AbstractServer {
+		SINGLETON(LoginServer);
+	public:
+		auto getPinEnabled() const -> bool;
+		auto rehashConfig() -> void;
+		auto getInvalidLoginThreshold() const -> int32_t;
+		auto getValidCharDataProvider() const -> const ValidCharDataProvider &;
+		auto getEquipDataProvider() const -> const EquipDataProvider &;
+		auto getCurseDataProvider() const -> const CurseDataProvider &;
+		auto getWorlds() -> Worlds &;
+		auto getCharacterAccountSaltSize() const -> const SaltSizeConfig &;
+		auto getCharacterAccountSaltingPolicy() const -> const SaltConfig &;
+	protected:
+		auto initComplete() -> void override;
+		auto loadData() -> Result override;
+		auto loadConfig() -> Result override;
+		auto listen() -> void;
+		auto loadWorlds() -> void;
+		auto makeLogIdentifier() const -> opt_string_t override;
+		auto getLogPrefix() const -> string_t override;
+	private:
+		bool m_pinEnabled = false;
+		port_t m_port = 0;
+		int32_t m_maxInvalidLogins = 0;
+		SaltSizeConfig m_accountSaltSize;
+		SaltConfig m_accountSaltingPolicy;
+		ValidCharDataProvider m_validCharDataProvider;
+		EquipDataProvider m_equipDataProvider;
+		CurseDataProvider m_curseDataProvider;
+		Worlds m_worlds;
+	};
+}

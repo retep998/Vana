@@ -22,8 +22,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <string>
 
-class AbstractServerConnection;
+namespace Vana {
+	class AbstractServerConnection;
 
-namespace AuthenticationPacket {
-	PACKET(sendPassword, AbstractServerConnection *connection, const string_t &pass, const IpMatrix &extIp);
+	namespace Packets {
+		PACKET(sendPassword, AbstractServerConnection *connection, const string_t &pass, const IpMatrix &extIp);
+	}
 }

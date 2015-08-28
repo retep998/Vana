@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <sstream>
 
+namespace Vana {
+
 #ifdef WIN32
 namespace fs = std::tr2::sys;
 #else
@@ -67,4 +69,6 @@ auto FileLogger::flush() -> void {
 		f.close();
 	}
 	m_buffer.clear();
+}
+
 }

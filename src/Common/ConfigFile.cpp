@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SaltPolicy.hpp"
 #include <iostream>
 
+namespace Vana {
+
 ConfigFile::ConfigFile(const string_t &filename) :
 	LuaEnvironment{filename}
 {
@@ -145,4 +147,6 @@ auto ConfigFile::getDatabaseConfig() -> owned_ptr_t<ConfigFile> {
 auto ConfigFile::getConnectionPropertiesConfig() -> owned_ptr_t<ConfigFile> {
 	auto env = make_owned_ptr<ConfigFile>("conf/connection_properties.lua");
 	return env;
+}
+
 }

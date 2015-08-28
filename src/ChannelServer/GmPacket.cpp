@@ -20,7 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-namespace GmPacket {
+namespace Vana {
+namespace Packets {
+namespace Gm {
 
 PACKET_IMPL(beginHide) {
 	PacketBuilder builder;
@@ -94,4 +96,6 @@ PACKET_IMPL(setGetVarResult, const string_t &name, const string_t &variable, con
 	return builder;
 }
 
+}
+}
 }

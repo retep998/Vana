@@ -22,7 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-namespace ReactorPacket {
+namespace Vana {
+namespace Packets {
 
 PACKET_IMPL(spawnReactor, Reactor *reactor) {
 	PacketBuilder builder;
@@ -57,4 +58,5 @@ PACKET_IMPL(destroyReactor, Reactor *reactor) {
 	return builder;
 }
 
+}
 }

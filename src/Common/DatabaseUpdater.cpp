@@ -30,6 +30,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #endif
 #include <iostream>
 
+namespace Vana {
+
 #ifdef WIN32
 namespace fs = std::tr2::sys;
 #else
@@ -184,4 +186,6 @@ auto DatabaseUpdater::runQueries(const string_t &filename) -> void {
 			break;
 		}
 	}
+}
+
 }

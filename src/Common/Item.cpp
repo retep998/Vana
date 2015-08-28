@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SociExtensions.hpp"
 #include <soci.h>
 
+namespace Vana {
+
 const string_t Item::Inventory = "inventory";
 const string_t Item::Storage = "storage";
 
@@ -455,4 +457,6 @@ auto Item::databaseInsert(Database &db, const vector_t<ItemDbRecord> &items) -> 
 
 		st.execute(true);
 	}
+}
+
 }

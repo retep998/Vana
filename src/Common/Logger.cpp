@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 #include <sstream>
 
+namespace Vana {
+
 Logger::Logger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize) :
 	m_format{format},
 	m_timeFormat{timeFormat},
@@ -194,4 +196,6 @@ auto Logger::LogReplacements::getServerTypeString(ServerType type) -> string_t {
 		case ServerType::World: return "World";
 	}
 	throw NotImplementedException{"ServerType"};
+}
+
 }

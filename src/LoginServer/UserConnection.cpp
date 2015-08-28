@@ -28,6 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
+namespace Vana {
+
 UserConnection::~UserConnection() {
 	setOnline(false);
 }
@@ -51,7 +53,7 @@ auto UserConnection::handleRequest(PacketReader &reader) -> void {
 			case CMSG_PLAYER_DELETE: Characters::deleteCharacter(this, reader); break;
 			case CMSG_ACCOUNT_GENDER: Login::setGender(this, reader); break;
 			case CMSG_REGISTER_PIN: Login::registerPin(this, reader); break;
-			case CMSG_LOGIN_RETURN: this->send(LoginPacket::relogResponse()); break;
+			case CMSG_LOGIN_RETURN: this->send(Packets::relogResponse()); break;
 		}
 	}
 	catch (const PacketContentException &e) {
@@ -80,4 +82,6 @@ auto UserConnection::setOnline(bool online) -> void {
 		<< "WHERE u.account_id = :id",
 		soci::use((online ? 1 : 0), "online"),
 		soci::use(m_accountId, "id");
+}
+
 }

@@ -32,6 +32,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 #include <string>
 
+namespace Vana {
+
 namespace TradeOpcodes {
 	enum Opcodes : int8_t {
 		OpenTrade = 0x00,
@@ -57,7 +59,7 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 	int8_t subOpcode = reader.get<int8_t>();
 	switch (subOpcode) {
 		case TradeOpcodes::OpenTrade: // Open trade - this usually comes with 03 00 - I think that implies the type of thing getting opened (trade, minigame, etc.)
-			player->send(TradesPacket::sendOpenTrade(player, nullptr));
+			player->send(Packets::Trades::sendOpenTrade(player, nullptr));
 			break;
 		case TradeOpcodes::SendTradeRequest: {
 			if (player->isTrading()) {
@@ -68,10 +70,10 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 			Player *receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(recvId);
 			if (receiver != nullptr) {
 				if (!receiver->isTrading()) {
-					receiver->send(TradesPacket::sendTradeRequest(player->getName(), ChannelServer::getInstance().getTrades().newTrade(player, receiver)));
+					receiver->send(Packets::Trades::sendTradeRequest(player->getName(), ChannelServer::getInstance().getTrades().newTrade(player, receiver)));
 				}
 				else {
-					player->send(TradesPacket::sendTradeMessage(receiver->getName(), TradesPacket::MessageTypes::DenyTrade, TradesPacket::Messages::DoingSomethingElse));
+					player->send(Packets::Trades::sendTradeMessage(receiver->getName(), Packets::Trades::MessageTypes::DenyTrade, Packets::Trades::Messages::DoingSomethingElse));
 				}
 			}
 			break;
@@ -83,7 +85,7 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 				Player *one = trade->getSender();
 				Player *two = trade->getReceiver();
 				TradeHandler::removeTrade(tradeId);
-				one->send(TradesPacket::sendTradeMessage(two->getName(),TradesPacket::MessageTypes::DenyTrade, reader.get<int8_t>()));
+				one->send(Packets::Trades::sendTradeMessage(two->getName(),Packets::Trades::MessageTypes::DenyTrade, reader.get<int8_t>()));
 			}
 			break;
 		}
@@ -94,12 +96,12 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 				Player *one = trade->getSender();
 				Player *two = trade->getReceiver();
 				two->setTrading(true);
-				one->send(TradesPacket::sendAddUser(two, TradeSlots::Two));
-				player->send(TradesPacket::sendOpenTrade(two, one));
+				one->send(Packets::Trades::sendAddUser(two, TradeSlots::Two));
+				player->send(Packets::Trades::sendOpenTrade(two, one));
 				ChannelServer::getInstance().getTrades().stopTimeout(tradeId);
 			}
 			else {
-				player->send(TradesPacket::sendTradeEntryMessage(TradesPacket::Messages::RoomAlreadyClosed));
+				player->send(Packets::Trades::sendTradeEntryMessage(Packets::Trades::Messages::RoomAlreadyClosed));
 			}
 			break;
 		}
@@ -113,9 +115,9 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 			Player *two = trade->getReceiver();
 			bool blue = (player == two);
 			string_t chat = player->getName() + " : " + reader.get<string_t>();
-			one->send(TradesPacket::sendTradeChat(blue, chat));
+			one->send(Packets::Trades::sendTradeChat(blue, chat));
 			if (two != nullptr) {
-				two->send(TradesPacket::sendTradeChat(blue, chat));
+				two->send(Packets::Trades::sendTradeChat(blue, chat));
 			}
 			break;
 		}
@@ -167,8 +169,8 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 						amount = item->getAmount();
 					}
 					Item *use = trade->addItem(player, mod, item, addSlot, slot, inventory, amount);
-					one->send(TradesPacket::sendAddItem(isReceiver ? TradeSlots::Two : TradeSlots::One, addSlot, use));
-					two->send(TradesPacket::sendAddItem(isReceiver ? TradeSlots::One : TradeSlots::Two, addSlot, use));
+					one->send(Packets::Trades::sendAddItem(isReceiver ? TradeSlots::Two : TradeSlots::One, addSlot, use));
+					two->send(Packets::Trades::sendAddItem(isReceiver ? TradeSlots::One : TradeSlots::Two, addSlot, use));
 					break;
 				}
 				case TradeOpcodes::AddMesos: {
@@ -178,13 +180,13 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 						return;
 					}
 					mesos_t mesos = trade->addMesos(player, mod, amount);
-					one->send(TradesPacket::sendAddMesos(isReceiver ? TradeSlots::Two : TradeSlots::One, mesos));
-					two->send(TradesPacket::sendAddMesos(isReceiver ? TradeSlots::One : TradeSlots::Two, mesos));
+					one->send(Packets::Trades::sendAddMesos(isReceiver ? TradeSlots::Two : TradeSlots::One, mesos));
+					two->send(Packets::Trades::sendAddMesos(isReceiver ? TradeSlots::One : TradeSlots::Two, mesos));
 					break;
 				}
 				case TradeOpcodes::AcceptTrade: {
 					trade->accept(mod);
-					(isReceiver ? one : two)->send(TradesPacket::sendAccepted());
+					(isReceiver ? one : two)->send(Packets::Trades::sendAccepted());
 					if (trade->bothAccepted()) {
 						// Do trade processing
 						bool fail = !trade->bothCanTrade();
@@ -195,9 +197,9 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 							trade->swapTrade();
 						}
 
-						int8_t message = (fail ? TradesPacket::Messages::Failure : TradesPacket::Messages::Success);
-						one->send(TradesPacket::sendEndTrade(message));
-						two->send(TradesPacket::sendEndTrade(message));
+						int8_t message = (fail ? Packets::Trades::Messages::Failure : Packets::Trades::Messages::Success);
+						one->send(Packets::Trades::sendEndTrade(message));
+						two->send(Packets::Trades::sendEndTrade(message));
 						TradeHandler::removeTrade(tradeId);
 					}
 					break;
@@ -217,7 +219,7 @@ auto TradeHandler::cancelTrade(Player *player) -> void {
 		bool isReceiver = (player == two);
 		if (isReceiver || (!isReceiver && two != nullptr && two->getTradeId() == one->getTradeId())) {
 			// Left while in trade, give items back
-			(isReceiver ? one : two)->send(TradesPacket::sendLeaveTrade());
+			(isReceiver ? one : two)->send(Packets::Trades::sendLeaveTrade());
 			trade->returnTrade();
 		}
 		TradeHandler::removeTrade(tradeId);
@@ -272,4 +274,6 @@ auto TradeHandler::getTaxLevel(mesos_t mesos) -> int32_t {
 #	error Please specify trade costs
 #endif
 	return 0; // There was no tax prior to .17
+}
+
 }

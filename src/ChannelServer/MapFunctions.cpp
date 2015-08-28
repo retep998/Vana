@@ -30,14 +30,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <chrono>
 #include <iostream>
 
+namespace Vana {
+
 auto MapFunctions::eventInstruction(Player *player, const chat_t &args) -> ChatResult {
-	player->sendMap(MapPacket::showEventInstructions());
+	player->sendMap(Packets::Map::showEventInstructions());
 	return ChatResult::HandledDisplay;
 }
 
 auto MapFunctions::instruction(Player *player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
-		player->sendMap(PlayerPacket::instructionBubble(args));
+		player->sendMap(Packets::Player::instructionBubble(args));
 		ChatHandlerFunctions::showInfo(player, "Showing instruction bubble to everyone on the map");
 		return ChatResult::HandledDisplay;
 	}
@@ -515,4 +517,6 @@ auto MapFunctions::killAllMobs(Player *player, const chat_t &args) -> ChatResult
 		message << "Killed " << killed << " mobs";
 	});
 	return ChatResult::HandledDisplay;
+}
+
 }

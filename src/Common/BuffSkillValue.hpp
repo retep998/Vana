@@ -19,31 +19,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.hpp"
 
-enum class BuffSkillValue {
-	Predefined,
-	// SpecialProcessing indicates an unusual value (e.g. combo orbs) or set of values
-	SpecialProcessing,
-	// SpecialPacket buffs share the same packet for first person/third person views
-	SpecialPacket,
-	BitpackedXy16,
-	BitpackedSkillAndLevel32,
-	SkillId,
-	Level,
-	X,
-	Y,
-	Speed,
-	Jump,
-	Watk,
-	Wdef,
-	Matk,
-	Mdef,
-	Accuracy,
-	Avoid,
-	Prop,
-	Morph,
-	GenderSpecificMorph,
-	MobCount,
-	Range,
-	Damage,
-	Time,
-};
+namespace Vana {
+	enum class BuffSkillValue {
+		Predefined,
+		// SpecialProcessing indicates an unusual value (e.g. combo orbs) or set of values
+		SpecialProcessing,
+		// SpecialPacket buffs share the same packet for first person/third person views
+		SpecialPacket,
+		BitpackedXy16,
+		BitpackedSkillAndLevel32,
+		SkillId,
+		Level,
+		X,
+		Y,
+		Speed,
+		Jump,
+		Watk,
+		Wdef,
+		Matk,
+		Mdef,
+		Accuracy,
+		Avoid,
+		Prop,
+		Morph,
+		GenderSpecificMorph,
+		MobCount,
+		Range,
+		Damage,
+		Time,
+	};
+}

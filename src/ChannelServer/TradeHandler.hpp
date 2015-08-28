@@ -19,14 +19,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.hpp"
 
-class PacketReader;
-class Player;
-struct TradeInfo;
+namespace Vana {
+	class PacketReader;
+	class Player;
+	struct TradeInfo;
 
-namespace TradeHandler {
-	auto tradeHandler(Player *player, PacketReader &reader) -> void;
-	auto removeTrade(trade_id_t id) -> void;
-	auto cancelTrade(Player *player) -> void;
+	namespace TradeHandler {
+		auto tradeHandler(Player *player, PacketReader &reader) -> void;
+		auto removeTrade(trade_id_t id) -> void;
+		auto cancelTrade(Player *player) -> void;
 
-	auto getTaxLevel(mesos_t mesos) -> int32_t;
+		auto getTaxLevel(mesos_t mesos) -> int32_t;
+	}
 }

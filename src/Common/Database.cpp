@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DbConfig.hpp"
 #include <soci-mysql.h>
 
+namespace Vana {
+
 thread_local owned_ptr_t<Database> Database::m_chardb{nullptr};
 thread_local owned_ptr_t<Database> Database::m_datadb{nullptr};
 
@@ -120,4 +122,6 @@ auto Database::buildConnectionString(const DbConfig &conf, bool includeDatabase)
 		<< " port=" << conf.port;
 
 	return str.str();
+}
+
 }

@@ -19,8 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ChatHandlerFunctions.hpp"
 
-class Player;
+namespace Vana {
+	class Player;
 
-namespace CustomFunctions {
-	auto initialize(case_insensitive_hash_map_t<ChatCommand, chat_t> &commandList) -> void;
+	namespace CustomFunctions {
+		auto initialize(case_insensitive_hash_map_t<ChatCommand, chat_t> &commandList) -> void;
+	}
 }

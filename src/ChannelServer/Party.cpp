@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerSkills.hpp"
 #include "WorldServerConnectPacket.hpp"
 
+namespace Vana {
+
 Party::Party(party_id_t partyId) :
 	m_partyId{partyId}
 {
@@ -38,7 +40,7 @@ auto Party::setLeader(player_id_t playerId, bool showPacket) -> void {
 	m_leaderId = playerId;
 	if (showPacket) {
 		runFunction([this, playerId](Player *player) {
-			player->send(PartyPacket::setLeader(this, playerId));
+			player->send(Packets::Party::setLeader(this, playerId));
 		});
 	}
 }
@@ -46,7 +48,7 @@ auto Party::setLeader(player_id_t playerId, bool showPacket) -> void {
 namespace Functors {
 	struct JoinPartyUpdate {
 		auto operator()(Player *target) -> void {
-			target->send(PartyPacket::joinParty(target->getMapId(), party, player));
+			target->send(Packets::Party::joinParty(target->getMapId(), party, player));
 		}
 		Party *party;
 		string_t player;
@@ -90,7 +92,7 @@ auto Party::setMember(player_id_t playerId, Player *player) -> void {
 namespace Functors {
 	struct LeavePartyUpdate {
 		auto operator()(Player *target) -> void {
-			target->send(PartyPacket::leaveParty(target->getMapId(), party, playerId, player, kicked));
+			target->send(Packets::Party::leaveParty(target->getMapId(), party, playerId, player, kicked));
 		}
 		Party *party;
 		player_id_t playerId;
@@ -143,7 +145,7 @@ auto Party::disband() -> void {
 	for (const auto &kvp : temp) {
 		if (Player *player = kvp.second) {
 			player->setParty(nullptr);
-			player->send(PartyPacket::disbandParty(this));
+			player->send(Packets::Party::disbandParty(this));
 		}
 		m_members.erase(kvp.first);
 	}
@@ -151,7 +153,7 @@ auto Party::disband() -> void {
 
 auto Party::silentUpdate() -> void {
 	runFunction([this](Player *player) {
-		player->send(PartyPacket::silentUpdate(player->getMapId(), this));
+		player->send(Packets::Party::silentUpdate(player->getMapId(), this));
 	});
 }
 
@@ -210,7 +212,7 @@ auto Party::getPartyMembers(map_id_t mapId) -> vector_t<Player *> {
 auto Party::showHpBar(Player *player) -> void {
 	runFunction([&player](Player *testPlayer) {
 		if (testPlayer != player && testPlayer->getMapId() == player->getMapId()) {
-			testPlayer->send(PlayerPacket::showHpBar(player->getId(), player->getStats()->getHp(), player->getStats()->getMaxHp()));
+			testPlayer->send(Packets::Player::showHpBar(player->getId(), player->getStats()->getHp(), player->getStats()->getMaxHp()));
 		}
 	});
 }
@@ -218,7 +220,7 @@ auto Party::showHpBar(Player *player) -> void {
 auto Party::receiveHpBar(Player *player) -> void {
 	runFunction([&player](Player *testPlayer) {
 		if (testPlayer != player && testPlayer->getMapId() == player->getMapId()) {
-			player->send(PlayerPacket::showHpBar(testPlayer->getId(), testPlayer->getStats()->getHp(), testPlayer->getStats()->getMaxHp()));
+			player->send(Packets::Player::showHpBar(testPlayer->getId(), testPlayer->getStats()->getHp(), testPlayer->getStats()->getMaxHp()));
 		}
 	});
 }
@@ -328,4 +330,6 @@ auto Party::verifyFootholds(const vector_t<vector_t<foothold_id_t>> &footholds) 
 		winner = footholdGroupsUsed.size() == footholds.size() ? Result::Successful : Result::Failure;
 	}
 	return winner;
+}
+
 }

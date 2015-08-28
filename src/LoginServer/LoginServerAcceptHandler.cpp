@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Worlds.hpp"
 #include <iostream>
 
+namespace Vana {
+
 auto LoginServerAcceptHandler::registerChannel(LoginServerAcceptConnection *connection, PacketReader &reader) -> void {
 	channel_id_t channel = reader.get<channel_id_t>();
 	Channel *chan = new Channel();
@@ -52,4 +54,6 @@ auto LoginServerAcceptHandler::removeChannel(LoginServerAcceptConnection *connec
 
 	LoginServer::getInstance().getWorlds().getWorld(connection->getWorldId())->removeChannel(channel);
 	LoginServer::getInstance().log(LogType::ServerDisconnect, [&](out_stream_t &log) { log << "World " << static_cast<int32_t>(connection->getWorldId()) << "; Channel " << static_cast<int32_t>(channel); });
+}
+
 }

@@ -22,6 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
 
+namespace Vana {
+
 LuaInstance::LuaInstance(const string_t &name, player_id_t playerId) :
 	LuaScriptable{ChannelServer::getInstance().getScriptDataProvider().buildScriptPath(ScriptTypes::Instance, name), playerId}
 {
@@ -42,7 +44,7 @@ auto LuaExports::createInstanceInstance(lua_State *luaVm) -> lua_return_t {
 		persistent = env.get<int32_t>(luaVm, 4);
 	}
 
-	Instance *instance = new Instance(name, 0, 0, seconds_t{time}, seconds_t{persistent}, showTimer);
+	Instance *instance = new Instance{name, 0, 0, seconds_t{time}, seconds_t{persistent}, showTimer};
 	ChannelServer::getInstance().getInstances().addInstance(instance);
 	instance->beginInstance();
 
@@ -51,4 +53,6 @@ auto LuaExports::createInstanceInstance(lua_State *luaVm) -> lua_return_t {
 	}
 
 	return 0;
+}
+
 }

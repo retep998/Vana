@@ -22,6 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketBuilder.hpp"
 #include "Randomizer.hpp"
 
+namespace Vana {
+
 const uint8_t AesKeySize = 32;
 const uint8_t AesKey[AesKeySize] = {
 	0x13, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0xB4, 0x00, 0x00, 0x00,
@@ -178,4 +180,6 @@ auto Decoder::createHeader(unsigned char *header, uint16_t size) -> void {
 	}
 	*reinterpret_cast<uint16_t *>(header) = version;
 	*reinterpret_cast<uint16_t *>(header + 2) = pSize;
+}
+
 }

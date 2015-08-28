@@ -20,8 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketBuilder.hpp"
 #include "Types.hpp"
 
-struct Character;
+namespace Vana {
+	struct Character;
 
-namespace LoginPacketHelper {
-	PACKET(addCharacter, const Character &charc);
+	namespace Packets {
+		namespace Helpers {
+			PACKET(addCharacter, const Character &charc);
+		}
+	}
 }

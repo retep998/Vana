@@ -31,6 +31,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ShopDataProvider.hpp"
 #include "StoragePacket.hpp"
 
+namespace Vana {
+
 namespace ShopOpcodes {
 	enum Opcodes : int8_t {
 		Buy = 0x00,
@@ -96,7 +98,7 @@ auto NpcHandler::handleNpcIn(Player *player, PacketReader &reader) -> void {
 		return;
 	}
 
-	if (type == NpcPacket::Dialogs::Quiz || type == NpcPacket::Dialogs::Question) {
+	if (type == Packets::Npc::Dialogs::Quiz || type == Packets::Npc::Dialogs::Question) {
 		npc->proceedText(reader.get<string_t>());
 		npc->checkEnd();
 		return;
@@ -105,23 +107,23 @@ auto NpcHandler::handleNpcIn(Player *player, PacketReader &reader) -> void {
 	int8_t choice = reader.get<int8_t>();
 
 	switch (type) {
-		case NpcPacket::Dialogs::Normal:
+		case Packets::Npc::Dialogs::Normal:
 			switch (choice) {
 				case 0: npc->proceedBack(); break;
 				case 1:	npc->proceedNext(); break;
 				default: npc->end(); break;
 			}
 			break;
-		case NpcPacket::Dialogs::YesNo:
-		case NpcPacket::Dialogs::AcceptDecline:
-		case NpcPacket::Dialogs::AcceptDeclineNoExit:
+		case Packets::Npc::Dialogs::YesNo:
+		case Packets::Npc::Dialogs::AcceptDecline:
+		case Packets::Npc::Dialogs::AcceptDeclineNoExit:
 			switch (choice) {
 				case 0: npc->proceedSelection(0); break;
 				case 1:	npc->proceedSelection(1); break;
 				default: npc->end(); break;
 			}
 			break;
-		case NpcPacket::Dialogs::GetText:
+		case Packets::Npc::Dialogs::GetText:
 			if (choice != 0) {
 				npc->proceedText(reader.get<string_t>());
 			}
@@ -129,7 +131,7 @@ auto NpcHandler::handleNpcIn(Player *player, PacketReader &reader) -> void {
 				npc->end();
 			}
 			break;
-		case NpcPacket::Dialogs::GetNumber:
+		case Packets::Npc::Dialogs::GetNumber:
 			if (choice == 1) {
 				npc->proceedNumber(reader.get<int32_t>());
 			}
@@ -137,7 +139,7 @@ auto NpcHandler::handleNpcIn(Player *player, PacketReader &reader) -> void {
 				npc->end();
 			}
 			break;
-		case NpcPacket::Dialogs::Simple:
+		case Packets::Npc::Dialogs::Simple:
 			if (choice == 0) {
 				npc->end();
 			}
@@ -145,7 +147,7 @@ auto NpcHandler::handleNpcIn(Player *player, PacketReader &reader) -> void {
 				npc->proceedSelection(reader.get<uint8_t>());
 			}
 			break;
-		case NpcPacket::Dialogs::Style:
+		case Packets::Npc::Dialogs::Style:
 			if (choice == 1) {
 				npc->proceedSelection(reader.get<uint8_t>());
 			}
@@ -160,7 +162,7 @@ auto NpcHandler::handleNpcIn(Player *player, PacketReader &reader) -> void {
 }
 
 auto NpcHandler::handleNpcAnimation(Player *player, PacketReader &reader) -> void {
-	player->send(NpcPacket::animateNpc(reader));
+	player->send(Packets::Npc::animateNpc(reader));
 }
 
 auto NpcHandler::useShop(Player *player, PacketReader &reader) -> void {
@@ -190,17 +192,17 @@ auto NpcHandler::useShop(Player *player, PacketReader &reader) -> void {
 
 			if (price == 0 || totalAmount > itemInfo->maxSlot || totalAmount < 0 || player->getInventory()->getMesos() < totalPrice) {
 				// Hacking
-				player->send(NpcPacket::bought(NpcPacket::BoughtMessages::NotEnoughMesos));
+				player->send(Packets::Npc::bought(Packets::Npc::BoughtMessages::NotEnoughMesos));
 				return;
 			}
 			bool haveSlot = player->getInventory()->hasOpenSlotsFor(itemId, totalAmount, true);
 			if (!haveSlot) {
-				player->send(NpcPacket::bought(NpcPacket::BoughtMessages::NoSlots));
+				player->send(Packets::Npc::bought(Packets::Npc::BoughtMessages::NoSlots));
 				return;
 			}
 			Inventory::addNewItem(player, itemId, totalAmount);
 			player->getInventory()->modifyMesos(-totalPrice);
-			player->send(NpcPacket::bought(NpcPacket::BoughtMessages::Success));
+			player->send(Packets::Npc::bought(Packets::Npc::BoughtMessages::Success));
 			break;
 		}
 		case ShopOpcodes::Sell: {
@@ -211,7 +213,7 @@ auto NpcHandler::useShop(Player *player, PacketReader &reader) -> void {
 			Item *item = player->getInventory()->getItem(inv, slot);
 			if (item == nullptr || item->getId() != itemId || (!GameLogicUtilities::isRechargeable(itemId) && amount > item->getAmount())) {
 				// Hacking
-				player->send(NpcPacket::bought(NpcPacket::BoughtMessages::NotEnoughInStock));
+				player->send(Packets::Npc::bought(Packets::Npc::BoughtMessages::NotEnoughInStock));
 				return;
 			}
 			mesos_t price = ChannelServer::getInstance().getItemDataProvider().getItemInfo(itemId)->price;
@@ -223,7 +225,7 @@ auto NpcHandler::useShop(Player *player, PacketReader &reader) -> void {
 			else {
 				Inventory::takeItemSlot(player, inv, slot, amount, true);
 			}
-			player->send(NpcPacket::bought(NpcPacket::BoughtMessages::Success));
+			player->send(Packets::Npc::bought(Packets::Npc::BoughtMessages::Success));
 			break;
 		}
 		case ShopOpcodes::Recharge: {
@@ -245,10 +247,10 @@ auto NpcHandler::useShop(Player *player, PacketReader &reader) -> void {
 				item->setAmount(maxSlot);
 
 				vector_t<InventoryPacketOperation> ops;
-				ops.emplace_back(InventoryPacket::OperationTypes::ModifyQuantity, item, slot);
-				player->send(InventoryPacket::inventoryOperation(true, ops));
+				ops.emplace_back(Packets::Inventory::OperationTypes::ModifyQuantity, item, slot);
+				player->send(Packets::Inventory::inventoryOperation(true, ops));
 
-				player->send(NpcPacket::bought(NpcPacket::BoughtMessages::Success));
+				player->send(Packets::Npc::bought(Packets::Npc::BoughtMessages::Success));
 			}
 			break;
 		}
@@ -280,7 +282,7 @@ auto NpcHandler::useStorage(Player *player, PacketReader &reader) -> void {
 			}
 			Inventory::addItem(player, new Item{item});
 			player->getStorage()->takeItem(slot);
-			player->send(StoragePacket::takeItem(player, inv));
+			player->send(Packets::Storage::takeItem(player, inv));
 			break;
 		}
 		case ShopOpcodes::StoreItem: {
@@ -289,12 +291,12 @@ auto NpcHandler::useStorage(Player *player, PacketReader &reader) -> void {
 			slot_qty_t amount = reader.get<slot_qty_t>();
 			if (player->getInventory()->getMesos() < cost) {
 				// Player doesn't have enough mesos to store this item
-				player->send(StoragePacket::noMesos());
+				player->send(Packets::Storage::noMesos());
 				return;
 			}
 			if (player->getStorage()->isFull()) {
 				// Storage is full, so tell the player and abort the mission
-				player->send(StoragePacket::storageFull());
+				player->send(Packets::Storage::storageFull());
 				return;
 			}
 			inventory_t inv = GameLogicUtilities::getInventory(itemId);
@@ -339,7 +341,7 @@ auto NpcHandler::useStorage(Player *player, PacketReader &reader) -> void {
 				true);
 
 			player->getInventory()->modifyMesos(-cost);
-			player->send(StoragePacket::addItem(player, inv));
+			player->send(Packets::Storage::addItem(player, inv));
 			break;
 		}
 		case ShopOpcodes::MesoTransaction: {
@@ -359,7 +361,7 @@ auto NpcHandler::useStorage(Player *player, PacketReader &reader) -> void {
 auto NpcHandler::showShop(Player *player, shop_id_t shopId) -> Result {
 	if (ChannelServer::getInstance().getShopDataProvider().isShop(shopId)) {
 		player->setShop(shopId);
-		player->send(NpcPacket::showShop(ChannelServer::getInstance().getShopDataProvider().getShop(shopId), player->getSkills()->getRechargeableBonus()));
+		player->send(Packets::Npc::showShop(ChannelServer::getInstance().getShopDataProvider().getShop(shopId), player->getSkills()->getRechargeableBonus()));
 		return Result::Successful;
 	}
 	return Result::Failure;
@@ -368,7 +370,7 @@ auto NpcHandler::showShop(Player *player, shop_id_t shopId) -> Result {
 auto NpcHandler::showStorage(Player *player, npc_id_t npcId) -> Result {
 	if (ChannelServer::getInstance().getNpcDataProvider().getStorageCost(npcId)) {
 		player->setShop(npcId);
-		player->send(StoragePacket::showStorage(player, npcId));
+		player->send(Packets::Storage::showStorage(player, npcId));
 		return Result::Successful;
 	}
 	return Result::Failure;
@@ -379,4 +381,6 @@ auto NpcHandler::showGuildRank(Player *player, npc_id_t npcId) -> Result {
 		// To be implemented later
 	}
 	return Result::Failure;
+}
+
 }

@@ -20,10 +20,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketBuilder.hpp"
 #include "Types.hpp"
 
-class Item;
-class Player;
+namespace Vana {
+	class Item;
+	class Player;
 
-namespace PlayerPacketHelper {
-	PACKET(addItemInfo, inventory_slot_t slot, Item *item, bool shortSlot = false);
-	PACKET(addPlayerDisplay, Player *player);
+	namespace Packets {
+		namespace Helpers {
+			PACKET(addItemInfo, inventory_slot_t slot, Item *item, bool shortSlot = false);
+			PACKET(addPlayerDisplay, Vana::Player *player);
+		}
+	}
 }

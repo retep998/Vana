@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ServerClient.hpp"
 #include "ThreadPool.hpp"
 
+namespace Vana {
+
 ConnectionManager::ConnectionManager(AbstractServer *server) :
 	m_server{server}
 {
@@ -104,4 +106,6 @@ auto ConnectionManager::acceptConnection(ref_ptr_t<Listener> listener) -> void {
 			this->acceptConnection(listener);
 		}
 	});
+}
+
 }

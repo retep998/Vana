@@ -28,6 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.hpp"
 #include <array>
 
+namespace Vana {
+
 PlayerQuests::PlayerQuests(Player *player) :
 	m_player{player}
 {
@@ -156,8 +158,8 @@ auto PlayerQuests::load() -> void {
 }
 
 auto PlayerQuests::addQuest(quest_id_t questId, npc_id_t npcId) -> void {
-	m_player->send(QuestsPacket::acceptQuestNotice(questId));
-	m_player->send(QuestsPacket::acceptQuest(questId, npcId));
+	m_player->send(Packets::Quests::acceptQuestNotice(questId));
+	m_player->send(Packets::Quests::acceptQuest(questId, npcId));
 
 	ActiveQuest quest;
 	quest.id = questId;
@@ -203,7 +205,7 @@ auto PlayerQuests::updateQuestMob(mob_id_t mobId) -> void {
 		});
 
 		if (anyUpdate) {
-			m_player->send(QuestsPacket::updateQuest(quest));
+			m_player->send(Packets::Quests::updateQuest(quest));
 		}
 		if (possiblyCompleted) {
 			checkDone(quest);
@@ -229,7 +231,7 @@ auto PlayerQuests::checkDone(ActiveQuest &quest) -> void {
 	});
 
 	if (quest.done) {
-		m_player->send(QuestsPacket::doneQuest(quest.id));
+		m_player->send(Packets::Quests::doneQuest(quest.id));
 	}
 }
 
@@ -257,9 +259,9 @@ auto PlayerQuests::finishQuest(quest_id_t questId, npc_id_t npcId) -> void {
 	m_quests.erase(questId);
 	FileTime endTime{};
 	m_completed[questId] = endTime;
-	m_player->send(QuestsPacket::completeQuestNotice(questId, endTime));
-	m_player->send(QuestsPacket::completeQuest(questId, npcId, questInfo.getNextQuest()));
-	m_player->sendMap(QuestsPacket::completeQuestAnimation(m_player->getId()));
+	m_player->send(Packets::Quests::completeQuestNotice(questId, endTime));
+	m_player->send(Packets::Quests::completeQuest(questId, npcId, questInfo.getNextQuest()));
+	m_player->sendMap(Packets::Quests::completeQuestAnimation(m_player->getId()));
 }
 
 auto PlayerQuests::itemDropAllowed(item_id_t itemId, quest_id_t questId) -> AllowQuestItemResult {
@@ -306,7 +308,7 @@ auto PlayerQuests::giveRewards(quest_id_t questId, bool start) -> Result {
 			mesos_t mesos = info.id + m_player->getInventory()->getMesos();
 			if (mesos < 0) {
 				// Will trigger for both too low and too high
-				m_player->send(QuestsPacket::questError(questId, QuestsPacket::ErrorNotEnoughMesos));
+				m_player->send(Packets::Quests::questError(questId, Packets::Quests::ErrorNotEnoughMesos));
 				return IterationResult::StopIterating;
 			}
 		}
@@ -320,7 +322,7 @@ auto PlayerQuests::giveRewards(quest_id_t questId, bool start) -> Result {
 
 	for (inventory_t i = 0; i < Inventories::InventoryCount; i++) {
 		if (neededSlots[i] != 0 && m_player->getInventory()->getOpenSlotsNum(i + 1) < neededSlots[i]) {
-			m_player->send(QuestsPacket::questError(questId, QuestsPacket::ErrorNoItemSpace));
+			m_player->send(Packets::Quests::questError(questId, Packets::Quests::ErrorNoItemSpace));
 			return Result::Failure;
 		}
 	}
@@ -334,15 +336,15 @@ auto PlayerQuests::giveRewards(quest_id_t questId, bool start) -> Result {
 		}
 		else if (info.isItem) {
 			if (info.count > 0) {
-				m_player->send(QuestsPacket::giveItem(info.id, info.count));
+				m_player->send(Packets::Quests::giveItem(info.id, info.count));
 				Inventory::addNewItem(m_player, info.id, info.count);
 			}
 			else if (info.count < 0) {
-				m_player->send(QuestsPacket::giveItem(info.id, info.count));
+				m_player->send(Packets::Quests::giveItem(info.id, info.count));
 				Inventory::takeItem(m_player, info.id, -info.count);
 			}
 			else if (info.id > 0) {
-				m_player->send(QuestsPacket::giveItem(info.id, -m_player->getInventory()->getItemAmount(info.id)));
+				m_player->send(Packets::Quests::giveItem(info.id, -m_player->getInventory()->getItemAmount(info.id)));
 				Inventory::takeItem(m_player, info.id, m_player->getInventory()->getItemAmount(info.id));
 			}
 		}
@@ -351,11 +353,11 @@ auto PlayerQuests::giveRewards(quest_id_t questId, bool start) -> Result {
 		}
 		else if (info.isMesos) {
 			m_player->getInventory()->modifyMesos(info.id);
-			m_player->send(QuestsPacket::giveMesos(info.id));
+			m_player->send(Packets::Quests::giveMesos(info.id));
 		}
 		else if (info.isFame) {
 			m_player->getStats()->setFame(m_player->getStats()->getFame() + static_cast<fame_t>(info.id));
-			m_player->send(QuestsPacket::giveFame(info.id));
+			m_player->send(Packets::Quests::giveFame(info.id));
 		}
 		else if (info.isBuff) {
 			Inventory::useItem(m_player, info.id);
@@ -375,7 +377,7 @@ auto PlayerQuests::giveRewards(quest_id_t questId, bool start) -> Result {
 		chance = 0;
 		for (const auto &info : items) {
 			if (chance >= random) {
-				m_player->send(QuestsPacket::giveItem(info.id, info.count));
+				m_player->send(Packets::Quests::giveItem(info.id, info.count));
 				if (info.count > 0) {
 					Inventory::addNewItem(m_player, info.id, info.count);
 				}
@@ -396,7 +398,7 @@ auto PlayerQuests::giveRewards(quest_id_t questId, bool start) -> Result {
 auto PlayerQuests::removeQuest(quest_id_t questId) -> void {
 	if (isQuestActive(questId)) {
 		m_quests.erase(questId);
-		m_player->send(QuestsPacket::forfeitQuest(questId));
+		m_player->send(Packets::Quests::forfeitQuest(questId));
 	}
 }
 
@@ -435,9 +437,11 @@ auto PlayerQuests::setQuestData(quest_id_t id, const string_t &data) -> void {
 
 	auto &quest = m_quests[id];
 	quest.data = data;
-	m_player->send(QuestsPacket::updateQuest(quest));
+	m_player->send(Packets::Quests::updateQuest(quest));
 }
 
 auto PlayerQuests::getQuestData(quest_id_t id) -> string_t {
 	return isQuestActive(id) ? m_quests[id].data : "";
+}
+
 }

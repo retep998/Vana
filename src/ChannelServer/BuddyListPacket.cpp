@@ -20,7 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerBuddyList.hpp"
 #include "SmsgHeader.hpp"
 
-namespace BuddyListPacket {
+namespace Vana {
+namespace Packets {
+namespace Buddy {
 
 PACKET_IMPL(error, uint8_t error) {
 	PacketBuilder builder;
@@ -87,4 +89,6 @@ PACKET_IMPL(online, player_id_t charId, channel_id_t channel, bool cashShop) {
 	return builder;
 }
 
+}
+}
 }

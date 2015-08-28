@@ -22,7 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-namespace TradesPacket {
+namespace Vana {
+namespace Packets {
+namespace Trades {
 
 PACKET_IMPL(sendOpenTrade, Player *player1, Player *player2) {
 	PacketBuilder builder;
@@ -35,13 +37,13 @@ PACKET_IMPL(sendOpenTrade, Player *player1, Player *player2) {
 
 	if (player2 != nullptr) {
 		builder
-			.addBuffer(PlayerPacketHelper::addPlayerDisplay(player2))
+			.addBuffer(Helpers::addPlayerDisplay(player2))
 			.add<string_t>(player2->getName())
 			.add<int8_t>(1); // Location in the window
 	}
 	if (player1 != nullptr) {
 		builder
-			.addBuffer(PlayerPacketHelper::addPlayerDisplay(player1))
+			.addBuffer(Helpers::addPlayerDisplay(player1))
 			.add<string_t>(player1->getName())
 			.add<int8_t>(-1); // Location in the window
 	}
@@ -73,7 +75,7 @@ PACKET_IMPL(sendEndTrade, int8_t message) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PLAYER_ROOM)
-		.add<int8_t>(TradesPacket::MessageTypes::EndTrade)
+		.add<int8_t>(Packets::Trades::MessageTypes::EndTrade)
 		.add<int8_t>(0x00)
 		.add<int8_t>(message);
 	return builder;
@@ -83,7 +85,7 @@ PACKET_IMPL(sendTradeEntryMessage, int8_t message) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PLAYER_ROOM)
-		.add<int8_t>(TradesPacket::MessageTypes::ShopEntryMessages)
+		.add<int8_t>(Packets::Trades::MessageTypes::ShopEntryMessages)
 		.add<int8_t>(0x00)
 		.add<int8_t>(message);
 	return builder;
@@ -106,7 +108,7 @@ PACKET_IMPL(sendAddUser, Player *newPlayer, int8_t slot) {
 		.add<header_t>(SMSG_PLAYER_ROOM)
 		.add<int8_t>(0x04)
 		.add<int8_t>(slot)
-		.addBuffer(PlayerPacketHelper::addPlayerDisplay(newPlayer))
+		.addBuffer(Helpers::addPlayerDisplay(newPlayer))
 		.add<string_t>(newPlayer->getName());
 	return builder;
 }
@@ -145,8 +147,10 @@ PACKET_IMPL(sendAddItem, uint8_t player, uint8_t slot, Item *item) {
 		.add<header_t>(SMSG_PLAYER_ROOM)
 		.add<int8_t>(0x0E)
 		.add<int8_t>(player)
-		.addBuffer(PlayerPacketHelper::addItemInfo(slot, item));
+		.addBuffer(Helpers::addItemInfo(slot, item));
 	return builder;
 }
 
+}
+}
 }

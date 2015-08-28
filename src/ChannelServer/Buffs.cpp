@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillDataProvider.hpp"
 #include "SummonHandler.hpp"
 
+namespace Vana {
+
 auto Buffs::addBuff(Player *player, skill_id_t skillId, skill_level_t level, int16_t addedInfo, map_object_t mapMobId) -> Result {
 	auto source = BuffSource::fromSkill(skillId, level);
 	auto &buffProvider = ChannelServer::getInstance().getBuffDataProvider();
@@ -397,4 +399,6 @@ auto Buffs::getValue(Player *player, const BuffSource &source, const seconds_t &
 	}
 
 	throw NotImplementedException{"BuffSourceType"};
+}
+
 }

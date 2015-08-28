@@ -19,13 +19,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "AbstractServerConnection.hpp"
 
-class PacketReader;
+namespace Vana {
+	class PacketReader;
 
-class LoginServerConnection final : public AbstractServerConnection {
-	NONCOPYABLE(LoginServerConnection);
-public:
-	LoginServerConnection();
-	~LoginServerConnection();
-protected:
-	auto handleRequest(PacketReader &reader) -> void override;
-};
+	class LoginServerConnection final : public AbstractServerConnection {
+		NONCOPYABLE(LoginServerConnection);
+	public:
+		LoginServerConnection();
+		~LoginServerConnection();
+	protected:
+		auto handleRequest(PacketReader &reader) -> void override;
+	};
+}

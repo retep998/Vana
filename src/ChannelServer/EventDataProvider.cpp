@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
+namespace Vana {
+
 EventDataProvider::EventDataProvider()
 {
 	m_variables = make_owned_ptr<Variables>();
@@ -147,4 +149,6 @@ auto EventDataProvider::startInstance(const string_t &name, const duration_t &ti
 	Instance *instance = new Instance{name, 0, 0, time, repeat, false};
 	ChannelServer::getInstance().getInstances().addInstance(instance);
 	instance->beginInstance();
+}
+
 }

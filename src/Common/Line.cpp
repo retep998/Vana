@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <cmath>
 
+namespace Vana {
+
 Line::Line(const Point &pt1, const Point &pt2) :
 	pt1{pt1},
 	pt2{pt2}
@@ -146,4 +148,6 @@ auto Line::isEdge(const Point &pt) -> bool {
 
 auto Line::isEdge(coord_t xValue, coord_t yValue) -> bool {
 	return isEdge(Point{xValue, yValue});
+}
+
 }

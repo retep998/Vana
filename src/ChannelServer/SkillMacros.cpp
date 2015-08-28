@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.hpp"
 #include "MiscUtilities.hpp"
 
+namespace Vana {
+
 auto SkillMacros::load(player_id_t charId) -> void {
 	auto &db = Database::getCharDb();
 	auto &sql = db.getSession();
@@ -64,4 +66,6 @@ auto SkillMacros::save(player_id_t charId) -> void {
 			st.execute(true);
 		}
 	}
+}
+
 }

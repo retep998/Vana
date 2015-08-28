@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <algorithm>
 #include <cmath>
 
+namespace Vana {
+
 Rect::Rect(const Point &leftTop, const Point &rightBottom) :
 	m_leftTop{leftTop},
 	m_rightBottom{rightBottom}
@@ -179,7 +181,7 @@ auto Rect::intersects(const Line &line) const -> bool {
 			x = m_leftTop.x;
 			y = y1 + (y2 - y1) * (m_leftTop.x - x1) / (x1 - x2);
 		}
-		else throw NotImplementedException{"Should not reach here"};
+		else throw InvalidOperationException{"Should not reach here"};
 
 		if (outsideResult == testResultPt1) {
 			x1 = x;
@@ -281,4 +283,6 @@ auto Rect::findOverlap(const Rect &other) const -> SearchResult {
 		test.m_leftTop.y < normalized.m_rightBottom.y;
 
 	return noOverlap ? SearchResult::NotFound : SearchResult::Found;
+}
+
 }

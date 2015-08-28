@@ -43,6 +43,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ShopDataProvider.hpp"
 #include "ValidCharDataProvider.hpp"
 
+namespace Vana {
+
 auto InventoryHandler::itemMove(Player *player, PacketReader &reader) -> void {
 	reader.skip<tick_count_t>();
 	inventory_t inv = reader.get<inventory_t>();
@@ -72,7 +74,7 @@ auto InventoryHandler::itemMove(Player *player, PacketReader &reader) -> void {
 		auto testPetSlot = [&player, &testSlot](int16_t equipSlot, int32_t petIndex) {
 			if (testSlot(equipSlot)) {
 				if (Pet *pet = player->getPets()->getSummoned(petIndex)) {
-					player->sendMap(PetsPacket::changeName(player->getId(), pet));
+					player->sendMap(Packets::Pets::changeName(player->getId(), pet));
 				}
 			}
 		};
@@ -81,7 +83,7 @@ auto InventoryHandler::itemMove(Player *player, PacketReader &reader) -> void {
 		testPetSlot(EquipSlots::PetLabelRing2, 1);
 		testPetSlot(EquipSlots::PetLabelRing3, 2);
 
-		player->sendMap(InventoryPacket::updatePlayer(player));
+		player->sendMap(Packets::Inventory::updatePlayer(player));
 	}
 }
 
@@ -107,8 +109,8 @@ auto InventoryHandler::dropItem(Player *player, PacketReader &reader, Item *item
 	droppedItem.setAmount(amount);
 	if (item->getAmount() == amount) {
 		vector_t<InventoryPacketOperation> ops;
-		ops.emplace_back(InventoryPacket::OperationTypes::ModifySlot, item, slot);
-		player->send(InventoryPacket::inventoryOperation(true, ops));
+		ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, item, slot);
+		player->send(Packets::Inventory::inventoryOperation(true, ops));
 
 		player->getInventory()->deleteItem(inv, slot);
 	}
@@ -117,8 +119,8 @@ auto InventoryHandler::dropItem(Player *player, PacketReader &reader, Item *item
 		player->getInventory()->changeItemAmount(item->getId(), -amount);
 
 		vector_t<InventoryPacketOperation> ops;
-		ops.emplace_back(InventoryPacket::OperationTypes::ModifyQuantity, item, slot);
-		player->send(InventoryPacket::inventoryOperation(true, ops));
+		ops.emplace_back(Packets::Inventory::OperationTypes::ModifyQuantity, item, slot);
+		player->send(Packets::Inventory::inventoryOperation(true, ops));
 	}
 
 	auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(droppedItem.getId());
@@ -203,14 +205,14 @@ auto InventoryHandler::useSkillbook(Player *player, PacketReader &reader) -> voi
 	}
 
 	if (skillId != 0) {
-		player->sendMap(InventoryPacket::useSkillbook(player->getId(), skillId, newMaxLevel, true, succeed));
+		player->sendMap(Packets::Inventory::useSkillbook(player->getId(), skillId, newMaxLevel, true, succeed));
 	}
 }
 
 auto InventoryHandler::useChair(Player *player, PacketReader &reader) -> void {
 	item_id_t chairId = reader.get<item_id_t>();
 	player->setChair(chairId);
-	player->sendMap(InventoryPacket::sitChair(player->getId(), chairId));
+	player->sendMap(Packets::Inventory::sitChair(player->getId(), chairId));
 }
 
 auto InventoryHandler::handleChair(Player *player, PacketReader &reader) -> void {
@@ -224,17 +226,17 @@ auto InventoryHandler::handleChair(Player *player, PacketReader &reader) -> void
 			map->playerSeated(player->getMapChair(), nullptr);
 			player->setMapChair(0);
 		}
-		map->send(InventoryPacket::stopChair(player->getId(), false), player);
+		map->send(Packets::Inventory::stopChair(player->getId(), false), player);
 	}
 	else {
 		// Map chair
 		if (map->seatOccupied(chair)) {
-			map->send(InventoryPacket::stopChair(player->getId(), true), player);
+			map->send(Packets::Inventory::stopChair(player->getId(), true), player);
 		}
 		else {
 			map->playerSeated(chair, player);
 			player->setMapChair(chair);
-			player->send(InventoryPacket::sitMapChair(chair));
+			player->send(Packets::Inventory::sitMapChair(chair));
 		}
 	}
 }
@@ -328,30 +330,30 @@ auto InventoryHandler::useScroll(Player *player, PacketReader &reader) -> void {
 		}
 
 		Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
-		player->sendMap(InventoryPacket::useScroll(player->getId(), succeed, cursed, legendarySpirit));
+		player->sendMap(Packets::Inventory::useScroll(player->getId(), succeed, cursed, legendarySpirit));
 
 		if (!cursed) {
 			player->getStats()->setEquip(equipSlot, equip);
 
 			vector_t<InventoryPacketOperation> ops;
-			ops.emplace_back(InventoryPacket::OperationTypes::AddItem, equip, equipSlot);
-			player->send(InventoryPacket::inventoryOperation(true, ops));
+			ops.emplace_back(Packets::Inventory::OperationTypes::AddItem, equip, equipSlot);
+			player->send(Packets::Inventory::inventoryOperation(true, ops));
 		}
 		else {
 			vector_t<InventoryPacketOperation> ops;
-			ops.emplace_back(InventoryPacket::OperationTypes::ModifySlot, equip, equipSlot);
-			player->send(InventoryPacket::inventoryOperation(true, ops));
+			ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, equip, equipSlot);
+			player->send(Packets::Inventory::inventoryOperation(true, ops));
 
 			player->getInventory()->deleteItem(Inventories::EquipInventory, equipSlot);
 		}
 
-		player->sendMap(InventoryPacket::updatePlayer(player));
+		player->sendMap(Packets::Inventory::updatePlayer(player));
 	}
 	else {
 		if (legendarySpirit) {
-			player->sendMap(InventoryPacket::useScroll(player->getId(), succeed, cursed, legendarySpirit));
+			player->sendMap(Packets::Inventory::useScroll(player->getId(), succeed, cursed, legendarySpirit));
 		}
-		player->send(InventoryPacket::blankUpdate());
+		player->send(Packets::Inventory::blankUpdate());
 	}
 }
 
@@ -411,7 +413,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 		Pet *pet = player->getPets()->getSummoned(0);
 		if (pet != nullptr) {
 			if (pet->getFullness() < Stats::MaxFullness) {
-				player->send(PetsPacket::showAnimation(player->getId(), pet, 1));
+				player->send(Packets::Pets::showAnimation(player->getId(), pet, 1));
 				pet->modifyFullness(Stats::MaxFullness, false);
 				pet->addCloseness(100); // All cash pet food gives 100 closeness
 				used = true;
@@ -453,14 +455,14 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 			case Items::Megaphone: {
 				string_t msg = player->getMedalName() + " : " + reader.get<string_t>();
 				// In global, this sends to everyone on the current channel, not the map
-				ChannelServer::getInstance().getPlayerDataProvider().send(InventoryPacket::showMegaphone(msg));
+				ChannelServer::getInstance().getPlayerDataProvider().send(Packets::Inventory::showMegaphone(msg));
 				used = true;
 				break;
 			}
 			case Items::SuperMegaphone: {
 				string_t msg = player->getMedalName() + " : " + reader.get<string_t>();
 				bool whisper = reader.get<bool>();
-				auto &basePacket = InventoryPacket::showSuperMegaphone(msg, whisper);
+				auto &basePacket = Packets::Inventory::showSuperMegaphone(msg, whisper);
 				ChannelServer::getInstance().sendWorld(
 					Packets::prepend(basePacket, [](PacketBuilder &builder) {
 						builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
@@ -476,7 +478,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 				string_t msg3 = reader.get<string_t>();
 				string_t msg4 = reader.get<string_t>();
 
-				auto &basePacket = InventoryPacket::showMessenger(player->getName(), msg1, msg2, msg3, msg4, reader.getBuffer(), reader.getBufferLength(), itemId);
+				auto &basePacket = Packets::Inventory::showMessenger(player->getName(), msg1, msg2, msg3, msg4, reader.getBuffer(), reader.getBufferLength(), itemId);
 				ChannelServer::getInstance().sendWorld(
 					Packets::prepend(basePacket, [](PacketBuilder &builder) {
 						builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
@@ -498,7 +500,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 					}
 				}
 
-				auto &basePacket = InventoryPacket::showItemMegaphone(msg, whisper, item);
+				auto &basePacket = Packets::Inventory::showItemMegaphone(msg, whisper, item);
 				ChannelServer::getInstance().sendWorld(
 					Packets::prepend(basePacket, [](PacketBuilder &builder) {
 						builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
@@ -518,7 +520,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 				}
 
 				bool whisper = reader.get<bool>();
-				auto &basePacket = InventoryPacket::showTripleMegaphone(lines, text[0], text[1], text[2], whisper);
+				auto &basePacket = Packets::Inventory::showTripleMegaphone(lines, text[0], text[1], text[2], whisper);
 				ChannelServer::getInstance().sendWorld(
 					Packets::prepend(basePacket, [](PacketBuilder &builder) {
 						builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
@@ -551,8 +553,8 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 					item->setName(player->getName());
 
 					vector_t<InventoryPacketOperation> ops;
-					ops.emplace_back(InventoryPacket::OperationTypes::AddItem, item, slot);
-					player->send(InventoryPacket::inventoryOperation(true, ops));
+					ops.emplace_back(Packets::Inventory::OperationTypes::AddItem, item, slot);
+					player->send(Packets::Inventory::inventoryOperation(true, ops));
 					used = true;
 				}
 				break;
@@ -592,8 +594,8 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 					}
 
 					vector_t<InventoryPacketOperation> ops;
-					ops.emplace_back(InventoryPacket::OperationTypes::AddItem, item, slot);
-					player->send(InventoryPacket::inventoryOperation(true, ops));
+					ops.emplace_back(Packets::Inventory::OperationTypes::AddItem, item, slot);
+					player->send(Packets::Inventory::inventoryOperation(true, ops));
 					used = true;
 				}
 				break;
@@ -616,7 +618,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 					ChannelServer::getInstance().getMapleTvs().addMessage(player, receiver, msg1, msg2, msg3, msg4, msg5, itemId - (itemId == Items::Megassenger ? 3 : 0), time);
 
 					if (itemId == Items::Megassenger) {
-						auto &basePacket = InventoryPacket::showSuperMegaphone(player->getMedalName() + " : " + msg1 + msg2 + msg3 + msg4 + msg5, showWhisper);
+						auto &basePacket = Packets::Inventory::showSuperMegaphone(player->getMedalName() + " : " + msg1 + msg2 + msg3 + msg4 + msg5, showWhisper);
 						ChannelServer::getInstance().sendWorld(
 							Packets::prepend(basePacket, [](PacketBuilder &builder) {
 								builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
@@ -641,7 +643,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 				ChannelServer::getInstance().getMapleTvs().addMessage(player, nullptr, msg1, msg2, msg3, msg4, msg5, itemId - (itemId == Items::StarMegassenger ? 3 : 0), time);
 
 				if (itemId == Items::StarMegassenger) {
-					auto &basePacket = InventoryPacket::showSuperMegaphone(player->getMedalName() + " : " + msg1 + msg2 + msg3 + msg4 + msg5, showWhisper);
+					auto &basePacket = Packets::Inventory::showSuperMegaphone(player->getMedalName() + " : " + msg1 + msg2 + msg3 + msg4 + msg5, showWhisper);
 					ChannelServer::getInstance().sendWorld(
 						Packets::prepend(basePacket, [](PacketBuilder &builder) {
 							builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
@@ -668,7 +670,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 					ChannelServer::getInstance().getMapleTvs().addMessage(player, receiver, msg1, msg2, msg3, msg4, msg5, itemId - (itemId == Items::HeartMegassenger ? 3 : 0), time);
 
 					if (itemId == Items::HeartMegassenger) {
-						auto &basePacket = InventoryPacket::showSuperMegaphone(player->getMedalName() + " : " + msg1 + msg2 + msg3 + msg4 + msg5, showWhisper);
+						auto &basePacket = Packets::Inventory::showSuperMegaphone(player->getMedalName() + " : " + msg1 + msg2 + msg3 + msg4 + msg5, showWhisper);
 						ChannelServer::getInstance().sendWorld(
 							Packets::prepend(basePacket, [](PacketBuilder &builder) {
 								builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
@@ -683,10 +685,10 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 			case Items::GoldSackOfMesos: {
 				mesos_t mesos = itemInfo->mesos;
 				if (!player->getInventory()->modifyMesos(mesos)) {
-					player->send(InventoryPacket::sendMesobagFailed());
+					player->send(Packets::Inventory::sendMesobagFailed());
 				}
 				else {
-					player->send(InventoryPacket::sendMesobagSucceed(mesos));
+					player->send(Packets::Inventory::sendMesobagSucceed(mesos));
 					used = true;
 				}
 				break;
@@ -695,7 +697,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 			case Items::Chalkboard2: {
 				string_t msg = reader.get<string_t>();
 				player->setChalkboard(msg);
-				player->sendMap(InventoryPacket::sendChalkboardUpdate(player->getId(), msg));
+				player->sendMap(Packets::Inventory::sendChalkboardUpdate(player->getId(), msg));
 				break;
 			}
 			case Items::FungusScroll:
@@ -714,13 +716,13 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 				}
 				item->incHammers();
 				item->incSlots();
-				player->send(InventoryPacket::sendHammerSlots(item->getHammers()));
+				player->send(Packets::Inventory::sendHammerSlots(item->getHammers()));
 				player->getInventory()->setHammerSlot(slot);
 				used = true;
 				break;
 			}
 			case Items::CongratulatorySong:
-				player->sendMap(InventoryPacket::playCashSong(itemId, player->getName()));
+				player->sendMap(Packets::Inventory::playCashSong(itemId, player->getName()));
 				used = true;
 				break;
 		}
@@ -729,7 +731,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 		Inventory::takeItem(player, itemId, 1);
 	}
 	else {
-		player->send(InventoryPacket::blankUpdate());
+		player->send(Packets::Inventory::blankUpdate());
 	}
 }
 
@@ -740,7 +742,7 @@ auto InventoryHandler::useItemEffect(Player *player, PacketReader &reader) -> vo
 		return;
 	}
 	player->setItemEffect(itemId);
-	player->sendMap(InventoryPacket::useItemEffect(player->getId(), itemId));
+	player->sendMap(Packets::Inventory::useItemEffect(player->getId(), itemId));
 }
 
 auto InventoryHandler::handleRockFunctions(Player *player, PacketReader &reader) -> void {
@@ -764,7 +766,7 @@ auto InventoryHandler::handleRockFunctions(Player *player, PacketReader &reader)
 		}
 		else {
 			// Hacking, the client doesn't allow this to occur
-			player->send(InventoryPacket::sendRockError(InventoryPacket::RockErrors::CannotSaveMap, type));
+			player->send(Packets::Inventory::sendRockError(Packets::Inventory::RockErrors::CannotSaveMap, type));
 		}
 	}
 }
@@ -782,8 +784,8 @@ auto InventoryHandler::handleRockTeleport(Player *player, item_id_t itemId, Pack
 	}
 
 	int8_t type = itemId != Items::VipRock ?
-		InventoryPacket::RockTypes::Regular :
-		InventoryPacket::RockTypes::Vip;
+		Packets::Inventory::RockTypes::Regular :
+		Packets::Inventory::RockTypes::Vip;
 
 	bool used = false;
 	int8_t mode = reader.get<int8_t>();
@@ -807,7 +809,7 @@ auto InventoryHandler::handleRockTeleport(Player *player, item_id_t itemId, Pack
 			targetMapId = target->getMapId();
 		}
 		else if (target == nullptr) {
-			player->send(InventoryPacket::sendRockError(InventoryPacket::RockErrors::DifficultToLocate, type));
+			player->send(Packets::Inventory::sendRockError(Packets::Inventory::RockErrors::DifficultToLocate, type));
 		}
 		else if (target == player) {
 			// Hacking
@@ -818,19 +820,19 @@ auto InventoryHandler::handleRockTeleport(Player *player, item_id_t itemId, Pack
 		Map *destination = Maps::getMap(targetMapId);
 		Map *origin = player->getMap();
 		if (!destination->canVip()) {
-			player->send(InventoryPacket::sendRockError(InventoryPacket::RockErrors::CannotGo, type));
+			player->send(Packets::Inventory::sendRockError(Packets::Inventory::RockErrors::CannotGo, type));
 		}
 		else if (!origin->canVip()) {
-			player->send(InventoryPacket::sendRockError(InventoryPacket::RockErrors::CannotGo, type));
+			player->send(Packets::Inventory::sendRockError(Packets::Inventory::RockErrors::CannotGo, type));
 		}
 		else if (player->getMapId() == targetMapId) {
-			player->send(InventoryPacket::sendRockError(InventoryPacket::RockErrors::AlreadyThere, type));
+			player->send(Packets::Inventory::sendRockError(Packets::Inventory::RockErrors::AlreadyThere, type));
 		}
 		else if (type == 0 && destination->getContinent() != origin->getContinent()) {
-			player->send(InventoryPacket::sendRockError(InventoryPacket::RockErrors::CannotGo, type));
+			player->send(Packets::Inventory::sendRockError(Packets::Inventory::RockErrors::CannotGo, type));
 		}
 		else if (player->getStats()->getLevel() < 7 && origin->getContinent() == 0 && destination->getContinent() != 0) {
-			player->send(InventoryPacket::sendRockError(InventoryPacket::RockErrors::NoobsCannotLeaveMapleIsland, type));
+			player->send(Packets::Inventory::sendRockError(Packets::Inventory::RockErrors::NoobsCannotLeaveMapleIsland, type));
 		}
 		else {
 			player->setMap(targetMapId);
@@ -845,7 +847,7 @@ auto InventoryHandler::handleRockTeleport(Player *player, item_id_t itemId, Pack
 			Inventory::takeItem(player, itemId, 1);
 		}
 		else {
-			player->send(InventoryPacket::blankUpdate());
+			player->send(Packets::Inventory::blankUpdate());
 		}
 	}
 	return used;
@@ -858,8 +860,8 @@ auto InventoryHandler::handleHammerTime(Player *player) -> void {
 	}
 	inventory_slot_t hammerSlot = player->getInventory()->getHammerSlot();
 	Item *item = player->getInventory()->getItem(Inventories::EquipInventory, hammerSlot);
-	player->send(InventoryPacket::sendHammerUpdate());
-	player->send(InventoryPacket::sendHulkSmash(hammerSlot, item));
+	player->send(Packets::Inventory::sendHammerUpdate());
+	player->send(Packets::Inventory::sendHulkSmash(hammerSlot, item));
 	player->getInventory()->setHammerSlot(-1);
 }
 
@@ -869,14 +871,14 @@ auto InventoryHandler::handleRewardItem(Player *player, PacketReader &reader) ->
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 	if (item == nullptr || item->getId() != itemId) {
 		// Hacking or hacking failure
-		player->send(InventoryPacket::blankUpdate());
+		player->send(Packets::Inventory::blankUpdate());
 		return;
 	}
 
 	auto rewards = ChannelServer::getInstance().getItemDataProvider().getItemRewards(itemId);
 	if (rewards == nullptr) {
 		// Hacking or no information in the database
-		player->send(InventoryPacket::blankUpdate());
+		player->send(Packets::Inventory::blankUpdate());
 		return;
 	}
 
@@ -884,13 +886,13 @@ auto InventoryHandler::handleRewardItem(Player *player, PacketReader &reader) ->
 	Inventory::takeItem(player, itemId, 1);
 	Item *rewardItem = new Item(reward->rewardId, reward->quantity);
 	Inventory::addItem(player, rewardItem, true);
-	player->sendMap(InventoryPacket::sendRewardItemAnimation(player->getId(), itemId, reward->effect));
+	player->sendMap(Packets::Inventory::sendRewardItemAnimation(player->getId(), itemId, reward->effect));
 }
 
 auto InventoryHandler::handleScriptItem(Player *player, PacketReader &reader) -> void {
 	if (player->getNpc() != nullptr || player->getShop() != 0 || player->getTradeId() != 0) {
 		// Hacking
-		player->send(InventoryPacket::blankUpdate());
+		player->send(Packets::Inventory::blankUpdate());
 		return;
 	}
 
@@ -901,7 +903,7 @@ auto InventoryHandler::handleScriptItem(Player *player, PacketReader &reader) ->
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 	if (item == nullptr || item->getId() != itemId) {
 		// Hacking or hacking failure
-		player->send(InventoryPacket::blankUpdate());
+		player->send(Packets::Inventory::blankUpdate());
 		return;
 	}
 
@@ -909,7 +911,7 @@ auto InventoryHandler::handleScriptItem(Player *player, PacketReader &reader) ->
 	string_t scriptName = channel.getScriptDataProvider().getScript(&channel, itemId, ScriptTypes::Item);
 	if (scriptName.empty()) {
 		// Hacking or no script for item found
-		player->send(InventoryPacket::blankUpdate());
+		player->send(Packets::Inventory::blankUpdate());
 		return;
 	}
 
@@ -925,6 +927,8 @@ auto InventoryHandler::handleScriptItem(Player *player, PacketReader &reader) ->
 	}
 	else {
 		// NPC didn't run/no script found
-		player->send(InventoryPacket::blankUpdate());
+		player->send(Packets::Inventory::blankUpdate());
 	}
+}
+
 }

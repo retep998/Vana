@@ -20,45 +20,47 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "IdLooper.hpp"
 #include "Types.hpp"
 
-// Keep track of a pool of identifiers and ensure that identifiers aren't reused
-template <typename TIdentifier>
-class IdPool {
-public:
-	explicit IdPool(TIdentifier minimum = 1, TIdentifier maximum = std::numeric_limits<TIdentifier>::max()) :
-		m_identifiers{minimum, maximum}
-	{
-	}
-
-	auto lease() -> TIdentifier {
-		if (free() == 0) {
-			throw std::range_error{"all identifiers are consumed"};
+namespace Vana {
+	// Keep track of a pool of identifiers and ensure that identifiers aren't reused
+	template <typename TIdentifier>
+	class IdPool {
+	public:
+		explicit IdPool(TIdentifier minimum = 1, TIdentifier maximum = std::numeric_limits<TIdentifier>::max()) :
+			m_identifiers{minimum, maximum}
+		{
 		}
 
-		TIdentifier ret;
-		do {
-			ret = m_identifiers.next();
-		} while (m_taken.find(ret) != std::end(m_taken));
+		auto lease() -> TIdentifier {
+			if (free() == 0) {
+				throw std::range_error{"all identifiers are consumed"};
+			}
 
-		m_taken.insert(ret);
+			TIdentifier ret;
+			do {
+				ret = m_identifiers.next();
+			} while (m_taken.find(ret) != std::end(m_taken));
 
-		return ret;
-	}
+			m_taken.insert(ret);
 
-	auto taken() const -> size_t {
-		return m_taken.size();
-	}
-
-	auto free() const -> size_t {
-		return m_identifiers.range() - m_taken.size();
-	}
-
-	auto release(TIdentifier value) -> void {
-		auto iter = m_taken.find(value);
-		if (iter != std::end(m_taken)) {
-			m_taken.erase(iter);
+			return ret;
 		}
-	}
-private:
-	IdLooper<TIdentifier> m_identifiers;
-	hash_set_t<TIdentifier> m_taken;
-};
+
+		auto taken() const -> size_t {
+			return m_taken.size();
+		}
+
+		auto free() const -> size_t {
+			return m_identifiers.range() - m_taken.size();
+		}
+
+		auto release(TIdentifier value) -> void {
+			auto iter = m_taken.find(value);
+			if (iter != std::end(m_taken)) {
+				m_taken.erase(iter);
+			}
+		}
+	private:
+		IdLooper<TIdentifier> m_identifiers;
+		hash_set_t<TIdentifier> m_taken;
+	};
+}

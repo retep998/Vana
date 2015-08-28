@@ -29,46 +29,48 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-class AbstractServerConnection;
-struct LogConfig;
+namespace Vana {
+	class AbstractServerConnection;
+	struct LogConfig;
 
-class AbstractServer {
-public:
-	virtual ~AbstractServer() = default;
+	class AbstractServer {
+	public:
+		virtual ~AbstractServer() = default;
 
-	auto initialize() -> Result;
-	virtual auto shutdown() -> void;
+		auto initialize() -> Result;
+		virtual auto shutdown() -> void;
 
-	auto log(LogType type, const string_t &message) -> void;
-	auto log(LogType type, function_t<void(out_stream_t &)> produceMessage) -> void;
-	auto log(LogType type, const char *message) -> void;
-	auto getServerType() const -> ServerType;
-	auto getInterPassword() const -> string_t;
-	auto getInterserverSaltingPolicy() const -> const SaltConfig &;
-protected:
-	AbstractServer(ServerType type);
-	virtual auto loadConfig() -> Result;
-	virtual auto initComplete() -> void;
-	virtual auto loadData() -> Result = 0;
-	virtual auto makeLogIdentifier() const -> opt_string_t = 0;
-	virtual auto getLogPrefix() const -> string_t = 0;
+		auto log(LogType type, const string_t &message) -> void;
+		auto log(LogType type, function_t<void(out_stream_t &)> produceMessage) -> void;
+		auto log(LogType type, const char *message) -> void;
+		auto getServerType() const -> ServerType;
+		auto getInterPassword() const -> string_t;
+		auto getInterserverSaltingPolicy() const -> const SaltConfig &;
+	protected:
+		AbstractServer(ServerType type);
+		virtual auto loadConfig() -> Result;
+		virtual auto initComplete() -> void;
+		virtual auto loadData() -> Result = 0;
+		virtual auto makeLogIdentifier() const -> opt_string_t = 0;
+		virtual auto getLogPrefix() const -> string_t = 0;
 
-	auto getInterServerConfig() const -> const InterServerConfig &;
-	auto sendAuth(AbstractServerConnection *connection) const -> void;
-	auto displayLaunchTime() const -> void;
-	auto buildLogIdentifier(function_t<void(out_stream_t &)> produceId) const -> opt_string_t;
-	auto getConnectionManager() -> ConnectionManager & { return m_connectionManager; }
-private:
-	auto loadLogConfig() -> void;
-	auto createLogger(const LogConfig &conf) -> void;
+		auto getInterServerConfig() const -> const InterServerConfig &;
+		auto sendAuth(AbstractServerConnection *connection) const -> void;
+		auto displayLaunchTime() const -> void;
+		auto buildLogIdentifier(function_t<void(out_stream_t &)> produceId) const -> opt_string_t;
+		auto getConnectionManager() -> ConnectionManager & { return m_connectionManager; }
+	private:
+		auto loadLogConfig() -> void;
+		auto createLogger(const LogConfig &conf) -> void;
 
-	ServerType m_serverType = ServerType::None;
-	time_point_t m_startTime;
-	string_t m_interPassword;
-	string_t m_salt;
-	owned_ptr_t<Logger> m_logger;
-	InterServerConfig m_interServerConfig;
-	SaltConfig m_saltingPolicy;
-	IpMatrix m_externalIps;
-	ConnectionManager m_connectionManager;
-};
+		ServerType m_serverType = ServerType::None;
+		time_point_t m_startTime;
+		string_t m_interPassword;
+		string_t m_salt;
+		owned_ptr_t<Logger> m_logger;
+		InterServerConfig m_interServerConfig;
+		SaltConfig m_saltingPolicy;
+		IpMatrix m_externalIps;
+		ConnectionManager m_connectionManager;
+	};
+}

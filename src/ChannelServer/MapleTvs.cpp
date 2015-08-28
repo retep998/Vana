@@ -25,6 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer.hpp"
 #include <functional>
 
+namespace Vana {
+
 auto MapleTvs::addMap(Map *map) -> void {
 	m_maps[map->getId()] = map;
 }
@@ -41,10 +43,10 @@ auto MapleTvs::addMessage(Player *sender, Player *receiver, const string_t &msg,
 	message.msg3 = msg3;
 	message.msg4 = msg4;
 	message.msg5 = msg5;
-	message.sendDisplay.addBuffer(PlayerPacketHelper::addPlayerDisplay(sender)); // We need to save the packet since it gets buffered and there's no guarantee the player will exist later
+	message.sendDisplay.addBuffer(Packets::Helpers::addPlayerDisplay(sender)); // We need to save the packet since it gets buffered and there's no guarantee the player will exist later
 	message.sendName = sender->getName();
 	if (receiver != nullptr) {
-		message.recvDisplay.addBuffer(PlayerPacketHelper::addPlayerDisplay(receiver));
+		message.recvDisplay.addBuffer(Packets::Helpers::addPlayerDisplay(receiver));
 		message.recvName = receiver->getName();
 	}
 
@@ -62,7 +64,7 @@ auto MapleTvs::parseBuffer() -> void {
 		MapleTvMessage message = m_buffer.front();
 		m_buffer.pop_front();
 
-		send(MapleTvPacket::showMessage(message, getMessageTime()));
+		send(Packets::MapleTv::showMessage(message, getMessageTime()));
 
 		m_currentMessage = message;
 
@@ -73,7 +75,7 @@ auto MapleTvs::parseBuffer() -> void {
 	}
 	else {
 		m_hasMessage = false;
-		send(MapleTvPacket::endDisplay());
+		send(Packets::MapleTv::endDisplay());
 	}
 }
 
@@ -102,4 +104,6 @@ auto MapleTvs::getCounter() -> uint32_t {
 
 auto MapleTvs::getCurrentMessage() const -> const MapleTvMessage & {
 	return m_currentMessage;
+}
+
 }

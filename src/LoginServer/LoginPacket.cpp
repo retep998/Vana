@@ -25,7 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "UserConnection.hpp"
 #include "World.hpp"
 
-namespace LoginPacket {
+namespace Vana {
+namespace Packets {
 
 PACKET_IMPL(loginError, int16_t errorId) {
 	PacketBuilder builder;
@@ -195,7 +196,7 @@ PACKET_IMPL(showCharacters, const vector_t<Character> &chars, int32_t maxChars) 
 
 	builder.add<uint8_t>(static_cast<uint8_t>(chars.size()));
 	for (const auto &elem : chars) {
-		builder.addBuffer(LoginPacketHelper::addCharacter(elem));
+		builder.addBuffer(Helpers::addCharacter(elem));
 	}
 
 	builder.add<int32_t>(maxChars);
@@ -238,7 +239,7 @@ PACKET_IMPL(showViewAllCharacters, world_id_t worldId, const vector_t<Character>
 
 	builder.add<uint8_t>(static_cast<uint8_t>(chars.size()));
 	for (const auto &elem : chars) {
-		builder.addBuffer(LoginPacketHelper::addCharacter(elem));
+		builder.addBuffer(Helpers::addCharacter(elem));
 	}
 	return builder;
 }
@@ -248,7 +249,7 @@ PACKET_IMPL(showCharacter, const Character &charc) {
 	builder
 		.add<header_t>(SMSG_PLAYER_CREATE)
 		.unk<int8_t>()
-		.addBuffer(LoginPacketHelper::addCharacter(charc));
+		.addBuffer(Helpers::addCharacter(charc));
 	return builder;
 }
 
@@ -282,4 +283,5 @@ PACKET_IMPL(relogResponse) {
 	return builder;
 }
 
+}
 }

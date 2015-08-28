@@ -23,23 +23,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <vector>
 
-class PacketBuilder;
-class WorldServerAcceptConnection;
+namespace Vana {
+	class PacketBuilder;
+	class WorldServerAcceptConnection;
 
-class Channel : public ExternalIpResolver {
-	NONCOPYABLE(Channel);
-public:
-	Channel(WorldServerAcceptConnection *connection, channel_id_t id, port_t port);
+	class Channel : public ExternalIpResolver {
+		NONCOPYABLE(Channel);
+	public:
+		Channel(WorldServerAcceptConnection *connection, channel_id_t id, port_t port);
 
-	auto increasePlayers() -> int32_t;
-	auto decreasePlayers() -> int32_t;
-	auto getId() const -> channel_id_t;
-	auto getPort() const -> port_t;
-	auto send(const PacketBuilder &builder) -> void;
-	auto disconnect() -> void;
-private:
-	channel_id_t m_id = 0;
-	port_t m_port = 0;
-	int32_t m_players = 0;
-	WorldServerAcceptConnection *m_connection = nullptr;
-};
+		auto increasePlayers() -> int32_t;
+		auto decreasePlayers() -> int32_t;
+		auto getId() const -> channel_id_t;
+		auto getPort() const -> port_t;
+		auto send(const PacketBuilder &builder) -> void;
+		auto disconnect() -> void;
+	private:
+		channel_id_t m_id = 0;
+		port_t m_port = 0;
+		int32_t m_players = 0;
+		WorldServerAcceptConnection *m_connection = nullptr;
+	};
+}

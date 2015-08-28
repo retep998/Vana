@@ -33,6 +33,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sstream>
 #include <utility>
 
+namespace Vana {
+
 Instance::Instance(const string_t &name, map_id_t map, player_id_t playerId, const duration_t &time, const duration_t &persistent, bool showTimer) :
 	m_name{name},
 	m_persistent{persistent},
@@ -407,12 +409,12 @@ auto Instance::respawnReactors(map_id_t mapId) -> void {
 auto Instance::showTimer(bool show, bool doIt) -> void {
 	if (!show && (doIt || m_showTimer)) {
 		for (const auto &map : m_maps) {
-			map->send(MapPacket::showTimer(seconds_t{0}));
+			map->send(Packets::Map::showTimer(seconds_t{0}));
 		}
 	}
 	else if (show && (doIt || !m_showTimer)) {
 		for (const auto &map : m_maps) {
-			map->send(MapPacket::showTimer(getInstanceSecondsRemaining()));
+			map->send(Packets::Map::showTimer(getInstanceSecondsRemaining()));
 		}
 	}
 }
@@ -427,4 +429,6 @@ auto Instance::getPersistence() const -> duration_t {
 
 auto Instance::showTimer() const -> bool {
 	return m_showTimer;
+}
+
 }

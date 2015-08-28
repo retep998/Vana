@@ -20,20 +20,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <unordered_map>
 
-struct NpcData {
-	bool isMapleTv = false;
-	bool isGuildRank = false;
-	mesos_t storageCost = 0;
-};
+namespace Vana {
+	struct NpcData {
+		bool isMapleTv = false;
+		bool isGuildRank = false;
+		mesos_t storageCost = 0;
+	};
 
-class NpcDataProvider {
-public:
-	auto loadData() -> void;
+	class NpcDataProvider {
+	public:
+		auto loadData() -> void;
 
-	auto getStorageCost(npc_id_t npc) const -> mesos_t;
-	auto isMapleTv(npc_id_t npc) const -> bool;
-	auto isGuildRank(npc_id_t npc) const -> bool;
-	auto isValidNpcId(npc_id_t npc) const -> bool;
-private:
-	hash_map_t<npc_id_t, NpcData> m_data;
-};
+		auto getStorageCost(npc_id_t npc) const -> mesos_t;
+		auto isMapleTv(npc_id_t npc) const -> bool;
+		auto isGuildRank(npc_id_t npc) const -> bool;
+		auto isValidNpcId(npc_id_t npc) const -> bool;
+	private:
+		hash_map_t<npc_id_t, NpcData> m_data;
+	};
+}

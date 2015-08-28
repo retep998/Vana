@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "QuestsPacket.hpp"
 #include "PacketReader.hpp"
 
+namespace Vana {
+
 namespace QuestOpcodes {
 	enum : int8_t {
 		RestoreLostQuestItem = 0x00,
@@ -52,7 +54,7 @@ auto Quests::giveItem(Player *player, item_id_t itemId, slot_qty_t amount, Items
 		Inventory::takeItem(player, itemId, -amount);
 	}
 
-	player->send(QuestsPacket::giveItem(itemId, amount));
+	player->send(Packets::Quests::giveItem(itemId, amount));
 	return Result::Successful;
 }
 
@@ -62,13 +64,13 @@ auto Quests::giveMesos(Player *player, mesos_t amount) -> Result {
 		return Result::Failure;
 	}
 	player->getInventory()->modifyMesos(amount);
-	player->send(QuestsPacket::giveMesos(amount));
+	player->send(Packets::Quests::giveMesos(amount));
 	return Result::Successful;
 }
 
 auto Quests::giveFame(Player *player, fame_t amount) -> Result {
 	player->getStats()->setFame(player->getStats()->getFame() + amount);
-	player->send(QuestsPacket::giveFame(amount));
+	player->send(Packets::Quests::giveFame(amount));
 	return Result::Successful;
 }
 
@@ -109,7 +111,7 @@ auto Quests::getQuest(Player *player, PacketReader &reader) -> void {
 		}
 	}
 	// QuestOpcodes::RestoreLostQuestItem for some reason appears to use "NPC ID" as a different kind of identifier, maybe quantity?
-	
+
 	if (act != QuestOpcodes::RestoreLostQuestItem && !ChannelServer::getInstance().getNpcDataProvider().isValidNpcId(npcId)) {
 		ChannelServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &log) {
 			log << "Player (ID: " << player->getId()
@@ -131,7 +133,7 @@ auto Quests::getQuest(Player *player, PacketReader &reader) -> void {
 			}
 
 			if (itemInfo->quest) {
-				player->send(QuestsPacket::giveItem(itemId, 1));
+				player->send(Packets::Quests::giveItem(itemId, 1));
 				Inventory::addNewItem(player, itemId, 1);
 			}
 			else {
@@ -168,4 +170,6 @@ auto Quests::getQuest(Player *player, PacketReader &reader) -> void {
 			NpcHandler::handleQuestNpc(player, npcId, act == QuestOpcodes::StartNpcQuestChat, questId);
 			break;
 	}
+}
+
 }

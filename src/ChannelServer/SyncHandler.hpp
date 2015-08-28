@@ -19,9 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.hpp"
 
-class PacketReader;
+namespace Vana {
+	class PacketReader;
 
-namespace SyncHandler {
-	auto handle(PacketReader &reader) -> void;
-	auto handleConfigSync(PacketReader &reader) -> void;
+	namespace SyncHandler {
+		auto handle(PacketReader &reader) -> void;
+		auto handleConfigSync(PacketReader &reader) -> void;
+	}
 }

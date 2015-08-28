@@ -71,6 +71,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <array>
 #include <stdexcept>
 
+namespace Vana {
+
 Player::Player() :
 	MovableLife{0, Point{}, 0}
 {
@@ -119,7 +121,7 @@ Player::~Player() {
 
 		if (ChannelServer::getInstance().isConnected()) {
 			// Do not connect to worldserver if the worldserver has disconnected
-			ChannelServer::getInstance().sendWorld(SyncPacket::PlayerPacket::disconnect(getId()));
+			ChannelServer::getInstance().sendWorld(Packets::Interserver::Player::disconnect(getId()));
 		}
 		ChannelServer::getInstance().getPlayerDataProvider().removePlayer(this);
 	}
@@ -146,9 +148,9 @@ auto Player::handleRequest(PacketReader &reader) -> void {
 				case CMSG_BUDDY: BuddyListHandler::handleBuddyList(this, reader); break;
 				case CMSG_BUFF_ITEM_USE: InventoryHandler::useBuffItem(this, reader); break;
 				case CMSG_CASH_ITEM_USE: InventoryHandler::useCashItem(this, reader); break;
-				case CMSG_CASH_SHOP: send(PlayerPacket::sendBlockedMessage(PlayerPacket::BlockMessages::NoCashShop)); break;
+				case CMSG_CASH_SHOP: send(Packets::Player::sendBlockedMessage(Packets::Player::BlockMessages::NoCashShop)); break;
 				case CMSG_CHAIR: InventoryHandler::handleChair(this, reader); break;
-				case CMSG_CHALKBOARD: sendMap(InventoryPacket::sendChalkboardUpdate(m_id, "")); setChalkboard(""); break;
+				case CMSG_CHALKBOARD: sendMap(Packets::Inventory::sendChalkboardUpdate(m_id, "")); setChalkboard(""); break;
 				case CMSG_CHANNEL_CHANGE: changeChannel(reader.get<int8_t>()); break;
 				case CMSG_COMMAND: CommandHandler::handleCommand(this, reader); break;
 				case CMSG_DROP_MESOS: DropHandler::dropMesos(this, reader); break;
@@ -170,7 +172,7 @@ auto Player::handleRequest(PacketReader &reader) -> void {
 				case CMSG_MOB_EXPLOSION: MobHandler::handleBomb(this, reader); break;
 				case CMSG_MOB_TURNCOAT_DAMAGE: MobHandler::handleTurncoats(this, reader); break;
 				case CMSG_MONSTER_BOOK: PlayerHandler::handleMonsterBook(this, reader); break;
-				case CMSG_MTS: send(PlayerPacket::sendBlockedMessage(PlayerPacket::BlockMessages::MtsUnavailable)); break;
+				case CMSG_MTS: send(Packets::Player::sendBlockedMessage(Packets::Player::BlockMessages::MtsUnavailable)); break;
 				case CMSG_MULTI_STAT_ADDITION: getStats()->addStatMulti(reader); break;
 				case CMSG_MYSTIC_DOOR_ENTRY: PlayerHandler::handleDoorUse(this, reader); break;
 				case CMSG_NPC_ANIMATE: NpcHandler::handleNpcAnimation(this, reader); break;
@@ -379,10 +381,10 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 	m_stance = 0;
 	m_foothold = 0;
 
-	send(PlayerPacket::connectData(this));
+	send(Packets::Player::connectData(this));
 
 	if (!config.scrollingHeader.empty()) {
-		send(ServerPacket::showScrollingHeader(config.scrollingHeader));
+		send(Packets::showScrollingHeader(config.scrollingHeader));
 	}
 
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
@@ -391,12 +393,12 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 		}
 	}
 
-	send(PlayerPacket::showKeys(&keyMaps));
+	send(Packets::Player::showKeys(&keyMaps));
 
-	send(BuddyListPacket::update(this, BuddyListPacket::ActionTypes::Add));
+	send(Packets::Buddy::update(this, Packets::Buddy::ActionTypes::Add));
 	getBuddyList()->checkForPendingBuddy();
 
-	send(PlayerPacket::showSkillMacros(&skillMacros));
+	send(Packets::Player::showSkillMacros(&skillMacros));
 
 	provider.addPlayer(this);
 	Maps::addPlayer(this, m_map);
@@ -424,7 +426,7 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 	data.id = m_id;
 	data.ip = getIp();
 
-	channel.sendWorld(SyncPacket::PlayerPacket::connect(data, firstConnectionSinceServerStarted));
+	channel.sendWorld(Packets::Interserver::Player::connect(data, firstConnectionSinceServerStarted));
 }
 
 auto Player::getMap() const -> Map * {
@@ -468,7 +470,7 @@ auto Player::internalSetMap(map_id_t mapId, portal_id_t portalId, const Point &p
 		setChalkboard("");
 	}
 
-	send(MapPacket::changeMap(this, fromPosition, getPos()));
+	send(Packets::Map::changeMap(this, fromPosition, getPos()));
 	Maps::addPlayer(this, mapId);
 
 	ChannelServer::getInstance().getPlayerDataProvider().updatePlayerMap(this);
@@ -480,7 +482,7 @@ auto Player::setMap(map_id_t mapId, portal_id_t portalId, const Point &pos) -> v
 
 auto Player::setMap(map_id_t mapId, const PortalInfo * const portal, bool instance) -> void {
 	if (!Maps::getMap(mapId)) {
-		send(MapPacket::portalBlocked());
+		send(Packets::Map::portalBlocked());
 		return;
 	}
 	Map *oldMap = Maps::getMap(m_map);
@@ -515,7 +517,7 @@ auto Player::getMedalName() -> string_t {
 }
 
 auto Player::changeChannel(channel_id_t channel) -> void {
-	ChannelServer::getInstance().sendWorld(SyncPacket::PlayerPacket::changeChannel(this, channel));
+	ChannelServer::getInstance().sendWorld(Packets::Interserver::Player::changeChannel(this, channel));
 }
 
 auto Player::getTransferPacket() const -> PacketBuilder {
@@ -600,17 +602,17 @@ auto Player::changeSkillMacros(PacketReader &reader) -> void {
 
 auto Player::setHair(hair_id_t id) -> void {
 	m_hair = id;
-	send(PlayerPacket::updateStat(Stats::Hair, id));
+	send(Packets::Player::updateStat(Stats::Hair, id));
 }
 
 auto Player::setFace(face_id_t id) -> void {
 	m_face = id;
-	send(PlayerPacket::updateStat(Stats::Face, id));
+	send(Packets::Player::updateStat(Stats::Face, id));
 }
 
 auto Player::setSkin(skin_id_t id) -> void {
 	m_skin = id;
-	send(PlayerPacket::updateStat(Stats::Skin, id));
+	send(Packets::Player::updateStat(Stats::Skin, id));
 }
 
 auto Player::saveStats() -> void {
@@ -794,7 +796,7 @@ auto Player::hasGmBenefits() const -> bool {
 
 auto Player::setBuddyListSize(uint8_t size) -> void {
 	m_buddylistSize = size;
-	send(BuddyListPacket::showSize(this));
+	send(Packets::Buddy::showSize(this));
 }
 
 auto Player::getPortalCount(bool add) -> portal_count_t {
@@ -834,4 +836,6 @@ auto Player::sendMap(const PacketBuilder &builder, bool excludeSelf) -> void {
 
 auto Player::sendMap(const SplitPacketBuilder &builder) -> void {
 	getMap()->send(builder, this);
+}
+
 }

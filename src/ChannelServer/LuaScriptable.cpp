@@ -54,6 +54,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <vector>
 
+namespace Vana {
+
 // TODO FIXME msvc
 // Remove this when MSVC supports static init
 string_t LuaScriptable::sApiVersion = "1.0.0";
@@ -338,10 +340,10 @@ auto LuaScriptable::initialize() -> void {
 auto LuaScriptable::setEnvironmentVariables() -> void {
 	set<string_t>("instance_timer", "instance");
 
-	set<int32_t>("msg_blue", PlayerPacket::NoticeTypes::Blue);
-	set<int32_t>("msg_red", PlayerPacket::NoticeTypes::Red);
-	set<int32_t>("msg_notice", PlayerPacket::NoticeTypes::Notice);
-	set<int32_t>("msg_box", PlayerPacket::NoticeTypes::Box);
+	set<int32_t>("msg_blue", Packets::Player::NoticeTypes::Blue);
+	set<int32_t>("msg_red", Packets::Player::NoticeTypes::Red);
+	set<int32_t>("msg_notice", Packets::Player::NoticeTypes::Notice);
+	set<int32_t>("msg_box", Packets::Player::NoticeTypes::Box);
 
 	set<int32_t>("gender_male", Gender::Male);
 	set<int32_t>("gender_female", Gender::Female);
@@ -397,10 +399,10 @@ auto LuaScriptable::handleError(const string_t &filename, const string_t &error)
 	}
 
 	if (player->isGm()) {
-		player->send(PlayerPacket::showMessage(error, PlayerPacket::NoticeTypes::Red));
+		player->send(Packets::Player::showMessage(error, Packets::Player::NoticeTypes::Red));
 	}
 	else {
-		player->send(PlayerPacket::showMessage("There is a script error; please contact an administrator", PlayerPacket::NoticeTypes::Red));
+		player->send(Packets::Player::showMessage("There is a script error; please contact an administrator", Packets::Player::NoticeTypes::Red));
 	}
 }
 
@@ -529,7 +531,7 @@ auto LuaExports::showGlobalMessage(lua_State *luaVm) -> lua_return_t {
 	string_t msg = env.get<string_t>(luaVm, 1);
 	int8_t type = env.get<int8_t>(luaVm, 2);
 	ChannelServer::getInstance().sendWorld(
-		Packets::prepend(PlayerPacket::showMessage(msg, type), [](PacketBuilder &builder) {
+		Packets::prepend(Packets::Player::showMessage(msg, type), [](PacketBuilder &builder) {
 			builder.add<header_t>(IMSG_TO_LOGIN);
 			builder.add<header_t>(IMSG_TO_ALL_WORLDS);
 			builder.add<header_t>(IMSG_TO_ALL_CHANNELS);
@@ -543,7 +545,7 @@ auto LuaExports::showWorldMessage(lua_State *luaVm) -> lua_return_t {
 	string_t msg = env.get<string_t>(luaVm, 1);
 	int8_t type = env.get<int8_t>(luaVm, 2);
 	ChannelServer::getInstance().sendWorld(
-		Packets::prepend(PlayerPacket::showMessage(msg, type), [](PacketBuilder &builder) {
+		Packets::prepend(Packets::Player::showMessage(msg, type), [](PacketBuilder &builder) {
 			builder.add<header_t>(IMSG_TO_ALL_CHANNELS);
 			builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
 		}));
@@ -597,7 +599,7 @@ auto LuaExports::showChannelMessage(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	string_t msg = env.get<string_t>(luaVm, 1);
 	int8_t type = env.get<int8_t>(luaVm, 2);
-	ChannelServer::getInstance().getPlayerDataProvider().send(PlayerPacket::showMessage(msg, type));
+	ChannelServer::getInstance().getPlayerDataProvider().send(Packets::Player::showMessage(msg, type));
 	return 0;
 }
 
@@ -1421,7 +1423,7 @@ auto LuaExports::setStyle(lua_State *luaVm) -> lua_return_t {
 	else if (type == 3) {
 		player->setHair(id);
 	}
-	player->sendMap(InventoryPacket::updatePlayer(player));
+	player->sendMap(Packets::Inventory::updatePlayer(player));
 	return 0;
 }
 
@@ -1441,7 +1443,7 @@ auto LuaExports::showInstructionBubble(lua_State *luaVm) -> lua_return_t {
 		height = 5;
 	}
 
-	getPlayer(luaVm, env)->send(PlayerPacket::instructionBubble(msg, width, height));
+	getPlayer(luaVm, env)->send(Packets::Player::instructionBubble(msg, width, height));
 	return 0;
 }
 
@@ -1449,7 +1451,7 @@ auto LuaExports::showMessage(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	string_t msg = env.get<string_t>(luaVm, 1);
 	int8_t type = env.get<int8_t>(luaVm, 2);
-	getPlayer(luaVm, env)->send(PlayerPacket::showMessage(msg, type));
+	getPlayer(luaVm, env)->send(Packets::Player::showMessage(msg, type));
 	return 0;
 }
 
@@ -1457,7 +1459,7 @@ auto LuaExports::showMessage(lua_State *luaVm) -> lua_return_t {
 auto LuaExports::playFieldSound(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	string_t val = env.get<string_t>(luaVm, 1);
-	auto &packet = EffectPacket::sendFieldSound(val);
+	auto &packet = Packets::sendFieldSound(val);
 	if (env.is(luaVm, 2, LuaType::Number)) {
 		Maps::getMap(env.get<map_id_t>(luaVm, 2))->send(packet);
 	}
@@ -1470,7 +1472,7 @@ auto LuaExports::playFieldSound(lua_State *luaVm) -> lua_return_t {
 auto LuaExports::playMinigameSound(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	string_t val = env.get<string_t>(luaVm, 1);
-	auto &packet = EffectPacket::sendMinigameSound(val);
+	auto &packet = Packets::sendMinigameSound(val);
 	if (env.is(luaVm, 2, LuaType::Number)) {
 		Maps::getMap(env.get<map_id_t>(luaVm, 2))->send(packet);
 	}
@@ -1506,10 +1508,10 @@ auto LuaExports::showMapEffect(lua_State *luaVm) -> lua_return_t {
 	string_t val = env.get<string_t>(luaVm, 1);
 	if (env.is(luaVm, 2, LuaType::Number)) {
 		map_id_t mapId = env.get<map_id_t>(luaVm, 2);
-		Maps::getMap(mapId)->send(EffectPacket::sendEffect(val));
+		Maps::getMap(mapId)->send(Packets::sendEffect(val));
 	}
 	else {
-		getPlayer(luaVm, env)->sendMap(EffectPacket::sendEffect(val));
+		getPlayer(luaVm, env)->sendMap(Packets::sendEffect(val));
 	}
 	return 0;
 }
@@ -1519,10 +1521,10 @@ auto LuaExports::showMapEvent(lua_State *luaVm) -> lua_return_t {
 	string_t val = env.get<string_t>(luaVm, 1);
 	if (env.is(luaVm, 2, LuaType::Number)) {
 		map_id_t mapId = env.get<map_id_t>(luaVm, 2);
-		Maps::getMap(mapId)->send(EffectPacket::sendEvent(val));
+		Maps::getMap(mapId)->send(Packets::sendEvent(val));
 	}
 	else {
-		getPlayer(luaVm, env)->sendMap(EffectPacket::sendEvent(val));
+		getPlayer(luaVm, env)->sendMap(Packets::sendEvent(val));
 	}
 	return 0;
 }
@@ -1643,7 +1645,7 @@ auto LuaExports::showMapMessage(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	string_t msg = env.get<string_t>(luaVm, 1);
 	int8_t type = env.get<int8_t>(luaVm, 2);
-	getPlayer(luaVm, env)->sendMap(PlayerPacket::showMessage(msg, type));
+	getPlayer(luaVm, env)->sendMap(Packets::Player::showMessage(msg, type));
 	return 0;
 }
 
@@ -2274,4 +2276,6 @@ auto LuaExports::stopInstanceTimer(lua_State *luaVm) -> lua_return_t {
 	string_t name = env.get<string_t>(luaVm, 1);
 	getInstance(luaVm, env)->removeTimer(name);
 	return 0;
+}
+
 }

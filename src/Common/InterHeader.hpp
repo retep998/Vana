@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.hpp"
 
+namespace Vana {
+
 // Inter-server communication does not separate send and recv because the server does both
 enum AnyConnection : header_t {
 	IMSG_PASSWORD = 0xff,
@@ -52,3 +54,5 @@ enum WorldChannel : header_t {
 	IMSG_TO_PLAYER_LIST,
 	IMSG_TO_ALL_PLAYERS,
 };
+
+}

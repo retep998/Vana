@@ -22,23 +22,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <string>
 
-class Item;
-class PacketBuilder;
-class Pet;
-class Player;
+namespace Vana {
+	class Item;
+	class PacketBuilder;
+	class Pet;
+	class Player;
 
-namespace PetsPacket {
-	SPLIT_PACKET(petSummoned, player_id_t playerId, Pet *pet, bool kick = false, int8_t index = -1);
-	SPLIT_PACKET(showChat, player_id_t playerId, Pet *pet, const string_t &message, int8_t act);
-	SPLIT_PACKET(showMovement, player_id_t playerId, Pet *pet, unsigned char *buf, int32_t bufLen);
-	PACKET(showAnimation, player_id_t playerId, Pet *pet, int8_t animation);
-	PACKET(updatePet, Pet *pet, Item *petItem);
-	SPLIT_PACKET(levelUp, player_id_t playerId, Pet *pet);
-	SPLIT_PACKET(changeName, player_id_t playerId, Pet *pet);
-	// TODO FIXME packet
-	// This doesn't appear to be used anywhere, not sure if that's by mistake or not
-	//auto showPet(Player *player, Pet *pet) -> void;
-	PACKET(updateSummonedPets, Player *player);
-	PACKET(blankUpdate);
-	PACKET(addInfo, Pet *pet, Item *petItem);
+	namespace Packets {
+		namespace Pets {
+			SPLIT_PACKET(petSummoned, player_id_t playerId, Pet *pet, bool kick = false, int8_t index = -1);
+			SPLIT_PACKET(showChat, player_id_t playerId, Pet *pet, const string_t &message, int8_t act);
+			SPLIT_PACKET(showMovement, player_id_t playerId, Pet *pet, unsigned char *buf, int32_t bufLen);
+			PACKET(showAnimation, player_id_t playerId, Pet *pet, int8_t animation);
+			PACKET(updatePet, Pet *pet, Item *petItem);
+			SPLIT_PACKET(levelUp, player_id_t playerId, Pet *pet);
+			SPLIT_PACKET(changeName, player_id_t playerId, Pet *pet);
+			// TODO FIXME packet
+			// This doesn't appear to be used anywhere, not sure if that's by mistake or not
+			//auto showPet(Player *player, Pet *pet) -> void;
+			PACKET(updateSummonedPets, Player *player);
+			PACKET(blankUpdate);
+			PACKET(addInfo, Pet *pet, Item *petItem);
+		}
+	}
 }

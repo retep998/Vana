@@ -19,7 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Characters.hpp"
 #include "ItemConstants.hpp"
 
-namespace LoginPacketHelper {
+namespace Vana {
+namespace Packets {
+namespace Helpers {
 
 PACKET_IMPL(addCharacter, const Character &charc) {
 	PacketBuilder builder;
@@ -116,4 +118,6 @@ PACKET_IMPL(addCharacter, const Character &charc) {
 	return builder;
 }
 
+}
+}
 }

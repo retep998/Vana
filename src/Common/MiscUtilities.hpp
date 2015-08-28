@@ -22,49 +22,51 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace MiscUtilities {
-	enum class NullableMode {
-		NullIfFound = 1,
-		ForceNotNull = 2,
-		ForceNull = 3
-	};
+namespace Vana {
+	namespace MiscUtilities {
+		enum class NullableMode {
+			NullIfFound = 1,
+			ForceNotNull = 2,
+			ForceNull = 3
+		};
 
-	template <typename TElement>
-	auto convertLinearScale(
-		const TElement &pValue,
-		const TElement &pValueDomainMin,
-		const TElement &pValueDomainMax,
-		const TElement &pNewDomainMin,
-		const TElement &pNewDomainMax) -> TElement
-	{
-		if (pValueDomainMin >= pValueDomainMax) throw std::invalid_argument{"Domain min must be below domain max"};
-		if (pNewDomainMin >= pNewDomainMax) throw std::invalid_argument{"Domain min must be below domain max"};
-		if (pValue < pValueDomainMin || pValue > pValueDomainMax) throw std::invalid_argument{"Value must be within domain"};
-		double valueRange = pValueDomainMax - pValueDomainMin;
-		double newRange = pNewDomainMax - pNewDomainMin;
-		return static_cast<TElement>(
-			((static_cast<double>(pValue) - pValueDomainMin) / valueRange) *
-			newRange + pNewDomainMin);
-	}
+		template <typename TElement>
+		auto convertLinearScale(
+			const TElement &pValue,
+			const TElement &pValueDomainMin,
+			const TElement &pValueDomainMax,
+			const TElement &pNewDomainMin,
+			const TElement &pNewDomainMax) -> TElement
+		{
+			if (pValueDomainMin >= pValueDomainMax) throw std::invalid_argument{"Domain min must be below domain max"};
+			if (pNewDomainMin >= pNewDomainMax) throw std::invalid_argument{"Domain min must be below domain max"};
+			if (pValue < pValueDomainMin || pValue > pValueDomainMax) throw std::invalid_argument{"Value must be within domain"};
+			double valueRange = pValueDomainMax - pValueDomainMin;
+			double newRange = pNewDomainMax - pNewDomainMin;
+			return static_cast<TElement>(
+				((static_cast<double>(pValue) - pValueDomainMin) / valueRange) *
+				newRange + pNewDomainMin);
+		}
 
-	template <typename TElement>
-	auto getOptional(const TElement &testVal, NullableMode mode, init_list_t<TElement> nullableVals) -> optional_t<TElement> {
-		optional_t<TElement> ret;
-		if (mode == NullableMode::NullIfFound) {
-			bool found = false;
-			for (const auto &nullableVal : nullableVals) {
-				if (testVal == nullableVal) {
-					found = true;
-					break;
+		template <typename TElement>
+		auto getOptional(const TElement &testVal, NullableMode mode, init_list_t<TElement> nullableVals) -> optional_t<TElement> {
+			optional_t<TElement> ret;
+			if (mode == NullableMode::NullIfFound) {
+				bool found = false;
+				for (const auto &nullableVal : nullableVals) {
+					if (testVal == nullableVal) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					ret = testVal;
 				}
 			}
-			if (!found) {
+			else if (mode == NullableMode::ForceNotNull) {
 				ret = testVal;
 			}
+			return ret;
 		}
-		else if (mode == NullableMode::ForceNotNull) {
-			ret = testVal;
-		}
-		return ret;
 	}
 }

@@ -22,22 +22,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-DEFAULT_EXCEPTION(ConfigException, std::runtime_error);
+namespace Vana {
+	DEFAULT_EXCEPTION(ConfigException, std::runtime_error);
 
-class ConfigFile : public LuaEnvironment {
-	NONCOPYABLE(ConfigFile);
-	NO_DEFAULT_CONSTRUCTOR(ConfigFile);
-public:
-	ConfigFile(const string_t &filename);
-	~ConfigFile();
-	auto static getSaltingConfig() -> owned_ptr_t<ConfigFile>;
-	auto static getWorldsConfig() -> owned_ptr_t<ConfigFile>;
-	auto static getLoginServerConfig() -> owned_ptr_t<ConfigFile>;
-	auto static getLoggerConfig() -> owned_ptr_t<ConfigFile>;
-	auto static getDatabaseConfig() -> owned_ptr_t<ConfigFile>;
-	auto static getConnectionPropertiesConfig() -> owned_ptr_t<ConfigFile>;
-protected:
-	auto handleError(const string_t &filename, const string_t &error) -> void override;
-	auto handleKeyNotFound(const string_t &filename, const string_t &key) -> void override;
-	auto handleFileNotFound(const string_t &filename) -> void override;
-};
+	class ConfigFile : public LuaEnvironment {
+		NONCOPYABLE(ConfigFile);
+		NO_DEFAULT_CONSTRUCTOR(ConfigFile);
+	public:
+		ConfigFile(const string_t &filename);
+		~ConfigFile();
+		auto static getSaltingConfig() -> owned_ptr_t<ConfigFile>;
+		auto static getWorldsConfig() -> owned_ptr_t<ConfigFile>;
+		auto static getLoginServerConfig() -> owned_ptr_t<ConfigFile>;
+		auto static getLoggerConfig() -> owned_ptr_t<ConfigFile>;
+		auto static getDatabaseConfig() -> owned_ptr_t<ConfigFile>;
+		auto static getConnectionPropertiesConfig() -> owned_ptr_t<ConfigFile>;
+	protected:
+		auto handleError(const string_t &filename, const string_t &error) -> void override;
+		auto handleKeyNotFound(const string_t &filename, const string_t &key) -> void override;
+		auto handleFileNotFound(const string_t &filename) -> void override;
+	};
+}

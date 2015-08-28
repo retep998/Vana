@@ -32,6 +32,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SummonHandler.hpp"
 #include <string>
 
+namespace Vana {
+
 auto Maps::getMap(map_id_t mapId) -> Map * {
 	return ChannelServer::getInstance().getMap(mapId);
 }
@@ -42,15 +44,15 @@ auto Maps::unloadMap(map_id_t mapId) -> void {
 
 auto Maps::usePortal(Player *player, const PortalInfo * const portal) -> void {
 	if (portal->disabled) {
-		player->send(MapPacket::portalBlocked());
-		player->send(PlayerPacket::showMessage("The portal is closed for now.", PlayerPacket::NoticeTypes::Red));
+		player->send(Packets::Map::portalBlocked());
+		player->send(Packets::Player::showMessage("The portal is closed for now.", Packets::Player::NoticeTypes::Red));
 		return;
 	}
 
 	if (portal->script.size() != 0) {
 		// Check for "onlyOnce" portal
 		if (portal->onlyOnce && player->usedPortal(portal->id)) {
-			player->send(MapPacket::portalBlocked());
+			player->send(Packets::Map::portalBlocked());
 			return;
 		}
 
@@ -60,7 +62,7 @@ auto Maps::usePortal(Player *player, const PortalInfo * const portal) -> void {
 			LuaPortal luaEnv = {filename, player->getId(), player->getMapId(), portal};
 
 			if (!luaEnv.playerMapChanged()) {
-				player->send(MapPacket::portalBlocked());
+				player->send(Packets::Map::portalBlocked());
 			}
 			if (portal->onlyOnce && !luaEnv.portalFailed()) {
 				player->addUsedPortal(portal->id);
@@ -71,16 +73,16 @@ auto Maps::usePortal(Player *player, const PortalInfo * const portal) -> void {
 				"Portal '" + portal->script + "' is currently unavailable." :
 				"This portal is currently unavailable.";
 
-			player->send(PlayerPacket::showMessage(message, PlayerPacket::NoticeTypes::Red));
-			player->send(MapPacket::portalBlocked());
+			player->send(Packets::Player::showMessage(message, Packets::Player::NoticeTypes::Red));
+			player->send(Packets::Map::portalBlocked());
 		}
 	}
 	else {
 		// Normal portal
 		Map *toMap = getMap(portal->toMap);
 		if (toMap == nullptr) {
-			player->send(PlayerPacket::showMessage("Bzzt. The map you're attempting to travel to doesn't exist.", PlayerPacket::NoticeTypes::Red));
-			player->send(MapPacket::portalBlocked());
+			player->send(Packets::Player::showMessage("Bzzt. The map you're attempting to travel to doesn't exist.", Packets::Player::NoticeTypes::Red));
+			player->send(Packets::Map::portalBlocked());
 			return;
 		}
 		const PortalInfo * const nextPortal = toMap->getPortal(portal->toName);
@@ -159,4 +161,6 @@ auto Maps::addPlayer(Player *player, map_id_t mapId) -> void {
 	// Bug in global - would be fixed here:
 	// Berserk doesn't display properly when switching maps with it activated - client displays, but no message is sent to any client
 	// player->getActiveBuffs()->checkBerserk(true) would override the default of only displaying changes
+}
+
 }

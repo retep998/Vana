@@ -37,6 +37,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ValidCharDataProvider.hpp"
 #include <unordered_map>
 
+namespace Vana {
+
 auto Characters::loadEquips(player_id_t id, vector_t<CharEquip> &vec) -> void {
 	auto &db = Database::getCharDb();
 	auto &sql = db.getSession();
@@ -127,9 +129,9 @@ auto Characters::showAllCharacters(UserConnection *user) -> void {
 	}
 
 	uint32_t unk = charsNum + (3 - charsNum % 3); // What I've observed
-	user->send(LoginPacket::showAllCharactersInfo(static_cast<world_id_t>(chars.size()), unk));
+	user->send(Packets::showAllCharactersInfo(static_cast<world_id_t>(chars.size()), unk));
 	for (const auto &kvp : chars) {
-		user->send(LoginPacket::showViewAllCharacters(kvp.first, kvp.second));
+		user->send(Packets::showViewAllCharacters(kvp.first, kvp.second));
 	}
 }
 
@@ -167,7 +169,7 @@ auto Characters::showCharacters(UserConnection *user) -> void {
 		max = world.defaultChars;
 	}
 
-	user->send(LoginPacket::showCharacters(chars, max.get()));
+	user->send(Packets::showCharacters(chars, max.get()));
 }
 
 auto Characters::checkCharacterName(UserConnection *user, PacketReader &reader) -> void {
@@ -177,13 +179,13 @@ auto Characters::checkCharacterName(UserConnection *user, PacketReader &reader) 
 	}
 
 	if (nameInvalid(name)) {
-		user->send(LoginPacket::checkName(name, LoginPacket::CheckNameErrors::Invalid));
+		user->send(Packets::checkName(name, Packets::CheckNameErrors::Invalid));
 	}
 	else if (nameTaken(name)) {
-		user->send(LoginPacket::checkName(name, LoginPacket::CheckNameErrors::Taken));
+		user->send(Packets::checkName(name, Packets::CheckNameErrors::Taken));
 	}
 	else {
-		user->send(LoginPacket::checkName(name, LoginPacket::CheckNameErrors::None));
+		user->send(Packets::checkName(name, Packets::CheckNameErrors::None));
 	}
 }
 
@@ -215,11 +217,11 @@ auto Characters::createCharacter(UserConnection *user, PacketReader &reader) -> 
 
 	// Let's check our char name again just to be sure
 	if (nameInvalid(name)) {
-		user->send(LoginPacket::checkName(name, LoginPacket::CheckNameErrors::Invalid));
+		user->send(Packets::checkName(name, Packets::CheckNameErrors::Invalid));
 		return;
 	}
 	if (nameTaken(name)) {
-		user->send(LoginPacket::checkName(name, LoginPacket::CheckNameErrors::Taken));
+		user->send(Packets::checkName(name, Packets::CheckNameErrors::Taken));
 		return;
 	}
 
@@ -280,8 +282,8 @@ auto Characters::createCharacter(UserConnection *user, PacketReader &reader) -> 
 
 	Character charc;
 	loadCharacter(charc, row);
-	user->send(LoginPacket::showCharacter(charc));
-	LoginServer::getInstance().getWorlds().send(user->getWorldId(), SyncPacket::PlayerPacket::characterCreated(id));
+	user->send(Packets::showCharacter(charc));
+	LoginServer::getInstance().getWorlds().send(user->getWorldId(), Packets::Interserver::Player::characterCreated(id));
 }
 
 auto Characters::deleteCharacter(UserConnection *user, PacketReader &reader) -> void {
@@ -326,7 +328,7 @@ auto Characters::deleteCharacter(UserConnection *user, PacketReader &reader) -> 
 	if (!delPassword.is_initialized() || delPassword.get() == password) {
 		LoginServer::getInstance().getWorlds().runFunction([&id, &worldId](World *world) -> bool {
 			if (world->isConnected() && world->getId() == worldId.get()) {
-				// LoginServerAcceptPacket::removeCharacter(world->getConnection(), playerId);
+				// Packets::Interserver::removeCharacter(world->getConnection(), playerId);
 				// For guilds
 				return true;
 			}
@@ -340,8 +342,8 @@ auto Characters::deleteCharacter(UserConnection *user, PacketReader &reader) -> 
 		result = IncorrectBirthday;
 	}
 
-	user->send(LoginPacket::deleteCharacter(id, result));
-	LoginServer::getInstance().getWorlds().send(user->getWorldId(), SyncPacket::PlayerPacket::characterDeleted(id));
+	user->send(Packets::deleteCharacter(id, result));
+	LoginServer::getInstance().getWorlds().send(user->getWorldId(), Packets::Interserver::Player::characterDeleted(id));
 }
 
 auto Characters::connectGame(UserConnection *user, player_id_t charId) -> void {
@@ -355,7 +357,7 @@ auto Characters::connectGame(UserConnection *user, player_id_t charId) -> void {
 	}
 
 	auto world = LoginServer::getInstance().getWorlds().getWorld(user->getWorldId());
-	world->send(LoginServerAcceptPacket::playerConnectingToChannel(user->getChannel(), charId, user->getIp()));
+	world->send(Packets::Interserver::playerConnectingToChannel(user->getChannel(), charId, user->getIp()));
 
 	Ip chanIp{0};
 	port_t port = -1;
@@ -364,7 +366,7 @@ auto Characters::connectGame(UserConnection *user, player_id_t charId) -> void {
 		port = channel->getPort();
 	}
 	ClientIp ip{chanIp};
-	user->send(LoginPacket::connectIp(ip, port, charId));
+	user->send(Packets::connectIp(ip, port, charId));
 }
 
 auto Characters::connectGame(UserConnection *user, PacketReader &reader) -> void {
@@ -460,4 +462,6 @@ auto Characters::nameTaken(const string_t &name) -> bool {
 auto Characters::nameInvalid(const string_t &name) -> bool {
 	return LoginServer::getInstance().getValidCharDataProvider().isForbiddenName(name) ||
 		LoginServer::getInstance().getCurseDataProvider().isCurseWord(name);
+}
+
 }

@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
 
+namespace Vana {
+
 auto Fame::handleFame(Player *player, PacketReader &reader) -> void {
 	player_id_t targetId = reader.get<player_id_t>();
 	uint8_t type = reader.get<uint8_t>();
@@ -33,32 +35,32 @@ auto Fame::handleFame(Player *player, PacketReader &reader) -> void {
 		}
 		int32_t checkResult = canFame(player, targetId);
 		if (checkResult != 0) {
-			player->send(FamePacket::sendError(checkResult));
+			player->send(Packets::Fame::sendError(checkResult));
 		}
 		else {
 			Player *famee = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(targetId);
 			fame_t newFame = famee->getStats()->getFame() + (type == 1 ? 1 : -1);
 			famee->getStats()->setFame(newFame);
 			addFameLog(player->getId(), targetId);
-			player->send(FamePacket::sendFame(famee->getName(), type, newFame));
-			famee->send(FamePacket::receiveFame(player->getName(), type));
+			player->send(Packets::Fame::sendFame(famee->getName(), type, newFame));
+			famee->send(Packets::Fame::receiveFame(player->getName(), type));
 		}
 	}
 	else {
-		player->send(FamePacket::sendError(FamePacket::Errors::IncorrectUser));
+		player->send(Packets::Fame::sendError(Packets::Fame::Errors::IncorrectUser));
 	}
 }
 
 auto Fame::canFame(Player *player, player_id_t to) -> int32_t {
 	player_id_t from = player->getId();
 	if (player->getStats()->getLevel() < 15) {
-		return FamePacket::Errors::LevelUnder15;
+		return Packets::Fame::Errors::LevelUnder15;
 	}
 	if (getLastFameLog(from) == SearchResult::Found) {
-		return FamePacket::Errors::AlreadyFamedToday;
+		return Packets::Fame::Errors::AlreadyFamedToday;
 	}
 	if (getLastFameSpLog(from, to) == SearchResult::Found) {
-		return FamePacket::Errors::FamedThisMonth;
+		return Packets::Fame::Errors::FamedThisMonth;
 	}
 	return 0;
 }
@@ -126,4 +128,6 @@ auto Fame::getLastFameSpLog(player_id_t from, player_id_t to) -> SearchResult {
 	return time.is_initialized() ?
 		SearchResult::Found :
 		SearchResult::NotFound;
+}
+
 }

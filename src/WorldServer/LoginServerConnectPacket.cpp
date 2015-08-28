@@ -21,7 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include "WorldServer.hpp"
 
-namespace LoginServerConnectPacket {
+namespace Vana {
+namespace Packets {
 
 PACKET_IMPL(registerChannel, channel_id_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port) {
 	PacketBuilder builder;
@@ -51,4 +52,5 @@ PACKET_IMPL(removeChannel, channel_id_t channel) {
 	return builder;
 }
 
+}
 }

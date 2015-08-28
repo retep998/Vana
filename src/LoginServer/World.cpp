@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketBuilder.hpp"
 #include "Randomizer.hpp"
 
+namespace Vana {
+
 auto World::runChannelFunction(function_t<void (Channel *)> func) -> void {
 	for (const auto &kvp : m_channels) {
 		func(kvp.second.get());
@@ -36,4 +38,6 @@ auto World::send(const PacketBuilder &builder) -> void {
 
 auto World::matchSubnet(const Ip &test) -> Ip {
 	return m_connection->matchSubnet(test);
+}
+
 }

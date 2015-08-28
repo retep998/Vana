@@ -21,7 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.hpp"
 #include "SmsgHeader.hpp"
 
-namespace MonsterBookPacket {
+namespace Vana {
+namespace Packets {
+namespace MonsterBook {
 
 PACKET_IMPL(addCard, item_id_t cardId, uint8_t level, bool full) {
 	PacketBuilder builder;
@@ -58,4 +60,6 @@ PACKET_IMPL(changeCover, item_id_t cardId) {
 	return builder;
 }
 
+}
+}
 }

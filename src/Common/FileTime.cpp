@@ -18,6 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "FileTime.hpp"
 #include "UnixTime.hpp"
 
+namespace Vana {
+
 FileTime::FileTime() :
 	FileTime{UnixTime{}}
 {
@@ -70,4 +72,6 @@ auto FileTime::convert(time_t time) -> int64_t {
 
 	ticks *= 10000000; // Convert to 100-nanoseconds
 	return ticks;
+}
+
 }

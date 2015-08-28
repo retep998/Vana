@@ -22,31 +22,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <string>
 
-class PacketBuilder;
-class PacketReader;
+namespace Vana {
+	class PacketBuilder;
+	class PacketReader;
 
-class AbstractConnection : public TimerContainerHolder {
-public:
-	virtual ~AbstractConnection() = default;
+	class AbstractConnection : public TimerContainerHolder {
+	public:
+		virtual ~AbstractConnection() = default;
 
-	auto send(const PacketBuilder &builder) -> void;
-	auto disconnect() -> void;
-	auto getIp() const -> const Ip &;
-	auto getLatency() const -> milliseconds_t;
-protected:
-	AbstractConnection(bool isServer = false);
-	virtual auto handleRequest(PacketReader &reader) -> void = 0;
-private:
-	friend class Session;
-	auto ping() -> void;
-	auto setSession(Session *val, bool ping, const Ip &ip) -> void;
-	auto baseHandleRequest(PacketReader &reader) -> void;
+		auto send(const PacketBuilder &builder) -> void;
+		auto disconnect() -> void;
+		auto getIp() const -> const Ip &;
+		auto getLatency() const -> milliseconds_t;
+	protected:
+		AbstractConnection(bool isServer = false);
+		virtual auto handleRequest(PacketReader &reader) -> void = 0;
+	private:
+		friend class Session;
+		auto ping() -> void;
+		auto setSession(Session *val, bool ping, const Ip &ip) -> void;
+		auto baseHandleRequest(PacketReader &reader) -> void;
 
-	bool m_isServer = false;
-	int8_t m_pingCount = 0;
-	bool m_doesPing = true;
-	Session *m_session = nullptr;
-	Ip m_ip;
-	milliseconds_t m_latency = milliseconds_t{0};
-	time_point_t m_lastPing;
-};
+		bool m_isServer = false;
+		int8_t m_pingCount = 0;
+		bool m_doesPing = true;
+		Session *m_session = nullptr;
+		Ip m_ip;
+		milliseconds_t m_latency = milliseconds_t{0};
+		time_point_t m_lastPing;
+	};
+}

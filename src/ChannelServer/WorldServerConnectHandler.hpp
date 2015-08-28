@@ -17,11 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-class PacketReader;
-class WorldServerConnection;
+namespace Vana {
+	class PacketReader;
+	class WorldServerConnection;
 
-namespace WorldServerConnectHandler {
-	auto connectLogin(WorldServerConnection *player, PacketReader &reader) -> void;
-	auto connect(WorldServerConnection *player, PacketReader &reader) -> void;
-	auto reloadMcdb(PacketReader &reader) -> void;
+	namespace WorldServerConnectHandler {
+		auto connectLogin(WorldServerConnection *player, PacketReader &reader) -> void;
+		auto connect(WorldServerConnection *player, PacketReader &reader) -> void;
+		auto reloadMcdb(PacketReader &reader) -> void;
+	}
 }

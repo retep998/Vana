@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
+namespace Vana {
+
 auto StringUtilities::noCaseCompare(const string_t &s1, const string_t &s2) -> int32_t {
 	size_t l1 = s1.size();
 	size_t l2 = s2.size();
@@ -126,4 +128,6 @@ auto StringUtilities::split(string_t input, const string_t &delimiter) -> vector
 	}
 	ret.push_back(input);
 	return ret;
+}
+
 }

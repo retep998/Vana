@@ -22,13 +22,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <string>
 
-class LuaInstance : public LuaScriptable {
-	NONCOPYABLE(LuaInstance);
-	NO_DEFAULT_CONSTRUCTOR(LuaInstance);
-public:
-	LuaInstance(const string_t &name, player_id_t playerId);
-};
+namespace Vana {
+	class LuaInstance : public LuaScriptable {
+		NONCOPYABLE(LuaInstance);
+		NO_DEFAULT_CONSTRUCTOR(LuaInstance);
+	public:
+		LuaInstance(const string_t &name, player_id_t playerId);
+	};
 
-namespace LuaExports {
-	auto createInstanceInstance(lua_State *luaVm) -> lua_return_t;
+	namespace LuaExports {
+		auto createInstanceInstance(lua_State *luaVm) -> lua_return_t;
+	}
 }

@@ -25,6 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
+namespace Vana {
+
 auto NpcDataProvider::loadData() -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing NPCs... ";
 
@@ -62,4 +64,6 @@ auto NpcDataProvider::isGuildRank(npc_id_t npc) const -> bool {
 
 auto NpcDataProvider::isValidNpcId(npc_id_t npc) const -> bool {
 	return ext::is_element(m_data, npc);
+}
+
 }

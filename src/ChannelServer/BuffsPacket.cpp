@@ -24,13 +24,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillConstants.hpp"
 #include "SmsgHeader.hpp"
 
-namespace BuffsPacket {
+namespace Vana {
+namespace Packets {
 
 SPLIT_PACKET_IMPL(addBuff, player_id_t playerId, int32_t buffId, const seconds_t &time, const BuffPacketValues &buff, int16_t addedInfo) {
 	SplitPacketBuilder builder;
 	builder.player
 		.add<header_t>(SMSG_SKILL_USE)
-		.addBuffer(BuffsPacketHelper::addBytes(buff.player.types));
+		.addBuffer(Helpers::addBuffBytes(buff.player.types));
 
 	for (const auto &val : buff.player.values) {
 		if (val.type == BuffPacketValueType::SpecialPacket) continue;
@@ -72,7 +73,7 @@ SPLIT_PACKET_IMPL(addBuff, player_id_t playerId, int32_t buffId, const seconds_t
 		builder.map
 			.add<header_t>(SMSG_3RD_PARTY_SKILL)
 			.add<player_id_t>(playerId)
-			.addBuffer(BuffsPacketHelper::addMapValues(mapBuff));
+			.addBuffer(Helpers::addBuffMapValues(mapBuff));
 
 		builder.map.add<int16_t>(static_cast<int16_t>(buff.delay.count()));
 	}
@@ -84,17 +85,18 @@ SPLIT_PACKET_IMPL(endBuff, player_id_t playerId, const BuffPacketValues &buff) {
 
 	builder.player
 		.add<header_t>(SMSG_SKILL_CANCEL)
-		.addBuffer(BuffsPacketHelper::addBytes(buff.player.types))
+		.addBuffer(Helpers::addBuffBytes(buff.player.types))
 		.unk<int8_t>();
 
 	if (buff.map.is_initialized()) {
 		builder.map
 			.add<header_t>(SMSG_3RD_PARTY_BUFF_END)
 			.add<player_id_t>(playerId)
-			.addBuffer(BuffsPacketHelper::addBytes(buff.map.get().types));
+			.addBuffer(Helpers::addBuffBytes(buff.map.get().types));
 	}
 
 	return builder;
 }
 
+}
 }

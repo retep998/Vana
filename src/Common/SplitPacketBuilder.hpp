@@ -25,7 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SPLIT_PACKET_IMPL(TypeName, ...) \
 	auto TypeName(__VA_ARGS__) -> SplitPacketBuilder
 
-struct SplitPacketBuilder {
-	PacketBuilder player;
-	PacketBuilder map;
-};
+namespace Vana {
+	struct SplitPacketBuilder {
+		PacketBuilder player;
+		PacketBuilder map;
+	};
+}

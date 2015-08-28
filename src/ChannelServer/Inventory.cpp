@@ -30,6 +30,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.hpp"
 #include "SkillDataProvider.hpp"
 
+namespace Vana {
+
 auto Inventory::addItem(Player *player, Item *item, bool fromDrop) -> slot_qty_t {
 	inventory_t inv = GameLogicUtilities::getInventory(item->getId());
 	inventory_slot_t freeSlot = 0;
@@ -45,16 +47,16 @@ auto Inventory::addItem(Player *player, Item *item, bool fromDrop) -> slot_qty_t
 					oldItem->setAmount(maxSlot);
 
 					vector_t<InventoryPacketOperation> ops;
-					ops.emplace_back(InventoryPacket::OperationTypes::AddItem, oldItem, s);
-					player->send(InventoryPacket::inventoryOperation(fromDrop, ops));
+					ops.emplace_back(Packets::Inventory::OperationTypes::AddItem, oldItem, s);
+					player->send(Packets::Inventory::inventoryOperation(fromDrop, ops));
 				}
 				else {
 					item->incAmount(oldItem->getAmount());
 					player->getInventory()->deleteItem(inv, s);
 					player->getInventory()->addItem(inv, s, item);
 					vector_t<InventoryPacketOperation> ops;
-					ops.emplace_back(InventoryPacket::OperationTypes::AddItem, item, s);
-					player->send(InventoryPacket::inventoryOperation(fromDrop, ops));
+					ops.emplace_back(Packets::Inventory::OperationTypes::AddItem, item, s);
+					player->send(Packets::Inventory::inventoryOperation(fromDrop, ops));
 					return 0;
 				}
 			}
@@ -70,14 +72,14 @@ auto Inventory::addItem(Player *player, Item *item, bool fromDrop) -> slot_qty_t
 		player->getInventory()->addItem(inv, freeSlot, item);
 
 		vector_t<InventoryPacketOperation> ops;
-		ops.emplace_back(InventoryPacket::OperationTypes::AddItem, item, freeSlot);
-		player->send(InventoryPacket::inventoryOperation(fromDrop, ops));
+		ops.emplace_back(Packets::Inventory::OperationTypes::AddItem, item, freeSlot);
+		player->send(Packets::Inventory::inventoryOperation(fromDrop, ops));
 
 		if (GameLogicUtilities::isPet(item->getId())) {
 			Pet *pet = new Pet(player, item);
 			player->getPets()->addPet(pet);
 			pet->setInventorySlot(static_cast<int8_t>(freeSlot));
-			player->send(PetsPacket::updatePet(pet, item));
+			player->send(Packets::Pets::updatePet(pet, item));
 		}
 
 		return 0;
@@ -132,7 +134,7 @@ auto Inventory::addNewItem(Player *player, item_id_t itemId, slot_qty_t amount, 
 
 auto Inventory::takeItem(Player *player, item_id_t itemId, slot_qty_t howMany) -> void {
 	if (player->hasGmBenefits()) {
-		player->send(InventoryPacket::blankUpdate());
+		player->send(Packets::Inventory::blankUpdate());
 		return;
 	}
 
@@ -148,15 +150,15 @@ auto Inventory::takeItem(Player *player, item_id_t itemId, slot_qty_t howMany) -
 				item->decAmount(howMany);
 				if (item->getAmount() == 0 && !GameLogicUtilities::isRechargeable(item->getId())) {
 					vector_t<InventoryPacketOperation> ops;
-					ops.emplace_back(InventoryPacket::OperationTypes::ModifySlot, item, i);
-					player->send(InventoryPacket::inventoryOperation(true, ops));
+					ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, item, i);
+					player->send(Packets::Inventory::inventoryOperation(true, ops));
 
 					player->getInventory()->deleteItem(inv, i);
 				}
 				else {
 					vector_t<InventoryPacketOperation> ops;
-					ops.emplace_back(InventoryPacket::OperationTypes::ModifyQuantity, item, i);
-					player->send(InventoryPacket::inventoryOperation(true, ops));
+					ops.emplace_back(Packets::Inventory::OperationTypes::ModifyQuantity, item, i);
+					player->send(Packets::Inventory::inventoryOperation(true, ops));
 				}
 				break;
 			}
@@ -165,8 +167,8 @@ auto Inventory::takeItem(Player *player, item_id_t itemId, slot_qty_t howMany) -
 				item->setAmount(0);
 
 				vector_t<InventoryPacketOperation> ops;
-				ops.emplace_back(InventoryPacket::OperationTypes::ModifySlot, item, i);
-				player->send(InventoryPacket::inventoryOperation(true, ops));
+				ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, item, i);
+				player->send(Packets::Inventory::inventoryOperation(true, ops));
 
 				player->getInventory()->deleteItem(inv, i);
 			}
@@ -186,8 +188,8 @@ auto Inventory::takeItemSlot(Player *player, inventory_t inv, inventory_slot_t s
 	item->decAmount(amount);
 	if ((item->getAmount() == 0 && !GameLogicUtilities::isRechargeable(item->getId())) || (takeStar && GameLogicUtilities::isRechargeable(item->getId()))) {
 		vector_t<InventoryPacketOperation> ops;
-		ops.emplace_back(InventoryPacket::OperationTypes::ModifySlot, item, slot);
-		player->send(InventoryPacket::inventoryOperation(true, ops));
+		ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, item, slot);
+		player->send(Packets::Inventory::inventoryOperation(true, ops));
 
 		player->getInventory()->deleteItem(inv, slot);
 	}
@@ -195,8 +197,8 @@ auto Inventory::takeItemSlot(Player *player, inventory_t inv, inventory_slot_t s
 		player->getInventory()->changeItemAmount(item->getId(), -amount);
 
 		vector_t<InventoryPacketOperation> ops;
-		ops.emplace_back(InventoryPacket::OperationTypes::ModifyQuantity, item, slot);
-		player->send(InventoryPacket::inventoryOperation(true, ops));
+		ops.emplace_back(Packets::Inventory::OperationTypes::ModifyQuantity, item, slot);
+		player->send(Packets::Inventory::inventoryOperation(true, ops));
 	}
 }
 
@@ -239,12 +241,14 @@ auto Inventory::useItem(Player *player, item_id_t itemId) -> void {
 	}
 	if (GameLogicUtilities::isMonsterCard(itemId)) {
 		bool isFull = player->getMonsterBook()->addCard(itemId); // Has a special buff for being full?
-		player->send(MonsterBookPacket::addCard(itemId, player->getMonsterBook()->getCardLevel(itemId), isFull));
+		player->send(Packets::MonsterBook::addCard(itemId, player->getMonsterBook()->getCardLevel(itemId), isFull));
 		if (!isFull) {
-			player->sendMap(MonsterBookPacket::addCardEffect(player->getId()));
+			player->sendMap(Packets::MonsterBook::addCardEffect(player->getId()));
 		}
 		if (item->mcProb != 0 && Randomizer::rand<uint16_t>(99) < item->mcProb) {
 			Buffs::addBuff(player, itemId, item->buffTime);
 		}
 	}
+}
+
 }

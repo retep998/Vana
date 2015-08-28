@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketBuilder.hpp"
 #include "WorldServerAcceptConnection.hpp"
 
+namespace Vana {
+
 Channel::Channel(WorldServerAcceptConnection *connection, channel_id_t id, port_t port) :
 	m_connection{connection},
 	m_id{id},
@@ -48,4 +50,6 @@ auto Channel::getPort() const -> port_t {
 
 auto Channel::disconnect() -> void {
 	m_connection->disconnect();
+}
+
 }

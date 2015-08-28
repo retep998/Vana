@@ -25,6 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StoragePacket.hpp"
 #include <vector>
 
+namespace Vana {
+
 LuaNpc::LuaNpc(const string_t &filename, player_id_t playerId) :
 	LuaScriptable{filename, playerId, true}
 {
@@ -134,7 +136,7 @@ auto LuaExports::runNpcNpc(lua_State *luaVm) -> lua_return_t {
 auto LuaExports::showStorage(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	Player *player = getPlayer(luaVm, env);
-	player->send(StoragePacket::showStorage(player, getNpc(luaVm, env)->getNpcId()));
+	player->send(Packets::Storage::showStorage(player, getNpc(luaVm, env)->getNpcId()));
 	return 0;
 }
 
@@ -269,4 +271,6 @@ auto LuaExports::endQuest(lua_State *luaVm) -> lua_return_t {
 	quest_id_t questId = env.get<quest_id_t>(luaVm, 1);
 	getPlayer(luaVm, env)->getQuests()->finishQuest(questId, getNpc(luaVm, env)->getNpcId());
 	return 0;
+}
+
 }

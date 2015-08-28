@@ -30,6 +30,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "World.hpp"
 #include <iostream>
 
+namespace Vana {
+
 auto Worlds::showWorld(UserConnection *user) -> void {
 	if (user->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
@@ -38,10 +40,10 @@ auto Worlds::showWorld(UserConnection *user) -> void {
 
 	for (const auto &kvp : m_worlds) {
 		if (kvp.second->isConnected()) {
-			user->send(LoginPacket::showWorld(kvp.second));
+			user->send(Packets::showWorld(kvp.second));
 		}
 	}
-	user->send(LoginPacket::worldEnd());
+	user->send(Packets::worldEnd());
 }
 
 auto Worlds::addWorld(World *world) -> void {
@@ -60,15 +62,15 @@ auto Worlds::selectWorld(UserConnection *user, PacketReader &reader) -> void {
 		int32_t load = world->getPlayerLoad();
 		int32_t maxLoad = world->getMaxPlayerLoad();
 		int32_t minMaxLoad = (maxLoad / 100) * 90;
-		int8_t message = LoginPacket::WorldMessages::Normal;
+		int8_t message = Packets::WorldMessages::Normal;
 
 		if (load >= minMaxLoad && load < maxLoad) {
-			message = LoginPacket::WorldMessages::HeavyLoad;
+			message = Packets::WorldMessages::HeavyLoad;
 		}
 		else if (load == maxLoad) {
-			message = LoginPacket::WorldMessages::MaxLoad;
+			message = Packets::WorldMessages::MaxLoad;
 		}
-		user->send(LoginPacket::showChannels(message));
+		user->send(Packets::showChannels(message));
 	}
 	else {
 		// Hacking
@@ -84,7 +86,7 @@ auto Worlds::channelSelect(UserConnection *user, PacketReader &reader) -> void {
 	reader.unk<uint8_t>();
 	channel_id_t channelId = reader.get<int8_t>();
 
-	user->send(LoginPacket::channelSelect());
+	user->send(Packets::channelSelect());
 	World *world = m_worlds[user->getWorldId()];
 
 	if (world == nullptr) {
@@ -97,7 +99,7 @@ auto Worlds::channelSelect(UserConnection *user, PacketReader &reader) -> void {
 		Characters::showCharacters(user);
 	}
 	else {
-		user->send(LoginPacket::channelOffline());
+		user->send(Packets::channelOffline());
 	}
 }
 
@@ -118,12 +120,12 @@ auto Worlds::addWorldServer(LoginServerAcceptConnection *connection) -> world_id
 		world->setConnected(true);
 		world->setConnection(connection);
 
-		connection->send(LoginServerAcceptPacket::connect(world));
+		connection->send(Packets::Interserver::connect(world));
 
 		server.log(LogType::ServerConnect, [&](out_stream_t &log) { log << "World " << static_cast<int32_t>(worldId); });
 	}
 	else {
-		connection->send(LoginServerAcceptPacket::noMoreWorld());
+		connection->send(Packets::Interserver::noMoreWorld());
 		server.log(LogType::Error, "No more worlds to assign.");
 		connection->disconnect();
 	}
@@ -144,10 +146,10 @@ auto Worlds::addChannelServer(LoginServerAcceptConnection *connection) -> world_
 	if (validWorld != nullptr) {
 		worldId = validWorld->getId();
 		Ip worldIp = validWorld->matchSubnet(connection->getIp());
-		connection->send(LoginServerAcceptPacket::connectChannel(worldId, worldIp, validWorld->getPort()));
+		connection->send(Packets::Interserver::connectChannel(worldId, worldIp, validWorld->getPort()));
 	}
 	else {
-		connection->send(LoginServerAcceptPacket::connectChannel(worldId, Ip{0}, 0));
+		connection->send(Packets::Interserver::connectChannel(worldId, Ip{0}, 0));
 		LoginServer::getInstance().log(LogType::Error, "No more channels to assign.");
 	}
 	connection->disconnect();
@@ -203,4 +205,6 @@ auto Worlds::setEventMessages(const string_t &message) -> void {
 	for (const auto &kvp : m_worlds) {
 		kvp.second->setEventMessage(message);
 	}
+}
+
 }

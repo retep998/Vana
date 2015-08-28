@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaVariant.hpp"
 
+namespace Vana {
+
 LuaVariant::LuaVariant() :
 	m_boolean{false},
 	m_type{LuaType::Nil}
@@ -113,3 +115,4 @@ auto LuaVariant::isAny(init_list_t<LuaType> types) const -> bool {
 	});
 }
 
+}

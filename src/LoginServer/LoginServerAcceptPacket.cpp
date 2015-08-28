@@ -21,7 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "World.hpp"
 #include "WorldConfig.hpp"
 
-namespace LoginServerAcceptPacket {
+namespace Vana {
+namespace Packets {
+namespace Interserver {
 
 PACKET_IMPL(connect, World *world) {
 	PacketBuilder builder;
@@ -74,4 +76,6 @@ PACKET_IMPL(rehashConfig, World *world) {
 	return builder;
 }
 
+}
+}
 }

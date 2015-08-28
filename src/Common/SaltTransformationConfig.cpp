@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
+namespace Vana {
+
 SaltTransformationConfig::SaltTransformationConfig(SaltModifyPolicy policy, vector_t<LuaVariant> args) :
 	m_policy{policy},
 	m_args{args}
@@ -383,4 +385,6 @@ auto SaltTransformationConfig::apply(string_t input) const -> string_t {
 		default: throw NotImplementedException{"SaltModifyPolicy"};
 	}
 	return ret;
+}
+
 }

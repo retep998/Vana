@@ -31,7 +31,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-namespace InventoryPacket {
+namespace Vana {
+namespace Packets {
+namespace Inventory {
 
 SPLIT_PACKET_IMPL(updatePlayer, Player *player) {
 	SplitPacketBuilder builder;
@@ -39,7 +41,7 @@ SPLIT_PACKET_IMPL(updatePlayer, Player *player) {
 		.add<header_t>(SMSG_PLAYER_CHANGE_LOOK)
 		.add<player_id_t>(player->getId())
 		.add<int8_t>(1)
-		.addBuffer(PlayerPacketHelper::addPlayerDisplay(player))
+		.addBuffer(Helpers::addPlayerDisplay(player))
 		.unk<int8_t>()
 		.unk<int16_t>();
 
@@ -144,15 +146,15 @@ PACKET_IMPL(inventoryOperation, bool unk, const vector_t<InventoryPacketOperatio
 			.add<inventory_t>(GameLogicUtilities::getInventory(operation.item->getId()));
 
 		switch (operation.operationType) {
-			case InventoryPacket::OperationTypes::AddItem:
-				builder.addBuffer(PlayerPacketHelper::addItemInfo(operation.currentSlot, operation.item, true));
+			case Packets::Inventory::OperationTypes::AddItem:
+				builder.addBuffer(Helpers::addItemInfo(operation.currentSlot, operation.item, true));
 				break;
-			case InventoryPacket::OperationTypes::ModifyQuantity:
+			case Packets::Inventory::OperationTypes::ModifyQuantity:
 				builder
 					.add<inventory_slot_t>(operation.currentSlot)
 					.add<slot_qty_t>(operation.item->getAmount());
 				break;
-			case InventoryPacket::OperationTypes::ModifySlot:
+			case Packets::Inventory::OperationTypes::ModifySlot:
 				builder
 					.add<inventory_slot_t>(operation.oldSlot)
 					.add<inventory_slot_t>(operation.currentSlot);
@@ -166,7 +168,7 @@ PACKET_IMPL(inventoryOperation, bool unk, const vector_t<InventoryPacketOperatio
 					}
 				}
 				break;
-			case InventoryPacket::OperationTypes::RemoveItem:
+			case Packets::Inventory::OperationTypes::RemoveItem:
 				builder.add<inventory_slot_t>(operation.currentSlot);
 				break;
 		}
@@ -235,7 +237,7 @@ PACKET_IMPL(showItemMegaphone, const string_t &msg, bool whisper, Item *item) {
 		builder.add<int8_t>(0);
 	}
 	else {
-		builder.addBuffer(PlayerPacketHelper::addItemInfo(1, item));
+		builder.addBuffer(Helpers::addItemInfo(1, item));
 	}
 	return builder;
 }
@@ -281,7 +283,7 @@ PACKET_IMPL(sendRockUpdate, int8_t mode, int8_t type, const vector_t<map_id_t> &
 		.add<header_t>(SMSG_TELEPORT_ROCK)
 		.add<int8_t>(mode)
 		.add<int8_t>(type)
-		.addBuffer(InventoryPacketHelper::fillRockPacket(maps, (type == RockTypes::Regular ? Inventories::TeleportRockMax : Inventories::VipRockMax)));
+		.addBuffer(Helpers::fillRockPacket(maps, (type == RockTypes::Regular ? Inventories::TeleportRockMax : Inventories::VipRockMax)));
 	return builder;
 }
 
@@ -389,4 +391,6 @@ PACKET_IMPL(sendItemExpired, const vector_t<item_id_t> &items) {
 	return builder;
 }
 
+}
+}
 }

@@ -19,8 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InterHeader.hpp"
 #include "InterHelper.hpp"
 
-namespace SyncPacket {
-namespace PlayerPacket {
+namespace Vana {
+namespace Packets {
+namespace Interserver {
+namespace Player {
 
 PACKET_IMPL(characterCreated, player_id_t playerId) {
 	PacketBuilder builder;
@@ -42,5 +44,7 @@ PACKET_IMPL(characterDeleted, player_id_t playerId) {
 	return builder;
 }
 
+}
+}
 }
 }

@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SmsgHeader.hpp"
 #include <string>
 
+namespace Vana {
+
 Npc::Npc(npc_id_t npcId, Player *player, quest_id_t questId, bool isStart) :
 	m_player{player},
 	m_npcId{npcId}
@@ -105,14 +107,14 @@ auto Npc::run() -> void {
 }
 
 auto Npc::sendSimple() -> void {
-	m_sentDialog = NpcPacket::Dialogs::Simple;
-	m_player->send(NpcPacket::npcChat(m_sentDialog, m_npcId, m_text));
+	m_sentDialog = Packets::Npc::Dialogs::Simple;
+	m_player->send(Packets::Npc::npcChat(m_sentDialog, m_npcId, m_text));
 	m_text = "";
 }
 
 auto Npc::sendYesNo() -> void {
-	m_sentDialog = NpcPacket::Dialogs::YesNo;
-	m_player->send(NpcPacket::npcChat(m_sentDialog, m_npcId, m_text));
+	m_sentDialog = Packets::Npc::Dialogs::YesNo;
+	m_player->send(Packets::Npc::npcChat(m_sentDialog, m_npcId, m_text));
 	m_text = "";
 }
 
@@ -122,8 +124,8 @@ auto Npc::sendDialog(bool back, bool next, bool save) -> void {
 		m_previousStates.push_back(make_ref_ptr<NpcChatState>(m_text, back, next));
 	}
 
-	m_sentDialog = NpcPacket::Dialogs::Normal;
-	m_player->send(NpcPacket::npcChat(m_sentDialog, m_npcId, m_text)
+	m_sentDialog = Packets::Npc::Dialogs::Normal;
+	m_player->send(Packets::Npc::npcChat(m_sentDialog, m_npcId, m_text)
 		.add<bool>(back)
 		.add<bool>(next));
 	m_text = "";
@@ -135,20 +137,20 @@ auto Npc::sendDialog(ref_ptr_t<NpcChatState> npcState) -> void {
 }
 
 auto Npc::sendAcceptDecline() -> void {
-	m_sentDialog = NpcPacket::Dialogs::AcceptDecline;
-	m_player->send(NpcPacket::npcChat(m_sentDialog, m_npcId, m_text));
+	m_sentDialog = Packets::Npc::Dialogs::AcceptDecline;
+	m_player->send(Packets::Npc::npcChat(m_sentDialog, m_npcId, m_text));
 	m_text = "";
 }
 
 auto Npc::sendAcceptDeclineNoExit() -> void {
-	m_sentDialog = NpcPacket::Dialogs::AcceptDeclineNoExit;
-	m_player->send(NpcPacket::npcChat(m_sentDialog, m_npcId, m_text));
+	m_sentDialog = Packets::Npc::Dialogs::AcceptDeclineNoExit;
+	m_player->send(Packets::Npc::npcChat(m_sentDialog, m_npcId, m_text));
 	m_text = "";
 }
 
 auto Npc::sendQuiz(int8_t type, int32_t objectId, int32_t correct, int32_t questions, int32_t time) -> void {
-	m_sentDialog = NpcPacket::Dialogs::Quiz;
-	m_player->send(NpcPacket::npcChat(m_sentDialog, m_npcId, "", false)
+	m_sentDialog = Packets::Npc::Dialogs::Quiz;
+	m_player->send(Packets::Npc::npcChat(m_sentDialog, m_npcId, "", false)
 		.add<int8_t>(0)
 		.add<int32_t>(type)
 		.add<int32_t>(objectId)
@@ -158,8 +160,8 @@ auto Npc::sendQuiz(int8_t type, int32_t objectId, int32_t correct, int32_t quest
 }
 
 auto Npc::sendQuestion(const string_t &question, const string_t &clue, int32_t minLength, int32_t maxLength, int32_t time) -> void {
-	m_sentDialog = NpcPacket::Dialogs::Question;
-	m_player->send(NpcPacket::npcChat(m_sentDialog, m_npcId, "", false)
+	m_sentDialog = Packets::Npc::Dialogs::Question;
+	m_player->send(Packets::Npc::npcChat(m_sentDialog, m_npcId, "", false)
 		.add<int8_t>(0x00) // If it's 0x01, it does something else
 		.add<string_t>(m_text)
 		.add<string_t>(question) // Another question thing
@@ -170,8 +172,8 @@ auto Npc::sendQuestion(const string_t &question, const string_t &clue, int32_t m
 }
 
 auto Npc::sendGetText(int16_t min, int16_t max, const string_t &def) -> void {
-	m_sentDialog = NpcPacket::Dialogs::GetText;
-	m_player->send(NpcPacket::npcChat(m_sentDialog, m_npcId, m_text)
+	m_sentDialog = Packets::Npc::Dialogs::GetText;
+	m_player->send(Packets::Npc::npcChat(m_sentDialog, m_npcId, m_text)
 		.add<string_t>(def)
 		.add<int16_t>(min)
 		.add<int16_t>(max));
@@ -179,8 +181,8 @@ auto Npc::sendGetText(int16_t min, int16_t max, const string_t &def) -> void {
 }
 
 auto Npc::sendGetNumber(int32_t def, int32_t min, int32_t max) -> void {
-	m_sentDialog = NpcPacket::Dialogs::GetNumber;
-	m_player->send(NpcPacket::npcChat(m_sentDialog, m_npcId, m_text)
+	m_sentDialog = Packets::Npc::Dialogs::GetNumber;
+	m_player->send(Packets::Npc::npcChat(m_sentDialog, m_npcId, m_text)
 		.add<int32_t>(def)
 		.add<int32_t>(min)
 		.add<int32_t>(max));
@@ -188,8 +190,8 @@ auto Npc::sendGetNumber(int32_t def, int32_t min, int32_t max) -> void {
 }
 
 auto Npc::sendStyle(vector_t<int32_t> styles) -> void {
-	m_sentDialog = NpcPacket::Dialogs::Style;
-	m_player->send(NpcPacket::npcChat(m_sentDialog, m_npcId, m_text)
+	m_sentDialog = Packets::Npc::Dialogs::Style;
+	m_player->send(Packets::Npc::npcChat(m_sentDialog, m_npcId, m_text)
 		.add<uint8_t>(static_cast<uint8_t>(styles.size()))
 		.add<vector_t<int32_t>>(styles, styles.size()));
 	m_text = "";
@@ -226,4 +228,6 @@ auto Npc::proceedNumber(int32_t number) -> void {
 
 auto Npc::proceedText(const string_t &text) -> void {
 	m_luaNpc->proceedText(text);
+}
+
 }

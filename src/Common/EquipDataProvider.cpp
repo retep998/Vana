@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <random>
 #include <string>
 
+namespace Vana {
+
 auto EquipDataProvider::loadData() -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Equips... ";
 
@@ -196,4 +198,6 @@ auto EquipDataProvider::getSlots(item_id_t equipId) const -> int8_t {
 
 auto EquipDataProvider::getEquipInfo(item_id_t equipId) const -> const EquipInfo & {
 	return m_equipInfo.find(equipId)->second;
+}
+
 }

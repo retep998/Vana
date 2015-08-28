@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerModFunctions.hpp"
 #include "PlayerPacket.hpp"
 
+namespace Vana {
+
 case_insensitive_hash_map_t<ChatCommand, chat_t> ChatHandlerFunctions::sCommandList;
 
 const case_insensitive_hash_map_t<MapPair, chat_t> ChatHandlerFunctions::sMapAssociations = {
@@ -777,10 +779,10 @@ auto ChatHandlerFunctions::getBanString(int8_t reason) -> chat_t {
 
 auto ChatHandlerFunctions::getMessageType(const chat_t &query) -> int8_t {
 	int8_t ret = -1;
-	if (query == "notice") ret = PlayerPacket::NoticeTypes::Notice;
-	else if (query == "box") ret = PlayerPacket::NoticeTypes::Box;
-	else if (query == "red") ret = PlayerPacket::NoticeTypes::Red;
-	else if (query == "blue") ret = PlayerPacket::NoticeTypes::Blue;
+	if (query == "notice") ret = Packets::Player::NoticeTypes::Notice;
+	else if (query == "box") ret = Packets::Player::NoticeTypes::Box;
+	else if (query == "red") ret = Packets::Player::NoticeTypes::Red;
+	else if (query == "blue") ret = Packets::Player::NoticeTypes::Blue;
 	return ret;
 }
 
@@ -812,11 +814,11 @@ auto ChatHandlerFunctions::showSyntax(Player *player, const chat_t &command, boo
 }
 
 auto ChatHandlerFunctions::showError(Player *player, const chat_t &message) -> void {
-	player->send(PlayerPacket::showMessage(message, PlayerPacket::NoticeTypes::Red));
+	player->send(Packets::Player::showMessage(message, Packets::Player::NoticeTypes::Red));
 }
 
 auto ChatHandlerFunctions::showInfo(Player *player, const chat_t &message) -> void {
-	player->send(PlayerPacket::showMessage(message, PlayerPacket::NoticeTypes::Blue));
+	player->send(Packets::Player::showMessage(message, Packets::Player::NoticeTypes::Blue));
 }
 
 auto ChatHandlerFunctions::showError(Player *player, function_t<void(chat_stream_t &)> produceMessage) -> void {
@@ -837,4 +839,6 @@ auto ChatHandlerFunctions::showError(Player *player, const char *message) -> voi
 
 auto ChatHandlerFunctions::showInfo(Player *player, const char *message) -> void {
 	showInfo(player, chat_t{message});
+}
+
 }

@@ -18,6 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer.hpp"
 #include "VanaMain.hpp"
 
-auto main() -> exit_code_t {
-	return Vana::main<WorldServer>();
+auto main() -> Vana::exit_code_t {
+	return Vana::main<Vana::WorldServer>();
 }

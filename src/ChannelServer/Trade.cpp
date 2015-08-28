@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TradeHandler.hpp"
 #include "Trades.hpp"
 
+namespace Vana {
+
 ActiveTrade::ActiveTrade(Player *sender, Player *receiver, trade_id_t id) :
 	m_id{id}
 {
@@ -216,8 +218,8 @@ auto ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, trade_slo
 		holder->getInventory()->setItem(inventory, inventorySlot, nullptr);
 
 		vector_t<InventoryPacketOperation> ops;
-		ops.emplace_back(InventoryPacket::OperationTypes::ModifySlot, item, inventorySlot);
-		holder->send(InventoryPacket::inventoryOperation(true, ops));
+		ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, item, inventorySlot);
+		holder->send(Packets::Inventory::inventoryOperation(true, ops));
 
 		holder->getInventory()->deleteItem(inventory, inventorySlot);
 	}
@@ -226,12 +228,12 @@ auto ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, trade_slo
 		holder->getInventory()->changeItemAmount(item->getId(), item->getAmount());
 
 		vector_t<InventoryPacketOperation> ops;
-		ops.emplace_back(InventoryPacket::OperationTypes::ModifyQuantity, item, inventorySlot);
-		holder->send(InventoryPacket::inventoryOperation(true, ops));
+		ops.emplace_back(Packets::Inventory::OperationTypes::ModifyQuantity, item, inventorySlot);
+		holder->send(Packets::Inventory::inventoryOperation(true, ops));
 
 		use->setAmount(amount);
 	}
-	holder->send(InventoryPacket::blankUpdate()); // Should prevent locking up in .70, don't know why it locks
+	holder->send(Packets::Inventory::blankUpdate()); // Should prevent locking up in .70, don't know why it locks
 	unit->count++;
 	trade_slot_t index = tradeSlot - 1;
 	unit->items[index] = use;
@@ -244,4 +246,6 @@ auto ActiveTrade::getSender() -> Player * {
 
 auto ActiveTrade::getReceiver() -> Player * {
 	return ChannelServer::getInstance().getPlayerDataProvider().getPlayer(m_receiverId);
+}
+
 }

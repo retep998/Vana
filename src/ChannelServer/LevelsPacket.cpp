@@ -21,7 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-namespace LevelsPacket {
+namespace Vana {
+namespace Packets {
 
 PACKET_IMPL(showExp, experience_t exp, bool white, bool inChat) {
 	PacketBuilder builder;
@@ -76,4 +77,5 @@ SPLIT_PACKET_IMPL(jobChange, player_id_t playerId) {
 	return builder;
 }
 
+}
 }

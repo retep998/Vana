@@ -24,7 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-namespace DropsPacket {
+namespace Vana {
+namespace Packets {
+namespace Drops {
 
 PACKET_IMPL(showDrop, Drop *drop, int8_t type, const Point &origin) {
 	PacketBuilder builder;
@@ -140,4 +142,6 @@ PACKET_IMPL(pickupDropSpecial, map_object_t id) {
 	return builder;
 }
 
+}
+}
 }

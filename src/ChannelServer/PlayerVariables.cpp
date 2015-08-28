@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.hpp"
 #include "Player.hpp"
 
+namespace Vana {
+
 PlayerVariables::PlayerVariables(Player *player) :
 	m_player{player}
 {
@@ -59,4 +61,6 @@ auto PlayerVariables::load() -> void {
 	for (const auto &row : rs) {
 		m_variables[row.get<string_t>("key")] = row.get<string_t>("value");
 	}
+}
+
 }

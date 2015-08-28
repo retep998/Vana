@@ -21,54 +21,56 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <array>
 #include <memory>
 
-class Item;
-class Player;
+namespace Vana {
+	class Item;
+	class Player;
 
-struct TradeInfo {
-	TradeInfo()
-	{
-		for (trade_slot_t i = 0; i < TradeSize; i++) {
-			items[i] = nullptr;
+	struct TradeInfo {
+		TradeInfo()
+		{
+			for (trade_slot_t i = 0; i < TradeSize; i++) {
+				items[i] = nullptr;
+			}
 		}
-	}
 
-	const static trade_slot_t TradeSize = 9;
+		const static trade_slot_t TradeSize = 9;
 
-	bool accepted = false;
-	trade_slot_t count = 0;
-	mesos_t mesos = 0;
-	array_t<Item *, TradeSize> items;
-};
+		bool accepted = false;
+		trade_slot_t count = 0;
+		mesos_t mesos = 0;
+		array_t<Item *, TradeSize> items;
+	};
 
-class ActiveTrade {
-	NONCOPYABLE(ActiveTrade);
-	NO_DEFAULT_CONSTRUCTOR(ActiveTrade);
-public:
-	ActiveTrade(Player *starter, Player *receiver, trade_id_t id);
+	class ActiveTrade {
+		NONCOPYABLE(ActiveTrade);
+		NO_DEFAULT_CONSTRUCTOR(ActiveTrade);
+	public:
+		ActiveTrade(Player *starter, Player *receiver, trade_id_t id);
 
-	auto getId() const -> trade_id_t { return m_id; }
-	auto getSenderTrade() const -> TradeInfo * { return m_sender.get(); }
-	auto getReceiverTrade() const -> TradeInfo * { return m_receiver.get(); }
+		auto getId() const -> trade_id_t { return m_id; }
+		auto getSenderTrade() const -> TradeInfo * { return m_sender.get(); }
+		auto getReceiverTrade() const -> TradeInfo * { return m_receiver.get(); }
 
-	auto getSender() -> Player *;
-	auto getReceiver() -> Player *;
+		auto getSender() -> Player *;
+		auto getReceiver() -> Player *;
 
-	auto bothCanTrade() -> bool;
-	auto bothAccepted() -> bool;
-	auto returnTrade() -> void;
-	auto swapTrade() -> void;
-	auto accept(TradeInfo *unit) -> void;
-	auto addMesos(Player *holder, TradeInfo *unit, mesos_t amount) -> mesos_t;
-	auto addItem(Player *holder, TradeInfo *unit, Item *item, trade_slot_t tradeSlot, inventory_slot_t inventorySlot, inventory_t inventory, slot_qty_t amount) -> Item *;
-	auto isItemInSlot(TradeInfo *unit, trade_slot_t tradeSlot) -> bool { return tradeSlot > TradeInfo::TradeSize ? true : unit->items[tradeSlot - 1] != nullptr; }
-private:
-	auto canTrade(Player *target, TradeInfo *unit) -> bool;
-	auto giveItems(Player *target, TradeInfo *unit) -> void;
-	auto giveMesos(Player *player, TradeInfo *info, bool traded = false) -> void;
+		auto bothCanTrade() -> bool;
+		auto bothAccepted() -> bool;
+		auto returnTrade() -> void;
+		auto swapTrade() -> void;
+		auto accept(TradeInfo *unit) -> void;
+		auto addMesos(Player *holder, TradeInfo *unit, mesos_t amount) -> mesos_t;
+		auto addItem(Player *holder, TradeInfo *unit, Item *item, trade_slot_t tradeSlot, inventory_slot_t inventorySlot, inventory_t inventory, slot_qty_t amount) -> Item *;
+		auto isItemInSlot(TradeInfo *unit, trade_slot_t tradeSlot) -> bool { return tradeSlot > TradeInfo::TradeSize ? true : unit->items[tradeSlot - 1] != nullptr; }
+	private:
+		auto canTrade(Player *target, TradeInfo *unit) -> bool;
+		auto giveItems(Player *target, TradeInfo *unit) -> void;
+		auto giveMesos(Player *player, TradeInfo *info, bool traded = false) -> void;
 
-	trade_id_t m_id = 0;
-	player_id_t m_senderId = 0;
-	player_id_t m_receiverId = 0;
-	owned_ptr_t<TradeInfo> m_sender;
-	owned_ptr_t<TradeInfo> m_receiver;
-};
+		trade_id_t m_id = 0;
+		player_id_t m_senderId = 0;
+		player_id_t m_receiverId = 0;
+		owned_ptr_t<TradeInfo> m_sender;
+		owned_ptr_t<TradeInfo> m_receiver;
+	};
+}

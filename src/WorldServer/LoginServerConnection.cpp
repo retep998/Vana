@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer.hpp"
 #include <iostream>
 
+namespace Vana {
+
 LoginServerConnection::LoginServerConnection() :
 	AbstractServerConnection{ServerType::World}
 {
@@ -57,4 +59,6 @@ auto LoginServerConnection::handleRequest(PacketReader &reader) -> void {
 		case IMSG_TO_ALL_CHANNELS: WorldServer::getInstance().getChannels().send(Packets::identity(reader)); break;
 		case IMSG_SYNC: SyncHandler::handle(this, reader); break;
 	}
+}
+
 }

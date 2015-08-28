@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
+namespace Vana {
+
 PacketBuilder::PacketBuilder() :
 	m_packet{new unsigned char[bufferLen]},
 	m_packetCapacity{bufferLen}
@@ -84,4 +86,6 @@ auto PacketBuilder::getBuffer(size_t pos, size_t len) -> unsigned char * {
 
 auto PacketBuilder::toString() const -> string_t {
 	return StringUtilities::bytesToHex(getBuffer(), getSize());
+}
+
 }

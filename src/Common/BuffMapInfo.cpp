@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "BuffMapInfo.hpp"
 
+namespace Vana {
+
 BuffMapInfo::BuffMapInfo()
 {
 }
@@ -61,4 +63,6 @@ auto BuffMapInfo::withPredefinedValue(int16_t value) const -> BuffMapInfo {
 	result.m_value = BuffSkillValue::Predefined;
 	result.m_predefinedValue = value;
 	return result;
+}
+
 }

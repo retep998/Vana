@@ -21,7 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-namespace ServerPacket {
+namespace Vana {
+namespace Packets {
 
 PACKET_IMPL(showScrollingHeader, const string_t &msg) {
 	PacketBuilder builder;
@@ -37,4 +38,5 @@ PACKET_IMPL(showScrollingHeader, const string_t &msg) {
 	return builder;
 }
 
+}
 }

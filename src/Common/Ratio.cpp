@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Ratio.hpp"
 #include <cmath>
 
+namespace Vana {
+
 Ratio::Ratio(coord_t top, coord_t bottom) :
 	m_isDefined{top != 0 && bottom != 0},
 	m_isNegative{(top < 0) != (bottom < 0)}
@@ -83,4 +85,6 @@ auto Ratio::negativeReciprocal() const -> Ratio {
 	return m_isNegative ?
 		Ratio{m_bottom, m_top} :
 		Ratio{-m_bottom, m_top};
+}
+
 }

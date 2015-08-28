@@ -23,18 +23,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <asio.hpp>
 
-class AbstractConnection;
-class ConnectionManager;
+namespace Vana {
+	class AbstractConnection;
+	class ConnectionManager;
 
-class ServerClient : public Session {
-public:
-	ServerClient(asio::io_service &ioService, const Ip &serverIp, port_t serverPort, ConnectionManager &manager, AbstractConnection *connection, bool ping);
-private:
-	friend class ConnectionManager;
-	auto startConnect() -> Result;
-	auto readConnectPacket() -> void;
+	class ServerClient : public Session {
+	public:
+		ServerClient(asio::io_service &ioService, const Ip &serverIp, port_t serverPort, ConnectionManager &manager, AbstractConnection *connection, bool ping);
+	private:
+		friend class ConnectionManager;
+		auto startConnect() -> Result;
+		auto readConnectPacket() -> void;
 
-	port_t m_port = 0;
-	Ip m_server;
-	asio::ip::tcp::resolver m_resolver;
-};
+		port_t m_port = 0;
+		Ip m_server;
+		asio::ip::tcp::resolver m_resolver;
+	};
+}

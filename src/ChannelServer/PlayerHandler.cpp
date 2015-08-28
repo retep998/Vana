@@ -52,6 +52,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WidePoint.hpp"
 #include <functional>
 
+namespace Vana {
+
 auto PlayerHandler::handleDoorUse(Player *player, PacketReader &reader) -> void {
 	player_id_t doorPlayerId = reader.get<player_id_t>();
 	bool toTown = !reader.get<bool>();
@@ -221,7 +223,7 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 			}
 			damageApplied = true;
 
-			player->sendMap(SkillsPacket::showSkillEffect(player->getId(), source.getSkillId()));
+			player->sendMap(Packets::Skills::showSkillEffect(player->getId(), source.getSkillId()));
 		}
 
 		auto magicGuard = player->getActiveBuffs()->getMagicGuardSource();
@@ -281,19 +283,19 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 
 		player->getActiveBuffs()->takeDamage(damage);
 	}
-	player->sendMap(PlayersPacket::damagePlayer(player->getId(), damage, mobId, hit, type, stance, noDamageId, pgmr));
+	player->sendMap(Packets::Players::damagePlayer(player->getId(), damage, mobId, hit, type, stance, noDamageId, pgmr));
 }
 
 auto PlayerHandler::handleFacialExpression(Player *player, PacketReader &reader) -> void {
 	int32_t face = reader.get<int32_t>();
-	player->sendMap(PlayersPacket::faceExpression(player->getId(), face));
+	player->sendMap(Packets::Players::faceExpression(player->getId(), face));
 }
 
 auto PlayerHandler::handleGetInfo(Player *player, PacketReader &reader) -> void {
 	reader.skip<tick_count_t>();
 	player_id_t playerId = reader.get<player_id_t>();
 	if (Player *info = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId)) {
-		player->send(PlayersPacket::showInfo(info, reader.get<bool>()));
+		player->send(Packets::Players::showInfo(info, reader.get<bool>()));
 	}
 }
 
@@ -317,7 +319,7 @@ auto PlayerHandler::handleMoving(Player *player, PacketReader &reader) -> void {
 	reader.reset(11);
 	MovementHandler::parseMovement(player, reader);
 	reader.reset(11);
-	player->sendMap(PlayersPacket::showMoving(player->getId(), reader.getBuffer(), reader.getBufferLength()));
+	player->sendMap(Packets::Players::showMoving(player->getId(), reader.getBuffer(), reader.getBufferLength()));
 
 	if (player->getFoothold() == 0 && !player->isUsingGmHide()) {
 		// Player is floating in the air
@@ -360,7 +362,7 @@ auto PlayerHandler::handleSpecialSkills(Player *player, PacketReader &reader) ->
 			info.direction = reader.get<uint8_t>();
 			info.weaponSpeed = reader.get<uint8_t>();
 			player->setChargeOrStationarySkill(info);
-			player->sendMap(SkillsPacket::endChargeOrStationarySkill(player->getId(), info));
+			player->sendMap(Packets::Skills::endChargeOrStationarySkill(player->getId(), info));
 			break;
 		}
 		case Skills::ChiefBandit::Chakra: {
@@ -398,7 +400,7 @@ auto PlayerHandler::handleMonsterBook(Player *player, PacketReader &reader) -> v
 		}
 	}
 	player->getMonsterBook()->setCover(newCover);
-	player->send(MonsterBookPacket::changeCover(cardId));
+	player->send(Packets::MonsterBook::changeCover(cardId));
 }
 
 auto PlayerHandler::handleAdminMessenger(Player *player, PacketReader &reader) -> void {
@@ -437,7 +439,7 @@ auto PlayerHandler::handleAdminMessenger(Player *player, PacketReader &reader) -
 		out_stream_t output;
 		output << player->getMedalName() << " : " << line1 << line2 << line3 << line4 << line5;
 
-		auto &basePacket = InventoryPacket::showSuperMegaphone(output.str(), useWhisper);
+		auto &basePacket = Packets::Inventory::showSuperMegaphone(output.str(), useWhisper);
 		ChannelServer::getInstance().sendWorld(
 			Packets::prepend(basePacket, [](PacketBuilder &builder) {
 				builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
@@ -461,7 +463,7 @@ auto PlayerHandler::useBombSkill(Player *player, PacketReader &reader) -> void {
 		return;
 	}
 
-	player->sendMap(PlayersPacket::useBombAttack(player->getId(), charge, skillId, playerPos));
+	player->sendMap(Packets::Players::useBombAttack(player->getId(), charge, skillId, playerPos));
 }
 
 auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void {
@@ -482,7 +484,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 		}
 	}
 
-	player->sendMap(PlayersPacket::useMeleeAttack(player->getId(), masteryId, player->getSkills()->getSkillLevel(masteryId), attack));
+	player->sendMap(Packets::Players::useMeleeAttack(player->getId(), masteryId, player->getSkills()->getSkillLevel(masteryId), attack));
 
 	map_id_t map = player->getMapId();
 	auto pickpocket = player->getActiveBuffs()->getPickpocketSource();
@@ -595,7 +597,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 						// Hacking
 						return;
 					}
-					map->send(DropsPacket::explodeDrop(drop->getId()));
+					map->send(Packets::Drops::explodeDrop(drop->getId()));
 					map->removeDrop(drop->getId());
 					delete drop;
 				}
@@ -690,7 +692,7 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 		return;
 	}
 
-	player->sendMap(PlayersPacket::useRangedAttack(player->getId(), masteryId, player->getSkills()->getSkillLevel(masteryId), attack));
+	player->sendMap(Packets::Players::useRangedAttack(player->getId(), masteryId, player->getSkills()->getSkillLevel(masteryId), attack));
 
 	switch (skillId) {
 		case Skills::Bowmaster::Hurricane:
@@ -703,7 +705,7 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 				info.weaponSpeed = attack.weaponSpeed;
 				info.level = level;
 				player->setChargeOrStationarySkill(info);
-				player->sendMap(SkillsPacket::endChargeOrStationarySkill(player->getId(), info));
+				player->sendMap(Packets::Skills::endChargeOrStationarySkill(player->getId(), info));
 			}
 			break;
 	}
@@ -825,7 +827,7 @@ auto PlayerHandler::useSpellAttack(Player *player, PacketReader &reader) -> void
 		}
 	}
 
-	player->sendMap(PlayersPacket::useSpellAttack(player->getId(), attack));
+	player->sendMap(Packets::Players::useSpellAttack(player->getId(), attack));
 
 	MpEaterInfo eater;
 	eater.skillId = player->getSkills()->getMpEater();
@@ -895,7 +897,7 @@ auto PlayerHandler::useSpellAttack(Player *player, PacketReader &reader) -> void
 auto PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &reader) -> void {
 	Attack attack = compileAttack(player, reader, SkillType::EnergyCharge);
 	skill_id_t masteryId = player->getSkills()->getMastery();
-	player->sendMap(PlayersPacket::useEnergyChargeAttack(player->getId(), masteryId, player->getSkills()->getSkillLevel(masteryId), attack));
+	player->sendMap(Packets::Players::useEnergyChargeAttack(player->getId(), masteryId, player->getSkills()->getSkillLevel(masteryId), attack));
 
 	skill_id_t skillId = attack.skillId;
 	skill_level_t level = attack.skillLevel;
@@ -946,7 +948,7 @@ auto PlayerHandler::useSummonAttack(Player *player, PacketReader &reader) -> voi
 		// Hacking or some other form of tomfoolery
 		return;
 	}
-	player->sendMap(PlayersPacket::useSummonAttack(player->getId(), attack));
+	player->sendMap(Packets::Players::useSummonAttack(player->getId(), attack));
 	for (const auto &target : attack.damages) {
 		damage_t targetTotal = 0;
 		map_object_t mapMobId = target.first;
@@ -1105,4 +1107,6 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &reader, SkillTyp
 		attack.projectilePos = reader.get<Point>();
 	}
 	return attack;
+}
+
 }

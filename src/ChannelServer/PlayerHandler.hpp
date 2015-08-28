@@ -19,28 +19,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.hpp"
 
-enum class SkillType;
-class PacketReader;
-class Player;
-struct Attack;
-struct MpEaterInfo;
+namespace Vana {
+	enum class SkillType;
+	class PacketReader;
+	class Player;
+	struct Attack;
+	struct MpEaterInfo;
 
-namespace PlayerHandler {
-	auto handleDoorUse(Player *player, PacketReader &reader) -> void;
-	auto handleDamage(Player *player, PacketReader &reader) -> void;
-	auto handleFacialExpression(Player *player, PacketReader &reader) -> void;
-	auto handleGetInfo(Player *player, PacketReader &reader) -> void;
-	auto handleHeal(Player *player, PacketReader &reader) -> void;
-	auto handleMoving(Player *player, PacketReader &reader) -> void;
-	auto handleSpecialSkills(Player *player, PacketReader &reader) -> void;
-	auto handleMonsterBook(Player *player, PacketReader &reader) -> void;
-	auto handleAdminMessenger(Player *player, PacketReader &reader) -> void;
+	namespace PlayerHandler {
+		auto handleDoorUse(Player *player, PacketReader &reader) -> void;
+		auto handleDamage(Player *player, PacketReader &reader) -> void;
+		auto handleFacialExpression(Player *player, PacketReader &reader) -> void;
+		auto handleGetInfo(Player *player, PacketReader &reader) -> void;
+		auto handleHeal(Player *player, PacketReader &reader) -> void;
+		auto handleMoving(Player *player, PacketReader &reader) -> void;
+		auto handleSpecialSkills(Player *player, PacketReader &reader) -> void;
+		auto handleMonsterBook(Player *player, PacketReader &reader) -> void;
+		auto handleAdminMessenger(Player *player, PacketReader &reader) -> void;
 
-	auto useBombSkill(Player *player, PacketReader &reader) -> void;
-	auto useMeleeAttack(Player *player, PacketReader &reader) -> void;
-	auto useRangedAttack(Player *player, PacketReader &reader) -> void;
-	auto useSpellAttack(Player *player, PacketReader &reader) -> void;
-	auto useEnergyChargeAttack(Player *player, PacketReader &reader) -> void;
-	auto useSummonAttack(Player *player, PacketReader &reader) -> void;
-	auto compileAttack(Player *player, PacketReader &reader, SkillType skillType) -> Attack;
+		auto useBombSkill(Player *player, PacketReader &reader) -> void;
+		auto useMeleeAttack(Player *player, PacketReader &reader) -> void;
+		auto useRangedAttack(Player *player, PacketReader &reader) -> void;
+		auto useSpellAttack(Player *player, PacketReader &reader) -> void;
+		auto useEnergyChargeAttack(Player *player, PacketReader &reader) -> void;
+		auto useSummonAttack(Player *player, PacketReader &reader) -> void;
+		auto compileAttack(Player *player, PacketReader &reader, SkillType skillType) -> Attack;
+	}
 }

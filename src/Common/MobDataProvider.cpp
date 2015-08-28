@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 #include <string>
 
+namespace Vana {
+
 auto MobDataProvider::loadData() -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Mobs... ";
 
@@ -202,4 +204,6 @@ auto MobDataProvider::getMobSkill(mob_id_t mobId, uint8_t index) const -> const 
 
 auto MobDataProvider::getSkills(mob_id_t mobId) const -> const vector_t<MobSkillInfo> & {
 	return m_skills.find(mobId)->second;
+}
+
 }

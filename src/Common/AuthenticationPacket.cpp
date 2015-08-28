@@ -22,7 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include <algorithm>
 
-namespace AuthenticationPacket {
+namespace Vana {
+namespace Packets {
 
 PACKET_IMPL(sendPassword, AbstractServerConnection *connection, const string_t &pass, const IpMatrix &extIp) {
 	PacketBuilder builder;
@@ -33,4 +34,5 @@ PACKET_IMPL(sendPassword, AbstractServerConnection *connection, const string_t &
 	return builder;
 }
 
+}
 }

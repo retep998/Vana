@@ -22,11 +22,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SplitPacketBuilder.hpp"
 #include "Types.hpp"
 
-class Player;
-struct MonsterCard;
+namespace Vana {
+	class Player;
+	struct MonsterCard;
 
-namespace MonsterBookPacket {
-	PACKET(addCard, item_id_t cardId, uint8_t level, bool full);
-	SPLIT_PACKET(addCardEffect, player_id_t playerId);
-	PACKET(changeCover, item_id_t cardId);
+	namespace Packets {
+		namespace MonsterBook {
+			PACKET(addCard, item_id_t cardId, uint8_t level, bool full);
+			SPLIT_PACKET(addCardEffect, player_id_t playerId);
+			PACKET(changeCover, item_id_t cardId);
+		}
+	}
 }

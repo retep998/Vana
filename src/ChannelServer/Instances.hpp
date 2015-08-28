@@ -22,12 +22,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <unordered_map>
 
-class Instances {
-public:
-	auto addInstance(Instance *instance) -> void;
-	auto removeInstance(Instance *instance) -> void;
-	auto getInstance(const string_t &name) -> Instance *;
-	auto isInstance(const string_t &name) -> bool;
-private:
-	case_insensitive_hash_map_t<Instance *> m_instances;
-};
+namespace Vana {
+	class Instances {
+	public:
+		auto addInstance(Instance *instance) -> void;
+		auto removeInstance(Instance *instance) -> void;
+		auto getInstance(const string_t &name) -> Instance *;
+		auto isInstance(const string_t &name) -> bool;
+	private:
+		case_insensitive_hash_map_t<Instance *> m_instances;
+	};
+}

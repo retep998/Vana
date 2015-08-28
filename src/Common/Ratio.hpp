@@ -19,22 +19,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.hpp"
 
-class Ratio {
-public:
-	Ratio(coord_t top, coord_t bottom);
-	auto isUnit() const -> bool;
-	auto isZero() const -> bool;
-	auto isDefined() const -> bool;
-	auto isNegative() const -> bool;
+namespace Vana {
+	class Ratio {
+	public:
+		Ratio(coord_t top, coord_t bottom);
+		auto isUnit() const -> bool;
+		auto isZero() const -> bool;
+		auto isDefined() const -> bool;
+		auto isNegative() const -> bool;
 
-	auto top() const -> coord_t;
-	auto bottom() const -> coord_t;
-	auto reciprocal() const -> Ratio;
-	auto invertSign() const -> Ratio;
-	auto negativeReciprocal() const -> Ratio;
-private:
-	coord_t m_top = 0;
-	coord_t m_bottom = 0;
-	bool m_isDefined = false;
-	bool m_isNegative = false;
-};
+		auto top() const -> coord_t;
+		auto bottom() const -> coord_t;
+		auto reciprocal() const -> Ratio;
+		auto invertSign() const -> Ratio;
+		auto negativeReciprocal() const -> Ratio;
+	private:
+		coord_t m_top = 0;
+		coord_t m_bottom = 0;
+		bool m_isDefined = false;
+		bool m_isNegative = false;
+	};
+}

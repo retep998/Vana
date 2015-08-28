@@ -32,12 +32,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptPacket.hpp"
 #include <iostream>
 
+namespace Vana {
+
 WorldServerAcceptConnection::~WorldServerAcceptConnection() {
 	if (isAuthenticated()) {
 		if (getType() == ServerType::Channel) {
 			auto &server = WorldServer::getInstance();
 			if (server.isConnected()) {
-				server.sendLogin(LoginServerConnectPacket::removeChannel(m_channel));
+				server.sendLogin(Packets::removeChannel(m_channel));
 			}
 			server.getPlayerDataProvider().channelDisconnect(m_channel);
 			server.getChannels().removeChannel(m_channel);
@@ -89,19 +91,19 @@ auto WorldServerAcceptConnection::authenticated(ServerType type) -> void {
 			const IpMatrix &ips = getExternalIps();
 			server.getChannels().registerChannel(this, m_channel, getIp(), ips, port);
 
-			send(WorldServerAcceptPacket::connect(m_channel, port));
+			send(Packets::Interserver::connect(m_channel, port));
 
 			// TODO FIXME packet - a more elegant way to do this?
-			send(SyncPacket::sendSyncData([&](PacketBuilder &builder) {
+			send(Packets::Interserver::sendSyncData([&](PacketBuilder &builder) {
 				server.getPlayerDataProvider().getChannelConnectPacket(builder);
 			}));
 
-			server.sendLogin(LoginServerConnectPacket::registerChannel(m_channel, getIp(), ips, port));
+			server.sendLogin(Packets::registerChannel(m_channel, getIp(), ips, port));
 
 			server.log(LogType::ServerConnect, [&](out_stream_t &log) { log << "Channel " << static_cast<int32_t>(m_channel); });
 		}
 		else {
-			send(WorldServerAcceptPacket::connect(-1, 0));
+			send(Packets::Interserver::connect(-1, 0));
 			server.log(LogType::Error, "No more channels to assign.");
 			disconnect();
 		}
@@ -110,4 +112,6 @@ auto WorldServerAcceptConnection::authenticated(ServerType type) -> void {
 
 auto WorldServerAcceptConnection::getChannel() const -> channel_id_t {
 	return m_channel;
+}
+
 }

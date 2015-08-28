@@ -22,7 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-namespace MapleTvPacket {
+namespace Vana {
+namespace Packets {
+namespace MapleTv {
 
 PACKET_IMPL(showMessage, const MapleTvMessage &message, seconds_t timeLeft) {
 	PacketBuilder builder;
@@ -51,4 +53,6 @@ PACKET_IMPL(endDisplay) {
 	return builder;
 }
 
+}
+}
 }

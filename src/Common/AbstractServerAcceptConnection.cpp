@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <asio.hpp>
 #include <iostream>
 
+namespace Vana {
+
 auto AbstractServerAcceptConnection::processAuth(AbstractServer &server, PacketReader &reader) -> Result {
 	if (reader.get<header_t>() == IMSG_PASSWORD) {
 		if (reader.get<string_t>() == server.getInterPassword()) {
@@ -48,4 +50,6 @@ auto AbstractServerAcceptConnection::processAuth(AbstractServer &server, PacketR
 	}
 	reader.reset();
 	return Result::Successful;
+}
+
 }

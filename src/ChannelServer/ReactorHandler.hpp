@@ -19,13 +19,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.hpp"
 
-class Drop;
-class PacketReader;
-class Player;
+namespace Vana {
+	class Drop;
+	class PacketReader;
+	class Player;
 
-namespace ReactorHandler {
-	auto hitReactor(Player *player, PacketReader &reader) -> void;
-	auto touchReactor(Player *player, PacketReader &reader) -> void;
-	auto checkDrop(Player *player, Drop *drop) -> void;
-	auto checkLoot(Drop *drop) -> void;
+	namespace ReactorHandler {
+		auto hitReactor(Player *player, PacketReader &reader) -> void;
+		auto touchReactor(Player *player, PacketReader &reader) -> void;
+		auto checkDrop(Player *player, Drop *drop) -> void;
+		auto checkLoot(Drop *drop) -> void;
+	}
 }

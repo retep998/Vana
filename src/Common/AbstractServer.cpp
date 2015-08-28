@@ -36,6 +36,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
+namespace Vana {
+
 AbstractServer::AbstractServer(ServerType type) :
 	m_serverType{type},
 	m_connectionManager{this}
@@ -190,4 +192,6 @@ auto AbstractServer::buildLogIdentifier(function_t<void(out_stream_t &)> produce
 auto AbstractServer::displayLaunchTime() const -> void {
 	auto loadingTime = TimeUtilities::getDistance<milliseconds_t>(TimeUtilities::getNow(), m_startTime);
 	std::cout << "Started in " << std::setprecision(3) << loadingTime / 1000.f << " seconds!" << std::endl << std::endl;
+}
+
 }

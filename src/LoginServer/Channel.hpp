@@ -22,15 +22,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Ip.hpp"
 #include "Types.hpp"
 
-class Channel : public ExternalIpResolver {
-	NONCOPYABLE(Channel);
-public:
-	Channel() = default;
-	auto setPort(port_t port) -> void { m_port = port; }
-	auto setPopulation(int32_t population) -> void { m_population = population; }
-	auto getPort() const -> port_t { return m_port; }
-	auto getPopulation() const -> int32_t { return m_population; }
-private:
-	port_t m_port = 0;
-	int32_t m_population = 0;
-};
+namespace Vana {
+	class Channel : public ExternalIpResolver {
+		NONCOPYABLE(Channel);
+	public:
+		Channel() = default;
+		auto setPort(port_t port) -> void { m_port = port; }
+		auto setPopulation(int32_t population) -> void { m_population = population; }
+		auto getPort() const -> port_t { return m_port; }
+		auto getPopulation() const -> int32_t { return m_population; }
+	private:
+		port_t m_port = 0;
+		int32_t m_population = 0;
+	};
+}

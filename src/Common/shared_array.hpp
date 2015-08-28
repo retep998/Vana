@@ -19,26 +19,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <memory>
 
-namespace MiscUtilities {
-	// Sorta based on Boost's, not really
-	template <typename TElement>
-	class shared_array {
-	private:
-		template <typename TPointer>
-		struct array_deleter {
-			auto operator()(TPointer *p) -> void {
-				delete[] p;
-			}
+namespace Vana {
+	namespace MiscUtilities {
+		// Sorta based on Boost's, not really
+		template <typename TElement>
+		class shared_array {
+		private:
+			template <typename TPointer>
+			struct array_deleter {
+				auto operator()(TPointer *p) -> void {
+					delete[] p;
+				}
+			};
+
+			std::shared_ptr<TElement> m_ptr;
+		public:
+			explicit shared_array(TElement *p = nullptr): m_ptr(p, array_deleter<TElement>()) { }
+			shared_array(const shared_array &r): m_ptr(r.m_ptr) { }
+
+			auto reset(TElement *p = nullptr) -> void { m_ptr.reset(p); }
+			auto operator[](std::ptrdiff_t i) const -> TElement & { return m_ptr.get()[i]; }
+			auto get() const -> TElement * { return m_ptr.get(); }
+			operator bool() const { return m_ptr.get() != nullptr; }
 		};
-
-		std::shared_ptr<TElement> m_ptr;
-	public:
-		explicit shared_array(TElement *p = nullptr): m_ptr(p, array_deleter<TElement>()) { }
-		shared_array(const shared_array &r): m_ptr(r.m_ptr) { }
-
-		auto reset(TElement *p = nullptr) -> void { m_ptr.reset(p); }
-		auto operator[](std::ptrdiff_t i) const -> TElement & { return m_ptr.get()[i]; }
-		auto get() const -> TElement * { return m_ptr.get(); }
-		operator bool() const { return m_ptr.get() != nullptr; }
-	};
+	}
 }

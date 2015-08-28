@@ -36,6 +36,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <memory>
 
+namespace Vana {
+
 PlayerDataProvider::PlayerDataProvider() :
 	m_partyIds{1, 100000}
 {
@@ -276,7 +278,7 @@ auto PlayerDataProvider::handlePlayerUpdate(PacketReader &reader) -> void {
 		}
 	}
 
-	sendSync(SyncPacket::PlayerPacket::updatePlayer(player, flags));
+	sendSync(Packets::Interserver::Player::updatePlayer(player, flags));
 }
 
 auto PlayerDataProvider::handlePlayerConnect(channel_id_t channel, PacketReader &reader) -> void {
@@ -289,7 +291,7 @@ auto PlayerDataProvider::handlePlayerConnect(channel_id_t channel, PacketReader 
 		player.copyFrom(data);
 		player.initialized = true;
 		player.transferring = false;
-		sendSync(SyncPacket::PlayerPacket::updatePlayer(player, Sync::Player::UpdateBits::Full));
+		sendSync(Packets::Interserver::Player::updatePlayer(player, Sync::Player::UpdateBits::Full));
 	}
 	else {
 		// Only the map/channel are relevant
@@ -298,7 +300,7 @@ auto PlayerDataProvider::handlePlayerConnect(channel_id_t channel, PacketReader 
 		player.ip = reader.get<Ip>();
 		player.transferring = false;
 
-		sendSync(SyncPacket::PlayerPacket::updatePlayer(player, Sync::Player::UpdateBits::Map | Sync::Player::UpdateBits::Channel | Sync::Player::UpdateBits::Transfer | Sync::Player::UpdateBits::Ip));
+		sendSync(Packets::Interserver::Player::updatePlayer(player, Sync::Player::UpdateBits::Map | Sync::Player::UpdateBits::Channel | Sync::Player::UpdateBits::Transfer | Sync::Player::UpdateBits::Ip));
 	}
 
 	WorldServer::getInstance().getChannels().increasePopulation(channel);
@@ -310,23 +312,23 @@ auto PlayerDataProvider::handlePlayerDisconnect(channel_id_t channel, PacketRead
 	auto &player = m_players.find(id)->second;
 	if (channel == -1 || player.channel == channel) {
 		player.channel.reset();
-		sendSync(SyncPacket::PlayerPacket::updatePlayer(player, Sync::Player::UpdateBits::Channel));
+		sendSync(Packets::Interserver::Player::updatePlayer(player, Sync::Player::UpdateBits::Channel));
 	}
 
 	WorldServer::getInstance().getChannels().decreasePopulation(channel);
 
 	channel_id_t oldChannel = removePendingPlayer(id);
 	if (oldChannel != -1) {
-		WorldServer::getInstance().getChannels().send(oldChannel, SyncPacket::PlayerPacket::deleteConnectable(id));
+		WorldServer::getInstance().getChannels().send(oldChannel, Packets::Interserver::Player::deleteConnectable(id));
 		player.transferring = false;
-		sendSync(SyncPacket::PlayerPacket::updatePlayer(player, Sync::Player::UpdateBits::Transfer));
+		sendSync(Packets::Interserver::Player::updatePlayer(player, Sync::Player::UpdateBits::Transfer));
 	}
 }
 
 auto PlayerDataProvider::handleCharacterCreated(PacketReader &reader) -> void {
 	player_id_t id = reader.get<player_id_t>();
 	loadPlayer(id);
-	sendSync(SyncPacket::PlayerPacket::characterCreated(m_players[id]));
+	sendSync(Packets::Interserver::Player::characterCreated(m_players[id]));
 }
 
 auto PlayerDataProvider::handleCharacterDeleted(PacketReader &reader) -> void {
@@ -335,7 +337,7 @@ auto PlayerDataProvider::handleCharacterDeleted(PacketReader &reader) -> void {
 	// To my knowledge, the player takes up space in buddies, parties, AND guilds until the player is kicked from those or the social grouping disappears
 	// This means we can't delete the info when the character is deleted and must also take care to preserve it for buddies/guilds
 	// This design is not in place yet
-	sendSync(SyncPacket::PlayerPacket::characterDeleted(id));
+	sendSync(Packets::Interserver::Player::characterDeleted(id));
 }
 
 auto PlayerDataProvider::handleChangeChannelRequest(AbstractConnection *connection, PacketReader &reader) -> void {
@@ -348,13 +350,13 @@ auto PlayerDataProvider::handleChangeChannelRequest(AbstractConnection *connecti
 
 		auto &player = m_players[playerId];
 		player.transferring = true;
-		sendSync(SyncPacket::PlayerPacket::updatePlayer(player, Sync::Player::UpdateBits::Transfer));
+		sendSync(Packets::Interserver::Player::updatePlayer(player, Sync::Player::UpdateBits::Transfer));
 
 		ip = reader.get<Ip>();
-		channel->send(SyncPacket::PlayerPacket::newConnectable(playerId, ip, reader));
+		channel->send(Packets::Interserver::Player::newConnectable(playerId, ip, reader));
 	}
 	else {
-		connection->send(SyncPacket::PlayerPacket::playerChangeChannel(playerId, -1, ip, port));
+		connection->send(Packets::Interserver::Player::playerChangeChannel(playerId, -1, ip, port));
 	}
 }
 
@@ -378,7 +380,7 @@ auto PlayerDataProvider::handleChangeChannel(AbstractConnection *connection, Pac
 		port = destinationChannel->getPort();
 	}
 
-	currentChannel->send(SyncPacket::PlayerPacket::playerChangeChannel(playerId, channelId, ip, port));
+	currentChannel->send(Packets::Interserver::Player::playerChangeChannel(playerId, channelId, ip, port));
 	removePendingPlayer(playerId);
 }
 
@@ -398,7 +400,7 @@ auto PlayerDataProvider::handleCreateParty(player_id_t playerId) -> void {
 
 	player.party = party.id;
 
-	sendSync(SyncPacket::PartyPacket::createParty(party.id, playerId));
+	sendSync(Packets::Interserver::Party::createParty(party.id, playerId));
 }
 
 auto PlayerDataProvider::handlePartyLeave(player_id_t playerId) -> void {
@@ -424,13 +426,13 @@ auto PlayerDataProvider::handlePartyLeave(player_id_t playerId) -> void {
 				member.party = 0;
 			}
 		}
-		sendSync(SyncPacket::PartyPacket::disbandParty(party.id));
+		sendSync(Packets::Interserver::Party::disbandParty(party.id));
 		m_partyIds.release(party.id);
 		m_parties.erase(kvp);
 	}
 	else {
 		ext::remove_element(party.members, playerId);
-		sendSync(SyncPacket::PartyPacket::removePartyMember(party.id, playerId, false));
+		sendSync(Packets::Interserver::Party::removePartyMember(party.id, playerId, false));
 	}
 }
 
@@ -456,7 +458,7 @@ auto PlayerDataProvider::handlePartyRemove(player_id_t playerId, player_id_t tar
 	auto &target = m_players[targetId];
 	target.party = 0;
 	ext::remove_element(party.members, targetId);
-	sendSync(SyncPacket::PartyPacket::removePartyMember(party.id, targetId, true));
+	sendSync(Packets::Interserver::Party::removePartyMember(party.id, targetId, true));
 }
 
 auto PlayerDataProvider::handlePartyAdd(player_id_t playerId, party_id_t partyId) -> void {
@@ -479,7 +481,7 @@ auto PlayerDataProvider::handlePartyAdd(player_id_t playerId, party_id_t partyId
 
 	player.party = party.id;
 	party.members.push_back(player.id);
-	sendSync(SyncPacket::PartyPacket::addPartyMember(party.id, player.id));
+	sendSync(Packets::Interserver::Party::addPartyMember(party.id, player.id));
 }
 
 auto PlayerDataProvider::handlePartyTransfer(player_id_t playerId, player_id_t newLeaderId) -> void {
@@ -508,7 +510,7 @@ auto PlayerDataProvider::handlePartyTransfer(player_id_t playerId, player_id_t n
 	}
 
 	party.leader = newLeaderId;
-	sendSync(SyncPacket::PartyPacket::newPartyLeader(party.id, newLeaderId));
+	sendSync(Packets::Interserver::Party::newPartyLeader(party.id, newLeaderId));
 }
 
 // Buddies
@@ -530,7 +532,7 @@ auto PlayerDataProvider::buddyInvite(PacketReader &reader) -> void {
 			soci::use(inviterId, "inviter");
 	}
 	else {
-		WorldServer::getInstance().getChannels().send(invitee.channel.get(), SyncPacket::BuddyPacket::sendBuddyInvite(inviteeId, inviterId, inviter.name));
+		WorldServer::getInstance().getChannels().send(invitee.channel.get(), Packets::Interserver::Buddy::sendBuddyInvite(inviteeId, inviterId, inviter.name));
 	}
 }
 
@@ -543,7 +545,7 @@ auto PlayerDataProvider::acceptBuddyInvite(PacketReader &reader) -> void {
 	invitee.mutualBuddies.push_back(inviterId);
 	inviter.mutualBuddies.push_back(inviteeId);
 
-	sendSync(SyncPacket::BuddyPacket::sendAcceptBuddyInvite(inviteeId, inviterId));
+	sendSync(Packets::Interserver::Buddy::sendAcceptBuddyInvite(inviteeId, inviterId));
 }
 
 auto PlayerDataProvider::removeBuddy(PacketReader &reader) -> void {
@@ -555,7 +557,7 @@ auto PlayerDataProvider::removeBuddy(PacketReader &reader) -> void {
 	ext::remove_element(listOwner.mutualBuddies, removalId);
 	ext::remove_element(removal.mutualBuddies, listOwnerId);
 
-	sendSync(SyncPacket::BuddyPacket::sendBuddyRemoval(listOwnerId, removalId));
+	sendSync(Packets::Interserver::Buddy::sendBuddyRemoval(listOwnerId, removalId));
 }
 
 auto PlayerDataProvider::readdBuddy(PacketReader &reader) -> void {
@@ -567,5 +569,7 @@ auto PlayerDataProvider::readdBuddy(PacketReader &reader) -> void {
 	listOwner.mutualBuddies.push_back(buddyId);
 	buddy.mutualBuddies.push_back(listOwnerId);
 
-	sendSync(SyncPacket::BuddyPacket::sendReaddBuddy(listOwnerId, buddyId));
+	sendSync(Packets::Interserver::Buddy::sendReaddBuddy(listOwnerId, buddyId));
+}
+
 }

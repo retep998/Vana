@@ -19,18 +19,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.hpp"
 
-class TauswortheGenerator {
-	NONCOPYABLE(TauswortheGenerator);
-	NO_DEFAULT_CONSTRUCTOR(TauswortheGenerator);
-public:
-	TauswortheGenerator(uint32_t seed1, uint32_t seed2, uint32_t seed3);
+namespace Vana {
+	class TauswortheGenerator {
+		NONCOPYABLE(TauswortheGenerator);
+		NO_DEFAULT_CONSTRUCTOR(TauswortheGenerator);
+	public:
+		TauswortheGenerator(uint32_t seed1, uint32_t seed2, uint32_t seed3);
 
-	auto reset(uint32_t seed1, uint32_t seed2, uint32_t seed3) -> void;
-	auto skip() -> void;
-	auto skip(int32_t skipStateCount) -> void;
-	auto next() -> uint32_t;
-private:
-	uint32_t m_seed1;
-	uint32_t m_seed2;
-	uint32_t m_seed3;
-};
+		auto reset(uint32_t seed1, uint32_t seed2, uint32_t seed3) -> void;
+		auto skip() -> void;
+		auto skip(int32_t skipStateCount) -> void;
+		auto next() -> uint32_t;
+	private:
+		uint32_t m_seed1;
+		uint32_t m_seed2;
+		uint32_t m_seed3;
+	};
+}

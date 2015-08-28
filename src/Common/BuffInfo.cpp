@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "BuffInfo.hpp"
 
+namespace Vana {
+
 BuffInfo::BuffInfo()
 {
 }
@@ -211,4 +213,6 @@ auto BuffInfo::getBuffByte(uint8_t bitPosition) -> uint8_t {
 
 auto BuffInfo::getBuffType(uint8_t bitPosition) -> uint8_t {
 	return 1U << ((bitPosition - 1) % 8);
+}
+
 }

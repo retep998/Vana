@@ -32,6 +32,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <utility>
 
+namespace Vana {
+
 auto ItemDataProvider::loadData(BuffDataProvider &provider) -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Items... ";
 
@@ -498,4 +500,7 @@ auto ItemDataProvider::getItemRewards(item_id_t itemId) const -> const vector_t<
 
 auto ItemDataProvider::getItemSummons(item_id_t itemId) const -> const vector_t<SummonBag> * const {
 	return ext::find_value_ptr(m_summonBags, itemId);
+}
+
+
 }

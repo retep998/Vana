@@ -23,7 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SmsgHeader.hpp"
 #include "Summon.hpp"
 
-namespace SummonsPacket {
+namespace Vana {
+namespace Packets {
 
 SPLIT_PACKET_IMPL(showSummon, player_id_t playerId, Summon *summon, bool isMapEntry) {
 	SplitPacketBuilder builder;
@@ -113,4 +114,5 @@ SPLIT_PACKET_IMPL(summonSkillEffect, player_id_t playerId, skill_id_t skillId, u
 	return builder;
 }
 
+}
 }

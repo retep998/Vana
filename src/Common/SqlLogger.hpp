@@ -21,14 +21,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-class SqlLogger : public Logger {
-public:
-	SqlLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize = 10);
-	~SqlLogger();
+namespace Vana {
+	class SqlLogger : public Logger {
+	public:
+		SqlLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize = 10);
+		~SqlLogger();
 
-	auto log(LogType type, const opt_string_t &identifier, const string_t &message) -> void override;
-	auto flush() -> void;
-private:
-	size_t m_bufferSize;
-	vector_t<LogMessage> m_buffer;
-};
+		auto log(LogType type, const opt_string_t &identifier, const string_t &message) -> void override;
+		auto flush() -> void;
+	private:
+		size_t m_bufferSize;
+		vector_t<LogMessage> m_buffer;
+	};
+}

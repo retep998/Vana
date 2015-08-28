@@ -20,14 +20,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Map.hpp"
 #include "Types.hpp"
 
-class PacketReader;
-class Player;
+namespace Vana {
+	class PacketReader;
+	class Player;
 
-namespace Maps {
-	auto getMap(map_id_t mapId) -> Map *;
-	auto unloadMap(map_id_t mapId) -> void;
-	auto usePortal(Player *player, const PortalInfo * const portal) -> void;
-	auto usePortal(Player *player, PacketReader &reader) -> void;
-	auto useScriptedPortal(Player *player, PacketReader &reader) -> void;
-	auto addPlayer(Player *player, map_id_t mapId) -> void;
+	namespace Maps {
+		auto getMap(map_id_t mapId) -> Map *;
+		auto unloadMap(map_id_t mapId) -> void;
+		auto usePortal(Player *player, const PortalInfo * const portal) -> void;
+		auto usePortal(Player *player, PacketReader &reader) -> void;
+		auto useScriptedPortal(Player *player, PacketReader &reader) -> void;
+		auto addPlayer(Player *player, map_id_t mapId) -> void;
+	}
 }

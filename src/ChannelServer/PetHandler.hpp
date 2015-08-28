@@ -20,16 +20,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <string>
 
-class PacketReader;
-class Player;
+namespace Vana {
+	class PacketReader;
+	class Player;
 
-namespace PetHandler {
-	auto showPets(Player *player) -> void;
-	auto handleChat(Player *player, PacketReader &reader) -> void;
-	auto handleFeed(Player *player, PacketReader &reader) -> void;
-	auto handleMovement(Player *player, PacketReader &reader) -> void;
-	auto handleSummon(Player *player, PacketReader &reader) -> void;
-	auto handleCommand(Player *player, PacketReader &reader) -> void;
-	auto handleConsumePotion(Player *player, PacketReader &reader) -> void;
-	auto changeName(Player *player, const string_t &name) -> void;
+	namespace PetHandler {
+		auto showPets(Player *player) -> void;
+		auto handleChat(Player *player, PacketReader &reader) -> void;
+		auto handleFeed(Player *player, PacketReader &reader) -> void;
+		auto handleMovement(Player *player, PacketReader &reader) -> void;
+		auto handleSummon(Player *player, PacketReader &reader) -> void;
+		auto handleCommand(Player *player, PacketReader &reader) -> void;
+		auto handleConsumePotion(Player *player, PacketReader &reader) -> void;
+		auto changeName(Player *player, const string_t &name) -> void;
+	}
 }

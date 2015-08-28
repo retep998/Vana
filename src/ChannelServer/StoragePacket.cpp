@@ -24,7 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-namespace StoragePacket {
+namespace Vana {
+namespace Packets {
+namespace Storage {
 
 PACKET_IMPL(showStorage, Player *player, npc_id_t npcId) {
 	PacketBuilder builder;
@@ -40,7 +42,7 @@ PACKET_IMPL(showStorage, Player *player, npc_id_t npcId) {
 		.add<storage_slot_t>(player->getStorage()->getNumItems());
 
 	for (storage_slot_t i = 0; i < player->getStorage()->getNumItems(); i++) {
-		builder.addBuffer(PlayerPacketHelper::addItemInfo(0, player->getStorage()->getItem(i)));
+		builder.addBuffer(Helpers::addItemInfo(0, player->getStorage()->getItem(i)));
 	}
 
 	builder
@@ -63,7 +65,7 @@ PACKET_IMPL(addItem, Player *player, inventory_t inv) {
 	for (storage_slot_t i = 0; i < player->getStorage()->getNumItems(); i++) {
 		Item *item = player->getStorage()->getItem(i);
 		if (GameLogicUtilities::getInventory(item->getId()) == inv) {
-			builder.addBuffer(PlayerPacketHelper::addItemInfo(0, item));
+			builder.addBuffer(Helpers::addItemInfo(0, item));
 		}
 	}
 	return builder;
@@ -83,7 +85,7 @@ PACKET_IMPL(takeItem, Player *player, int8_t inv) {
 	for (storage_slot_t i = 0; i < player->getStorage()->getNumItems(); i++) {
 		Item *item = player->getStorage()->getItem(i);
 		if (GameLogicUtilities::getInventory(item->getId()) == inv) {
-			builder.addBuffer(PlayerPacketHelper::addItemInfo(0, item));
+			builder.addBuffer(Helpers::addItemInfo(0, item));
 		}
 	}
 	return builder;
@@ -118,4 +120,6 @@ PACKET_IMPL(noMesos) {
 	return builder;
 }
 
+}
+}
 }

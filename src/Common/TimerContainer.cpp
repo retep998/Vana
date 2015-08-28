@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer.hpp"
 #include <chrono>
 
+namespace Vana {
 namespace Timer {
 
 auto Container::isTimerRunning(const Id &id) const -> bool {
@@ -38,4 +39,5 @@ auto Container::removeTimer(const Id &id) -> void {
 	}
 }
 
+}
 }

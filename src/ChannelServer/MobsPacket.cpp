@@ -24,7 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StatusInfo.hpp"
 #include "WidePoint.hpp"
 
-namespace MobsPacket {
+namespace Vana {
+namespace Packets {
+namespace Mobs {
 
 PACKET_IMPL(spawnMob, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> owner, MobSpawnType spawn) {
 	PacketBuilder builder;
@@ -256,4 +258,6 @@ PACKET_IMPL(showSpawnEffect, int8_t summonEffect, const Point &pos) {
 	return builder;
 }
 
+}
+}
 }

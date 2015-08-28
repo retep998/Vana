@@ -22,9 +22,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <array>
 
-struct BuffPacketStructure;
+namespace Vana {
+	struct BuffPacketStructure;
 
-namespace BuffsPacketHelper {
-	PACKET(addBytes, const buff_array_t &bytes);
-	PACKET(addMapValues, const BuffPacketStructure &buff);
+	namespace Packets {
+		namespace Helpers {
+			PACKET(addBuffBytes, const buff_array_t &bytes);
+			PACKET(addBuffMapValues, const BuffPacketStructure &buff);
+		}
+	}
 }

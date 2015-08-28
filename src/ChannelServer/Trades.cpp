@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimerContainer.hpp"
 #include <functional>
 
+namespace Vana {
+
 seconds_t Trades::TradeTimeout = seconds_t{180};
 
 Trades::Trades() :
@@ -83,4 +85,6 @@ auto Trades::startTimeout(trade_id_t id, Player *sender) -> void {
 		timerId,
 		nullptr,
 		TradeTimeout);
+}
+
 }

@@ -225,7 +225,6 @@
     </ClCompile>
     <ClCompile Include="src\Common\ExitCodes.cpp" />
     <ClCompile Include="src\Common\VanaMain.cpp" />
-    <ClCompile Include="src\Common\ThreadPool.cpp" />
     <ClCompile Include="src\Common\Buff.cpp">
       <Filter>Data Structures\Buffs</Filter>
     </ClCompile>
@@ -264,6 +263,9 @@
     </ClCompile>
     <ClCompile Include="src\Common\Ratio.cpp">
       <Filter>Data Structures\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ThreadPool.cpp">
+      <Filter>Utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -475,7 +477,6 @@
       <Filter>Connection</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\ExitCodes.hpp" />
-    <ClInclude Include="src\Common\MapleVersion.hpp" />
     <ClInclude Include="src\Common\PrecompiledHeader.hpp" />
     <ClInclude Include="src\Common\Types.hpp" />
     <ClInclude Include="src\Common\Ip.hpp">
@@ -530,7 +531,6 @@
     <ClInclude Include="src\Common\LuaEnvironment.hpp">
       <Filter>Scripting</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ThreadPool.hpp" />
     <ClInclude Include="src\Common\TimerType.hpp">
       <Filter>Timer</Filter>
     </ClInclude>
@@ -618,7 +618,6 @@
     <ClInclude Include="src\Common\MajorBossConfig.hpp">
       <Filter>Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ServerType.hpp" />
     <ClInclude Include="src\Common\SaltConfig.hpp">
       <Filter>Configuration</Filter>
     </ClInclude>
@@ -649,6 +648,13 @@
     <ClInclude Include="src\Common\Ratio.hpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClInclude>
+    <ClInclude Include="src\Common\ThreadPool.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ServerType.hpp">
+      <Filter>Connection</Filter>
+    </ClInclude>
     <ClInclude Include="src\Common\McdbVersion.hpp" />
+    <ClInclude Include="src\Common\MapleVersion.hpp" />
   </ItemGroup>
 </Project>

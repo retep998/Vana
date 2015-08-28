@@ -18,47 +18,49 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "KeyMaps.hpp"
 #include "Database.hpp"
 
+namespace Vana {
+
 auto KeyMaps::defaultMap() -> void {
 	// TODO FIXME move to a config file
-	add(2, KeyMap(4, 10));
-	add(3, KeyMap(4, 12));
-	add(4, KeyMap(4, 13));
-	add(5, KeyMap(4, 18));
-	add(6, KeyMap(4, 24));
-	add(7, KeyMap(4, 21));
-	add(16, KeyMap(4, 8));
-	add(17, KeyMap(4, 5));
-	add(18, KeyMap(4, 0));
-	add(19, KeyMap(4, 4));
-	add(23, KeyMap(4, 1));
-	add(24, KeyMap(4, 25));
-	add(25, KeyMap(4, 19));
-	add(26, KeyMap(4, 14));
-	add(27, KeyMap(4, 15));
-	add(29, KeyMap(5, 52));
-	add(31, KeyMap(4, 2));
-	add(33, KeyMap(4, 26));
-	add(34, KeyMap(4, 17));
-	add(35, KeyMap(4, 11));
-	add(37, KeyMap(4, 3));
-	add(38, KeyMap(4, 20));
-	add(40, KeyMap(4, 16));
-	add(41, KeyMap(4, 23));
-	add(43, KeyMap(4, 9));
-	add(44, KeyMap(5, 50));
-	add(45, KeyMap(5, 51));
-	add(46, KeyMap(4, 6));
-	add(48, KeyMap(4, 22));
-	add(50, KeyMap(4, 7));
-	add(56, KeyMap(5, 53));
-	add(57, KeyMap(5, 54));
-	add(59, KeyMap(6, 100));
-	add(60, KeyMap(6, 101));
-	add(61, KeyMap(6, 102));
-	add(62, KeyMap(6, 103));
-	add(63, KeyMap(6, 104));
-	add(64, KeyMap(6, 105));
-	add(65, KeyMap(6, 106));
+	add(2, KeyMap{4, 10});
+	add(3, KeyMap{4, 12});
+	add(4, KeyMap{4, 13});
+	add(5, KeyMap{4, 18});
+	add(6, KeyMap{4, 24});
+	add(7, KeyMap{4, 21});
+	add(16, KeyMap{4, 8});
+	add(17, KeyMap{4, 5});
+	add(18, KeyMap{4, 0});
+	add(19, KeyMap{4, 4});
+	add(23, KeyMap{4, 1});
+	add(24, KeyMap{4, 25});
+	add(25, KeyMap{4, 19});
+	add(26, KeyMap{4, 14});
+	add(27, KeyMap{4, 15});
+	add(29, KeyMap{5, 52});
+	add(31, KeyMap{4, 2});
+	add(33, KeyMap{4, 26});
+	add(34, KeyMap{4, 17});
+	add(35, KeyMap{4, 11});
+	add(37, KeyMap{4, 3});
+	add(38, KeyMap{4, 20});
+	add(40, KeyMap{4, 16});
+	add(41, KeyMap{4, 23});
+	add(43, KeyMap{4, 9});
+	add(44, KeyMap{5, 50});
+	add(45, KeyMap{5, 51});
+	add(46, KeyMap{4, 6});
+	add(48, KeyMap{4, 22});
+	add(50, KeyMap{4, 7});
+	add(56, KeyMap{5, 53});
+	add(57, KeyMap{5, 54});
+	add(59, KeyMap{6, 100});
+	add(60, KeyMap{6, 101});
+	add(61, KeyMap{6, 102});
+	add(62, KeyMap{6, 103});
+	add(63, KeyMap{6, 104});
+	add(64, KeyMap{6, 105});
+	add(65, KeyMap{6, 106});
 }
 
 auto KeyMaps::load(player_id_t charId) -> void {
@@ -99,4 +101,6 @@ auto KeyMaps::save(player_id_t charId) -> void {
 			st.execute(true);
 		}
 	}
+}
+
 }

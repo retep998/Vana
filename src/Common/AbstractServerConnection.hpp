@@ -24,20 +24,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-class AbstractServer;
-class PacketReader;
+namespace Vana {
+	class AbstractServer;
+	class PacketReader;
 
-class AbstractServerConnection : public AbstractConnection {
-public:
-	auto getType() const -> ServerType { return m_type; }
-protected:
-	AbstractServerConnection(ServerType type) :
-		AbstractConnection{true},
-		m_type{type}
-	{
-	}
-private:
-	friend class AbstractServer;
-	auto sendAuth(const string_t &pass, const IpMatrix &extIp) -> void;
-	ServerType m_type = ServerType::None;
-};
+	class AbstractServerConnection : public AbstractConnection {
+	public:
+		auto getType() const -> ServerType { return m_type; }
+	protected:
+		AbstractServerConnection(ServerType type) :
+			AbstractConnection{true},
+			m_type{type}
+		{
+		}
+	private:
+		friend class AbstractServer;
+		auto sendAuth(const string_t &pass, const IpMatrix &extIp) -> void;
+		ServerType m_type = ServerType::None;
+	};
+}

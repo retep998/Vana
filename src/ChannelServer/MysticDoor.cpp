@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.hpp"
 #include "SkillDataProvider.hpp"
 
+namespace Vana {
+
 MysticDoor::MysticDoor(Player *owner, map_id_t townId, portal_id_t portalId, const Point &mapPos, const Point &townPos, bool isDisplacement, seconds_t doorTime) :
 	m_mapId{owner->getMapId()},
 	m_mapPos{mapPos},
@@ -88,4 +90,6 @@ auto MysticDoor::withNewPortal(portal_id_t portalId, const Point &townPos) const
 		portalId,
 		townPos,
 		m_doorTime);
+}
+
 }

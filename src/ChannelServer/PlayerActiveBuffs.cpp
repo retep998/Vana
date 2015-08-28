@@ -32,6 +32,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimerContainer.hpp"
 #include <functional>
 
+namespace Vana {
+
 struct BuffRunAction {
 	BuffRunAction(BuffSource source) :
 		source{source}
@@ -306,7 +308,7 @@ auto PlayerActiveBuffs::addBuff(const BuffSource &source, const Buff &buff, cons
 	m_buffs.push_back(local);
 
 	m_player->sendMap(
-		BuffsPacket::addBuff(
+		Packets::addBuff(
 			m_player->getId(),
 			translateToPacket(source),
 			time,
@@ -328,7 +330,7 @@ auto PlayerActiveBuffs::removeBuff(const BuffSource &source, const Buff &buff, b
 		const auto &info = m_buffs[i];
 		if (info.type == source.getType() && info.identifier == source.getId()) {
 			m_player->sendMap(
-				BuffsPacket::endBuff(
+				Packets::endBuff(
 					m_player->getId(),
 					Buffs::convertToPacketTypes(info.raw)));
 
@@ -563,7 +565,7 @@ auto PlayerActiveBuffs::resetHomingBeaconMob(map_object_t mapMobId) -> void {
 
 			mob->removeMarker(m_player);
 			m_player->sendMap(
-				BuffsPacket::endBuff(
+				Packets::endBuff(
 					m_player->getId(),
 					Buffs::convertToPacketTypes(
 						Buffs::preprocessBuff(
@@ -590,7 +592,7 @@ auto PlayerActiveBuffs::setCombo(uint8_t combo) -> void {
 	seconds_t timeLeft = getBuffSecondsRemaining(buffSource);
 
 	m_player->sendMap(
-		BuffsPacket::addBuff(
+		Packets::addBuff(
 			m_player->getId(),
 			buffSource.getId(),
 			timeLeft,
@@ -655,7 +657,7 @@ auto PlayerActiveBuffs::checkBerserk(bool display) -> void {
 				change = true;
 			}
 			if (change || display) {
-				m_player->sendMap(SkillsPacket::showBerserk(m_player->getId(), level, m_berserk));
+				m_player->sendMap(Packets::Skills::showBerserk(m_player->getId(), level, m_berserk));
 			}
 		}
 	}
@@ -687,7 +689,7 @@ auto PlayerActiveBuffs::increaseEnergyChargeLevel(int8_t targets) -> void {
 			BuffSource source = BuffSource::fromSkill(skillId, info->level);
 			Buff buff{{ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect().energyCharge}};
 			m_player->send(
-				BuffsPacket::addBuff(
+				Packets::addBuff(
 					m_player->getId(),
 					translateToPacket(source),
 					seconds_t{0},
@@ -709,7 +711,7 @@ auto PlayerActiveBuffs::decreaseEnergyChargeLevel() -> void {
 	BuffSource source = BuffSource::fromSkill(skillId, info->level);
 	Buff buff{{ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect().energyCharge}};
 	m_player->send(
-		BuffsPacket::addBuff(
+		Packets::addBuff(
 			m_player->getId(),
 			translateToPacket(source),
 			seconds_t{0},
@@ -985,7 +987,7 @@ auto PlayerActiveBuffs::takeDamage(damage_t damage) -> void {
 			stopSkill(source);
 		}
 		else {
-			BuffsPacket::addBuff(
+			Packets::addBuff(
 				m_player->getId(),
 				source.getSkillId(),
 				seconds_t{0},
@@ -1111,4 +1113,6 @@ auto PlayerActiveBuffs::parseTransferPacket(PacketReader &reader) -> void {
 		auto skill = getBuffSkillInfo(hyperBodyMpSource.get());
 		m_player->getStats()->setHyperBodyMp(skill->y);
 	}
+}
+
 }

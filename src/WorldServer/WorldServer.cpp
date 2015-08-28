@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SyncPacket.hpp"
 #include "WorldServerAcceptPacket.hpp"
 
+namespace Vana {
+
 WorldServer::WorldServer() :
 	AbstractServer{ServerType::World}
 {
@@ -56,7 +58,7 @@ auto WorldServer::loadData() -> Result {
 auto WorldServer::rehashConfig(const WorldConfig &config) -> void {
 	m_config = config;
 	m_defaultRates = config.rates;
-	m_channels.send(WorldServerAcceptPacket::rehashConfig(config));
+	m_channels.send(Packets::Interserver::rehashConfig(config));
 }
 
 auto WorldServer::establishedLoginConnection(world_id_t worldId, port_t port, const WorldConfig &conf) -> void {
@@ -78,7 +80,7 @@ auto WorldServer::establishedLoginConnection(world_id_t worldId, port_t port, co
 
 auto WorldServer::setRates(const RatesConfig &rates) -> void {
 	m_config.rates = rates;
-	m_channels.send(SyncPacket::ConfigPacket::setRates(rates));
+	m_channels.send(Packets::Interserver::Config::setRates(rates));
 }
 
 auto WorldServer::resetRates(int32_t flags) -> void {
@@ -143,9 +145,11 @@ auto WorldServer::getConfig() -> const WorldConfig & {
 
 auto WorldServer::setScrollingHeader(const string_t &message) -> void {
 	m_config.scrollingHeader = message;
-	m_channels.send(SyncPacket::ConfigPacket::scrollingHeader(message));
+	m_channels.send(Packets::Interserver::Config::scrollingHeader(message));
 }
 
 auto WorldServer::sendLogin(const PacketBuilder &builder) -> void {
 	m_loginConnection->send(builder);
+}
+
 }

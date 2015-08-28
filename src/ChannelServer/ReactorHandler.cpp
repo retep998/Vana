@@ -36,6 +36,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <sstream>
 
+namespace Vana {
+
 auto ReactorHandler::hitReactor(Player *player, PacketReader &reader) -> void {
 	map_object_t id = Map::makeReactorId(reader.get<map_object_t>());
 
@@ -50,7 +52,7 @@ auto ReactorHandler::hitReactor(Player *player, PacketReader &reader) -> void {
 				if (reactorEvent.type == 100) {
 					return;
 				}
-				map->send(ReactorPacket::triggerReactor(reactor));
+				map->send(Packets::triggerReactor(reactor));
 				reactor->setState(reactorEvent.nextState, true);
 				return;
 			}
@@ -69,7 +71,7 @@ auto ReactorHandler::hitReactor(Player *player, PacketReader &reader) -> void {
 				reactor->setState(reactorEvent.nextState, false);
 				reactor->kill();
 				map->removeReactor(id);
-				map->send(ReactorPacket::destroyReactor(reactor));
+				map->send(Packets::destroyReactor(reactor));
 			}
 		}
 	}
@@ -84,7 +86,7 @@ auto ReactorHandler::touchReactor(Player *player, PacketReader &reader) -> void 
 
 	if (reactor != nullptr && reactor->isAlive()) {
 		int8_t newState = reactor->getState() + (isTouching ? 1 : -1);
-		map->send(ReactorPacket::triggerReactor(reactor));
+		map->send(Packets::triggerReactor(reactor));
 		reactor->setState(newState, true);
 	}
 }
@@ -135,4 +137,6 @@ auto ReactorHandler::checkDrop(Player *player, Drop *drop) -> void {
 auto ReactorHandler::checkLoot(Drop *drop) -> void {
 	Timer::Id id{TimerType::ReactionTimer, drop->getId()};
 	Timer::TimerThread::getInstance().getTimerContainer()->removeTimer(id);
+}
+
 }

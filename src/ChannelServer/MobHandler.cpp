@@ -38,6 +38,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer.hpp"
 #include <functional>
 
+namespace Vana {
+
 auto MobHandler::handleBomb(Player *player, PacketReader &reader) -> void {
 	map_object_t mobId = reader.get<map_object_t>();
 	auto mob = player->getMap()->getMob(mobId);
@@ -157,9 +159,9 @@ auto MobHandler::monsterControl(Player *player, PacketReader &reader) -> void {
 		mob->chooseRandomSkill(player, nextCastSkill, nextCastSkillLevel);
 	}
 
-	player->send(MobsPacket::moveMobResponse(mobId, moveId, nextMovementCouldBeSkill, mob->getMp(), nextCastSkill, nextCastSkillLevel));
+	player->send(Packets::Mobs::moveMobResponse(mobId, moveId, nextMovementCouldBeSkill, mob->getMp(), nextCastSkill, nextCastSkillLevel));
 	reader.reset(19);
-	player->sendMap(MobsPacket::moveMob(mobId, nextMovementCouldBeSkill, rawActivity, useSkillId, useSkillLevel, option, reader.getBuffer(), reader.getBufferLength()), true);
+	player->sendMap(Packets::Mobs::moveMob(mobId, nextMovementCouldBeSkill, rawActivity, useSkillId, useSkillLevel, option, reader.getBuffer(), reader.getBufferLength()), true);
 }
 
 auto MobHandler::handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill_id_t skillId, skill_level_t level, item_id_t weapon, int8_t hits, damage_t damage) -> int32_t {
@@ -368,4 +370,6 @@ auto MobHandler::handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill
 		mob->addStatus(playerId, statuses);
 	}
 	return statuses.size();
+}
+
 }

@@ -32,6 +32,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.hpp"
 #include "SkillConstants.hpp"
 
+namespace Vana {
+
 auto PetHandler::handleMovement(Player *player, PacketReader &reader) -> void {
 	pet_id_t petId = reader.get<pet_id_t>();
 	Pet *pet = player->getPets()->getPet(petId);
@@ -43,7 +45,7 @@ auto PetHandler::handleMovement(Player *player, PacketReader &reader) -> void {
 	reader.unk<uint32_t>(); // Not ticks at all, not sure what this is
 	MovementHandler::parseMovement(pet, reader);
 	reader.reset(10);
-	player->sendMap(PetsPacket::showMovement(player->getId(), pet, reader.getBuffer(), reader.getBufferLength() - 9));
+	player->sendMap(Packets::Pets::showMovement(player->getId(), pet, reader.getBuffer(), reader.getBufferLength() - 9));
 }
 
 auto PetHandler::handleChat(Player *player, PacketReader &reader) -> void {
@@ -55,7 +57,7 @@ auto PetHandler::handleChat(Player *player, PacketReader &reader) -> void {
 	reader.unk<uint8_t>();
 	int8_t act = reader.get<int8_t>();
 	string_t message = reader.get<string_t>();
-	player->sendMap(PetsPacket::showChat(player->getId(), player->getPets()->getPet(petId), message, act));
+	player->sendMap(Packets::Pets::showChat(player->getId(), player->getPets()->getPet(petId), message, act));
 }
 
 auto PetHandler::handleSummon(Player *player, PacketReader &reader) -> void {
@@ -94,7 +96,7 @@ auto PetHandler::handleSummon(Player *player, PacketReader &reader) -> void {
 		}
 
 		pet->desummon();
-		player->sendMap(PetsPacket::petSummoned(player->getId(), pet, false, index));
+		player->sendMap(Packets::Pets::petSummoned(player->getId(), pet, false, index));
 	}
 	else {
 		// Summoning a Pet
@@ -110,16 +112,16 @@ auto PetHandler::handleSummon(Player *player, PacketReader &reader) -> void {
 						move->summon(i);
 					}
 				}
-				player->sendMap(PetsPacket::petSummoned(player->getId(), pet));
+				player->sendMap(Packets::Pets::petSummoned(player->getId(), pet));
 			}
 			else if (Pet *kicked = player->getPets()->getSummoned(0)) {
 				Timer::Id id{TimerType::PetTimer, kicked->getIndex().get()};
 				player->getTimerContainer()->removeTimer(id);
 				kicked->desummon();
-				player->sendMap(PetsPacket::petSummoned(player->getId(), pet, true));
+				player->sendMap(Packets::Pets::petSummoned(player->getId(), pet, true));
 			}
 			else {
-				player->sendMap(PetsPacket::petSummoned(player->getId(), pet));
+				player->sendMap(Packets::Pets::petSummoned(player->getId(), pet));
 			}
 			player->getPets()->setSummoned(0, pet->getId());
 			pet->startTimer();
@@ -129,14 +131,14 @@ auto PetHandler::handleSummon(Player *player, PacketReader &reader) -> void {
 				if (!player->getPets()->getSummoned(i)) {
 					player->getPets()->setSummoned(i, pet->getId());
 					pet->summon(i);
-					player->sendMap(PetsPacket::petSummoned(player->getId(), pet));
+					player->sendMap(Packets::Pets::petSummoned(player->getId(), pet));
 					pet->startTimer();
 					break;
 				}
 			}
 		}
 	}
-	player->send(PetsPacket::blankUpdate());
+	player->send(Packets::Pets::blankUpdate());
 }
 
 auto PetHandler::handleFeed(Player *player, PacketReader &reader) -> void {
@@ -150,7 +152,7 @@ auto PetHandler::handleFeed(Player *player, PacketReader &reader) -> void {
 
 		bool success = (pet->getFullness() < Stats::MaxFullness);
 		if (success) {
-			player->send(PetsPacket::showAnimation(player->getId(), pet, 1));
+			player->send(Packets::Pets::showAnimation(player->getId(), pet, 1));
 
 			pet->modifyFullness(Stats::PetFeedFullness, false);
 			if (Randomizer::rand<int32_t>(99) < 60) {
@@ -160,7 +162,7 @@ auto PetHandler::handleFeed(Player *player, PacketReader &reader) -> void {
 		}
 	}
 	else {
-		player->send(InventoryPacket::blankUpdate());
+		player->send(Packets::Inventory::blankUpdate());
 	}
 }
 
@@ -183,7 +185,7 @@ auto PetHandler::handleCommand(Player *player, PacketReader &reader) -> void {
 		pet->addCloseness(action->increase);
 	}
 
-	player->send(PetsPacket::showAnimation(player->getId(), pet, act));
+	player->send(Packets::Pets::showAnimation(player->getId(), pet, act));
 }
 
 auto PetHandler::handleConsumePotion(Player *player, PacketReader &reader) -> void {
@@ -230,8 +232,10 @@ auto PetHandler::showPets(Player *player) -> void {
 	for (int8_t i = 0; i < Inventories::MaxPetCount; ++i) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
 			pet->setPos(player->getPos());
-			player->send(PetsPacket::petSummoned(player->getId(), pet));
+			player->send(Packets::Pets::petSummoned(player->getId(), pet));
 		}
 	}
-	player->send(PetsPacket::updateSummonedPets(player));
+	player->send(Packets::Pets::updateSummonedPets(player));
+}
+
 }

@@ -23,80 +23,80 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.hpp"
 #include "Types.hpp"
 
-class UnixTime;
+namespace Vana {
+	class UnixTime;
 
-class FileTime {
-public:
-	FileTime();
-	FileTime(int64_t t);
-	FileTime(const UnixTime &t);
-	FileTime(const FileTime &t);
+	class FileTime {
+	public:
+		FileTime();
+		FileTime(int64_t t);
+		FileTime(const UnixTime &t);
+		FileTime(const FileTime &t);
 
-	auto getValue() const -> int64_t;
-	auto operator =(const FileTime &right) -> FileTime & { m_value = right.m_value; return *this; }
-	auto operator +=(const FileTime &right) -> FileTime & { m_value += right.m_value; return *this; }
-	auto operator -=(const FileTime &right) -> FileTime & { m_value -= right.m_value; return *this; }
-	auto operator +(const FileTime &right) const -> FileTime { return FileTime{m_value + right.m_value}; }
-	auto operator -(const FileTime &right) const -> FileTime { return FileTime{m_value - right.m_value}; }
-private:
-	int64_t m_value;
+		auto getValue() const -> int64_t;
+		auto operator =(const FileTime &right) -> FileTime & { m_value = right.m_value; return *this; }
+		auto operator +=(const FileTime &right) -> FileTime & { m_value += right.m_value; return *this; }
+		auto operator -=(const FileTime &right) -> FileTime & { m_value -= right.m_value; return *this; }
+		auto operator +(const FileTime &right) const -> FileTime { return FileTime{m_value + right.m_value}; }
+		auto operator -(const FileTime &right) const -> FileTime { return FileTime{m_value - right.m_value}; }
+	private:
+		int64_t m_value;
 
-	static auto convert(time_t time) -> int64_t;
-	friend auto operator ==(const FileTime &a, const FileTime &b) -> bool;
-	friend auto operator !=(const FileTime &a, const FileTime &b) -> bool;
-	friend auto operator <(const FileTime &a, const FileTime &b) -> bool;
-	friend auto operator <=(const FileTime &a, const FileTime &b) -> bool;
-	friend auto operator >(const FileTime &a, const FileTime &b) -> bool;
-	friend auto operator >=(const FileTime &a, const FileTime &b) -> bool;
-};
+		static auto convert(time_t time) -> int64_t;
+		friend auto operator ==(const FileTime &a, const FileTime &b) -> bool;
+		friend auto operator !=(const FileTime &a, const FileTime &b) -> bool;
+		friend auto operator <(const FileTime &a, const FileTime &b) -> bool;
+		friend auto operator <=(const FileTime &a, const FileTime &b) -> bool;
+		friend auto operator >(const FileTime &a, const FileTime &b) -> bool;
+		friend auto operator >=(const FileTime &a, const FileTime &b) -> bool;
+	};
 
-inline
-auto operator ==(const FileTime &a, const FileTime &b) -> bool {
-	return a.m_value == b.m_value;
-}
-
-inline
-auto operator !=(const FileTime &a, const FileTime &b) -> bool {
-	return !(a == b);
-}
-
-inline
-auto operator >(const FileTime &a, const FileTime &b) -> bool {
-	return a.m_value > b.m_value;
-}
-
-inline
-auto operator >=(const FileTime &a, const FileTime &b) -> bool {
-	return a.m_value >= b.m_value;
-}
-
-inline
-auto operator <(const FileTime &a, const FileTime &b) -> bool {
-	return a.m_value < b.m_value;
-}
-
-inline
-auto operator <=(const FileTime &a, const FileTime &b) -> bool {
-	return a.m_value <= b.m_value;
-}
-
-template <>
-struct PacketSerialize<FileTime> {
-	auto read(PacketReader &reader) -> FileTime {
-		return FileTime{reader.get<int64_t>()};
+	inline
+	auto operator ==(const FileTime &a, const FileTime &b) -> bool {
+		return a.m_value == b.m_value;
 	}
-	auto write(PacketBuilder &builder, const FileTime &obj) -> void {
-		builder.add<int64_t>(obj.getValue());
+
+	inline
+	auto operator !=(const FileTime &a, const FileTime &b) -> bool {
+		return !(a == b);
 	}
-};
+
+	inline
+	auto operator >(const FileTime &a, const FileTime &b) -> bool {
+		return a.m_value > b.m_value;
+	}
+
+	inline
+	auto operator >=(const FileTime &a, const FileTime &b) -> bool {
+		return a.m_value >= b.m_value;
+	}
+
+	inline
+	auto operator <(const FileTime &a, const FileTime &b) -> bool {
+		return a.m_value < b.m_value;
+	}
+
+	inline
+	auto operator <=(const FileTime &a, const FileTime &b) -> bool {
+		return a.m_value <= b.m_value;
+	}
+
+	template <>
+	struct PacketSerialize<FileTime> {
+		auto read(PacketReader &reader) -> FileTime {
+			return FileTime{reader.get<int64_t>()};
+		}
+		auto write(PacketBuilder &builder, const FileTime &obj) -> void {
+			builder.add<int64_t>(obj.getValue());
+		}
+	};
+}
 
 namespace std {
-
-template <>
-struct hash<FileTime> {
-	auto operator()(const FileTime &v) const -> size_t {
-		return MiscUtilities::hash_combinator(static_cast<int64_t>(v.getValue()));
-	}
-};
-
+	template <>
+	struct hash<Vana::FileTime> {
+		auto operator()(const Vana::FileTime &v) const -> size_t {
+			return Vana::MiscUtilities::hash_combinator(static_cast<int64_t>(v.getValue()));
+		}
+	};
 }

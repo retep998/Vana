@@ -20,66 +20,68 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <limits>
 #include <type_traits>
 
-// Keep track and returns a number between min and max, restarts when number reaches max
-template <typename TIdentifier>
-class IdLooper {
-public:
-	explicit IdLooper(TIdentifier minimum = 1, TIdentifier maximum = std::numeric_limits<TIdentifier>::max()) :
-		m_current{minimum},
-		m_minimum{minimum},
-		m_maximum{maximum}
-	{
-		if (maximum <= minimum) {
-			throw std::domain_error{"maximum must be greater than minimum"};
+namespace Vana {
+	// Keep track and returns a number between min and max, restarts when number reaches max
+	template <typename TIdentifier>
+	class IdLooper {
+	public:
+		explicit IdLooper(TIdentifier minimum = 1, TIdentifier maximum = std::numeric_limits<TIdentifier>::max()) :
+			m_current{minimum},
+			m_minimum{minimum},
+			m_maximum{maximum}
+		{
+			if (maximum <= minimum) {
+				throw std::domain_error{"maximum must be greater than minimum"};
+			}
+			if (minimum == typeMin() && maximum == typeMax()) {
+				throw std::domain_error{"range is not representible in the unsigned version of the TIdentifier type"};
+			}
 		}
-		if (minimum == typeMin() && maximum == typeMax()) {
-			throw std::domain_error{"range is not representible in the unsigned version of the TIdentifier type"};
-		}
-	}
 
-	auto next() -> TIdentifier {
-		TIdentifier ret = m_current;
-		if (m_current == m_maximum) {
-			m_current = m_minimum;
+		auto next() -> TIdentifier {
+			TIdentifier ret = m_current;
+			if (m_current == m_maximum) {
+				m_current = m_minimum;
+			}
+			else {
+				m_current++;
+			}
+			return ret;
 		}
-		else {
-			m_current++;
-		}
-		return ret;
-	}
 
-	using unsigned_type = typename std::make_unsigned_t<TIdentifier>;
-	auto range() const -> unsigned_type { return range_helper<TIdentifier>(); }
-private:
-	static auto typeMax() -> TIdentifier { return std::numeric_limits<TIdentifier>::max(); }
-	static auto typeMin() -> TIdentifier { return std::numeric_limits<TIdentifier>::min(); }
-	static auto abs(TIdentifier val) -> typename unsigned_type {
-		if (val < 0) return static_cast<unsigned_type>(-val);
-		return static_cast<unsigned_type>(val);
-	}
-	template <typename THelper>
-	auto range_helper() const -> typename std::enable_if_t<std::is_unsigned<THelper>::value, unsigned_type> {
-		// Type is already unsigned, the only unrepresentible value is [0, maxInt]
-		// Which is taken care of by the constructor
-		return (m_maximum - m_minimum) + 1;
-	}
-	template <typename THelper>
-	auto range_helper() const -> typename std::enable_if_t<std::is_signed<THelper>::value, unsigned_type> {
-		if (((m_maximum <= 0) == (m_minimum < 0)) || m_maximum == typeMax() && m_minimum == 0) {
-			// In the case where both are <= 0 or both are > 0, this is simple logic because the range is fully representible as a positive signed type
-			// The only values that are not representible at this point are [0, maxInt] and [minInt, 0]
-			// Which are taken care of by the cast here
-			return static_cast<unsigned_type>(m_maximum - m_minimum) + 1;
+		using unsigned_type = typename std::make_unsigned_t<TIdentifier>;
+		auto range() const -> unsigned_type { return range_helper<TIdentifier>(); }
+	private:
+		static auto typeMax() -> TIdentifier { return std::numeric_limits<TIdentifier>::max(); }
+		static auto typeMin() -> TIdentifier { return std::numeric_limits<TIdentifier>::min(); }
+		static auto abs(TIdentifier val) -> typename unsigned_type {
+			if (val < 0) return static_cast<unsigned_type>(-val);
+			return static_cast<unsigned_type>(val);
 		}
-		// We have mixed signedness which could mean up to double the type's max value in representability
-		// For this reason, we use distance from 0 and cast it into the unsigned type to allow us to do the math
-		// So if we have [-2147, 2147], we end up with 2147 + 2147 + 1 or 4295 possible values
-		// If we have mixed signedness and max is > min (validated by constructor), only min can be negative and needs abs
-		// We already validated whether max and min had the same sign, so that case doesn't apply here
-		return static_cast<unsigned_type>(m_maximum) + abs(m_minimum) + 1;
-	}
+		template <typename THelper>
+		auto range_helper() const -> typename std::enable_if_t<std::is_unsigned<THelper>::value, unsigned_type> {
+			// Type is already unsigned, the only unrepresentible value is [0, maxInt]
+			// Which is taken care of by the constructor
+			return (m_maximum - m_minimum) + 1;
+		}
+		template <typename THelper>
+		auto range_helper() const -> typename std::enable_if_t<std::is_signed<THelper>::value, unsigned_type> {
+			if (((m_maximum <= 0) == (m_minimum < 0)) || m_maximum == typeMax() && m_minimum == 0) {
+				// In the case where both are <= 0 or both are > 0, this is simple logic because the range is fully representible as a positive signed type
+				// The only values that are not representible at this point are [0, maxInt] and [minInt, 0]
+				// Which are taken care of by the cast here
+				return static_cast<unsigned_type>(m_maximum - m_minimum) + 1;
+			}
+			// We have mixed signedness which could mean up to double the type's max value in representability
+			// For this reason, we use distance from 0 and cast it into the unsigned type to allow us to do the math
+			// So if we have [-2147, 2147], we end up with 2147 + 2147 + 1 or 4295 possible values
+			// If we have mixed signedness and max is > min (validated by constructor), only min can be negative and needs abs
+			// We already validated whether max and min had the same sign, so that case doesn't apply here
+			return static_cast<unsigned_type>(m_maximum) + abs(m_minimum) + 1;
+		}
 
-	TIdentifier m_current;
-	TIdentifier m_minimum;
-	TIdentifier m_maximum;
-};
+		TIdentifier m_current;
+		TIdentifier m_minimum;
+		TIdentifier m_maximum;
+	};
+}

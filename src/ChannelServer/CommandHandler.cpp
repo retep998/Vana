@@ -40,6 +40,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectPacket.hpp"
 #include <string>
 
+namespace Vana {
+
 namespace CommandOpcodes {
 	enum Opcodes : int8_t {
 		FindPlayer = 0x05,
@@ -91,19 +93,19 @@ auto CommandHandler::handleCommand(Player *player, PacketReader &reader) -> void
 			bool found = false;
 			if (receiver != nullptr) {
 				if (!receiver->isUsingGmHide() || player->isGm() || player->isAdmin()) {
-					player->send(PlayersPacket::findPlayer(receiver->getName(), receiver->getMapId()));
+					player->send(Packets::Players::findPlayer(receiver->getName(), receiver->getMapId()));
 					found = true;
 				}
 			}
 			else {
 				auto targetData = ChannelServer::getInstance().getPlayerDataProvider().getPlayerDataByName(name);
 				if (targetData != nullptr && targetData->channel.is_initialized()) {
-					player->send(PlayersPacket::findPlayer(targetData->name, targetData->channel.get(), 1, true));
+					player->send(Packets::Players::findPlayer(targetData->name, targetData->channel.get(), 1, true));
 					found = true;
 				}
 			}
 			if (!found) {
-				player->send(PlayersPacket::findPlayer(name, opt_int32_t{}, 0));
+				player->send(Packets::Players::findPlayer(name, opt_int32_t{}, 0));
 			}
 			break;
 		}
@@ -111,16 +113,16 @@ auto CommandHandler::handleCommand(Player *player, PacketReader &reader) -> void
 			chat_t chat = reader.get<chat_t>();
 			bool found = false;
 			if (receiver != nullptr) {
-				receiver->send(PlayersPacket::whisperPlayer(player->getName(), ChannelServer::getInstance().getChannelId(), chat));
-				player->send(PlayersPacket::findPlayer(receiver->getName(), opt_int32_t{}, 1));
+				receiver->send(Packets::Players::whisperPlayer(player->getName(), ChannelServer::getInstance().getChannelId(), chat));
+				player->send(Packets::Players::findPlayer(receiver->getName(), opt_int32_t{}, 1));
 				found = true;
 			}
 			else {
 				auto targetData = ChannelServer::getInstance().getPlayerDataProvider().getPlayerDataByName(name);
 				if (targetData != nullptr && targetData->channel.is_initialized()) {
-					player->send(PlayersPacket::findPlayer(targetData->name, opt_int32_t{}, 1));
+					player->send(Packets::Players::findPlayer(targetData->name, opt_int32_t{}, 1));
 					ChannelServer::getInstance().sendWorld(
-						Packets::prepend(PlayersPacket::whisperPlayer(player->getName(), ChannelServer::getInstance().getChannelId(), chat), [targetData](PacketBuilder &builder) {
+						Packets::prepend(Packets::Players::whisperPlayer(player->getName(), ChannelServer::getInstance().getChannelId(), chat), [targetData](PacketBuilder &builder) {
 							builder.add<header_t>(IMSG_TO_CHANNEL);
 							builder.add<channel_id_t>(targetData->channel.get());
 							builder.add<header_t>(IMSG_TO_PLAYER);
@@ -130,7 +132,7 @@ auto CommandHandler::handleCommand(Player *player, PacketReader &reader) -> void
 				}
 			}
 			if (!found) {
-				player->send(PlayersPacket::findPlayer(name, opt_int32_t{}, 0));
+				player->send(Packets::Players::findPlayer(name, opt_int32_t{}, 0));
 			}
 			break;
 		}
@@ -155,7 +157,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 					0);
 
 				if (result == Result::Successful) {
-					player->send(GmPacket::beginHide());
+					player->send(Packets::Gm::beginHide());
 					player->getMap()->gmHideChange(player);
 				}
 			}
@@ -176,7 +178,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 				receiver->setMap(mapId);
 			}
 			else {
-				player->send(GmPacket::invalidCharacterName());
+				player->send(Packets::Gm::invalidCharacterName());
 			}
 
 			break;
@@ -225,7 +227,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 				receiver->disconnect();
 			}
 			else {
-				player->send(GmPacket::invalidCharacterName());
+				player->send(Packets::Gm::invalidCharacterName());
 			}
 			break;
 		}
@@ -250,17 +252,17 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 					soci::use(reason, "reason"),
 					soci::use(reasonMessage, "reasonMessage");
 
-				player->send(GmPacket::block());
+				player->send(Packets::Gm::block());
 				chat_t banMessage = victim + " has been banned" + ChatHandlerFunctions::getBanString(reason);
-				ChannelServer::getInstance().getPlayerDataProvider().send(PlayerPacket::showMessage(banMessage, PlayerPacket::NoticeTypes::Notice));
+				ChannelServer::getInstance().getPlayerDataProvider().send(Packets::Player::showMessage(banMessage, Packets::Player::NoticeTypes::Notice));
 			}
 			else {
-				player->send(GmPacket::invalidCharacterName());
+				player->send(Packets::Gm::invalidCharacterName());
 			}
 			break;
 		}
 		case AdminOpcodes::ShowMessageMap:
-			player->send(PlayerPacket::showMessage(player->getMap()->getPlayerNames(), PlayerPacket::NoticeTypes::Notice));
+			player->send(Packets::Player::showMessage(player->getMap()->getPlayerNames(), Packets::Player::NoticeTypes::Notice));
 			break;
 		case AdminOpcodes::Snow:
 			player->getMap()->createWeather(player, true, reader.get<int32_t>(), Items::SnowySnow, "");
@@ -275,11 +277,11 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 					victim->getVariables()->setVariable(variableName, variableValue);
 				}
 				else {
-					player->send(GmPacket::setGetVarResult(playerName, variableName, victim->getVariables()->getVariable(variableName)));
+					player->send(Packets::Gm::setGetVarResult(playerName, variableName, victim->getVariables()->getVariable(variableName)));
 				}
 			}
 			else {
-				player->send(GmPacket::invalidCharacterName());
+				player->send(Packets::Gm::invalidCharacterName());
 			}
 			break;
 		}
@@ -287,13 +289,15 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 			chat_t victim = reader.get<chat_t>();
 			chat_t message = reader.get<chat_t>();
 			if (Player *receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(victim)) {
-				receiver->send(PlayerPacket::showMessage(message, PlayerPacket::NoticeTypes::Box));
-				player->send(GmPacket::warning(true));
+				receiver->send(Packets::Player::showMessage(message, Packets::Player::NoticeTypes::Box));
+				player->send(Packets::Gm::warning(true));
 			}
 			else {
-				player->send(GmPacket::warning(false));
+				player->send(Packets::Gm::warning(false));
 			}
 			break;
 		}
 	}
+}
+
 }

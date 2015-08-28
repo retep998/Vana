@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <sstream>
 
+namespace Vana {
+
 ConsoleLogger::ConsoleLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize) :
 	Logger{filename, format, timeFormat, serverType, bufferSize}
 {
@@ -39,4 +41,6 @@ auto ConsoleLogger::log(LogType type, const opt_string_t &identifier, const stri
 			std::cout << Logger::formatLog(getFormat(), type, this, identifier, message) << std::endl;
 			break;
 	}
+}
+
 }

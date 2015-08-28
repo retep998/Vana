@@ -18,7 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InventoryPacketHelper.hpp"
 #include "MapConstants.hpp"
 
-namespace InventoryPacketHelper {
+namespace Vana {
+namespace Packets {
+namespace Helpers {
 
 PACKET_IMPL(fillRockPacket, const vector_t<map_id_t> &vec, size_t maxSize) {
 	PacketBuilder builder;
@@ -34,4 +36,6 @@ PACKET_IMPL(fillRockPacket, const vector_t<map_id_t> &vec, size_t maxSize) {
 	return builder;
 }
 
+}
+}
 }

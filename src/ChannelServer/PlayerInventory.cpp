@@ -35,6 +35,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacketHelper.hpp"
 #include "TimeUtilities.hpp"
 
+namespace Vana {
+
 PlayerInventory::PlayerInventory(Player *player, const array_t<inventory_slot_count_t, Inventories::InventoryCount> &maxSlots, mesos_t mesos) :
 	m_maxSlots{maxSlots},
 	m_mesos{mesos},
@@ -153,7 +155,7 @@ auto PlayerInventory::addMaxSlots(inventory_t inventory, inventory_slot_count_t 
 	inv += (rows * 4);
 
 	inv = ext::constrain_range(inv, Inventories::MinSlotsPerInventory, Inventories::MaxSlotsPerInventory);
-	m_player->send(InventoryPacket::updateSlots(inventory + 1, inv));
+	m_player->send(Packets::Inventory::updateSlots(inventory + 1, inv));
 }
 
 auto PlayerInventory::setMesos(mesos_t mesos, bool sendPacket) -> void {
@@ -161,7 +163,7 @@ auto PlayerInventory::setMesos(mesos_t mesos, bool sendPacket) -> void {
 		mesos = 0;
 	}
 	m_mesos = mesos;
-	m_player->send(PlayerPacket::updateStat(Stats::Mesos, m_mesos, sendPacket));
+	m_player->send(Packets::Player::updateStat(Stats::Mesos, m_mesos, sendPacket));
 }
 
 auto PlayerInventory::modifyMesos(mesos_t mod, bool sendPacket) -> bool {
@@ -178,7 +180,7 @@ auto PlayerInventory::modifyMesos(mesos_t mod, bool sendPacket) -> bool {
 		}
 		m_mesos = mesoTest;
 	}
-	m_player->send(PlayerPacket::updateStat(Stats::Mesos, m_mesos, sendPacket));
+	m_player->send(Packets::Player::updateStat(Stats::Mesos, m_mesos, sendPacket));
 	return true;
 }
 
@@ -250,8 +252,8 @@ auto PlayerInventory::destroyEquippedItem(item_id_t itemId) -> void {
 	for (const auto &kvp : equips) {
 		if (kvp.first < 0 && kvp.second->getId() == itemId) {
 			vector_t<InventoryPacketOperation> ops;
-			ops.emplace_back(InventoryPacket::OperationTypes::ModifySlot, kvp.second, kvp.first);
-			m_player->send(InventoryPacket::inventoryOperation(true, ops));
+			ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, kvp.second, kvp.first);
+			m_player->send(Packets::Inventory::inventoryOperation(true, ops));
 
 			deleteItem(inv, kvp.first, false);
 			break;
@@ -378,38 +380,38 @@ auto PlayerInventory::doShadowStars() -> item_id_t {
 }
 
 auto PlayerInventory::addRockMap(map_id_t mapId, int8_t type) -> void {
-	const int8_t mode = InventoryPacket::RockModes::Add;
-	if (type == InventoryPacket::RockTypes::Regular) {
+	const int8_t mode = Packets::Inventory::RockModes::Add;
+	if (type == Packets::Inventory::RockTypes::Regular) {
 		if (m_rockLocations.size() < Inventories::TeleportRockMax) {
 			m_rockLocations.push_back(mapId);
 		}
-		m_player->send(InventoryPacket::sendRockUpdate(mode, type, m_rockLocations));
+		m_player->send(Packets::Inventory::sendRockUpdate(mode, type, m_rockLocations));
 	}
-	else if (type == InventoryPacket::RockTypes::Vip) {
+	else if (type == Packets::Inventory::RockTypes::Vip) {
 		if (m_vipLocations.size() < Inventories::VipRockMax) {
 			m_vipLocations.push_back(mapId);
 			// Want packet
 		}
-		m_player->send(InventoryPacket::sendRockUpdate(mode, type, m_vipLocations));
+		m_player->send(Packets::Inventory::sendRockUpdate(mode, type, m_vipLocations));
 	}
 }
 
 auto PlayerInventory::delRockMap(map_id_t mapId, int8_t type) -> void {
-	const int8_t mode = InventoryPacket::RockModes::Delete;
-	if (type == InventoryPacket::RockTypes::Regular) {
+	const int8_t mode = Packets::Inventory::RockModes::Delete;
+	if (type == Packets::Inventory::RockTypes::Regular) {
 		for (size_t k = 0; k < m_rockLocations.size(); ++k) {
 			if (m_rockLocations[k] == mapId) {
 				m_rockLocations.erase(std::begin(m_rockLocations) + k);
-				m_player->send(InventoryPacket::sendRockUpdate(mode, type, m_rockLocations));
+				m_player->send(Packets::Inventory::sendRockUpdate(mode, type, m_rockLocations));
 				break;
 			}
 		}
 	}
-	else if (type == InventoryPacket::RockTypes::Vip) {
+	else if (type == Packets::Inventory::RockTypes::Vip) {
 		for (size_t k = 0; k < m_vipLocations.size(); ++k) {
 			if (m_vipLocations[k] == mapId) {
 				m_vipLocations.erase(std::begin(m_vipLocations) + k);
-				m_player->send(InventoryPacket::sendRockUpdate(mode, type, m_vipLocations));
+				m_player->send(Packets::Inventory::sendRockUpdate(mode, type, m_vipLocations));
 				break;
 			}
 		}
@@ -440,8 +442,8 @@ auto PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) 
 				auto &equipInfo = ChannelServer::getInstance().getEquipDataProvider().getEquipInfo(itemId1);
 				if (equipInfo.tradeBlockOnEquip && !item1->hasTradeBlock()) {
 					item1->setTradeBlock(true);
-					ops.emplace_back(InventoryPacket::OperationTypes::RemoveItem, item1, slot1);
-					ops.emplace_back(InventoryPacket::OperationTypes::AddItem, item1, slot1);
+					ops.emplace_back(Packets::Inventory::OperationTypes::RemoveItem, item1, slot1);
+					ops.emplace_back(Packets::Inventory::OperationTypes::AddItem, item1, slot1);
 					return true;
 				}
 			}
@@ -499,15 +501,15 @@ auto PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) 
 
 				vector_t<InventoryPacketOperation> ops;
 				bindTradeBlockOnEquip(ops);
-				ops.emplace_back(InventoryPacket::OperationTypes::ModifySlot, item1, slot1, slot2);
-				ops.emplace_back(InventoryPacket::OperationTypes::ModifySlot, remove, swapSlot, slot1);
-				m_player->send(InventoryPacket::inventoryOperation(true, ops));
-				m_player->sendMap(InventoryPacket::updatePlayer(m_player));
+				ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, item1, slot1, slot2);
+				ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, remove, swapSlot, slot1);
+				m_player->send(Packets::Inventory::inventoryOperation(true, ops));
+				m_player->sendMap(Packets::Inventory::updatePlayer(m_player));
 				return;
 			}
 			else {
 				if (getOpenSlotsNum(inventory) == 0) {
-					m_player->send(InventoryPacket::blankUpdate());
+					m_player->send(Packets::Inventory::blankUpdate());
 					return;
 				}
 				inventory_slot_t freeSlot = 0;
@@ -523,8 +525,8 @@ auto PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) 
 				setItem(inventory, oldSlot, nullptr);
 
 				vector_t<InventoryPacketOperation> ops;
-				ops.emplace_back(InventoryPacket::OperationTypes::ModifySlot, item1, oldSlot, freeSlot);
-				m_player->send(InventoryPacket::inventoryOperation(true, ops));
+				ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, item1, oldSlot, freeSlot);
+				m_player->send(Packets::Inventory::inventoryOperation(true, ops));
 			}
 		}
 
@@ -535,8 +537,8 @@ auto PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) 
 
 		vector_t<InventoryPacketOperation> ops;
 		bindTradeBlockOnEquip(ops);
-		ops.emplace_back(InventoryPacket::OperationTypes::ModifySlot, item1, slot1, slot2);
-		m_player->send(InventoryPacket::inventoryOperation(true, ops));
+		ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, item1, slot1, slot2);
+		m_player->send(Packets::Inventory::inventoryOperation(true, ops));
 	}
 	else {
 		// The only interesting things that can happen here are stack modifications and slot swapping
@@ -560,18 +562,18 @@ auto PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) 
 				deleteItem(inventory, slot1, false);
 
 				vector_t<InventoryPacketOperation> ops;
-				ops.emplace_back(InventoryPacket::OperationTypes::ModifyQuantity, item2, slot2);
-				ops.emplace_back(InventoryPacket::OperationTypes::ModifySlot, item1, slot1);
-				m_player->send(InventoryPacket::inventoryOperation(true, ops));
+				ops.emplace_back(Packets::Inventory::OperationTypes::ModifyQuantity, item2, slot2);
+				ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, item1, slot1);
+				m_player->send(Packets::Inventory::inventoryOperation(true, ops));
 			}
 			else {
 				item1->decAmount(maxSlot - item2->getAmount());
 				item2->setAmount(maxSlot);
 
 				vector_t<InventoryPacketOperation> ops;
-				ops.emplace_back(InventoryPacket::OperationTypes::ModifyQuantity, item1, slot1);
-				ops.emplace_back(InventoryPacket::OperationTypes::ModifyQuantity, item2, slot2);
-				m_player->send(InventoryPacket::inventoryOperation(true, ops));
+				ops.emplace_back(Packets::Inventory::OperationTypes::ModifyQuantity, item1, slot1);
+				ops.emplace_back(Packets::Inventory::OperationTypes::ModifyQuantity, item2, slot2);
+				m_player->send(Packets::Inventory::inventoryOperation(true, ops));
 			}
 		}
 		else {
@@ -586,8 +588,8 @@ auto PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) 
 			}
 
 			vector_t<InventoryPacketOperation> ops;
-			ops.emplace_back(InventoryPacket::OperationTypes::ModifySlot, item1, slot1, slot2);
-			m_player->send(InventoryPacket::inventoryOperation(true, ops));
+			ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, item1, slot1, slot2);
+			m_player->send(Packets::Inventory::inventoryOperation(true, ops));
 		}
 	}
 }
@@ -621,19 +623,19 @@ auto PlayerInventory::connectData(PacketBuilder &packet) -> void {
 	const auto &equips = m_items[Inventories::EquipInventory - 1];
 	for (const auto &kvp : equips) {
 		if (kvp.first < 0 && kvp.first > -100) {
-			packet.addBuffer(PlayerPacketHelper::addItemInfo(kvp.first, kvp.second));
+			packet.addBuffer(Packets::Helpers::addItemInfo(kvp.first, kvp.second));
 		}
 	}
 	packet.add<int8_t>(0);
 	for (const auto &kvp : equips) {
 		if (kvp.first < -100) {
-			packet.addBuffer(PlayerPacketHelper::addItemInfo(kvp.first, kvp.second));
+			packet.addBuffer(Packets::Helpers::addItemInfo(kvp.first, kvp.second));
 		}
 	}
 	packet.add<int8_t>(0);
 	for (const auto &kvp : equips) {
 		if (kvp.first > 0) {
-			packet.addBuffer(PlayerPacketHelper::addItemInfo(kvp.first, kvp.second));
+			packet.addBuffer(Packets::Helpers::addItemInfo(kvp.first, kvp.second));
 		}
 	}
 	packet.add<int8_t>(0);
@@ -646,12 +648,12 @@ auto PlayerInventory::connectData(PacketBuilder &packet) -> void {
 				continue;
 			}
 			if (item->getPetId() == 0) {
-				packet.addBuffer(PlayerPacketHelper::addItemInfo(s, item));
+				packet.addBuffer(Packets::Helpers::addItemInfo(s, item));
 			}
 			else {
 				Pet *pet = m_player->getPets()->getPet(item->getPetId());
 				packet.add<int8_t>(static_cast<int8_t>(s));
-				packet.addBuffer(PetsPacket::addInfo(pet, item));
+				packet.addBuffer(Packets::Pets::addInfo(pet, item));
 			}
 		}
 		packet.add<int8_t>(0);
@@ -659,8 +661,8 @@ auto PlayerInventory::connectData(PacketBuilder &packet) -> void {
 }
 
 auto PlayerInventory::rockPacket(PacketBuilder &packet) -> void {
-	packet.addBuffer(InventoryPacketHelper::fillRockPacket(m_rockLocations, Inventories::TeleportRockMax));
-	packet.addBuffer(InventoryPacketHelper::fillRockPacket(m_vipLocations, Inventories::VipRockMax));
+	packet.addBuffer(Packets::Helpers::fillRockPacket(m_rockLocations, Inventories::TeleportRockMax));
+	packet.addBuffer(Packets::Helpers::fillRockPacket(m_vipLocations, Inventories::VipRockMax));
 }
 
 auto PlayerInventory::wishListPacket(PacketBuilder &packet) -> void {
@@ -686,6 +688,8 @@ auto PlayerInventory::checkExpiredItems() -> void {
 	}
 
 	if (expiredItemIds.size() > 0) {
-		m_player->send(InventoryPacket::sendItemExpired(expiredItemIds));
+		m_player->send(Packets::Inventory::sendItemExpired(expiredItemIds));
 	}
+}
+
 }

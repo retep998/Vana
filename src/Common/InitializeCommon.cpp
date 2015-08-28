@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
+namespace Vana {
+
 auto Initializing::checkMcdbVersion(AbstractServer *server) -> Result {
 	soci::row row;
 
@@ -152,4 +154,6 @@ auto Initializing::setUsersOffline(AbstractServer *server, int32_t onlineId) -> 
 
 	auto loadingTime = TimeUtilities::getDistance<milliseconds_t>(TimeUtilities::getNow(), startTime);
 	std::cout << "Reset all accounts and players in " << std::setprecision(3) << loadingTime / 1000.f << " seconds!" << std::endl << std::endl;
+}
+
 }

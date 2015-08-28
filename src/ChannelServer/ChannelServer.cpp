@@ -31,6 +31,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnection.hpp"
 #include "WorldServerConnectPacket.hpp"
 
+namespace Vana {
+
 ChannelServer::ChannelServer() :
 	AbstractServer{ServerType::Channel},
 	m_worldIp{0}
@@ -262,7 +264,7 @@ auto ChannelServer::sendWorld(const PacketBuilder &builder) -> void {
 auto ChannelServer::setScrollingHeader(const string_t &message) -> void {
 	if (m_config.scrollingHeader != message) {
 		m_config.scrollingHeader = message;
-		m_playerDataProvider.send(ServerPacket::showScrollingHeader(message));
+		m_playerDataProvider.send(Packets::showScrollingHeader(message));
 	}
 }
 
@@ -274,7 +276,7 @@ auto ChannelServer::modifyRate(int32_t rateType, int32_t newValue) -> void {
 	if (rateType & RatesConfig::Types::dropMeso) currentRates.dropMeso = newValue;
 	if (rateType & RatesConfig::Types::globalDropRate) currentRates.globalDropRate = newValue;
 	if (rateType & RatesConfig::Types::globalDropMeso) currentRates.globalDropMeso = newValue;
-	sendWorld(SyncPacket::ConfigPacket::modifyRates(currentRates));
+	sendWorld(Packets::Interserver::Config::modifyRates(currentRates));
 }
 
 auto ChannelServer::setRates(const RatesConfig &rates) -> void {
@@ -287,4 +289,6 @@ auto ChannelServer::setConfig(const WorldConfig &config) -> void {
 		Map::setMapUnloadTime(config.mapUnloadTime);
 	}
 	m_config = config;
+}
+
 }

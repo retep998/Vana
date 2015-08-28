@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.hpp"
 #include "ReactorPacket.hpp"
 
+namespace Vana {
+
 Reactor::Reactor(map_id_t mapId, reactor_id_t reactorId, const Point &pos, bool facesLeft) :
 	m_reactorId{reactorId},
 	m_mapId{mapId},
@@ -33,14 +35,14 @@ Reactor::Reactor(map_id_t mapId, reactor_id_t reactorId, const Point &pos, bool 
 auto Reactor::setState(int8_t state, bool sendPacket) -> void {
 	m_state = state;
 	if (sendPacket) {
-		getMap()->send(ReactorPacket::triggerReactor(this));
+		getMap()->send(Packets::triggerReactor(this));
 	}
 }
 
 auto Reactor::restore() -> void {
 	revive();
 	setState(0, false);
-	getMap()->send(ReactorPacket::spawnReactor(this));
+	getMap()->send(Packets::spawnReactor(this));
 }
 
 auto Reactor::drop(Player *player) -> void {
@@ -49,4 +51,6 @@ auto Reactor::drop(Player *player) -> void {
 
 auto Reactor::getMap() const -> Map * {
 	return Maps::getMap(m_mapId);
+}
+
 }

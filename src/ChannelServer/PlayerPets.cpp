@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.hpp"
 #include "Player.hpp"
 
+namespace Vana {
+
 PlayerPets::PlayerPets(Player *player) :
 	m_player{player}
 {
@@ -119,4 +121,6 @@ auto PlayerPets::connectData(PacketBuilder &packet) -> void {
 			packet.add<int64_t>(0);
 		}
 	}
+}
+
 }

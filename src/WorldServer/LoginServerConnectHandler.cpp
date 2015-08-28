@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer.hpp"
 #include <iostream>
 
+namespace Vana {
+
 auto LoginServerConnectHandler::connect(LoginServerConnection *connection, PacketReader &reader) -> void {
 	world_id_t worldId = reader.get<world_id_t>();
 	if (worldId != -1) {
@@ -37,4 +39,6 @@ auto LoginServerConnectHandler::connect(LoginServerConnection *connection, Packe
 		WorldServer::getInstance().log(LogType::CriticalError, "No world to handle");
 		ExitCodes::exit(ExitCodes::ServerConnectionError);
 	}
+}
+
 }

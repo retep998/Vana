@@ -19,25 +19,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.hpp"
 
-enum class TimerType : uint32_t {
-	BuffTimer,
-	EnergyChargeTimer,
-	CoolTimer,
-	InstanceTimer,
-	MapleTvTimer,
-	MapTimer,
-	MistTimer,
-	DoorTimer,
-	MobHealTimer,
-	MobRemoveTimer,
-	MobStatusTimer,
-	PetTimer,
-	PickpocketTimer,
-	PingTimer,
-	RankTimer,
-	ReactionTimer,
-	SkillActTimer,
-	SpongeCleanupTimer,
-	TradeTimer,
-	WeatherTimer
-};
+namespace Vana {
+	enum class TimerType : uint32_t {
+		BuffTimer,
+		EnergyChargeTimer,
+		CoolTimer,
+		InstanceTimer,
+		MapleTvTimer,
+		MapTimer,
+		MistTimer,
+		DoorTimer,
+		MobHealTimer,
+		MobRemoveTimer,
+		MobStatusTimer,
+		PetTimer,
+		PickpocketTimer,
+		PingTimer,
+		RankTimer,
+		ReactionTimer,
+		SkillActTimer,
+		SpongeCleanupTimer,
+		TradeTimer,
+		WeatherTimer
+	};
+}

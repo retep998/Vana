@@ -21,11 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SplitPacketBuilder.hpp"
 #include "Types.hpp"
 
-class Player;
+namespace Vana {
+	class Player;
 
-namespace LevelsPacket {
-	PACKET(showExp, experience_t exp, bool white, bool inChat);
-	SPLIT_PACKET(levelUp, player_id_t playerId);
-	SPLIT_PACKET(jobChange, player_id_t playerId);
-	PACKET(statOk);
+	namespace Packets {
+		PACKET(showExp, experience_t exp, bool white, bool inChat);
+		SPLIT_PACKET(levelUp, player_id_t playerId);
+		SPLIT_PACKET(jobChange, player_id_t playerId);
+		PACKET(statOk);
+	}
 }

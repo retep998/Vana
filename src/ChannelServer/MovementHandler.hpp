@@ -17,10 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-class MovableLife;
-class PacketReader;
-struct Point;
+namespace Vana {
+	class MovableLife;
+	class PacketReader;
+	struct Point;
 
-namespace MovementHandler {
-	auto parseMovement(MovableLife *life, PacketReader &reader) -> Point;
+	namespace MovementHandler {
+		auto parseMovement(MovableLife *life, PacketReader &reader) -> Point;
+	}
 }

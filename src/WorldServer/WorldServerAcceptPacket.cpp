@@ -29,7 +29,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <map>
 
-namespace WorldServerAcceptPacket {
+namespace Vana {
+namespace Packets {
+namespace Interserver {
 
 PACKET_IMPL(connect, channel_id_t channel, port_t port) {
 	PacketBuilder builder;
@@ -49,4 +51,6 @@ PACKET_IMPL(rehashConfig, const WorldConfig &config) {
 	return builder;
 }
 
+}
+}
 }

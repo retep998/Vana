@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
+namespace Vana {
+
 auto BeautyDataProvider::loadData() -> void {
 	loadSkins();
 
@@ -125,4 +127,6 @@ auto BeautyDataProvider::isValidSkin(skin_id_t skin) const -> bool {
 
 auto BeautyDataProvider::getGender(gender_id_t genderId) const -> const ValidLook & {
 	return genderId == Gender::Female ? m_female : m_male;
+}
+
 }

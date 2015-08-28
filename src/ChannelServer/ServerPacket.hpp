@@ -21,8 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <string>
 
-class Player;
+namespace Vana {
+	class Player;
 
-namespace ServerPacket {
-	PACKET(showScrollingHeader, const string_t &msg);
+	namespace Packets {
+		PACKET(showScrollingHeader, const string_t &msg);
+	}
 }

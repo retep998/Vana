@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <thread>
 
+namespace Vana {
 namespace ExitCodes {
 
 auto exit(exit_code_t code) -> void {
@@ -36,4 +37,5 @@ auto exit(exit_code_t code) -> void {
 	raise(SIGINT);
 }
 
+}
 }

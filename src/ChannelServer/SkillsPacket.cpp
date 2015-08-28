@@ -24,7 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-namespace SkillsPacket {
+namespace Vana {
+namespace Packets {
+namespace Skills {
 
 PACKET_IMPL(addSkill, skill_id_t skillId, const PlayerSkillInfo &skillInfo) {
 	PacketBuilder builder;
@@ -48,9 +50,9 @@ SPLIT_PACKET_IMPL(showSkill, player_id_t playerId, skill_id_t skillId, skill_lev
 		.add<skill_level_t>(level);
 
 	switch (skillId) {
-		case Skills::Hero::MonsterMagnet:
-		case Skills::Paladin::MonsterMagnet:
-		case Skills::DarkKnight::MonsterMagnet:
+		case Vana::Skills::Hero::MonsterMagnet:
+		case Vana::Skills::Paladin::MonsterMagnet:
+		case Vana::Skills::DarkKnight::MonsterMagnet:
 			packet.add<uint8_t>(direction);
 			break;
 	}
@@ -88,16 +90,16 @@ SPLIT_PACKET_IMPL(showSkillEffect, player_id_t playerId, skill_id_t skillId) {
 	SplitPacketBuilder builder;
 	PacketBuilder packet;
 	switch (skillId) {
-		case Skills::FpWizard::MpEater:
-		case Skills::IlWizard::MpEater:
-		case Skills::Cleric::MpEater:
+		case Vana::Skills::FpWizard::MpEater:
+		case Vana::Skills::IlWizard::MpEater:
+		case Vana::Skills::Cleric::MpEater:
 			packet
 				.add<int8_t>(1)
 				.add<skill_id_t>(skillId)
 				.add<int8_t>(1);
 			break;
-		case Skills::ChiefBandit::MesoGuard:
-		case Skills::DragonKnight::DragonBlood:
+		case Vana::Skills::ChiefBandit::MesoGuard:
+		case Vana::Skills::DragonKnight::DragonBlood:
 			packet
 				.add<int8_t>(5)
 				.add<skill_id_t>(skillId);
@@ -161,7 +163,7 @@ SPLIT_PACKET_IMPL(showBerserk, player_id_t playerId, skill_level_t level, bool o
 	PacketBuilder packet;
 	packet
 		.add<int8_t>(1)
-		.add<skill_id_t>(Skills::DarkKnight::Berserk)
+		.add<skill_id_t>(Vana::Skills::DarkKnight::Berserk)
 		.add<skill_level_t>(level)
 		.add<bool>(on);
 
@@ -176,4 +178,6 @@ SPLIT_PACKET_IMPL(showBerserk, player_id_t playerId, skill_level_t level, bool o
 	return builder;
 }
 
+}
+}
 }

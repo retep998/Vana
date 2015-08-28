@@ -21,71 +21,73 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <atomic>
 #include <thread>
 
-class ThreadPool {
-public:
-	static auto lease(function_t<void()> work, function_t<void()> preWaitHook) -> ref_ptr_t<thread_t> {
-		return s_pool.lease(work, preWaitHook);
-	}
-
-	static auto lease(function_t<void(owned_lock_t<recursive_mutex_t> &)> work, function_t<void()> preWaitHook, recursive_mutex_t &mutex) -> ref_ptr_t<thread_t> {
-		return s_pool.lease(work, preWaitHook, mutex);
-	}
-
-	static auto wait() -> void {
-		s_pool.wait();
-	}
-private:
-	struct ThreadPair {
-		ref_ptr_t<thread_t> thread;
-		function_t<void()> preWaitHook;
-
-		ThreadPair(ref_ptr_t<thread_t> thread, function_t<void()> preWaitHook) :
-			thread{thread},
-			preWaitHook{preWaitHook}
-		{
-		}
-	};
-
-	class _impl {
+namespace Vana {
+	class ThreadPool {
 	public:
-		_impl() {
-			m_runThread = true;
+		static auto lease(function_t<void()> work, function_t<void()> preWaitHook) -> ref_ptr_t<thread_t> {
+			return s_pool.lease(work, preWaitHook);
 		}
 
-		auto lease(function_t<void()> work, function_t<void()> preWaitHook) -> ref_ptr_t<thread_t> {
-			auto thread = make_ref_ptr<thread_t>([this, work]() -> void {
-				while (m_runThread.load(std::memory_order_relaxed)) {
-					work();
-				}
-			});
-			auto pair = make_owned_ptr<ThreadPair>(thread, preWaitHook);
-			m_threads.emplace_back(std::move(pair));
-			return thread;
+		static auto lease(function_t<void(owned_lock_t<recursive_mutex_t> &)> work, function_t<void()> preWaitHook, recursive_mutex_t &mutex) -> ref_ptr_t<thread_t> {
+			return s_pool.lease(work, preWaitHook, mutex);
 		}
 
-		auto lease(function_t<void(owned_lock_t<recursive_mutex_t> &)> work, function_t<void()> preWaitHook, recursive_mutex_t &mutex) -> ref_ptr_t<thread_t> {
-			auto thread = make_ref_ptr<thread_t>([this, work, &mutex]() -> void {
-				owned_lock_t<recursive_mutex_t> l{mutex};
-				while (m_runThread.load(std::memory_order_relaxed)) {
-					work(l);
-				}
-			});
-			auto pair = make_owned_ptr<ThreadPair>(thread, preWaitHook);
-			m_threads.emplace_back(std::move(pair));
-			return thread;
-		}
-
-		auto wait() -> void {
-			m_runThread.store(false, std::memory_order_relaxed);
-			for (auto &pair : m_threads) {
-				pair->preWaitHook();
-				pair->thread->join();
-			}
+		static auto wait() -> void {
+			s_pool.wait();
 		}
 	private:
-		std::atomic_bool m_runThread;
-		vector_t<owned_ptr_t<ThreadPair>> m_threads;
-	};
+		struct ThreadPair {
+			ref_ptr_t<thread_t> thread;
+			function_t<void()> preWaitHook;
 
-	static _impl s_pool;
-};
+			ThreadPair(ref_ptr_t<thread_t> thread, function_t<void()> preWaitHook) :
+				thread{thread},
+				preWaitHook{preWaitHook}
+			{
+			}
+		};
+
+		class _impl {
+		public:
+			_impl() {
+				m_runThread = true;
+			}
+
+			auto lease(function_t<void()> work, function_t<void()> preWaitHook) -> ref_ptr_t<thread_t> {
+				auto thread = make_ref_ptr<thread_t>([this, work]() -> void {
+					while (m_runThread.load(std::memory_order_relaxed)) {
+						work();
+					}
+				});
+				auto pair = make_owned_ptr<ThreadPair>(thread, preWaitHook);
+				m_threads.emplace_back(std::move(pair));
+				return thread;
+			}
+
+			auto lease(function_t<void(owned_lock_t<recursive_mutex_t> &)> work, function_t<void()> preWaitHook, recursive_mutex_t &mutex) -> ref_ptr_t<thread_t> {
+				auto thread = make_ref_ptr<thread_t>([this, work, &mutex]() -> void {
+					owned_lock_t<recursive_mutex_t> l{mutex};
+					while (m_runThread.load(std::memory_order_relaxed)) {
+						work(l);
+					}
+				});
+				auto pair = make_owned_ptr<ThreadPair>(thread, preWaitHook);
+				m_threads.emplace_back(std::move(pair));
+				return thread;
+			}
+
+			auto wait() -> void {
+				m_runThread.store(false, std::memory_order_relaxed);
+				for (auto &pair : m_threads) {
+					pair->preWaitHook();
+					pair->thread->join();
+				}
+			}
+		private:
+			std::atomic_bool m_runThread;
+			vector_t<owned_ptr_t<ThreadPair>> m_threads;
+		};
+
+		static _impl s_pool;
+	};
+}

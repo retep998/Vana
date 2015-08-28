@@ -38,6 +38,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.hpp"
 #include <algorithm>
 
+namespace Vana {
+
 auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t droppingLevel, int32_t droppingId, const Point &origin, bool explosive, bool ffa, int32_t taunt, bool isSteal) -> void {
 	auto &channel = ChannelServer::getInstance();
 	auto &globalDrops = channel.getDropDataProvider().getGlobalDrops();
@@ -221,7 +223,7 @@ auto DropHandler::lootItem(Player *player, PacketReader &reader, pet_id_t petId)
 	Drop *drop = player->getMap()->getDrop(dropId);
 
 	if (drop == nullptr) {
-		player->send(DropsPacket::dontTake());
+		player->send(Packets::Drops::dontTake());
 		return;
 	}
 	else if (drop->getPos() - player->getPos() > 300) {
@@ -229,15 +231,15 @@ auto DropHandler::lootItem(Player *player, PacketReader &reader, pet_id_t petId)
 		return;
 	}
 	else if (player->isUsingGmHide()) {
-		player->send(DropsPacket::dropNotAvailableForPickup());
-		player->send(DropsPacket::dontTake());
+		player->send(Packets::Drops::dropNotAvailableForPickup());
+		player->send(Packets::Drops::dontTake());
 		return;
 	}
 
 	if (drop->isQuest()) {
 		if (player->getQuests()->itemDropAllowed(drop->getObjectId(), drop->getQuest()) == AllowQuestItemResult::Disallow) {
-			player->send(DropsPacket::dropNotAvailableForPickup());
-			player->send(DropsPacket::dontTake());
+			player->send(Packets::Drops::dropNotAvailableForPickup());
+			player->send(Packets::Drops::dontTake());
 			return;
 		}
 	}
@@ -246,10 +248,10 @@ auto DropHandler::lootItem(Player *player, PacketReader &reader, pet_id_t petId)
 		mesos_t rawMesos = drop->getObjectId();
 		auto giveMesos = [](Player *p, mesos_t mesos) -> Result {
 			if (p->getInventory()->modifyMesos(mesos, true)) {
-				p->send(DropsPacket::pickupDrop(mesos, 0, true));
+				p->send(Packets::Drops::pickupDrop(mesos, 0, true));
 			}
 			else {
-				p->send(DropsPacket::dontTake());
+				p->send(Packets::Drops::dontTake());
 				return Result::Failure;
 			}
 			return Result::Successful;
@@ -290,9 +292,9 @@ auto DropHandler::lootItem(Player *player, PacketReader &reader, pet_id_t petId)
 		auto cons = ChannelServer::getInstance().getItemDataProvider().getConsumeInfo(dropItem.getId());
 		if (cons != nullptr && cons->autoConsume) {
 			if (GameLogicUtilities::isMonsterCard(drop->getObjectId())) {
-				player->send(DropsPacket::pickupDropSpecial(drop->getObjectId()));
+				player->send(Packets::Drops::pickupDropSpecial(drop->getObjectId()));
 				Inventory::useItem(player, dropItem.getId());
-				player->send(DropsPacket::dontTake());
+				player->send(Packets::Drops::dontTake());
 				drop->takeDrop(player, petId);
 				return;
 			}
@@ -307,18 +309,20 @@ auto DropHandler::lootItem(Player *player, PacketReader &reader, pet_id_t petId)
 			slot_qty_t amount = Inventory::addItem(player, item, true);
 			if (amount > 0) {
 				if ((dropAmount - amount) > 0) {
-					player->send(DropsPacket::pickupDrop(drop->getObjectId(), dropAmount - amount));
+					player->send(Packets::Drops::pickupDrop(drop->getObjectId(), dropAmount - amount));
 					drop->setItemAmount(amount);
 				}
-				player->send(DropsPacket::cantGetAnymoreItems());
-				player->send(DropsPacket::dontTake());
+				player->send(Packets::Drops::cantGetAnymoreItems());
+				player->send(Packets::Drops::dontTake());
 				return;
 			}
 		}
 		// TODO FIXME Bug here? drop->getObjectId is going to be either a meso count or item identifier
 		// pickupDrop packet calls for map_object_t and it's unclear which is correct and which isn't
-		player->send(DropsPacket::pickupDrop(drop->getObjectId(), drop->getAmount()));
+		player->send(Packets::Drops::pickupDrop(drop->getObjectId(), drop->getAmount()));
 	}
 	ReactorHandler::checkLoot(drop);
 	drop->takeDrop(player, petId);
+}
+
 }

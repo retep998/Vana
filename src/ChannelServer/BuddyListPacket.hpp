@@ -21,39 +21,43 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <string>
 
-class Player;
-struct BuddyInvite;
+namespace Vana {
+	class Player;
+	struct BuddyInvite;
 
-namespace BuddyListPacket {
-	namespace Errors {
-		enum Errors : int8_t {
-			None = 0x00,
-			BuddyListFull = 0x0B,
-			TargetListFull = 0x0C,
-			AlreadyInList = 0x0D,
-			NoGms = 0x0E,
-			UserDoesNotExist = 0x0F
-		};
-	}
-	namespace ActionTypes {
-		enum Types : int8_t {
-			First = 0x07,
-			Add = 0x0A,
-			Remove = 0x12,
-			Logon = 0x14
-		};
-	}
-	namespace OppositeStatus {
-		enum Statuses : int8_t {
-			Registered = 0x00,
-			Requested = 0x01,
-			Unregistered = 0x02
-		};
-	}
+	namespace Packets {
+		namespace Buddy {
+			namespace Errors {
+				enum Errors : int8_t {
+					None = 0x00,
+					BuddyListFull = 0x0B,
+					TargetListFull = 0x0C,
+					AlreadyInList = 0x0D,
+					NoGms = 0x0E,
+					UserDoesNotExist = 0x0F
+				};
+			}
+			namespace ActionTypes {
+				enum Types : int8_t {
+					First = 0x07,
+					Add = 0x0A,
+					Remove = 0x12,
+					Logon = 0x14
+				};
+			}
+			namespace OppositeStatus {
+				enum Statuses : int8_t {
+					Registered = 0x00,
+					Requested = 0x01,
+					Unregistered = 0x02
+				};
+			}
 
-	PACKET(error, uint8_t error);
-	PACKET(update, Player *player, uint8_t type);
-	PACKET(showSize, Player *player);
-	PACKET(invitation, const BuddyInvite &invite);
-	PACKET(online, player_id_t charId, channel_id_t channel, bool cashShop);
+			PACKET(error, uint8_t error);
+			PACKET(update, Player *player, uint8_t type);
+			PACKET(showSize, Player *player);
+			PACKET(invitation, const BuddyInvite &invite);
+			PACKET(online, player_id_t charId, channel_id_t channel, bool cashShop);
+		}
+	}
 }

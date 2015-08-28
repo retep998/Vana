@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StoragePacket.hpp"
 #include <algorithm>
 
+namespace Vana {
+
 PlayerStorage::PlayerStorage(Player *player) :
 	m_player{player}
 {
@@ -71,7 +73,7 @@ auto PlayerStorage::getNumItems(inventory_t inv) -> storage_slot_t {
 
 auto PlayerStorage::changeMesos(mesos_t mesos) -> void {
 	m_mesos -= mesos;
-	m_player->send(StoragePacket::changeMesos(getSlots(), m_mesos));
+	m_player->send(Packets::Storage::changeMesos(getSlots(), m_mesos));
 }
 
 auto PlayerStorage::load() -> void {
@@ -164,4 +166,6 @@ auto PlayerStorage::save() -> void {
 		}
 		Item::databaseInsert(db, v);
 	}
+}
+
 }

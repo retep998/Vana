@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <string>
 
+namespace Vana {
+
 auto DropDataProvider::loadData() -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Drops... ";
 
@@ -124,4 +126,6 @@ auto DropDataProvider::getDrops(int32_t objectId) const -> const vector_t<DropIn
 
 auto DropDataProvider::getGlobalDrops() const -> const vector_t<GlobalDrop> & {
 	return m_globalDrops;
+}
+
 }

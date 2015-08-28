@@ -22,14 +22,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <string>
 
-class Player;
+namespace Vana {
+	class Player;
 
-namespace EffectPacket {
-	PACKET(playMusic, const string_t &music);
-	PACKET(sendEvent, const string_t &id);
-	PACKET(sendEffect, const string_t &effect);
-	PACKET(playPortalSoundEffect);
-	PACKET(sendFieldSound, const string_t &sound);
-	PACKET(sendMinigameSound, const string_t &sound);
-	SPLIT_PACKET(sendMobItemBuffEffect, player_id_t playerId, item_id_t itemId);
+	namespace Packets {
+		PACKET(playMusic, const string_t &music);
+		PACKET(sendEvent, const string_t &id);
+		PACKET(sendEffect, const string_t &effect);
+		PACKET(playPortalSoundEffect);
+		PACKET(sendFieldSound, const string_t &sound);
+		PACKET(sendMinigameSound, const string_t &sound);
+		SPLIT_PACKET(sendMobItemBuffEffect, player_id_t playerId, item_id_t itemId);
+	}
 }

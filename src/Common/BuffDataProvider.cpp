@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
+namespace Vana {
+
 auto BuffDataProvider::processSkills(Buff value, const init_list_t<skill_id_t> &skills) -> void {
 	for (const auto &s : skills) {
 		if (m_buffs.find(s) != std::end(m_buffs)) throw std::invalid_argument{"skill is already present"};
@@ -779,4 +781,6 @@ auto BuffDataProvider::getInfo(const BuffSource &source) const -> const Buff & {
 
 auto BuffDataProvider::getBuffsByEffect() const -> const BuffInfoByEffect & {
 	return m_basics;
+}
+
 }

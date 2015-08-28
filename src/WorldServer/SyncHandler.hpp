@@ -20,14 +20,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <string>
 
-class AbstractConnection;
-class PacketBuilder;
-class PacketReader;
-class Player;
+namespace Vana {
+	class AbstractConnection;
+	class PacketBuilder;
+	class PacketReader;
+	class Player;
 
-namespace SyncHandler {
-	// Dispatch
-	auto handle(AbstractConnection *connection, PacketReader &reader) -> void;
-	// Config
-	auto handleConfigSync(PacketReader &reader) -> void;
+	namespace SyncHandler {
+		// Dispatch
+		auto handle(AbstractConnection *connection, PacketReader &reader) -> void;
+		// Config
+		auto handleConfigSync(PacketReader &reader) -> void;
+	}
 }

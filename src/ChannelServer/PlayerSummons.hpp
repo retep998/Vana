@@ -21,27 +21,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <vector>
 
-class PacketBuilder;
-class PacketReader;
-class Player;
+namespace Vana {
+	class PacketBuilder;
+	class PacketReader;
+	class Player;
 
-class PlayerSummons {
-	NONCOPYABLE(PlayerSummons);
-	NO_DEFAULT_CONSTRUCTOR(PlayerSummons);
-public:
-	PlayerSummons(Player *player);
+	class PlayerSummons {
+		NONCOPYABLE(PlayerSummons);
+		NO_DEFAULT_CONSTRUCTOR(PlayerSummons);
+	public:
+		PlayerSummons(Player *player);
 
-	auto getSummon(summon_id_t summonId) -> Summon *;
-	auto addSummon(Summon *summon, seconds_t time) -> void;
-	auto removeSummon(summon_id_t summonId, bool fromTimer) -> void;
-	auto changedMap() -> void;
-	auto forEach(function_t<void(Summon *)> func) -> void;
+		auto getSummon(summon_id_t summonId) -> Summon *;
+		auto addSummon(Summon *summon, seconds_t time) -> void;
+		auto removeSummon(summon_id_t summonId, bool fromTimer) -> void;
+		auto changedMap() -> void;
+		auto forEach(function_t<void(Summon *)> func) -> void;
 
-	auto getTransferPacket() const -> PacketBuilder;
-	auto parseTransferPacket(PacketReader &reader) -> void;
-private:
-	auto getSummonTimeRemaining(summon_id_t summonId) const -> seconds_t;
+		auto getTransferPacket() const -> PacketBuilder;
+		auto parseTransferPacket(PacketReader &reader) -> void;
+	private:
+		auto getSummonTimeRemaining(summon_id_t summonId) const -> seconds_t;
 
-	Player *m_player = nullptr;
-	vector_t<Summon *> m_summons;
-};
+		Player *m_player = nullptr;
+		vector_t<Summon *> m_summons;
+	};
+}

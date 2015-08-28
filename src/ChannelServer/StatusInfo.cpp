@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.hpp"
 #include "SkillConstants.hpp"
 
+namespace Vana {
+
 StatusInfo::StatusInfo(int32_t status, int32_t val, int32_t skillId, seconds_t time) :
 	status{status},
 	val{val},
@@ -62,4 +64,6 @@ StatusInfo::StatusInfo(int32_t status, int32_t val, int16_t mobSkill, int16_t le
 	time{time},
 	reflection{reflect}
 {
+}
+
 }

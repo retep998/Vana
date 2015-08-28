@@ -24,112 +24,114 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <random>
 #include <type_traits>
 
-class Randomizer {
-public:
-	template <typename TNumber>
-	static auto rand() -> TNumber {
-		return rand(std::numeric_limits<TNumber>::max(), std::numeric_limits<TNumber>::min());
-	}
-
-	template <>
-	static auto rand<bool>() -> bool {
-		return (rand<uint8_t>() & 1) == 1;
-	}
-
-	template <typename TDistribution>
-	static auto rand(TDistribution &dist) -> typename TDistribution::result_type {
-		return dist(s_rand.engine());
-	}
-
-	template <typename TNumber>
-	static auto range(TNumber base, TNumber modifier) -> std::enable_if_t<std::is_integral<TNumber>::value, TNumber> {
-		TNumber min = base - (modifier / 2);
-		TNumber max = base + (modifier / 2);
-		return s_rand.rand(max, min);
-	}
-
-	template <typename TNumber>
-	static auto range(TNumber base, TNumber modifier) -> std::enable_if_t<std::is_floating_point<TNumber>::value, TNumber> {
-		TNumber min = base - (modifier / 2);
-		TNumber max = base + (modifier / 2);
-		return s_rand.rand(max, min);
-	}
-
-	template <typename TNumber>
-	static auto rand(TNumber max, TNumber min = 0) -> std::enable_if_t<std::is_integral<TNumber>::value, TNumber> {
-		return s_rand.rand(max, min);
-	}
-
-	template <typename TNumber>
-	static auto rand(TNumber max, TNumber min = 0) -> std::enable_if_t<std::is_floating_point<TNumber>::value, TNumber> {
-		return s_rand.rand(max, min);
-	}
-
-	template <typename TContainer>
-	static auto shuffle(TContainer &c) -> void {
-		shuffle(std::begin(c), std::end(c));
-	}
-
-	template <typename TIterator>
-	static auto shuffle(TIterator begin, TIterator end) -> void {
-		std::shuffle(begin, end, s_rand.engine());
-	}
-
-	template <typename TContainer>
-	static auto select(const TContainer &c) -> decltype(std::cbegin(c)) {
-		return select(std::cbegin(c), std::cend(c));
-	}
-
-	template <typename TContainer>
-	static auto select(const TContainer *c) -> decltype(select(*c)) {
-		return select(*c);
-	}
-
-	template <typename TIterator>
-	static auto select(TIterator begin, TIterator end) -> TIterator {
-		auto distance = rand(std::distance(begin, end) - 1);
-		TIterator element = begin;
-		std::advance(element, distance);
-		return element;
-	}
-private:
-	class _impl {
+namespace Vana {
+	class Randomizer {
 	public:
-		_impl() {
-			std::random_device seedingEngine;
-			m_engine.seed(seedingEngine());
-		}
-
 		template <typename TNumber>
-		auto rand(TNumber max, TNumber min) -> std::enable_if_t<std::is_integral<TNumber>::value, TNumber> {
-			std::uniform_int_distribution<TNumber> distribution{min, max};
-			return distribution(m_engine);
-		}
-
-		// TODO FIXME c++
-		// If C++ ever gets an actual small integer type, dump these specializations
-		template <>
-		auto rand<int8_t>(int8_t max, int8_t min) -> int8_t {
-			return static_cast<int8_t>(rand<int16_t>(max, min));
+		static auto rand() -> TNumber {
+			return rand(std::numeric_limits<TNumber>::max(), std::numeric_limits<TNumber>::min());
 		}
 
 		template <>
-		auto rand<uint8_t>(uint8_t max, uint8_t min) -> uint8_t {
-			return static_cast<uint8_t>(rand<uint16_t>(max, min));
+		static auto rand<bool>() -> bool {
+			return (rand<uint8_t>() & 1) == 1;
+		}
+
+		template <typename TDistribution>
+		static auto rand(TDistribution &dist) -> typename TDistribution::result_type {
+			return dist(s_rand.engine());
 		}
 
 		template <typename TNumber>
-		auto rand(TNumber max, TNumber min) -> std::enable_if_t<std::is_floating_point<TNumber>::value, TNumber> {
-			std::uniform_real_distribution<TNumber> distribution{min, max};
-			return distribution(m_engine);
+		static auto range(TNumber base, TNumber modifier) -> std::enable_if_t<std::is_integral<TNumber>::value, TNumber> {
+			TNumber min = base - (modifier / 2);
+			TNumber max = base + (modifier / 2);
+			return s_rand.rand(max, min);
 		}
 
-		auto engine() -> std::mt19937 & {
-			return m_engine;
+		template <typename TNumber>
+		static auto range(TNumber base, TNumber modifier) -> std::enable_if_t<std::is_floating_point<TNumber>::value, TNumber> {
+			TNumber min = base - (modifier / 2);
+			TNumber max = base + (modifier / 2);
+			return s_rand.rand(max, min);
+		}
+
+		template <typename TNumber>
+		static auto rand(TNumber max, TNumber min = 0) -> std::enable_if_t<std::is_integral<TNumber>::value, TNumber> {
+			return s_rand.rand(max, min);
+		}
+
+		template <typename TNumber>
+		static auto rand(TNumber max, TNumber min = 0) -> std::enable_if_t<std::is_floating_point<TNumber>::value, TNumber> {
+			return s_rand.rand(max, min);
+		}
+
+		template <typename TContainer>
+		static auto shuffle(TContainer &c) -> void {
+			shuffle(std::begin(c), std::end(c));
+		}
+
+		template <typename TIterator>
+		static auto shuffle(TIterator begin, TIterator end) -> void {
+			std::shuffle(begin, end, s_rand.engine());
+		}
+
+		template <typename TContainer>
+		static auto select(const TContainer &c) -> decltype(std::cbegin(c)) {
+			return select(std::cbegin(c), std::cend(c));
+		}
+
+		template <typename TContainer>
+		static auto select(const TContainer *c) -> decltype(select(*c)) {
+			return select(*c);
+		}
+
+		template <typename TIterator>
+		static auto select(TIterator begin, TIterator end) -> TIterator {
+			auto distance = rand(std::distance(begin, end) - 1);
+			TIterator element = begin;
+			std::advance(element, distance);
+			return element;
 		}
 	private:
-		std::mt19937 m_engine;
-	};
+		class _impl {
+		public:
+			_impl() {
+				std::random_device seedingEngine;
+				m_engine.seed(seedingEngine());
+			}
 
-	static _impl s_rand;
-};
+			template <typename TNumber>
+			auto rand(TNumber max, TNumber min) -> std::enable_if_t<std::is_integral<TNumber>::value, TNumber> {
+				std::uniform_int_distribution<TNumber> distribution{min, max};
+				return distribution(m_engine);
+			}
+
+			// TODO FIXME c++
+			// If C++ ever gets an actual small integer type, dump these specializations
+			template <>
+			auto rand<int8_t>(int8_t max, int8_t min) -> int8_t {
+				return static_cast<int8_t>(rand<int16_t>(max, min));
+			}
+
+			template <>
+			auto rand<uint8_t>(uint8_t max, uint8_t min) -> uint8_t {
+				return static_cast<uint8_t>(rand<uint16_t>(max, min));
+			}
+
+			template <typename TNumber>
+			auto rand(TNumber max, TNumber min) -> std::enable_if_t<std::is_floating_point<TNumber>::value, TNumber> {
+				std::uniform_real_distribution<TNumber> distribution{min, max};
+				return distribution(m_engine);
+			}
+
+			auto engine() -> std::mt19937 & {
+				return m_engine;
+			}
+		private:
+			std::mt19937 m_engine;
+		};
+
+		static _impl s_rand;
+	};
+}

@@ -27,7 +27,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-namespace PetsPacket {
+namespace Vana {
+namespace Packets {
+namespace Pets {
 
 SPLIT_PACKET_IMPL(petSummoned, player_id_t playerId, Pet *pet, bool kick, int8_t index) {
 	SplitPacketBuilder builder;
@@ -195,4 +197,6 @@ PACKET_IMPL(addInfo, Pet *pet, Item *petItem) {
 	return builder;
 }
 
+}
+}
 }

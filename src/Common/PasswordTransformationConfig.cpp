@@ -22,6 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
+namespace Vana {
+
 PasswordTransformationConfig::PasswordTransformationConfig(SaltPolicy policy, vector_t<LuaVariant> args) :
 	m_policy{policy},
 	m_args{args}
@@ -160,4 +162,6 @@ auto PasswordTransformationConfig::apply(string_t input, string_t salt) const ->
 			throw NotImplementedException{"SaltPolicy"};
 	}
 	return ret;
+}
+
 }

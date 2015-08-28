@@ -24,8 +24,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 namespace soci {
+	using UnixTime = Vana::UnixTime;
+	using string_t = Vana::string_t;
+	using int8_t = Vana::int8_t;
+	using int16_t = Vana::int16_t;
+	using int32_t = Vana::int32_t;
+	using int64_t = Vana::int64_t;
+	using uint8_t = Vana::uint8_t;
+	using uint16_t = Vana::uint16_t;
+	using uint32_t = Vana::uint32_t;
+	using uint64_t = Vana::uint64_t;
+	template <typename TElement>
+	using optional_t = Vana::optional_t<TElement>;
+
 	template <>
-	struct type_conversion<UnixTime> {
+	struct type_conversion<Vana::UnixTime> {
 		using base_type = std::tm;
 		using target_type = UnixTime;
 

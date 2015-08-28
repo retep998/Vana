@@ -32,9 +32,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.hpp"
 #include <unordered_map>
 
-namespace PlayerPacket {
+namespace Vana {
+namespace Packets {
+namespace Player {
 
-PACKET_IMPL(connectData, Player *player) {
+PACKET_IMPL(connectData, Vana::Player *player) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_CHANGE_MAP)
@@ -265,4 +267,6 @@ PACKET_IMPL(sendYellowMessage, const chat_t &msg) {
 	return builder;
 }
 
+}
+}
 }

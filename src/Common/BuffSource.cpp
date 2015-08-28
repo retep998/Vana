@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemDataProvider.hpp"
 #include "SkillDataProvider.hpp"
 
+namespace Vana {
+
 auto BuffSource::fromItem(item_id_t itemId) -> BuffSource {
 	BuffSource ret;
 	ret.m_type = BuffSourceType::Item;
@@ -86,4 +88,6 @@ auto BuffSource::getSkillData(const SkillDataProvider &provider) const -> const 
 
 auto BuffSource::getMobSkillData(const SkillDataProvider &provider) const -> const MobSkillLevelInfo * const {
 	return provider.getMobSkill(m_mobSkillId, m_mobSkillLevel);
+}
+
 }

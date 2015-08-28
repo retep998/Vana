@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer.hpp"
 #include <functional>
 
+namespace Vana {
+
 Pet::Pet(Player *player, Item *item) :
 	MovableLife{0, Point{}, 0},
 	m_player{player},
@@ -61,12 +63,12 @@ Pet::Pet(Player *player, Item *item, const soci::row &row) :
 
 auto Pet::levelUp() -> void {
 	m_level += 1;
-	m_player->sendMap(PetsPacket::levelUp(m_player->getId(), this));
+	m_player->sendMap(Packets::Pets::levelUp(m_player->getId(), this));
 }
 
 auto Pet::setName(const string_t &name) -> void {
 	m_name = name;
-	m_player->sendMap(PetsPacket::changeName(m_player->getId(), this));
+	m_player->sendMap(Packets::Pets::changeName(m_player->getId(), this));
 }
 
 auto Pet::addCloseness(int16_t amount) -> void {
@@ -78,7 +80,7 @@ auto Pet::addCloseness(int16_t amount) -> void {
 		levelUp();
 	}
 
-	m_player->send(PetsPacket::updatePet(this, m_item));
+	m_player->send(Packets::Pets::updatePet(this, m_item));
 }
 
 auto Pet::modifyFullness(int8_t offset, bool sendPacket) -> void {
@@ -94,7 +96,7 @@ auto Pet::modifyFullness(int8_t offset, bool sendPacket) -> void {
 	}
 
 	if (sendPacket) {
-		m_player->send(PetsPacket::updatePet(this, m_item));
+		m_player->send(Packets::Pets::updatePet(this, m_item));
 	}
 }
 
@@ -140,4 +142,6 @@ auto Pet::initializePet(const soci::row &row) -> void {
 	m_closeness = row.get<int16_t>("closeness");
 	m_fullness = row.get<int8_t>("fullness");
 	m_inventorySlot = row.get<int8_t>("slot");
+}
+
 }

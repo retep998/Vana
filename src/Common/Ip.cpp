@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <asio.hpp>
 #include <stdexcept>
 
+namespace Vana {
+
 Ip::Ip(const string_t &addr, Ip::Type type) :
 	m_type{type}
 {
@@ -66,4 +68,6 @@ auto Ip::getType() const -> const Ip::Type & {
 
 auto Ip::isInitialized() const -> bool {
 	return m_ipv4 != 0;
+}
+
 }

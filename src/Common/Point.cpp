@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Point.hpp"
 
+namespace Vana {
+
 Point::Point(coord_t x, coord_t y) :
 	x{x},
 	y{y}
@@ -37,4 +39,6 @@ auto Point::moveX(coord_t x) const -> Point {
 
 auto Point::moveY(coord_t y) const -> Point {
 	return Point{this->x, this->y + y};
+}
+
 }

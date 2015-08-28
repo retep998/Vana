@@ -23,44 +23,46 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-class BuffDataProvider;
-class EquipDataProvider;
-class Item;
+namespace Vana {
+	class BuffDataProvider;
+	class EquipDataProvider;
+	class Item;
 
-class ItemDataProvider {
-public:
-	auto loadData(BuffDataProvider &provider) -> void;
+	class ItemDataProvider {
+	public:
+		auto loadData(BuffDataProvider &provider) -> void;
 
-	auto getCardId(mob_id_t mobId) const -> optional_t<item_id_t>;
-	auto getMobId(item_id_t cardId) const -> optional_t<mob_id_t>;
-	auto scrollItem(const EquipDataProvider &provider, item_id_t scrollId, Item *equip, bool whiteScroll, bool gmScroller, int8_t &succeed, bool &cursed) const -> HackingResult;
-	auto getItemInfo(item_id_t itemId) const -> const ItemInfo * const;
-	auto getConsumeInfo(item_id_t itemId) const -> const ConsumeInfo * const;
-	auto getPetInfo(item_id_t itemId) const -> const PetInfo * const;
-	auto getInteraction(item_id_t itemId, int32_t action) const -> const PetInteractInfo * const;
-	auto getItemSkills(item_id_t itemId) const -> const vector_t<Skillbook> * const;
-	auto getItemRewards(item_id_t itemId) const -> const vector_t<ItemRewardInfo> * const;
-	auto getItemSummons(item_id_t itemId) const -> const vector_t<SummonBag> * const;
-private:
-	auto loadItems() -> void;
-	auto loadScrolls() -> void;
-	auto loadConsumes(BuffDataProvider &provider) -> void;
-	auto loadMapRanges() -> void;
-	auto loadMonsterCardData() -> void;
-	auto loadItemSkills() -> void;
-	auto loadSummonBags() -> void;
-	auto loadItemRewards() -> void;
-	auto loadPets() -> void;
-	auto loadPetInteractions() -> void;
+		auto getCardId(mob_id_t mobId) const -> optional_t<item_id_t>;
+		auto getMobId(item_id_t cardId) const -> optional_t<mob_id_t>;
+		auto scrollItem(const EquipDataProvider &provider, item_id_t scrollId, Item *equip, bool whiteScroll, bool gmScroller, int8_t &succeed, bool &cursed) const -> HackingResult;
+		auto getItemInfo(item_id_t itemId) const -> const ItemInfo * const;
+		auto getConsumeInfo(item_id_t itemId) const -> const ConsumeInfo * const;
+		auto getPetInfo(item_id_t itemId) const -> const PetInfo * const;
+		auto getInteraction(item_id_t itemId, int32_t action) const -> const PetInteractInfo * const;
+		auto getItemSkills(item_id_t itemId) const -> const vector_t<Skillbook> * const;
+		auto getItemRewards(item_id_t itemId) const -> const vector_t<ItemRewardInfo> * const;
+		auto getItemSummons(item_id_t itemId) const -> const vector_t<SummonBag> * const;
+	private:
+		auto loadItems() -> void;
+		auto loadScrolls() -> void;
+		auto loadConsumes(BuffDataProvider &provider) -> void;
+		auto loadMapRanges() -> void;
+		auto loadMonsterCardData() -> void;
+		auto loadItemSkills() -> void;
+		auto loadSummonBags() -> void;
+		auto loadItemRewards() -> void;
+		auto loadPets() -> void;
+		auto loadPetInteractions() -> void;
 
-	hash_map_t<item_id_t, ItemInfo> m_itemInfo;
-	hash_map_t<item_id_t, ScrollInfo> m_scrollInfo;
-	hash_map_t<item_id_t, ConsumeInfo> m_consumeInfo;
-	hash_map_t<item_id_t, vector_t<SummonBag>> m_summonBags;
-	hash_map_t<item_id_t, vector_t<Skillbook>> m_skillbooks;
-	hash_map_t<item_id_t, vector_t<ItemRewardInfo>> m_itemRewards;
-	hash_map_t<item_id_t, PetInfo> m_petInfo;
-	hash_map_t<item_id_t, hash_map_t<int32_t, PetInteractInfo>> m_petInteractInfo;
-	hash_map_t<item_id_t, mob_id_t> m_cardsToMobs;
-	hash_map_t<mob_id_t, item_id_t> m_mobsToCards;
-};
+		hash_map_t<item_id_t, ItemInfo> m_itemInfo;
+		hash_map_t<item_id_t, ScrollInfo> m_scrollInfo;
+		hash_map_t<item_id_t, ConsumeInfo> m_consumeInfo;
+		hash_map_t<item_id_t, vector_t<SummonBag>> m_summonBags;
+		hash_map_t<item_id_t, vector_t<Skillbook>> m_skillbooks;
+		hash_map_t<item_id_t, vector_t<ItemRewardInfo>> m_itemRewards;
+		hash_map_t<item_id_t, PetInfo> m_petInfo;
+		hash_map_t<item_id_t, hash_map_t<int32_t, PetInteractInfo>> m_petInteractInfo;
+		hash_map_t<item_id_t, mob_id_t> m_cardsToMobs;
+		hash_map_t<mob_id_t, item_id_t> m_mobsToCards;
+	};
+}

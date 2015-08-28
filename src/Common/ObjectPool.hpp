@@ -20,59 +20,61 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "IdLooper.hpp"
 #include "Types.hpp"
 
-// Keep track of a pool of objects and ensure that identifiers aren't reused
-template <typename TIdentifier, typename TObject>
-class ObjectPool {
-	using container_t = typename hash_map_t<TIdentifier, TObject>;
+namespace Vana {
+	// Keep track of a pool of objects and ensure that identifiers aren't reused
+	template <typename TIdentifier, typename TObject>
+	class ObjectPool {
+		using container_t = typename hash_map_t<TIdentifier, TObject>;
 
-public:
-	explicit ObjectPool(TIdentifier minimum = 1, TIdentifier maximum = std::numeric_limits<TIdentifier>::max()) :
-		m_identifiers{minimum, maximum}
-	{
-	}
-
-	auto store(TObject obj) -> TIdentifier {
-		if (free() == 0) {
-			throw std::range_error{"all identifiers are consumed"};
+	public:
+		explicit ObjectPool(TIdentifier minimum = 1, TIdentifier maximum = std::numeric_limits<TIdentifier>::max()) :
+			m_identifiers{minimum, maximum}
+		{
 		}
 
-		TIdentifier ret;
-		do {
-			ret = m_identifiers.next();
-		} while (find(ret) != end());
+		auto store(TObject obj) -> TIdentifier {
+			if (free() == 0) {
+				throw std::range_error{"all identifiers are consumed"};
+			}
 
-		m_taken.emplace(ret, obj);
+			TIdentifier ret;
+			do {
+				ret = m_identifiers.next();
+			} while (find(ret) != end());
 
-		return ret;
-	}
+			m_taken.emplace(ret, obj);
 
-	using iterator = typename container_t::iterator;
-	using const_iterator = typename container_t::const_iterator;
-
-	auto begin() -> iterator { return std::begin(m_taken); }
-	auto end() -> iterator { return std::end(m_taken); }
-	auto cbegin() const -> const_iterator { return std::cbegin(m_taken); }
-	auto cend() const -> const_iterator { return std::cend(m_taken); }
-
-	auto taken() const -> size_t {
-		return m_taken.size();
-	}
-
-	auto free() const -> size_t {
-		return m_identifiers.range() - m_taken.size();
-	}
-
-	auto find(TIdentifier id) -> iterator {
-		return m_taken.find(id);
-	}
-
-	auto release(TIdentifier value) -> void {
-		auto iter = find(value);
-		if (iter != end()) {
-			m_taken.erase(iter);
+			return ret;
 		}
-	}
-private:
-	IdLooper<TIdentifier> m_identifiers;
-	container_t m_taken;
-};
+
+		using iterator = typename container_t::iterator;
+		using const_iterator = typename container_t::const_iterator;
+
+		auto begin() -> iterator { return std::begin(m_taken); }
+		auto end() -> iterator { return std::end(m_taken); }
+		auto cbegin() const -> const_iterator { return std::cbegin(m_taken); }
+		auto cend() const -> const_iterator { return std::cend(m_taken); }
+
+		auto taken() const -> size_t {
+			return m_taken.size();
+		}
+
+		auto free() const -> size_t {
+			return m_identifiers.range() - m_taken.size();
+		}
+
+		auto find(TIdentifier id) -> iterator {
+			return m_taken.find(id);
+		}
+
+		auto release(TIdentifier value) -> void {
+			auto iter = find(value);
+			if (iter != end()) {
+				m_taken.erase(iter);
+			}
+		}
+	private:
+		IdLooper<TIdentifier> m_identifiers;
+		container_t m_taken;
+	};
+}

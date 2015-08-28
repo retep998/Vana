@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <botan/pipe.h>
 #include <botan/filters.h>
 
+namespace Vana {
+
 auto HashUtilities::hashPassword(const string_t &password) -> string_t {
 	Botan::Pipe pipe{
 		new Botan::Chain{
@@ -61,4 +63,6 @@ auto HashUtilities::generateSalt(const SaltSizeConfig &conf) -> string_t {
 		salt[i] = Randomizer::rand<uint8_t>(255, 0);
 	}
 	return salt;
+}
+
 }

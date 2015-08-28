@@ -23,27 +23,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 #include <string>
 
-class PacketBuilder;
+namespace Vana {
+	class PacketBuilder;
 
-class ClientIp {
-public:
-	explicit ClientIp(const Ip &ip);
-private:
-	friend struct PacketSerialize<ClientIp>;
+	class ClientIp {
+	public:
+		explicit ClientIp(const Ip &ip);
+	private:
+		friend struct PacketSerialize<ClientIp>;
 
-	ClientIp() : m_ip{0} { }
+		ClientIp() : m_ip{0} { }
 
-	Ip m_ip;
-};
+		Ip m_ip;
+	};
 
-template <>
-struct PacketSerialize<ClientIp> {
-	auto write(PacketBuilder &builder, const ClientIp &obj) -> void {
-		if (obj.m_ip.getType() == Ip::Type::Ipv4) {
-			builder.add<uint32_t>(htonl(obj.m_ip.asIpv4()));
+	template <>
+	struct PacketSerialize<ClientIp> {
+		auto write(PacketBuilder &builder, const ClientIp &obj) -> void {
+			if (obj.m_ip.getType() == Ip::Type::Ipv4) {
+				builder.add<uint32_t>(htonl(obj.m_ip.asIpv4()));
+			}
+			else {
+				throw NotImplementedException{"IPv6"};
+			}
 		}
-		else {
-			throw NotImplementedException{"IPv6"};
-		}
-	}
-};
+	};
+}

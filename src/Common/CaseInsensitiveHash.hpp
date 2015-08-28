@@ -20,23 +20,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <locale>
 #include <string>
 
-struct CaseInsensitiveHash {
-	auto operator()(const std::string &s) const -> size_t {
-#if SIZE_MAX == UINT32_MAX
-		size_t const prime = 16777619U;
-		size_t const base = 2166136261U;
-#elif SIZE_MAX == UINT64_MAX
-		size_t const prime = 1099511628211ULL;
-		size_t const base = 14695981039346656037ULL;
-#else
-#	error "Unsupported platform"
-#endif
-		size_t val = base;
-		std::locale loc;
-		for (const auto &c : s) {
-			val ^= static_cast<size_t>(std::tolower(c, loc));
-			val *= prime;
+namespace Vana {
+	struct CaseInsensitiveHash {
+		auto operator()(const std::string &s) const -> size_t {
+	#if SIZE_MAX == UINT32_MAX
+			size_t const prime = 16777619U;
+			size_t const base = 2166136261U;
+	#elif SIZE_MAX == UINT64_MAX
+			size_t const prime = 1099511628211ULL;
+			size_t const base = 14695981039346656037ULL;
+	#else
+	#	error "Unsupported platform"
+	#endif
+			size_t val = base;
+			std::locale loc;
+			for (const auto &c : s) {
+				val ^= static_cast<size_t>(std::tolower(c, loc));
+				val *= prime;
+			}
+			return val;
 		}
-		return val;
-	}
-};
+	};
+}

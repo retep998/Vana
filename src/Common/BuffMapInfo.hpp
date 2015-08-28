@@ -21,20 +21,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "hash_combine.hpp"
 #include "Types.hpp"
 
-class BuffMapInfo {
-public:
-	BuffMapInfo();
-	BuffMapInfo(BuffSkillValue value);
-	BuffMapInfo(uint8_t size, BuffSkillValue value);
-	BuffMapInfo(uint8_t size, int64_t predefinedValue);
+namespace Vana {
+	class BuffMapInfo {
+	public:
+		BuffMapInfo();
+		BuffMapInfo(BuffSkillValue value);
+		BuffMapInfo(uint8_t size, BuffSkillValue value);
+		BuffMapInfo(uint8_t size, int64_t predefinedValue);
 
-	auto getPredefinedValue() const -> int64_t;
-	auto getValue() const -> BuffSkillValue;
-	auto getSize() const -> uint8_t;
-	auto withValue(BuffSkillValue value) const -> BuffMapInfo;
-	auto withPredefinedValue(int16_t value) const ->BuffMapInfo;
-private:
-	int64_t m_predefinedValue = 0;
-	uint8_t m_size = 0;
-	BuffSkillValue m_value = BuffSkillValue::Predefined;
-};
+		auto getPredefinedValue() const -> int64_t;
+		auto getValue() const -> BuffSkillValue;
+		auto getSize() const -> uint8_t;
+		auto withValue(BuffSkillValue value) const -> BuffMapInfo;
+		auto withPredefinedValue(int16_t value) const ->BuffMapInfo;
+	private:
+		int64_t m_predefinedValue = 0;
+		uint8_t m_size = 0;
+		BuffSkillValue m_value = BuffSkillValue::Predefined;
+	};
+}

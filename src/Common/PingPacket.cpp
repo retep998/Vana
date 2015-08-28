@@ -19,7 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "CommonHeader.hpp"
 #include "Session.hpp"
 
-namespace PingPacket {
+namespace Vana {
+namespace Packets {
 
 PACKET_IMPL(ping) {
 	PacketBuilder builder;
@@ -33,4 +34,5 @@ PACKET_IMPL(pong) {
 	return builder;
 }
 
+}
 }

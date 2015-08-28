@@ -24,36 +24,36 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 #include <memory>
 
-namespace Timer {
+namespace Vana {
+	namespace Timer {
+		using timer_func_t = function_t<void(const time_point_t &)>;
 
-using timer_func_t = function_t<void(const time_point_t &)>;
+		enum class RunResult {
+			Reset,
+			Complete
+		};
 
-enum class RunResult {
-	Reset,
-	Complete
-};
+		class Container;
+		class Thread;
 
-class Container;
-class Thread;
+		class Timer {
+			NONCOPYABLE(Timer);
+			NO_DEFAULT_CONSTRUCTOR(Timer);
+		public:
+			Timer(const timer_func_t func, const Id &id, ref_ptr_t<Container> container, const duration_t &differenceFromNow, const duration_t &repeat);
+			static auto create(const timer_func_t func, const Id &id, ref_ptr_t<Container> container, const duration_t &differenceFromNow, const duration_t &repeat = seconds_t{0}) -> void;
 
-class Timer {
-	NONCOPYABLE(Timer);
-	NO_DEFAULT_CONSTRUCTOR(Timer);
-public:
-	Timer(const timer_func_t func, const Id &id, ref_ptr_t<Container> container, const duration_t &differenceFromNow, const duration_t &repeat);
-	static auto create(const timer_func_t func, const Id &id, ref_ptr_t<Container> container, const duration_t &differenceFromNow, const duration_t &repeat = seconds_t{0}) -> void;
-
-	auto getTimeLeft() const -> duration_t;
-	auto run(const time_point_t &now) const -> RunResult;
-	auto reset(const time_point_t &now) -> time_point_t;
-	auto removeFromContainer() const -> void;
-private:
-	Id m_id;
-	view_ptr_t<Container> m_container;
-	time_point_t m_runAt;
-	bool m_repeat;
-	duration_t m_repeatTime;
-	timer_func_t m_function;
-};
-
+			auto getTimeLeft() const -> duration_t;
+			auto run(const time_point_t &now) const -> RunResult;
+			auto reset(const time_point_t &now) -> time_point_t;
+			auto removeFromContainer() const -> void;
+		private:
+			Id m_id;
+			view_ptr_t<Container> m_container;
+			time_point_t m_runAt;
+			bool m_repeat;
+			duration_t m_repeatTime;
+			timer_func_t m_function;
+		};
+	}
 }

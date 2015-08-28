@@ -21,11 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-class CurseDataProvider {
-public:
-	auto loadData() -> void;
+namespace Vana {
+	class CurseDataProvider {
+	public:
+		auto loadData() -> void;
 
-	auto isCurseWord(const string_t &cmp) const -> bool;
-private:
-	vector_t<string_t> m_curseWords;
-};
+		auto isCurseWord(const string_t &cmp) const -> bool;
+	private:
+		vector_t<string_t> m_curseWords;
+	};
+}

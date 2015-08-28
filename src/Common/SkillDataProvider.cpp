@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
+namespace Vana {
+
 auto SkillDataProvider::loadData() -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Skills... ";
 
@@ -219,4 +221,6 @@ auto SkillDataProvider::getBanishData(mob_id_t mobId) const -> const BanishField
 
 auto SkillDataProvider::getMorphData(morph_id_t morph) const -> const MorphData * const {
 	return ext::find_value_ptr(m_morphInfo, morph);
+}
+
 }

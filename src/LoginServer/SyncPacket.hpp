@@ -20,9 +20,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketBuilder.hpp"
 #include "Types.hpp"
 
-namespace SyncPacket {
-	namespace PlayerPacket {
-		PACKET(characterCreated, player_id_t playerId);
-		PACKET(characterDeleted, player_id_t playerId);
+namespace Vana {
+	namespace Packets {
+		namespace Interserver {
+			namespace Player {
+				PACKET(characterCreated, player_id_t playerId);
+				PACKET(characterDeleted, player_id_t playerId);
+			}
+		}
 	}
 }

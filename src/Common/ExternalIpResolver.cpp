@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.hpp"
 #include <stdexcept>
 
+namespace Vana {
+
 ExternalIpResolver::ExternalIpResolver(const Ip &defaultIp, const IpMatrix &externalIps) :
 	m_defaultIp{defaultIp},
 	m_externalIps{externalIps}
@@ -38,4 +40,6 @@ auto ExternalIpResolver::matchIpToSubnet(const Ip &test) const -> Ip {
 	}
 
 	return ret;
+}
+
 }

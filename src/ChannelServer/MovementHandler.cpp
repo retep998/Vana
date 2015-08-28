@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
+namespace Vana {
+
 auto MovementHandler::parseMovement(MovableLife *life, PacketReader &reader) -> Point {
 	foothold_id_t foothold = 0;
 	int8_t stance = 0;
@@ -144,4 +146,6 @@ auto MovementHandler::parseMovement(MovableLife *life, PacketReader &reader) -> 
 	Point pos{x, y};
 	life->resetMovement(foothold, pos, stance);
 	return pos;
+}
+
 }

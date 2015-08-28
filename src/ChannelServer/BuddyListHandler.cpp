@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.hpp"
 #include <string>
 
+namespace Vana {
+
 namespace BuddyOpcodes {
 	enum Opcodes : int8_t {
 		Add = 0x01,
@@ -39,7 +41,7 @@ auto BuddyListHandler::handleBuddyList(Player *player, PacketReader &reader) -> 
 			uint8_t error = player->getBuddyList()->addBuddy(name, group);
 
 			if (error) {
-				player->send(BuddyListPacket::error(error));
+				player->send(Packets::Buddy::error(error));
 			}
 			break;
 		}
@@ -54,4 +56,6 @@ auto BuddyListHandler::handleBuddyList(Player *player, PacketReader &reader) -> 
 			break;
 		}
 	}
+}
+
 }

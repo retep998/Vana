@@ -19,9 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Buffs.hpp"
 #include "PlayerActiveBuffs.hpp"
 
-namespace BuffsPacketHelper {
+namespace Vana {
+namespace Packets {
+namespace Helpers {
 
-PACKET_IMPL(addBytes, const buff_array_t &bytes) {
+PACKET_IMPL(addBuffBytes, const buff_array_t &bytes) {
 	PacketBuilder builder;
 	for (uint8_t i = 0; i < Buffs::ByteQuantity; i++) {
 		size_t packetIndex = 0;
@@ -49,9 +51,9 @@ PACKET_IMPL(addBytes, const buff_array_t &bytes) {
 	return builder;
 }
 
-PACKET_IMPL(addMapValues, const BuffPacketStructure &buff) {
+PACKET_IMPL(addBuffMapValues, const BuffPacketStructure &buff) {
 	PacketBuilder builder;
-	builder.addBuffer(addBytes(buff.types));
+	builder.addBuffer(addBuffBytes(buff.types));
 
 	for (const auto &buffValue : buff.values) {
 		if (buffValue.type == BuffPacketValueType::SpecialPacket) continue;
@@ -81,4 +83,6 @@ PACKET_IMPL(addMapValues, const BuffPacketStructure &buff) {
 	return builder;
 }
 
+}
+}
 }

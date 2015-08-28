@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
+namespace Vana {
+
 ObjectPool<int32_t, LuaEnvironment *> LuaEnvironment::s_environments = ObjectPool<int32_t, LuaEnvironment *>{1, 1000000};
 
 auto LuaEnvironment::getEnvironment(lua_State *luaVm) -> LuaEnvironment & {
@@ -302,4 +304,6 @@ auto LuaEnvironment::typeOf(int index) -> LuaType {
 
 auto LuaEnvironment::typeOf(lua_State *luaVm, int index) -> LuaType {
 	return static_cast<LuaType>(lua_type(luaVm, index));
+}
+
 }

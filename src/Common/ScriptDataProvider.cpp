@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 #include <string>
 
+namespace Vana {
+
 auto ScriptDataProvider::loadData() -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Scripts... ";
 
@@ -121,4 +123,6 @@ auto ScriptDataProvider::resolvePath(ScriptTypes type) const -> string_t {
 		case ScriptTypes::Portal: return "portals";
 	}
 	throw NotImplementedException{"ScriptType"};
+}
+
 }

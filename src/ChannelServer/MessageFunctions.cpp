@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.hpp"
 #include "PlayerDataProvider.hpp"
 
+namespace Vana {
+
 auto MessageFunctions::worldMessage(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (.+))", matches) == MatchResult::AnyMatches) {
@@ -31,7 +33,7 @@ auto MessageFunctions::worldMessage(Player *player, const chat_t &args) -> ChatR
 		if (type != -1) {
 			string_t message = matches[2];
 			ChannelServer::getInstance().sendWorld(
-				Packets::prepend(PlayerPacket::showMessage(message, type), [](PacketBuilder &builder) {
+				Packets::prepend(Packets::Player::showMessage(message, type), [](PacketBuilder &builder) {
 					builder.add<header_t>(IMSG_TO_ALL_CHANNELS);
 					builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
 				}));
@@ -52,7 +54,7 @@ auto MessageFunctions::globalMessage(Player *player, const chat_t &args) -> Chat
 		if (type != -1) {
 			string_t message = matches[2];
 			ChannelServer::getInstance().sendWorld(
-				Packets::prepend(PlayerPacket::showMessage(message, type), [](PacketBuilder &builder) {
+				Packets::prepend(Packets::Player::showMessage(message, type), [](PacketBuilder &builder) {
 					builder.add<header_t>(IMSG_TO_LOGIN);
 					builder.add<header_t>(IMSG_TO_ALL_WORLDS);
 					builder.add<header_t>(IMSG_TO_ALL_CHANNELS);
@@ -74,7 +76,7 @@ auto MessageFunctions::channelMessage(Player *player, const chat_t &args) -> Cha
 		int8_t type = ChatHandlerFunctions::getMessageType(rawType);
 		if (type != -1) {
 			string_t message = matches[2];
-			ChannelServer::getInstance().getPlayerDataProvider().send(PlayerPacket::showMessage(message, type));
+			ChannelServer::getInstance().getPlayerDataProvider().send(Packets::Player::showMessage(message, type));
 		}
 		else {
 			ChatHandlerFunctions::showError(player, "Invalid message type: " + rawType);
@@ -89,4 +91,6 @@ auto MessageFunctions::gmChatMode(Player *player, const chat_t &args) -> ChatRes
 	player->setGmChat(!player->isGmChat());
 	ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) { message << "GM chat mode " << (player->isGmChat() ? "enabled" : "disabled"); });
 	return ChatResult::HandledDisplay;
+}
+
 }

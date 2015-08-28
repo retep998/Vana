@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
+namespace Vana {
+
 auto ShopDataProvider::loadData() -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Shops... ";
 
@@ -146,4 +148,6 @@ auto ShopDataProvider::getRechargeCost(shop_id_t shopId, item_id_t itemId, slot_
 	}
 
 	return 1;
+}
+
 }

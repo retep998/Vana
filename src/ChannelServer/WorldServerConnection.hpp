@@ -19,14 +19,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "AbstractServerConnection.hpp"
 
-class PacketReader;
-class Player;
+namespace Vana {
+	class PacketReader;
+	class Player;
 
-class WorldServerConnection final : public AbstractServerConnection {
-	NONCOPYABLE(WorldServerConnection);
-public:
-	WorldServerConnection();
-	~WorldServerConnection();
-protected:
-	auto handleRequest(PacketReader &reader) -> void override;
-};
+	class WorldServerConnection final : public AbstractServerConnection {
+		NONCOPYABLE(WorldServerConnection);
+	public:
+		WorldServerConnection();
+		~WorldServerConnection();
+	protected:
+		auto handleRequest(PacketReader &reader) -> void override;
+	};
+}

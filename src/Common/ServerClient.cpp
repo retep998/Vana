@@ -25,6 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
+namespace Vana {
+
 ServerClient::ServerClient(asio::io_service &ioService, const Ip &serverIp, port_t serverPort, ConnectionManager &manager, AbstractConnection *connection, bool ping) :
 	Session{ioService, manager, connection, false, true, ping, MapleVersion::LoginSubversion},
 	m_server{serverIp},
@@ -107,4 +109,6 @@ auto ServerClient::readConnectPacket() -> void {
 	auto &decoder = getDecoder();
 	decoder.setSendIv(sendIv);
 	decoder.setRecvIv(recvIv);
+}
+
 }

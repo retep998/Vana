@@ -25,7 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.hpp"
 #include <cmath>
 
-namespace PlayerPacketHelper {
+namespace Vana {
+namespace Packets {
+namespace Helpers {
 
 PACKET_IMPL(addItemInfo, inventory_slot_t slot, Item *item, bool shortSlot) {
 	PacketBuilder builder;
@@ -108,7 +110,7 @@ PACKET_IMPL(addItemInfo, inventory_slot_t slot, Item *item, bool shortSlot) {
 	return builder;
 }
 
-PACKET_IMPL(addPlayerDisplay, Player *player) {
+PACKET_IMPL(addPlayerDisplay, Vana::Player *player) {
 	PacketBuilder builder;
 	builder
 		.add<gender_id_t>(player->getGender())
@@ -129,4 +131,6 @@ PACKET_IMPL(addPlayerDisplay, Player *player) {
 	return builder;
 }
 
+}
+}
 }

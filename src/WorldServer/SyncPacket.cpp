@@ -29,7 +29,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.hpp"
 #include "WorldServerAcceptConnection.hpp"
 
-namespace SyncPacket {
+namespace Vana {
+namespace Packets {
+namespace Interserver {
 
 PACKET_IMPL(sendSyncData, function_t<void(PacketBuilder &)> buildSyncData) {
 	PacketBuilder builder;
@@ -40,7 +42,7 @@ PACKET_IMPL(sendSyncData, function_t<void(PacketBuilder &)> buildSyncData) {
 	return builder;
 }
 
-PACKET_IMPL(ConfigPacket::scrollingHeader, const string_t &message) {
+PACKET_IMPL(Config::scrollingHeader, const string_t &message) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
@@ -50,7 +52,7 @@ PACKET_IMPL(ConfigPacket::scrollingHeader, const string_t &message) {
 	return builder;
 }
 
-PACKET_IMPL(ConfigPacket::setRates, const RatesConfig &rates) {
+PACKET_IMPL(Config::setRates, const RatesConfig &rates) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
@@ -60,7 +62,7 @@ PACKET_IMPL(ConfigPacket::setRates, const RatesConfig &rates) {
 	return builder;
 }
 
-PACKET_IMPL(PlayerPacket::newConnectable, player_id_t playerId, const Ip &ip, PacketReader &buffer) {
+PACKET_IMPL(Player::newConnectable, player_id_t playerId, const Ip &ip, PacketReader &buffer) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
@@ -73,7 +75,7 @@ PACKET_IMPL(PlayerPacket::newConnectable, player_id_t playerId, const Ip &ip, Pa
 	return builder;
 }
 
-PACKET_IMPL(PlayerPacket::deleteConnectable, player_id_t playerId) {
+PACKET_IMPL(Player::deleteConnectable, player_id_t playerId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
@@ -83,7 +85,7 @@ PACKET_IMPL(PlayerPacket::deleteConnectable, player_id_t playerId) {
 	return builder;
 }
 
-PACKET_IMPL(PlayerPacket::playerChangeChannel, player_id_t playerId, channel_id_t channelId, const Ip &ip, port_t port) {
+PACKET_IMPL(Player::playerChangeChannel, player_id_t playerId, channel_id_t channelId, const Ip &ip, port_t port) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
@@ -96,7 +98,7 @@ PACKET_IMPL(PlayerPacket::playerChangeChannel, player_id_t playerId, channel_id_
 	return builder;
 }
 
-PACKET_IMPL(PlayerPacket::updatePlayer, const PlayerData &data, update_bits_t flags) {
+PACKET_IMPL(Player::updatePlayer, const PlayerData &data, update_bits_t flags) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
@@ -137,7 +139,7 @@ PACKET_IMPL(PlayerPacket::updatePlayer, const PlayerData &data, update_bits_t fl
 	return builder;
 }
 
-PACKET_IMPL(PlayerPacket::characterCreated, const PlayerData &data) {
+PACKET_IMPL(Player::characterCreated, const PlayerData &data) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
@@ -147,7 +149,7 @@ PACKET_IMPL(PlayerPacket::characterCreated, const PlayerData &data) {
 	return builder;
 }
 
-PACKET_IMPL(PlayerPacket::characterDeleted, player_id_t id) {
+PACKET_IMPL(Player::characterDeleted, player_id_t id) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
@@ -157,7 +159,7 @@ PACKET_IMPL(PlayerPacket::characterDeleted, player_id_t id) {
 	return builder;
 }
 
-PACKET_IMPL(PartyPacket::removePartyMember, party_id_t partyId, player_id_t playerId, bool kicked) {
+PACKET_IMPL(Party::removePartyMember, party_id_t partyId, player_id_t playerId, bool kicked) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
@@ -169,7 +171,7 @@ PACKET_IMPL(PartyPacket::removePartyMember, party_id_t partyId, player_id_t play
 	return builder;
 }
 
-PACKET_IMPL(PartyPacket::addPartyMember, party_id_t partyId, player_id_t playerId) {
+PACKET_IMPL(Party::addPartyMember, party_id_t partyId, player_id_t playerId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
@@ -180,7 +182,7 @@ PACKET_IMPL(PartyPacket::addPartyMember, party_id_t partyId, player_id_t playerI
 	return builder;
 }
 
-PACKET_IMPL(PartyPacket::newPartyLeader, party_id_t partyId, player_id_t playerId) {
+PACKET_IMPL(Party::newPartyLeader, party_id_t partyId, player_id_t playerId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
@@ -191,7 +193,7 @@ PACKET_IMPL(PartyPacket::newPartyLeader, party_id_t partyId, player_id_t playerI
 	return builder;
 }
 
-PACKET_IMPL(PartyPacket::createParty, party_id_t partyId, player_id_t playerId) {
+PACKET_IMPL(Party::createParty, party_id_t partyId, player_id_t playerId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
@@ -202,7 +204,7 @@ PACKET_IMPL(PartyPacket::createParty, party_id_t partyId, player_id_t playerId) 
 	return builder;
 }
 
-PACKET_IMPL(PartyPacket::disbandParty, party_id_t partyId) {
+PACKET_IMPL(Party::disbandParty, party_id_t partyId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
@@ -212,7 +214,7 @@ PACKET_IMPL(PartyPacket::disbandParty, party_id_t partyId) {
 	return builder;
 }
 
-PACKET_IMPL(BuddyPacket::sendBuddyInvite, player_id_t inviteeId, player_id_t inviterId, const string_t &name) {
+PACKET_IMPL(Buddy::sendBuddyInvite, player_id_t inviteeId, player_id_t inviterId, const string_t &name) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
@@ -224,7 +226,7 @@ PACKET_IMPL(BuddyPacket::sendBuddyInvite, player_id_t inviteeId, player_id_t inv
 	return builder;
 }
 
-PACKET_IMPL(BuddyPacket::sendAcceptBuddyInvite, player_id_t inviteeId, player_id_t inviterId) {
+PACKET_IMPL(Buddy::sendAcceptBuddyInvite, player_id_t inviteeId, player_id_t inviterId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
@@ -235,7 +237,7 @@ PACKET_IMPL(BuddyPacket::sendAcceptBuddyInvite, player_id_t inviteeId, player_id
 	return builder;
 }
 
-PACKET_IMPL(BuddyPacket::sendBuddyRemoval, player_id_t listOwnerId, player_id_t removalId) {
+PACKET_IMPL(Buddy::sendBuddyRemoval, player_id_t listOwnerId, player_id_t removalId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
@@ -246,7 +248,7 @@ PACKET_IMPL(BuddyPacket::sendBuddyRemoval, player_id_t listOwnerId, player_id_t 
 	return builder;
 }
 
-PACKET_IMPL(BuddyPacket::sendReaddBuddy, player_id_t listOwnerId, player_id_t buddyId) {
+PACKET_IMPL(Buddy::sendReaddBuddy, player_id_t listOwnerId, player_id_t buddyId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
@@ -257,4 +259,6 @@ PACKET_IMPL(BuddyPacket::sendReaddBuddy, player_id_t listOwnerId, player_id_t bu
 	return builder;
 }
 
+}
+}
 }

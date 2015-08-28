@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "TauswortheGenerator.hpp"
 
+namespace Vana {
+
 TauswortheGenerator::TauswortheGenerator(uint32_t seed1, uint32_t seed2, uint32_t seed3)
 {
 	reset(seed1, seed2, seed3);
@@ -43,4 +45,6 @@ auto TauswortheGenerator::next() -> uint32_t {
 	m_seed2 = ((m_seed2 & 0xFFFFFFF8) <<  4) ^ (((m_seed2 <<  2) ^ m_seed2) >> 25);
 	m_seed3 = ((m_seed3 & 0xFFFFFFF0) << 17) ^ (((m_seed3 <<  3) ^ m_seed3) >> 11);
 	return (m_seed1 ^ m_seed2 ^ m_seed3);
+}
+
 }

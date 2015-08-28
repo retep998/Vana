@@ -28,6 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Reactor.hpp"
 #include <string>
 
+namespace Vana {
+
 LuaReactor::LuaReactor(const string_t &filename, player_id_t playerId, reactor_id_t reactorId, map_id_t mapId) :
 	LuaScriptable{filename, playerId},
 	m_reactorId{reactorId}
@@ -69,7 +71,7 @@ auto LuaExports::reset(lua_State *luaVm) -> lua_return_t {
 	Reactor *reactor = getReactor(luaVm, env);
 	reactor->revive();
 	reactor->setState(0, true);
-	reactor->getMap()->send(ReactorPacket::triggerReactor(reactor));
+	reactor->getMap()->send(Packets::triggerReactor(reactor));
 	return 0;
 }
 
@@ -128,4 +130,6 @@ auto LuaExports::spawnZakum(lua_State *luaVm) -> lua_return_t {
 	}
 	Maps::getMap(getReactor(luaVm, env)->getMapId())->spawnZakum(Point{x, y}, foothold);
 	return 0;
+}
+
 }

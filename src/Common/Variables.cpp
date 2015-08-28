@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Variables.hpp"
 
+namespace Vana {
+
 auto Variables::deleteVariable(const string_t &name) -> void {
 	auto kvp = m_variables.find(name);
 	if (kvp != std::end(m_variables)) {
@@ -35,4 +37,6 @@ auto Variables::getVariable(const string_t &name) const -> string_t {
 
 auto Variables::operator[](const string_t &key) const -> string_t {
 	return getVariable(key);
+}
+
 }

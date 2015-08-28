@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
+namespace Vana {
+
 auto ValidCharDataProvider::loadData() -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Char Info... ";
 
@@ -125,4 +127,6 @@ auto ValidCharDataProvider::getItems(gender_id_t genderId, int8_t classId) const
 	return genderId == Gender::Male ?
 		(classId == Adventurer ? m_adventurer.male : m_cygnus.male) :
 		(classId == Adventurer ? m_adventurer.female : m_cygnus.female);
+}
+
 }

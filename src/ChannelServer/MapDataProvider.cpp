@@ -25,6 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StringUtilities.hpp"
 #include <utility>
 
+namespace Vana {
+
 auto MapDataProvider::getMap(map_id_t mapId) -> Map * {
 	if (m_maps.find(mapId) != std::end(m_maps)) {
 		return m_maps[mapId];
@@ -278,4 +280,6 @@ auto MapDataProvider::getContinent(map_id_t mapId) const -> opt_int8_t {
 		return {};
 	}
 	return kvp->second;
+}
+
 }

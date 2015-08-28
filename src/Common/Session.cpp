@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 #include <iostream>
 
+namespace Vana {
+
 Session::Session(asio::io_service &ioService, ConnectionManager &manager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string_t &subversion) :
 	m_manager{manager},
 	m_socket{ioService},
@@ -186,4 +188,6 @@ auto Session::getConnectPacket(const string_t &subversion) const -> PacketBuilde
 
 	builder.set<header_t>(static_cast<header_t>(builder.getSize() - sizeof(header_t)), 0);
 	return builder;
+}
+
 }

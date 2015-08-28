@@ -19,15 +19,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Variables.hpp"
 
-class Player;
+namespace Vana {
+	class Player;
 
-class PlayerVariables : public Variables {
-	NONCOPYABLE(PlayerVariables);
-	NO_DEFAULT_CONSTRUCTOR(PlayerVariables);
-public:
-	PlayerVariables(Player *player);
-	auto save() -> void;
-	auto load() -> void;
-private:
-	Player *m_player = nullptr;
-};
+	class PlayerVariables : public Variables {
+		NONCOPYABLE(PlayerVariables);
+		NO_DEFAULT_CONSTRUCTOR(PlayerVariables);
+	public:
+		PlayerVariables(Player *player);
+		auto save() -> void;
+		auto load() -> void;
+	private:
+		Player *m_player = nullptr;
+	};
+}

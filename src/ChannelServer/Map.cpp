@@ -56,6 +56,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 #include <utility>
 
+namespace Vana {
+
 // TODO FIXME msvc
 // Remove this crap once MSVC supports static initializers
 int32_t Map::s_mapUnloadTime = 0;
@@ -90,7 +92,7 @@ auto Map::setMusic(const string_t &musicName) -> void {
 		m_info->defaultMusic :
 		musicName;
 
-	send(EffectPacket::playMusic(m_music));
+	send(Packets::playMusic(m_music));
 }
 
 auto Map::setMobSpawning(mob_id_t spawn) -> void {
@@ -129,7 +131,7 @@ auto Map::addReactorSpawn(const ReactorSpawnInfo &spawn) -> void {
 	m_reactorSpawns.push_back(spawn);
 	m_reactorSpawns[m_reactorSpawns.size() - 1].spawned = true;
 	Reactor *reactor = new Reactor(getId(), spawn.id, spawn.pos, spawn.facesLeft);
-	send(ReactorPacket::spawnReactor(reactor));
+	send(Packets::spawnReactor(reactor));
 }
 
 auto Map::addMobSpawn(const MobSpawnInfo &spawn) -> void {
@@ -171,27 +173,27 @@ auto Map::addTimeMob(ref_ptr_t<TimeMob> info) -> void {
 auto Map::addPlayer(Player *player) -> void {
 	m_players.push_back(player);
 	if (m_info->forceMapEquip) {
-		player->send(MapPacket::forceMapEquip());
+		player->send(Packets::Map::forceMapEquip());
 	}
 	if (!player->isUsingGmHide()) {
-		send(MapPacket::playerPacket(player), player);
+		send(Packets::Map::playerPacket(player), player);
 	}
 	else {
-		player->send(GmPacket::beginHide());
+		player->send(Packets::Gm::beginHide());
 	}
 	if (m_timer.count() > 0) {
-		player->send(MapPacket::showTimer(m_timer - duration_cast<seconds_t>(TimeUtilities::getNow() - m_timerStart)));
+		player->send(Packets::Map::showTimer(m_timer - duration_cast<seconds_t>(TimeUtilities::getNow() - m_timerStart)));
 	}
 	else if (Instance *instance = getInstance()) {
 		if (instance->showTimer()) {
 			seconds_t time = instance->getInstanceSecondsRemaining();
 			if (time.count() > 0) {
-				player->send(MapPacket::showTimer(time));
+				player->send(Packets::Map::showTimer(time));
 			}
 		}
 	}
 	if (m_info->shipKind != -1) {
-		player->send(MapPacket::boatDockUpdate(m_ship, m_info->shipKind));
+		player->send(Packets::Map::boatDockUpdate(m_ship, m_info->shipKind));
 	}
 
 	checkPlayerEquip(player);
@@ -224,7 +226,7 @@ auto Map::checkPlayerEquip(Player *player) -> void {
 auto Map::boatDock(bool isDocked) -> void {
 	if (isDocked != m_ship) {
 		m_ship = isDocked;
-		send(MapPacket::boatDockUpdate(isDocked, m_info->shipKind));
+		send(Packets::Map::boatDockUpdate(isDocked, m_info->shipKind));
 	}
 }
 
@@ -265,7 +267,7 @@ auto Map::removePlayer(Player *player) -> void {
 		SummonHandler::removeSummon(player, summon->getId(), true, SummonMessages::None);
 	});
 
-	send(MapPacket::removePlayer(player->getId()), player);
+	send(Packets::Map::removePlayer(player->getId()), player);
 	updateMobControl(player);
 
 	auto kvp = m_playersWithoutProtectItem.find(playerId);
@@ -305,7 +307,7 @@ auto Map::buffPlayers(item_id_t buffId) -> void {
 	for (const auto &player : m_players) {
 		if (player->getStats()->getHp() > 0) {
 			Inventory::useItem(player, buffId);
-			player->sendMap(EffectPacket::sendMobItemBuffEffect(player->getId(), buffId));
+			player->sendMap(Packets::sendMobItemBuffEffect(player->getId(), buffId));
 		}
 	}
 }
@@ -313,10 +315,10 @@ auto Map::buffPlayers(item_id_t buffId) -> void {
 auto Map::gmHideChange(Player *player) -> void {
 	if (player->isUsingGmHide()) {
 		updateMobControl(player);
-		send(MapPacket::removePlayer(player->getId()), player);
+		send(Packets::Map::removePlayer(player->getId()), player);
 	}
 	else {
-		send(MapPacket::playerPacket(player), player);
+		send(Packets::Map::playerPacket(player), player);
 		for (const auto &kvp : m_mobs) {
 			if (auto mob = kvp.second) {
 				if (mob->getController() == nullptr && mob->getControlStatus() != MobControlStatus::None) {
@@ -364,7 +366,7 @@ auto Map::killReactors(bool showPacket) -> void {
 		if (reactor->isAlive()) {
 			reactor->kill();
 			if (showPacket) {
-				send(ReactorPacket::destroyReactor(reactor));
+				send(Packets::destroyReactor(reactor));
 			}
 		}
 	}
@@ -616,8 +618,8 @@ auto Map::removeNpc(size_t index) -> void {
 	if (isValidNpcIndex(index)) {
 		NpcSpawnInfo npc = m_npcSpawns[index];
 		map_object_t id = makeNpcId();
-		send(NpcPacket::showNpc(npc, id, false));
-		send(NpcPacket::controlNpc(npc, id, false));
+		send(Packets::Npc::showNpc(npc, id, false));
+		send(Packets::Npc::controlNpc(npc, id, false));
 		m_npcSpawns.erase(std::begin(m_npcSpawns) + index);
 	}
 }
@@ -625,8 +627,8 @@ auto Map::removeNpc(size_t index) -> void {
 auto Map::addNpc(const NpcSpawnInfo &npc) -> map_object_t {
 	m_npcSpawns.push_back(npc);
 	map_object_t id = makeNpcId();
-	send(NpcPacket::showNpc(npc, id));
-	send(NpcPacket::controlNpc(npc, id));
+	send(Packets::Npc::showNpc(npc, id));
+	send(Packets::Npc::controlNpc(npc, id));
 
 	if (ChannelServer::getInstance().getNpcDataProvider().isMapleTv(npc.id)) {
 		ChannelServer::getInstance().getMapleTvs().addMap(this);
@@ -653,7 +655,7 @@ auto Map::spawnMob(mob_id_t mobId, const Point &pos, foothold_id_t foothold, ref
 	}
 
 	m_mobs[id] = mob;
-	send(MobsPacket::spawnMob(mob, summonEffect, owner, (owner == nullptr ? MobSpawnType::New : MobSpawnType::Existing)));
+	send(Packets::Mobs::spawnMob(mob, summonEffect, owner, (owner == nullptr ? MobSpawnType::New : MobSpawnType::Existing)));
 	updateMobControl(mob, MobSpawnType::New);
 
 	if (Instance *instance = getInstance()) {
@@ -669,7 +671,7 @@ auto Map::spawnMob(int32_t spawnId, const MobSpawnInfo &info) -> ref_ptr_t<Mob> 
 	ref_ptr_t<Mob> noOwner = nullptr;
 	auto mob = make_ref_ptr<Mob>(id, getId(), info.id, noOwner, info.pos, spawnId, info.facesLeft, info.foothold, MobControlStatus::Normal);
 	m_mobs[id] = mob;
-	send(MobsPacket::spawnMob(mob, 0, nullptr, MobSpawnType::New));
+	send(Packets::Mobs::spawnMob(mob, 0, nullptr, MobSpawnType::New));
 	updateMobControl(mob, MobSpawnType::New);
 
 	if (Instance *instance = getInstance()) {
@@ -828,7 +830,7 @@ auto Map::mobDeath(ref_ptr_t<Mob> mob, bool fromExplosion) -> void {
 			owner->m_spawns.erase(mapMobId);
 		}
 
-		send(MobsPacket::dieMob(mapMobId, fromExplosion ? 4 : 1));
+		send(Packets::Mobs::dieMob(mapMobId, fromExplosion ? 4 : 1));
 		if (mob->m_info->buff != 0) {
 			buffPlayers(mob->m_info->buff);
 		}
@@ -953,8 +955,8 @@ auto Map::spawnZakum(const Point &pos, foothold_id_t foothold) -> void {
 }
 
 auto Map::convertShellToNormal(ref_ptr_t<Mob> mob) -> void {
-	send(MobsPacket::endControlMob(mob->getMapMobId()));
-	send(MobsPacket::spawnMob(mob, 0, nullptr));
+	send(Packets::Mobs::endControlMob(mob->getMapMobId()));
+	send(Packets::Mobs::spawnMob(mob, 0, nullptr));
 	updateMobControl(mob);
 }
 
@@ -1041,7 +1043,7 @@ auto Map::addMist(Mist *mist) -> void {
 		Timer::Id{TimerType::MistTimer, mist->getId()},
 		getTimers(), seconds_t{mist->getTime()});
 
-	send(MapPacket::spawnMist(mist, false));
+	send(Packets::Map::spawnMist(mist, false));
 }
 
 auto Map::getMist(mist_id_t id) -> Mist * {
@@ -1062,7 +1064,7 @@ auto Map::removeMist(Mist *mist) -> void {
 		m_mists.erase(id);
 	}
 	delete mist;
-	send(MapPacket::removeMist(id));
+	send(Packets::Map::removeMist(id));
 	m_mistIds.release(id);
 }
 
@@ -1227,14 +1229,14 @@ auto Map::timeMob(bool firstLoad) -> void {
 		if (cHour >= tm->startHour && cHour < tm->endHour) {
 			Point p = findRandomFloorPos();
 			m_timeMob = spawnMob(tm->id, p, getFootholdAtPosition(p), nullptr, 0)->getMapMobId();
-			send(PlayerPacket::showMessage(tm->message, PlayerPacket::NoticeTypes::Blue));
+			send(Packets::Player::showMessage(tm->message, Packets::Player::NoticeTypes::Blue));
 		}
 	}
 	else {
 		if (cHour == tm->startHour) {
 			Point p = findRandomFloorPos();
 			m_timeMob = spawnMob(tm->id, p, getFootholdAtPosition(p), nullptr, 0)->getMapMobId();
-			send(PlayerPacket::showMessage(tm->message, PlayerPacket::NoticeTypes::Blue));
+			send(Packets::Player::showMessage(tm->message, Packets::Player::NoticeTypes::Blue));
 		}
 		else if (cHour == tm->endHour && m_timeMob != 0) {
 			auto m = getMob(m_timeMob);
@@ -1251,7 +1253,7 @@ auto Map::setMapTimer(const seconds_t &timer) -> void {
 	m_timer = timer;
 	m_timerStart = TimeUtilities::getNow();
 
-	send(MapPacket::showTimer(timer));
+	send(Packets::Map::showTimer(timer));
 	if (timer.count() > 0) {
 		Timer::Timer::create(
 			[this](const time_point_t &now) { this->setMapTimer(seconds_t{0}); },
@@ -1263,19 +1265,19 @@ auto Map::setMapTimer(const seconds_t &timer) -> void {
 auto Map::showObjects(Player *player) -> void {
 	// Music
 	if (m_music != m_info->defaultMusic) {
-		player->send(EffectPacket::playMusic(m_music));
+		player->send(Packets::playMusic(m_music));
 	}
 
 	// MapleTV messengers
 	// TODO FIXME api
 	if (ChannelServer::getInstance().getMapleTvs().isMapleTvMap(getId()) && ChannelServer::getInstance().getMapleTvs().hasMessage()) {
-		player->send(MapleTvPacket::showMessage(ChannelServer::getInstance().getMapleTvs().getCurrentMessage(), ChannelServer::getInstance().getMapleTvs().getMessageTime()));
+		player->send(Packets::MapleTv::showMessage(ChannelServer::getInstance().getMapleTvs().getCurrentMessage(), ChannelServer::getInstance().getMapleTvs().getMessageTime()));
 	}
 
 	// Players
 	for (const auto &mapPlayer : m_players) {
 		if (player != mapPlayer && !mapPlayer->isUsingGmHide()) {
-			player->send(MapPacket::playerPacket(mapPlayer));
+			player->send(Packets::Map::playerPacket(mapPlayer));
 			SummonHandler::showSummons(mapPlayer, player);
 			// Bug in global; would be fixed here:
 			// Hurricane/Pierce do not display properly if using when someone enters the map
@@ -1287,15 +1289,15 @@ auto Map::showObjects(Player *player) -> void {
 	int32_t i = 0;
 	for (const auto &npc : m_npcSpawns) {
 		map_object_t id = i + Map::NpcStart;
-		player->send(NpcPacket::showNpc(npc, id));
-		player->send(NpcPacket::controlNpc(npc, id));
+		player->send(Packets::Npc::showNpc(npc, id));
+		player->send(Packets::Npc::controlNpc(npc, id));
 		i++;
 	}
 
 	// Reactors
 	for (const auto &reactor : m_reactors) {
 		if (reactor->isAlive()) {
-			player->send(ReactorPacket::spawnReactor(reactor));
+			player->send(Packets::spawnReactor(reactor));
 		}
 	}
 
@@ -1306,7 +1308,7 @@ auto Map::showObjects(Player *player) -> void {
 				updateMobControl(mob, MobSpawnType::New, player);
 			}
 			else {
-				player->send(MobsPacket::spawnMob(mob, 0, nullptr, MobSpawnType::Existing));
+				player->send(Packets::Mobs::spawnMob(mob, 0, nullptr, MobSpawnType::Existing));
 				updateMobControl(mob);
 			}
 		}
@@ -1325,7 +1327,7 @@ auto Map::showObjects(Player *player) -> void {
 	// Mists
 	for (const auto &kvp : m_mists) {
 		if (Mist *mist = kvp.second) {
-			player->send(MapPacket::spawnMist(mist, true));
+			player->send(Packets::Map::spawnMist(mist, true));
 		}
 	}
 
@@ -1339,7 +1341,7 @@ auto Map::showObjects(Player *player) -> void {
 	if (m_info->clock) {
 		time_t rawTime = time(nullptr);
 		struct tm *timeInfo = localtime(&rawTime);
-		player->send(MapPacket::showClock(timeInfo->tm_hour, timeInfo->tm_min, timeInfo->tm_sec));
+		player->send(Packets::Map::showClock(timeInfo->tm_hour, timeInfo->tm_min, timeInfo->tm_sec));
 	}
 }
 
@@ -1374,10 +1376,10 @@ auto Map::createWeather(Player *player, bool adminWeather, int32_t time, int32_t
 		return false;
 	}
 
-	send(MapPacket::changeWeather(adminWeather, itemId, message));
+	send(Packets::Map::changeWeather(adminWeather, itemId, message));
 	Timer::Timer::create(
 		[this, adminWeather](const time_point_t &now) {
-			this->send(MapPacket::changeWeather(adminWeather, 0, ""));
+			this->send(Packets::Map::changeWeather(adminWeather, 0, ""));
 		},
 		timerId,
 		getTimers(),
@@ -1398,4 +1400,6 @@ auto Map::endInstance(bool reset) -> void {
 	if (reset) {
 		respawn();
 	}
+}
+
 }

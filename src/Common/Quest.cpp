@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Quest.hpp"
 
+namespace Vana {
+
 auto Quest::addReward(bool start, const QuestRewardInfo &info, job_id_t job) -> void {
 	auto &rewards = start ? m_beginState.rewards : m_endState.rewards;
 	auto &rewardList = job == -1 ? rewards.universal : rewards.job[job];
@@ -77,4 +79,6 @@ auto Quest::setNextQuest(quest_id_t questId) -> void {
 
 auto Quest::setQuestId(quest_id_t questId) -> void {
 	m_id = questId;
+}
+
 }

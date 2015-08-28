@@ -38,6 +38,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 #include <initializer_list>
 
+namespace Vana {
+
 Mob::Mob(map_object_t mapMobId, map_id_t mapId, mob_id_t mobId, view_ptr_t<Mob> owner, const Point &pos, int32_t spawnId, bool facesLeft, foothold_id_t foothold, MobControlStatus controlStatus) :
 	MovableLife{foothold, pos, facesLeft ? 1 : 2},
 	m_mapMobId{mapMobId},
@@ -117,17 +119,17 @@ auto Mob::applyDamage(player_id_t playerId, damage_t damage, bool poison) -> voi
 
 		if (m_info->hasHpBar()) {
 			// Boss HP bars - Horntail's damage sponge isn't a boss in the data
-			map->send(MobsPacket::showBossHp(shared_from_this()));
+			map->send(Packets::Mobs::showBossHp(shared_from_this()));
 		}
 		else if (m_info->boss) {
 			// Minibosses
-			map->send(MobsPacket::showHp(m_mapMobId, percent));
+			map->send(Packets::Mobs::showHp(m_mapMobId, percent));
 		}
 		else if (m_info->friendly) {
-			map->send(MobsPacket::damageFriendlyMob(shared_from_this(), damage));
+			map->send(Packets::Mobs::damageFriendlyMob(shared_from_this(), damage));
 		}
 		else if (player != nullptr) {
-			player->send(MobsPacket::showHp(m_mapMobId, percent));
+			player->send(Packets::Mobs::showHp(m_mapMobId, percent));
 		}
 
 		// Need to preserve the pointer through mob deletion in die()
@@ -154,7 +156,7 @@ auto Mob::applyWebDamage() -> void {
 	if (webDamage != 0) {
 		m_damages[m_webPlayerId] += webDamage;
 		m_hp -= webDamage;
-		getMap()->send(MobsPacket::hurtMob(m_mapMobId, webDamage));
+		getMap()->send(Packets::Mobs::hurtMob(m_mapMobId, webDamage));
 	}
 }
 
@@ -229,7 +231,7 @@ auto Mob::addStatus(player_id_t playerId, vector_t<StatusInfo> &statusInfo) -> v
 	for (const auto &kvp : m_statuses) {
 		m_status |= kvp.first;
 	}
-	map->send(MobsPacket::applyStatus(m_mapMobId, addedStatus, statusInfo, 300, reflection));
+	map->send(Packets::Mobs::applyStatus(m_mapMobId, addedStatus, statusInfo, 300, reflection));
 }
 
 auto Mob::removeStatus(int32_t status, bool fromTimer) -> void {
@@ -264,7 +266,7 @@ auto Mob::removeStatus(int32_t status, bool fromTimer) -> void {
 		}
 		m_status -= status;
 		m_statuses.erase(kvp);
-		map->send(MobsPacket::removeStatus(m_mapMobId, status));
+		map->send(Packets::Mobs::removeStatus(m_mapMobId, status));
 	}
 }
 
@@ -313,14 +315,14 @@ auto Mob::setController(Player *control, MobSpawnType spawn, Player *display) ->
 
 	m_controller = control;
 	if (control != nullptr) {
-		control->send(MobsPacket::requestControl(shared_from_this(), spawn));
+		control->send(Packets::Mobs::requestControl(shared_from_this(), spawn));
 	}
 	else if (getControlStatus() == MobControlStatus::None) {
 		if (display != nullptr) {
-			display->send(MobsPacket::requestControl(shared_from_this(), spawn));
+			display->send(Packets::Mobs::requestControl(shared_from_this(), spawn));
 		}
 		else {
-			getMap()->send(MobsPacket::requestControl(shared_from_this(), spawn));
+			getMap()->send(Packets::Mobs::requestControl(shared_from_this(), spawn));
 		}
 	}
 
@@ -334,7 +336,7 @@ auto Mob::endControl() -> void {
 	// TODO FIXME resource
 	// isDisconnecting should not be necessary here, but it requires a great deal of structural fixing to properly fix
 	if (m_controller != nullptr && m_controller->getMapId() == getMapId() && !m_controller->isDisconnecting()) {
-		m_controller->send(MobsPacket::endControlMob(m_mapMobId));
+		m_controller->send(Packets::Mobs::endControlMob(m_mapMobId));
 	}
 }
 
@@ -511,7 +513,7 @@ auto Mob::skillHeal(int32_t healHp, int32_t healRange) -> void {
 		sponge->m_hp = healHp;
 	}
 
-	getMap()->send(MobsPacket::healMob(m_mapMobId, original));
+	getMap()->send(Packets::Mobs::healMob(m_mapMobId, original));
 }
 
 auto Mob::dispelBuffs() -> void {
@@ -546,7 +548,7 @@ auto Mob::mpEat(Player *player, MpEaterInfo *mp) -> void {
 		eatenMp = std::min<int32_t>(eatenMp, Stats::MaxMaxMp);
 		player->getStats()->modifyMp(eatenMp);
 
-		player->sendMap(SkillsPacket::showSkillEffect(player->getId(), mp->skillId));
+		player->sendMap(Packets::Skills::showSkillEffect(player->getId(), mp->skillId));
 		m_mpEaterCount++;
 	}
 }
@@ -737,7 +739,7 @@ auto Mob::useAnticipatedSkill() -> Result {
 
 				auto func = [&message, &field, &portal](Player *player) {
 					if (!message.empty()) {
-						player->send(PlayerPacket::showMessage(message, PlayerPacket::NoticeTypes::Blue));
+						player->send(Packets::Player::showMessage(message, Packets::Player::NoticeTypes::Blue));
 					}
 					player->setMap(field, portal);
 				};
@@ -817,4 +819,6 @@ auto Mob::spawnsSponge(mob_id_t mobId) -> bool {
 
 auto Mob::getMap() const -> Map * {
 	return Maps::getMap(m_mapId);
+}
+
 }

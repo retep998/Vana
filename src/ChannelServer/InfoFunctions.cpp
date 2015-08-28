@@ -25,6 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapPosition.hpp"
 #include <iostream>
 
+namespace Vana {
+
 auto InfoFunctions::help(Player *player, const chat_t &args) -> ChatResult {
 	using ChatHandlerFunctions::sCommandList;
 	if (!args.empty()) {
@@ -422,4 +424,6 @@ auto InfoFunctions::questKills(Player *player, const chat_t &args) -> ChatResult
 auto InfoFunctions::gmLevel(Player *player, const chat_t &args) -> ChatResult {
 	ChatHandlerFunctions::showInfo(player, [&](chat_stream_t &message) { message << "Your GM level: " << player->getGmLevel(); });
 	return ChatResult::HandledDisplay;
+}
+
 }

@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <chrono>
 #include <functional>
 
+namespace Vana {
 namespace Timer {
 
 TimerThread::TimerThread()
@@ -85,4 +86,5 @@ auto TimerThread::getWaitTime() const -> time_point_t {
 	return TimeUtilities::getNowWithTimeAdded(milliseconds_t{1000000000});
 }
 
+}
 }

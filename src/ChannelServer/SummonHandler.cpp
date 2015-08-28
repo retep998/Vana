@@ -34,6 +34,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Summon.hpp"
 #include "SummonsPacket.hpp"
 
+namespace Vana {
+
 IdPool<summon_id_t> SummonHandler::summonIds;
 
 auto SummonHandler::useSummon(Player *player, skill_id_t skillId, skill_level_t level) -> void {
@@ -117,13 +119,13 @@ auto SummonHandler::useSummon(Player *player, skill_id_t skillId, skill_level_t 
 
 	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
 	player->getSummons()->addSummon(summon, skill->buffTime);
-	player->sendMap(SummonsPacket::showSummon(player->getId(), summon, false));
+	player->sendMap(Packets::showSummon(player->getId(), summon, false));
 }
 
 auto SummonHandler::removeSummon(Player *player, summon_id_t summonId, bool packetOnly, int8_t showMessage, bool fromTimer) -> void {
 	Summon *summon = player->getSummons()->getSummon(summonId);
 	if (summon != nullptr) {
-		player->sendMap(SummonsPacket::removeSummon(player->getId(), summon, showMessage));
+		player->sendMap(Packets::removeSummon(player->getId(), summon, showMessage));
 		if (!packetOnly) {
 			player->getSummons()->removeSummon(summonId, fromTimer);
 		}
@@ -133,13 +135,13 @@ auto SummonHandler::removeSummon(Player *player, summon_id_t summonId, bool pack
 auto SummonHandler::showSummon(Player *player) -> void {
 	player->getSummons()->forEach([player](Summon *summon) {
 		summon->setPos(player->getPos());
-		player->sendMap(SummonsPacket::showSummon(player->getId(), summon));
+		player->sendMap(Packets::showSummon(player->getId(), summon));
 	});
 }
 
 auto SummonHandler::showSummons(Player *fromPlayer, Player *toPlayer) -> void {
 	fromPlayer->getSummons()->forEach([fromPlayer, toPlayer](Summon *summon) {
-		toPlayer->send(SummonsPacket::showSummon(fromPlayer->getId(), summon));
+		toPlayer->send(Packets::showSummon(fromPlayer->getId(), summon));
 	});
 }
 
@@ -157,7 +159,7 @@ auto SummonHandler::moveSummon(Player *player, PacketReader &reader) -> void {
 
 	MovementHandler::parseMovement(summon, reader);
 	reader.reset(10);
-	player->sendMap(SummonsPacket::moveSummon(player->getId(), summon, summon->getPos(), reader.getBuffer(), (reader.getBufferLength() - 9)));
+	player->sendMap(Packets::moveSummon(player->getId(), summon, summon->getPos(), reader.getBuffer(), (reader.getBufferLength() - 9)));
 }
 
 auto SummonHandler::damageSummon(Player *player, PacketReader &reader) -> void {
@@ -243,6 +245,8 @@ auto SummonHandler::summonSkill(Player *player, PacketReader &reader) -> void {
 			return;
 	}
 
-	player->sendMap(SummonsPacket::summonSkill(player->getId(), skillId, display, level), true);
-	player->sendMap(SummonsPacket::summonSkillEffect(player->getId(), Skills::DarkKnight::Beholder, display, level));
+	player->sendMap(Packets::summonSkill(player->getId(), skillId, display, level), true);
+	player->sendMap(Packets::summonSkillEffect(player->getId(), Skills::DarkKnight::Beholder, display, level));
+}
+
 }

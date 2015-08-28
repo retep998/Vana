@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.hpp"
 #include <memory>
 
+namespace Vana {
 namespace Timer {
 
 auto Timer::create(const timer_func_t func, const Id &id, ref_ptr_t<Container> container, const duration_t &differenceFromNow, const duration_t &repeat) -> void {
@@ -62,4 +63,5 @@ auto Timer::getTimeLeft() const -> duration_t {
 	return m_runAt - TimeUtilities::getNow();
 }
 
+}
 }

@@ -29,7 +29,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SmsgHeader.hpp"
 #include "WidePoint.hpp"
 
-namespace PlayersPacket {
+namespace Vana {
+namespace Packets {
+namespace Players {
 
 SPLIT_PACKET_IMPL(showMoving, player_id_t playerId, unsigned char *buf, size_t size) {
 	SplitPacketBuilder builder;
@@ -104,7 +106,7 @@ SPLIT_PACKET_IMPL(damagePlayer, player_id_t playerId, damage_t dmg, mob_id_t mob
 	return builder;
 }
 
-PACKET_IMPL(showInfo, Player *getInfo, bool isSelf) {
+PACKET_IMPL(showInfo, Vana::Player *getInfo, bool isSelf) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PLAYER_INFO)
@@ -329,4 +331,6 @@ SPLIT_PACKET_IMPL(useEnergyChargeAttack, player_id_t playerId, int32_t masterySk
 	return builder;
 }
 
+}
+}
 }

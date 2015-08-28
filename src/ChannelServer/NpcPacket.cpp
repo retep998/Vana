@@ -25,7 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ShopDataProvider.hpp"
 #include "SmsgHeader.hpp"
 
-namespace NpcPacket {
+namespace Vana {
+namespace Packets {
+namespace Npc {
 
 PACKET_IMPL(showNpc, const NpcSpawnInfo &npc, map_object_t id, bool show) {
 	PacketBuilder builder;
@@ -161,4 +163,6 @@ PACKET_IMPL(npcChat, int8_t type, map_object_t npcId, const string_t &text, bool
 	return builder;
 }
 
+}
+}
 }

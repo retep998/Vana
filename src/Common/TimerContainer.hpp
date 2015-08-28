@@ -25,26 +25,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <memory>
 #include <unordered_map>
 
-namespace Timer {
+namespace Vana {
+	namespace Timer {
+		class Container {
+		public:
+			template <typename TDuration>
+			auto getRemainingTime(const Id &id) const -> TDuration;
+			auto isTimerRunning(const Id &id) const -> bool;
+			auto registerTimer(ref_ptr_t<Timer> timer, const Id &id, time_point_t runAt) -> void;
+			auto removeTimer(const Id &id) -> void;
+		private:
+			hash_map_t<Id, ref_ptr_t<Timer>> m_timers;
+		};
 
-class Container {
-public:
-	template <typename TDuration>
-	auto getRemainingTime(const Id &id) const -> TDuration;
-	auto isTimerRunning(const Id &id) const -> bool;
-	auto registerTimer(ref_ptr_t<Timer> timer, const Id &id, time_point_t runAt) -> void;
-	auto removeTimer(const Id &id) -> void;
-private:
-	hash_map_t<Id, ref_ptr_t<Timer>> m_timers;
-};
-
-template <typename TDuration>
-auto Container::getRemainingTime(const Id &id) const -> TDuration {
-	auto iter = m_timers.find(id);
-	if (iter != std::end(m_timers)) {
-		return duration_cast<TDuration>(iter->second->getTimeLeft());
+		template <typename TDuration>
+		auto Container::getRemainingTime(const Id &id) const -> TDuration {
+			auto iter = m_timers.find(id);
+			if (iter != std::end(m_timers)) {
+				return duration_cast<TDuration>(iter->second->getTimeLeft());
+			}
+			return TDuration{0};
+		}
 	}
-	return TDuration{0};
-}
-
 }

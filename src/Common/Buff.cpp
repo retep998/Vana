@@ -18,6 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Buff.hpp"
 #include "Algorithm.hpp"
 
+namespace Vana {
+
 Buff::Buff()
 {
 }
@@ -84,4 +86,6 @@ auto Buff::withDelay(milliseconds_t value) const -> Buff {
 	Buff result{*this};
 	result.m_delay = value;
 	return result;
+}
+
 }

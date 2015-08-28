@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 #include <iostream>
 
+namespace Vana {
+
 const milliseconds_t InitialPing = milliseconds_t{60000};
 const milliseconds_t PingTime = milliseconds_t{15000};
 
@@ -42,7 +44,7 @@ auto AbstractConnection::baseHandleRequest(PacketReader &reader) -> void {
 		switch (reader.peek<header_t>()) {
 			case SMSG_PING:
 				if (m_isServer) {
-					send(PingPacket::pong());
+					send(Packets::pong());
 				}
 				break;
 			case CMSG_PONG:
@@ -90,7 +92,7 @@ auto AbstractConnection::ping() -> void {
 
 		m_pingCount++;
 		m_lastPing = TimeUtilities::getNow();
-		send(PingPacket::ping());
+		send(Packets::ping());
 	}
 }
 
@@ -103,4 +105,6 @@ auto AbstractConnection::setSession(Session *val, bool ping, const Ip &ip) -> vo
 		[this](const time_point_t &now) { this->ping(); },
 		Timer::Id{TimerType::PingTimer},
 		getTimers(), InitialPing, PingTime);
+}
+
 }

@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
+namespace Vana {
+
 auto QuestDataProvider::loadData() -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Quests... ";
 
@@ -232,4 +234,6 @@ auto QuestDataProvider::isQuest(quest_id_t questId) const -> bool {
 
 auto QuestDataProvider::getInfo(quest_id_t questId) const -> const Quest & {
 	return m_quests.find(questId)->second;
+}
+
 }

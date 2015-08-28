@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.hpp"
 #include "Player.hpp"
 
+namespace Vana {
+
 LuaPortal::LuaPortal(const string_t &filename, player_id_t playerId, map_id_t mapId, const PortalInfo * const portal) :
 	LuaScriptable{filename, playerId}
 {
@@ -54,14 +56,14 @@ auto LuaExports::instantWarp(lua_State *luaVm) -> lua_return_t {
 	Player *player = getPlayer(luaVm, env);
 	string_t portal = env.get<string_t>(luaVm, 1);
 	portal_id_t portalId = player->getMap()->getPortal(portal)->id;
-	player->send(MapPacket::instantWarp(portalId));
+	player->send(Packets::Map::instantWarp(portalId));
 	env.set<bool>(luaVm, "player_warped", true);
 	return 0;
 }
 
 auto LuaExports::playPortalSe(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	getPlayer(luaVm, env)->send(EffectPacket::playPortalSoundEffect());
+	getPlayer(luaVm, env)->send(Packets::playPortalSoundEffect());
 	return 0;
 }
 
@@ -69,4 +71,6 @@ auto LuaExports::portalFailed(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	env.set<bool>(luaVm, "player_portal_failed", true);
 	return 0;
+}
+
 }

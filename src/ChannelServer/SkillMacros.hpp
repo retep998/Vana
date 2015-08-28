@@ -22,61 +22,63 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <unordered_map>
 
-class SkillMacros {
-public:
-	struct SkillMacro;
+namespace Vana {
+	class SkillMacros {
+	public:
+		struct SkillMacro;
 
-	auto add(uint8_t pos, SkillMacro *macro) -> void;
-	auto getSkillMacro(int8_t pos) -> SkillMacro *;
-	auto getMax() -> int8_t;
+		auto add(uint8_t pos, SkillMacro *macro) -> void;
+		auto getSkillMacro(int8_t pos) -> SkillMacro *;
+		auto getMax() -> int8_t;
 
-	auto load(player_id_t charId) -> void;
-	auto save(player_id_t charId) -> void;
-private:
-	int8_t m_maxPoint = -1;
-	hash_map_t<int8_t, ref_ptr_t<SkillMacro>> m_skillMacros;
-};
+		auto load(player_id_t charId) -> void;
+		auto save(player_id_t charId) -> void;
+	private:
+		int8_t m_maxPoint = -1;
+		hash_map_t<int8_t, ref_ptr_t<SkillMacro>> m_skillMacros;
+	};
 
-struct SkillMacros::SkillMacro {
-	NONCOPYABLE(SkillMacro);
-	NO_DEFAULT_CONSTRUCTOR(SkillMacro);
-public:
-	SkillMacro(const string_t &name, bool shout, skill_id_t skill1, skill_id_t skill2, skill_id_t skill3);
+	struct SkillMacros::SkillMacro {
+		NONCOPYABLE(SkillMacro);
+		NO_DEFAULT_CONSTRUCTOR(SkillMacro);
+	public:
+		SkillMacro(const string_t &name, bool shout, skill_id_t skill1, skill_id_t skill2, skill_id_t skill3);
 
-	bool shout = false;
-	skill_id_t skill1 = 0;
-	skill_id_t skill2 = 0;
-	skill_id_t skill3 = 0;
-	string_t name;
-};
+		bool shout = false;
+		skill_id_t skill1 = 0;
+		skill_id_t skill2 = 0;
+		skill_id_t skill3 = 0;
+		string_t name;
+	};
 
-inline
-auto SkillMacros::add(uint8_t pos, SkillMacro *macro) -> void {
-	m_skillMacros[pos].reset(macro);
-	if (m_maxPoint < pos) {
-		m_maxPoint = pos;
+	inline
+	auto SkillMacros::add(uint8_t pos, SkillMacro *macro) -> void {
+		m_skillMacros[pos].reset(macro);
+		if (m_maxPoint < pos) {
+			m_maxPoint = pos;
+		}
 	}
-}
 
-inline
-SkillMacros::SkillMacro * SkillMacros::getSkillMacro(int8_t pos) {
-	if (m_skillMacros.find(pos) != std::end(m_skillMacros)) {
-		return m_skillMacros[pos].get();
+	inline
+	SkillMacros::SkillMacro * SkillMacros::getSkillMacro(int8_t pos) {
+		if (m_skillMacros.find(pos) != std::end(m_skillMacros)) {
+			return m_skillMacros[pos].get();
+		}
+		return nullptr;
 	}
-	return nullptr;
-}
 
-inline
-auto SkillMacros::getMax() -> int8_t {
-	return m_maxPoint;
-}
+	inline
+	auto SkillMacros::getMax() -> int8_t {
+		return m_maxPoint;
+	}
 
-inline
-SkillMacros::SkillMacro::SkillMacro(const string_t &name, bool shout, skill_id_t skill1, skill_id_t skill2, skill_id_t skill3) :
-	name{name},
-	shout{shout},
-	skill1{skill1},
-	skill2{skill2},
-	skill3{skill3}
-{
+	inline
+	SkillMacros::SkillMacro::SkillMacro(const string_t &name, bool shout, skill_id_t skill1, skill_id_t skill2, skill_id_t skill3) :
+		name{name},
+		shout{shout},
+		skill1{skill1},
+		skill2{skill2},
+		skill3{skill3}
+	{
+	}
 }

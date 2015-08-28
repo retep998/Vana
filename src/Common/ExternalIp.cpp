@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.hpp"
 #include <stdexcept>
 
+namespace Vana {
+
 ExternalIp::ExternalIp(const string_t &addr, uint32_t ipv4SubnetMask) :
 	Ip{addr, Ip::Type::Ipv4},
 	m_ipv4SubnetMask{ipv4SubnetMask}
@@ -45,4 +47,6 @@ auto ExternalIp::tryMatchIpToSubnet(const Ip &test, Ip &result) const -> bool {
 	}
 
 	return false;
+}
+
 }

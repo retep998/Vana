@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.hpp"
 #include "SkillConstants.hpp"
 
+namespace Vana {
+
 auto PlayerModFunctions::disconnect(Player *player, const chat_t &args) -> ChatResult {
 	player->disconnect();
 	return ChatResult::HandledDisplay;
@@ -207,4 +209,6 @@ auto PlayerModFunctions::maxSp(Player *player, const chat_t &args) -> ChatResult
 		return ChatResult::HandledDisplay;
 	}
 	return ChatResult::ShowSyntax;
+}
+
 }

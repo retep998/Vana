@@ -28,6 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "World.hpp"
 #include "Worlds.hpp"
 
+namespace Vana {
+
 LoginServerAcceptConnection::~LoginServerAcceptConnection() {
 	if (m_worldId != -1) {
 		auto &server = LoginServer::getInstance();
@@ -79,4 +81,6 @@ auto LoginServerAcceptConnection::setWorldId(world_id_t id) -> void {
 
 auto LoginServerAcceptConnection::getWorldId() const -> world_id_t {
 	return m_worldId;
+}
+
 }

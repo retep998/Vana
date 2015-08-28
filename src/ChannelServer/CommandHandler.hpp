@@ -17,10 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-class PacketReader;
-class Player;
+namespace Vana {
+	class PacketReader;
+	class Player;
 
-namespace CommandHandler {
-	auto handleCommand(Player *player, PacketReader &reader) -> void;
-	auto handleAdminCommand(Player *player, PacketReader &reader) -> void;
+	namespace CommandHandler {
+		auto handleCommand(Player *player, PacketReader &reader) -> void;
+		auto handleAdminCommand(Player *player, PacketReader &reader) -> void;
+	}
 }

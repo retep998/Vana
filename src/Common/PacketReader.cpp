@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sstream>
 #include <stdexcept>
 
+namespace Vana {
+
 PacketReader::PacketReader(unsigned char *buffer, size_t length) :
 	m_buffer{buffer},
 	m_length{length}
@@ -57,4 +59,6 @@ auto PacketReader::reset(int32_t len) -> PacketReader & {
 
 auto PacketReader::toString() const -> string_t {
 	return StringUtilities::bytesToHex(getBuffer(), getBufferLength());
+}
+
 }

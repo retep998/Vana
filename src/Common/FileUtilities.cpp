@@ -18,6 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "FileUtilities.hpp"
 #include <sys/stat.h>
 
+namespace Vana {
+
 auto FileUtilities::fileExists(const string_t &file) -> bool {
 	struct stat fileInfo;
 	return (!stat(file.c_str(), &fileInfo)) != 0;
@@ -27,4 +29,6 @@ auto FileUtilities::removeExtension(const string_t &file) -> string_t {
 	string_t ret = file;
 	ret = ret.erase(ret.find_last_of('.'));
 	return ret;
+}
+
 }

@@ -26,37 +26,39 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-struct SaltingConfig {
-	SaltSizeConfig accountSaltSize;
-	SaltConfig account;
-	SaltConfig interserver;	
-};
+namespace Vana {
+	struct SaltingConfig {
+		SaltSizeConfig accountSaltSize;
+		SaltConfig account;
+		SaltConfig interserver;	
+	};
 
-template <>
-struct LuaSerialize<SaltingConfig> {
-	auto read(LuaEnvironment &config, const string_t &prefix) -> SaltingConfig {
-		SaltingConfig ret;
+	template <>
+	struct LuaSerialize<SaltingConfig> {
+		auto read(LuaEnvironment &config, const string_t &prefix) -> SaltingConfig {
+			SaltingConfig ret;
 
-		LuaVariant account = config.get<LuaVariant>("account");
-		config.validateObject(LuaType::Table, account, "account");
+			LuaVariant account = config.get<LuaVariant>("account");
+			config.validateObject(LuaType::Table, account, "account");
 
-		auto map = account.as<hash_map_t<LuaVariant, LuaVariant>>();
-		bool hasSaltSize = false;
-		for (const auto &kvp : map) {
-			config.validateKey(LuaType::String, kvp.first, prefix);
+			auto map = account.as<hash_map_t<LuaVariant, LuaVariant>>();
+			bool hasSaltSize = false;
+			for (const auto &kvp : map) {
+				config.validateKey(LuaType::String, kvp.first, prefix);
 
-			string_t key = kvp.first.as<string_t>();
-			if (key == "salt_size") {
-				hasSaltSize = true;
-				ret.accountSaltSize = kvp.second.into<SaltSizeConfig>(config, prefix + "." + key);
+				string_t key = kvp.first.as<string_t>();
+				if (key == "salt_size") {
+					hasSaltSize = true;
+					ret.accountSaltSize = kvp.second.into<SaltSizeConfig>(config, prefix + "." + key);
+				}
 			}
+
+			config.required(hasSaltSize, "salt_size", "account");
+
+			ret.account = config.get<SaltConfig>("account");
+			ret.interserver = config.get<SaltConfig>("interserver");
+
+			return ret;
 		}
-
-		config.required(hasSaltSize, "salt_size", "account");
-
-		ret.account = config.get<SaltConfig>("account");
-		ret.interserver = config.get<SaltConfig>("interserver");
-
-		return ret;
-	}
-};
+	};
+}

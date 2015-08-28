@@ -21,7 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-namespace FamePacket {
+namespace Vana {
+namespace Packets {
+namespace Fame {
 
 PACKET_IMPL(sendError, int32_t reason) {
 	PacketBuilder builder;
@@ -52,4 +54,6 @@ PACKET_IMPL(receiveFame, const string_t &name, uint8_t type) {
 	return builder;
 }
 
+}
+}
 }

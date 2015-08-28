@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StringUtilities.hpp"
 #include <algorithm>
 
+namespace Vana {
+
 auto Instances::addInstance(Instance *instance) -> void {
 	m_instances[instance->getName()] = instance;
 }
@@ -41,4 +43,6 @@ auto Instances::isInstance(const string_t &name) -> bool {
 		delete instance;
 	}
 	return exists;
+}
+
 }

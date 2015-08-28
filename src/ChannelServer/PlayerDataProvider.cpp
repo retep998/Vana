@@ -38,6 +38,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <algorithm>
 #include <cstring>
 
+namespace Vana {
+
 auto PlayerDataProvider::parseChannelConnectPacket(PacketReader &reader) -> void {
 	// Players
 	uint32_t quantity = reader.get<uint32_t>();
@@ -114,7 +116,7 @@ auto PlayerDataProvider::removePlayer(Player *player) -> void {
 	auto kvp = m_followers.find(player->getId());
 	if (kvp != std::end(m_followers)) {
 		for (auto follower : kvp->second) {
-			follower->send(PlayerPacket::showMessage("Player " + player->getName() + " has disconnected", PlayerPacket::NoticeTypes::Red));
+			follower->send(Packets::Player::showMessage("Player " + player->getName() + " has disconnected", Packets::Player::NoticeTypes::Red));
 			follower->setFollow(nullptr);
 		}
 		m_followers.erase(kvp);
@@ -124,7 +126,7 @@ auto PlayerDataProvider::removePlayer(Player *player) -> void {
 auto PlayerDataProvider::updatePlayerLevel(Player *player) -> void {
 	auto &data = m_playerData[player->getId()];
 	data.level = player->getStats()->getLevel();
-	sendSync(SyncPacket::PlayerPacket::updatePlayer(data, Sync::Player::UpdateBits::Level));
+	sendSync(Packets::Interserver::Player::updatePlayer(data, Sync::Player::UpdateBits::Level));
 	if (data.party != 0) {
 		getParty(data.party)->silentUpdate();
 	}
@@ -133,7 +135,7 @@ auto PlayerDataProvider::updatePlayerLevel(Player *player) -> void {
 auto PlayerDataProvider::updatePlayerMap(Player *player) -> void {
 	auto &data = m_playerData[player->getId()];
 	data.map = player->getMapId();
-	sendSync(SyncPacket::PlayerPacket::updatePlayer(data, Sync::Player::UpdateBits::Map));
+	sendSync(Packets::Interserver::Player::updatePlayer(data, Sync::Player::UpdateBits::Map));
 	if (data.party != 0) {
 		getParty(data.party)->silentUpdate();
 	}
@@ -149,7 +151,7 @@ auto PlayerDataProvider::updatePlayerMap(Player *player) -> void {
 auto PlayerDataProvider::updatePlayerJob(Player *player) -> void {
 	auto &data = m_playerData[player->getId()];
 	data.job = player->getStats()->getJob();
-	sendSync(SyncPacket::PlayerPacket::updatePlayer(data, Sync::Player::UpdateBits::Job));
+	sendSync(Packets::Interserver::Player::updatePlayer(data, Sync::Player::UpdateBits::Job));
 	if (data.party != 0) {
 		getParty(data.party)->silentUpdate();
 	}
@@ -239,7 +241,7 @@ auto PlayerDataProvider::disconnect() -> void {
 }
 
 auto PlayerDataProvider::handleGroupChat(int8_t chatType, player_id_t playerId, const vector_t<player_id_t> &receivers, const chat_t &chat) -> void {
-	auto &packet = PlayerPacket::groupChat(m_playerData[playerId].name, chat, chatType);
+	auto &packet = Packets::Player::groupChat(m_playerData[playerId].name, chat, chatType);
 
 	vector_t<player_id_t> nonPresentReceivers;
 	for (const auto &playerId : receivers) {
@@ -265,7 +267,7 @@ auto PlayerDataProvider::handleGmChat(Player *player, const chat_t &chat) -> voi
 		<< static_cast<int32_t>(ChannelServer::getInstance().getChannelId() + 1)
 		<< "] : " << chat;
 
-	auto &packet = PlayerPacket::showMessage(message.str(), PlayerPacket::NoticeTypes::Blue);
+	auto &packet = Packets::Player::showMessage(message.str(), Packets::Player::NoticeTypes::Blue);
 
 	vector_t<player_id_t> nonPresentReceivers;
 	for (const auto &playerId : m_gmList) {
@@ -373,7 +375,7 @@ auto PlayerDataProvider::handleChangeChannel(PacketReader &reader) -> void {
 
 	if (Player *player = getPlayer(playerId)) {
 		if (!ip.isInitialized()) {
-			player->send(PlayerPacket::sendBlockedMessage(PlayerPacket::BlockMessages::CannotGo));
+			player->send(Packets::Player::sendBlockedMessage(Packets::Player::BlockMessages::CannotGo));
 		}
 		else {
 			auto kvp = m_followers.find(playerId);
@@ -387,7 +389,7 @@ auto PlayerDataProvider::handleChangeChannel(PacketReader &reader) -> void {
 			}
 
 			player->setOnline(false); // Set online to false BEFORE CC packet is sent to player
-			player->send(PlayerPacket::changeChannel(ip, port));
+			player->send(Packets::Player::changeChannel(ip, port));
 			player->saveAll(true);
 			player->setSaveOnDc(false);
 		}
@@ -398,7 +400,7 @@ auto PlayerDataProvider::handleNewConnectable(PacketReader &reader) -> void {
 	player_id_t playerId = reader.get<player_id_t>();
 	Ip ip = reader.get<Ip>();
 	newPlayer(playerId, ip, reader);
-	sendSync(SyncPacket::PlayerPacket::connectableEstablished(playerId));
+	sendSync(Packets::Interserver::Player::connectableEstablished(playerId));
 }
 
 auto PlayerDataProvider::handleDeleteConnectable(PacketReader &reader) -> void {
@@ -491,7 +493,7 @@ auto PlayerDataProvider::handleUpdatePlayer(PacketReader &reader) -> void {
 		if (updateBuddies && player.mutualBuddies.size() > 0) {
 			for (auto playerId : player.mutualBuddies) {
 				if (Player *listPlayer = getPlayer(playerId)) {
-					listPlayer->send(BuddyListPacket::online(player.id, player.channel.get(-1), player.cashShop));
+					listPlayer->send(Packets::Buddy::online(player.id, player.channel.get(-1), player.cashShop));
 				}
 			}
 		}
@@ -520,7 +522,7 @@ auto PlayerDataProvider::handleCreateParty(party_id_t id, player_id_t leaderId) 
 	}
 	else {
 		p->addMember(leader, true);
-		leader->send(PartyPacket::createParty(p.get(), leader));
+		leader->send(Packets::Party::createParty(p.get(), leader));
 	}
 
 	p->setLeader(leaderId);
@@ -595,11 +597,11 @@ auto PlayerDataProvider::acceptBuddyInvite(PacketReader &reader) -> void {
 	inviter.mutualBuddies.push_back(inviteeId);
 
 	if (Player *player = getPlayer(inviterId)) {
-		player->send(BuddyListPacket::online(inviteeId, invitee.channel.get(-1), invitee.cashShop));
+		player->send(Packets::Buddy::online(inviteeId, invitee.channel.get(-1), invitee.cashShop));
 		player->getBuddyList()->buddyAccepted(inviteeId);
 	}
 	if (Player *player = getPlayer(inviteeId)) {
-		player->send(BuddyListPacket::online(inviterId, inviter.channel.get(-1), inviter.cashShop));
+		player->send(Packets::Buddy::online(inviterId, inviter.channel.get(-1), inviter.cashShop));
 	}
 }
 
@@ -613,7 +615,7 @@ auto PlayerDataProvider::removeBuddy(PacketReader &reader) -> void {
 	ext::remove_element(removal.mutualBuddies, listOwnerId);
 
 	if (Player *player = getPlayer(removal.id)) {
-		player->send(BuddyListPacket::online(listOwner.id, -1, false));
+		player->send(Packets::Buddy::online(listOwner.id, -1, false));
 	}
 }
 
@@ -629,4 +631,6 @@ auto PlayerDataProvider::readdBuddy(PacketReader &reader) -> void {
 	if (Player *player = getPlayer(buddyId)) {
 		player->getBuddyList()->buddyAccepted(listOwnerId);
 	}
+}
+
 }

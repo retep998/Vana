@@ -22,12 +22,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-struct SaltConfig;
-struct SaltSizeConfig;
+namespace Vana {
+	struct SaltConfig;
+	struct SaltSizeConfig;
 
-namespace HashUtilities {
-	auto hashPassword(const string_t &password) -> string_t;
-	auto hashPassword(const string_t &password, const string_t &rawSalt, const SaltConfig &conf) -> string_t;
-	auto saltPassword(const string_t &password, const string_t &rawSalt, const SaltConfig &conf) -> string_t;
-	auto generateSalt(const SaltSizeConfig &conf) -> string_t;
+	namespace HashUtilities {
+		auto hashPassword(const string_t &password) -> string_t;
+		auto hashPassword(const string_t &password, const string_t &rawSalt, const SaltConfig &conf) -> string_t;
+		auto saltPassword(const string_t &password, const string_t &rawSalt, const SaltConfig &conf) -> string_t;
+		auto generateSalt(const SaltSizeConfig &conf) -> string_t;
+	}
 }

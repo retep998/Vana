@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.hpp"
 #include "SkillDataProvider.hpp"
 
+namespace Vana {
+
 Mist::Mist(map_id_t mapId, Player *owner, seconds_t time, const Rect &area, skill_id_t skillId, skill_level_t level, bool isPoison) :
 	m_ownerMap{mapId},
 	m_ownerId{owner->getId()},
@@ -48,4 +50,6 @@ Mist::Mist(map_id_t mapId, Mob *owner, seconds_t time, const Rect &area, mob_ski
 
 auto Mist::getMap() const -> Map * {
 	return Maps::getMap(m_ownerMap);
+}
+
 }

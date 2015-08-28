@@ -22,70 +22,72 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <string>
 
-class Player;
+namespace Vana {
+	class Player;
 
-struct FootholdInfo {
-	bool forbidJumpDown = false;
-	bool leftEdge = false;
-	bool rightEdge = false;
-	foothold_id_t id = 0;
-	int16_t dragForce = 0;
-	Line line;
-};
+	struct FootholdInfo {
+		bool forbidJumpDown = false;
+		bool leftEdge = false;
+		bool rightEdge = false;
+		foothold_id_t id = 0;
+		int16_t dragForce = 0;
+		Line line;
+	};
 
-struct PortalInfo {
-	bool disabled = false;
-	bool onlyOnce = false;
-	portal_id_t id = 0;
-	map_id_t toMap = 0;
-	string_t toName;
-	string_t script;
-	string_t name;
-	Point pos;
-};
+	struct PortalInfo {
+		bool disabled = false;
+		bool onlyOnce = false;
+		portal_id_t id = 0;
+		map_id_t toMap = 0;
+		string_t toName;
+		string_t script;
+		string_t name;
+		Point pos;
+	};
 
-struct SpawnInfo {
-	auto setSpawnInfo(const SpawnInfo &rhs) -> void {
-		id = rhs.id;
-		time = rhs.time;
-		foothold = rhs.foothold;
-		pos = rhs.pos;
-		facesLeft = rhs.facesLeft;
-		spawned = rhs.spawned;
-	}
+	struct SpawnInfo {
+		auto setSpawnInfo(const SpawnInfo &rhs) -> void {
+			id = rhs.id;
+			time = rhs.time;
+			foothold = rhs.foothold;
+			pos = rhs.pos;
+			facesLeft = rhs.facesLeft;
+			spawned = rhs.spawned;
+		}
 
-	bool facesLeft = false;
-	bool spawned = false;
-	int32_t id = 0;
-	int32_t time = 0;
-	foothold_id_t foothold = 0;
-	Point pos;
-};
+		bool facesLeft = false;
+		bool spawned = false;
+		int32_t id = 0;
+		int32_t time = 0;
+		foothold_id_t foothold = 0;
+		Point pos;
+	};
 
-struct NpcSpawnInfo : public SpawnInfo {
-	coord_t rx0 = 0;
-	coord_t rx1 = 0;
-};
+	struct NpcSpawnInfo : public SpawnInfo {
+		coord_t rx0 = 0;
+		coord_t rx1 = 0;
+	};
 
-struct MobSpawnInfo : public SpawnInfo {
-	mob_id_t link = 0;
-};
+	struct MobSpawnInfo : public SpawnInfo {
+		mob_id_t link = 0;
+	};
 
-struct ReactorSpawnInfo : public SpawnInfo {
-	string_t name;
-};
+	struct ReactorSpawnInfo : public SpawnInfo {
+		string_t name;
+	};
 
-struct Respawnable {
-	Respawnable() = default;
-	Respawnable(size_t spawnId, time_point_t spawnAt) : spawnAt{spawnAt}, spawnId{spawnId}, spawn{true} { }
+	struct Respawnable {
+		Respawnable() = default;
+		Respawnable(size_t spawnId, time_point_t spawnAt) : spawnAt{spawnAt}, spawnId{spawnId}, spawn{true} { }
 
-	bool spawn = false;
-	size_t spawnId = 0;
-	time_point_t spawnAt = time_point_t{seconds_t{0}};
-};
+		bool spawn = false;
+		size_t spawnId = 0;
+		time_point_t spawnAt = time_point_t{seconds_t{0}};
+	};
 
-struct SeatInfo {
-	seat_id_t id = 0;
-	Player *occupant = nullptr;
-	Point pos;
-};
+	struct SeatInfo {
+		seat_id_t id = 0;
+		Player *occupant = nullptr;
+		Point pos;
+	};
+}
