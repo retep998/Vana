@@ -35,7 +35,7 @@ namespace Vana {
 	class Player;
 	struct MobSkillInfo;
 	struct MobSkillLevelInfo;
-	struct MpEaterInfo;
+	struct MpEaterData;
 	struct StatusInfo;
 
 	class Mob : public MovableLife, public enable_shared<Mob>, public TimerContainerHolder {
@@ -53,7 +53,7 @@ namespace Vana {
 		auto explode() -> void;
 		auto kill() -> void;
 		auto consumeMp(int32_t mp) -> void;
-		auto mpEat(Player *player, MpEaterInfo *mp) -> void;
+		auto mpEat(Player *player, MpEaterData *mp) -> void;
 		auto setSkillFeasibility(bool skillFeasible) -> void { m_skillFeasible = skillFeasible; }
 		auto useAnticipatedSkill() -> Result;
 		auto resetAnticipatedSkill() -> void;

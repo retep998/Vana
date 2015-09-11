@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Channel.hpp"
 #include "Channels.hpp"
 #include "Database.hpp"
-#include "GameObjects.hpp"
 #include "InterHeader.hpp"
 #include "InterHelper.hpp"
 #include "PacketReader.hpp"

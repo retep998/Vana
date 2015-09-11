@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MiscUtilities.hpp"
 #include "Mist.hpp"
 #include "MobsPacket.hpp"
+#include "MpEaterData.hpp"
 #include "Party.hpp"
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
@@ -537,7 +538,7 @@ auto Mob::doCrashSkill(skill_id_t skillId) -> void {
 	}
 }
 
-auto Mob::mpEat(Player *player, MpEaterInfo *mp) -> void {
+auto Mob::mpEat(Player *player, MpEaterData *mp) -> void {
 	if (m_mpEaterCount < 3 && getMp() > 0 && Randomizer::rand<uint16_t>(99) < mp->prop) {
 		mp->used = true;
 		int32_t eatenMp = getMaxMp() * mp->x / 100;

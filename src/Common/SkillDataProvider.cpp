@@ -162,7 +162,7 @@ auto SkillDataProvider::loadBanishData() -> void {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("skill_mob_banish_data"));
 
 	for (const auto &row : rs) {
-		BanishField banish;
+		BanishFieldInfo banish;
 		mob_id_t mobId = row.get<mob_id_t>("mobid");
 
 		banish.message = row.get<string_t>("message");
@@ -181,7 +181,7 @@ auto SkillDataProvider::loadMorphs() -> void {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("morph_data"));
 
 	for (const auto &row : rs) {
-		MorphData morph;
+		MorphInfo morph;
 		morph_id_t morphId = row.get<morph_id_t>("morphid");
 
 		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&morph](const string_t &cmp) {
@@ -215,11 +215,11 @@ auto SkillDataProvider::getMobSkill(mob_skill_id_t skill, mob_skill_level_t leve
 		ext::find_value_ptr(m_mobSkills, skill), level);
 }
 
-auto SkillDataProvider::getBanishData(mob_id_t mobId) const -> const BanishField * const {
+auto SkillDataProvider::getBanishData(mob_id_t mobId) const -> const BanishFieldInfo * const {
 	return ext::find_value_ptr(m_banishInfo, mobId);
 }
 
-auto SkillDataProvider::getMorphData(morph_id_t morph) const -> const MorphData * const {
+auto SkillDataProvider::getMorphData(morph_id_t morph) const -> const MorphInfo * const {
 	return ext::find_value_ptr(m_morphInfo, morph);
 }
 

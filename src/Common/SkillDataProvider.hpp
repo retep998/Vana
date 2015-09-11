@@ -17,8 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "BanishFieldInfo.hpp"
+#include "MobSkillLevelInfo.hpp"
+#include "MorphInfo.hpp"
 #include "SkillConstants.hpp"
-#include "SkillDataObjects.hpp"
+#include "SkillLevelInfo.hpp"
 #include "Types.hpp"
 #include <unordered_map>
 
@@ -31,8 +34,8 @@ namespace Vana {
 		auto getMaxLevel(skill_id_t skillId) const -> uint8_t;
 		auto getSkill(skill_id_t skill, skill_level_t level) const -> const SkillLevelInfo * const;
 		auto getMobSkill(mob_skill_id_t skill, mob_skill_level_t level) const -> const MobSkillLevelInfo * const;
-		auto getBanishData(mob_id_t mobId) const -> const BanishField * const;
-		auto getMorphData(morph_id_t morph) const -> const MorphData * const;
+		auto getBanishData(mob_id_t mobId) const -> const BanishFieldInfo * const;
+		auto getMorphData(morph_id_t morph) const -> const MorphInfo * const;
 	private:
 		auto loadPlayerSkills() -> void;
 		auto loadPlayerSkillLevels() -> void;
@@ -44,7 +47,7 @@ namespace Vana {
 		hash_map_t<mob_skill_id_t, hash_map_t<mob_skill_level_t, MobSkillLevelInfo>> m_mobSkills;
 		hash_map_t<skill_id_t, hash_map_t<skill_level_t, SkillLevelInfo>> m_skillLevels;
 		hash_map_t<skill_id_t, skill_level_t> m_skillMaxLevels;
-		hash_map_t<skill_id_t, BanishField> m_banishInfo;
-		hash_map_t<morph_id_t, MorphData> m_morphInfo;
+		hash_map_t<skill_id_t, BanishFieldInfo> m_banishInfo;
+		hash_map_t<morph_id_t, MorphInfo> m_morphInfo;
 	};
 }

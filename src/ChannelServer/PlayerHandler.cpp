@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerHandler.hpp"
 #include "Algorithm.hpp"
+#include "AttackData.hpp"
 #include "ChannelServer.hpp"
 #include "Drop.hpp"
 #include "DropHandler.hpp"
@@ -31,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MobHandler.hpp"
 #include "MonsterBookPacket.hpp"
 #include "MovementHandler.hpp"
+#include "MpEaterData.hpp"
 #include "MysticDoor.hpp"
 #include "PacketWrapper.hpp"
 #include "Player.hpp"
@@ -40,10 +42,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayersPacket.hpp"
 #include "Randomizer.hpp"
 #include "PacketReader.hpp"
+#include "ReturnDamageData.hpp"
 #include "SkillConstants.hpp"
 #include "SkillDataProvider.hpp"
 #include "Skills.hpp"
 #include "SkillsPacket.hpp"
+#include "SkillType.hpp"
 #include "StatusInfo.hpp"
 #include "Summon.hpp"
 #include "SummonHandler.hpp"
@@ -104,7 +108,7 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 	map_object_t mapMobId = 0;
 	mob_id_t mobId = 0;
 	skill_id_t noDamageId = 0;
-	ReturnDamageInfo pgmr;
+	ReturnDamageData pgmr;
 
 	if (type != MapDamage) {
 		mobId = reader.get<mob_id_t>();
@@ -356,7 +360,7 @@ auto PlayerHandler::handleSpecialSkills(Player *player, PacketReader &reader) ->
 		case Skills::FpArchMage::BigBang:
 		case Skills::IlArchMage::BigBang:
 		case Skills::Bishop::BigBang: {
-			ChargeOrStationarySkillInfo info;
+			ChargeOrStationarySkillData info;
 			info.skillId = skillId;
 			info.level = reader.get<skill_level_t>();
 			info.direction = reader.get<uint8_t>();
@@ -467,7 +471,7 @@ auto PlayerHandler::useBombSkill(Player *player, PacketReader &reader) -> void {
 }
 
 auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void {
-	Attack attack = compileAttack(player, reader, SkillType::Melee);
+	AttackData attack = compileAttack(player, reader, SkillType::Melee);
 	if (attack.portals != player->getPortalCount()) {
 		// Usually evidence of hacking
 		return;
@@ -677,7 +681,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 }
 
 auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> void {
-	Attack attack = compileAttack(player, reader, SkillType::Ranged);
+	AttackData attack = compileAttack(player, reader, SkillType::Ranged);
 	if (attack.portals != player->getPortalCount()) {
 		// Usually evidence of hacking
 		return;
@@ -699,7 +703,7 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 		case Skills::WindArcher::Hurricane:
 		case Skills::Corsair::RapidFire:
 			if (!player->hasChargeOrStationarySkill()) {
-				ChargeOrStationarySkillInfo info;
+				ChargeOrStationarySkillData info;
 				info.skillId = skillId;
 				info.direction = attack.animation;
 				info.weaponSpeed = attack.weaponSpeed;
@@ -810,7 +814,7 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 }
 
 auto PlayerHandler::useSpellAttack(Player *player, PacketReader &reader) -> void {
-	const Attack &attack = compileAttack(player, reader, SkillType::Magic);
+	const AttackData &attack = compileAttack(player, reader, SkillType::Magic);
 	if (attack.portals != player->getPortalCount()) {
 		// Usually evidence of hacking
 		return;
@@ -829,7 +833,7 @@ auto PlayerHandler::useSpellAttack(Player *player, PacketReader &reader) -> void
 
 	player->sendMap(Packets::Players::useSpellAttack(player->getId(), attack));
 
-	MpEaterInfo eater;
+	MpEaterData eater;
 	eater.skillId = player->getSkills()->getMpEater();
 	eater.level = player->getSkills()->getSkillLevel(eater.skillId);
 	if (eater.level > 0) {
@@ -895,7 +899,7 @@ auto PlayerHandler::useSpellAttack(Player *player, PacketReader &reader) -> void
 }
 
 auto PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &reader) -> void {
-	Attack attack = compileAttack(player, reader, SkillType::EnergyCharge);
+	AttackData attack = compileAttack(player, reader, SkillType::EnergyCharge);
 	skill_id_t masteryId = player->getSkills()->getMastery();
 	player->sendMap(Packets::Players::useEnergyChargeAttack(player->getId(), masteryId, player->getSkills()->getSkillLevel(masteryId), attack));
 
@@ -942,7 +946,7 @@ auto PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &reader) 
 }
 
 auto PlayerHandler::useSummonAttack(Player *player, PacketReader &reader) -> void {
-	Attack attack = compileAttack(player, reader, SkillType::Summon);
+	AttackData attack = compileAttack(player, reader, SkillType::Summon);
 	Summon *summon = player->getSummons()->getSummon(attack.summonId);
 	if (summon == nullptr) {
 		// Hacking or some other form of tomfoolery
@@ -984,8 +988,8 @@ auto PlayerHandler::useSummonAttack(Player *player, PacketReader &reader) -> voi
 	}
 }
 
-auto PlayerHandler::compileAttack(Player *player, PacketReader &reader, SkillType skillType) -> Attack {
-	Attack attack;
+auto PlayerHandler::compileAttack(Player *player, PacketReader &reader, SkillType skillType) -> AttackData {
+	AttackData attack;
 	int8_t targets = 0;
 	int8_t hits = 0;
 	skill_id_t skillId = 0;

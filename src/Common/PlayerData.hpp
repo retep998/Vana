@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "IPacket.hpp"
 #include "Types.hpp"
 #include <string>
+#include <vector>
 
 namespace Vana {
 	struct PlayerData {
@@ -94,28 +95,6 @@ namespace Vana {
 			builder.add<string_t>(obj.name);
 			builder.add<Ip>(obj.ip);
 			builder.add<vector_t<player_id_t>>(obj.mutualBuddies);
-		}
-	};
-
-	struct PartyData {
-		party_id_t id = -1;
-		player_id_t leader = -1;
-		vector_t<player_id_t> members;
-	};
-
-	template <>
-	struct PacketSerialize<PartyData> {
-		auto read(PacketReader &reader) -> PartyData {
-			PartyData ret;
-			ret.id = reader.get<party_id_t>();
-			ret.leader = reader.get<player_id_t>();
-			ret.members = reader.get<vector_t<player_id_t>>();
-			return ret;
-		}
-		auto write(PacketBuilder &builder, const PartyData &obj) -> void {
-			builder.add<party_id_t>(obj.id);
-			builder.add<player_id_t>(obj.leader);
-			builder.add<vector_t<player_id_t>>(obj.members);
 		}
 	};
 }

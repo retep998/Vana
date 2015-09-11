@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "EquipDataProvider.hpp"
 #include "GameConstants.hpp"
 #include "GameLogicUtilities.hpp"
-#include "GameObjects.hpp"
 #include "InitializeCommon.hpp"
 #include "Randomizer.hpp"
 #include "ShopDataProvider.hpp"
@@ -136,9 +135,9 @@ auto ItemDataProvider::loadConsumes(BuffDataProvider &provider) -> void {
 	auto &sql = db.getSession();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("item_random_morphs"));
 
-	hash_map_t<item_id_t, vector_t<Morph>> morphData;
+	hash_map_t<item_id_t, vector_t<MorphChanceInfo>> morphData;
 	for (const auto &row : rs) {
-		Morph morph;
+		MorphChanceInfo morph;
 		item_id_t itemId = row.get<item_id_t>("itemid");
 		morph.morph = row.get<morph_id_t>("morphid");
 		morph.chance = row.get<int8_t>("success");
@@ -173,7 +172,7 @@ auto ItemDataProvider::loadConsumes(BuffDataProvider &provider) -> void {
 
 		morph_id_t morphId = row.get<morph_id_t>("morph");
 		if (morphId != 0) {
-			Morph morph;
+			MorphChanceInfo morph;
 			morph.morph = morphId;
 			morph.chance = 100;
 			item.morphs.push_back(morph);
@@ -240,7 +239,7 @@ auto ItemDataProvider::loadMapRanges() -> void {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("item_monster_card_map_ranges"));
 
 	for (const auto &row : rs) {
-		CardMapRange range;
+		CardMapRangeInfo range;
 		item_id_t itemId = row.get<item_id_t>("itemid");
 		range.startMap = row.get<map_id_t>("start_map");
 		range.endMap = row.get<map_id_t>("end_map");
@@ -274,14 +273,14 @@ auto ItemDataProvider::loadItemSkills() -> void {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("item_skills"));
 
 	for (const auto &row : rs) {
-		Skillbook skill;
+		SkillbookInfo book;
 		item_id_t itemId = row.get<item_id_t>("itemid");
-		skill.skillId = row.get<skill_id_t>("skillid");
-		skill.reqLevel = row.get<skill_level_t>("req_skill_level");
-		skill.maxLevel = row.get<skill_level_t>("master_level");
-		skill.chance = row.get<int8_t>("chance");
+		book.skillId = row.get<skill_id_t>("skillid");
+		book.reqLevel = row.get<skill_level_t>("req_skill_level");
+		book.maxLevel = row.get<skill_level_t>("master_level");
+		book.chance = row.get<int8_t>("chance");
 
-		m_skillbooks[itemId].push_back(skill);
+		m_skillbooks[itemId].push_back(book);
 	}
 }
 
@@ -293,7 +292,7 @@ auto ItemDataProvider::loadSummonBags() -> void {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("item_summons"));
 
 	for (const auto &row : rs) {
-		SummonBag summon;
+		SummonBagInfo summon;
 		item_id_t itemId = row.get<item_id_t>("itemid");
 		summon.mobId = row.get<mob_id_t>("mobid");
 		summon.chance = row.get<uint16_t>("chance");
@@ -490,7 +489,7 @@ auto ItemDataProvider::getInteraction(item_id_t itemId, int32_t action) const ->
 		ext::find_value_ptr(m_petInteractInfo, itemId), action);
 }
 
-auto ItemDataProvider::getItemSkills(item_id_t itemId) const -> const vector_t<Skillbook> * const {
+auto ItemDataProvider::getItemSkills(item_id_t itemId) const -> const vector_t<SkillbookInfo> * const {
 	return ext::find_value_ptr(m_skillbooks, itemId);
 }
 
@@ -498,7 +497,7 @@ auto ItemDataProvider::getItemRewards(item_id_t itemId) const -> const vector_t<
 	return ext::find_value_ptr(m_itemRewards, itemId);
 }
 
-auto ItemDataProvider::getItemSummons(item_id_t itemId) const -> const vector_t<SummonBag> * const {
+auto ItemDataProvider::getItemSummons(item_id_t itemId) const -> const vector_t<SummonBagInfo> * const {
 	return ext::find_value_ptr(m_summonBags, itemId);
 }
 

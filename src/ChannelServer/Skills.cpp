@@ -74,8 +74,8 @@ auto Skills::cancelSkill(Player *player, PacketReader &reader) -> void {
 		case Skills::IlArchMage::BigBang:
 		case Skills::Bishop::BigBang:
 		case Skills::Corsair::RapidFire:
-			player->sendMap(Packets::Skills::endChargeOrStationarySkill(player->getId(), player->getChargeOrStationarySkillInfo()));
-			player->setChargeOrStationarySkill(ChargeOrStationarySkillInfo{});
+			player->sendMap(Packets::Skills::endChargeOrStationarySkill(player->getId(), player->getChargeOrStationarySkill()));
+			player->setChargeOrStationarySkill(ChargeOrStationarySkillData{});
 			return;
 	}
 

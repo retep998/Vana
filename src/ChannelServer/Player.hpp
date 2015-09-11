@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "AbstractConnection.hpp"
+#include "ChargeOrStationarySkillData.hpp"
 #include "MovableLife.hpp"
 #include "Npc.hpp"
 #include "PlayerActiveBuffs.hpp"
@@ -73,7 +74,7 @@ namespace Vana {
 		auto setChair(item_id_t chair) -> void { m_chair = chair; }
 		auto setItemEffect(item_id_t effect) -> void { m_itemEffect = effect; }
 		auto setChalkboard(const string_t &msg) -> void { m_chalkboard = msg; }
-		auto setChargeOrStationarySkill(const ChargeOrStationarySkillInfo &info) -> void { m_info = info; }
+		auto setChargeOrStationarySkill(const ChargeOrStationarySkillData &info) -> void { m_info = info; }
 		auto setNpc(Npc *npc) -> void { m_npc.reset(npc); }
 		auto setParty(Party *party) -> void { m_party = party; }
 		auto setFollow(Player *target) -> void { m_follow = target; }
@@ -114,7 +115,7 @@ namespace Vana {
 		auto getChalkboard() const -> string_t { return m_chalkboard; }
 		auto getMedalName() -> string_t;
 		auto getName() const -> string_t { return m_name; }
-		auto getChargeOrStationarySkillInfo() const -> ChargeOrStationarySkillInfo { return m_info; }
+		auto getChargeOrStationarySkill() const -> ChargeOrStationarySkillData { return m_info; }
 		auto getTransferPacket() const -> PacketBuilder;
 
 		auto getMap() const -> Map *;
@@ -192,7 +193,7 @@ namespace Vana {
 		Player *m_follow = nullptr;
 		string_t m_chalkboard;
 		string_t m_name;
-		ChargeOrStationarySkillInfo m_info;
+		ChargeOrStationarySkillData m_info;
 		owned_ptr_t<Npc> m_npc;
 		owned_ptr_t<PlayerActiveBuffs> m_activeBuffs;
 		owned_ptr_t<PlayerBuddyList> m_buddyList;

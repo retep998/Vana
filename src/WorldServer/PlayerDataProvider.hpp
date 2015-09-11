@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "GameObjects.hpp"
 #include "IdPool.hpp"
 #include "InterHelper.hpp"
 #include "Ip.hpp"
-#include "PlayerObjects.hpp"
+#include "PartyData.hpp"
+#include "PlayerData.hpp"
 #include "Types.hpp"
 #include <functional>
 #include <memory>

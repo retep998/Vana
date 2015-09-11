@@ -98,7 +98,7 @@ auto DropDataProvider::loadGlobalDrops() -> void {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("drop_global_data"));
 
 	for (const auto &row : rs) {
-		GlobalDrop drop;
+		GlobalDropInfo drop;
 
 		drop.continent = row.get<int8_t>("continent");
 		drop.itemId = row.get<item_id_t>("itemid");
@@ -124,7 +124,7 @@ auto DropDataProvider::getDrops(int32_t objectId) const -> const vector_t<DropIn
 	return m_dropInfo.find(objectId)->second;
 }
 
-auto DropDataProvider::getGlobalDrops() const -> const vector_t<GlobalDrop> & {
+auto DropDataProvider::getGlobalDrops() const -> const vector_t<GlobalDropInfo> & {
 	return m_globalDrops;
 }
 

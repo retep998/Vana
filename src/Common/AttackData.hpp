@@ -17,25 +17,36 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Item.hpp"
-#include "ItemConstants.hpp"
-#include "EquipInfo.hpp"
+#include "Point.hpp"
 #include "Types.hpp"
 #include <unordered_map>
+#include <vector>
 
 namespace Vana {
-	class EquipDataProvider {
-	public:
-		auto loadData() -> void;
-
-		auto setEquipStats(Item *equip, Items::StatVariance variancePolicy, bool isGm, bool isItemInitialization) const -> void;
-		auto canEquip(item_id_t itemId, gender_id_t gender, job_id_t job, stat_t str, stat_t dex, stat_t intt, stat_t luk, fame_t fame) const -> bool;
-		auto isValidSlot(item_id_t equipId, inventory_slot_t target) const -> bool;
-		auto getSlots(item_id_t equipId) const -> int8_t;
-		auto getEquipInfo(item_id_t equipId) const -> const EquipInfo &;
-	private:
-		auto loadEquips() -> void;
-
-		hash_map_t<item_id_t, EquipInfo> m_equipInfo;
+	struct AttackData {
+		bool isMesoExplosion = false;
+		bool isShadowMeso = false;
+		bool isChargeSkill = false;
+		bool isPiercingArrow = false;
+		bool isHeal = false;
+		int8_t targets = 0;
+		int8_t hits = 0;
+		uint8_t display = 0;
+		uint8_t weaponSpeed = 0;
+		uint8_t animation = 0;
+		uint8_t weaponClass = 0;
+		skill_level_t skillLevel = 0;
+		uint8_t portals = 0;
+		inventory_slot_t starPos = -1;
+		inventory_slot_t cashStarPos = -1;
+		skill_id_t skillId = 0;
+		summon_id_t summonId = 0;
+		charge_time_t charge = 0;
+		item_id_t starId = 0;
+		tick_count_t ticks = 0;
+		int64_t totalDamage = 0;
+		Point projectilePos;
+		Point playerPos;
+		hash_map_t<map_object_t, vector_t<damage_t>> damages;
 	};
 }

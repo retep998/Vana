@@ -17,25 +17,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Item.hpp"
-#include "ItemConstants.hpp"
-#include "EquipInfo.hpp"
 #include "Types.hpp"
-#include <unordered_map>
 
 namespace Vana {
-	class EquipDataProvider {
-	public:
-		auto loadData() -> void;
-
-		auto setEquipStats(Item *equip, Items::StatVariance variancePolicy, bool isGm, bool isItemInitialization) const -> void;
-		auto canEquip(item_id_t itemId, gender_id_t gender, job_id_t job, stat_t str, stat_t dex, stat_t intt, stat_t luk, fame_t fame) const -> bool;
-		auto isValidSlot(item_id_t equipId, inventory_slot_t target) const -> bool;
-		auto getSlots(item_id_t equipId) const -> int8_t;
-		auto getEquipInfo(item_id_t equipId) const -> const EquipInfo &;
-	private:
-		auto loadEquips() -> void;
-
-		hash_map_t<item_id_t, EquipInfo> m_equipInfo;
+	struct ScrollInfo {
+		bool warmSupport = false;
+		bool randStat = false;
+		bool preventSlip = false;
+		int8_t recover = 0;
+		stat_t istr = 0;
+		stat_t idex = 0;
+		stat_t iint = 0;
+		stat_t iluk = 0;
+		health_t ihp = 0;
+		health_t imp = 0;
+		stat_t iwAtk = 0;
+		stat_t imAtk = 0;
+		stat_t iwDef = 0;
+		stat_t imDef = 0;
+		stat_t iacc = 0;
+		stat_t iavo = 0;
+		stat_t ihand = 0;
+		stat_t ijump = 0;
+		stat_t ispeed = 0;
+		uint16_t success = 0;
+		uint16_t cursed = 0;
 	};
 }

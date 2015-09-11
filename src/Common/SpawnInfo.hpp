@@ -18,33 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Point.hpp"
-#include "Line.hpp"
 #include "Types.hpp"
 #include <string>
 
 namespace Vana {
-	class Player;
-
-	struct FootholdInfo {
-		bool forbidJumpDown = false;
-		bool leftEdge = false;
-		bool rightEdge = false;
-		foothold_id_t id = 0;
-		int16_t dragForce = 0;
-		Line line;
-	};
-
-	struct PortalInfo {
-		bool disabled = false;
-		bool onlyOnce = false;
-		portal_id_t id = 0;
-		map_id_t toMap = 0;
-		string_t toName;
-		string_t script;
-		string_t name;
-		Point pos;
-	};
-
 	struct SpawnInfo {
 		auto setSpawnInfo(const SpawnInfo &rhs) -> void {
 			id = rhs.id;
@@ -74,20 +51,5 @@ namespace Vana {
 
 	struct ReactorSpawnInfo : public SpawnInfo {
 		string_t name;
-	};
-
-	struct Respawnable {
-		Respawnable() = default;
-		Respawnable(size_t spawnId, time_point_t spawnAt) : spawnAt{spawnAt}, spawnId{spawnId}, spawn{true} { }
-
-		bool spawn = false;
-		size_t spawnId = 0;
-		time_point_t spawnAt = time_point_t{seconds_t{0}};
-	};
-
-	struct SeatInfo {
-		seat_id_t id = 0;
-		Player *occupant = nullptr;
-		Point pos;
 	};
 }

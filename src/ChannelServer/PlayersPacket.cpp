@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayersPacket.hpp"
+#include "AttackData.hpp"
 #include "ChannelServer.hpp"
 #include "GameConstants.hpp"
 #include "GameLogicUtilities.hpp"
@@ -25,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pet.hpp"
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
+#include "ReturnDamageData.hpp"
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 #include "WidePoint.hpp"
@@ -63,7 +65,7 @@ PACKET_IMPL(showChat, player_id_t playerId, bool isGm, const string_t &msg, bool
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(damagePlayer, player_id_t playerId, damage_t dmg, mob_id_t mob, uint8_t hit, int8_t type, uint8_t stance, skill_id_t noDamageSkill, const ReturnDamageInfo &pgmr) {
+SPLIT_PACKET_IMPL(damagePlayer, player_id_t playerId, damage_t dmg, mob_id_t mob, uint8_t hit, int8_t type, uint8_t stance, skill_id_t noDamageSkill, const ReturnDamageData &pgmr) {
 	SplitPacketBuilder builder;
 	const int8_t BumpDamage = -1;
 	const int8_t MapDamage = -2;
@@ -158,7 +160,7 @@ PACKET_IMPL(findPlayer, const string_t &name, opt_int32_t map, uint8_t is, bool 
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useMeleeAttack, player_id_t playerId, skill_id_t masterySkillId, skill_level_t masteryLevel, const Attack &attack) {
+SPLIT_PACKET_IMPL(useMeleeAttack, player_id_t playerId, skill_id_t masterySkillId, skill_level_t masteryLevel, const AttackData &attack) {
 	SplitPacketBuilder builder;
 	int8_t hitByte = (attack.targets * 0x10) + attack.hits;
 	skill_id_t skillId = attack.skillId;
@@ -199,7 +201,7 @@ SPLIT_PACKET_IMPL(useMeleeAttack, player_id_t playerId, skill_id_t masterySkillI
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useRangedAttack, player_id_t playerId, skill_id_t masterySkillId, skill_level_t masteryLevel, const Attack &attack) {
+SPLIT_PACKET_IMPL(useRangedAttack, player_id_t playerId, skill_id_t masterySkillId, skill_level_t masteryLevel, const AttackData &attack) {
 	SplitPacketBuilder builder;
 	skill_id_t skillId = attack.skillId;
 
@@ -243,7 +245,7 @@ SPLIT_PACKET_IMPL(useRangedAttack, player_id_t playerId, skill_id_t masterySkill
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useSpellAttack, player_id_t playerId, const Attack &attack) {
+SPLIT_PACKET_IMPL(useSpellAttack, player_id_t playerId, const AttackData &attack) {
 	SplitPacketBuilder builder;
 	builder.map
 		.add<header_t>(SMSG_ATTACK_MAGIC)
@@ -273,7 +275,7 @@ SPLIT_PACKET_IMPL(useSpellAttack, player_id_t playerId, const Attack &attack) {
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useSummonAttack, player_id_t playerId, const Attack &attack) {
+SPLIT_PACKET_IMPL(useSummonAttack, player_id_t playerId, const AttackData &attack) {
 	SplitPacketBuilder builder;
 	builder.map
 		.add<header_t>(SMSG_SUMMON_ATTACK)
@@ -305,7 +307,7 @@ SPLIT_PACKET_IMPL(useBombAttack, player_id_t playerId, charge_time_t chargeTime,
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useEnergyChargeAttack, player_id_t playerId, int32_t masterySkillId, uint8_t masteryLevel, const Attack &attack) {
+SPLIT_PACKET_IMPL(useEnergyChargeAttack, player_id_t playerId, int32_t masterySkillId, uint8_t masteryLevel, const AttackData &attack) {
 	SplitPacketBuilder builder;
 	builder.map
 		.add<header_t>(SMSG_ATTACK_ENERGYCHARGE)

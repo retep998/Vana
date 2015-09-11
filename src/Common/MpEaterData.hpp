@@ -17,25 +17,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Item.hpp"
-#include "ItemConstants.hpp"
-#include "EquipInfo.hpp"
+#include "MapConstants.hpp"
+#include "Point.hpp"
+#include "Rect.hpp"
 #include "Types.hpp"
+#include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace Vana {
-	class EquipDataProvider {
-	public:
-		auto loadData() -> void;
-
-		auto setEquipStats(Item *equip, Items::StatVariance variancePolicy, bool isGm, bool isItemInitialization) const -> void;
-		auto canEquip(item_id_t itemId, gender_id_t gender, job_id_t job, stat_t str, stat_t dex, stat_t intt, stat_t luk, fame_t fame) const -> bool;
-		auto isValidSlot(item_id_t equipId, inventory_slot_t target) const -> bool;
-		auto getSlots(item_id_t equipId) const -> int8_t;
-		auto getEquipInfo(item_id_t equipId) const -> const EquipInfo &;
-	private:
-		auto loadEquips() -> void;
-
-		hash_map_t<item_id_t, EquipInfo> m_equipInfo;
+	struct MpEaterData {
+		bool used = false;
+		skill_level_t level = 0;
+		int16_t x = 0;
+		uint16_t prop = 0;
+		skill_id_t skillId = 0;
 	};
 }

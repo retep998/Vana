@@ -23,8 +23,7 @@ namespace Vana {
 	enum class SkillType;
 	class PacketReader;
 	class Player;
-	struct Attack;
-	struct MpEaterInfo;
+	struct AttackData;
 
 	namespace PlayerHandler {
 		auto handleDoorUse(Player *player, PacketReader &reader) -> void;
@@ -43,6 +42,6 @@ namespace Vana {
 		auto useSpellAttack(Player *player, PacketReader &reader) -> void;
 		auto useEnergyChargeAttack(Player *player, PacketReader &reader) -> void;
 		auto useSummonAttack(Player *player, PacketReader &reader) -> void;
-		auto compileAttack(Player *player, PacketReader &reader, SkillType skillType) -> Attack;
+		auto compileAttack(Player *player, PacketReader &reader, SkillType skillType) -> AttackData;
 	}
 }

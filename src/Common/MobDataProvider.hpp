@@ -18,7 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "GameConstants.hpp"
-#include "MobDataObjects.hpp"
+#include "MobAttackInfo.hpp"
+#include "MobInfo.hpp"
+#include "MobSkillInfo.hpp"
 #include "Types.hpp"
 #include <memory>
 #include <string>

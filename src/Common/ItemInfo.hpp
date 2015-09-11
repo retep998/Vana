@@ -17,25 +17,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Item.hpp"
-#include "ItemConstants.hpp"
-#include "EquipInfo.hpp"
 #include "Types.hpp"
-#include <unordered_map>
+#include <string>
 
 namespace Vana {
-	class EquipDataProvider {
-	public:
-		auto loadData() -> void;
-
-		auto setEquipStats(Item *equip, Items::StatVariance variancePolicy, bool isGm, bool isItemInitialization) const -> void;
-		auto canEquip(item_id_t itemId, gender_id_t gender, job_id_t job, stat_t str, stat_t dex, stat_t intt, stat_t luk, fame_t fame) const -> bool;
-		auto isValidSlot(item_id_t equipId, inventory_slot_t target) const -> bool;
-		auto getSlots(item_id_t equipId) const -> int8_t;
-		auto getEquipInfo(item_id_t equipId) const -> const EquipInfo &;
-	private:
-		auto loadEquips() -> void;
-
-		hash_map_t<item_id_t, EquipInfo> m_equipInfo;
+	struct ItemInfo {
+		bool timeLimited = false;
+		bool noSale = false;
+		bool karmaScissors = false;
+		bool expireOnLogout = false;
+		bool blockPickup = false;
+		bool noTrade = false;
+		bool quest = false;
+		bool cash = false;
+		player_level_t minLevel = 0;
+		player_level_t maxLevel = 0;
+		skill_level_t makerLevel = 0;
+		slot_qty_t maxSlot = 0;
+		mesos_t price = 0;
+		int32_t maxObtainable = 0;
+		experience_t exp = 0;
+		npc_id_t npc = 0;
+		mesos_t mesos = 0;
+		string_t name;
 	};
 }

@@ -17,10 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "GameObjects.hpp"
 #include "InterHelper.hpp"
 #include "Ip.hpp"
-#include "PlayerObjects.hpp"
+#include "PlayerData.hpp"
 #include "shared_array.hpp"
 #include "Types.hpp"
 #include <functional>

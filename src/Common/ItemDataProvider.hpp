@@ -17,7 +17,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "ItemDataObjects.hpp"
+#include "ConsumeInfo.hpp"
+#include "ItemInfo.hpp"
+#include "ItemRewardInfo.hpp"
+#include "PetInfo.hpp"
+#include "PetInteractInfo.hpp"
+#include "ScrollInfo.hpp"
+#include "SkillbookInfo.hpp"
+#include "SummonBagInfo.hpp"
 #include "Types.hpp"
 #include <string>
 #include <unordered_map>
@@ -39,9 +46,9 @@ namespace Vana {
 		auto getConsumeInfo(item_id_t itemId) const -> const ConsumeInfo * const;
 		auto getPetInfo(item_id_t itemId) const -> const PetInfo * const;
 		auto getInteraction(item_id_t itemId, int32_t action) const -> const PetInteractInfo * const;
-		auto getItemSkills(item_id_t itemId) const -> const vector_t<Skillbook> * const;
+		auto getItemSkills(item_id_t itemId) const -> const vector_t<SkillbookInfo> * const;
 		auto getItemRewards(item_id_t itemId) const -> const vector_t<ItemRewardInfo> * const;
-		auto getItemSummons(item_id_t itemId) const -> const vector_t<SummonBag> * const;
+		auto getItemSummons(item_id_t itemId) const -> const vector_t<SummonBagInfo> * const;
 	private:
 		auto loadItems() -> void;
 		auto loadScrolls() -> void;
@@ -57,8 +64,8 @@ namespace Vana {
 		hash_map_t<item_id_t, ItemInfo> m_itemInfo;
 		hash_map_t<item_id_t, ScrollInfo> m_scrollInfo;
 		hash_map_t<item_id_t, ConsumeInfo> m_consumeInfo;
-		hash_map_t<item_id_t, vector_t<SummonBag>> m_summonBags;
-		hash_map_t<item_id_t, vector_t<Skillbook>> m_skillbooks;
+		hash_map_t<item_id_t, vector_t<SummonBagInfo>> m_summonBags;
+		hash_map_t<item_id_t, vector_t<SkillbookInfo>> m_skillbooks;
 		hash_map_t<item_id_t, vector_t<ItemRewardInfo>> m_itemRewards;
 		hash_map_t<item_id_t, PetInfo> m_petInfo;
 		hash_map_t<item_id_t, hash_map_t<int32_t, PetInteractInfo>> m_petInteractInfo;

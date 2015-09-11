@@ -368,13 +368,7 @@
     <ClInclude Include="src\Common\Variables.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\GameObjects.hpp">
-      <Filter>Data Structures</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\Item.hpp">
-      <Filter>Data Structures</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\MapObjects.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\ConnectionManager.hpp">
@@ -404,9 +398,6 @@
     <ClInclude Include="src\Common\BitUtilities.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\PlayerObjects.hpp">
-      <Filter>Data Structures</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\Decoder.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
@@ -424,15 +415,6 @@
     </ClInclude>
     <ClInclude Include="src\Common\TauswortheGenerator.hpp">
       <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\ItemDataObjects.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\MobDataObjects.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\SkillDataObjects.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\hash_combine.hpp">
       <Filter>Lib</Filter>
@@ -656,5 +638,107 @@
     </ClInclude>
     <ClInclude Include="src\Common\McdbVersion.hpp" />
     <ClInclude Include="src\Common\MapleVersion.hpp" />
+    <ClInclude Include="src\Common\PlayerData.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\PartyData.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Respawnable.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\GuildLogo.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SpawnInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SeatInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\PortalInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\FootholdInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ScrollInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SkillbookInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SummonBagInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ConsumeInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\CardMapRangeInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ItemInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\PetInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\PetInteractInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ItemRewardInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\DropInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\GlobalDropInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\EquipInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MobAttackInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MobAttackType.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MobInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MobSkillInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SkillLevelInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SkillType.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\AttackData.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\BanishFieldInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ChargeOrStationarySkillData.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MpEaterData.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ReturnDamageData.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MobSkillLevelInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MorphChanceInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MorphInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

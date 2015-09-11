@@ -17,13 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "FootholdInfo.hpp"
 #include "IdPool.hpp"
 #include "MapConstants.hpp"
 #include "MapDataProvider.hpp"
-#include "MapObjects.hpp"
 #include "Mob.hpp"
 #include "Point.hpp"
+#include "PortalInfo.hpp"
 #include "Rect.hpp"
+#include "Respawnable.hpp"
+#include "SeatInfo.hpp"
+#include "SpawnInfo.hpp"
 #include "TimerContainerHolder.hpp"
 #include "Types.hpp"
 #include <ctime>

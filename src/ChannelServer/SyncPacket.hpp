@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "InterHelper.hpp"
 #include "PacketBuilder.hpp"
-#include "PlayerObjects.hpp"
+#include "PlayerData.hpp"
 #include "Types.hpp"
 #include <string>
 #include <vector>

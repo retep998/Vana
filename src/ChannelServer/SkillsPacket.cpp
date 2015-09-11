@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SkillsPacket.hpp"
+#include "ChargeOrStationarySkillData.hpp"
 #include "GameConstants.hpp"
 #include "Maps.hpp"
 #include "Player.hpp"
@@ -119,7 +120,7 @@ SPLIT_PACKET_IMPL(showSkillEffect, player_id_t playerId, skill_id_t skillId) {
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(showChargeOrStationarySkill, player_id_t playerId, const ChargeOrStationarySkillInfo &info) {
+SPLIT_PACKET_IMPL(showChargeOrStationarySkill, player_id_t playerId, const ChargeOrStationarySkillData &info) {
 	SplitPacketBuilder builder;
 	builder.map
 		.add<header_t>(SMSG_CHARGE_OR_STATIONARY_SKILL)
@@ -131,7 +132,7 @@ SPLIT_PACKET_IMPL(showChargeOrStationarySkill, player_id_t playerId, const Charg
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(endChargeOrStationarySkill, player_id_t playerId, const ChargeOrStationarySkillInfo &info) {
+SPLIT_PACKET_IMPL(endChargeOrStationarySkill, player_id_t playerId, const ChargeOrStationarySkillData &info) {
 	SplitPacketBuilder builder;
 	builder.map
 		.add<header_t>(SMSG_CHARGE_OR_STATIONARY_SKILL_END)

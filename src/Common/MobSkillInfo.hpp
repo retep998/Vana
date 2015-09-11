@@ -17,17 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "GameConstants.hpp"
 #include "Types.hpp"
-#include <array>
-#include <string>
-#include <vector>
 
 namespace Vana {
-	struct GuildLogo {
-		int8_t color = 0;
-		int8_t backgroundColor = 0;
-		int16_t logo = 0;
-		int16_t background = 0;
+	struct MobSkillInfo {
+		mob_skill_id_t skillId = 0;
+		mob_skill_level_t level = 0;
+		milliseconds_t effectAfter = milliseconds_t{0};
 	};
 }

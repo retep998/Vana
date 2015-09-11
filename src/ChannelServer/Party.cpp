@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PartyPacket.hpp"
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
-#include "PlayerObjects.hpp"
 #include "PlayerPacket.hpp"
 #include "PlayerSkills.hpp"
 #include "WorldServerConnectPacket.hpp"

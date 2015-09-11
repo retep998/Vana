@@ -19,34 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "GameConstants.hpp"
 #include "Types.hpp"
-#include <memory>
 #include <vector>
 
 namespace Vana {
-	enum class MobAttackType {
-		Normal,
-		SingleTarget,
-		Projectile,
-		AreaEffect,
-		AreaEffectPlus,
-	};
-
-	struct MobAttackInfo {
-		int8_t id = 0;
-		mob_skill_level_t level = 0;
-		mob_skill_id_t disease = 0;
-		uint8_t mpConsume = 0;
-		uint16_t mpBurn = 0;
-		bool deadlyAttack = false;
-		MobAttackType attackType = MobAttackType::Normal;
-	};
-
-	struct MobSkillInfo {
-		mob_skill_id_t skillId = 0;
-		mob_skill_level_t level = 0;
-		milliseconds_t effectAfter = milliseconds_t{0};
-	};
-
 	struct MobInfo {
 		bool boss = false;
 		bool canFreeze = false;
