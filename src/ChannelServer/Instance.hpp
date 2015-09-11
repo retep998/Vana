@@ -103,6 +103,8 @@ namespace Vana {
 			uint32_t counterId = 0;
 		};
 
+		template <typename ... TArgs>
+		auto callInstanceFunction(const string_t &func, TArgs ... args) -> Result;
 		auto setInstanceTimer(const duration_t &time, bool firstRun = false) -> void;
 		auto timerComplete(const string_t &name, bool fromTimer = false) -> void;
 		auto removeTimer(const string_t &name, bool performEvent) -> void;
@@ -124,4 +126,13 @@ namespace Vana {
 		hash_map_t<string_t, TimerAction> m_timerActions; // Timers indexed by name
 		hash_map_t<player_id_t, Player *> m_players;
 	};
+
+	template <typename ... TArgs>
+	auto Instance::callInstanceFunction(const string_t &func, TArgs ... args) -> Result {
+		auto luaInst = getLuaInstance();
+		if (!luaInst->exists(func)) {
+			return Result::Failure;
+		}
+		return luaInst->call(func, args...);
+	}
 }

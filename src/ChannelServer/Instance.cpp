@@ -243,8 +243,14 @@ auto Instance::setInstanceTimer(const duration_t &time, bool firstRun) -> void {
 		m_timerActions.emplace("instance", timer);
 
 		Timer::Id id{TimerType::InstanceTimer, timer.counterId};
-		Timer::Timer::create([this](const time_point_t &now) { this->instanceEnd(false, true); },
-			id, getTimers(), time, m_persistent);
+		Timer::Timer::create(
+			[this](const time_point_t &now) {
+				this->instanceEnd(false, true);
+			},
+			id,
+			getTimers(),
+			time,
+			m_persistent);
 
 		if (!firstRun && showTimer()) {
 			showTimer(true, true);
@@ -253,83 +259,43 @@ auto Instance::setInstanceTimer(const duration_t &time, bool firstRun) -> void {
 }
 
 auto Instance::beginInstance() -> Result {
-	auto luaInst = getLuaInstance();
-	if (!luaInst->exists("beginInstance")) {
-		return Result::Failure;
-	}
-	return luaInst->call("beginInstance");
+	return callInstanceFunction("beginInstance");
 }
 
 auto Instance::playerDeath(player_id_t playerId) -> Result {
-	auto luaInst = getLuaInstance();
-	if (!luaInst->exists("playerDeath")) {
-		return Result::Failure;
-	}
-	return luaInst->call("playerDeath", playerId);
+	return callInstanceFunction("playerDeath", playerId);
 }
 
 auto Instance::partyDisband(party_id_t partyId) -> Result {
-	auto luaInst = getLuaInstance();
-	if (!luaInst->exists("partyDisband")) {
-		return Result::Failure;
-	}
-	return luaInst->call("partyDisband", partyId);
+	return callInstanceFunction("partyDisband", partyId);
 }
 
 auto Instance::timerEnd(const string_t &name, bool fromTimer) -> Result {
-	auto luaInst = getLuaInstance();
-	if (!luaInst->exists("timerEnd")) {
-		return Result::Failure;
-	}
-	return luaInst->call("timerEnd", name, fromTimer);
+	return callInstanceFunction("timerEnd", name, fromTimer);
 }
 
 auto Instance::playerDisconnect(player_id_t playerId, bool isPartyLeader) -> Result {
-	auto luaInst = getLuaInstance();
-	if (!luaInst->exists("playerDisconnect")) {
-		return Result::Failure;
-	}
-	return luaInst->call("playerDisconnect", playerId, isPartyLeader);
+	return callInstanceFunction("playerDisconnect", playerId, isPartyLeader);
 }
 
 auto Instance::removePartyMember(party_id_t partyId, player_id_t playerId) -> Result {
-	auto luaInst = getLuaInstance();
-	if (!luaInst->exists("partyRemoveMember")) {
-		return Result::Failure;
-	}
-	return luaInst->call("partyRemoveMember", partyId, playerId);
+	return callInstanceFunction("partyRemoveMember", partyId, playerId);
 }
 
 auto Instance::mobDeath(mob_id_t mobId, map_object_t mapMobId, map_id_t mapId) -> Result {
-	auto luaInst = getLuaInstance();
-	if (!luaInst->exists("mobDeath")) {
-		return Result::Failure;
-	}
-	return luaInst->call("mobDeath", mobId, mapMobId, mapId);
+	return callInstanceFunction("mobDeath", mobId, mapMobId, mapId);
 }
 
 auto Instance::mobSpawn(mob_id_t mobId, map_object_t mapMobId, map_id_t mapId) -> Result {
-	auto luaInst = getLuaInstance();
-	if (!luaInst->exists("mobSpawn")) {
-		return Result::Failure;
-	}
-	return luaInst->call("mobSpawn", mobId, mapMobId, mapId);
+	return callInstanceFunction("mobSpawn", mobId, mapMobId, mapId);
 }
 
 auto Instance::playerChangeMap(player_id_t playerId, map_id_t newMapId, map_id_t oldMapId, bool isPartyLeader) -> Result {
-	auto luaInst = getLuaInstance();
-	if (!luaInst->exists("changeMap")) {
-		return Result::Failure;
-	}
-	return luaInst->call("changeMap", playerId, newMapId, oldMapId, isPartyLeader);
+	return callInstanceFunction("changeMap", playerId, newMapId, oldMapId, isPartyLeader);
 }
 
 auto Instance::friendlyMobHit(mob_id_t mobId, map_object_t mapMobId, map_id_t mapId, int32_t mobHp, int32_t mobMaxHp) -> Result {
-	auto luaInst = getLuaInstance();
-	if (!luaInst->exists("friendlyHit")) {
-		return Result::Failure;
-	}
-	return luaInst->call("friendlyHit", mobId, mapMobId, mapId, mobHp, mobMaxHp);
+	return callInstanceFunction("friendlyHit", mobId, mapMobId, mapId, mobHp, mobMaxHp);
 }
 
 auto Instance::timerComplete(const string_t &name, bool fromTimer) -> void {
