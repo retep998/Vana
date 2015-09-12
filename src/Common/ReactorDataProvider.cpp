@@ -43,7 +43,7 @@ auto ReactorDataProvider::loadReactors() -> void {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("reactor_data"));
 
 	for (const auto &row : rs) {
-		ReactorData reactor;
+		ReactorInfo reactor;
 		reactor_id_t id = row.get<reactor_id_t>("reactorid");
 		reactor.maxStates = row.get<int8_t>("max_states");
 		reactor.link = row.get<reactor_id_t>("link");
@@ -105,7 +105,7 @@ auto ReactorDataProvider::loadTriggerSkills() -> void {
 	}
 }
 
-auto ReactorDataProvider::getReactorData(reactor_id_t reactorId, bool respectLink) const -> const ReactorData & {
+auto ReactorDataProvider::getReactorData(reactor_id_t reactorId, bool respectLink) const -> const ReactorInfo & {
 	auto kvp = m_reactorInfo.find(reactorId);
 	if (respectLink && kvp->second.link != 0) {
 		kvp = m_reactorInfo.find(kvp->second.link);

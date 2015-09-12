@@ -17,21 +17,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "ReactorInfo.hpp"
+#include "Rect.hpp"
 #include "Types.hpp"
-#include <unordered_map>
+#include <vector>
 
 namespace Vana {
-	class ReactorDataProvider {
-	public:
-		auto loadData() -> void;
-
-		auto getReactorData(reactor_id_t reactorId, bool respectLink = false) const -> const ReactorInfo &;
-	private:
-		auto loadReactors() -> void;
-		auto loadStates() -> void;
-		auto loadTriggerSkills() -> void;
-
-		hash_map_t<reactor_id_t, ReactorInfo> m_reactorInfo;
+	struct ReactorStateInfo {
+		int8_t nextState = 0;
+		int16_t type = 0;
+		slot_qty_t itemQuantity = 0;
+		item_id_t itemId = 0;
+		int32_t timeout = 0;
+		Rect dimensions;
+		vector_t<skill_id_t> triggerSkills;
 	};
 }

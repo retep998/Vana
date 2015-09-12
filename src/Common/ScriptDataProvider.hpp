@@ -17,23 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "ScriptTypes.hpp"
 #include "Types.hpp"
 #include <string>
 #include <unordered_map>
 
 namespace Vana {
 	class AbstractServer;
-
-	enum class ScriptTypes {
-		Npc,
-		Reactor,
-		Quest,
-		Item,
-		MapEntry,
-		FirstMapEntry,
-		Portal,
-		Instance,
-	};
 
 	class ScriptDataProvider {
 	public:

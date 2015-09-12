@@ -740,5 +740,23 @@
     <ClInclude Include="src\Common\MorphInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
+    <ClInclude Include="src\Common\NpcInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ReactorInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ReactorStateInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ScriptTypes.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ShopInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ShopItemInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

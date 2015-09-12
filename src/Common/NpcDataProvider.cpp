@@ -35,7 +35,7 @@ auto NpcDataProvider::loadData() -> void {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("npc_data"));
 
 	for (const auto &row : rs) {
-		NpcData npc;
+		NpcInfo npc;
 		npc_id_t id = row.get<npc_id_t>("npcid");
 		npc.storageCost = row.get<mesos_t>("storage_cost");
 

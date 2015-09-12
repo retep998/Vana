@@ -234,6 +234,7 @@
     <ClInclude Include="src\Common\MorphChanceInfo.hpp" />
     <ClInclude Include="src\Common\MpEaterData.hpp" />
     <ClInclude Include="src\Common\NpcDataProvider.hpp" />
+    <ClInclude Include="src\Common\NpcInfo.hpp" />
     <ClInclude Include="src\Common\ObjectPool.hpp" />
     <ClInclude Include="src\Common\optional.hpp" />
     <ClInclude Include="src\Common\PacketBuilder.hpp" />
@@ -251,6 +252,8 @@
     <ClInclude Include="src\Common\Quest.hpp" />
     <ClInclude Include="src\Common\RatesConfig.hpp" />
     <ClInclude Include="src\Common\Ratio.hpp" />
+    <ClInclude Include="src\Common\ReactorInfo.hpp" />
+    <ClInclude Include="src\Common\ReactorStateInfo.hpp" />
     <ClInclude Include="src\Common\Rect.hpp" />
     <ClInclude Include="src\Common\Respawnable.hpp" />
     <ClInclude Include="src\Common\ReturnDamageData.hpp" />
@@ -262,9 +265,12 @@
     <ClInclude Include="src\Common\SaltSizePolicy.hpp" />
     <ClInclude Include="src\Common\SaltTransformationConfig.hpp" />
     <ClInclude Include="src\Common\SaltPolicy.hpp" />
+    <ClInclude Include="src\Common\ScriptTypes.hpp" />
     <ClInclude Include="src\Common\ScrollInfo.hpp" />
     <ClInclude Include="src\Common\SeatInfo.hpp" />
     <ClInclude Include="src\Common\shared_array.hpp" />
+    <ClInclude Include="src\Common\ShopInfo.hpp" />
+    <ClInclude Include="src\Common\ShopItemInfo.hpp" />
     <ClInclude Include="src\Common\SkillbookInfo.hpp" />
     <ClInclude Include="src\Common\SkillConstants.hpp" />
     <ClInclude Include="src\Common\MorphInfo.hpp" />

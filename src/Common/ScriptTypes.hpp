@@ -17,21 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "ReactorInfo.hpp"
 #include "Types.hpp"
-#include <unordered_map>
 
 namespace Vana {
-	class ReactorDataProvider {
-	public:
-		auto loadData() -> void;
-
-		auto getReactorData(reactor_id_t reactorId, bool respectLink = false) const -> const ReactorInfo &;
-	private:
-		auto loadReactors() -> void;
-		auto loadStates() -> void;
-		auto loadTriggerSkills() -> void;
-
-		hash_map_t<reactor_id_t, ReactorInfo> m_reactorInfo;
+	enum class ScriptTypes {
+		Npc,
+		Reactor,
+		Quest,
+		Item,
+		MapEntry,
+		FirstMapEntry,
+		Portal,
+		Instance,
 	};
 }
