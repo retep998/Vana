@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "FileTime.hpp"
 #include "ItemConstants.hpp"
+#include "ItemDbInformation.hpp"
+#include "ItemDbRecord.hpp"
 #include "Types.hpp"
 #include <string>
 #include <vector>
@@ -26,44 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 	class Database;
 	class EquipDataProvider;
-	class Item;
 	class soci::row;
-
-	struct ItemDbInformation {
-		NO_DEFAULT_CONSTRUCTOR(ItemDbInformation);
-	public:
-		ItemDbInformation(inventory_slot_t slot, player_id_t charId, account_id_t userId, world_id_t worldId, const string_t &location) :
-			slot{slot},
-			charId{charId},
-			userId{userId},
-			worldId{worldId},
-			location{location}
-		{
-		}
-
-		inventory_slot_t slot;
-		player_id_t charId;
-		account_id_t userId;
-		world_id_t worldId;
-		string_t location;
-	};
-
-	struct ItemDbRecord : ItemDbInformation {
-		NO_DEFAULT_CONSTRUCTOR(ItemDbRecord);
-	public:
-		ItemDbRecord(inventory_slot_t slot, player_id_t charId, account_id_t userId, world_id_t worldId, const string_t &location, Item *item) :
-			ItemDbInformation{slot, charId, userId, worldId, location},
-			item{item}
-		{
-		}
-		ItemDbRecord(const ItemDbInformation &info, Item *item) :
-			ItemDbInformation{info.slot, info.charId, info.userId, info.worldId, info.location},
-			item{item}
-		{
-		}
-
-		Item *item;
-	};
 
 	class Item {
 	public:

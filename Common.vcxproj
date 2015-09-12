@@ -211,6 +211,8 @@
     <ClInclude Include="src\Common\Item.hpp" />
     <ClInclude Include="src\Common\ItemConstants.hpp" />
     <ClInclude Include="src\Common\BlockCipherIv.hpp" />
+    <ClInclude Include="src\Common\ItemDbInformation.hpp" />
+    <ClInclude Include="src\Common\ItemDbRecord.hpp" />
     <ClInclude Include="src\Common\ItemInfo.hpp" />
     <ClInclude Include="src\Common\ItemRewardInfo.hpp" />
     <ClInclude Include="src\Common\JobConstants.hpp" />
@@ -250,6 +252,11 @@
     <ClInclude Include="src\Common\PrecompiledHeader.hpp" />
     <ClInclude Include="src\Common\MySqlQueryParser.hpp" />
     <ClInclude Include="src\Common\Quest.hpp" />
+    <ClInclude Include="src\Common\QuestRequestInfo.hpp" />
+    <ClInclude Include="src\Common\QuestRequestsData.hpp" />
+    <ClInclude Include="src\Common\QuestRewardInfo.hpp" />
+    <ClInclude Include="src\Common\QuestRewardsData.hpp" />
+    <ClInclude Include="src\Common\QuestStateData.hpp" />
     <ClInclude Include="src\Common\RatesConfig.hpp" />
     <ClInclude Include="src\Common\Ratio.hpp" />
     <ClInclude Include="src\Common\ReactorInfo.hpp" />

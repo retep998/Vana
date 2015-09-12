@@ -773,5 +773,26 @@
     <ClInclude Include="src\Common\ShopData.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
+    <ClInclude Include="src\Common\ItemDbInformation.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ItemDbRecord.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\QuestRewardInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\QuestRewardsData.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\QuestStateData.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\QuestRequestsData.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\QuestRequestInfo.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
