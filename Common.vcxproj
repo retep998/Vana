@@ -269,6 +269,7 @@
     <ClInclude Include="src\Common\ScrollInfo.hpp" />
     <ClInclude Include="src\Common\SeatInfo.hpp" />
     <ClInclude Include="src\Common\shared_array.hpp" />
+    <ClInclude Include="src\Common\ShopData.hpp" />
     <ClInclude Include="src\Common\ShopInfo.hpp" />
     <ClInclude Include="src\Common\ShopItemInfo.hpp" />
     <ClInclude Include="src\Common\SkillbookInfo.hpp" />
@@ -326,6 +327,10 @@
     <ClInclude Include="src\Common\AbstractServer.hpp" />
     <ClInclude Include="src\Common\GuildLogo.hpp" />
     <ClInclude Include="src\Common\ServerType.hpp" />
+    <ClInclude Include="src\Common\ValidClassGenderData.hpp" />
+    <ClInclude Include="src\Common\ValidClassData.hpp" />
+    <ClInclude Include="src\Common\ValidItemType.hpp" />
+    <ClInclude Include="src\Common\ValidLookData.hpp" />
     <ClInclude Include="src\Common\VanaMain.hpp" />
     <ClInclude Include="src\Common\Variables.hpp" />
     <ClInclude Include="src\Common\DatabaseUpdater.hpp" />

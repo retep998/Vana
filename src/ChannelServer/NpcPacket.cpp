@@ -95,7 +95,7 @@ PACKET_IMPL(bought, uint8_t msg) {
 	return builder;
 }
 
-PACKET_IMPL(showShop, const BuiltShopInfo &shop, slot_qty_t rechargeableBonus) {
+PACKET_IMPL(showShop, const ShopData &shop, slot_qty_t rechargeableBonus) {
 	PacketBuilder builder;
 	slot_qty_t shopCount = static_cast<slot_qty_t>(shop.items.size() + shop.rechargeables.size());
 	hash_set_t<item_id_t> itemsAdded;
@@ -145,7 +145,7 @@ PACKET_IMPL(showShop, const BuiltShopInfo &shop, slot_qty_t rechargeableBonus) {
 		}
 	}
 
-	builder.set<slot_qty_t>(shopCount, 6);
+	builder.set<slot_qty_t>(shopCount, sizeof(header_t) + sizeof(npc_id_t));
 	return builder;
 }
 

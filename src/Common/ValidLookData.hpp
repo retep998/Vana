@@ -17,29 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "ShopData.hpp"
-#include "ShopInfo.hpp"
-#include "ShopItemInfo.hpp"
 #include "Types.hpp"
-#include <map>
-#include <unordered_map>
 #include <vector>
 
 namespace Vana {
-	class ShopDataProvider {
-	public:
-		auto loadData() -> void;
+	struct ValidLookData {
+		auto clear() -> void {
+			hair.clear();
+			faces.clear();
+		}
 
-		auto isShop(shop_id_t id) const -> bool;
-		auto getShop(shop_id_t id) const -> ShopData;
-		auto getShopItem(shop_id_t shopId, uint16_t shopIndex) const -> const ShopItemInfo * const;
-		auto getRechargeCost(shop_id_t shopId, item_id_t itemId, slot_qty_t amount) const -> mesos_t;
-	private:
-		auto loadShops() -> void;
-		auto loadUserShops() -> void;
-		auto loadRechargeTiers() -> void;
-
-		hash_map_t<shop_id_t, ShopInfo> m_shops;
-		hash_map_t<int8_t, ord_map_t<item_id_t, double>> m_rechargeCosts;
+		vector_t<hair_id_t> hair;
+		vector_t<face_id_t> faces;
 	};
 }

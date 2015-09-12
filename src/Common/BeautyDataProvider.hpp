@@ -18,19 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.hpp"
+#include "ValidLookData.hpp"
 #include <vector>
 
 namespace Vana {
-	struct ValidLook {
-		auto clear() -> void {
-			hair.clear();
-			faces.clear();
-		}
-
-		vector_t<hair_id_t> hair;
-		vector_t<face_id_t> faces;
-	};
-
 	class BeautyDataProvider {
 	public:
 		auto loadData() -> void;
@@ -50,10 +41,10 @@ namespace Vana {
 		auto loadSkins() -> void;
 		auto loadHair() -> void;
 		auto loadFaces() -> void;
-		auto getGender(gender_id_t genderId) const -> const ValidLook &;
+		auto getGender(gender_id_t genderId) const -> const ValidLookData &;
 
-		ValidLook m_male;
-		ValidLook m_female;
+		ValidLookData m_male;
+		ValidLookData m_female;
 		vector_t<skin_id_t> m_skins;
 	};
 }

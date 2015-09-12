@@ -758,5 +758,20 @@
     <ClInclude Include="src\Common\ShopItemInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
+    <ClInclude Include="src\Common\ValidItemType.hpp">
+      <Filter>Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ValidClassData.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ValidClassGenderData.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ValidLookData.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ShopData.hpp">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

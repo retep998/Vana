@@ -125,7 +125,7 @@ auto BeautyDataProvider::isValidSkin(skin_id_t skin) const -> bool {
 	return ext::any_of(m_skins, [skin](skin_id_t testSkin) { return testSkin == skin; });
 }
 
-auto BeautyDataProvider::getGender(gender_id_t genderId) const -> const ValidLook & {
+auto BeautyDataProvider::getGender(gender_id_t genderId) const -> const ValidLookData & {
 	return genderId == Gender::Female ? m_female : m_male;
 }
 

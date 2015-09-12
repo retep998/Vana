@@ -108,7 +108,7 @@ auto ValidCharDataProvider::isValidCharacter(gender_id_t genderId, hair_id_t hai
 	return valid;
 }
 
-auto ValidCharDataProvider::isValidItem(int32_t id, const ValidItems &items, ValidItemType type) const -> bool {
+auto ValidCharDataProvider::isValidItem(int32_t id, const ValidClassData &items, ValidItemType type) const -> bool {
 	auto idTest = [id](int32_t test) -> bool { return id == test; };
 	switch (type) {
 		case ValidItemType::Face: return ext::any_of(items.faces, idTest);
@@ -123,7 +123,7 @@ auto ValidCharDataProvider::isValidItem(int32_t id, const ValidItems &items, Val
 	throw NotImplementedException{"ValidItemType"};
 }
 
-auto ValidCharDataProvider::getItems(gender_id_t genderId, int8_t classId) const -> const ValidItems & {
+auto ValidCharDataProvider::getItems(gender_id_t genderId, int8_t classId) const -> const ValidClassData & {
 	return genderId == Gender::Male ?
 		(classId == Adventurer ? m_adventurer.male : m_cygnus.male) :
 		(classId == Adventurer ? m_adventurer.female : m_cygnus.female);

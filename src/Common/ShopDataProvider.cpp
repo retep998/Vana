@@ -117,10 +117,10 @@ auto ShopDataProvider::isShop(shop_id_t id) const -> bool {
 	return ext::is_element(m_shops, id);
 }
 
-auto ShopDataProvider::getShop(shop_id_t id) const -> BuiltShopInfo {
+auto ShopDataProvider::getShop(shop_id_t id) const -> ShopData {
 	const auto &info = m_shops.find(id)->second;
 
-	BuiltShopInfo ret;
+	ShopData ret;
 	ret.npc = info.npc;
 	for (const auto &item : info.items) {
 		ret.items.push_back(&item);

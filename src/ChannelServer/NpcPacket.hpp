@@ -24,7 +24,7 @@ namespace Vana {
 	class Player;
 	class PacketReader;
 	struct NpcSpawnInfo;
-	struct BuiltShopInfo;
+	struct ShopData;
 
 	namespace Packets {
 		namespace Npc {
@@ -56,7 +56,7 @@ namespace Vana {
 			PACKET(animateNpc, PacketReader &reader);
 			PACKET(showNpcEffect, int32_t index, bool show = false);
 			PACKET(bought, uint8_t msg);
-			PACKET(showShop, const BuiltShopInfo &shop, slot_qty_t rechargeableBonus);
+			PACKET(showShop, const ShopData &shop, slot_qty_t rechargeableBonus);
 			PACKET(npcChat, int8_t type, map_object_t npcId, const string_t &text, bool excludeText = false);
 		}
 	}
