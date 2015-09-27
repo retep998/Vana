@@ -32,6 +32,24 @@ PacketBuilder::PacketBuilder() :
 {
 }
 
+auto PacketBuilder::unk(int32_t bytes) -> PacketBuilder & {
+	if (bytes <= 0) throw std::invalid_argument{"bytes must be > 0"};
+
+	const size_t alignSize = sizeof(uint32_t);
+	size_t casted = static_cast<size_t>(bytes);
+	size_t alignedMax = casted / alignSize;
+	size_t remainder = casted % alignSize;
+	for (size_t i = 0; i < alignedMax; i += alignSize) {
+		unk<uint32_t>(0);
+	}
+	if (remainder != 0) {
+		for (size_t i = 0; i < remainder; i++) {
+			unk<uint8_t>(0);
+		}
+	}
+	return *this;
+}
+
 auto PacketBuilder::addBytes(const string_t &hex) -> PacketBuilder & {
 	return addBytes(hex.c_str());
 }

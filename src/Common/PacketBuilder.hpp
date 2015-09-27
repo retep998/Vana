@@ -46,6 +46,8 @@ namespace Vana {
 		auto unk() -> PacketBuilder &;
 		template <typename TValue>
 		auto unk(const TValue &value) -> PacketBuilder &;
+		auto unk(int32_t bytes) -> PacketBuilder &;
+
 		template <typename TValue>
 		auto add(const TValue &value, size_t count) -> PacketBuilder &;
 		template <typename TValue>
