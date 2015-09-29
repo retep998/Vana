@@ -16,10 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Channel.hpp"
-#include "PacketBuilder.hpp"
-#include "WorldServerAcceptConnection.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "WorldServer/WorldServerAcceptConnection.hpp"
 
 namespace Vana {
+namespace WorldServer {
 
 Channel::Channel(WorldServerAcceptConnection *connection, channel_id_t id, port_t port) :
 	m_connection{connection},
@@ -52,4 +53,5 @@ auto Channel::disconnect() -> void {
 	m_connection->disconnect();
 }
 
+}
 }

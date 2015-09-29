@@ -17,31 +17,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "ExternalIp.hpp"
-#include "Ip.hpp"
-#include "Types.hpp"
+#include "Common/ExternalIp.hpp"
+#include "Common/Ip.hpp"
+#include "Common/Types.hpp"
 #include <memory>
 #include <string>
 #include <unordered_map>
 
 namespace Vana {
-	class Channel;
 	class PacketBuilder;
-	class WorldServerAcceptConnection;
 
-	class Channels {
-	public:
-		auto registerChannel(WorldServerAcceptConnection *connection, channel_id_t channelId, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void;
-		auto removeChannel(channel_id_t channelId) -> void;
-		auto getChannel(channel_id_t num) -> Channel *;
-		auto increasePopulation(channel_id_t channelId) -> void;
-		auto decreasePopulation(channel_id_t channelId) -> void;
-		auto getFirstAvailableChannelId() -> channel_id_t;
-		auto disconnect() -> void;
-		auto send(channel_id_t channelId, const PacketBuilder &builder) -> void;
-		auto send(const vector_t<channel_id_t> &channels, const PacketBuilder &builder) -> void;
-		auto send(const PacketBuilder &builder) -> void;
-	private:
-		hash_map_t<channel_id_t, ref_ptr_t<Channel>> m_channels;
-	};
+	namespace WorldServer {
+		class Channel;
+		class WorldServerAcceptConnection;
+
+		class Channels {
+		public:
+			auto registerChannel(WorldServerAcceptConnection *connection, channel_id_t channelId, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void;
+			auto removeChannel(channel_id_t channelId) -> void;
+			auto getChannel(channel_id_t num) -> Channel *;
+			auto increasePopulation(channel_id_t channelId) -> void;
+			auto decreasePopulation(channel_id_t channelId) -> void;
+			auto getFirstAvailableChannelId() -> channel_id_t;
+			auto disconnect() -> void;
+			auto send(channel_id_t channelId, const PacketBuilder &builder) -> void;
+			auto send(const vector_t<channel_id_t> &channels, const PacketBuilder &builder) -> void;
+			auto send(const PacketBuilder &builder) -> void;
+		private:
+			hash_map_t<channel_id_t, ref_ptr_t<Channel>> m_channels;
+		};
+	}
 }

@@ -18,10 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 namespace Vana {
-	class LoginServerConnection;
 	class PacketReader;
 
-	namespace LoginServerConnectHandler {
-		auto connect(LoginServerConnection *connection, PacketReader &reader) -> void;
+	namespace WorldServer {
+		class LoginServerConnection;
+
+		namespace LoginServerConnectHandler {
+			auto connect(LoginServerConnection *connection, PacketReader &reader) -> void;
+		}
 	}
 }

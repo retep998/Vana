@@ -16,18 +16,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerConnection.hpp"
-#include "Channels.hpp"
-#include "ExitCodes.hpp"
-#include "LoginServerConnectHandler.hpp"
-#include "InterHeader.hpp"
-#include "PacketReader.hpp"
-#include "PacketWrapper.hpp"
-#include "ServerType.hpp"
-#include "SyncHandler.hpp"
-#include "WorldServer.hpp"
+#include "Common/ExitCodes.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/PacketWrapper.hpp"
+#include "Common/ServerType.hpp"
+#include "WorldServer/Channels.hpp"
+#include "WorldServer/LoginServerConnectHandler.hpp"
+#include "WorldServer/SyncHandler.hpp"
+#include "WorldServer/WorldServer.hpp"
 #include <iostream>
 
 namespace Vana {
+namespace WorldServer {
 
 LoginServerConnection::LoginServerConnection() :
 	AbstractServerConnection{ServerType::World}
@@ -61,4 +62,5 @@ auto LoginServerConnection::handleRequest(PacketReader &reader) -> void {
 	}
 }
 
+}
 }

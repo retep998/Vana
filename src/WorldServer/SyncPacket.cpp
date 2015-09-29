@@ -16,20 +16,21 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SyncPacket.hpp"
-#include "AbstractConnection.hpp"
-#include "Channel.hpp"
-#include "Channels.hpp"
-#include "InterHeader.hpp"
-#include "InterHelper.hpp"
-#include "MapConstants.hpp"
-#include "PacketReader.hpp"
-#include "PlayerDataProvider.hpp"
-#include "RatesConfig.hpp"
-#include "Session.hpp"
-#include "TimeUtilities.hpp"
-#include "WorldServerAcceptConnection.hpp"
+#include "Common/AbstractConnection.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/InterHelper.hpp"
+#include "Common/MapConstants.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/RatesConfig.hpp"
+#include "Common/Session.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "WorldServer/Channel.hpp"
+#include "WorldServer/Channels.hpp"
+#include "WorldServer/PlayerDataProvider.hpp"
+#include "WorldServer/WorldServerAcceptConnection.hpp"
 
 namespace Vana {
+namespace WorldServer {
 namespace Packets {
 namespace Interserver {
 
@@ -259,6 +260,7 @@ PACKET_IMPL(Buddy::sendReaddBuddy, player_id_t listOwnerId, player_id_t buddyId)
 	return builder;
 }
 
+}
 }
 }
 }

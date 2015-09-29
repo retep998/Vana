@@ -17,19 +17,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "PacketBuilder.hpp"
-#include "Types.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/Types.hpp"
 #include <string>
 
 namespace Vana {
 	class PacketReader;
-	class WorldServerAcceptConnection;
 	struct WorldConfig;
 
-	namespace Packets {
-		namespace Interserver {
-			PACKET(connect, channel_id_t channel, port_t port);
-			PACKET(rehashConfig, const WorldConfig &config);
+	namespace WorldServer {
+		namespace Packets {
+			namespace Interserver {
+				PACKET(connect, channel_id_t channel, port_t port);
+				PACKET(rehashConfig, const WorldConfig &config);
+			}
 		}
 	}
 }

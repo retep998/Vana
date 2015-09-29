@@ -17,19 +17,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Types.hpp"
+#include "Common/Types.hpp"
 #include <string>
 
 namespace Vana {
 	class AbstractConnection;
 	class PacketBuilder;
 	class PacketReader;
-	class Player;
 
-	namespace SyncHandler {
-		// Dispatch
-		auto handle(AbstractConnection *connection, PacketReader &reader) -> void;
-		// Config
-		auto handleConfigSync(PacketReader &reader) -> void;
+	namespace WorldServer {
+		namespace SyncHandler {
+			// Dispatch
+			auto handle(AbstractConnection *connection, PacketReader &reader) -> void;
+			// Config
+			auto handleConfigSync(PacketReader &reader) -> void;
+		}
 	}
 }

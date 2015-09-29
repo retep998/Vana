@@ -16,25 +16,26 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerDataProvider.hpp"
-#include "Algorithm.hpp"
-#include "Channel.hpp"
-#include "Channels.hpp"
-#include "Database.hpp"
-#include "InitializeCommon.hpp"
-#include "InterHeader.hpp"
-#include "InterHelper.hpp"
-#include "PacketWrapper.hpp"
-#include "StringUtilities.hpp"
-#include "SyncHandler.hpp"
-#include "SyncPacket.hpp"
-#include "WorldServer.hpp"
-#include "WorldServerAcceptConnection.hpp"
-#include "WorldServerAcceptPacket.hpp"
+#include "Common/Algorithm.hpp"
+#include "Common/Database.hpp"
+#include "Common/InitializeCommon.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/InterHelper.hpp"
+#include "Common/PacketWrapper.hpp"
+#include "Common/StringUtilities.hpp"
+#include "WorldServer/Channel.hpp"
+#include "WorldServer/Channels.hpp"
+#include "WorldServer/SyncHandler.hpp"
+#include "WorldServer/SyncPacket.hpp"
+#include "WorldServer/WorldServer.hpp"
+#include "WorldServer/WorldServerAcceptConnection.hpp"
+#include "WorldServer/WorldServerAcceptPacket.hpp"
 #include <iomanip>
 #include <iostream>
 #include <memory>
 
 namespace Vana {
+namespace WorldServer {
 
 PlayerDataProvider::PlayerDataProvider() :
 	m_partyIds{1, 100000}
@@ -125,7 +126,7 @@ auto PlayerDataProvider::send(player_id_t playerId, const PacketBuilder &builder
 		return;
 	}
 
-	WorldServer::getInstance().getChannels().send(data.channel.get(), Packets::prepend(
+	WorldServer::getInstance().getChannels().send(data.channel.get(), Vana::Packets::prepend(
 		builder, [&](PacketBuilder &packet) {
 			packet
 				.add<header_t>(IMSG_TO_PLAYER)
@@ -151,7 +152,7 @@ auto PlayerDataProvider::send(const vector_t<player_id_t> &playerIds, const Pack
 	}
 
 	for (const auto &kvp : sendTargets) {
-		WorldServer::getInstance().getChannels().send(kvp.first, Packets::prepend(
+		WorldServer::getInstance().getChannels().send(kvp.first, Vana::Packets::prepend(
 			builder, [&](PacketBuilder &packet) {
 				packet
 					.add<header_t>(IMSG_TO_PLAYER_LIST)
@@ -177,7 +178,7 @@ auto PlayerDataProvider::send(const PacketBuilder &builder) -> void {
 	}
 
 	for (const auto &kvp : sendTargets) {
-		WorldServer::getInstance().getChannels().send(kvp.first, Packets::prepend(
+		WorldServer::getInstance().getChannels().send(kvp.first, Vana::Packets::prepend(
 			builder, [&](PacketBuilder &packet) {
 				packet
 					.add<header_t>(IMSG_TO_PLAYER_LIST)
@@ -570,4 +571,5 @@ auto PlayerDataProvider::readdBuddy(PacketReader &reader) -> void {
 	sendSync(Packets::Interserver::Buddy::sendReaddBuddy(listOwnerId, buddyId));
 }
 
+}
 }

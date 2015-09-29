@@ -16,23 +16,24 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerAcceptConnection.hpp"
-#include "Channels.hpp"
-#include "InterHeader.hpp"
-#include "LoginServerConnectPacket.hpp"
-#include "MiscUtilities.hpp"
-#include "PacketReader.hpp"
-#include "PacketWrapper.hpp"
-#include "PlayerDataProvider.hpp"
-#include "ServerType.hpp"
-#include "Session.hpp"
-#include "StringUtilities.hpp"
-#include "SyncHandler.hpp"
-#include "SyncPacket.hpp"
-#include "WorldServer.hpp"
-#include "WorldServerAcceptPacket.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/MiscUtilities.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/PacketWrapper.hpp"
+#include "Common/ServerType.hpp"
+#include "Common/Session.hpp"
+#include "Common/StringUtilities.hpp"
+#include "WorldServer/Channels.hpp"
+#include "WorldServer/LoginServerConnectPacket.hpp"
+#include "WorldServer/PlayerDataProvider.hpp"
+#include "WorldServer/SyncHandler.hpp"
+#include "WorldServer/SyncPacket.hpp"
+#include "WorldServer/WorldServer.hpp"
+#include "WorldServer/WorldServerAcceptPacket.hpp"
 #include <iostream>
 
 namespace Vana {
+namespace WorldServer {
 
 WorldServerAcceptConnection::~WorldServerAcceptConnection() {
 	if (isAuthenticated()) {
@@ -56,29 +57,29 @@ auto WorldServerAcceptConnection::handleRequest(PacketReader &reader) -> void {
 	}
 	switch (reader.get<header_t>()) {
 		case IMSG_SYNC: SyncHandler::handle(this, reader); break;
-		case IMSG_TO_LOGIN: server.sendLogin(Packets::identity(reader)); break;
+		case IMSG_TO_LOGIN: server.sendLogin(Vana::Packets::identity(reader)); break;
 		case IMSG_TO_PLAYER: {
 			player_id_t playerId = reader.get<player_id_t>();
-			server.getPlayerDataProvider().send(playerId, Packets::identity(reader));
+			server.getPlayerDataProvider().send(playerId, Vana::Packets::identity(reader));
 			break;
 		}
 		case IMSG_TO_PLAYER_LIST: {
 			vector_t<player_id_t> playerIds = reader.get<vector_t<player_id_t>>();
-			server.getPlayerDataProvider().send(playerIds, Packets::identity(reader));
+			server.getPlayerDataProvider().send(playerIds, Vana::Packets::identity(reader));
 			break;
 		}
-		case IMSG_TO_ALL_PLAYERS: server.getPlayerDataProvider().send(Packets::identity(reader)); break;
+		case IMSG_TO_ALL_PLAYERS: server.getPlayerDataProvider().send(Vana::Packets::identity(reader)); break;
 		case IMSG_TO_CHANNEL: {
 			channel_id_t channelId = reader.get<channel_id_t>();
-			server.getChannels().send(channelId, Packets::identity(reader));
+			server.getChannels().send(channelId, Vana::Packets::identity(reader));
 			break;
 		}
 		case IMSG_TO_CHANNEL_LIST: {
 			vector_t<channel_id_t> channels = reader.get<vector_t<channel_id_t>>();
-			server.getChannels().send(channels, Packets::identity(reader));
+			server.getChannels().send(channels, Vana::Packets::identity(reader));
 			break;
 		}
-		case IMSG_TO_ALL_CHANNELS: server.getChannels().send(Packets::identity(reader)); break;
+		case IMSG_TO_ALL_CHANNELS: server.getChannels().send(Vana::Packets::identity(reader)); break;
 	}
 }
 
@@ -114,4 +115,5 @@ auto WorldServerAcceptConnection::getChannel() const -> channel_id_t {
 	return m_channel;
 }
 
+}
 }

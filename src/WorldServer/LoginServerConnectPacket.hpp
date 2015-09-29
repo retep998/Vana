@@ -17,18 +17,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "ExternalIp.hpp"
-#include "Ip.hpp"
-#include "PacketBuilder.hpp"
-#include "Types.hpp"
+#include "Common/ExternalIp.hpp"
+#include "Common/Ip.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/Types.hpp"
 #include <vector>
 
 namespace Vana {
-	class LoginServerConnection;
-
-	namespace Packets {
-		PACKET(registerChannel, channel_id_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port);
-		PACKET(updateChannelPop, channel_id_t channel, int32_t population);
-		PACKET(removeChannel, channel_id_t channel);
+	namespace WorldServer {
+		namespace Packets {
+			PACKET(registerChannel, channel_id_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port);
+			PACKET(updateChannelPop, channel_id_t channel, int32_t population);
+			PACKET(removeChannel, channel_id_t channel);
+		}
 	}
 }

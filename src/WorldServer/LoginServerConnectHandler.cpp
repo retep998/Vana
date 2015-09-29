@@ -16,17 +16,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerConnectHandler.hpp"
-#include "Channels.hpp"
-#include "ExitCodes.hpp"
-#include "LoginServerConnection.hpp"
-#include "PacketReader.hpp"
-#include "PlayerDataProvider.hpp"
-#include "SyncPacket.hpp"
-#include "WorldConfig.hpp"
-#include "WorldServer.hpp"
+#include "Common/ExitCodes.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/WorldConfig.hpp"
+#include "WorldServer/Channels.hpp"
+#include "WorldServer/LoginServerConnection.hpp"
+#include "WorldServer/PlayerDataProvider.hpp"
+#include "WorldServer/SyncPacket.hpp"
+#include "WorldServer/WorldServer.hpp"
 #include <iostream>
 
 namespace Vana {
+namespace WorldServer {
 
 auto LoginServerConnectHandler::connect(LoginServerConnection *connection, PacketReader &reader) -> void {
 	world_id_t worldId = reader.get<world_id_t>();
@@ -41,4 +42,5 @@ auto LoginServerConnectHandler::connect(LoginServerConnection *connection, Packe
 	}
 }
 
+}
 }

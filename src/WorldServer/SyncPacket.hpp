@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Ip.hpp"
-#include "InterHelper.hpp"
-#include "PacketBuilder.hpp"
-#include "PlayerData.hpp"
-#include "Types.hpp"
+#include "Common/Ip.hpp"
+#include "Common/InterHelper.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/PlayerData.hpp"
+#include "Common/Types.hpp"
 #include <string>
 #include <vector>
 
@@ -31,34 +31,36 @@ namespace Vana {
 	class PacketReader;
 	struct RatesConfig;
 
-	namespace Packets {
-		namespace Interserver {
-			PACKET(sendSyncData, function_t<void(PacketBuilder &)> buildSyncData);
+	namespace WorldServer {
+		namespace Packets {
+			namespace Interserver {
+				PACKET(sendSyncData, function_t<void(PacketBuilder &)> buildSyncData);
 
-			namespace Config {
-				PACKET(setRates, const RatesConfig &rates);
-				PACKET(scrollingHeader, const string_t &message);
-			}
-			namespace Party {
-				PACKET(removePartyMember, party_id_t partyId, player_id_t playerId, bool kicked);
-				PACKET(addPartyMember, party_id_t partyId, player_id_t playerId);
-				PACKET(newPartyLeader, party_id_t partyId, player_id_t playerId);
-				PACKET(createParty, party_id_t partyId, player_id_t playerId);
-				PACKET(disbandParty, party_id_t partyId);
-			}
-			namespace Player {
-				PACKET(playerChangeChannel, player_id_t playerId, channel_id_t channelId, const Ip &ip, port_t port);
-				PACKET(newConnectable, player_id_t playerId, const Ip &ip, PacketReader &buffer);
-				PACKET(deleteConnectable, player_id_t playerId);
-				PACKET(updatePlayer, const PlayerData &data, update_bits_t flags);
-				PACKET(characterCreated, const PlayerData &data);
-				PACKET(characterDeleted, player_id_t id);
-			}
-			namespace Buddy {
-				PACKET(sendBuddyInvite, player_id_t inviteeId, player_id_t inviterId, const string_t &name);
-				PACKET(sendAcceptBuddyInvite, player_id_t inviteeId, player_id_t inviterId);
-				PACKET(sendBuddyRemoval, player_id_t listOwnerId, player_id_t removalId);
-				PACKET(sendReaddBuddy, player_id_t listOwnerId, player_id_t buddyId);
+				namespace Config {
+					PACKET(setRates, const RatesConfig &rates);
+					PACKET(scrollingHeader, const string_t &message);
+				}
+				namespace Party {
+					PACKET(removePartyMember, party_id_t partyId, player_id_t playerId, bool kicked);
+					PACKET(addPartyMember, party_id_t partyId, player_id_t playerId);
+					PACKET(newPartyLeader, party_id_t partyId, player_id_t playerId);
+					PACKET(createParty, party_id_t partyId, player_id_t playerId);
+					PACKET(disbandParty, party_id_t partyId);
+				}
+				namespace Player {
+					PACKET(playerChangeChannel, player_id_t playerId, channel_id_t channelId, const Ip &ip, port_t port);
+					PACKET(newConnectable, player_id_t playerId, const Ip &ip, PacketReader &buffer);
+					PACKET(deleteConnectable, player_id_t playerId);
+					PACKET(updatePlayer, const PlayerData &data, update_bits_t flags);
+					PACKET(characterCreated, const PlayerData &data);
+					PACKET(characterDeleted, player_id_t id);
+				}
+				namespace Buddy {
+					PACKET(sendBuddyInvite, player_id_t inviteeId, player_id_t inviterId, const string_t &name);
+					PACKET(sendAcceptBuddyInvite, player_id_t inviteeId, player_id_t inviterId);
+					PACKET(sendBuddyRemoval, player_id_t listOwnerId, player_id_t removalId);
+					PACKET(sendReaddBuddy, player_id_t listOwnerId, player_id_t buddyId);
+				}
 			}
 		}
 	}

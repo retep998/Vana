@@ -16,12 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerConnectPacket.hpp"
-#include "InterHeader.hpp"
-#include "LoginServerConnection.hpp"
-#include "Session.hpp"
-#include "WorldServer.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/Session.hpp"
+#include "WorldServer/LoginServerConnection.hpp"
+#include "WorldServer/WorldServer.hpp"
 
 namespace Vana {
+namespace WorldServer {
 namespace Packets {
 
 PACKET_IMPL(registerChannel, channel_id_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port) {
@@ -52,5 +53,6 @@ PACKET_IMPL(removeChannel, channel_id_t channel) {
 	return builder;
 }
 
+}
 }
 }

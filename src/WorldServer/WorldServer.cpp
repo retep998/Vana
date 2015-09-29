@@ -16,15 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServer.hpp"
-#include "ConnectionManager.hpp"
-#include "Channels.hpp"
-#include "InitializeCommon.hpp"
-#include "ServerType.hpp"
-#include "StringUtilities.hpp"
-#include "SyncPacket.hpp"
-#include "WorldServerAcceptPacket.hpp"
+#include "Common/ConnectionManager.hpp"
+#include "Common/InitializeCommon.hpp"
+#include "Common/ServerType.hpp"
+#include "Common/StringUtilities.hpp"
+#include "WorldServer/Channels.hpp"
+#include "WorldServer/SyncPacket.hpp"
+#include "WorldServer/WorldServerAcceptPacket.hpp"
 
 namespace Vana {
+namespace WorldServer {
 
 WorldServer::WorldServer() :
 	AbstractServer{ServerType::World}
@@ -152,4 +153,5 @@ auto WorldServer::sendLogin(const PacketBuilder &builder) -> void {
 	m_loginConnection->send(builder);
 }
 
+}
 }

@@ -17,48 +17,50 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "AbstractServer.hpp"
-#include "Channels.hpp"
-#include "Ip.hpp"
-#include "LoginServerConnection.hpp"
-#include "PlayerDataProvider.hpp"
-#include "RatesConfig.hpp"
-#include "Types.hpp"
-#include "WorldConfig.hpp"
-#include "WorldServerAcceptConnection.hpp"
+#include "Common/AbstractServer.hpp"
+#include "Common/Ip.hpp"
+#include "Common/RatesConfig.hpp"
+#include "Common/Types.hpp"
+#include "Common/WorldConfig.hpp"
+#include "WorldServer/Channels.hpp"
+#include "WorldServer/LoginServerConnection.hpp"
+#include "WorldServer/PlayerDataProvider.hpp"
+#include "WorldServer/WorldServerAcceptConnection.hpp"
 #include <string>
 
 namespace Vana {
 	class PacketBuilder;
 
-	class WorldServer final : public AbstractServer {
-		SINGLETON(WorldServer);
-	public:
-		auto shutdown() -> void override;
-		auto establishedLoginConnection(world_id_t worldId, port_t port, const WorldConfig &conf) -> void;
-		auto rehashConfig(const WorldConfig &config) -> void;
-		auto setScrollingHeader(const string_t &message) -> void;
-		auto setRates(const RatesConfig &rates) -> void;
-		auto resetRates(int32_t flags) -> void;
-		auto getPlayerDataProvider() -> PlayerDataProvider &;
-		auto getChannels() -> Channels &;
-		auto isConnected() const -> bool;
-		auto getWorldId() const -> world_id_t;
-		auto makeChannelPort(channel_id_t channelId) const -> port_t;
-		auto getConfig() -> const WorldConfig &;
-		auto sendLogin(const PacketBuilder &builder) -> void;
-	protected:
-		auto listen() -> void;
-		auto loadData() -> Result override;
-		auto makeLogIdentifier() const -> opt_string_t override;
-		auto getLogPrefix() const -> string_t override;
-	private:
-		world_id_t m_worldId = -1;
-		port_t m_port = 0;
-		WorldConfig m_config;
-		RatesConfig m_defaultRates;
-		LoginServerConnection *m_loginConnection;
-		PlayerDataProvider m_playerDataProvider;
-		Channels m_channels;
-	};
+	namespace WorldServer {
+		class WorldServer final : public AbstractServer {
+			SINGLETON(WorldServer);
+		public:
+			auto shutdown() -> void override;
+			auto establishedLoginConnection(world_id_t worldId, port_t port, const WorldConfig &conf) -> void;
+			auto rehashConfig(const WorldConfig &config) -> void;
+			auto setScrollingHeader(const string_t &message) -> void;
+			auto setRates(const RatesConfig &rates) -> void;
+			auto resetRates(int32_t flags) -> void;
+			auto getPlayerDataProvider() -> PlayerDataProvider &;
+			auto getChannels() -> Channels &;
+			auto isConnected() const -> bool;
+			auto getWorldId() const -> world_id_t;
+			auto makeChannelPort(channel_id_t channelId) const -> port_t;
+			auto getConfig() -> const WorldConfig &;
+			auto sendLogin(const PacketBuilder &builder) -> void;
+		protected:
+			auto listen() -> void;
+			auto loadData() -> Result override;
+			auto makeLogIdentifier() const -> opt_string_t override;
+			auto getLogPrefix() const -> string_t override;
+		private:
+			world_id_t m_worldId = -1;
+			port_t m_port = 0;
+			WorldConfig m_config;
+			RatesConfig m_defaultRates;
+			LoginServerConnection *m_loginConnection;
+			PlayerDataProvider m_playerDataProvider;
+			Channels m_channels;
+		};
+	}
 }

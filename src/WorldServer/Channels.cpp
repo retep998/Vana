@@ -16,14 +16,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Channels.hpp"
-#include "Channel.hpp"
-#include "LoginServerConnectPacket.hpp"
-#include "PacketBuilder.hpp"
-#include "Session.hpp"
-#include "WorldServer.hpp"
-#include "WorldServerAcceptConnection.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/Session.hpp"
+#include "WorldServer/Channel.hpp"
+#include "WorldServer/LoginServerConnectPacket.hpp"
+#include "WorldServer/WorldServer.hpp"
+#include "WorldServer/WorldServerAcceptConnection.hpp"
 
 namespace Vana {
+namespace WorldServer {
 
 auto Channels::registerChannel(WorldServerAcceptConnection *connection, channel_id_t channelId, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void {
 	ref_ptr_t<Channel> chan = make_ref_ptr<Channel>(connection, channelId, port);
@@ -86,4 +87,5 @@ auto Channels::disconnect() -> void {
 	}
 }
 
+}
 }

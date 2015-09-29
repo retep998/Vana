@@ -16,22 +16,23 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SyncHandler.hpp"
-#include "AbstractConnection.hpp"
-#include "Channel.hpp"
-#include "Channels.hpp"
-#include "Database.hpp"
-#include "InterHeader.hpp"
-#include "InterHelper.hpp"
-#include "PacketReader.hpp"
-#include "PlayerDataProvider.hpp"
-#include "RatesConfig.hpp"
-#include "Session.hpp"
-#include "SyncPacket.hpp"
-#include "WorldServer.hpp"
-#include "WorldServerAcceptConnection.hpp"
-#include "WorldServerAcceptPacket.hpp"
+#include "Common/AbstractConnection.hpp"
+#include "Common/Database.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/InterHelper.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/RatesConfig.hpp"
+#include "Common/Session.hpp"
+#include "WorldServer/Channel.hpp"
+#include "WorldServer/Channels.hpp"
+#include "WorldServer/PlayerDataProvider.hpp"
+#include "WorldServer/SyncPacket.hpp"
+#include "WorldServer/WorldServer.hpp"
+#include "WorldServer/WorldServerAcceptConnection.hpp"
+#include "WorldServer/WorldServerAcceptPacket.hpp"
 
 namespace Vana {
+namespace WorldServer {
 
 auto SyncHandler::handle(AbstractConnection *connection, PacketReader &reader) -> void {
 	sync_t type = reader.get<sync_t>();
@@ -50,4 +51,5 @@ auto SyncHandler::handleConfigSync(PacketReader &reader) -> void {
 	}
 }
 
+}
 }
