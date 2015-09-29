@@ -17,20 +17,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Ip.hpp"
-#include "PacketBuilder.hpp"
-#include "Types.hpp"
+#include "Common/Ip.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
-	class World;
+	namespace LoginServer {
+		class World;
 
-	namespace Packets {
-		namespace Interserver {
-			PACKET(connect, World *world);
-			PACKET(noMoreWorld);
-			PACKET(connectChannel, world_id_t worldId, const Ip &ip, port_t port);
-			PACKET(playerConnectingToChannel, channel_id_t channel, player_id_t charId, const Ip &ip);
-			PACKET(rehashConfig, World *world);
+		namespace Packets {
+			namespace Interserver {
+				PACKET(connect, World *world);
+				PACKET(noMoreWorld);
+				PACKET(connectChannel, world_id_t worldId, const Ip &ip, port_t port);
+				PACKET(playerConnectingToChannel, channel_id_t channel, player_id_t charId, const Ip &ip);
+				PACKET(rehashConfig, World *world);
+			}
 		}
 	}
 }

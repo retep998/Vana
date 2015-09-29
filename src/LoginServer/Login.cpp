@@ -16,24 +16,25 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Login.hpp"
-#include "Algorithm.hpp"
-#include "Database.hpp"
-#include "FileTime.hpp"
-#include "GameConstants.hpp"
-#include "HashUtilities.hpp"
-#include "LoginPacket.hpp"
-#include "LoginServer.hpp"
-#include "PacketReader.hpp"
-#include "PlayerStatus.hpp"
-#include "Randomizer.hpp"
-#include "Session.hpp"
-#include "StringUtilities.hpp"
-#include "TimeUtilities.hpp"
-#include "UnixTime.hpp"
-#include "UserConnection.hpp"
+#include "Common/Algorithm.hpp"
+#include "Common/Database.hpp"
+#include "Common/FileTime.hpp"
+#include "Common/GameConstants.hpp"
+#include "Common/HashUtilities.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/Randomizer.hpp"
+#include "Common/Session.hpp"
+#include "Common/StringUtilities.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "Common/UnixTime.hpp"
+#include "LoginServer/LoginPacket.hpp"
+#include "LoginServer/LoginServer.hpp"
+#include "LoginServer/PlayerStatus.hpp"
+#include "LoginServer/UserConnection.hpp"
 #include <iostream>
 
 namespace Vana {
+namespace LoginServer {
 
 auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 	string_t username = reader.get<string_t>();
@@ -309,4 +310,5 @@ auto Login::registerPin(UserConnection *user, PacketReader &reader) -> void {
 	user->send(Packets::pinAssigned());
 }
 
+}
 }

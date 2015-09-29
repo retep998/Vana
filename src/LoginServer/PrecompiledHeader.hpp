@@ -20,4 +20,4 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // be included twice.
 
 // Common project precompiled header
-#include "../Common/PrecompiledHeader.hpp"
+#include "Common/PrecompiledHeader.hpp"

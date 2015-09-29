@@ -16,19 +16,20 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerAcceptConnection.hpp"
-#include "InterHeader.hpp"
-#include "LoginServer.hpp"
-#include "LoginServerAcceptHandler.hpp"
-#include "PacketReader.hpp"
-#include "PacketWrapper.hpp"
-#include "RankingCalculator.hpp"
-#include "ServerType.hpp"
-#include "Session.hpp"
-#include "StringUtilities.hpp"
-#include "World.hpp"
-#include "Worlds.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/PacketWrapper.hpp"
+#include "Common/ServerType.hpp"
+#include "Common/Session.hpp"
+#include "Common/StringUtilities.hpp"
+#include "LoginServer/LoginServer.hpp"
+#include "LoginServer/LoginServerAcceptHandler.hpp"
+#include "LoginServer/RankingCalculator.hpp"
+#include "LoginServer/World.hpp"
+#include "LoginServer/Worlds.hpp"
 
 namespace Vana {
+namespace LoginServer {
 
 LoginServerAcceptConnection::~LoginServerAcceptConnection() {
 	if (m_worldId != -1) {
@@ -83,4 +84,5 @@ auto LoginServerAcceptConnection::getWorldId() const -> world_id_t {
 	return m_worldId;
 }
 
+}
 }

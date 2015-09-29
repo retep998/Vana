@@ -17,44 +17,46 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Types.hpp"
-#include "UnixTime.hpp"
+#include "Common/Types.hpp"
+#include "Common/UnixTime.hpp"
 #include <mutex>
 #include <string>
 #include <vector>
 
 namespace Vana {
-	namespace RankingCalculator {
-		struct Rank {
-			opt_int32_t oldRank;
-			opt_int32_t newRank;
-		};
-		struct RankPlayer {
-			player_level_t levelStat;
-			player_level_t jobLevelMax;
-			world_id_t worldId;
-			job_id_t jobStat;
-			fame_t fameStat;
-			experience_t expStat;
-			player_id_t charId;
-			UnixTime levelTime;
-			Rank overall;
-			Rank world;
-			Rank job;
-			Rank fame;
-		};
+	namespace LoginServer {
+		namespace RankingCalculator {
+			struct Rank {
+				opt_int32_t oldRank;
+				opt_int32_t newRank;
+			};
+			struct RankPlayer {
+				player_level_t levelStat;
+				player_level_t jobLevelMax;
+				world_id_t worldId;
+				job_id_t jobStat;
+				fame_t fameStat;
+				experience_t expStat;
+				player_id_t charId;
+				UnixTime levelTime;
+				Rank overall;
+				Rank world;
+				Rank job;
+				Rank fame;
+			};
 
-		auto setTimer() -> void;
-		auto runThread() -> void;
-		auto all() -> void;
-		auto overall(vector_t<RankPlayer> &v) -> void;
-		auto world(vector_t<RankPlayer> &v) -> void;
-		auto job(vector_t<RankPlayer> &v) -> void;
-		auto fame(vector_t<RankPlayer> &v) -> void;
-		auto increaseRank(player_level_t level, player_level_t maxLevel, player_level_t lastLevel, experience_t exp, experience_t lastExp, job_id_t job) -> bool;
-		auto baseCompare(const RankPlayer &t1, const RankPlayer &t2) -> bool;
-		auto updateRank(Rank &r, int32_t newRank) -> void;
+			auto setTimer() -> void;
+			auto runThread() -> void;
+			auto all() -> void;
+			auto overall(vector_t<RankPlayer> &v) -> void;
+			auto world(vector_t<RankPlayer> &v) -> void;
+			auto job(vector_t<RankPlayer> &v) -> void;
+			auto fame(vector_t<RankPlayer> &v) -> void;
+			auto increaseRank(player_level_t level, player_level_t maxLevel, player_level_t lastLevel, experience_t exp, experience_t lastExp, job_id_t job) -> bool;
+			auto baseCompare(const RankPlayer &t1, const RankPlayer &t2) -> bool;
+			auto updateRank(Rank &r, int32_t newRank) -> void;
 
-		extern mutex_t RankingsMutex;
+			extern mutex_t RankingsMutex;
+		}
 	}
 }

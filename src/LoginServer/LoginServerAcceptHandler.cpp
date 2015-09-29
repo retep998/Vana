@@ -16,18 +16,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerAcceptHandler.hpp"
-#include "Channel.hpp"
-#include "LoginServer.hpp"
-#include "LoginServerAcceptConnection.hpp"
-#include "PacketBuilder.hpp"
-#include "PacketReader.hpp"
-#include "PacketWrapper.hpp"
-#include "StringUtilities.hpp"
-#include "World.hpp"
-#include "Worlds.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/PacketWrapper.hpp"
+#include "Common/StringUtilities.hpp"
+#include "LoginServer/Channel.hpp"
+#include "LoginServer/LoginServer.hpp"
+#include "LoginServer/LoginServerAcceptConnection.hpp"
+#include "LoginServer/World.hpp"
+#include "LoginServer/Worlds.hpp"
 #include <iostream>
 
 namespace Vana {
+namespace LoginServer {
 
 auto LoginServerAcceptHandler::registerChannel(LoginServerAcceptConnection *connection, PacketReader &reader) -> void {
 	channel_id_t channel = reader.get<channel_id_t>();
@@ -37,7 +38,9 @@ auto LoginServerAcceptHandler::registerChannel(LoginServerAcceptConnection *conn
 	chan->setExternalIpInformation(ip, reader.get<vector_t<ExternalIp>>());
 	chan->setPort(reader.get<port_t>());
 	LoginServer::getInstance().getWorlds().getWorld(connection->getWorldId())->addChannel(channel, chan);
-	LoginServer::getInstance().log(LogType::ServerConnect, [&](out_stream_t &log) { log << "World " << static_cast<int32_t>(connection->getWorldId()) << "; Channel " << static_cast<int32_t>(channel); });
+	LoginServer::getInstance().log(LogType::ServerConnect, [&](out_stream_t &log) {
+		log << "World " << static_cast<int32_t>(connection->getWorldId()) << "; Channel " << static_cast<int32_t>(channel);
+	});
 }
 
 auto LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptConnection *connection, PacketReader &reader) -> void {
@@ -53,7 +56,10 @@ auto LoginServerAcceptHandler::removeChannel(LoginServerAcceptConnection *connec
 	channel_id_t channel = reader.get<channel_id_t>();
 
 	LoginServer::getInstance().getWorlds().getWorld(connection->getWorldId())->removeChannel(channel);
-	LoginServer::getInstance().log(LogType::ServerDisconnect, [&](out_stream_t &log) { log << "World " << static_cast<int32_t>(connection->getWorldId()) << "; Channel " << static_cast<int32_t>(channel); });
+	LoginServer::getInstance().log(LogType::ServerDisconnect, [&](out_stream_t &log) {
+		log << "World " << static_cast<int32_t>(connection->getWorldId()) << "; Channel " << static_cast<int32_t>(channel);
+	});
 }
 
+}
 }

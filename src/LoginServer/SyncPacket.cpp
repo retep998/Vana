@@ -16,10 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SyncPacket.hpp"
-#include "InterHeader.hpp"
-#include "InterHelper.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/InterHelper.hpp"
 
 namespace Vana {
+namespace LoginServer {
 namespace Packets {
 namespace Interserver {
 namespace Player {
@@ -44,6 +45,7 @@ PACKET_IMPL(characterDeleted, player_id_t playerId) {
 	return builder;
 }
 
+}
 }
 }
 }

@@ -19,14 +19,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Vana {
 	class PacketReader;
-	class UserConnection;
 
-	namespace Login {
-		auto loginUser(UserConnection *user, PacketReader &reader) -> void;
-		auto setGender(UserConnection *user, PacketReader &reader) -> void;
-		auto handleLogin(UserConnection *user, PacketReader &reader) -> void;
-		auto registerPin(UserConnection *user, PacketReader &reader) -> void;
-		auto loginBack(UserConnection *user) -> void;
-		auto checkPin(UserConnection *user, PacketReader &reader) -> void;
+	namespace LoginServer {
+		class UserConnection;
+
+		namespace Login {
+			auto loginUser(UserConnection *user, PacketReader &reader) -> void;
+			auto setGender(UserConnection *user, PacketReader &reader) -> void;
+			auto handleLogin(UserConnection *user, PacketReader &reader) -> void;
+			auto registerPin(UserConnection *user, PacketReader &reader) -> void;
+			auto loginBack(UserConnection *user) -> void;
+			auto checkPin(UserConnection *user, PacketReader &reader) -> void;
+		}
 	}
 }

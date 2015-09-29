@@ -16,22 +16,23 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServer.hpp"
-#include "ConnectionManager.hpp"
-#include "InitializeCommon.hpp"
-#include "LoginServerAcceptPacket.hpp"
-#include "MajorBossConfig.hpp"
-#include "MapleVersion.hpp"
-#include "RankingCalculator.hpp"
-#include "RatesConfig.hpp"
-#include "SaltingConfig.hpp"
-#include "ServerType.hpp"
-#include "UserConnection.hpp"
-#include "World.hpp"
-#include "Worlds.hpp"
+#include "Common/ConnectionManager.hpp"
+#include "Common/InitializeCommon.hpp"
+#include "Common/MajorBossConfig.hpp"
+#include "Common/MapleVersion.hpp"
+#include "Common/RatesConfig.hpp"
+#include "Common/SaltingConfig.hpp"
+#include "Common/ServerType.hpp"
+#include "LoginServer/LoginServerAcceptPacket.hpp"
+#include "LoginServer/RankingCalculator.hpp"
+#include "LoginServer/UserConnection.hpp"
+#include "LoginServer/World.hpp"
+#include "LoginServer/Worlds.hpp"
 #include <sstream>
 #include <iostream>
 
 namespace Vana {
+namespace LoginServer {
 
 LoginServer::LoginServer() :
 	AbstractServer{ServerType::Login}
@@ -167,4 +168,5 @@ auto LoginServer::loadWorlds() -> void {
 	}
 }
 
+}
 }

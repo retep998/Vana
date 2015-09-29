@@ -16,21 +16,22 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Worlds.hpp"
-#include "Channel.hpp"
-#include "Characters.hpp"
-#include "LoginPacket.hpp"
-#include "LoginServer.hpp"
-#include "LoginServerAcceptConnection.hpp"
-#include "LoginServerAcceptPacket.hpp"
-#include "PacketReader.hpp"
-#include "PlayerStatus.hpp"
-#include "Session.hpp"
-#include "StringUtilities.hpp"
-#include "UserConnection.hpp"
-#include "World.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/Session.hpp"
+#include "Common/StringUtilities.hpp"
+#include "LoginServer/Channel.hpp"
+#include "LoginServer/Characters.hpp"
+#include "LoginServer/LoginPacket.hpp"
+#include "LoginServer/LoginServer.hpp"
+#include "LoginServer/LoginServerAcceptConnection.hpp"
+#include "LoginServer/LoginServerAcceptPacket.hpp"
+#include "LoginServer/PlayerStatus.hpp"
+#include "LoginServer/UserConnection.hpp"
+#include "LoginServer/World.hpp"
 #include <iostream>
 
 namespace Vana {
+namespace LoginServer {
 
 auto Worlds::showWorld(UserConnection *user) -> void {
 	if (user->getStatus() != PlayerStatus::LoggedIn) {
@@ -207,4 +208,5 @@ auto Worlds::setEventMessages(const string_t &message) -> void {
 	}
 }
 
+}
 }

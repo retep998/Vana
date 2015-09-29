@@ -16,19 +16,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "RankingCalculator.hpp"
-#include "Database.hpp"
-#include "GameConstants.hpp"
-#include "GameLogicUtilities.hpp"
-#include "InitializeCommon.hpp"
-#include "JobConstants.hpp"
-#include "LoginServer.hpp"
-#include "StopWatch.hpp"
-#include "StringUtilities.hpp"
-#include "Timer.hpp"
-#include "TimerThread.hpp"
-#include "TimeUtilities.hpp"
-#include "World.hpp"
-#include "Worlds.hpp"
+#include "Common/Database.hpp"
+#include "Common/GameConstants.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/InitializeCommon.hpp"
+#include "Common/JobConstants.hpp"
+#include "Common/StopWatch.hpp"
+#include "Common/StringUtilities.hpp"
+#include "Common/Timer.hpp"
+#include "Common/TimerThread.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "LoginServer/LoginServer.hpp"
+#include "LoginServer/World.hpp"
+#include "LoginServer/Worlds.hpp"
 #include <algorithm>
 #include <functional>
 #include <iomanip>
@@ -37,6 +37,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <thread>
 
 namespace Vana {
+namespace LoginServer {
 
 mutex_t RankingCalculator::RankingsMutex;
 
@@ -332,4 +333,5 @@ auto RankingCalculator::fame(vector_t<RankPlayer> &v) -> void {
 	}
 }
 
+}
 }

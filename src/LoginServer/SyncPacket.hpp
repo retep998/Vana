@@ -17,15 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "PacketBuilder.hpp"
-#include "Types.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
-	namespace Packets {
-		namespace Interserver {
-			namespace Player {
-				PACKET(characterCreated, player_id_t playerId);
-				PACKET(characterDeleted, player_id_t playerId);
+	namespace LoginServer {
+		namespace Packets {
+			namespace Interserver {
+				namespace Player {
+					PACKET(characterCreated, player_id_t playerId);
+					PACKET(characterDeleted, player_id_t playerId);
+				}
 			}
 		}
 	}

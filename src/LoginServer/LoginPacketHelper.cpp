@@ -16,10 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginPacketHelper.hpp"
-#include "Characters.hpp"
-#include "ItemConstants.hpp"
+#include "Common/ItemConstants.hpp"
+#include "LoginServer/Characters.hpp"
 
 namespace Vana {
+namespace LoginServer {
 namespace Packets {
 namespace Helpers {
 
@@ -118,6 +119,7 @@ PACKET_IMPL(addCharacter, const Character &charc) {
 	return builder;
 }
 
+}
 }
 }
 }

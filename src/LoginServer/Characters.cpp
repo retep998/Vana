@@ -16,28 +16,29 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Characters.hpp"
-#include "Algorithm.hpp"
-#include "CurseDataProvider.hpp"
-#include "ClientIp.hpp"
-#include "Database.hpp"
-#include "EquipDataProvider.hpp"
-#include "GameConstants.hpp"
-#include "GameLogicUtilities.hpp"
-#include "ItemConstants.hpp"
-#include "LoginPacket.hpp"
-#include "LoginServer.hpp"
-#include "LoginServerAcceptPacket.hpp"
-#include "MiscUtilities.hpp"
-#include "PacketReader.hpp"
-#include "Session.hpp"
-#include "SyncPacket.hpp"
-#include "UserConnection.hpp"
-#include "World.hpp"
-#include "Worlds.hpp"
-#include "ValidCharDataProvider.hpp"
+#include "Common/Algorithm.hpp"
+#include "Common/CurseDataProvider.hpp"
+#include "Common/ClientIp.hpp"
+#include "Common/Database.hpp"
+#include "Common/EquipDataProvider.hpp"
+#include "Common/GameConstants.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/ItemConstants.hpp"
+#include "Common/MiscUtilities.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/Session.hpp"
+#include "Common/ValidCharDataProvider.hpp"
+#include "LoginServer/LoginPacket.hpp"
+#include "LoginServer/LoginServer.hpp"
+#include "LoginServer/LoginServerAcceptPacket.hpp"
+#include "LoginServer/SyncPacket.hpp"
+#include "LoginServer/UserConnection.hpp"
+#include "LoginServer/World.hpp"
+#include "LoginServer/Worlds.hpp"
 #include <unordered_map>
 
 namespace Vana {
+namespace LoginServer {
 
 auto Characters::loadEquips(player_id_t id, vector_t<CharEquip> &vec) -> void {
 	auto &db = Database::getCharDb();
@@ -174,7 +175,7 @@ auto Characters::showCharacters(UserConnection *user) -> void {
 
 auto Characters::checkCharacterName(UserConnection *user, PacketReader &reader) -> void {
 	string_t name = reader.get<string_t>();
-	if (!ext::in_range_inclusive<size_t>(name.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
+	if (!ext::in_range_inclusive<size_t>(name.size(), Vana::Characters::MinNameSize, Vana::Characters::MaxNameSize)) {
 		return;
 	}
 
@@ -211,7 +212,7 @@ auto Characters::createCharacter(UserConnection *user, PacketReader &reader) -> 
 	}
 
 	string_t name = reader.get<string_t>();
-	if (!ext::in_range_inclusive<size_t>(name.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
+	if (!ext::in_range_inclusive<size_t>(name.size(), Vana::Characters::MinNameSize, Vana::Characters::MaxNameSize)) {
 		return;
 	}
 
@@ -464,4 +465,5 @@ auto Characters::nameInvalid(const string_t &name) -> bool {
 		LoginServer::getInstance().getCurseDataProvider().isCurseWord(name);
 }
 
+}
 }

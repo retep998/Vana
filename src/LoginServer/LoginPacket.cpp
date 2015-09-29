@@ -16,16 +16,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginPacket.hpp"
-#include "Channel.hpp"
-#include "Characters.hpp"
-#include "ClientIp.hpp"
-#include "LoginPacketHelper.hpp"
-#include "PlayerStatus.hpp"
-#include "SmsgHeader.hpp"
-#include "UserConnection.hpp"
-#include "World.hpp"
+#include "Common/ClientIp.hpp"
+#include "LoginServer/Channel.hpp"
+#include "LoginServer/Characters.hpp"
+#include "LoginServer/LoginPacketHelper.hpp"
+#include "LoginServer/PlayerStatus.hpp"
+#include "LoginServer/SmsgHeader.hpp"
+#include "LoginServer/UserConnection.hpp"
+#include "LoginServer/World.hpp"
 
 namespace Vana {
+namespace LoginServer {
 namespace Packets {
 
 PACKET_IMPL(loginError, int16_t errorId) {
@@ -283,5 +284,6 @@ PACKET_IMPL(relogResponse) {
 	return builder;
 }
 
+}
 }
 }
