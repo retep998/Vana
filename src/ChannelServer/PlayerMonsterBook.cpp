@@ -112,27 +112,27 @@ auto PlayerMonsterBook::addCard(int32_t cardId, uint8_t level, bool initialLoad)
 	return false;
 }
 
-auto PlayerMonsterBook::connectData(PacketBuilder &packet) -> void {
+auto PlayerMonsterBook::connectData(PacketBuilder &builder) -> void {
 	if (getCover() != 0) {
 		optional_t<item_id_t> coverId = ChannelServer::getInstance().getItemDataProvider().getCardId(getCover());
 		if (coverId.is_initialized()) {
-			packet.add<int32_t>(coverId.get());
+			builder.add<int32_t>(coverId.get());
 		}
 		else {
 			// ???
 			// Shouldn't happen, server screwed up in modification somewhere
-			packet.add<int32_t>(0);
+			builder.add<int32_t>(0);
 		}
 	}
 	else {
-		packet.add<int32_t>(0);
+		builder.add<int32_t>(0);
 	}
-	packet.unk<int8_t>();
+	builder.unk<int8_t>();
 
-	packet.add<uint16_t>(static_cast<uint16_t>(m_cards.size()));
+	builder.add<uint16_t>(static_cast<uint16_t>(m_cards.size()));
 	for (const auto &kvp : m_cards) {
-		packet.add<int16_t>(GameLogicUtilities::getCardShortId(kvp.second.id));
-		packet.add<int8_t>(kvp.second.level);
+		builder.add<int16_t>(GameLogicUtilities::getCardShortId(kvp.second.id));
+		builder.add<int8_t>(kvp.second.level);
 	}
 }
 
@@ -148,12 +148,12 @@ auto PlayerMonsterBook::calculateLevel() -> void {
 	}
 }
 
-auto PlayerMonsterBook::infoData(PacketBuilder &packet) -> void {
-	packet.add<int32_t>(getLevel());
-	packet.add<int32_t>(getNormals());
-	packet.add<int32_t>(getSpecials());
-	packet.add<int32_t>(getSize());
-	packet.add<int32_t>(getCover());
+auto PlayerMonsterBook::infoData(PacketBuilder &builder) -> void {
+	builder.add<int32_t>(getLevel());
+	builder.add<int32_t>(getNormals());
+	builder.add<int32_t>(getSpecials());
+	builder.add<int32_t>(getSize());
+	builder.add<int32_t>(getCover());
 }
 
 auto PlayerMonsterBook::getCard(int32_t cardId) -> MonsterCard * {

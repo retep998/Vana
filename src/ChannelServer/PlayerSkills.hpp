@@ -42,8 +42,8 @@ namespace Vana {
 
 		auto load() -> void;
 		auto save(bool saveCooldowns = false) -> void;
-		auto connectData(PacketBuilder &packet) const -> void;
-		auto connectDataForBlessing(PacketBuilder &packet) const -> void;
+		auto connectData(PacketBuilder &builder) const -> void;
+		auto connectDataForBlessing(PacketBuilder &builder) const -> void;
 
 		auto addSkillLevel(skill_id_t skillId, skill_level_t amount, bool sendPacket = true) -> bool;
 		auto getSkillLevel(skill_id_t skillId) const -> skill_level_t;

@@ -410,17 +410,17 @@ auto PlayerQuests::isQuestComplete(quest_id_t questId) -> bool {
 	return m_completed.find(questId) != std::end(m_completed);
 }
 
-auto PlayerQuests::connectData(PacketBuilder &packet) -> void {
-	packet.add<uint16_t>(static_cast<uint16_t>(m_quests.size()));
+auto PlayerQuests::connectData(PacketBuilder &builder) -> void {
+	builder.add<uint16_t>(static_cast<uint16_t>(m_quests.size()));
 	for (const auto &kvp : m_quests) {
-		packet.add<quest_id_t>(kvp.first);
-		packet.add<string_t>(kvp.second.getQuestData());
+		builder.add<quest_id_t>(kvp.first);
+		builder.add<string_t>(kvp.second.getQuestData());
 	}
 
-	packet.add<uint16_t>(static_cast<uint16_t>(m_completed.size()));
+	builder.add<uint16_t>(static_cast<uint16_t>(m_completed.size()));
 	for (const auto &kvp : m_completed) {
-		packet.add<quest_id_t>(kvp.first);
-		packet.add<FileTime>(kvp.second);
+		builder.add<quest_id_t>(kvp.first);
+		builder.add<FileTime>(kvp.second);
 	}
 }
 

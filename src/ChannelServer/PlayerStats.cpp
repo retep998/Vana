@@ -128,21 +128,21 @@ auto PlayerStats::setEquip(inventory_slot_t slot, Item *equip, bool isLoading) -
 }
 
 // Data acquisition
-auto PlayerStats::connectData(PacketBuilder &packet) -> void {
-	packet.add<player_level_t>(getLevel());
-	packet.add<job_id_t>(getJob());
-	packet.add<stat_t>(getStr());
-	packet.add<stat_t>(getDex());
-	packet.add<stat_t>(getInt());
-	packet.add<stat_t>(getLuk());
-	packet.add<health_t>(getHp());
-	packet.add<health_t>(getMaxHp(true));
-	packet.add<health_t>(getMp());
-	packet.add<health_t>(getMaxMp(true));
-	packet.add<stat_t>(getAp());
-	packet.add<stat_t>(getSp());
-	packet.add<experience_t>(getExp());
-	packet.add<fame_t>(getFame());
+auto PlayerStats::connectData(PacketBuilder &builder) -> void {
+	builder.add<player_level_t>(getLevel());
+	builder.add<job_id_t>(getJob());
+	builder.add<stat_t>(getStr());
+	builder.add<stat_t>(getDex());
+	builder.add<stat_t>(getInt());
+	builder.add<stat_t>(getLuk());
+	builder.add<health_t>(getHp());
+	builder.add<health_t>(getMaxHp(true));
+	builder.add<health_t>(getMp());
+	builder.add<health_t>(getMaxMp(true));
+	builder.add<stat_t>(getAp());
+	builder.add<stat_t>(getSp());
+	builder.add<experience_t>(getExp());
+	builder.add<fame_t>(getFame());
 }
 
 auto PlayerStats::getMaxHp(bool withoutBonus) -> health_t {
@@ -542,7 +542,7 @@ auto PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) -> void {
 }
 
 auto PlayerStats::addStat(PacketReader &reader) -> void {
-	tick_count_t ticks = reader.get<uint32_t>();
+	reader.skip<tick_count_t>();
 	int32_t type = reader.get<int32_t>();
 	if (getAp() == 0) {
 		// Hacking
@@ -553,7 +553,7 @@ auto PlayerStats::addStat(PacketReader &reader) -> void {
 }
 
 auto PlayerStats::addStatMulti(PacketReader &reader) -> void {
-	tick_count_t ticks = reader.get<uint32_t>();
+	reader.skip<tick_count_t>();
 	uint32_t amount = reader.get<uint32_t>();
 
 	m_player->send(Packets::statOk());

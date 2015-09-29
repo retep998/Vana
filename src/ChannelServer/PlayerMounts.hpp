@@ -39,8 +39,8 @@ namespace Vana {
 		auto save() -> void;
 		auto load() -> void;
 
-		auto mountInfoPacket(PacketBuilder &packet) -> void;
-		auto mountInfoMapSpawnPacket(PacketBuilder &packet) -> void;
+		auto mountInfoPacket(PacketBuilder &builder) -> void;
+		auto mountInfoMapSpawnPacket(PacketBuilder &builder) -> void;
 
 		auto getCurrentMount() const -> item_id_t { return m_currentMount; }
 		auto getCurrentExp() -> int16_t;

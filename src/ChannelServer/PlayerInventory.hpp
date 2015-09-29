@@ -39,10 +39,10 @@ namespace Vana {
 		auto load() -> void;
 		auto save() -> void;
 
-		auto connectData(PacketBuilder &packet) -> void;
-		auto addEquippedPacket(PacketBuilder &packet) -> void;
-		auto rockPacket(PacketBuilder &packet) -> void;
-		auto wishListPacket(PacketBuilder &packet) -> void;
+		auto connectData(PacketBuilder &builder) -> void;
+		auto addEquippedPacket(PacketBuilder &builder) -> void;
+		auto rockPacket(PacketBuilder &builder) -> void;
+		auto wishListPacket(PacketBuilder &builder) -> void;
 
 		auto setMesos(mesos_t mesos, bool sendPacket = false) -> void;
 		auto modifyMesos(mesos_t mod, bool sendPacket = false) -> bool;

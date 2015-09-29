@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.hpp"
 #include "PacketWrapper.hpp"
 #include "Party.hpp"
+#include "PartyData.hpp"
 #include "PartyPacket.hpp"
 #include "Player.hpp"
 #include "PlayerPacket.hpp"
@@ -65,8 +66,8 @@ auto PlayerDataProvider::parseChannelConnectPacket(PacketReader &reader) -> void
 	}
 }
 
-auto PlayerDataProvider::sendSync(const PacketBuilder &packet) const -> void {
-	ChannelServer::getInstance().sendWorld(packet);
+auto PlayerDataProvider::sendSync(const PacketBuilder &builder) const -> void {
+	ChannelServer::getInstance().sendWorld(builder);
 }
 
 auto PlayerDataProvider::handleSync(sync_t type, PacketReader &reader) -> void {
@@ -189,28 +190,28 @@ auto PlayerDataProvider::getPlayerDataByName(const string_t &name) const -> cons
 	return kvp->second;
 }
 
-auto PlayerDataProvider::send(player_id_t playerId, const PacketBuilder &packet) -> void {
+auto PlayerDataProvider::send(player_id_t playerId, const PacketBuilder &builder) -> void {
 	auto kvp = m_players.find(playerId);
 	if (kvp == std::end(m_players)) {
 		return;
 	}
 
-	kvp->second->send(packet);
+	kvp->second->send(builder);
 }
 
-auto PlayerDataProvider::send(const vector_t<player_id_t> &playerIds, const PacketBuilder &packet) -> void {
+auto PlayerDataProvider::send(const vector_t<player_id_t> &playerIds, const PacketBuilder &builder) -> void {
 	for (const auto &playerId : playerIds) {
 		auto kvp = m_players.find(playerId);
 		if (kvp != std::end(m_players)) {
-			kvp->second->send(packet);
+			kvp->second->send(builder);
 		}
 	}
 }
 
-auto PlayerDataProvider::send(const PacketBuilder &packet) -> void {
+auto PlayerDataProvider::send(const PacketBuilder &builder) -> void {
 	for (const auto &kvp : m_players) {
 		Player *player = kvp.second;
-		player->send(packet);
+		player->send(builder);
 	}
 }
 

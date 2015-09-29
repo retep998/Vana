@@ -32,8 +32,8 @@ namespace Vana {
 		PlayerPets(Player *player);
 
 		auto save() -> void;
-		auto petInfoPacket(PacketBuilder &packet) -> void;
-		auto connectData(PacketBuilder &packet) -> void;
+		auto petInfoPacket(PacketBuilder &builder) -> void;
+		auto connectData(PacketBuilder &builder) -> void;
 
 		auto getPet(pet_id_t petId) -> Pet *;
 		auto getSummoned(int8_t index) -> Pet *;

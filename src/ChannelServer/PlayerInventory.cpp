@@ -279,30 +279,30 @@ auto PlayerInventory::getEquippedId(inventory_slot_t slot, bool cash) -> item_id
 	return m_equipped[slot][(cash ? 1 : 0)];
 }
 
-auto PlayerInventory::addEquippedPacket(PacketBuilder &packet) -> void {
+auto PlayerInventory::addEquippedPacket(PacketBuilder &builder) -> void {
 	for (int8_t i = 0; i < Inventories::EquippedSlots; ++i) {
 		// Shown items
 		if (m_equipped[i][0] > 0 || m_equipped[i][1] > 0) {
-			packet.add<int8_t>(i);
+			builder.add<int8_t>(i);
 			if (m_equipped[i][1] <= 0 || (i == EquipSlots::Weapon && m_equipped[i][0] > 0)) {
 				// Normal weapons always here
-				packet.add<int32_t>(m_equipped[i][0]);
+				builder.add<int32_t>(m_equipped[i][0]);
 			}
 			else {
-				packet.add<int32_t>(m_equipped[i][1]);
+				builder.add<int32_t>(m_equipped[i][1]);
 			}
 		}
 	}
-	packet.add<int8_t>(-1);
+	builder.add<int8_t>(-1);
 	for (int8_t i = 0; i < Inventories::EquippedSlots; ++i) {
 		// Covered items
 		if (m_equipped[i][1] > 0 && m_equipped[i][0] > 0 && i != EquipSlots::Weapon) {
-			packet.add<int8_t>(i);
-			packet.add<int32_t>(m_equipped[i][0]);
+			builder.add<int8_t>(i);
+			builder.add<int32_t>(m_equipped[i][0]);
 		}
 	}
-	packet.add<int8_t>(-1);
-	packet.add<int32_t>(m_equipped[EquipSlots::Weapon][1]); // Cash weapon
+	builder.add<int8_t>(-1);
+	builder.add<int32_t>(m_equipped[EquipSlots::Weapon][1]); // Cash weapon
 }
 
 auto PlayerInventory::getItemAmount(item_id_t itemId) -> slot_qty_t {
@@ -612,33 +612,33 @@ auto PlayerInventory::addWishListItem(item_id_t itemId) -> void {
 	m_wishlist.push_back(itemId);
 }
 
-auto PlayerInventory::connectData(PacketBuilder &packet) -> void {
-	packet.add<int32_t>(m_mesos);
+auto PlayerInventory::connectData(PacketBuilder &builder) -> void {
+	builder.add<int32_t>(m_mesos);
 
 	for (inventory_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; ++i) {
-		packet.add<inventory_slot_count_t>(getMaxSlots(i));
+		builder.add<inventory_slot_count_t>(getMaxSlots(i));
 	}
 
 	// Go through equips
 	const auto &equips = m_items[Inventories::EquipInventory - 1];
 	for (const auto &kvp : equips) {
 		if (kvp.first < 0 && kvp.first > -100) {
-			packet.addBuffer(Packets::Helpers::addItemInfo(kvp.first, kvp.second));
+			builder.addBuffer(Packets::Helpers::addItemInfo(kvp.first, kvp.second));
 		}
 	}
-	packet.add<int8_t>(0);
+	builder.add<int8_t>(0);
 	for (const auto &kvp : equips) {
 		if (kvp.first < -100) {
-			packet.addBuffer(Packets::Helpers::addItemInfo(kvp.first, kvp.second));
+			builder.addBuffer(Packets::Helpers::addItemInfo(kvp.first, kvp.second));
 		}
 	}
-	packet.add<int8_t>(0);
+	builder.add<int8_t>(0);
 	for (const auto &kvp : equips) {
 		if (kvp.first > 0) {
-			packet.addBuffer(Packets::Helpers::addItemInfo(kvp.first, kvp.second));
+			builder.addBuffer(Packets::Helpers::addItemInfo(kvp.first, kvp.second));
 		}
 	}
-	packet.add<int8_t>(0);
+	builder.add<int8_t>(0);
 
 	// Equips done, do rest of user's items starting with Use
 	for (inventory_t i = Inventories::UseInventory; i <= Inventories::InventoryCount; ++i) {
@@ -648,27 +648,27 @@ auto PlayerInventory::connectData(PacketBuilder &packet) -> void {
 				continue;
 			}
 			if (item->getPetId() == 0) {
-				packet.addBuffer(Packets::Helpers::addItemInfo(s, item));
+				builder.addBuffer(Packets::Helpers::addItemInfo(s, item));
 			}
 			else {
 				Pet *pet = m_player->getPets()->getPet(item->getPetId());
-				packet.add<int8_t>(static_cast<int8_t>(s));
-				packet.addBuffer(Packets::Pets::addInfo(pet, item));
+				builder.add<int8_t>(static_cast<int8_t>(s));
+				builder.addBuffer(Packets::Pets::addInfo(pet, item));
 			}
 		}
-		packet.add<int8_t>(0);
+		builder.add<int8_t>(0);
 	}
 }
 
-auto PlayerInventory::rockPacket(PacketBuilder &packet) -> void {
-	packet.addBuffer(Packets::Helpers::fillRockPacket(m_rockLocations, Inventories::TeleportRockMax));
-	packet.addBuffer(Packets::Helpers::fillRockPacket(m_vipLocations, Inventories::VipRockMax));
+auto PlayerInventory::rockPacket(PacketBuilder &builder) -> void {
+	builder.addBuffer(Packets::Helpers::fillRockPacket(m_rockLocations, Inventories::TeleportRockMax));
+	builder.addBuffer(Packets::Helpers::fillRockPacket(m_vipLocations, Inventories::VipRockMax));
 }
 
-auto PlayerInventory::wishListPacket(PacketBuilder &packet) -> void {
-	packet.add<uint8_t>(static_cast<uint8_t>(m_wishlist.size()));
+auto PlayerInventory::wishListPacket(PacketBuilder &builder) -> void {
+	builder.add<uint8_t>(static_cast<uint8_t>(m_wishlist.size()));
 	for (const auto &item : m_wishlist) {
-		packet.add<int32_t>(item);
+		builder.add<int32_t>(item);
 	}
 }
 

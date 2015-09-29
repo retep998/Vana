@@ -46,15 +46,15 @@ auto PlayerDataProvider::loadData() -> void {
 	loadPlayers(worldId);
 }
 
-auto PlayerDataProvider::getChannelConnectPacket(PacketBuilder &packet) -> void {
-	packet.add<uint32_t>(m_players.size());
+auto PlayerDataProvider::getChannelConnectPacket(PacketBuilder &builder) -> void {
+	builder.add<uint32_t>(m_players.size());
 	for (const auto &kvp : m_players) {
-		packet.add<PlayerData>(kvp.second);
+		builder.add<PlayerData>(kvp.second);
 	}
 
-	packet.add<uint32_t>(m_parties.size());
+	builder.add<uint32_t>(m_parties.size());
 	for (const auto &kvp : m_parties) {
-		packet.add<PartyData>(kvp.second);
+		builder.add<PartyData>(kvp.second);
 	}
 }
 

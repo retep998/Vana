@@ -201,6 +201,7 @@ namespace Vana {
 				AngelicBuster4 = 6512,
 			};
 		}
+
 		enum class JobType : int8_t {
 			Adventurer = 0,
 			Cygnus = 1,

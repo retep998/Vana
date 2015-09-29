@@ -87,17 +87,17 @@ auto PlayerPets::save() -> void {
 	}
 }
 
-auto PlayerPets::petInfoPacket(PacketBuilder &packet) -> void {
+auto PlayerPets::petInfoPacket(PacketBuilder &builder) -> void {
 	Item *it;
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = getSummoned(i)) {
-			packet.add<int8_t>(1);
-			packet.add<item_id_t>(pet->getItemId());
-			packet.add<string_t>(pet->getName());
-			packet.add<int8_t>(pet->getLevel());
-			packet.add<int16_t>(pet->getCloseness());
-			packet.add<int8_t>(pet->getFullness());
-			packet.unk<int16_t>();
+			builder.add<int8_t>(1);
+			builder.add<item_id_t>(pet->getItemId());
+			builder.add<string_t>(pet->getName());
+			builder.add<int8_t>(pet->getLevel());
+			builder.add<int16_t>(pet->getCloseness());
+			builder.add<int8_t>(pet->getFullness());
+			builder.unk<int16_t>();
 			int16_t slot = 0;
 			switch (i) {
 				case 0: slot = EquipSlots::PetEquip1;
@@ -106,19 +106,19 @@ auto PlayerPets::petInfoPacket(PacketBuilder &packet) -> void {
 			}
 
 			it = m_player->getInventory()->getItem(Inventories::EquipInventory, slot);
-			packet.add<item_id_t>(it != nullptr ? it->getId() : 0);
+			builder.add<item_id_t>(it != nullptr ? it->getId() : 0);
 		}
 	}
-	packet.add<int8_t>(0); // End of pets / start of taming mob
+	builder.add<int8_t>(0); // End of pets / start of taming mob
 }
 
-auto PlayerPets::connectData(PacketBuilder &packet) -> void {
+auto PlayerPets::connectData(PacketBuilder &builder) -> void {
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = getSummoned(i)) {
-			packet.add<int64_t>(pet->getId()); //pet->getCashId() != 0 ? pet->getCashId() : pet->getId());
+			builder.add<int64_t>(pet->getId()); //pet->getCashId() != 0 ? pet->getCashId() : pet->getId());
 		}
 		else {
-			packet.add<int64_t>(0);
+			builder.add<int64_t>(0);
 		}
 	}
 }

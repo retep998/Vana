@@ -806,16 +806,16 @@ auto Player::getPortalCount(bool add) -> portal_count_t {
 	return m_portalCount;
 }
 
-auto Player::initializeRng(PacketBuilder &packet) -> void {
+auto Player::initializeRng(PacketBuilder &builder) -> void {
 	uint32_t seed1 = Randomizer::rand<uint32_t>();
 	uint32_t seed2 = Randomizer::rand<uint32_t>();
 	uint32_t seed3 = Randomizer::rand<uint32_t>();
 
 	m_randStream = make_owned_ptr<TauswortheGenerator>(seed1, seed2, seed3);
 
-	packet.add<uint32_t>(seed1);
-	packet.add<uint32_t>(seed2);
-	packet.add<uint32_t>(seed3);
+	builder.add<uint32_t>(seed1);
+	builder.add<uint32_t>(seed2);
+	builder.add<uint32_t>(seed3);
 }
 
 auto Player::send(const PacketBuilder &builder) -> void {

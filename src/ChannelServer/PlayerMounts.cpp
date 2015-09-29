@@ -132,28 +132,28 @@ auto PlayerMounts::setCurrentTiredness(int8_t tiredness) -> void {
 	}
 }
 
-auto PlayerMounts::mountInfoPacket(PacketBuilder &packet) -> void {
+auto PlayerMounts::mountInfoPacket(PacketBuilder &builder) -> void {
 	if (getCurrentMount() > 0 && m_player->getInventory()->getEquippedId(EquipSlots::Saddle) != 0) {
-		packet.add<bool>(true);
-		packet.add<int32_t>(getCurrentLevel());
-		packet.add<int32_t>(getCurrentExp());
-		packet.add<int32_t>(getCurrentTiredness());
+		builder.add<bool>(true);
+		builder.add<int32_t>(getCurrentLevel());
+		builder.add<int32_t>(getCurrentExp());
+		builder.add<int32_t>(getCurrentTiredness());
 	}
 	else {
-		packet.add<bool>(false);
+		builder.add<bool>(false);
 	}
 }
 
-auto PlayerMounts::mountInfoMapSpawnPacket(PacketBuilder &packet) -> void {
+auto PlayerMounts::mountInfoMapSpawnPacket(PacketBuilder &builder) -> void {
 	if (getCurrentMount() > 0 && m_player->getInventory()->getEquippedId(EquipSlots::Saddle) != 0) {
-		packet.add<int32_t>(getCurrentLevel());
-		packet.add<int32_t>(getCurrentExp());
-		packet.add<int32_t>(getCurrentTiredness());
+		builder.add<int32_t>(getCurrentLevel());
+		builder.add<int32_t>(getCurrentExp());
+		builder.add<int32_t>(getCurrentTiredness());
 	}
 	else {
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
+		builder.add<int32_t>(0);
+		builder.add<int32_t>(0);
+		builder.add<int32_t>(0);
 	}
 }
 

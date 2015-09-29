@@ -67,7 +67,7 @@ namespace Vana {
 
 		auto load() -> void;
 		auto save() -> void;
-		auto connectData(PacketBuilder &packet) -> void;
+		auto connectData(PacketBuilder &builder) -> void;
 
 		auto itemDropAllowed(item_id_t itemId, quest_id_t questId) -> AllowQuestItemResult;
 		auto addQuest(quest_id_t questId, npc_id_t npcId) -> void;

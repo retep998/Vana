@@ -41,11 +41,11 @@ namespace Vana {
 
 		auto load() -> void;
 		auto save() -> void;
-		auto connectData(PacketBuilder &packet) -> void;
+		auto connectData(PacketBuilder &builder) -> void;
 
 		auto addCard(item_id_t itemId, uint8_t level = 1, bool initialLoad = false) -> bool;
 		auto calculateLevel() -> void;
-		auto infoData(PacketBuilder &packet) -> void;
+		auto infoData(PacketBuilder &builder) -> void;
 		auto setCover(int32_t newCover) -> void { m_cover = newCover; }
 
 		auto getCard(item_id_t cardId) -> MonsterCard *;

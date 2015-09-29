@@ -759,25 +759,25 @@ auto PlayerSkills::onDisconnect() -> void {
 	}
 }
 
-auto PlayerSkills::connectData(PacketBuilder &packet) const -> void {
+auto PlayerSkills::connectData(PacketBuilder &builder) const -> void {
 	// Skill levels
-	packet.add<uint16_t>(static_cast<uint16_t>(m_skills.size()));
+	builder.add<uint16_t>(static_cast<uint16_t>(m_skills.size()));
 	for (const auto &kvp : m_skills) {
-		packet.add<skill_id_t>(kvp.first);
-		packet.add<int32_t>(kvp.second.level);
+		builder.add<skill_id_t>(kvp.first);
+		builder.add<int32_t>(kvp.second.level);
 		if (GameLogicUtilities::isFourthJobSkill(kvp.first)) {
-			packet.add<int32_t>(kvp.second.playerMaxSkillLevel);
+			builder.add<int32_t>(kvp.second.playerMaxSkillLevel);
 		}
 	}
 	// Cooldowns
-	packet.add<uint16_t>(static_cast<uint16_t>(m_cooldowns.size()));
+	builder.add<uint16_t>(static_cast<uint16_t>(m_cooldowns.size()));
 	for (const auto &kvp : m_cooldowns) {
-		packet.add<skill_id_t>(kvp.first);
-		packet.add<int16_t>(static_cast<int16_t>(kvp.second.count()));
+		builder.add<skill_id_t>(kvp.first);
+		builder.add<int16_t>(static_cast<int16_t>(kvp.second.count()));
 	}
 }
 
-auto PlayerSkills::connectDataForBlessing(PacketBuilder &packet) const -> void {
+auto PlayerSkills::connectDataForBlessing(PacketBuilder &builder) const -> void {
 	// Orange text wasn't added until sometime after .75 and before .82
 	//if (!m_blessingPlayer.empty()) {
 	//	packet.add<bool>(true);

@@ -146,7 +146,7 @@ namespace Vana {
 		auto setOnline(bool online) -> void;
 		auto setLevelDate() -> void;
 		auto acceptDeath(bool wheel) -> void;
-		auto initializeRng(PacketBuilder &packet) -> void;
+		auto initializeRng(PacketBuilder &builder) -> void;
 
 		auto send(const PacketBuilder &builder) -> void;
 		auto send(const SplitPacketBuilder &builder) -> void;

@@ -57,7 +57,7 @@ namespace Vana {
 		auto getBuddyIds() -> vector_t<player_id_t>;
 		auto addBuddyInvite(const BuddyInvite &invite) -> void { m_pendingBuddies.push_back(invite); }
 
-		auto addBuddies(PacketBuilder &packet) -> void;
+		auto addBuddies(PacketBuilder &builder) -> void;
 		auto checkForPendingBuddy() -> void;
 		auto buddyAccepted(player_id_t buddyId) -> void;
 		auto removePendingBuddy(player_id_t id, bool accepted) -> void;

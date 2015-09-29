@@ -57,9 +57,9 @@ namespace Vana {
 		auto getPlayer(player_id_t id) -> Player *;
 		auto getPlayer(const string_t &name) -> Player *;
 		auto run(function_t<void(Player *)> func) -> void;
-		auto send(player_id_t playerId, const PacketBuilder &packet) -> void;
-		auto send(const vector_t<player_id_t> &playerIds, const PacketBuilder &packet) -> void;
-		auto send(const PacketBuilder &packet) -> void;
+		auto send(player_id_t playerId, const PacketBuilder &builder) -> void;
+		auto send(const vector_t<player_id_t> &playerIds, const PacketBuilder &builder) -> void;
+		auto send(const PacketBuilder &builder) -> void;
 		auto addFollower(Player *follower, Player *target) -> void;
 		auto stopFollowing(Player *follower) -> void;
 		auto disconnect() -> void;
@@ -86,7 +86,7 @@ namespace Vana {
 		auto handlePartySync(PacketReader &reader) -> void;
 		auto handleBuddySync(PacketReader &reader) -> void;
 
-		auto sendSync(const PacketBuilder &packet) const -> void;
+		auto sendSync(const PacketBuilder &builder) const -> void;
 		auto addPlayerData(const PlayerData &data) -> void;
 		auto handleCharacterCreated(PacketReader &reader) -> void;
 		auto handleCharacterDeleted(PacketReader &reader) -> void;

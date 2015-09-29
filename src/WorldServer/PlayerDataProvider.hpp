@@ -41,7 +41,7 @@ namespace Vana {
 		PlayerDataProvider();
 
 		auto loadData() -> void;
-		auto getChannelConnectPacket(PacketBuilder &packet) -> void;
+		auto getChannelConnectPacket(PacketBuilder &builder) -> void;
 		auto channelDisconnect(channel_id_t channel) -> void;
 		auto send(player_id_t playerId, const PacketBuilder &builder) -> void;
 		auto send(const vector_t<player_id_t> &playerIds, const PacketBuilder &builder) -> void;

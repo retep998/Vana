@@ -262,33 +262,33 @@ auto PlayerBuddyList::addBuddy(Database &db, const soci::row &row) -> void {
 	m_buddies[charId] = buddy;
 }
 
-auto PlayerBuddyList::addBuddies(PacketBuilder &packet) -> void {
+auto PlayerBuddyList::addBuddies(PacketBuilder &builder) -> void {
 	auto &provider = ChannelServer::getInstance().getPlayerDataProvider();
 	for (const auto &kvp : m_buddies) {
 		const ref_ptr_t<Buddy> &buddy = kvp.second;
 		auto data = provider.getPlayerData(buddy->charId);
 
-		packet.add<int32_t>(buddy->charId);
-		packet.add<string_t>(buddy->name, 13);
-		packet.add<uint8_t>(buddy->oppositeStatus);
+		builder.add<int32_t>(buddy->charId);
+		builder.add<string_t>(buddy->name, 13);
+		builder.add<uint8_t>(buddy->oppositeStatus);
 
 		if (buddy->oppositeStatus == Packets::Buddy::OppositeStatus::Unregistered) {
-			packet.add<int16_t>(0x00);
-			packet.add<uint8_t>(0xF0);
-			packet.add<uint8_t>(0xB2);
+			builder.add<int16_t>(0x00);
+			builder.add<uint8_t>(0xF0);
+			builder.add<uint8_t>(0xB2);
 		}
 		else if (data == nullptr) {
-			packet.add<int32_t>(-1);
+			builder.add<int32_t>(-1);
 		}
 		else {
-			packet.add<int32_t>(data->channel.get(-1));
+			builder.add<int32_t>(data->channel.get(-1));
 		}
 
-		packet.add<string_t>(buddy->groupName, 13);
-		packet.add<int8_t>(0x00);
-		packet.add<int8_t>(20); // Seems to be the amount of buddy slots for the character...
-		packet.add<uint8_t>(0xFD);
-		packet.add<uint8_t>(0xBA);
+		builder.add<string_t>(buddy->groupName, 13);
+		builder.add<int8_t>(0x00);
+		builder.add<int8_t>(20); // Seems to be the amount of buddy slots for the character...
+		builder.add<uint8_t>(0xFD);
+		builder.add<uint8_t>(0xBA);
 	}
 }
 
