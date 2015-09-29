@@ -17,11 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#ifdef WIN32
-# include <winsock2.h> // Prevent conflict with asio
-#endif
-
-#include <soci.h>
 #include "Common/SociExtensions.hpp"
 #include "Common/Types.hpp"
 #include <memory>
