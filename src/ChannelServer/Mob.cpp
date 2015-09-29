@@ -16,30 +16,31 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Mob.hpp"
-#include "Algorithm.hpp"
-#include "ChannelServer.hpp"
-#include "DropHandler.hpp"
-#include "GameConstants.hpp"
-#include "Instance.hpp"
-#include "Maps.hpp"
-#include "MiscUtilities.hpp"
-#include "Mist.hpp"
-#include "MobsPacket.hpp"
-#include "MpEaterData.hpp"
-#include "Party.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "PlayerPacket.hpp"
-#include "Randomizer.hpp"
-#include "Skills.hpp"
-#include "SkillsPacket.hpp"
-#include "StatusInfo.hpp"
-#include "TimeUtilities.hpp"
-#include "Timer.hpp"
+#include "Common/Algorithm.hpp"
+#include "Common/GameConstants.hpp"
+#include "Common/MiscUtilities.hpp"
+#include "Common/MpEaterData.hpp"
+#include "Common/Randomizer.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "Common/Timer.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/DropHandler.hpp"
+#include "ChannelServer/Instance.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Mist.hpp"
+#include "ChannelServer/MobsPacket.hpp"
+#include "ChannelServer/Party.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
+#include "ChannelServer/Skills.hpp"
+#include "ChannelServer/SkillsPacket.hpp"
+#include "ChannelServer/StatusInfo.hpp"
 #include <functional>
 #include <initializer_list>
 
 namespace Vana {
+namespace ChannelServer {
 
 Mob::Mob(map_object_t mapMobId, map_id_t mapId, mob_id_t mobId, view_ptr_t<Mob> owner, const Point &pos, int32_t spawnId, bool facesLeft, foothold_id_t foothold, MobControlStatus controlStatus) :
 	MovableLife{foothold, pos, facesLeft ? 1 : 2},
@@ -66,15 +67,15 @@ Mob::Mob(map_object_t mapMobId, map_id_t mapId, mob_id_t mobId, view_ptr_t<Mob> 
 	if (m_info->hpRecovery > 0 || m_info->mpRecovery > 0) {
 		int32_t hpRecovery = m_info->hpRecovery;
 		int32_t mpRecovery = m_info->mpRecovery;
-		Timer::Timer::create(
+		Vana::Timer::Timer::create(
 			[this, hpRecovery, mpRecovery](const time_point_t &now) { this->naturalHeal(hpRecovery, mpRecovery); },
-			Timer::Id{TimerType::MobHealTimer},
+			Vana::Timer::Id{TimerType::MobHealTimer},
 			getTimers(), seconds_t{1}, seconds_t{10});
 	}
 	if (m_info->removeAfter > 0) {
-		Timer::Timer::create(
+		Vana::Timer::Timer::create(
 			[this](const time_point_t &now) { this->kill(); },
-			Timer::Id{TimerType::MobRemoveTimer, m_mapMobId},
+			Vana::Timer::Id{TimerType::MobRemoveTimer, m_mapMobId},
 			getTimers(), seconds_t{m_info->removeAfter});
 	}
 }
@@ -183,8 +184,8 @@ auto Mob::addStatus(player_id_t playerId, vector_t<StatusInfo> &statusInfo) -> v
 				break;
 			case StatusEffects::Mob::MagicAttackUp:
 				switch (info.skillId) {
-					case Skills::NightLord::Taunt:
-					case Skills::Shadower::Taunt: {
+					case Vana::Skills::NightLord::Taunt:
+					case Vana::Skills::Shadower::Taunt: {
 						m_tauntEffect = (100 - info.val) + 100;
 						// Value passed as 100 - x, so 100 - value will = x
 						break;
@@ -211,19 +212,19 @@ auto Mob::addStatus(player_id_t playerId, vector_t<StatusInfo> &statusInfo) -> v
 			case StatusEffects::Mob::VenomousWeapon:
 			case StatusEffects::Mob::NinjaAmbush:
 				damage_t poisonDamage = info.val;
-				Timer::Timer::create(
+				Vana::Timer::Timer::create(
 					[this, playerId, poisonDamage](const time_point_t &now) {
 						this->applyDamage(playerId, poisonDamage, true);
 					},
-					Timer::Id{TimerType::MobStatusTimer, cStatus, 1},
+					Vana::Timer::Id{TimerType::MobStatusTimer, cStatus, 1},
 					getTimers(), seconds_t{1}, seconds_t{1});
 				break;
 		}
 
 		// We add some milliseconds to our times in order to allow poisons to not end one hit early
-		Timer::Timer::create(
+		Vana::Timer::Timer::create(
 			[this, cStatus](const time_point_t &now) { this->removeStatus(cStatus, true); },
-			Timer::Id{TimerType::MobStatusTimer, cStatus},
+			Vana::Timer::Id{TimerType::MobStatusTimer, cStatus},
 			getTimers(), milliseconds_t{info.time.count() * 1000 + 100});
 	}
 
@@ -248,8 +249,8 @@ auto Mob::removeStatus(int32_t status, bool fromTimer) -> void {
 				break;
 			case StatusEffects::Mob::MagicAttackUp:
 				switch (stat.skillId) {
-					case Skills::NightLord::Taunt:
-					case Skills::Shadower::Taunt:
+					case Vana::Skills::NightLord::Taunt:
+					case Vana::Skills::Shadower::Taunt:
 						m_tauntEffect = 100;
 						break;
 				}
@@ -259,11 +260,11 @@ auto Mob::removeStatus(int32_t status, bool fromTimer) -> void {
 				// Intentional fallthrough
 			case StatusEffects::Mob::Poison:
 				// Stop poison damage timer
-				getTimers()->removeTimer(Timer::Id{TimerType::MobStatusTimer, status, 1});
+				getTimers()->removeTimer(Vana::Timer::Id{TimerType::MobStatusTimer, status, 1});
 				break;
 		}
 		if (!fromTimer) {
-			getTimers()->removeTimer(Timer::Id{TimerType::MobStatusTimer, status});
+			getTimers()->removeTimer(Vana::Timer::Id{TimerType::MobStatusTimer, status});
 		}
 		m_status -= status;
 		m_statuses.erase(kvp);
@@ -532,9 +533,9 @@ auto Mob::dispelBuffs() -> void {
 
 auto Mob::doCrashSkill(skill_id_t skillId) -> void {
 	switch (skillId) {
-		case Skills::Crusader::ArmorCrash: removeStatus(StatusEffects::Mob::Wdef); break;
-		case Skills::WhiteKnight::MagicCrash: removeStatus(StatusEffects::Mob::Matk); break;
-		case Skills::DragonKnight::PowerCrash: removeStatus(StatusEffects::Mob::Watk); break;
+		case Vana::Skills::Crusader::ArmorCrash: removeStatus(StatusEffects::Mob::Wdef); break;
+		case Vana::Skills::WhiteKnight::MagicCrash: removeStatus(StatusEffects::Mob::Matk); break;
+		case Vana::Skills::DragonKnight::PowerCrash: removeStatus(StatusEffects::Mob::Watk); break;
 	}
 }
 
@@ -822,4 +823,5 @@ auto Mob::getMap() const -> Map * {
 	return Maps::getMap(m_mapId);
 }
 
+}
 }

@@ -16,14 +16,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MovementHandler.hpp"
-#include "ChannelServer.hpp"
-#include "MovableLife.hpp"
-#include "Point.hpp"
-#include "PacketReader.hpp"
+#include "Common/Point.hpp"
+#include "Common/PacketReader.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/MovableLife.hpp"
 #include <iomanip>
 #include <iostream>
 
 namespace Vana {
+namespace ChannelServer {
 
 auto MovementHandler::parseMovement(MovableLife *life, PacketReader &reader) -> Point {
 	foothold_id_t foothold = 0;
@@ -148,4 +149,5 @@ auto MovementHandler::parseMovement(MovableLife *life, PacketReader &reader) -> 
 	return pos;
 }
 
+}
 }

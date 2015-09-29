@@ -16,59 +16,60 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SummonHandler.hpp"
-#include "BuffDataProvider.hpp"
-#include "BuffsPacket.hpp"
-#include "ChannelServer.hpp"
-#include "GameLogicUtilities.hpp"
-#include "IdPool.hpp"
-#include "Map.hpp"
-#include "Maps.hpp"
-#include "MovementHandler.hpp"
-#include "PacketReader.hpp"
-#include "PacketWrapper.hpp"
-#include "SkillConstants.hpp"
-#include "Player.hpp"
-#include "PlayerPacket.hpp"
-#include "SkillConstants.hpp"
-#include "SkillDataProvider.hpp"
-#include "Summon.hpp"
-#include "SummonsPacket.hpp"
+#include "Common/BuffDataProvider.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/IdPool.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/PacketWrapper.hpp"
+#include "Common/SkillConstants.hpp"
+#include "Common/SkillConstants.hpp"
+#include "Common/SkillDataProvider.hpp"
+#include "ChannelServer/BuffsPacket.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Map.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/MovementHandler.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
+#include "ChannelServer/Summon.hpp"
+#include "ChannelServer/SummonsPacket.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 IdPool<summon_id_t> SummonHandler::summonIds;
 
 auto SummonHandler::useSummon(Player *player, skill_id_t skillId, skill_level_t level) -> void {
 	// Determine if any summons need to be removed and do it
 	switch (skillId) {
-		case Skills::Ranger::Puppet:
-		case Skills::Sniper::Puppet:
-		case Skills::WindArcher::Puppet:
+		case Vana::Skills::Ranger::Puppet:
+		case Vana::Skills::Sniper::Puppet:
+		case Vana::Skills::WindArcher::Puppet:
 			player->getSummons()->forEach([player, skillId](Summon *summon) {
 				if (summon->getSkillId() == skillId) {
 					removeSummon(player, summon->getId(), false, SummonMessages::None);
 				}
 			});
 			break;
-		case Skills::Ranger::SilverHawk:
-		case Skills::Bowmaster::Phoenix:
-		case Skills::Sniper::GoldenEagle:
-		case Skills::Marksman::Frostprey:
+		case Vana::Skills::Ranger::SilverHawk:
+		case Vana::Skills::Bowmaster::Phoenix:
+		case Vana::Skills::Sniper::GoldenEagle:
+		case Vana::Skills::Marksman::Frostprey:
 			player->getSummons()->forEach([player, skillId](Summon *summon) {
 				if (!GameLogicUtilities::isPuppet(summon->getSkillId())) {
 					removeSummon(player, summon->getId(), false, SummonMessages::None);
 				}
 			});
 			break;
-		case Skills::Outlaw::Gaviota:
-		case Skills::Outlaw::Octopus:
-		case Skills::Corsair::WrathOfTheOctopi: {
+		case Vana::Skills::Outlaw::Gaviota:
+		case Vana::Skills::Outlaw::Octopus:
+		case Vana::Skills::Corsair::WrathOfTheOctopi: {
 			int8_t maxCount = -1;
 			int8_t currentCount = 0;
 			switch (skillId) {
-				case Skills::Outlaw::Octopus: maxCount = 2; break;
-				case Skills::Corsair::WrathOfTheOctopi: maxCount = 3; break;
-				case Skills::Outlaw::Gaviota: maxCount = 4; break;
+				case Vana::Skills::Outlaw::Octopus: maxCount = 2; break;
+				case Vana::Skills::Corsair::WrathOfTheOctopi: maxCount = 3; break;
+				case Vana::Skills::Outlaw::Gaviota: maxCount = 4; break;
 			}
 
 			player->getSummons()->forEach([player, skillId, &currentCount](Summon *summon) {
@@ -223,7 +224,7 @@ auto SummonHandler::summonSkill(Player *player, PacketReader &reader) -> void {
 		return;
 	}
 	switch (skillId) {
-		case Skills::DarkKnight::HexOfBeholder: {
+		case Vana::Skills::DarkKnight::HexOfBeholder: {
 			int8_t buffId = reader.get<int8_t>();
 			if (buffId < 0 || buffId > ((level - 1) / 5)) {
 				// Hacking
@@ -237,7 +238,7 @@ auto SummonHandler::summonSkill(Player *player, PacketReader &reader) -> void {
 			}
 			break;
 		}
-		case Skills::DarkKnight::AuraOfBeholder:
+		case Vana::Skills::DarkKnight::AuraOfBeholder:
 			player->getStats()->modifyHp(skillInfo->hpProp);
 			break;
 		default:
@@ -246,7 +247,8 @@ auto SummonHandler::summonSkill(Player *player, PacketReader &reader) -> void {
 	}
 
 	player->sendMap(Packets::summonSkill(player->getId(), skillId, display, level), true);
-	player->sendMap(Packets::summonSkillEffect(player->getId(), Skills::DarkKnight::Beholder, display, level));
+	player->sendMap(Packets::summonSkillEffect(player->getId(), Vana::Skills::DarkKnight::Beholder, display, level));
 }
 
+}
 }

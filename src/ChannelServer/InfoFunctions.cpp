@@ -16,16 +16,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InfoFunctions.hpp"
-#include "ChannelServer.hpp"
-#include "Database.hpp"
-#include "Maps.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "PlayerPacket.hpp"
-#include "MapPosition.hpp"
+#include "Common/Database.hpp"
+#include "Common/MapPosition.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
+
 #include <iostream>
 
 namespace Vana {
+namespace ChannelServer {
 
 auto InfoFunctions::help(Player *player, const chat_t &args) -> ChatResult {
 	using ChatHandlerFunctions::sCommandList;
@@ -426,4 +428,5 @@ auto InfoFunctions::gmLevel(Player *player, const chat_t &args) -> ChatResult {
 	return ChatResult::HandledDisplay;
 }
 
+}
 }

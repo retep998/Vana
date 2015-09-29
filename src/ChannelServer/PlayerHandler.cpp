@@ -16,47 +16,48 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerHandler.hpp"
-#include "Algorithm.hpp"
-#include "AttackData.hpp"
-#include "ChannelServer.hpp"
-#include "Drop.hpp"
-#include "DropHandler.hpp"
-#include "DropsPacket.hpp"
-#include "GameLogicUtilities.hpp"
-#include "InterHeader.hpp"
-#include "InventoryPacket.hpp"
-#include "ItemDataProvider.hpp"
-#include "MapleTvs.hpp"
-#include "Maps.hpp"
-#include "Mist.hpp"
-#include "MobHandler.hpp"
-#include "MonsterBookPacket.hpp"
-#include "MovementHandler.hpp"
-#include "MpEaterData.hpp"
-#include "MysticDoor.hpp"
-#include "PacketWrapper.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "PlayerPacket.hpp"
-#include "PlayerSkills.hpp"
-#include "PlayersPacket.hpp"
-#include "Randomizer.hpp"
-#include "PacketReader.hpp"
-#include "ReturnDamageData.hpp"
-#include "SkillConstants.hpp"
-#include "SkillDataProvider.hpp"
-#include "Skills.hpp"
-#include "SkillsPacket.hpp"
-#include "SkillType.hpp"
-#include "StatusInfo.hpp"
-#include "Summon.hpp"
-#include "SummonHandler.hpp"
-#include "TimeUtilities.hpp"
-#include "Timer.hpp"
-#include "WidePoint.hpp"
+#include "Common/Algorithm.hpp"
+#include "Common/AttackData.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/ItemDataProvider.hpp"
+#include "Common/MpEaterData.hpp"
+#include "Common/PacketWrapper.hpp"
+#include "Common/Randomizer.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/ReturnDamageData.hpp"
+#include "Common/SkillConstants.hpp"
+#include "Common/SkillDataProvider.hpp"
+#include "Common/SkillType.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "Common/Timer.hpp"
+#include "Common/WidePoint.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Drop.hpp"
+#include "ChannelServer/DropHandler.hpp"
+#include "ChannelServer/DropsPacket.hpp"
+#include "ChannelServer/InventoryPacket.hpp"
+#include "ChannelServer/MapleTvs.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Mist.hpp"
+#include "ChannelServer/MobHandler.hpp"
+#include "ChannelServer/MonsterBookPacket.hpp"
+#include "ChannelServer/MovementHandler.hpp"
+#include "ChannelServer/MysticDoor.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
+#include "ChannelServer/PlayerSkills.hpp"
+#include "ChannelServer/PlayersPacket.hpp"
+#include "ChannelServer/Skills.hpp"
+#include "ChannelServer/SkillsPacket.hpp"
+#include "ChannelServer/StatusInfo.hpp"
+#include "ChannelServer/Summon.hpp"
+#include "ChannelServer/SummonHandler.hpp"
 #include <functional>
 
 namespace Vana {
+namespace ChannelServer {
 
 auto PlayerHandler::handleDoorUse(Player *player, PacketReader &reader) -> void {
 	player_id_t doorPlayerId = reader.get<player_id_t>();
@@ -353,13 +354,13 @@ auto PlayerHandler::handleMoving(Player *player, PacketReader &reader) -> void {
 auto PlayerHandler::handleSpecialSkills(Player *player, PacketReader &reader) -> void {
 	skill_id_t skillId = reader.get<skill_id_t>();
 	switch (skillId) {
-		case Skills::Hero::MonsterMagnet:
-		case Skills::Paladin::MonsterMagnet:
-		case Skills::DarkKnight::MonsterMagnet:
-		case Skills::Marksman::PiercingArrow:
-		case Skills::FpArchMage::BigBang:
-		case Skills::IlArchMage::BigBang:
-		case Skills::Bishop::BigBang: {
+		case Vana::Skills::Hero::MonsterMagnet:
+		case Vana::Skills::Paladin::MonsterMagnet:
+		case Vana::Skills::DarkKnight::MonsterMagnet:
+		case Vana::Skills::Marksman::PiercingArrow:
+		case Vana::Skills::FpArchMage::BigBang:
+		case Vana::Skills::IlArchMage::BigBang:
+		case Vana::Skills::Bishop::BigBang: {
 			ChargeOrStationarySkillData info;
 			info.skillId = skillId;
 			info.level = reader.get<skill_level_t>();
@@ -369,7 +370,7 @@ auto PlayerHandler::handleSpecialSkills(Player *player, PacketReader &reader) ->
 			player->sendMap(Packets::Skills::endChargeOrStationarySkill(player->getId(), info));
 			break;
 		}
-		case Skills::ChiefBandit::Chakra: {
+		case Vana::Skills::ChiefBandit::Chakra: {
 			stat_t dex = player->getStats()->getDex(true);
 			stat_t luk = player->getStats()->getLuk(true);
 			int16_t recovery = player->getSkills()->getSkillInfo(skillId)->y;
@@ -445,7 +446,7 @@ auto PlayerHandler::handleAdminMessenger(Player *player, PacketReader &reader) -
 
 		auto &basePacket = Packets::Inventory::showSuperMegaphone(output.str(), useWhisper);
 		ChannelServer::getInstance().sendWorld(
-			Packets::prepend(basePacket, [](PacketBuilder &builder) {
+			Vana::Packets::prepend(basePacket, [](PacketBuilder &builder) {
 				builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
 			}));
 	}
@@ -481,7 +482,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 	skill_id_t skillId = attack.skillId;
 	skill_level_t level = attack.skillLevel;
 
-	if (skillId != Skills::All::RegularAttack) {
+	if (skillId != Vana::Skills::All::RegularAttack) {
 		if (Skills::useAttackSkill(player, skillId) == Result::Failure) {
 			// Most likely hacking, could feasibly be lag
 			return;
@@ -532,10 +533,10 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 				}
 				break;
 			}
-			if (skillId == Skills::Paladin::HeavensHammer) {
+			if (skillId == Vana::Skills::Paladin::HeavensHammer) {
 				damage = (mob->isBoss() ? Stats::MaxDamage : (mob->getHp() - 1)); // If a Paladin wants to prove that it does something else, feel free
 			}
-			else if (skillId == Skills::Bandit::Steal && !mob->isBoss()) {
+			else if (skillId == Vana::Skills::Bandit::Steal && !mob->isBoss()) {
 				DropHandler::doDrops(player->getId(), map, mob->getLevel(), mob->getMobId(), mob->getPos(), false, false, mob->getTauntEffect(), true);
 			}
 			int32_t tempHp = mob->getHp();
@@ -563,11 +564,11 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 			int32_t ppMesos = (ppDamages[pickpocket] * picking->x) / 10000; // TODO FIXME formula
 			Drop *ppDrop = new Drop{player->getMapId(), ppMesos, ppPos, player->getId(), true};
 			ppDrop->setTime(100);
-			Timer::Timer::create(
+			Vana::Timer::Timer::create(
 				[ppDrop, origin](const time_point_t &now) {
 					ppDrop->doDrop(origin);
 				},
-				Timer::Id{
+				Vana::Timer::Id{
 					TimerType::PickpocketTimer,
 					player->getId(),
 					player->getActiveBuffs()->getPickpocketCounter()
@@ -590,7 +591,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 	}
 
 	switch (skillId) {
-		case Skills::ChiefBandit::MesoExplosion: {
+		case Vana::Skills::ChiefBandit::MesoExplosion: {
 			uint8_t items = reader.get<int8_t>();
 			Map *map = player->getMap();
 			for (uint8_t i = 0; i < items; i++) {
@@ -608,8 +609,8 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 			}
 			break;
 		}
-		case Skills::Marauder::EnergyDrain:
-		case Skills::ThunderBreaker::EnergyDrain: {
+		case Vana::Skills::Marauder::EnergyDrain:
+		case Vana::Skills::ThunderBreaker::EnergyDrain: {
 			int32_t hpRecover = static_cast<int32_t>(attack.totalDamage * player->getSkills()->getSkillInfo(skillId)->x / 100);
 			if (hpRecover > player->getStats()->getMaxHp()) {
 				player->getStats()->setHp(player->getStats()->getMaxHp());
@@ -619,24 +620,24 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 			}
 			break;
 		}
-		case Skills::Crusader::SwordPanic: // Crusader finishers
-		case Skills::Crusader::SwordComa:
-		case Skills::Crusader::AxePanic:
-		case Skills::Crusader::AxeComa:
-		case Skills::DawnWarrior::Panic:
-		case Skills::DawnWarrior::Coma:
+		case Vana::Skills::Crusader::SwordPanic: // Crusader finishers
+		case Vana::Skills::Crusader::SwordComa:
+		case Vana::Skills::Crusader::AxePanic:
+		case Vana::Skills::Crusader::AxeComa:
+		case Vana::Skills::DawnWarrior::Panic:
+		case Vana::Skills::DawnWarrior::Coma:
 			player->getActiveBuffs()->resetCombo();
 			break;
-		case Skills::NightWalker::PoisonBomb: {
+		case Vana::Skills::NightWalker::PoisonBomb: {
 			auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
 			Mist *mist = new Mist{player->getMapId(), player, skill->buffTime, skill->dimensions.move(attack.projectilePos), skillId, level, true};
 			break;
 		}
-		case Skills::Crusader::Shout:
-		case Skills::Gm::SuperDragonRoar:
-		case Skills::SuperGm::SuperDragonRoar:
+		case Vana::Skills::Crusader::Shout:
+		case Vana::Skills::Gm::SuperDragonRoar:
+		case Vana::Skills::SuperGm::SuperDragonRoar:
 			break;
-		case Skills::DragonKnight::DragonRoar: {
+		case Vana::Skills::DragonKnight::DragonRoar: {
 			int16_t xProperty = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level)->x;
 			uint16_t reduction = (player->getStats()->getMaxHp() / 100) * xProperty;
 			if (reduction < player->getStats()->getHp()) {
@@ -646,10 +647,10 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 				// Hacking
 				return;
 			}
-			Buffs::addBuff(player, Skills::DragonKnight::DragonRoar, level, 0);
+			Buffs::addBuff(player, Vana::Skills::DragonKnight::DragonRoar, level, 0);
 			break;
 		}
-		case Skills::DragonKnight::Sacrifice: {
+		case Vana::Skills::DragonKnight::Sacrifice: {
 			if (attack.totalDamage > 0) {
 				int16_t xProperty = player->getSkills()->getSkillInfo(skillId)->x;
 				int32_t hpDamage = static_cast<int32_t>(attack.totalDamage * xProperty / 100);
@@ -662,11 +663,11 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 			}
 			break;
 		}
-		case Skills::WhiteKnight::ChargeBlow: {
-			skill_level_t skillLevel = player->getSkills()->getSkillLevel(Skills::Paladin::AdvancedCharge);
+		case Vana::Skills::WhiteKnight::ChargeBlow: {
+			skill_level_t skillLevel = player->getSkills()->getSkillLevel(Vana::Skills::Paladin::AdvancedCharge);
 			int16_t xProperty = 0;
 			if (skillLevel > 0) {
-				xProperty = ChannelServer::getInstance().getSkillDataProvider().getSkill(Skills::Paladin::AdvancedCharge, skillLevel)->x;
+				xProperty = ChannelServer::getInstance().getSkillDataProvider().getSkill(Vana::Skills::Paladin::AdvancedCharge, skillLevel)->x;
 			}
 			if ((xProperty != 100) && (xProperty == 0 || Randomizer::rand<int16_t>(99) > (xProperty - 1))) {
 				player->getActiveBuffs()->stopCharge();
@@ -699,9 +700,9 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 	player->sendMap(Packets::Players::useRangedAttack(player->getId(), masteryId, player->getSkills()->getSkillLevel(masteryId), attack));
 
 	switch (skillId) {
-		case Skills::Bowmaster::Hurricane:
-		case Skills::WindArcher::Hurricane:
-		case Skills::Corsair::RapidFire:
+		case Vana::Skills::Bowmaster::Hurricane:
+		case Vana::Skills::WindArcher::Hurricane:
+		case Vana::Skills::Corsair::RapidFire:
 			if (!player->hasChargeOrStationarySkill()) {
 				ChargeOrStationarySkillData info;
 				info.skillId = skillId;
@@ -746,7 +747,7 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 				continue;
 			}
 			maxHp = mob->getMaxHp();
-			if (skillId == Skills::Ranger::MortalBlow || skillId == Skills::Sniper::MortalBlow) {
+			if (skillId == Vana::Skills::Ranger::MortalBlow || skillId == Vana::Skills::Sniper::MortalBlow) {
 				auto sk = player->getSkills()->getSkillInfo(skillId);
 				int32_t hpPercentage = maxHp * sk->x / 100; // Percentage of HP required for Mortal Blow activation
 				if (mob->getHp() < hpPercentage && Randomizer::rand<int16_t>(99) < sk->y) {
@@ -759,7 +760,7 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 			if (tempHp <= damage) {
 				mob = nullptr;
 			}
-			else if (skillId == Skills::Outlaw::HomingBeacon || skillId == Skills::Corsair::Bullseye) {
+			else if (skillId == Vana::Skills::Outlaw::HomingBeacon || skillId == Vana::Skills::Corsair::Bullseye) {
 				Buffs::addBuff(player, skillId, level, 0, mapMobId);
 			}
 		}
@@ -786,8 +787,8 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 	}
 
 	switch (skillId) {
-		case Skills::NightWalker::Vampire:
-		case Skills::Assassin::Drain: {
+		case Vana::Skills::NightWalker::Vampire:
+		case Vana::Skills::Assassin::Drain: {
 			int16_t xProperty = player->getSkills()->getSkillInfo(skillId)->x;
 			int32_t hpRecover = static_cast<int32_t>(attack.totalDamage * xProperty / 100);
 			health_t playerMaxHp = player->getStats()->getMaxHp();
@@ -805,7 +806,7 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 			}
 			break;
 		}
-		case Skills::DawnWarrior::SoulBlade:
+		case Vana::Skills::DawnWarrior::SoulBlade:
 			if (attack.totalDamage > 0) {
 				player->getActiveBuffs()->addCombo();
 			}
@@ -889,8 +890,8 @@ auto PlayerHandler::useSpellAttack(Player *player, PacketReader &reader) -> void
 	}
 
 	switch (skillId) {
-		case Skills::FpMage::PoisonMist:
-		case Skills::BlazeWizard::FlameGear: {
+		case Vana::Skills::FpMage::PoisonMist:
+		case Vana::Skills::BlazeWizard::FlameGear: {
 			auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
 			Mist *mist = new Mist{player->getMapId(), player, skill->buffTime, skill->dimensions.move(player->getPos()), skillId, level, true};
 			break;
@@ -983,7 +984,7 @@ auto PlayerHandler::useSummonAttack(Player *player, PacketReader &reader) -> voi
 		}
 	}
 
-	if (summon->getSkillId() == Skills::Outlaw::Gaviota) {
+	if (summon->getSkillId() == Vana::Skills::Outlaw::Gaviota) {
 		SummonHandler::removeSummon(player, attack.summonId, false, SummonMessages::None, false);
 	}
 }
@@ -1003,7 +1004,7 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &reader, SkillTyp
 		targets = tByte / 0x10;
 		hits = tByte % 0x10;
 
-		if (skillId != Skills::All::RegularAttack) {
+		if (skillId != Vana::Skills::All::RegularAttack) {
 			attack.skillLevel = player->getSkills()->getSkillLevel(skillId);
 		}
 
@@ -1013,28 +1014,28 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &reader, SkillTyp
 		reader.skip<checksum_t>();
 
 		switch (skillId) {
-			case Skills::Hermit::ShadowMeso:
+			case Vana::Skills::Hermit::ShadowMeso:
 				attack.isShadowMeso = true;
 				shadowMeso = true;
 				break;
-			case Skills::ChiefBandit::MesoExplosion:
+			case Vana::Skills::ChiefBandit::MesoExplosion:
 				attack.isMesoExplosion = true;
 				mesoExplosion = true;
 				break;
-			case Skills::Cleric::Heal:
+			case Vana::Skills::Cleric::Heal:
 				attack.isHeal = true;
 				break;
-			case Skills::Gunslinger::Grenade:
-			case Skills::Brawler::CorkscrewBlow:
-			case Skills::ThunderBreaker::CorkscrewBlow:
-			case Skills::Bowmaster::Hurricane:
-			case Skills::WindArcher::Hurricane:
-			case Skills::Marksman::PiercingArrow:
-			case Skills::NightWalker::PoisonBomb:
-			case Skills::Corsair::RapidFire:
-			case Skills::FpArchMage::BigBang:
-			case Skills::IlArchMage::BigBang:
-			case Skills::Bishop::BigBang:
+			case Vana::Skills::Gunslinger::Grenade:
+			case Vana::Skills::Brawler::CorkscrewBlow:
+			case Vana::Skills::ThunderBreaker::CorkscrewBlow:
+			case Vana::Skills::Bowmaster::Hurricane:
+			case Vana::Skills::WindArcher::Hurricane:
+			case Vana::Skills::Marksman::PiercingArrow:
+			case Vana::Skills::NightWalker::PoisonBomb:
+			case Vana::Skills::Corsair::RapidFire:
+			case Vana::Skills::FpArchMage::BigBang:
+			case Vana::Skills::IlArchMage::BigBang:
+			case Vana::Skills::Bishop::BigBang:
 				attack.isChargeSkill = true;
 				attack.charge = reader.get<charge_time_t>();
 				break;
@@ -1061,7 +1062,7 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &reader, SkillTyp
 		attack.cashStarPos = csStar;
 		reader.unk<uint8_t>(); // 0x00 = AoE?
 		if (!shadowMeso) {
-			if (player->getActiveBuffs()->hasShadowStars() && skillId != Skills::NightLord::Taunt) {
+			if (player->getActiveBuffs()->hasShadowStars() && skillId != Vana::Skills::NightLord::Taunt) {
 				attack.starId = reader.get<int32_t>();
 			}
 			else if (csStar > 0) {
@@ -1107,10 +1108,11 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &reader, SkillTyp
 	}
 	attack.playerPos = reader.get<Point>();
 
-	if (skillId == Skills::NightWalker::PoisonBomb) {
+	if (skillId == Vana::Skills::NightWalker::PoisonBomb) {
 		attack.projectilePos = reader.get<Point>();
 	}
 	return attack;
 }
 
+}
 }

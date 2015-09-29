@@ -16,23 +16,24 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerActiveBuffs.hpp"
-#include "BuffsPacket.hpp"
-#include "ChannelServer.hpp"
-#include "GameConstants.hpp"
-#include "GameLogicUtilities.hpp"
-#include "Maps.hpp"
-#include "PacketReader.hpp"
-#include "Player.hpp"
-#include "Randomizer.hpp"
-#include "SkillDataProvider.hpp"
-#include "Skills.hpp"
-#include "SkillsPacket.hpp"
-#include "TimeUtilities.hpp"
-#include "Timer.hpp"
-#include "TimerContainer.hpp"
+#include "Common/GameConstants.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/Randomizer.hpp"
+#include "Common/SkillDataProvider.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "Common/Timer.hpp"
+#include "Common/TimerContainer.hpp"
+#include "ChannelServer/BuffsPacket.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/Skills.hpp"
+#include "ChannelServer/SkillsPacket.hpp"
 #include <functional>
 
 namespace Vana {
+namespace ChannelServer {
 
 struct BuffRunAction {
 	BuffRunAction(BuffSource source) :
@@ -121,8 +122,8 @@ auto PlayerActiveBuffs::addBuff(const BuffSource &source, const Buff &buff, cons
 			skill_id_t skillId = source.getSkillId();
 			skill_level_t skillLevel = source.getSkillLevel();
 			switch (source.getSkillId()) {
-				case Skills::Beginner::MonsterRider:
-				case Skills::Noblesse::MonsterRider: {
+				case Vana::Skills::Beginner::MonsterRider:
+				case Vana::Skills::Noblesse::MonsterRider: {
 					m_mountItemId = m_player->getInventory()->getEquippedId(EquipSlots::Mount);
 					if (m_mountItemId == 0) {
 						// Hacking
@@ -135,11 +136,11 @@ auto PlayerActiveBuffs::addBuff(const BuffSource &source, const Buff &buff, cons
 					}
 					break;
 				}
-				case Skills::Corsair::Battleship:
+				case Vana::Skills::Corsair::Battleship:
 					m_mountItemId = Items::BattleshipMount;
 					break;
-				case Skills::Hero::Enrage:
-					if (m_combo != Skills::MaxAdvancedComboOrbs) {
+				case Vana::Skills::Hero::Enrage:
+					if (m_combo != Vana::Skills::MaxAdvancedComboOrbs) {
 						// Hacking
 						return Result::Failure;
 					}
@@ -179,7 +180,7 @@ auto PlayerActiveBuffs::addBuff(const BuffSource &source, const Buff &buff, cons
 		}
 	}
 
-	Timer::Id buffTimerId{TimerType::BuffTimer, static_cast<int32_t>(source.getType()), source.getId()};
+	Vana::Timer::Id buffTimerId{TimerType::BuffTimer, static_cast<int32_t>(source.getType()), source.getId()};
 	if (hasTimer) {
 		// Get rid of timers/same buff if they currently exist
 		m_player->getTimerContainer()->removeTimer(buffTimerId);
@@ -188,7 +189,7 @@ auto PlayerActiveBuffs::addBuff(const BuffSource &source, const Buff &buff, cons
 	if (buff.anyActs()) {
 		for (const auto &info : buff.getBuffInfo()) {
 			if (!info.hasAct()) continue;
-			Timer::Id actId{TimerType::SkillActTimer, info.getBitPosition()};
+			Vana::Timer::Id actId{TimerType::SkillActTimer, info.getBitPosition()};
 			m_player->getTimerContainer()->removeTimer(actId);
 		}
 	}
@@ -241,12 +242,12 @@ auto PlayerActiveBuffs::addBuff(const BuffSource &source, const Buff &buff, cons
 				}
 
 				for (const auto &bit : displacedActBitPositions) {
-					Timer::Id actId{TimerType::SkillActTimer, bit};
+					Vana::Timer::Id actId{TimerType::SkillActTimer, bit};
 					m_player->getTimerContainer()->removeTimer(actId);
 				}
 
 				if (applicable.size() == 0) {
-					Timer::Id id{TimerType::BuffTimer, static_cast<int32_t>(existing.type), existing.identifier};
+					Vana::Timer::Id id{TimerType::BuffTimer, static_cast<int32_t>(existing.type), existing.identifier};
 					m_player->getTimerContainer()->removeTimer(id);
 
 					m_buffs.erase(std::begin(m_buffs) + i);
@@ -260,7 +261,7 @@ auto PlayerActiveBuffs::addBuff(const BuffSource &source, const Buff &buff, cons
 	}
 
 	if (hasTimer) {
-		Timer::Timer::create(
+		Vana::Timer::Timer::create(
 			[this, source](const time_point_t &now) {
 				Skills::stopSkill(m_player, source, true);
 			},
@@ -283,8 +284,8 @@ auto PlayerActiveBuffs::addBuff(const BuffSource &source, const Buff &buff, cons
 					info.getActValue(),
 					2).value;
 
-				Timer::Id actId{TimerType::SkillActTimer, info.getBitPosition()};
-				Timer::Timer::create(
+				Vana::Timer::Id actId{TimerType::SkillActTimer, info.getBitPosition()};
+				Vana::Timer::Timer::create(
 					runAct,
 					actId,
 					m_player->getTimerContainer(),
@@ -320,7 +321,7 @@ auto PlayerActiveBuffs::addBuff(const BuffSource &source, const Buff &buff, cons
 
 auto PlayerActiveBuffs::removeBuff(const BuffSource &source, const Buff &buff, bool fromTimer) -> void {
 	if (!fromTimer) {
-		Timer::Id id{TimerType::BuffTimer, static_cast<int32_t>(source.getType()), source.getId()};
+		Vana::Timer::Id id{TimerType::BuffTimer, static_cast<int32_t>(source.getType()), source.getId()};
 		m_player->getTimerContainer()->removeTimer(id);
 	}
 
@@ -336,7 +337,7 @@ auto PlayerActiveBuffs::removeBuff(const BuffSource &source, const Buff &buff, b
 
 			for (const auto &actInfo : info.raw.getBuffInfo()) {
 				if (!actInfo.hasAct()) continue;
-				Timer::Id actId{TimerType::SkillActTimer, actInfo.getBitPosition()};
+				Vana::Timer::Id actId{TimerType::SkillActTimer, actInfo.getBitPosition()};
 				m_player->getTimerContainer()->removeTimer(actId);
 			}
 
@@ -390,7 +391,7 @@ auto PlayerActiveBuffs::removeBuffs() -> void {
 }
 
 auto PlayerActiveBuffs::getBuffSecondsRemaining(BuffSourceType type, int32_t buffId) const -> seconds_t {
-	Timer::Id id{TimerType::BuffTimer, static_cast<int32_t>(type), buffId};
+	Vana::Timer::Id id{TimerType::BuffTimer, static_cast<int32_t>(type), buffId};
 	return m_player->getTimerContainer()->getRemainingTime<seconds_t>(id);
 }
 
@@ -546,7 +547,7 @@ auto PlayerActiveBuffs::getBattleshipHp() const -> int32_t {
 }
 
 auto PlayerActiveBuffs::resetBattleshipHp() -> void {
-	skill_level_t shipLevel = m_player->getSkills()->getSkillLevel(Skills::Corsair::Battleship);
+	skill_level_t shipLevel = m_player->getSkills()->getSkillLevel(Vana::Skills::Corsair::Battleship);
 	player_level_t playerLevel = m_player->getStats()->getLevel();
 	m_battleshipHp = GameLogicUtilities::getBattleshipHp(shipLevel, playerLevel);
 }
@@ -642,7 +643,7 @@ auto PlayerActiveBuffs::getBerserk() const -> bool {
 auto PlayerActiveBuffs::checkBerserk(bool display) -> void {
 	if (m_player->getStats()->getJob() == Jobs::JobIds::DarkKnight) {
 		// Berserk calculations
-		skill_id_t skillId = Skills::DarkKnight::Berserk;
+		skill_id_t skillId = Vana::Skills::DarkKnight::Berserk;
 		skill_level_t level = m_player->getSkills()->getSkillLevel(skillId);
 		if (level > 0) {
 			int16_t hpPercentage = m_player->getStats()->getMaxHp() * ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level)->x / 100;
@@ -722,8 +723,8 @@ auto PlayerActiveBuffs::decreaseEnergyChargeLevel() -> void {
 auto PlayerActiveBuffs::startEnergyChargeTimer() -> void {
 	skill_id_t skillId = m_player->getSkills()->getEnergyCharge();
 	m_energyChargeTimerCounter++;
-	Timer::Id id{TimerType::EnergyChargeTimer, skillId, m_energyChargeTimerCounter};
-	Timer::Timer::create(
+	Vana::Timer::Id id{TimerType::EnergyChargeTimer, skillId, m_energyChargeTimerCounter};
+	Vana::Timer::Timer::create(
 		[this](const time_point_t &now) {
 			this->decreaseEnergyChargeLevel();
 		},
@@ -734,7 +735,7 @@ auto PlayerActiveBuffs::startEnergyChargeTimer() -> void {
 
 auto PlayerActiveBuffs::stopEnergyChargeTimer() -> void {
 	skill_id_t skillId = m_player->getSkills()->getEnergyCharge();
-	Timer::Id id{TimerType::EnergyChargeTimer, skillId, m_energyChargeTimerCounter};
+	Vana::Timer::Id id{TimerType::EnergyChargeTimer, skillId, m_energyChargeTimerCounter};
 	m_player->getTimerContainer()->removeTimer(id);
 }
 
@@ -813,8 +814,8 @@ auto PlayerActiveBuffs::hasIceCharge() const -> bool {
 	if (buffSource.getType() != BuffSourceType::Skill) throw NotImplementedException{"Ice charge BuffSourceType"};
 	skill_id_t skillId = buffSource.getSkillId();
 	return
-		skillId == Skills::WhiteKnight::BwIceCharge ||
-		skillId == Skills::WhiteKnight::SwordIceCharge;
+		skillId == Vana::Skills::WhiteKnight::BwIceCharge ||
+		skillId == Vana::Skills::WhiteKnight::SwordIceCharge;
 }
 
 auto PlayerActiveBuffs::getPickpocketCounter() -> int32_t {
@@ -827,7 +828,7 @@ auto PlayerActiveBuffs::hasInfinity() const -> bool {
 }
 
 auto PlayerActiveBuffs::isUsingGmHide() const -> bool {
-	return hasBuff(BuffSourceType::Skill, Skills::SuperGm::Hide);
+	return hasBuff(BuffSourceType::Skill, Vana::Skills::SuperGm::Hide);
 }
 
 auto PlayerActiveBuffs::hasShadowPartner() const -> bool {
@@ -975,10 +976,10 @@ auto PlayerActiveBuffs::takeDamage(damage_t damage) -> void {
 		}
 	}
 
-	auto battleshipLevel = getBuffLevel(BuffSourceType::Skill, Skills::Corsair::Battleship);
+	auto battleshipLevel = getBuffLevel(BuffSourceType::Skill, Vana::Skills::Corsair::Battleship);
 	if (battleshipLevel > 0) {
 		m_battleshipHp -= damage / 10;
-		auto source = BuffSource::fromSkill(Skills::Corsair::Battleship, battleshipLevel);
+		auto source = BuffSource::fromSkill(Vana::Skills::Corsair::Battleship, battleshipLevel);
 
 		if (m_battleshipHp <= 0) {
 			m_battleshipHp = 0;
@@ -1089,8 +1090,8 @@ auto PlayerActiveBuffs::parseTransferPacket(PacketReader &reader) -> void {
 
 		m_buffs.push_back(buff);
 
-		Timer::Id id{TimerType::BuffTimer, static_cast<int32_t>(buff.type), buff.identifier};
-		Timer::Timer::create(
+		Vana::Timer::Id id{TimerType::BuffTimer, static_cast<int32_t>(buff.type), buff.identifier};
+		Vana::Timer::Timer::create(
 			[this, packetSkillId](const time_point_t &now) {
 				Skills::stopSkill(m_player, translateToSource(packetSkillId), true);
 			},
@@ -1115,4 +1116,5 @@ auto PlayerActiveBuffs::parseTransferPacket(PacketReader &reader) -> void {
 	}
 }
 
+}
 }

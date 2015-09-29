@@ -16,23 +16,24 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "TradeHandler.hpp"
-#include "ChannelServer.hpp"
-#include "GameLogicUtilities.hpp"
-#include "ItemDataProvider.hpp"
-#include "MapleVersion.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "PacketReader.hpp"
-#include "TimeUtilities.hpp"
-#include "Timer.hpp"
-#include "TimerThread.hpp"
-#include "Trade.hpp"
-#include "Trades.hpp"
-#include "TradesPacket.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/ItemDataProvider.hpp"
+#include "Common/MapleVersion.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "Common/Timer.hpp"
+#include "Common/TimerThread.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/Trade.hpp"
+#include "ChannelServer/Trades.hpp"
+#include "ChannelServer/TradesPacket.hpp"
 #include <functional>
 #include <string>
 
 namespace Vana {
+namespace ChannelServer {
 
 namespace TradeOpcodes {
 	enum Opcodes : int8_t {
@@ -276,4 +277,5 @@ auto TradeHandler::getTaxLevel(mesos_t mesos) -> int32_t {
 	return 0; // There was no tax prior to .17
 }
 
+}
 }

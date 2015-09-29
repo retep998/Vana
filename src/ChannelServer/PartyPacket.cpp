@@ -16,19 +16,20 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PartyPacket.hpp"
-#include "ChannelServer.hpp"
-#include "GameConstants.hpp"
-#include "InterHelper.hpp"
-#include "MysticDoor.hpp"
-#include "Party.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "PlayerSkills.hpp"
-#include "Session.hpp"
-#include "SmsgHeader.hpp"
-#include "WidePoint.hpp"
+#include "Common/GameConstants.hpp"
+#include "Common/InterHelper.hpp"
+#include "Common/Session.hpp"
+#include "Common/WidePoint.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/MysticDoor.hpp"
+#include "ChannelServer/Party.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/PlayerSkills.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace Party {
 
@@ -67,7 +68,7 @@ PACKET_IMPL(customError, const string_t &error) {
 	return builder;
 }
 
-PACKET_IMPL(createParty, Vana::Party *party, Vana::Player *leader) {
+PACKET_IMPL(createParty, Vana::ChannelServer::Party *party, Vana::ChannelServer::Player *leader) {
 	PacketBuilder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
@@ -90,14 +91,14 @@ PACKET_IMPL(createParty, Vana::Party *party, Vana::Player *leader) {
 	}
 	else {
 		builder
-			.add<map_id_t>(Maps::NoMap)
-			.add<map_id_t>(Maps::NoMap)
+			.add<map_id_t>(Vana::Maps::NoMap)
+			.add<map_id_t>(Vana::Maps::NoMap)
 			.add<Point>(Point{});
 	}
 	return builder;
 }
 
-PACKET_IMPL(joinParty, map_id_t targetMapId, Vana::Party *party, const string_t &player) {
+PACKET_IMPL(joinParty, map_id_t targetMapId, Vana::ChannelServer::Party *party, const string_t &player) {
 	PacketBuilder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
@@ -108,7 +109,7 @@ PACKET_IMPL(joinParty, map_id_t targetMapId, Vana::Party *party, const string_t 
 	return builder;
 }
 
-PACKET_IMPL(leaveParty, map_id_t targetMapId, Vana::Party *party, player_id_t playerId, const string_t &name, bool kicked) {
+PACKET_IMPL(leaveParty, map_id_t targetMapId, Vana::ChannelServer::Party *party, player_id_t playerId, const string_t &name, bool kicked) {
 	PacketBuilder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
@@ -122,7 +123,7 @@ PACKET_IMPL(leaveParty, map_id_t targetMapId, Vana::Party *party, player_id_t pl
 	return builder;
 }
 
-PACKET_IMPL(invitePlayer, Vana::Party *party, const string_t &inviter) {
+PACKET_IMPL(invitePlayer, Vana::ChannelServer::Party *party, const string_t &inviter) {
 	PacketBuilder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
@@ -133,7 +134,7 @@ PACKET_IMPL(invitePlayer, Vana::Party *party, const string_t &inviter) {
 	return builder;
 }
 
-PACKET_IMPL(disbandParty, Vana::Party *party) {
+PACKET_IMPL(disbandParty, Vana::ChannelServer::Party *party) {
 	PacketBuilder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
@@ -145,7 +146,7 @@ PACKET_IMPL(disbandParty, Vana::Party *party) {
 	return builder;
 }
 
-PACKET_IMPL(setLeader, Vana::Party *party, player_id_t newLeader) {
+PACKET_IMPL(setLeader, Vana::ChannelServer::Party *party, player_id_t newLeader) {
 	PacketBuilder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
@@ -155,7 +156,7 @@ PACKET_IMPL(setLeader, Vana::Party *party, player_id_t newLeader) {
 	return builder;
 }
 
-PACKET_IMPL(silentUpdate, map_id_t targetMapId, Vana::Party *party) {
+PACKET_IMPL(silentUpdate, map_id_t targetMapId, Vana::ChannelServer::Party *party) {
 	PacketBuilder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
@@ -165,7 +166,7 @@ PACKET_IMPL(silentUpdate, map_id_t targetMapId, Vana::Party *party) {
 	return builder;
 }
 
-PACKET_IMPL(updateParty, map_id_t targetMapId, Vana::Party *party) {
+PACKET_IMPL(updateParty, map_id_t targetMapId, Vana::ChannelServer::Party *party) {
 	PacketBuilder builder;
 	auto &members = party->getMembers();
 	size_t offset = Parties::MaxMembers - members.size();
@@ -241,8 +242,8 @@ PACKET_IMPL(updateParty, map_id_t targetMapId, Vana::Party *party) {
 	for (const auto &kvp : members) {
 		if (kvp.second == nullptr) {
 			builder
-				.add<map_id_t>(Maps::NoMap)
-				.add<map_id_t>(Maps::NoMap)
+				.add<map_id_t>(Vana::Maps::NoMap)
+				.add<map_id_t>(Vana::Maps::NoMap)
 				.add<WidePoint>(WidePoint{-1, -1});
 		}
 		else if (ref_ptr_t<MysticDoor> door = kvp.second->getSkills()->getMysticDoor()) {
@@ -253,15 +254,15 @@ PACKET_IMPL(updateParty, map_id_t targetMapId, Vana::Party *party) {
 		}
 		else {
 			builder
-				.add<map_id_t>(Maps::NoMap)
-				.add<map_id_t>(Maps::NoMap)
+				.add<map_id_t>(Vana::Maps::NoMap)
+				.add<map_id_t>(Vana::Maps::NoMap)
 				.add<WidePoint>(WidePoint{-1, -1});
 		}
 	}
 	for (i = 0; i < offset; i++) {
 		builder
-			.add<map_id_t>(Maps::NoMap)
-			.add<map_id_t>(Maps::NoMap)
+			.add<map_id_t>(Vana::Maps::NoMap)
+			.add<map_id_t>(Vana::Maps::NoMap)
 			.add<WidePoint>(WidePoint{-1, -1});
 	}
 	return builder;
@@ -276,8 +277,8 @@ PACKET_IMPL(updateDoor, uint8_t zeroBasedPlayerIndex, ref_ptr_t<MysticDoor> door
 
 	if (door == nullptr) {
 		builder
-			.add<map_id_t>(Maps::NoMap)
-			.add<map_id_t>(Maps::NoMap)
+			.add<map_id_t>(Vana::Maps::NoMap)
+			.add<map_id_t>(Vana::Maps::NoMap)
 			.add<WidePoint>(WidePoint{-1, -1});
 	}
 	else {
@@ -290,6 +291,7 @@ PACKET_IMPL(updateDoor, uint8_t zeroBasedPlayerIndex, ref_ptr_t<MysticDoor> door
 	return builder;
 }
 
+}
 }
 }
 }

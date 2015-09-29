@@ -16,27 +16,28 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ReactorHandler.hpp"
-#include "ChannelServer.hpp"
-#include "Drop.hpp"
-#include "FileUtilities.hpp"
-#include "GameLogicUtilities.hpp"
-#include "LuaReactor.hpp"
-#include "Maps.hpp"
-#include "PacketReader.hpp"
-#include "Player.hpp"
-#include "Point.hpp"
-#include "Reactor.hpp"
-#include "ReactorDataProvider.hpp"
-#include "ReactorPacket.hpp"
-#include "ScriptDataProvider.hpp"
-#include "TimeUtilities.hpp"
-#include "Timer.hpp"
-#include "TimerThread.hpp"
+#include "Common/FileUtilities.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/Point.hpp"
+#include "Common/ReactorDataProvider.hpp"
+#include "Common/ScriptDataProvider.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "Common/Timer.hpp"
+#include "Common/TimerThread.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Drop.hpp"
+#include "ChannelServer/LuaReactor.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/Reactor.hpp"
+#include "ChannelServer/ReactorPacket.hpp"
 #include <functional>
 #include <iostream>
 #include <sstream>
 
 namespace Vana {
+namespace ChannelServer {
 
 auto ReactorHandler::hitReactor(Player *player, PacketReader &reader) -> void {
 	map_object_t id = Map::makeReactorId(reader.get<map_object_t>());
@@ -124,8 +125,8 @@ auto ReactorHandler::checkDrop(Player *player, Drop *drop) -> void {
 						reaction.player = player;
 						reaction.state = reactorEvent.nextState;
 
-						Timer::Id id{TimerType::ReactionTimer, drop->getId()};
-						Timer::Timer::create(reaction, id, nullptr, seconds_t{3});
+						Vana::Timer::Id id{TimerType::ReactionTimer, drop->getId()};
+						Vana::Timer::Timer::create(reaction, id, nullptr, seconds_t{3});
 					}
 					return;
 				}
@@ -135,8 +136,9 @@ auto ReactorHandler::checkDrop(Player *player, Drop *drop) -> void {
 }
 
 auto ReactorHandler::checkLoot(Drop *drop) -> void {
-	Timer::Id id{TimerType::ReactionTimer, drop->getId()};
-	Timer::TimerThread::getInstance().getTimerContainer()->removeTimer(id);
+	Vana::Timer::Id id{TimerType::ReactionTimer, drop->getId()};
+	Vana::Timer::TimerThread::getInstance().getTimerContainer()->removeTimer(id);
 }
 
+}
 }

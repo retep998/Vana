@@ -16,25 +16,26 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerSkills.hpp"
-#include "Algorithm.hpp"
-#include "ChannelServer.hpp"
-#include "Database.hpp"
-#include "GameConstants.hpp"
-#include "GameLogicUtilities.hpp"
-#include "Map.hpp"
-#include "MapPacket.hpp"
-#include "MysticDoor.hpp"
-#include "Party.hpp"
-#include "PartyPacket.hpp"
-#include "Player.hpp"
-#include "Randomizer.hpp"
-#include "SkillDataProvider.hpp"
-#include "Skills.hpp"
-#include "SkillsPacket.hpp"
-#include "Timer.hpp"
-#include "TimerId.hpp"
+#include "Common/Algorithm.hpp"
+#include "Common/Database.hpp"
+#include "Common/GameConstants.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/Randomizer.hpp"
+#include "Common/SkillDataProvider.hpp"
+#include "Common/Timer.hpp"
+#include "Common/TimerId.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Map.hpp"
+#include "ChannelServer/MapPacket.hpp"
+#include "ChannelServer/MysticDoor.hpp"
+#include "ChannelServer/Party.hpp"
+#include "ChannelServer/PartyPacket.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/Skills.hpp"
+#include "ChannelServer/SkillsPacket.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 PlayerSkills::PlayerSkills(Player *player) :
 	m_player{player}
@@ -270,11 +271,11 @@ auto PlayerSkills::getElementalAmp() const -> skill_id_t {
 	skill_id_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::FpMage:
-		case Jobs::JobIds::FpArchMage: skillId = Skills::FpMage::ElementAmplification; break;
+		case Jobs::JobIds::FpArchMage: skillId = Vana::Skills::FpMage::ElementAmplification; break;
 		case Jobs::JobIds::IlMage:
-		case Jobs::JobIds::IlArchMage: skillId = Skills::IlMage::ElementAmplification; break;
+		case Jobs::JobIds::IlArchMage: skillId = Vana::Skills::IlMage::ElementAmplification; break;
 		case Jobs::JobIds::BlazeWizard3:
-		case Jobs::JobIds::BlazeWizard4: skillId = Skills::BlazeWizard::ElementAmplification; break;
+		case Jobs::JobIds::BlazeWizard4: skillId = Vana::Skills::BlazeWizard::ElementAmplification; break;
 	}
 	return skillId;
 }
@@ -282,9 +283,9 @@ auto PlayerSkills::getElementalAmp() const -> skill_id_t {
 auto PlayerSkills::getAchilles() const -> skill_id_t {
 	skill_id_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
-		case Jobs::JobIds::Hero: skillId = Skills::Hero::Achilles; break;
-		case Jobs::JobIds::Paladin: skillId = Skills::Paladin::Achilles; break;
-		case Jobs::JobIds::DarkKnight: skillId = Skills::DarkKnight::Achilles; break;
+		case Jobs::JobIds::Hero: skillId = Vana::Skills::Hero::Achilles; break;
+		case Jobs::JobIds::Paladin: skillId = Vana::Skills::Paladin::Achilles; break;
+		case Jobs::JobIds::DarkKnight: skillId = Vana::Skills::DarkKnight::Achilles; break;
 	}
 	return skillId;
 }
@@ -293,10 +294,10 @@ auto PlayerSkills::getEnergyCharge() const -> skill_id_t {
 	skill_id_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::Marauder:
-		case Jobs::JobIds::Buccaneer: skillId = Skills::Marauder::EnergyCharge; break;
+		case Jobs::JobIds::Buccaneer: skillId = Vana::Skills::Marauder::EnergyCharge; break;
 		case Jobs::JobIds::ThunderBreaker2:
 		case Jobs::JobIds::ThunderBreaker3:
-		case Jobs::JobIds::ThunderBreaker4: skillId = Skills::ThunderBreaker::EnergyCharge; break;
+		case Jobs::JobIds::ThunderBreaker4: skillId = Vana::Skills::ThunderBreaker::EnergyCharge; break;
 	}
 	return skillId;
 }
@@ -304,9 +305,9 @@ auto PlayerSkills::getEnergyCharge() const -> skill_id_t {
 auto PlayerSkills::getAdvancedCombo() const -> skill_id_t {
 	skill_id_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
-		case Jobs::JobIds::Hero: skillId = Skills::Hero::AdvancedComboAttack; break;
+		case Jobs::JobIds::Hero: skillId = Vana::Skills::Hero::AdvancedComboAttack; break;
 		case Jobs::JobIds::DawnWarrior3:
-		case Jobs::JobIds::DawnWarrior4: skillId = Skills::DawnWarrior::AdvancedCombo; break;
+		case Jobs::JobIds::DawnWarrior4: skillId = Vana::Skills::DawnWarrior::AdvancedCombo; break;
 	}
 	return skillId;
 }
@@ -315,9 +316,9 @@ auto PlayerSkills::getAlchemist() const -> skill_id_t {
 	skill_id_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::Hermit:
-		case Jobs::JobIds::NightLord: skillId = Skills::Hermit::Alchemist; break;
+		case Jobs::JobIds::NightLord: skillId = Vana::Skills::Hermit::Alchemist; break;
 		case Jobs::JobIds::NightWalker3:
-		case Jobs::JobIds::NightWalker4: skillId = Skills::NightWalker::Alchemist; break;
+		case Jobs::JobIds::NightWalker4: skillId = Vana::Skills::NightWalker::Alchemist; break;
 	}
 	return skillId;
 }
@@ -325,12 +326,12 @@ auto PlayerSkills::getAlchemist() const -> skill_id_t {
 auto PlayerSkills::getHpIncrease() const -> skill_id_t {
 	skill_id_t skillId = 0;
 	switch (GameLogicUtilities::getJobTrack(m_player->getStats()->getJob())) {
-		case Jobs::JobTracks::Warrior: skillId = Skills::Swordsman::ImprovedMaxHpIncrease; break;
-		case Jobs::JobTracks::DawnWarrior: skillId = Skills::DawnWarrior::MaxHpEnhancement; break;
-		case Jobs::JobTracks::ThunderBreaker: skillId = Skills::ThunderBreaker::ImproveMaxHp; break;
+		case Jobs::JobTracks::Warrior: skillId = Vana::Skills::Swordsman::ImprovedMaxHpIncrease; break;
+		case Jobs::JobTracks::DawnWarrior: skillId = Vana::Skills::DawnWarrior::MaxHpEnhancement; break;
+		case Jobs::JobTracks::ThunderBreaker: skillId = Vana::Skills::ThunderBreaker::ImproveMaxHp; break;
 		case Jobs::JobTracks::Pirate:
 			if ((m_player->getStats()->getJob() / 10) == (Jobs::JobIds::Brawler / 10)) {
-				skillId = Skills::Brawler::ImproveMaxHp;
+				skillId = Vana::Skills::Brawler::ImproveMaxHp;
 			}
 			break;
 	}
@@ -340,8 +341,8 @@ auto PlayerSkills::getHpIncrease() const -> skill_id_t {
 auto PlayerSkills::getMpIncrease() const -> skill_id_t {
 	skill_id_t skillId = 0;
 	switch (GameLogicUtilities::getJobTrack(m_player->getStats()->getJob())) {
-		case Jobs::JobTracks::Magician: skillId = Skills::Magician::ImprovedMaxMpIncrease; break;
-		case Jobs::JobTracks::BlazeWizard: skillId = Skills::BlazeWizard::IncreasingMaxMp; break;
+		case Jobs::JobTracks::Magician: skillId = Vana::Skills::Magician::ImprovedMaxMpIncrease; break;
+		case Jobs::JobTracks::BlazeWizard: skillId = Vana::Skills::BlazeWizard::IncreasingMaxMp; break;
 	}
 	return skillId;
 }
@@ -354,24 +355,24 @@ auto PlayerSkills::getMastery() const -> skill_id_t {
 			switch (m_player->getStats()->getJob()) {
 				case Jobs::JobIds::Fighter:
 				case Jobs::JobIds::Crusader:
-				case Jobs::JobIds::Hero: masteryId = Skills::Fighter::SwordMastery; break;
+				case Jobs::JobIds::Hero: masteryId = Vana::Skills::Fighter::SwordMastery; break;
 				case Jobs::JobIds::Page:
 				case Jobs::JobIds::WhiteKnight:
-				case Jobs::JobIds::Paladin: masteryId = Skills::Page::SwordMastery; break;
+				case Jobs::JobIds::Paladin: masteryId = Vana::Skills::Page::SwordMastery; break;
 			}
 			break;
 		case Items::Types::Weapon1hAxe:
-		case Items::Types::Weapon2hAxe: masteryId = Skills::Fighter::AxeMastery; break;
+		case Items::Types::Weapon2hAxe: masteryId = Vana::Skills::Fighter::AxeMastery; break;
 		case Items::Types::Weapon1hMace:
-		case Items::Types::Weapon2hMace: masteryId = Skills::Page::BwMastery; break;
-		case Items::Types::WeaponSpear: masteryId = Skills::Spearman::SpearMastery; break;
-		case Items::Types::WeaponPolearm: masteryId = Skills::Spearman::PolearmMastery; break;
-		case Items::Types::WeaponDagger: masteryId = Skills::Bandit::DaggerMastery; break;
-		case Items::Types::WeaponKnuckle: masteryId = Skills::Brawler::KnucklerMastery; break;
-		case Items::Types::WeaponBow: masteryId = Skills::Hunter::BowMastery; break;
-		case Items::Types::WeaponCrossbow: masteryId = Skills::Crossbowman::CrossbowMastery; break;
-		case Items::Types::WeaponClaw: masteryId = Skills::Assassin::ClawMastery; break;
-		case Items::Types::WeaponGun: masteryId = Skills::Gunslinger::GunMastery; break;
+		case Items::Types::Weapon2hMace: masteryId = Vana::Skills::Page::BwMastery; break;
+		case Items::Types::WeaponSpear: masteryId = Vana::Skills::Spearman::SpearMastery; break;
+		case Items::Types::WeaponPolearm: masteryId = Vana::Skills::Spearman::PolearmMastery; break;
+		case Items::Types::WeaponDagger: masteryId = Vana::Skills::Bandit::DaggerMastery; break;
+		case Items::Types::WeaponKnuckle: masteryId = Vana::Skills::Brawler::KnucklerMastery; break;
+		case Items::Types::WeaponBow: masteryId = Vana::Skills::Hunter::BowMastery; break;
+		case Items::Types::WeaponCrossbow: masteryId = Vana::Skills::Crossbowman::CrossbowMastery; break;
+		case Items::Types::WeaponClaw: masteryId = Vana::Skills::Assassin::ClawMastery; break;
+		case Items::Types::WeaponGun: masteryId = Vana::Skills::Gunslinger::GunMastery; break;
 	}
 	return masteryId;
 }
@@ -381,13 +382,13 @@ auto PlayerSkills::getMpEater() const -> skill_id_t {
 	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::FpWizard:
 		case Jobs::JobIds::FpMage:
-		case Jobs::JobIds::FpArchMage: skillId = Skills::FpWizard::MpEater; break;
+		case Jobs::JobIds::FpArchMage: skillId = Vana::Skills::FpWizard::MpEater; break;
 		case Jobs::JobIds::IlWizard:
 		case Jobs::JobIds::IlMage:
-		case Jobs::JobIds::IlArchMage: skillId = Skills::IlWizard::MpEater; break;
+		case Jobs::JobIds::IlArchMage: skillId = Vana::Skills::IlWizard::MpEater; break;
 		case Jobs::JobIds::Cleric:
 		case Jobs::JobIds::Priest:
-		case Jobs::JobIds::Bishop: skillId = Skills::Cleric::MpEater; break;
+		case Jobs::JobIds::Bishop: skillId = Vana::Skills::Cleric::MpEater; break;
 	}
 	return skillId;
 }
@@ -395,10 +396,10 @@ auto PlayerSkills::getMpEater() const -> skill_id_t {
 auto PlayerSkills::getVenomousWeapon() const -> skill_id_t {
 	skill_id_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
-		case Jobs::JobIds::NightLord: skillId = Skills::NightLord::VenomousStar; break;
-		case Jobs::JobIds::Shadower: skillId = Skills::Shadower::VenomousStab; break;
+		case Jobs::JobIds::NightLord: skillId = Vana::Skills::NightLord::VenomousStar; break;
+		case Jobs::JobIds::Shadower: skillId = Vana::Skills::Shadower::VenomousStab; break;
 		case Jobs::JobIds::NightWalker3: 
-		case Jobs::JobIds::NightWalker4: skillId = Skills::NightWalker::Venom; break;
+		case Jobs::JobIds::NightWalker4: skillId = Vana::Skills::NightWalker::Venom; break;
 	}
 	return skillId;
 }
@@ -408,10 +409,10 @@ auto PlayerSkills::getDarkSightInterruptionSkill() const -> skill_id_t {
 	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::NightWalker2:
 		case Jobs::JobIds::NightWalker3:
-		case Jobs::JobIds::NightWalker4: skillId = Skills::NightWalker::Vanish; break;
+		case Jobs::JobIds::NightWalker4: skillId = Vana::Skills::NightWalker::Vanish; break;
 		case Jobs::JobIds::WindArcher2:
 		case Jobs::JobIds::WindArcher3: 
-		case Jobs::JobIds::WindArcher4: skillId = Skills::WindArcher::WindWalk; break;
+		case Jobs::JobIds::WindArcher4: skillId = Vana::Skills::WindArcher::WindWalk; break;
 	}
 	return skillId;
 }
@@ -419,10 +420,10 @@ auto PlayerSkills::getDarkSightInterruptionSkill() const -> skill_id_t {
 auto PlayerSkills::getNoDamageSkill() const -> skill_id_t {
 	skill_id_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
-		case Jobs::JobIds::NightLord: skillId = Skills::NightLord::ShadowShifter; break;
-		case Jobs::JobIds::Shadower: skillId = Skills::Shadower::ShadowShifter; break;
-		case Jobs::JobIds::Hero: skillId = Skills::Hero::Guardian; break;
-		case Jobs::JobIds::Paladin: skillId = Skills::Paladin::Guardian; break;
+		case Jobs::JobIds::NightLord: skillId = Vana::Skills::NightLord::ShadowShifter; break;
+		case Jobs::JobIds::Shadower: skillId = Vana::Skills::Shadower::ShadowShifter; break;
+		case Jobs::JobIds::Hero: skillId = Vana::Skills::Hero::Guardian; break;
+		case Jobs::JobIds::Paladin: skillId = Vana::Skills::Paladin::Guardian; break;
 	}
 	return skillId;
 }
@@ -430,8 +431,8 @@ auto PlayerSkills::getNoDamageSkill() const -> skill_id_t {
 auto PlayerSkills::getFollowTheLead() const -> skill_id_t {
 	skill_id_t skillId = 0;
 	switch (GameLogicUtilities::getJobType(m_player->getStats()->getJob())) {
-		case Jobs::JobType::Adventurer: skillId = Skills::Beginner::FollowTheLead; break;
-		case Jobs::JobType::Cygnus: skillId = Skills::Noblesse::FollowTheLead; break;
+		case Jobs::JobType::Adventurer: skillId = Vana::Skills::Beginner::FollowTheLead; break;
+		case Jobs::JobType::Cygnus: skillId = Vana::Skills::Noblesse::FollowTheLead; break;
 	}
 	return skillId;
 }
@@ -439,8 +440,8 @@ auto PlayerSkills::getFollowTheLead() const -> skill_id_t {
 auto PlayerSkills::getLegendarySpirit() const -> skill_id_t {
 	skill_id_t skillId = 0;
 	switch (GameLogicUtilities::getJobType(m_player->getStats()->getJob())) {
-		case Jobs::JobType::Adventurer: skillId = Skills::Beginner::LegendarySpirit; break;
-		case Jobs::JobType::Cygnus: skillId = Skills::Noblesse::LegendarySpirit; break;
+		case Jobs::JobType::Adventurer: skillId = Vana::Skills::Beginner::LegendarySpirit; break;
+		case Jobs::JobType::Cygnus: skillId = Vana::Skills::Noblesse::LegendarySpirit; break;
 	}
 	return skillId;
 }
@@ -448,8 +449,8 @@ auto PlayerSkills::getLegendarySpirit() const -> skill_id_t {
 auto PlayerSkills::getMaker() const -> skill_id_t {
 	skill_id_t skillId = 0;
 	switch (GameLogicUtilities::getJobType(m_player->getStats()->getJob())) {
-		case Jobs::JobType::Adventurer: skillId = Skills::Beginner::Maker; break;
-		case Jobs::JobType::Cygnus: skillId = Skills::Noblesse::Maker; break;
+		case Jobs::JobType::Adventurer: skillId = Vana::Skills::Beginner::Maker; break;
+		case Jobs::JobType::Cygnus: skillId = Vana::Skills::Noblesse::Maker; break;
 	}
 	return skillId;
 }
@@ -457,8 +458,8 @@ auto PlayerSkills::getMaker() const -> skill_id_t {
 auto PlayerSkills::getBlessingOfTheFairy() const -> skill_id_t {
 	skill_id_t skillId = 0;
 	switch (GameLogicUtilities::getJobType(m_player->getStats()->getJob())) {
-		case Jobs::JobType::Adventurer: skillId = Skills::Beginner::BlessingOfTheFairy; break;
-		case Jobs::JobType::Cygnus: skillId = Skills::Noblesse::BlessingOfTheFairy; break;
+		case Jobs::JobType::Adventurer: skillId = Vana::Skills::Beginner::BlessingOfTheFairy; break;
+		case Jobs::JobType::Cygnus: skillId = Vana::Skills::Noblesse::BlessingOfTheFairy; break;
 	}
 	return skillId;
 }
@@ -468,13 +469,13 @@ auto PlayerSkills::getRechargeableBonus() const -> slot_qty_t {
 	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::Assassin:
 		case Jobs::JobIds::Hermit:
-		case Jobs::JobIds::NightLord: bonus = getSkillLevel(Skills::Assassin::ClawMastery) * 10; break;
+		case Jobs::JobIds::NightLord: bonus = getSkillLevel(Vana::Skills::Assassin::ClawMastery) * 10; break;
 		case Jobs::JobIds::Gunslinger:
 		case Jobs::JobIds::Outlaw:
-		case Jobs::JobIds::Corsair: bonus = getSkillLevel(Skills::Gunslinger::GunMastery) * 10; break;
+		case Jobs::JobIds::Corsair: bonus = getSkillLevel(Vana::Skills::Gunslinger::GunMastery) * 10; break;
 		case Jobs::JobIds::NightWalker2:
 		case Jobs::JobIds::NightWalker3:
-		case Jobs::JobIds::NightWalker4: bonus = getSkillLevel(Skills::NightWalker::ClawMastery) * 10; break;
+		case Jobs::JobIds::NightWalker4: bonus = getSkillLevel(Vana::Skills::NightWalker::ClawMastery) * 10; break;
 	}
 	return bonus;
 }
@@ -493,7 +494,7 @@ auto PlayerSkills::removeCooldown(skill_id_t skillId) -> void {
 auto PlayerSkills::removeAllCooldowns() -> void {
 	auto dupe = m_cooldowns;
 	for (const auto &kvp : dupe) {
-		if (kvp.first != Skills::Buccaneer::TimeLeap) {
+		if (kvp.first != Vana::Skills::Buccaneer::TimeLeap) {
 			Skills::stopCooldown(m_player, kvp.first);
 		}
 	}
@@ -555,11 +556,11 @@ auto PlayerSkills::openMysticDoor(const Point &pos, seconds_t doorTime) -> Mysti
 		m_player->send(Packets::Map::spawnPortal(m_mysticDoor, m_player->getMapId()));
 	}
 
-	Timer::Timer::create(
+	Vana::Timer::Timer::create(
 		[this](const time_point_t &now) {
 			this->closeMysticDoor(true);
 		},
-		Timer::Id{TimerType::DoorTimer},
+		Vana::Timer::Id{TimerType::DoorTimer},
 		m_player->getTimerContainer(),
 		m_mysticDoor->getDoorTime());
 
@@ -568,7 +569,7 @@ auto PlayerSkills::openMysticDoor(const Point &pos, seconds_t doorTime) -> Mysti
 
 auto PlayerSkills::closeMysticDoor(bool fromTimer) -> void {
 	if (!fromTimer) {
-		m_player->getTimerContainer()->removeTimer(Timer::Id{TimerType::DoorTimer});
+		m_player->getTimerContainer()->removeTimer(Vana::Timer::Id{TimerType::DoorTimer});
 	}
 
 	ref_ptr_t<MysticDoor> door = m_mysticDoor;
@@ -788,4 +789,5 @@ auto PlayerSkills::connectPacketForBlessing(PacketBuilder &builder) const -> voi
 	//}
 }
 
+}
 }

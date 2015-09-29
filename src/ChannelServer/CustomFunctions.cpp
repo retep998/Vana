@@ -16,9 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "CustomFunctions.hpp"
-#include "Player.hpp"
+#include "ChannelServer/Player.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 auto CustomFunctions::initialize(case_insensitive_hash_map_t<ChatCommand, chat_t> &commandList) -> void {
 	// Define any custom functions you may have here, just like ChatHandlerFunctions::initialize
@@ -26,4 +27,5 @@ auto CustomFunctions::initialize(case_insensitive_hash_map_t<ChatCommand, chat_t
 
 }
 
+}
 }

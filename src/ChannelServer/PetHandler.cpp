@@ -16,23 +16,24 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PetHandler.hpp"
-#include "ChannelServer.hpp"
-#include "GameConstants.hpp"
-#include "Inventory.hpp"
-#include "InventoryPacket.hpp"
-#include "ItemConstants.hpp"
-#include "ItemDataProvider.hpp"
-#include "Map.hpp"
-#include "MovementHandler.hpp"
-#include "PacketReader.hpp"
-#include "PacketWrapper.hpp"
-#include "Pet.hpp"
-#include "PetsPacket.hpp"
-#include "Player.hpp"
-#include "Randomizer.hpp"
-#include "SkillConstants.hpp"
+#include "Common/GameConstants.hpp"
+#include "Common/ItemConstants.hpp"
+#include "Common/ItemDataProvider.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/PacketWrapper.hpp"
+#include "Common/Randomizer.hpp"
+#include "Common/SkillConstants.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Inventory.hpp"
+#include "ChannelServer/InventoryPacket.hpp"
+#include "ChannelServer/Map.hpp"
+#include "ChannelServer/MovementHandler.hpp"
+#include "ChannelServer/Pet.hpp"
+#include "ChannelServer/PetsPacket.hpp"
+#include "ChannelServer/Player.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 auto PetHandler::handleMovement(Player *player, PacketReader &reader) -> void {
 	pet_id_t petId = reader.get<pet_id_t>();
@@ -77,7 +78,7 @@ auto PetHandler::handleSummon(Player *player, PacketReader &reader) -> void {
 		int8_t index = pet->getIndex().get();
 		player->getPets()->setSummoned(index, 0);
 		if (index == 0) {
-			Timer::Id id{TimerType::PetTimer, index};
+			Vana::Timer::Id id{TimerType::PetTimer, index};
 			player->getTimerContainer()->removeTimer(id);
 		}
 		if (multipet) {
@@ -115,7 +116,7 @@ auto PetHandler::handleSummon(Player *player, PacketReader &reader) -> void {
 				player->sendMap(Packets::Pets::petSummoned(player->getId(), pet));
 			}
 			else if (Pet *kicked = player->getPets()->getSummoned(0)) {
-				Timer::Id id{TimerType::PetTimer, kicked->getIndex().get()};
+				Vana::Timer::Id id{TimerType::PetTimer, kicked->getIndex().get()};
 				player->getTimerContainer()->removeTimer(id);
 				kicked->desummon();
 				player->sendMap(Packets::Pets::petSummoned(player->getId(), pet, true));
@@ -238,4 +239,5 @@ auto PetHandler::showPets(Player *player) -> void {
 	player->send(Packets::Pets::updateSummonedPets(player));
 }
 
+}
 }

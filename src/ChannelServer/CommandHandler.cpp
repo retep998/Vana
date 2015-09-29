@@ -16,31 +16,32 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "CommandHandler.hpp"
-#include "Algorithm.hpp"
-#include "Buffs.hpp"
-#include "ChatHandlerFunctions.hpp"
-#include "ChannelServer.hpp"
-#include "Database.hpp"
-#include "GameLogicUtilities.hpp"
-#include "GmPacket.hpp"
-#include "InterHeader.hpp"
-#include "Inventory.hpp"
-#include "Map.hpp"
-#include "MapPacket.hpp"
-#include "Maps.hpp"
-#include "MobDataProvider.hpp"
-#include "PacketWrapper.hpp"
-#include "Player.hpp"
-#include "PlayerInventory.hpp"
-#include "PlayerPacket.hpp"
-#include "PlayerDataProvider.hpp"
-#include "PlayersPacket.hpp"
-#include "PacketReader.hpp"
-#include "Skills.hpp"
-#include "WorldServerConnectPacket.hpp"
+#include "Common/Algorithm.hpp"
+#include "Common/Database.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/MobDataProvider.hpp"
+#include "Common/PacketWrapper.hpp"
+#include "Common/PacketReader.hpp"
+#include "ChannelServer/Buffs.hpp"
+#include "ChannelServer/ChatHandlerFunctions.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/GmPacket.hpp"
+#include "ChannelServer/Inventory.hpp"
+#include "ChannelServer/Map.hpp"
+#include "ChannelServer/MapPacket.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerInventory.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/PlayersPacket.hpp"
+#include "ChannelServer/Skills.hpp"
+#include "ChannelServer/WorldServerConnectPacket.hpp"
 #include <string>
 
 namespace Vana {
+namespace ChannelServer {
 
 namespace CommandOpcodes {
 	enum Opcodes : int8_t {
@@ -122,7 +123,7 @@ auto CommandHandler::handleCommand(Player *player, PacketReader &reader) -> void
 				if (targetData != nullptr && targetData->channel.is_initialized()) {
 					player->send(Packets::Players::findPlayer(targetData->name, opt_int32_t{}, 1));
 					ChannelServer::getInstance().sendWorld(
-						Packets::prepend(Packets::Players::whisperPlayer(player->getName(), ChannelServer::getInstance().getChannelId(), chat), [targetData](PacketBuilder &builder) {
+						Vana::Packets::prepend(Packets::Players::whisperPlayer(player->getName(), ChannelServer::getInstance().getChannelId(), chat), [targetData](PacketBuilder &builder) {
 							builder.add<header_t>(IMSG_TO_CHANNEL);
 							builder.add<channel_id_t>(targetData->channel.get());
 							builder.add<header_t>(IMSG_TO_PLAYER);
@@ -152,7 +153,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 			if (hide) {
 				auto result = Buffs::addBuff(
 					player,
-					Skills::SuperGm::Hide,
+					Vana::Skills::SuperGm::Hide,
 					1,
 					0);
 
@@ -165,7 +166,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 				Skills::stopSkill(
 					player,
 					BuffSource::fromSkill(
-						Skills::SuperGm::Hide,
+						Vana::Skills::SuperGm::Hide,
 						1));
 			}
 			break;
@@ -300,4 +301,5 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 	}
 }
 
+}
 }

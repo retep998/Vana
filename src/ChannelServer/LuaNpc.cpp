@@ -16,16 +16,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaNpc.hpp"
-#include "ChannelServer.hpp"
-#include "Npc.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "Quests.hpp"
-#include "ScriptDataProvider.hpp"
-#include "StoragePacket.hpp"
+#include "Common/ScriptDataProvider.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Npc.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/Quests.hpp"
+#include "ChannelServer/StoragePacket.hpp"
 #include <vector>
 
 namespace Vana {
+namespace ChannelServer {
 
 LuaNpc::LuaNpc(const string_t &filename, player_id_t playerId) :
 	LuaScriptable{filename, playerId, true}
@@ -273,4 +274,5 @@ auto LuaExports::endQuest(lua_State *luaVm) -> lua_return_t {
 	return 0;
 }
 
+}
 }

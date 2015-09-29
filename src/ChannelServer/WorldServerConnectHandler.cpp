@@ -16,31 +16,32 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerConnectHandler.hpp"
-#include "BeautyDataProvider.hpp"
-#include "ChannelServer.hpp"
-#include "DropDataProvider.hpp"
-#include "ExitCodes.hpp"
-#include "ItemDataProvider.hpp"
-#include "MapDataProvider.hpp"
-#include "MobDataProvider.hpp"
-#include "PacketReader.hpp"
-#include "PacketWrapper.hpp"
-#include "Player.hpp"
-#include "PlayerPacket.hpp"
-#include "PlayerDataProvider.hpp"
-#include "PlayersPacket.hpp"
-#include "QuestDataProvider.hpp"
-#include "ReactorDataProvider.hpp"
-#include "ScriptDataProvider.hpp"
-#include "Session.hpp"
-#include "ShopDataProvider.hpp"
-#include "SkillDataProvider.hpp"
-#include "WorldConfig.hpp"
-#include "WorldServerConnection.hpp"
+#include "Common/BeautyDataProvider.hpp"
+#include "Common/DropDataProvider.hpp"
+#include "Common/ExitCodes.hpp"
+#include "Common/ItemDataProvider.hpp"
+#include "Common/MobDataProvider.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/PacketWrapper.hpp"
+#include "Common/QuestDataProvider.hpp"
+#include "Common/ReactorDataProvider.hpp"
+#include "Common/ScriptDataProvider.hpp"
+#include "Common/Session.hpp"
+#include "Common/ShopDataProvider.hpp"
+#include "Common/SkillDataProvider.hpp"
+#include "Common/WorldConfig.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/MapDataProvider.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/PlayersPacket.hpp"
+#include "ChannelServer/WorldServerConnection.hpp"
 #include <iostream>
 #include <limits>
 
 namespace Vana {
+namespace ChannelServer {
 
 auto WorldServerConnectHandler::connectLogin(WorldServerConnection *player, PacketReader &reader) -> void {
 	world_id_t worldId = reader.get<world_id_t>();
@@ -73,4 +74,5 @@ auto WorldServerConnectHandler::reloadMcdb(PacketReader &reader) -> void {
 	ChannelServer::getInstance().reloadData(args);
 }
 
+}
 }

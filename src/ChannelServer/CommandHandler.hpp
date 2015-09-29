@@ -19,10 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Vana {
 	class PacketReader;
-	class Player;
 
-	namespace CommandHandler {
-		auto handleCommand(Player *player, PacketReader &reader) -> void;
-		auto handleAdminCommand(Player *player, PacketReader &reader) -> void;
+	namespace ChannelServer {
+		class Player;
+
+		namespace CommandHandler {
+			auto handleCommand(Player *player, PacketReader &reader) -> void;
+			auto handleAdminCommand(Player *player, PacketReader &reader) -> void;
+		}
 	}
 }

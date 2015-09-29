@@ -17,31 +17,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "LuaScriptable.hpp"
+#include "ChannelServer/LuaScriptable.hpp"
 #include <string>
 #include <unordered_map>
 
 namespace Vana {
 	struct PortalInfo;
 
-	class LuaPortal : public LuaScriptable {
-		NONCOPYABLE(LuaPortal);
-		NO_DEFAULT_CONSTRUCTOR(LuaPortal);
-	public:
-		LuaPortal(const string_t &filename, player_id_t playerId, map_id_t mapId, const PortalInfo * const portal);
-		auto playerWarped() -> bool;
-		auto playerMapChanged() -> bool;
-		auto portalFailed() -> bool;
-	};
+	namespace ChannelServer {
+		class LuaPortal : public LuaScriptable {
+			NONCOPYABLE(LuaPortal);
+			NO_DEFAULT_CONSTRUCTOR(LuaPortal);
+		public:
+			LuaPortal(const string_t &filename, player_id_t playerId, map_id_t mapId, const PortalInfo * const portal);
+			auto playerWarped() -> bool;
+			auto playerMapChanged() -> bool;
+			auto portalFailed() -> bool;
+		};
 
-	namespace LuaExports {
-		auto getPortal(lua_State *luaVm) -> const PortalInfo * const;
+		namespace LuaExports {
+			auto getPortal(lua_State *luaVm) -> const PortalInfo * const;
 
-		// Portal exports
+			// Portal exports
 
-		// Portal
-		auto instantWarp(lua_State *luaVm) -> lua_return_t;
-		auto playPortalSe(lua_State *luaVm) -> lua_return_t;
-		auto portalFailed(lua_State *luaVm) -> lua_return_t;
+			// Portal
+			auto instantWarp(lua_State *luaVm) -> lua_return_t;
+			auto playPortalSe(lua_State *luaVm) -> lua_return_t;
+			auto portalFailed(lua_State *luaVm) -> lua_return_t;
+		}
 	}
 }

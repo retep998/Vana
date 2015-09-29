@@ -17,17 +17,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "PacketBuilder.hpp"
-#include "SplitPacketBuilder.hpp"
-#include "Types.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/SplitPacketBuilder.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
-	class Player;
+	namespace ChannelServer {
+		class Player;
 
-	namespace Packets {
-		PACKET(showExp, experience_t exp, bool white, bool inChat);
-		SPLIT_PACKET(levelUp, player_id_t playerId);
-		SPLIT_PACKET(jobChange, player_id_t playerId);
-		PACKET(statOk);
+		namespace Packets {
+			PACKET(showExp, experience_t exp, bool white, bool inChat);
+			SPLIT_PACKET(levelUp, player_id_t playerId);
+			SPLIT_PACKET(jobChange, player_id_t playerId);
+			PACKET(statOk);
+		}
 	}
 }

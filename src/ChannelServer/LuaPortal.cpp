@@ -16,12 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaPortal.hpp"
-#include "EffectPacket.hpp"
-#include "MapPacket.hpp"
-#include "Maps.hpp"
-#include "Player.hpp"
+#include "ChannelServer/EffectPacket.hpp"
+#include "ChannelServer/MapPacket.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Player.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 LuaPortal::LuaPortal(const string_t &filename, player_id_t playerId, map_id_t mapId, const PortalInfo * const portal) :
 	LuaScriptable{filename, playerId}
@@ -73,4 +74,5 @@ auto LuaExports::portalFailed(lua_State *luaVm) -> lua_return_t {
 	return 0;
 }
 
+}
 }

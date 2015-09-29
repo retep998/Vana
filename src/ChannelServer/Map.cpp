@@ -16,39 +16,39 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Map.hpp"
-#include "Algorithm.hpp"
-#include "ChannelServer.hpp"
-#include "Drop.hpp"
-#include "EffectPacket.hpp"
-#include "GameLogicUtilities.hpp"
-#include "GmPacket.hpp"
-#include "Instance.hpp"
-#include "Inventory.hpp"
-#include "MapleTvPacket.hpp"
-#include "MapleTvs.hpp"
-#include "MapPacket.hpp"
-#include "Maps.hpp"
-#include "MiscUtilities.hpp"
-#include "Mist.hpp"
-#include "Mob.hpp"
-#include "MobConstants.hpp"
-#include "MobHandler.hpp"
-#include "MobsPacket.hpp"
-#include "MysticDoor.hpp"
-#include "NpcDataProvider.hpp"
-#include "NpcPacket.hpp"
-#include "PacketWrapper.hpp"
-#include "Party.hpp"
-#include "Player.hpp"
-#include "PlayerPacket.hpp"
-#include "Randomizer.hpp"
-#include "ReactorPacket.hpp"
-#include "Reactor.hpp"
-#include "Session.hpp"
-#include "SplitPacketBuilder.hpp"
-#include "SummonHandler.hpp"
-#include "TimeUtilities.hpp"
-#include "Timer.hpp"
+#include "Common/Algorithm.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/MiscUtilities.hpp"
+#include "Common/MobConstants.hpp"
+#include "Common/NpcDataProvider.hpp"
+#include "Common/PacketWrapper.hpp"
+#include "Common/Randomizer.hpp"
+#include "Common/Session.hpp"
+#include "Common/SplitPacketBuilder.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "Common/Timer.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Drop.hpp"
+#include "ChannelServer/EffectPacket.hpp"
+#include "ChannelServer/GmPacket.hpp"
+#include "ChannelServer/Instance.hpp"
+#include "ChannelServer/Inventory.hpp"
+#include "ChannelServer/MapleTvPacket.hpp"
+#include "ChannelServer/MapleTvs.hpp"
+#include "ChannelServer/MapPacket.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Mist.hpp"
+#include "ChannelServer/Mob.hpp"
+#include "ChannelServer/MobHandler.hpp"
+#include "ChannelServer/MobsPacket.hpp"
+#include "ChannelServer/MysticDoor.hpp"
+#include "ChannelServer/NpcPacket.hpp"
+#include "ChannelServer/Party.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
+#include "ChannelServer/ReactorPacket.hpp"
+#include "ChannelServer/Reactor.hpp"
+#include "ChannelServer/SummonHandler.hpp"
 #include <ctime>
 #include <functional>
 #include <initializer_list>
@@ -57,6 +57,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <utility>
 
 namespace Vana {
+namespace ChannelServer {
 
 // TODO FIXME msvc
 // Remove this crap once MSVC supports static initializers
@@ -69,9 +70,9 @@ Map::Map(ref_ptr_t<MapInfo> info, map_id_t id) :
 	m_music{info->defaultMusic}
 {
 	// Dynamic loading, start the map timer once the object is created
-	Timer::Timer::create(
+	Vana::Timer::Timer::create(
 		[this](const time_point_t &now) { this->mapTick(now); },
-		Timer::Id{TimerType::MapTimer, id},
+		Vana::Timer::Id{TimerType::MapTimer, id},
 		getTimers(), seconds_t{0}, seconds_t{1});
 
 	Point rightBottom = info->dimensions.rightBottom();
@@ -158,12 +159,12 @@ auto Map::addPortal(const PortalInfo &portal) -> void {
 }
 
 auto Map::addTimeMob(ref_ptr_t<TimeMob> info) -> void {
-	Timer::Timer::create([this](const time_point_t &now) { this->timeMob(false); },
-		Timer::Id{TimerType::MapTimer, getId(), 1},
+	Vana::Timer::Timer::create([this](const time_point_t &now) { this->timeMob(false); },
+		Vana::Timer::Id{TimerType::MapTimer, getId(), 1},
 		getTimers(), TimeUtilities::getDistanceToNextOccurringSecondOfHour(0), hours_t{1});
 
-	Timer::Timer::create([this](const time_point_t &now) { this->timeMob(true); },
-		Timer::Id{TimerType::MapTimer, getId(), 2},
+	Vana::Timer::Timer::create([this](const time_point_t &now) { this->timeMob(true); },
+		Vana::Timer::Id{TimerType::MapTimer, getId(), 2},
 		getTimers(), seconds_t{3}); // First check
 
 	m_timeMobInfo = info;
@@ -584,7 +585,7 @@ auto Map::getTownMysticDoorPortal(Player *player, uint8_t zeroBasedPartyIndex) c
 	}
 
 	map_id_t townId = m_info->returnMap;
-	if (townId == Maps::NoMap) {
+	if (townId == Vana::Maps::NoMap) {
 		ChannelServer::getInstance().log(LogType::Hacking, [&](out_stream_t &str) {
 			str << "Likely hacking by player ID " << player->getId() << ". "
 				<< "Mystic Door used on a map that has no return map: " << m_id;
@@ -1038,9 +1039,9 @@ auto Map::addMist(Mist *mist) -> void {
 		m_mists[mist->getId()] = mist;
 	}
 
-	Timer::Timer::create(
+	Vana::Timer::Timer::create(
 		[this, mist](const time_point_t &now) { this->removeMist(mist); },
-		Timer::Id{TimerType::MistTimer, mist->getId()},
+		Vana::Timer::Id{TimerType::MistTimer, mist->getId()},
 		getTimers(), seconds_t{mist->getTime()});
 
 	send(Packets::Map::spawnMist(mist, false));
@@ -1255,9 +1256,9 @@ auto Map::setMapTimer(const seconds_t &timer) -> void {
 
 	send(Packets::Map::showTimer(timer));
 	if (timer.count() > 0) {
-		Timer::Timer::create(
+		Vana::Timer::Timer::create(
 			[this](const time_point_t &now) { this->setMapTimer(seconds_t{0}); },
-			Timer::Id{TimerType::MapTimer, getId(), 25},
+			Vana::Timer::Id{TimerType::MapTimer, getId(), 25},
 			getTimers(), timer);
 	}
 }
@@ -1370,14 +1371,14 @@ auto Map::send(const SplitPacketBuilder &builder, Player *sender) -> void {
 }
 
 auto Map::createWeather(Player *player, bool adminWeather, int32_t time, int32_t itemId, const string_t &message) -> bool {
-	Timer::Id timerId{TimerType::WeatherTimer}; // Just to check if there's already a weather item running and adding a new one
+	Vana::Timer::Id timerId{TimerType::WeatherTimer}; // Just to check if there's already a weather item running and adding a new one
 	if (getTimers()->isTimerRunning(timerId)) {
 		// Hacking
 		return false;
 	}
 
 	send(Packets::Map::changeWeather(adminWeather, itemId, message));
-	Timer::Timer::create(
+	Vana::Timer::Timer::create(
 		[this, adminWeather](const time_point_t &now) {
 			this->send(Packets::Map::changeWeather(adminWeather, 0, ""));
 		},
@@ -1402,4 +1403,5 @@ auto Map::endInstance(bool reset) -> void {
 	}
 }
 
+}
 }

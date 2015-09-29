@@ -17,17 +17,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "PacketBuilder.hpp"
-#include "Types.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
-	class Player;
-	struct MapleTvMessage;
+	namespace ChannelServer {
+		class Player;
+		struct MapleTvMessage;
 
-	namespace Packets {
-		namespace MapleTv {
-			PACKET(showMessage, const MapleTvMessage &message, seconds_t timeLeft);
-			PACKET(endDisplay);
+		namespace Packets {
+			namespace MapleTv {
+				PACKET(showMessage, const MapleTvMessage &message, seconds_t timeLeft);
+				PACKET(endDisplay);
+			}
 		}
 	}
 }

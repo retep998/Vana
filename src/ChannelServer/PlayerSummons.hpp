@@ -17,33 +17,36 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Summon.hpp"
-#include "Types.hpp"
+#include "Common/Types.hpp"
+#include "ChannelServer/Summon.hpp"
 #include <vector>
 
 namespace Vana {
 	class PacketBuilder;
 	class PacketReader;
-	class Player;
 
-	class PlayerSummons {
-		NONCOPYABLE(PlayerSummons);
-		NO_DEFAULT_CONSTRUCTOR(PlayerSummons);
-	public:
-		PlayerSummons(Player *player);
+	namespace ChannelServer {
+		class Player;
 
-		auto getSummon(summon_id_t summonId) -> Summon *;
-		auto addSummon(Summon *summon, seconds_t time) -> void;
-		auto removeSummon(summon_id_t summonId, bool fromTimer) -> void;
-		auto changedMap() -> void;
-		auto forEach(function_t<void(Summon *)> func) -> void;
+		class PlayerSummons {
+			NONCOPYABLE(PlayerSummons);
+			NO_DEFAULT_CONSTRUCTOR(PlayerSummons);
+		public:
+			PlayerSummons(Player *player);
 
-		auto getTransferPacket() const -> PacketBuilder;
-		auto parseTransferPacket(PacketReader &reader) -> void;
-	private:
-		auto getSummonTimeRemaining(summon_id_t summonId) const -> seconds_t;
+			auto getSummon(summon_id_t summonId) -> Summon *;
+			auto addSummon(Summon *summon, seconds_t time) -> void;
+			auto removeSummon(summon_id_t summonId, bool fromTimer) -> void;
+			auto changedMap() -> void;
+			auto forEach(function_t<void(Summon *)> func) -> void;
 
-		Player *m_player = nullptr;
-		vector_t<Summon *> m_summons;
-	};
+			auto getTransferPacket() const -> PacketBuilder;
+			auto parseTransferPacket(PacketReader &reader) -> void;
+		private:
+			auto getSummonTimeRemaining(summon_id_t summonId) const -> seconds_t;
+
+			Player *m_player = nullptr;
+			vector_t<Summon *> m_summons;
+		};
+	}
 }

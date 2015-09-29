@@ -17,32 +17,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Types.hpp"
+#include "Common/Types.hpp"
 #include <unordered_map>
 
 namespace Vana {
 	class PacketBuilder;
-	class Pet;
-	class Player;
 
-	class PlayerPets {
-		NONCOPYABLE(PlayerPets);
-		NO_DEFAULT_CONSTRUCTOR(PlayerPets);
-	public:
-		PlayerPets(Player *player);
+	namespace ChannelServer {
+		class Pet;
+		class Player;
 
-		auto save() -> void;
-		auto petInfoPacket(PacketBuilder &builder) -> void;
-		auto connectPacket(PacketBuilder &builder) -> void;
+		class PlayerPets {
+			NONCOPYABLE(PlayerPets);
+			NO_DEFAULT_CONSTRUCTOR(PlayerPets);
+		public:
+			PlayerPets(Player *player);
 
-		auto getPet(pet_id_t petId) -> Pet *;
-		auto getSummoned(int8_t index) -> Pet *;
+			auto save() -> void;
+			auto petInfoPacket(PacketBuilder &builder) -> void;
+			auto connectPacket(PacketBuilder &builder) -> void;
 
-		auto addPet(Pet *pet) -> void;
-		auto setSummoned(int8_t index, pet_id_t petId) -> void;
-	private:
-		Player *m_player = nullptr;
-		hash_map_t<pet_id_t, Pet *> m_pets;
-		hash_map_t<int8_t, pet_id_t> m_summoned;
-	};
+			auto getPet(pet_id_t petId) -> Pet *;
+			auto getSummoned(int8_t index) -> Pet *;
+
+			auto addPet(Pet *pet) -> void;
+			auto setSummoned(int8_t index, pet_id_t petId) -> void;
+		private:
+			Player *m_player = nullptr;
+			hash_map_t<pet_id_t, Pet *> m_pets;
+			hash_map_t<int8_t, pet_id_t> m_summoned;
+		};
+	}
 }

@@ -16,15 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Trades.hpp"
-#include "Player.hpp"
-#include "Trade.hpp"
-#include "TradeHandler.hpp"
-#include "TimeUtilities.hpp"
-#include "Timer.hpp"
-#include "TimerContainer.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "Common/Timer.hpp"
+#include "Common/TimerContainer.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/Trade.hpp"
+#include "ChannelServer/TradeHandler.hpp"
 #include <functional>
 
 namespace Vana {
+namespace ChannelServer {
 
 seconds_t Trades::TradeTimeout = seconds_t{180};
 
@@ -63,7 +64,7 @@ auto Trades::getTrade(trade_id_t id) -> ActiveTrade * {
 }
 
 auto Trades::getTimerSecondsRemaining(trade_id_t id) -> seconds_t {
-	Timer::Id timerId{TimerType::TradeTimer, id};
+	Vana::Timer::Id timerId{TimerType::TradeTimer, id};
 	return getTimers()->getRemainingTime<seconds_t>(timerId);
 }
 
@@ -72,13 +73,13 @@ auto Trades::timeout(Player *sender) -> void {
 }
 
 auto Trades::stopTimeout(trade_id_t id) -> void {
-	Timer::Id timerId{TimerType::TradeTimer, id};
+	Vana::Timer::Id timerId{TimerType::TradeTimer, id};
 	getTimers()->removeTimer(timerId);
 }
 
 auto Trades::startTimeout(trade_id_t id, Player *sender) -> void {
-	Timer::Id timerId{TimerType::TradeTimer, id};
-	Timer::Timer::create(
+	Vana::Timer::Id timerId{TimerType::TradeTimer, id};
+	Vana::Timer::Timer::create(
 		[this, sender](const time_point_t &now) {
 			this->timeout(sender);
 		},
@@ -87,4 +88,5 @@ auto Trades::startTimeout(trade_id_t id, Player *sender) -> void {
 		TradeTimeout);
 }
 
+}
 }

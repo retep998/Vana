@@ -16,10 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "StatusInfo.hpp"
-#include "Randomizer.hpp"
-#include "SkillConstants.hpp"
+#include "Common/Randomizer.hpp"
+#include "Common/SkillConstants.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 StatusInfo::StatusInfo(int32_t status, int32_t val, int32_t skillId, seconds_t time) :
 	status{status},
@@ -30,13 +31,13 @@ StatusInfo::StatusInfo(int32_t status, int32_t val, int32_t skillId, seconds_t t
 {
 	switch (val) {
 		case StatusEffects::Mob::Freeze:
-			if (skillId == Skills::FpArchMage::Paralyze) {
+			if (skillId == Vana::Skills::FpArchMage::Paralyze) {
 				break;
 			}
 		case StatusEffects::Mob::Stun:
 			time = seconds_t{
 				time.count() +
-				(skillId == Skills::IlArchMage::Blizzard ? 3 : 1) +
+				(skillId == Vana::Skills::IlArchMage::Blizzard ? 3 : 1) +
 				Randomizer::rand<int32_t>(static_cast<int32_t>(time.count()) * 2)
 			};
 			// The 1 accounts for the skill cast time
@@ -66,4 +67,5 @@ StatusInfo::StatusInfo(int32_t status, int32_t val, int16_t mobSkill, int16_t le
 {
 }
 
+}
 }

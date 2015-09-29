@@ -16,20 +16,21 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ChatHandler.hpp"
-#include "ChannelServer.hpp"
-#include "ChatHandlerFunctions.hpp"
-#include "Map.hpp"
-#include "PacketReader.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "PlayerPacket.hpp"
-#include "PlayersPacket.hpp"
-#include "Session.hpp"
-#include "StringUtilities.hpp"
-#include "WorldServerConnectPacket.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/Session.hpp"
+#include "Common/StringUtilities.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/ChatHandlerFunctions.hpp"
+#include "ChannelServer/Map.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
+#include "ChannelServer/PlayersPacket.hpp"
+#include "ChannelServer/WorldServerConnectPacket.hpp"
 #include <algorithm>
 
 namespace Vana {
+namespace ChannelServer {
 
 auto ChatHandler::initializeCommands() -> void {
 	ChatHandlerFunctions::initialize();
@@ -91,4 +92,5 @@ auto ChatHandler::handleGroupChat(Player *player, PacketReader &reader) -> void 
 	}
 }
 
+}
 }

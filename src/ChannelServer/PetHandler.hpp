@@ -17,21 +17,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Types.hpp"
+#include "Common/Types.hpp"
 #include <string>
 
 namespace Vana {
 	class PacketReader;
-	class Player;
 
-	namespace PetHandler {
-		auto showPets(Player *player) -> void;
-		auto handleChat(Player *player, PacketReader &reader) -> void;
-		auto handleFeed(Player *player, PacketReader &reader) -> void;
-		auto handleMovement(Player *player, PacketReader &reader) -> void;
-		auto handleSummon(Player *player, PacketReader &reader) -> void;
-		auto handleCommand(Player *player, PacketReader &reader) -> void;
-		auto handleConsumePotion(Player *player, PacketReader &reader) -> void;
-		auto changeName(Player *player, const string_t &name) -> void;
+	namespace ChannelServer {
+		class Player;
+
+		namespace PetHandler {
+			auto showPets(Player *player) -> void;
+			auto handleChat(Player *player, PacketReader &reader) -> void;
+			auto handleFeed(Player *player, PacketReader &reader) -> void;
+			auto handleMovement(Player *player, PacketReader &reader) -> void;
+			auto handleSummon(Player *player, PacketReader &reader) -> void;
+			auto handleCommand(Player *player, PacketReader &reader) -> void;
+			auto handleConsumePotion(Player *player, PacketReader &reader) -> void;
+			auto changeName(Player *player, const string_t &name) -> void;
+		}
 	}
 }

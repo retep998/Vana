@@ -16,24 +16,25 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ManagementFunctions.hpp"
-#include "ChannelServer.hpp"
-#include "Database.hpp"
-#include "ExitCodes.hpp"
-#include "Inventory.hpp"
-#include "ItemConstants.hpp"
-#include "ItemDataProvider.hpp"
-#include "Maps.hpp"
-#include "MysticDoor.hpp"
-#include "NpcHandler.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "PlayerPacket.hpp"
-#include "RatesConfig.hpp"
-#include "StringUtilities.hpp"
-#include "SyncPacket.hpp"
-#include "WorldServerConnectPacket.hpp"
+#include "Common/Database.hpp"
+#include "Common/ExitCodes.hpp"
+#include "Common/ItemConstants.hpp"
+#include "Common/ItemDataProvider.hpp"
+#include "Common/RatesConfig.hpp"
+#include "Common/StringUtilities.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Inventory.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/MysticDoor.hpp"
+#include "ChannelServer/NpcHandler.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
+#include "ChannelServer/SyncPacket.hpp"
+#include "ChannelServer/WorldServerConnectPacket.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 auto ManagementFunctions::map(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
@@ -814,4 +815,5 @@ auto ManagementFunctions::rates(Player *player, const chat_t &args) -> ChatResul
 	return ChatResult::HandledDisplay;
 }
 
+}
 }

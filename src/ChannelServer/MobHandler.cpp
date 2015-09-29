@@ -16,29 +16,30 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MobHandler.hpp"
-#include "Algorithm.hpp"
-#include "ChannelServer.hpp"
-#include "GameLogicUtilities.hpp"
-#include "Instance.hpp"
-#include "Maps.hpp"
-#include "MiscUtilities.hpp"
-#include "Mob.hpp"
-#include "MobConstants.hpp"
-#include "MobsPacket.hpp"
-#include "MovementHandler.hpp"
-#include "PacketReader.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "PlayerPacket.hpp"
-#include "Point.hpp"
-#include "Randomizer.hpp"
-#include "SkillDataProvider.hpp"
-#include "StatusInfo.hpp"
-#include "TimeUtilities.hpp"
-#include "Timer.hpp"
+#include "Common/Algorithm.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/MiscUtilities.hpp"
+#include "Common/MobConstants.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/Point.hpp"
+#include "Common/Randomizer.hpp"
+#include "Common/SkillDataProvider.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "Common/Timer.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Instance.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Mob.hpp"
+#include "ChannelServer/MobsPacket.hpp"
+#include "ChannelServer/MovementHandler.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
+#include "ChannelServer/StatusInfo.hpp"
 #include <functional>
 
 namespace Vana {
+namespace ChannelServer {
 
 auto MobHandler::handleBomb(Player *player, PacketReader &reader) -> void {
 	map_object_t mobId = reader.get<map_object_t>();
@@ -173,21 +174,21 @@ auto MobHandler::handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill
 	if (mob->canFreeze()) {
 		// Freezing stuff
 		switch (skillId) {
-			case Skills::IlWizard::ColdBeam:
-			case Skills::IlMage::IceStrike:
-			case Skills::IlMage::ElementComposition:
-			case Skills::Sniper::Blizzard:
-			case Skills::IlArchMage::Blizzard:
+			case Vana::Skills::IlWizard::ColdBeam:
+			case Vana::Skills::IlMage::IceStrike:
+			case Vana::Skills::IlMage::ElementComposition:
+			case Vana::Skills::Sniper::Blizzard:
+			case Vana::Skills::IlArchMage::Blizzard:
 				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->buffTime);
 				break;
-			case Skills::Outlaw::IceSplitter:
-				if (auto elementalBoost = player->getSkills()->getSkillInfo(Skills::Corsair::ElementalBoost)) {
+			case Vana::Skills::Outlaw::IceSplitter:
+				if (auto elementalBoost = player->getSkills()->getSkillInfo(Vana::Skills::Corsair::ElementalBoost)) {
 					y = elementalBoost->y;
 				}
 				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, seconds_t{skill->buffTime.count() + y});
 				break;
-			case Skills::FpArchMage::Elquines:
-			case Skills::Marksman::Frostprey:
+			case Vana::Skills::FpArchMage::Elquines:
+			case Vana::Skills::Marksman::Frostprey:
 				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, seconds_t{skill->x});
 				break;
 		}
@@ -203,17 +204,17 @@ auto MobHandler::handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill
 	if (mob->canPoison() && mob->getHp() > 1) {
 		// Poisoning stuff
 		switch (skillId) {
-			case Skills::All::RegularAttack: // Venomous Star/Stab
-			case Skills::Rogue::LuckySeven:
-			case Skills::Hermit::Avenger:
-			case Skills::NightLord::TripleThrow:
-			case Skills::Rogue::DoubleStab:
-			case Skills::Rogue::Disorder:
-			case Skills::Bandit::SavageBlow:
-			case Skills::ChiefBandit::Assaulter:
-			case Skills::Shadower::Assassinate:
-			case Skills::Shadower::BoomerangStep:
-			case Skills::NightWalker::Disorder:
+			case Vana::Skills::All::RegularAttack: // Venomous Star/Stab
+			case Vana::Skills::Rogue::LuckySeven:
+			case Vana::Skills::Hermit::Avenger:
+			case Vana::Skills::NightLord::TripleThrow:
+			case Vana::Skills::Rogue::DoubleStab:
+			case Vana::Skills::Rogue::Disorder:
+			case Vana::Skills::Bandit::SavageBlow:
+			case Vana::Skills::ChiefBandit::Assaulter:
+			case Vana::Skills::Shadower::Assassinate:
+			case Vana::Skills::Shadower::BoomerangStep:
+			case Vana::Skills::NightWalker::Disorder:
 				if (player->getSkills()->hasVenomousWeapon() && mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount) {
 					// MAX = (18.5 * [STR + LUK] + DEX * 2) / 100 * Venom matk
 					// MIN = (8.0 * [STR + LUK] + DEX * 2) / 100 * Venom matk
@@ -238,15 +239,15 @@ auto MobHandler::handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill
 					}
 				}
 				break;
-			case Skills::FpMage::PoisonMist:
+			case Vana::Skills::FpMage::PoisonMist:
 				if (damage != 0) {
 					// The attack itself doesn't poison them
 					break;
 				}
-			case Skills::FpWizard::PoisonBreath:
-			case Skills::FpMage::ElementComposition:
-			case Skills::BlazeWizard::FlameGear:
-			case Skills::NightWalker::PoisonBomb:
+			case Vana::Skills::FpWizard::PoisonBreath:
+			case Vana::Skills::FpMage::ElementComposition:
+			case Vana::Skills::BlazeWizard::FlameGear:
+			case Vana::Skills::NightWalker::PoisonBomb:
 				if (success) {
 					statuses.emplace_back(StatusEffects::Mob::Poison, mob->getMaxHp() / (70 - level), skillId, skill->buffTime);
 				}
@@ -256,71 +257,71 @@ auto MobHandler::handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill
 	if (!mob->isBoss()) {
 		// Seal, Stun, etc
 		switch (skillId) {
-			case Skills::Corsair::Hypnotize:
+			case Vana::Skills::Corsair::Hypnotize:
 				statuses.emplace_back(StatusEffects::Mob::Hypnotize, 1, skillId, skill->buffTime);
 				break;
-			case Skills::Brawler::BackspinBlow:
-			case Skills::Brawler::DoubleUppercut:
-			case Skills::Buccaneer::Demolition:
-			case Skills::Buccaneer::Snatch:
+			case Vana::Skills::Brawler::BackspinBlow:
+			case Vana::Skills::Brawler::DoubleUppercut:
+			case Vana::Skills::Buccaneer::Demolition:
+			case Vana::Skills::Buccaneer::Snatch:
 				statuses.emplace_back(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillId, skill->buffTime);
 				break;
-			case Skills::Hunter::ArrowBomb:
-			case Skills::Crusader::SwordComa:
-			case Skills::DawnWarrior::Coma:
-			case Skills::Crusader::AxeComa:
-			case Skills::Crusader::Shout:
-			case Skills::WhiteKnight::ChargeBlow:
-			case Skills::ChiefBandit::Assaulter:
-			case Skills::Shadower::BoomerangStep:
-			case Skills::Gunslinger::BlankShot:
-			case Skills::NightLord::NinjaStorm:
+			case Vana::Skills::Hunter::ArrowBomb:
+			case Vana::Skills::Crusader::SwordComa:
+			case Vana::Skills::DawnWarrior::Coma:
+			case Vana::Skills::Crusader::AxeComa:
+			case Vana::Skills::Crusader::Shout:
+			case Vana::Skills::WhiteKnight::ChargeBlow:
+			case Vana::Skills::ChiefBandit::Assaulter:
+			case Vana::Skills::Shadower::BoomerangStep:
+			case Vana::Skills::Gunslinger::BlankShot:
+			case Vana::Skills::NightLord::NinjaStorm:
 				if (success) {
 					statuses.emplace_back(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillId, skill->buffTime);
 				}
 				break;
-			case Skills::Ranger::SilverHawk:
-			case Skills::Sniper::GoldenEagle:
+			case Vana::Skills::Ranger::SilverHawk:
+			case Vana::Skills::Sniper::GoldenEagle:
 				if (success) {
 					statuses.emplace_back(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillId, seconds_t{skill->x});
 				}
 				break;
-			case Skills::FpMage::Seal:
-			case Skills::IlMage::Seal:
-			case Skills::BlazeWizard::Seal:
+			case Vana::Skills::FpMage::Seal:
+			case Vana::Skills::IlMage::Seal:
+			case Vana::Skills::BlazeWizard::Seal:
 				if (success) {
 					statuses.emplace_back(StatusEffects::Mob::Seal, StatusEffects::Mob::Seal, skillId, skill->buffTime);
 				}
 				break;
-			case Skills::Priest::Doom:
+			case Vana::Skills::Priest::Doom:
 				if (success) {
 					statuses.emplace_back(StatusEffects::Mob::Doom, StatusEffects::Mob::Doom, skillId, skill->buffTime);
 				}
 				break;
-			case Skills::Hermit::ShadowWeb:
-			case Skills::NightWalker::ShadowWeb:
+			case Vana::Skills::Hermit::ShadowWeb:
+			case Vana::Skills::NightWalker::ShadowWeb:
 				if (success) {
 					statuses.emplace_back(StatusEffects::Mob::ShadowWeb, level, skillId, skill->buffTime);
 				}
 				break;
-			case Skills::FpArchMage::Paralyze:
+			case Vana::Skills::FpArchMage::Paralyze:
 				if (mob->canPoison()) {
 					statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->buffTime);
 				}
 				break;
-			case Skills::IlArchMage::IceDemon:
-			case Skills::FpArchMage::FireDemon:
+			case Vana::Skills::IlArchMage::IceDemon:
+			case Vana::Skills::FpArchMage::FireDemon:
 				statuses.emplace_back(StatusEffects::Mob::Poison, mob->getMaxHp() / (70 - level), skillId, skill->buffTime);
 				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, seconds_t{skill->x});
 				break;
-			case Skills::Shadower::Taunt:
-			case Skills::NightLord::Taunt:
+			case Vana::Skills::Shadower::Taunt:
+			case Vana::Skills::NightLord::Taunt:
 				// I know, these status effect types make no sense, that's just how it works
 				statuses.emplace_back(StatusEffects::Mob::MagicAttackUp, 100 - skill->x, skillId, skill->buffTime);
 				statuses.emplace_back(StatusEffects::Mob::MagicDefenseUp, 100 - skill->x, skillId, skill->buffTime);
 				break;
-			case Skills::Outlaw::Flamethrower:
-				if (auto elementalBoost = player->getSkills()->getSkillInfo(Skills::Corsair::ElementalBoost)) {
+			case Vana::Skills::Outlaw::Flamethrower:
+				if (auto elementalBoost = player->getSkills()->getSkillInfo(Vana::Skills::Corsair::ElementalBoost)) {
 					y = elementalBoost->x;
 				}
 				statuses.emplace_back(StatusEffects::Mob::Poison, damage * (5 + y) / 100, skillId, skill->buffTime);
@@ -328,20 +329,20 @@ auto MobHandler::handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill
 		}
 	}
 	switch (skillId) {
-		case Skills::Shadower::NinjaAmbush:
-		case Skills::NightLord::NinjaAmbush:
+		case Vana::Skills::Shadower::NinjaAmbush:
+		case Vana::Skills::NightLord::NinjaAmbush:
 			damage = 2 * (player->getStats()->getStr(true) + player->getStats()->getLuk(true)) * skill->damage / 100;
 			statuses.emplace_back(StatusEffects::Mob::NinjaAmbush, damage, skillId, skill->buffTime);
 			break;
-		case Skills::Rogue::Disorder:
-		case Skills::NightWalker::Disorder:
-		case Skills::Page::Threaten:
+		case Vana::Skills::Rogue::Disorder:
+		case Vana::Skills::NightWalker::Disorder:
+		case Vana::Skills::Page::Threaten:
 			statuses.emplace_back(StatusEffects::Mob::Watk, skill->x, skillId, skill->buffTime);
 			statuses.emplace_back(StatusEffects::Mob::Wdef, skill->y, skillId, skill->buffTime);
 			break;
-		case Skills::FpWizard::Slow:
-		case Skills::IlWizard::Slow:
-		case Skills::BlazeWizard::Slow:
+		case Vana::Skills::FpWizard::Slow:
+		case Vana::Skills::IlWizard::Slow:
+		case Vana::Skills::BlazeWizard::Slow:
 			statuses.emplace_back(StatusEffects::Mob::Speed, skill->x, skillId, skill->buffTime);
 			break;
 	}
@@ -350,8 +351,8 @@ auto MobHandler::handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill
 		if (hamstring.is_initialized()) {
 			auto info = player->getActiveBuffs()->getBuffSkillInfo(hamstring.get());
 			// Only triggers if player has the buff
-			if (skillId != Skills::Bowmaster::Phoenix && skillId != Skills::Ranger::SilverHawk) {
-				statuses.emplace_back(StatusEffects::Mob::Speed, info->x, Skills::Bowmaster::Hamstring, seconds_t{info->y});
+			if (skillId != Vana::Skills::Bowmaster::Phoenix && skillId != Vana::Skills::Ranger::SilverHawk) {
+				statuses.emplace_back(StatusEffects::Mob::Speed, info->x, Vana::Skills::Bowmaster::Hamstring, seconds_t{info->y});
 			}
 		}
 	}
@@ -360,8 +361,8 @@ auto MobHandler::handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill
 		if (blind.is_initialized()) {
 			auto info = player->getActiveBuffs()->getBuffSkillInfo(blind.get());
 			// Only triggers if player has the buff
-			if (skillId != Skills::Marksman::Frostprey && skillId != Skills::Sniper::GoldenEagle) {
-				statuses.emplace_back(StatusEffects::Mob::Acc, -(info->x), Skills::Marksman::Blind, seconds_t{info->y});
+			if (skillId != Vana::Skills::Marksman::Frostprey && skillId != Vana::Skills::Sniper::GoldenEagle) {
+				statuses.emplace_back(StatusEffects::Mob::Acc, -(info->x), Vana::Skills::Marksman::Blind, seconds_t{info->y});
 			}
 		}
 	}
@@ -372,4 +373,5 @@ auto MobHandler::handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill
 	return statuses.size();
 }
 
+}
 }

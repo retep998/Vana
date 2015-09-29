@@ -17,19 +17,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "ChatHandlerFunctions.hpp"
+#include "ChannelServer/ChatHandlerFunctions.hpp"
 
 namespace Vana {
-	class Player;
+	namespace ChannelServer {
+		class Player;
 
-	namespace InfoFunctions {
-		auto help(Player *player, const chat_t &args) -> ChatResult;
-		auto lookup(Player *player, const chat_t &args) -> ChatResult;
-		auto pos(Player *player, const chat_t &args) -> ChatResult;
-		auto online(Player *player, const chat_t &args) -> ChatResult;
-		auto variable(Player *player, const chat_t &args) -> ChatResult;
-		auto questData(Player *player, const chat_t &args) -> ChatResult;
-		auto questKills(Player *player, const chat_t &args) -> ChatResult;
-		auto gmLevel(Player *player, const chat_t &args) -> ChatResult;
+		namespace InfoFunctions {
+			auto help(Player *player, const chat_t &args) -> ChatResult;
+			auto lookup(Player *player, const chat_t &args) -> ChatResult;
+			auto pos(Player *player, const chat_t &args) -> ChatResult;
+			auto online(Player *player, const chat_t &args) -> ChatResult;
+			auto variable(Player *player, const chat_t &args) -> ChatResult;
+			auto questData(Player *player, const chat_t &args) -> ChatResult;
+			auto questKills(Player *player, const chat_t &args) -> ChatResult;
+			auto gmLevel(Player *player, const chat_t &args) -> ChatResult;
+		}
 	}
 }

@@ -16,15 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MobsPacket.hpp"
-#include "Maps.hpp"
-#include "Mob.hpp"
-#include "Player.hpp"
-#include "Session.hpp"
-#include "SmsgHeader.hpp"
-#include "StatusInfo.hpp"
-#include "WidePoint.hpp"
+#include "Common/Session.hpp"
+#include "Common/WidePoint.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Mob.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
+#include "ChannelServer/StatusInfo.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace Mobs {
 
@@ -258,6 +259,7 @@ PACKET_IMPL(showSpawnEffect, int8_t summonEffect, const Point &pos) {
 	return builder;
 }
 
+}
 }
 }
 }

@@ -16,22 +16,23 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "NpcHandler.hpp"
-#include "ChannelServer.hpp"
-#include "GameLogicUtilities.hpp"
-#include "Inventory.hpp"
-#include "InventoryPacket.hpp"
-#include "ItemDataProvider.hpp"
-#include "Map.hpp"
-#include "Maps.hpp"
-#include "Npc.hpp"
-#include "NpcDataProvider.hpp"
-#include "NpcPacket.hpp"
-#include "PacketReader.hpp"
-#include "Player.hpp"
-#include "ShopDataProvider.hpp"
-#include "StoragePacket.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/ItemDataProvider.hpp"
+#include "Common/NpcDataProvider.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/ShopDataProvider.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Inventory.hpp"
+#include "ChannelServer/InventoryPacket.hpp"
+#include "ChannelServer/Map.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Npc.hpp"
+#include "ChannelServer/NpcPacket.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/StoragePacket.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 namespace ShopOpcodes {
 	enum Opcodes : int8_t {
@@ -383,4 +384,5 @@ auto NpcHandler::showGuildRank(Player *player, npc_id_t npcId) -> Result {
 	return Result::Failure;
 }
 
+}
 }

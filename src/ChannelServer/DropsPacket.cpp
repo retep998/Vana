@@ -16,15 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "DropsPacket.hpp"
-#include "Drop.hpp"
-#include "GameLogicUtilities.hpp"
-#include "ItemConstants.hpp"
-#include "Maps.hpp"
-#include "Player.hpp"
-#include "Session.hpp"
-#include "SmsgHeader.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/ItemConstants.hpp"
+#include "Common/Session.hpp"
+#include "ChannelServer/Drop.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace Drops {
 
@@ -142,6 +143,7 @@ PACKET_IMPL(pickupDropSpecial, map_object_t id) {
 	return builder;
 }
 
+}
 }
 }
 }

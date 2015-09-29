@@ -16,17 +16,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Npc.hpp"
-#include "ChannelServer.hpp"
-#include "FileUtilities.hpp"
-#include "LuaNpc.hpp"
-#include "NpcPacket.hpp"
-#include "Player.hpp"
-#include "ScriptDataProvider.hpp"
-#include "Session.hpp"
-#include "SmsgHeader.hpp"
+#include "Common/FileUtilities.hpp"
+#include "Common/ScriptDataProvider.hpp"
+#include "Common/Session.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/LuaNpc.hpp"
+#include "ChannelServer/NpcPacket.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
 #include <string>
 
 namespace Vana {
+namespace ChannelServer {
 
 Npc::Npc(npc_id_t npcId, Player *player, quest_id_t questId, bool isStart) :
 	m_player{player},
@@ -230,4 +231,5 @@ auto Npc::proceedText(const string_t &text) -> void {
 	m_luaNpc->proceedText(text);
 }
 
+}
 }

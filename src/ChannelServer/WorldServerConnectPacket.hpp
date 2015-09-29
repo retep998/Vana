@@ -17,20 +17,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "PacketBuilder.hpp"
-#include "Types.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/Types.hpp"
 #include <string>
 #include <vector>
 
 namespace Vana {
 	class PacketBuilder;
-	class Player;
 
-	namespace Packets {
-		namespace Interserver {
-			PACKET(rankingCalculation);
-			PACKET(reloadMcdb, const string_t &type);
-			PACKET(rehashConfig);
+	namespace ChannelServer {
+		class Player;
+
+		namespace Packets {
+			namespace Interserver {
+				PACKET(rankingCalculation);
+				PACKET(reloadMcdb, const string_t &type);
+				PACKET(rehashConfig);
+			}
 		}
 	}
 }

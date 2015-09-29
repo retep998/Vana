@@ -16,11 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "BuddyListPacket.hpp"
-#include "Player.hpp"
-#include "PlayerBuddyList.hpp"
-#include "SmsgHeader.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerBuddyList.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace Buddy {
 
@@ -89,6 +90,7 @@ PACKET_IMPL(online, player_id_t charId, channel_id_t channel, bool cashShop) {
 	return builder;
 }
 
+}
 }
 }
 }

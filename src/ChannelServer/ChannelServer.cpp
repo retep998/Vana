@@ -16,22 +16,23 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ChannelServer.hpp"
-#include "ChatHandler.hpp"
-#include "ConfigFile.hpp"
-#include "ConnectionManager.hpp"
-#include "InitializeCommon.hpp"
-#include "Map.hpp"
-#include "MiscUtilities.hpp"
-#include "PacketBuilder.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "ServerPacket.hpp"
-#include "ServerType.hpp"
-#include "SyncPacket.hpp"
-#include "WorldServerConnection.hpp"
-#include "WorldServerConnectPacket.hpp"
+#include "Common/ConfigFile.hpp"
+#include "Common/ConnectionManager.hpp"
+#include "Common/InitializeCommon.hpp"
+#include "Common/MiscUtilities.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/ServerType.hpp"
+#include "ChannelServer/ChatHandler.hpp"
+#include "ChannelServer/Map.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/ServerPacket.hpp"
+#include "ChannelServer/SyncPacket.hpp"
+#include "ChannelServer/WorldServerConnection.hpp"
+#include "ChannelServer/WorldServerConnectPacket.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 ChannelServer::ChannelServer() :
 	AbstractServer{ServerType::Channel},
@@ -291,4 +292,5 @@ auto ChannelServer::setConfig(const WorldConfig &config) -> void {
 	m_config = config;
 }
 
+}
 }

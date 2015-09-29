@@ -16,15 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SyncPacket.hpp"
-#include "ChannelServer.hpp"
-#include "InterHeader.hpp"
-#include "InterHelper.hpp"
-#include "Party.hpp"
-#include "Player.hpp"
-#include "RatesConfig.hpp"
-#include "Session.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/InterHelper.hpp"
+#include "Common/RatesConfig.hpp"
+#include "Common/Session.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Party.hpp"
+#include "ChannelServer/Player.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace Interserver {
 
@@ -96,7 +97,7 @@ PACKET_IMPL(Player::updatePlayer, const PlayerData &player, update_bits_t flags)
 	return builder;
 }
 
-PACKET_IMPL(Player::changeChannel, Vana::Player *info, channel_id_t channel) {
+PACKET_IMPL(Player::changeChannel, Vana::ChannelServer::Player *info, channel_id_t channel) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
@@ -210,6 +211,7 @@ PACKET_IMPL(Buddy::readdBuddy, player_id_t listOwnerId, player_id_t buddyId) {
 	return builder;
 }
 
+}
 }
 }
 }

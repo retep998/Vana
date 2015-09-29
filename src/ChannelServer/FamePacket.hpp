@@ -17,26 +17,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "PacketBuilder.hpp"
-#include "Types.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
-	class Player;
+	namespace ChannelServer {
+		class Player;
 
-	namespace Packets {
-		namespace Fame {
-			namespace Errors {
-				enum Errors : int8_t {
-					IncorrectUser = 0x01,
-					LevelUnder15 = 0x02,
-					AlreadyFamedToday = 0x03,
-					FamedThisMonth = 0x04
-				};
+		namespace Packets {
+			namespace Fame {
+				namespace Errors {
+					enum Errors : int8_t {
+						IncorrectUser = 0x01,
+						LevelUnder15 = 0x02,
+						AlreadyFamedToday = 0x03,
+						FamedThisMonth = 0x04
+					};
+				}
+
+				PACKET(sendFame, const string_t &name, uint8_t type, int32_t newFame);
+				PACKET(receiveFame, const string_t &name, uint8_t type);
+				PACKET(sendError, int32_t reason);
 			}
-
-			PACKET(sendFame, const string_t &name, uint8_t type, int32_t newFame);
-			PACKET(receiveFame, const string_t &name, uint8_t type);
-			PACKET(sendError, int32_t reason);
 		}
 	}
 }

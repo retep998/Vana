@@ -19,11 +19,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Vana {
 	class PacketReader;
-	class WorldServerConnection;
 
-	namespace WorldServerConnectHandler {
-		auto connectLogin(WorldServerConnection *player, PacketReader &reader) -> void;
-		auto connect(WorldServerConnection *player, PacketReader &reader) -> void;
-		auto reloadMcdb(PacketReader &reader) -> void;
+	namespace ChannelServer {
+		class WorldServerConnection;
+
+		namespace WorldServerConnectHandler {
+			auto connectLogin(WorldServerConnection *player, PacketReader &reader) -> void;
+			auto connect(WorldServerConnection *player, PacketReader &reader) -> void;
+			auto reloadMcdb(PacketReader &reader) -> void;
+		}
 	}
 }

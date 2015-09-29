@@ -16,15 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "QuestsPacket.hpp"
-#include "Maps.hpp"
-#include "Player.hpp"
-#include "Quests.hpp"
-#include "Session.hpp"
-#include "SmsgHeader.hpp"
+#include "Common/Session.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/Quests.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
 #include <string>
 #include <vector>
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace Quests {
 
@@ -163,6 +164,7 @@ PACKET_IMPL(giveFame, fame_t amount) {
 	return builder;
 }
 
+}
 }
 }
 }

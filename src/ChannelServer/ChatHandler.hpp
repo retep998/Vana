@@ -17,16 +17,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Types.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
 	class PacketReader;
-	class Player;
 
-	namespace ChatHandler {
-		auto initializeCommands() -> void;
-		auto handleChat(Player *player, PacketReader &reader) -> void;
-		auto handleCommand(Player *player, const chat_t &message) -> HandleResult;
-		auto handleGroupChat(Player *player, PacketReader &reader) -> void;
+	namespace ChannelServer {
+		class Player;
+
+		namespace ChatHandler {
+			auto initializeCommands() -> void;
+			auto handleChat(Player *player, PacketReader &reader) -> void;
+			auto handleCommand(Player *player, const chat_t &message) -> HandleResult;
+			auto handleGroupChat(Player *player, PacketReader &reader) -> void;
+		}
 	}
 }

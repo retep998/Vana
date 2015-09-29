@@ -17,17 +17,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "ItemConstants.hpp"
-#include "Types.hpp"
+#include "Common/ItemConstants.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
 	class PacketReader;
-	class Player;
 
-	namespace Quests {
-		auto getQuest(Player *player, PacketReader &reader) -> void;
-		auto giveFame(Player *player, fame_t amount) -> Result;
-		auto giveItem(Player *player, item_id_t itemId, slot_qty_t amount, Items::StatVariance variancePolicy = Items::StatVariance::None) -> Result;
-		auto giveMesos(Player *player, mesos_t amount) -> Result;
+	namespace ChannelServer {
+		class Player;
+
+		namespace Quests {
+			auto getQuest(Player *player, PacketReader &reader) -> void;
+			auto giveFame(Player *player, fame_t amount) -> Result;
+			auto giveItem(Player *player, item_id_t itemId, slot_qty_t amount, Items::StatVariance variancePolicy = Items::StatVariance::None) -> Result;
+			auto giveMesos(Player *player, mesos_t amount) -> Result;
+		}
 	}
 }

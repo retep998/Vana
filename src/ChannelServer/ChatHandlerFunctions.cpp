@@ -16,29 +16,30 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ChatHandlerFunctions.hpp"
-#include "CustomFunctions.hpp"
-#include "InfoFunctions.hpp"
-#include "JobConstants.hpp"
-#include "MapFunctions.hpp"
-#include "Maps.hpp"
-#include "ManagementFunctions.hpp"
-#include "MessageFunctions.hpp"
-#include "Player.hpp"
-#include "PlayerModFunctions.hpp"
-#include "PlayerPacket.hpp"
+#include "Common/JobConstants.hpp"
+#include "ChannelServer/CustomFunctions.hpp"
+#include "ChannelServer/InfoFunctions.hpp"
+#include "ChannelServer/MapFunctions.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/ManagementFunctions.hpp"
+#include "ChannelServer/MessageFunctions.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerModFunctions.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 case_insensitive_hash_map_t<ChatCommand, chat_t> ChatHandlerFunctions::sCommandList;
 
 const case_insensitive_hash_map_t<MapPair, chat_t> ChatHandlerFunctions::sMapAssociations = {
 	// These first maps are here purely for documentation purposes - they are computed by other means
-	{"town", {Maps::NoMap, "Special"}},
-	{"return", {Maps::NoMap, "Special"}},
-	{"here", {Maps::NoMap, "Special"}},
-	{"back", {Maps::NoMap, "Special"}},
+	{"town", {Vana::Maps::NoMap, "Special"}},
+	{"return", {Vana::Maps::NoMap, "Special"}},
+	{"here", {Vana::Maps::NoMap, "Special"}},
+	{"back", {Vana::Maps::NoMap, "Special"}},
 	// Actual maps
-	{"gm", {Maps::GmMap, "Special"}},
+	{"gm", {Vana::Maps::GmMap, "Special"}},
 	{"fm", {910000000, "Special"}},
 	{"happyville", {209000000, "Special"}},
 	// Job-Related
@@ -668,7 +669,7 @@ auto ChatHandlerFunctions::getMap(const chat_t &query, Player *player) -> int32_
 	else if (lowercaseQuery == "town") mapId = player->getMap()->getReturnMap();
 	else if (lowercaseQuery == "return") {
 		mapId = player->getMap()->getForcedReturn();
-		if (mapId == Maps::NoMap) mapId = player->getMap()->getReturnMap();
+		if (mapId == Vana::Maps::NoMap) mapId = player->getMap()->getReturnMap();
 	}
 	else {
 		auto kvp = sMapAssociations.find(lowercaseQuery);
@@ -841,4 +842,5 @@ auto ChatHandlerFunctions::showInfo(Player *player, const char *message) -> void
 	showInfo(player, chat_t{message});
 }
 
+}
 }

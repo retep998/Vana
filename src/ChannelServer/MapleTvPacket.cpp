@@ -16,13 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapleTvPacket.hpp"
-#include "MapleTvs.hpp"
-#include "Maps.hpp"
-#include "Player.hpp"
-#include "Session.hpp"
-#include "SmsgHeader.hpp"
+#include "Common/Session.hpp"
+#include "ChannelServer/MapleTvs.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace MapleTv {
 
@@ -53,6 +54,7 @@ PACKET_IMPL(endDisplay) {
 	return builder;
 }
 
+}
 }
 }
 }

@@ -16,14 +16,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MessageFunctions.hpp"
-#include "ChannelServer.hpp"
-#include "InterHeader.hpp"
-#include "PacketWrapper.hpp"
-#include "Player.hpp"
-#include "PlayerPacket.hpp"
-#include "PlayerDataProvider.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/PacketWrapper.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 auto MessageFunctions::worldMessage(Player *player, const chat_t &args) -> ChatResult {
 	match_t matches;
@@ -33,7 +34,7 @@ auto MessageFunctions::worldMessage(Player *player, const chat_t &args) -> ChatR
 		if (type != -1) {
 			string_t message = matches[2];
 			ChannelServer::getInstance().sendWorld(
-				Packets::prepend(Packets::Player::showMessage(message, type), [](PacketBuilder &builder) {
+				Vana::Packets::prepend(Packets::Player::showMessage(message, type), [](PacketBuilder &builder) {
 					builder.add<header_t>(IMSG_TO_ALL_CHANNELS);
 					builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
 				}));
@@ -54,7 +55,7 @@ auto MessageFunctions::globalMessage(Player *player, const chat_t &args) -> Chat
 		if (type != -1) {
 			string_t message = matches[2];
 			ChannelServer::getInstance().sendWorld(
-				Packets::prepend(Packets::Player::showMessage(message, type), [](PacketBuilder &builder) {
+				Vana::Packets::prepend(Packets::Player::showMessage(message, type), [](PacketBuilder &builder) {
 					builder.add<header_t>(IMSG_TO_LOGIN);
 					builder.add<header_t>(IMSG_TO_ALL_WORLDS);
 					builder.add<header_t>(IMSG_TO_ALL_CHANNELS);
@@ -93,4 +94,5 @@ auto MessageFunctions::gmChatMode(Player *player, const chat_t &args) -> ChatRes
 	return ChatResult::HandledDisplay;
 }
 
+}
 }

@@ -17,20 +17,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Instance.hpp"
-#include "LuaScriptable.hpp"
-#include "Types.hpp"
+#include "Common/Types.hpp"
+#include "ChannelServer/Instance.hpp"
+#include "ChannelServer/LuaScriptable.hpp"
 #include <string>
 
 namespace Vana {
-	class LuaInstance : public LuaScriptable {
-		NONCOPYABLE(LuaInstance);
-		NO_DEFAULT_CONSTRUCTOR(LuaInstance);
-	public:
-		LuaInstance(const string_t &name, player_id_t playerId);
-	};
+	namespace ChannelServer {
+		class LuaInstance : public LuaScriptable {
+			NONCOPYABLE(LuaInstance);
+			NO_DEFAULT_CONSTRUCTOR(LuaInstance);
+		public:
+			LuaInstance(const string_t &name, player_id_t playerId);
+		};
 
-	namespace LuaExports {
-		auto createInstanceInstance(lua_State *luaVm) -> lua_return_t;
+		namespace LuaExports {
+			auto createInstanceInstance(lua_State *luaVm) -> lua_return_t;
+		}
 	}
 }

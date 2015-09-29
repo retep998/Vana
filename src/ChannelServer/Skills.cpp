@@ -16,31 +16,32 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Skills.hpp"
-#include "Buffs.hpp"
-#include "ChannelServer.hpp"
-#include "GameLogicUtilities.hpp"
-#include "GmPacket.hpp"
-#include "Inventory.hpp"
-#include "MapPacket.hpp"
-#include "Maps.hpp"
-#include "Mist.hpp"
-#include "MobHandler.hpp"
-#include "MysticDoor.hpp"
-#include "PacketReader.hpp"
-#include "PacketWrapper.hpp"
-#include "Party.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "Randomizer.hpp"
-#include "SkillConstants.hpp"
-#include "SkillDataProvider.hpp"
-#include "SkillsPacket.hpp"
-#include "SummonHandler.hpp"
-#include "TimeUtilities.hpp"
-#include "Timer.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/PacketWrapper.hpp"
+#include "Common/Randomizer.hpp"
+#include "Common/SkillConstants.hpp"
+#include "Common/SkillDataProvider.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "Common/Timer.hpp"
+#include "ChannelServer/Buffs.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/GmPacket.hpp"
+#include "ChannelServer/Inventory.hpp"
+#include "ChannelServer/MapPacket.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Mist.hpp"
+#include "ChannelServer/MobHandler.hpp"
+#include "ChannelServer/MysticDoor.hpp"
+#include "ChannelServer/Party.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/SkillsPacket.hpp"
+#include "ChannelServer/SummonHandler.hpp"
 #include <functional>
 
 namespace Vana {
+namespace ChannelServer {
 
 auto Skills::addSkill(Player *player, PacketReader &reader) -> void {
 	reader.skip<tick_count_t>();
@@ -67,13 +68,13 @@ auto Skills::cancelSkill(Player *player, PacketReader &reader) -> void {
 	// Handle "standing" skills here, otherwise dispatch to buffs
 
 	switch (identifier) {
-		case Skills::Bowmaster::Hurricane:
-		case Skills::WindArcher::Hurricane:
-		case Skills::Marksman::PiercingArrow:
-		case Skills::FpArchMage::BigBang:
-		case Skills::IlArchMage::BigBang:
-		case Skills::Bishop::BigBang:
-		case Skills::Corsair::RapidFire:
+		case Vana::Skills::Bowmaster::Hurricane:
+		case Vana::Skills::WindArcher::Hurricane:
+		case Vana::Skills::Marksman::PiercingArrow:
+		case Vana::Skills::FpArchMage::BigBang:
+		case Vana::Skills::IlArchMage::BigBang:
+		case Vana::Skills::Bishop::BigBang:
+		case Vana::Skills::Corsair::RapidFire:
 			player->sendMap(Packets::Skills::endChargeOrStationarySkill(player->getId(), player->getChargeOrStationarySkill()));
 			player->setChargeOrStationarySkill(ChargeOrStationarySkillData{});
 			return;
@@ -101,7 +102,7 @@ auto Skills::stopSkill(Player *player, const BuffSource &source, bool fromTimer)
 
 	Buffs::endBuff(player, source, fromTimer);
 
-	if (source.getSkillId() == Skills::SuperGm::Hide) {
+	if (source.getSkillId() == Vana::Skills::SuperGm::Hide) {
 		player->send(Packets::Gm::endHide());
 		player->getMap()->gmHideChange(player);
 	}
@@ -148,7 +149,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 	}
 
 	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
-	if (skillId == Skills::Priest::MysticDoor) {
+	if (skillId == Vana::Skills::Priest::MysticDoor) {
 		Point origin = reader.get<Point>();
 		MysticDoorResult result = player->getSkills()->openMysticDoor(origin, skill->buffTime);
 		if (result == MysticDoorResult::Hacking) {
@@ -167,17 +168,17 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 	}
 
 	switch (skillId) {
-		case Skills::Priest::MysticDoor:
+		case Vana::Skills::Priest::MysticDoor:
 			// Prevent the default case from executing, there's no packet data left for it
 			break;
-		case Skills::Brawler::MpRecovery: {
+		case Vana::Skills::Brawler::MpRecovery: {
 			health_t modHp = player->getStats()->getMaxHp() * skill->x / 100;
 			health_t healMp = modHp * skill->y / 100;
 			player->getStats()->modifyHp(-modHp);
 			player->getStats()->modifyMp(healMp);
 			break;
 		}
-		case Skills::Shadower::Smokescreen: {
+		case Vana::Skills::Shadower::Smokescreen: {
 			Point origin = reader.get<Point>();
 			Mist *m = new Mist{
 				player->getMapId(),
@@ -188,15 +189,15 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 				level};
 			break;
 		}
-		case Skills::Corsair::Battleship:
+		case Vana::Skills::Corsair::Battleship:
 			// TODO FIXME hacking? Remove?
 			if (player->getActiveBuffs()->getBattleshipHp() == 0) {
 				player->getActiveBuffs()->resetBattleshipHp();
 			}
 			break;
-		case Skills::Crusader::ArmorCrash:
-		case Skills::WhiteKnight::MagicCrash:
-		case Skills::DragonKnight::PowerCrash: {
+		case Vana::Skills::Crusader::ArmorCrash:
+		case Vana::Skills::WhiteKnight::MagicCrash:
+		case Vana::Skills::DragonKnight::PowerCrash: {
 			// Might be CRC
 			reader.unk<uint32_t>();
 			uint8_t mobs = reader.get<uint8_t>();
@@ -210,9 +211,9 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 			}
 			break;
 		}
-		case Skills::Hero::MonsterMagnet:
-		case Skills::Paladin::MonsterMagnet:
-		case Skills::DarkKnight::MonsterMagnet: {
+		case Vana::Skills::Hero::MonsterMagnet:
+		case Vana::Skills::Paladin::MonsterMagnet:
+		case Vana::Skills::DarkKnight::MonsterMagnet: {
 			int32_t mobs = reader.get<int32_t>();
 			for (int32_t k = 0; k < mobs; k++) {
 				map_object_t mapMobId = reader.get<map_object_t>();
@@ -222,21 +223,21 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 			direction = reader.get<uint8_t>();
 			break;
 		}
-		case Skills::FpWizard::Slow:
-		case Skills::IlWizard::Slow:
-		case Skills::BlazeWizard::Slow:
-		case Skills::Page::Threaten:
+		case Vana::Skills::FpWizard::Slow:
+		case Vana::Skills::IlWizard::Slow:
+		case Vana::Skills::BlazeWizard::Slow:
+		case Vana::Skills::Page::Threaten:
 			// Might be CRC
 			reader.unk<uint32_t>();
 			// Intentional fallthrough
-		case Skills::FpMage::Seal:
-		case Skills::IlMage::Seal:
-		case Skills::BlazeWizard::Seal:
-		case Skills::Priest::Doom:
-		case Skills::Hermit::ShadowWeb:
-		case Skills::NightWalker::ShadowWeb:
-		case Skills::Shadower::NinjaAmbush:
-		case Skills::NightLord::NinjaAmbush: {
+		case Vana::Skills::FpMage::Seal:
+		case Vana::Skills::IlMage::Seal:
+		case Vana::Skills::BlazeWizard::Seal:
+		case Vana::Skills::Priest::Doom:
+		case Vana::Skills::Hermit::ShadowWeb:
+		case Vana::Skills::NightWalker::ShadowWeb:
+		case Vana::Skills::Shadower::NinjaAmbush:
+		case Vana::Skills::NightLord::NinjaAmbush: {
 			uint8_t mobs = reader.get<uint8_t>();
 			for (uint8_t k = 0; k < mobs; k++) {
 				if (auto mob = player->getMap()->getMob(reader.get<int32_t>())) {
@@ -245,21 +246,21 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 			}
 			break;
 		}
-		case Skills::Bishop::HerosWill:
-		case Skills::IlArchMage::HerosWill:
-		case Skills::FpArchMage::HerosWill:
-		case Skills::DarkKnight::HerosWill:
-		case Skills::Hero::HerosWill:
-		case Skills::Paladin::HerosWill:
-		case Skills::NightLord::HerosWill:
-		case Skills::Shadower::HerosWill:
-		case Skills::Bowmaster::HerosWill:
-		case Skills::Marksman::HerosWill:
-		case Skills::Buccaneer::HerosWill:
-		case Skills::Corsair::HerosWill:
+		case Vana::Skills::Bishop::HerosWill:
+		case Vana::Skills::IlArchMage::HerosWill:
+		case Vana::Skills::FpArchMage::HerosWill:
+		case Vana::Skills::DarkKnight::HerosWill:
+		case Vana::Skills::Hero::HerosWill:
+		case Vana::Skills::Paladin::HerosWill:
+		case Vana::Skills::NightLord::HerosWill:
+		case Vana::Skills::Shadower::HerosWill:
+		case Vana::Skills::Bowmaster::HerosWill:
+		case Vana::Skills::Marksman::HerosWill:
+		case Vana::Skills::Buccaneer::HerosWill:
+		case Vana::Skills::Corsair::HerosWill:
 			player->getActiveBuffs()->removeDebuff(MobSkills::Seduce);
 			break;
-		case Skills::Priest::Dispel: {
+		case Vana::Skills::Priest::Dispel: {
 			int8_t affected = reader.get<int8_t>();
 			player->getActiveBuffs()->usePlayerDispel();
 			if (Party *party = player->getParty()) {
@@ -288,7 +289,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 			}
 			break;
 		}
-		case Skills::Cleric::Heal: {
+		case Vana::Skills::Cleric::Heal: {
 			uint16_t healRate = skill->hpProp;
 			if (healRate > 100) {
 				healRate = 100;
@@ -318,39 +319,39 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 			}
 			break;
 		}
-		case Skills::Fighter::Rage:
-		case Skills::DawnWarrior::Rage:
-		case Skills::Spearman::IronWill:
-		case Skills::Spearman::HyperBody:
-		case Skills::FpWizard::Meditation:
-		case Skills::IlWizard::Meditation:
-		case Skills::BlazeWizard::Meditation:
-		case Skills::Cleric::Bless:
-		case Skills::Priest::HolySymbol:
-		case Skills::Bishop::Resurrection:
-		case Skills::Bishop::HolyShield:
-		case Skills::Bowmaster::SharpEyes:
-		case Skills::Marksman::SharpEyes:
-		case Skills::Assassin::Haste:
-		case Skills::NightWalker::Haste:
-		case Skills::Hermit::MesoUp:
-		case Skills::Bandit::Haste:
-		case Skills::Buccaneer::SpeedInfusion:
-		case Skills::ThunderBreaker::SpeedInfusion:
-		case Skills::Buccaneer::TimeLeap:
-		case Skills::Hero::MapleWarrior:
-		case Skills::Paladin::MapleWarrior:
-		case Skills::DarkKnight::MapleWarrior:
-		case Skills::FpArchMage::MapleWarrior:
-		case Skills::IlArchMage::MapleWarrior:
-		case Skills::Bishop::MapleWarrior:
-		case Skills::Bowmaster::MapleWarrior:
-		case Skills::Marksman::MapleWarrior:
-		case Skills::NightLord::MapleWarrior:
-		case Skills::Shadower::MapleWarrior:
-		case Skills::Buccaneer::MapleWarrior:
-		case Skills::Corsair::MapleWarrior: {
-			if (skillId == Skills::Buccaneer::TimeLeap) {
+		case Vana::Skills::Fighter::Rage:
+		case Vana::Skills::DawnWarrior::Rage:
+		case Vana::Skills::Spearman::IronWill:
+		case Vana::Skills::Spearman::HyperBody:
+		case Vana::Skills::FpWizard::Meditation:
+		case Vana::Skills::IlWizard::Meditation:
+		case Vana::Skills::BlazeWizard::Meditation:
+		case Vana::Skills::Cleric::Bless:
+		case Vana::Skills::Priest::HolySymbol:
+		case Vana::Skills::Bishop::Resurrection:
+		case Vana::Skills::Bishop::HolyShield:
+		case Vana::Skills::Bowmaster::SharpEyes:
+		case Vana::Skills::Marksman::SharpEyes:
+		case Vana::Skills::Assassin::Haste:
+		case Vana::Skills::NightWalker::Haste:
+		case Vana::Skills::Hermit::MesoUp:
+		case Vana::Skills::Bandit::Haste:
+		case Vana::Skills::Buccaneer::SpeedInfusion:
+		case Vana::Skills::ThunderBreaker::SpeedInfusion:
+		case Vana::Skills::Buccaneer::TimeLeap:
+		case Vana::Skills::Hero::MapleWarrior:
+		case Vana::Skills::Paladin::MapleWarrior:
+		case Vana::Skills::DarkKnight::MapleWarrior:
+		case Vana::Skills::FpArchMage::MapleWarrior:
+		case Vana::Skills::IlArchMage::MapleWarrior:
+		case Vana::Skills::Bishop::MapleWarrior:
+		case Vana::Skills::Bowmaster::MapleWarrior:
+		case Vana::Skills::Marksman::MapleWarrior:
+		case Vana::Skills::NightLord::MapleWarrior:
+		case Vana::Skills::Shadower::MapleWarrior:
+		case Vana::Skills::Buccaneer::MapleWarrior:
+		case Vana::Skills::Corsair::MapleWarrior: {
+			if (skillId == Vana::Skills::Buccaneer::TimeLeap) {
 				player->getSkills()->removeAllCooldowns();
 			}
 			if (Party *party = player->getParty()) {
@@ -361,7 +362,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 						partyMember->send(Packets::Skills::showSkill(partyMember->getId(), skillId, level, direction, true, true));
 						partyMember->sendMap(Packets::Skills::showSkill(partyMember->getId(), skillId, level, direction, true));
 						Buffs::addBuff(partyMember, skillId, level, 0);
-						if (skillId == Skills::Buccaneer::TimeLeap) {
+						if (skillId == Vana::Skills::Buccaneer::TimeLeap) {
 							partyMember->getSkills()->removeAllCooldowns();
 						}
 					}
@@ -370,19 +371,19 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 			break;
 		}
 
-		case Skills::Beginner::EchoOfHero:
-		case Skills::Noblesse::EchoOfHero:
-		case Skills::SuperGm::Haste:
-		case Skills::SuperGm::HolySymbol:
-		case Skills::SuperGm::Bless:
-		case Skills::SuperGm::HyperBody:
-		case Skills::SuperGm::HealPlusDispel:
-		case Skills::SuperGm::Resurrection: {
+		case Vana::Skills::Beginner::EchoOfHero:
+		case Vana::Skills::Noblesse::EchoOfHero:
+		case Vana::Skills::SuperGm::Haste:
+		case Vana::Skills::SuperGm::HolySymbol:
+		case Vana::Skills::SuperGm::Bless:
+		case Vana::Skills::SuperGm::HyperBody:
+		case Vana::Skills::SuperGm::HealPlusDispel:
+		case Vana::Skills::SuperGm::Resurrection: {
 			uint8_t players = reader.get<uint8_t>();
 			function_t<bool(Player *)> doAction;
 			function_t<void(Player *)> action;
 			switch (skillId) {
-				case Skills::SuperGm::HealPlusDispel:
+				case Vana::Skills::SuperGm::HealPlusDispel:
 					doAction = [](Player *target) { return !target->getStats()->isDead(); };
 					action = [](Player *target) {
 						target->getStats()->setHp(target->getStats()->getMaxHp());
@@ -390,7 +391,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 						target->getActiveBuffs()->usePlayerDispel();
 					};
 					break;
-				case Skills::SuperGm::Resurrection:
+				case Vana::Skills::SuperGm::Resurrection:
 					doAction = [](Player *target) { return target->getStats()->isDead(); };
 					action = [](Player *target) {
 						target->getStats()->setHp(target->getStats()->getMaxHp());
@@ -427,7 +428,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 	player->sendMap(Packets::Skills::showSkill(player->getId(), skillId, level, direction));
 
 	if (Buffs::addBuff(player, skillId, level, addedInfo) == Result::Successful) {
-		if (skillId == Skills::SuperGm::Hide) {
+		if (skillId == Vana::Skills::SuperGm::Hide) {
 			player->send(Packets::Gm::beginHide());
 			player->getMap()->gmHideChange(player);
 		}
@@ -485,7 +486,7 @@ auto Skills::applySkillCosts(Player *player, skill_id_t skillId, skill_level_t l
 		}
 		Inventory::takeItem(player, item, skill->itemCount);
 	}
-	if (coolTime.count() > 0 && skillId != Skills::Corsair::Battleship) {
+	if (coolTime.count() > 0 && skillId != Vana::Skills::Corsair::Battleship) {
 		if (isCooling(player, skillId)) {
 			return Result::Failure;
 		}
@@ -508,7 +509,7 @@ auto Skills::applySkillCosts(Player *player, skill_id_t skillId, skill_level_t l
 }
 
 auto Skills::useAttackSkill(Player *player, skill_id_t skillId) -> Result {
-	if (skillId != Skills::All::RegularAttack) {
+	if (skillId != Vana::Skills::All::RegularAttack) {
 		skill_level_t level = player->getSkills()->getSkillLevel(skillId);
 		if (!ChannelServer::getInstance().getSkillDataProvider().isValidSkill(skillId) || level == 0) {
 			return Result::Failure;
@@ -520,7 +521,7 @@ auto Skills::useAttackSkill(Player *player, skill_id_t skillId) -> Result {
 
 auto Skills::useAttackSkillRanged(Player *player, skill_id_t skillId, inventory_slot_t projectilePos, inventory_slot_t cashProjectilePos, item_id_t projectileId) -> Result {
 	skill_level_t level = 0;
-	if (skillId != Skills::All::RegularAttack) {
+	if (skillId != Vana::Skills::All::RegularAttack) {
 		level = player->getSkills()->getSkillLevel(skillId);
 		if (!ChannelServer::getInstance().getSkillDataProvider().isValidSkill(skillId) || level == 0) {
 			return Result::Failure;
@@ -583,7 +584,7 @@ auto Skills::useAttackSkillRanged(Player *player, skill_id_t skillId, inventory_
 	}
 
 	slot_qty_t hits = 1;
-	if (skillId != Skills::All::RegularAttack) {
+	if (skillId != Vana::Skills::All::RegularAttack) {
 		auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
 		item_id_t optionalItem = skill->optionalItem;
 
@@ -642,11 +643,11 @@ auto Skills::startCooldown(Player *player, skill_id_t skillId, seconds_t coolTim
 		player->send(Packets::Skills::sendCooldown(skillId, coolTime));
 		player->getSkills()->addCooldown(skillId, coolTime);
 	}
-	Timer::Timer::create(
+	Vana::Timer::Timer::create(
 		[player, skillId](const time_point_t &now) {
 			Skills::stopCooldown(player, skillId);
 		},
-		Timer::Id{TimerType::CoolTimer, skillId},
+		Vana::Timer::Id{TimerType::CoolTimer, skillId},
 		player->getTimerContainer(),
 		seconds_t{coolTime});
 }
@@ -654,11 +655,11 @@ auto Skills::startCooldown(Player *player, skill_id_t skillId, seconds_t coolTim
 auto Skills::stopCooldown(Player *player, skill_id_t skillId) -> void {
 	player->getSkills()->removeCooldown(skillId);
 	player->send(Packets::Skills::sendCooldown(skillId, seconds_t{0}));
-	if (skillId == Skills::Corsair::Battleship) {
+	if (skillId == Vana::Skills::Corsair::Battleship) {
 		player->getActiveBuffs()->resetBattleshipHp();
 	}
 
-	Timer::Id id{TimerType::CoolTimer, skillId};
+	Vana::Timer::Id id{TimerType::CoolTimer, skillId};
 	auto container = player->getTimerContainer();
 	if (container->isTimerRunning(id)) {
 		container->removeTimer(id);
@@ -666,17 +667,18 @@ auto Skills::stopCooldown(Player *player, skill_id_t skillId) -> void {
 }
 
 auto Skills::isCooling(Player *player, skill_id_t skillId) -> bool {
-	Timer::Id id{TimerType::CoolTimer, skillId};
+	Vana::Timer::Id id{TimerType::CoolTimer, skillId};
 	return player->getTimerContainer()->isTimerRunning(id);
 }
 
 auto Skills::getCooldownTimeLeft(Player *player, skill_id_t skillId) -> int16_t {
 	int16_t coolTime = 0;
 	if (isCooling(player, skillId)) {
-		Timer::Id id{TimerType::CoolTimer, skillId};
+		Vana::Timer::Id id{TimerType::CoolTimer, skillId};
 		coolTime = static_cast<int16_t>(player->getTimerContainer()->getRemainingTime<seconds_t>(id).count());
 	}
 	return coolTime;
 }
 
+}
 }

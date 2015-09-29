@@ -16,13 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaInstance.hpp"
-#include "ChannelServer.hpp"
-#include "Instance.hpp"
-#include "Instances.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Instance.hpp"
+#include "ChannelServer/Instances.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 LuaInstance::LuaInstance(const string_t &name, player_id_t playerId) :
 	LuaScriptable{ChannelServer::getInstance().getScriptDataProvider().buildScriptPath(ScriptTypes::Instance, name), playerId}
@@ -55,4 +56,5 @@ auto LuaExports::createInstanceInstance(lua_State *luaVm) -> lua_return_t {
 	return 0;
 }
 
+}
 }

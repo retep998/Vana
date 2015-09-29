@@ -16,16 +16,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapleTvs.hpp"
-#include "Map.hpp"
-#include "MapleTvPacket.hpp"
-#include "Player.hpp"
-#include "PlayerPacketHelper.hpp"
-#include "SmsgHeader.hpp"
-#include "TimeUtilities.hpp"
-#include "Timer.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "Common/Timer.hpp"
+#include "ChannelServer/Map.hpp"
+#include "ChannelServer/MapleTvPacket.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerPacketHelper.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
 #include <functional>
 
 namespace Vana {
+namespace ChannelServer {
 
 auto MapleTvs::addMap(Map *map) -> void {
 	m_maps[map->getId()] = map;
@@ -68,8 +69,8 @@ auto MapleTvs::parseBuffer() -> void {
 
 		m_currentMessage = message;
 
-		Timer::Id id{TimerType::MapleTvTimer, message.senderId, message.counter};
-		Timer::Timer::create(
+		Vana::Timer::Id id{TimerType::MapleTvTimer, message.senderId, message.counter};
+		Vana::Timer::Timer::create(
 			[this](const time_point_t &now) { this->parseBuffer(); },
 			id, getTimers(), seconds_t{message.time});
 	}
@@ -86,7 +87,7 @@ auto MapleTvs::send(const PacketBuilder &builder) -> void {
 }
 
 auto MapleTvs::getMessageTime() const -> seconds_t {
-	Timer::Id id{TimerType::MapleTvTimer, m_currentMessage.senderId, m_currentMessage.counter};
+	Vana::Timer::Id id{TimerType::MapleTvTimer, m_currentMessage.senderId, m_currentMessage.counter};
 	return getTimers()->getRemainingTime<seconds_t>(id);
 }
 
@@ -106,4 +107,5 @@ auto MapleTvs::getCurrentMessage() const -> const MapleTvMessage & {
 	return m_currentMessage;
 }
 
+}
 }

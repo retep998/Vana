@@ -17,19 +17,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Instance.hpp"
-#include "Types.hpp"
+#include "Common/Types.hpp"
+#include "ChannelServer/Instance.hpp"
 #include <string>
 #include <unordered_map>
 
 namespace Vana {
-	class Instances {
-	public:
-		auto addInstance(Instance *instance) -> void;
-		auto removeInstance(Instance *instance) -> void;
-		auto getInstance(const string_t &name) -> Instance *;
-		auto isInstance(const string_t &name) -> bool;
-	private:
-		case_insensitive_hash_map_t<Instance *> m_instances;
-	};
+	namespace ChannelServer {
+		class Instances {
+		public:
+			auto addInstance(Instance *instance) -> void;
+			auto removeInstance(Instance *instance) -> void;
+			auto getInstance(const string_t &name) -> Instance *;
+			auto isInstance(const string_t &name) -> bool;
+		private:
+			case_insensitive_hash_map_t<Instance *> m_instances;
+		};
+	}
 }

@@ -16,20 +16,21 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerSummons.hpp"
-#include "Algorithm.hpp"
-#include "GameConstants.hpp"
-#include "GameLogicUtilities.hpp"
-#include "Map.hpp"
-#include "PacketReader.hpp"
-#include "Player.hpp"
-#include "Summon.hpp"
-#include "SummonHandler.hpp"
-#include "SummonsPacket.hpp"
-#include "Timer.hpp"
-#include "TimeUtilities.hpp"
+#include "Common/Algorithm.hpp"
+#include "Common/GameConstants.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/Timer.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "ChannelServer/Map.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/Summon.hpp"
+#include "ChannelServer/SummonHandler.hpp"
+#include "ChannelServer/SummonsPacket.hpp"
 #include <functional>
 
 namespace Vana {
+namespace ChannelServer {
 
 PlayerSummons::PlayerSummons(Player *player) :
 	m_player{player}
@@ -38,8 +39,8 @@ PlayerSummons::PlayerSummons(Player *player) :
 
 auto PlayerSummons::addSummon(Summon *summon, seconds_t time) -> void {
 	summon_id_t summonId = summon->getId();
-	Timer::Id id{TimerType::BuffTimer, summonId, 1};
-	Timer::Timer::create([this, summonId](const time_point_t &now) { SummonHandler::removeSummon(m_player, summonId, false, SummonMessages::OutOfTime, true); },
+	Vana::Timer::Id id{TimerType::BuffTimer, summonId, 1};
+	Vana::Timer::Timer::create([this, summonId](const time_point_t &now) { SummonHandler::removeSummon(m_player, summonId, false, SummonMessages::OutOfTime, true); },
 		id, m_player->getTimerContainer(), time);
 
 	m_summons.push_back(summon);
@@ -49,7 +50,7 @@ auto PlayerSummons::removeSummon(summon_id_t summonId, bool fromTimer) -> void {
 	Summon *summon = getSummon(summonId);
 	if (summon != nullptr) {
 		if (!fromTimer) {
-			Timer::Id id{TimerType::BuffTimer, summonId, 1};
+			Vana::Timer::Id id{TimerType::BuffTimer, summonId, 1};
 			m_player->getTimerContainer()->removeTimer(id);
 		}
 		ext::remove_element(m_summons, summon);
@@ -84,7 +85,7 @@ auto PlayerSummons::changedMap() -> void {
 }
 
 auto PlayerSummons::getSummonTimeRemaining(summon_id_t summonId) const -> seconds_t {
-	Timer::Id id{TimerType::BuffTimer, summonId, 1};
+	Vana::Timer::Id id{TimerType::BuffTimer, summonId, 1};
 	return m_player->getTimerContainer()->getRemainingTime<seconds_t>(id);
 }
 
@@ -120,4 +121,5 @@ auto PlayerSummons::parseTransferPacket(PacketReader &reader) -> void {
 	}
 }
 
+}
 }

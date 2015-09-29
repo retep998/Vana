@@ -17,17 +17,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "PacketBuilder.hpp"
-#include "SkillConstants.hpp"
-#include "SplitPacketBuilder.hpp"
-#include "Types.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/SkillConstants.hpp"
+#include "Common/SplitPacketBuilder.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
-	class Player;
-	struct BuffPacketValues;
+	namespace ChannelServer {
+		class Player;
+		struct BuffPacketValues;
 
-	namespace Packets {
-		SPLIT_PACKET(addBuff, player_id_t playerId, int32_t buffId, const seconds_t &time, const BuffPacketValues &buff, int16_t addedInfo);
-		SPLIT_PACKET(endBuff, player_id_t playerId, const BuffPacketValues &buff);
+		namespace Packets {
+			SPLIT_PACKET(addBuff, player_id_t playerId, int32_t buffId, const seconds_t &time, const BuffPacketValues &buff, int16_t addedInfo);
+			SPLIT_PACKET(endBuff, player_id_t playerId, const BuffPacketValues &buff);
+		}
 	}
 }

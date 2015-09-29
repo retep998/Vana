@@ -16,13 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "TradesPacket.hpp"
-#include "Inventory.hpp"
-#include "Player.hpp"
-#include "PlayerPacketHelper.hpp"
-#include "Session.hpp"
-#include "SmsgHeader.hpp"
+#include "Common/Session.hpp"
+#include "ChannelServer/Inventory.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerPacketHelper.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace Trades {
 
@@ -151,6 +152,7 @@ PACKET_IMPL(sendAddItem, uint8_t player, uint8_t slot, Item *item) {
 	return builder;
 }
 
+}
 }
 }
 }

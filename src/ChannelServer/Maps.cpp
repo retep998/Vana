@@ -16,22 +16,23 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Maps.hpp"
-#include "ChannelServer.hpp"
-#include "FileUtilities.hpp"
-#include "Instance.hpp"
-#include "Inventory.hpp"
-#include "LuaPortal.hpp"
-#include "MapDataProvider.hpp"
-#include "MapPacket.hpp"
-#include "PetHandler.hpp"
-#include "Player.hpp"
-#include "PlayerPacket.hpp"
-#include "PlayerDataProvider.hpp"
-#include "PacketReader.hpp"
-#include "SummonHandler.hpp"
+#include "Common/FileUtilities.hpp"
+#include "Common/PacketReader.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Instance.hpp"
+#include "ChannelServer/Inventory.hpp"
+#include "ChannelServer/LuaPortal.hpp"
+#include "ChannelServer/MapDataProvider.hpp"
+#include "ChannelServer/MapPacket.hpp"
+#include "ChannelServer/PetHandler.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/SummonHandler.hpp"
 #include <string>
 
 namespace Vana {
+namespace ChannelServer {
 
 auto Maps::getMap(map_id_t mapId) -> Map * {
 	return ChannelServer::getInstance().getMap(mapId);
@@ -162,4 +163,5 @@ auto Maps::addPlayer(Player *player, map_id_t mapId) -> void {
 	// player->getActiveBuffs()->checkBerserk(true) would override the default of only displaying changes
 }
 
+}
 }

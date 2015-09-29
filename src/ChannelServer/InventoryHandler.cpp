@@ -16,34 +16,35 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InventoryHandler.hpp"
-#include "ChannelServer.hpp"
-#include "CurseDataProvider.hpp"
-#include "Drop.hpp"
-#include "EquipDataProvider.hpp"
-#include "GameLogicUtilities.hpp"
-#include "InterHeader.hpp"
-#include "Inventory.hpp"
-#include "InventoryPacket.hpp"
-#include "ItemConstants.hpp"
-#include "ItemDataProvider.hpp"
-#include "MapleTvs.hpp"
-#include "Maps.hpp"
-#include "MobDataProvider.hpp"
-#include "NpcDataProvider.hpp"
-#include "PacketReader.hpp"
-#include "PacketWrapper.hpp"
-#include "Pet.hpp"
-#include "PetHandler.hpp"
-#include "PetsPacket.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "Randomizer.hpp"
-#include "ReactorHandler.hpp"
-#include "ScriptDataProvider.hpp"
-#include "ShopDataProvider.hpp"
-#include "ValidCharDataProvider.hpp"
+#include "Common/CurseDataProvider.hpp"
+#include "Common/EquipDataProvider.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/ItemConstants.hpp"
+#include "Common/ItemDataProvider.hpp"
+#include "Common/MobDataProvider.hpp"
+#include "Common/NpcDataProvider.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/PacketWrapper.hpp"
+#include "Common/Randomizer.hpp"
+#include "Common/ScriptDataProvider.hpp"
+#include "Common/ShopDataProvider.hpp"
+#include "Common/ValidCharDataProvider.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Drop.hpp"
+#include "ChannelServer/Inventory.hpp"
+#include "ChannelServer/InventoryPacket.hpp"
+#include "ChannelServer/MapleTvs.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Pet.hpp"
+#include "ChannelServer/PetHandler.hpp"
+#include "ChannelServer/PetsPacket.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/ReactorHandler.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 auto InventoryHandler::itemMove(Player *player, PacketReader &reader) -> void {
 	reader.skip<tick_count_t>();
@@ -288,7 +289,7 @@ auto InventoryHandler::useReturnScroll(Player *player, PacketReader &reader) -> 
 	Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
 
 	map_id_t map = info->moveTo;
-	player->setMap(map == Maps::NoMap ? player->getMap()->getReturnMap() : map);
+	player->setMap(map == Vana::Maps::NoMap ? player->getMap()->getReturnMap() : map);
 }
 
 auto InventoryHandler::useScroll(Player *player, PacketReader &reader) -> void {
@@ -464,7 +465,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 				bool whisper = reader.get<bool>();
 				auto &basePacket = Packets::Inventory::showSuperMegaphone(msg, whisper);
 				ChannelServer::getInstance().sendWorld(
-					Packets::prepend(basePacket, [](PacketBuilder &builder) {
+					Vana::Packets::prepend(basePacket, [](PacketBuilder &builder) {
 						builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
 					}));
 				used = true;
@@ -480,7 +481,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 
 				auto &basePacket = Packets::Inventory::showMessenger(player->getName(), msg1, msg2, msg3, msg4, reader.getBuffer(), reader.getBufferLength(), itemId);
 				ChannelServer::getInstance().sendWorld(
-					Packets::prepend(basePacket, [](PacketBuilder &builder) {
+					Vana::Packets::prepend(basePacket, [](PacketBuilder &builder) {
 						builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
 					}));
 				used = true;
@@ -502,7 +503,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 
 				auto &basePacket = Packets::Inventory::showItemMegaphone(msg, whisper, item);
 				ChannelServer::getInstance().sendWorld(
-					Packets::prepend(basePacket, [](PacketBuilder &builder) {
+					Vana::Packets::prepend(basePacket, [](PacketBuilder &builder) {
 						builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
 					}));
 				used = true;
@@ -522,7 +523,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 				bool whisper = reader.get<bool>();
 				auto &basePacket = Packets::Inventory::showTripleMegaphone(lines, text[0], text[1], text[2], whisper);
 				ChannelServer::getInstance().sendWorld(
-					Packets::prepend(basePacket, [](PacketBuilder &builder) {
+					Vana::Packets::prepend(basePacket, [](PacketBuilder &builder) {
 						builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
 					}));
 
@@ -620,7 +621,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 					if (itemId == Items::Megassenger) {
 						auto &basePacket = Packets::Inventory::showSuperMegaphone(player->getMedalName() + " : " + msg1 + msg2 + msg3 + msg4 + msg5, showWhisper);
 						ChannelServer::getInstance().sendWorld(
-							Packets::prepend(basePacket, [](PacketBuilder &builder) {
+							Vana::Packets::prepend(basePacket, [](PacketBuilder &builder) {
 								builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
 							}));
 
@@ -645,7 +646,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 				if (itemId == Items::StarMegassenger) {
 					auto &basePacket = Packets::Inventory::showSuperMegaphone(player->getMedalName() + " : " + msg1 + msg2 + msg3 + msg4 + msg5, showWhisper);
 					ChannelServer::getInstance().sendWorld(
-						Packets::prepend(basePacket, [](PacketBuilder &builder) {
+						Vana::Packets::prepend(basePacket, [](PacketBuilder &builder) {
 							builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
 						}));
 				}
@@ -672,7 +673,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 					if (itemId == Items::HeartMegassenger) {
 						auto &basePacket = Packets::Inventory::showSuperMegaphone(player->getMedalName() + " : " + msg1 + msg2 + msg3 + msg4 + msg5, showWhisper);
 						ChannelServer::getInstance().sendWorld(
-							Packets::prepend(basePacket, [](PacketBuilder &builder) {
+							Vana::Packets::prepend(basePacket, [](PacketBuilder &builder) {
 								builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
 							}));
 					}
@@ -931,4 +932,5 @@ auto InventoryHandler::handleScriptItem(Player *player, PacketReader &reader) ->
 	}
 }
 
+}
 }

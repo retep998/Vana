@@ -16,14 +16,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SummonsPacket.hpp"
-#include "GameConstants.hpp"
-#include "GameLogicUtilities.hpp"
-#include "Maps.hpp"
-#include "Player.hpp"
-#include "SmsgHeader.hpp"
-#include "Summon.hpp"
+#include "Common/GameConstants.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
+#include "ChannelServer/Summon.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 
 SPLIT_PACKET_IMPL(showSummon, player_id_t playerId, Summon *summon, bool isMapEntry) {
@@ -114,5 +115,6 @@ SPLIT_PACKET_IMPL(summonSkillEffect, player_id_t playerId, skill_id_t skillId, u
 	return builder;
 }
 
+}
 }
 }

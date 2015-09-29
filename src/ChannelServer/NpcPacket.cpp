@@ -16,16 +16,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "NpcPacket.hpp"
-#include "ChannelServer.hpp"
-#include "ItemDataProvider.hpp"
-#include "Maps.hpp"
-#include "PacketReader.hpp"
-#include "Player.hpp"
-#include "Session.hpp"
-#include "ShopDataProvider.hpp"
-#include "SmsgHeader.hpp"
+#include "Common/ItemDataProvider.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/Session.hpp"
+#include "Common/ShopDataProvider.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace Npc {
 
@@ -163,6 +164,7 @@ PACKET_IMPL(npcChat, int8_t type, map_object_t npcId, const string_t &text, bool
 	return builder;
 }
 
+}
 }
 }
 }

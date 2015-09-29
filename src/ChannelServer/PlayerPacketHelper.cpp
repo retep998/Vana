@@ -16,16 +16,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerPacketHelper.hpp"
-#include "FileTime.hpp"
-#include "GameLogicUtilities.hpp"
-#include "Inventory.hpp"
-#include "ItemConstants.hpp"
-#include "Pet.hpp"
-#include "Player.hpp"
-#include "TimeUtilities.hpp"
+#include "Common/FileTime.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/ItemConstants.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "ChannelServer/Inventory.hpp"
+#include "ChannelServer/Pet.hpp"
+#include "ChannelServer/Player.hpp"
 #include <cmath>
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace Helpers {
 
@@ -110,7 +111,7 @@ PACKET_IMPL(addItemInfo, inventory_slot_t slot, Item *item, bool shortSlot) {
 	return builder;
 }
 
-PACKET_IMPL(addPlayerDisplay, Vana::Player *player) {
+PACKET_IMPL(addPlayerDisplay, Vana::ChannelServer::Player *player) {
 	PacketBuilder builder;
 	builder
 		.add<gender_id_t>(player->getGender())
@@ -131,6 +132,7 @@ PACKET_IMPL(addPlayerDisplay, Vana::Player *player) {
 	return builder;
 }
 
+}
 }
 }
 }

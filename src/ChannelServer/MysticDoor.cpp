@@ -16,12 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MysticDoor.hpp"
-#include "Maps.hpp"
-#include "Mob.hpp"
-#include "Player.hpp"
-#include "SkillDataProvider.hpp"
+#include "Common/SkillDataProvider.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Mob.hpp"
+#include "ChannelServer/Player.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 MysticDoor::MysticDoor(Player *owner, map_id_t townId, portal_id_t portalId, const Point &mapPos, const Point &townPos, bool isDisplacement, seconds_t doorTime) :
 	m_mapId{owner->getMapId()},
@@ -92,4 +93,5 @@ auto MysticDoor::withNewPortal(portal_id_t portalId, const Point &townPos) const
 		m_doorTime);
 }
 
+}
 }

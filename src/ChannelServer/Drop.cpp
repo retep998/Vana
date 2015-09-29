@@ -16,15 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Drop.hpp"
-#include "ChannelServer.hpp"
-#include "DropsPacket.hpp"
-#include "Maps.hpp"
-#include "Pet.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "TimeUtilities.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/DropsPacket.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Pet.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 Drop::Drop(map_id_t mapId, mesos_t mesos, const Point &pos, player_id_t owner, bool playerDrop) :
 	m_owner{owner},
@@ -129,4 +130,5 @@ auto Drop::getMap() const -> Map * {
 	return Maps::getMap(m_mapId);
 }
 
+}
 }

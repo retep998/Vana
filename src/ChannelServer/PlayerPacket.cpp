@@ -16,27 +16,28 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerPacket.hpp"
-#include "ChannelServer.hpp"
-#include "ClientIp.hpp"
-#include "FileTime.hpp"
-#include "InterHeader.hpp"
-#include "KeyMaps.hpp"
-#include "Pet.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "PlayerPacketHelper.hpp"
-#include "Session.hpp"
-#include "SkillMacros.hpp"
-#include "Skills.hpp"
-#include "SmsgHeader.hpp"
-#include "TimeUtilities.hpp"
+#include "Common/ClientIp.hpp"
+#include "Common/FileTime.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/Session.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/KeyMaps.hpp"
+#include "ChannelServer/Pet.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/PlayerPacketHelper.hpp"
+#include "ChannelServer/SkillMacros.hpp"
+#include "ChannelServer/Skills.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
 #include <unordered_map>
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace Player {
 
-PACKET_IMPL(connectData, Vana::Player *player) {
+PACKET_IMPL(connectData, Vana::ChannelServer::Player *player) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_CHANGE_MAP)
@@ -267,6 +268,7 @@ PACKET_IMPL(sendYellowMessage, const chat_t &msg) {
 	return builder;
 }
 
+}
 }
 }
 }

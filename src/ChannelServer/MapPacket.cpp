@@ -16,30 +16,31 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapPacket.hpp"
-#include "Buffs.hpp"
-#include "BuffsPacketHelper.hpp"
-#include "ChannelServer.hpp"
-#include "FileTime.hpp"
-#include "Inventory.hpp"
-#include "Map.hpp"
-#include "Maps.hpp"
-#include "Mist.hpp"
-#include "MysticDoor.hpp"
-#include "Pet.hpp"
-#include "Player.hpp"
-#include "PlayerPacketHelper.hpp"
-#include "Point.hpp"
-#include "Session.hpp"
-#include "SmsgHeader.hpp"
-#include "TimeUtilities.hpp"
-#include "WidePoint.hpp"
+#include "Common/FileTime.hpp"
+#include "Common/Point.hpp"
+#include "Common/Session.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "Common/WidePoint.hpp"
+#include "ChannelServer/Buffs.hpp"
+#include "ChannelServer/BuffsPacketHelper.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Inventory.hpp"
+#include "ChannelServer/Map.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Mist.hpp"
+#include "ChannelServer/MysticDoor.hpp"
+#include "ChannelServer/Pet.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerPacketHelper.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
 #include <unordered_map>
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace Map {
 
-PACKET_IMPL(playerPacket, Vana::Player *player) {
+PACKET_IMPL(playerPacket, Vana::ChannelServer::Player *player) {
 	PacketBuilder builder;
 
 	builder
@@ -111,7 +112,7 @@ PACKET_IMPL(removePlayer, player_id_t playerId) {
 	return builder;
 }
 
-PACKET_IMPL(changeMap, Vana::Player *player, bool spawnByPosition, const Point &spawnPosition) {
+PACKET_IMPL(changeMap, Vana::ChannelServer::Player *player, bool spawnByPosition, const Point &spawnPosition) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_CHANGE_MAP)
@@ -255,8 +256,8 @@ PACKET_IMPL(removePortal) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PORTAL_ACTION)
-		.add<map_id_t>(Maps::NoMap)
-		.add<map_id_t>(Maps::NoMap);
+		.add<map_id_t>(Vana::Maps::NoMap)
+		.add<map_id_t>(Vana::Maps::NoMap);
 	return builder;
 }
 
@@ -296,6 +297,7 @@ PACKET_IMPL(changeWeather, bool adminWeather, item_id_t itemId, const string_t &
 	return builder;
 }
 
+}
 }
 }
 }

@@ -16,12 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "BuddyListHandler.hpp"
-#include "BuddyListPacket.hpp"
-#include "Player.hpp"
-#include "PacketReader.hpp"
+#include "Common/PacketReader.hpp"
+#include "ChannelServer/BuddyListPacket.hpp"
+#include "ChannelServer/Player.hpp"
 #include <string>
 
 namespace Vana {
+namespace ChannelServer {
 
 namespace BuddyOpcodes {
 	enum Opcodes : int8_t {
@@ -58,4 +59,5 @@ auto BuddyListHandler::handleBuddyList(Player *player, PacketReader &reader) -> 
 	}
 }
 
+}
 }

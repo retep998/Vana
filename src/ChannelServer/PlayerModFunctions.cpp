@@ -16,14 +16,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerModFunctions.hpp"
-#include "ChannelServer.hpp"
-#include "Maps.hpp"
-#include "Player.hpp"
-#include "PlayerPacket.hpp"
-#include "PlayerDataProvider.hpp"
-#include "SkillConstants.hpp"
+#include "Common/SkillConstants.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 auto PlayerModFunctions::disconnect(Player *player, const chat_t &args) -> ChatResult {
 	player->disconnect();
@@ -211,4 +212,5 @@ auto PlayerModFunctions::maxSp(Player *player, const chat_t &args) -> ChatResult
 	return ChatResult::ShowSyntax;
 }
 
+}
 }

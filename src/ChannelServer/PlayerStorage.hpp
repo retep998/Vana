@@ -17,45 +17,48 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Types.hpp"
+#include "Common/Types.hpp"
 #include <vector>
 
 namespace Vana {
 	class Item;
-	class Player;
 
-	class PlayerStorage {
-		NONCOPYABLE(PlayerStorage);
-		NO_DEFAULT_CONSTRUCTOR(PlayerStorage);
-	public:
-		PlayerStorage(Player *player);
-		~PlayerStorage();
+	namespace ChannelServer {
+		class Player;
 
-		auto setSlots(storage_slot_t slots) -> void;
-		auto addItem(Item *item) -> void;
-		auto takeItem(storage_slot_t slot) -> void;
-		auto setMesos(mesos_t mesos) -> void { m_mesos = mesos; }
-		auto changeMesos(mesos_t mesos) -> void;
+		class PlayerStorage {
+			NONCOPYABLE(PlayerStorage);
+			NO_DEFAULT_CONSTRUCTOR(PlayerStorage);
+		public:
+			PlayerStorage(Player *player);
+			~PlayerStorage();
 
-		auto getSlots() const -> storage_slot_t { return m_slots; }
-		auto getNumItems() const -> storage_slot_t { return static_cast<storage_slot_t>(m_items.size()); }
-		auto getNumItems(inventory_t inv) -> storage_slot_t;
-		auto getMesos() const -> mesos_t { return m_mesos; }
-		auto isFull() const -> bool { return m_items.size() == m_slots; }
-		auto getItem(storage_slot_t slot) const -> Item * {
-			if (slot < m_items.size()) {
-				return m_items[slot];
+			auto setSlots(storage_slot_t slots) -> void;
+			auto addItem(Item *item) -> void;
+			auto takeItem(storage_slot_t slot) -> void;
+			auto setMesos(mesos_t mesos) -> void { m_mesos = mesos; }
+			auto changeMesos(mesos_t mesos) -> void;
+
+			auto getSlots() const -> storage_slot_t { return m_slots; }
+			auto getNumItems() const -> storage_slot_t { return static_cast<storage_slot_t>(m_items.size()); }
+			auto getNumItems(inventory_t inv) -> storage_slot_t;
+			auto getMesos() const -> mesos_t { return m_mesos; }
+			auto isFull() const -> bool { return m_items.size() == m_slots; }
+			auto getItem(storage_slot_t slot) const -> Item * {
+				if (slot < m_items.size()) {
+					return m_items[slot];
+				}
+				return nullptr;
 			}
-			return nullptr;
-		}
 
-		auto load() -> void;
-		auto save() -> void;
-	private:
-		storage_slot_t m_slots = 0;
-		mesos_t m_mesos = 0;
-		int32_t m_charSlots = 0;
-		vector_t<Item *> m_items;
-		Player *m_player = nullptr;
-	};
+			auto load() -> void;
+			auto save() -> void;
+		private:
+			storage_slot_t m_slots = 0;
+			mesos_t m_mesos = 0;
+			int32_t m_charSlots = 0;
+			vector_t<Item *> m_items;
+			Player *m_player = nullptr;
+		};
+	}
 }

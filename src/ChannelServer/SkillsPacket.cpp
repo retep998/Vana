@@ -16,16 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SkillsPacket.hpp"
-#include "ChargeOrStationarySkillData.hpp"
-#include "GameConstants.hpp"
-#include "Maps.hpp"
-#include "Player.hpp"
-#include "Session.hpp"
-#include "Skills.hpp"
-#include "Session.hpp"
-#include "SmsgHeader.hpp"
+#include "Common/ChargeOrStationarySkillData.hpp"
+#include "Common/GameConstants.hpp"
+#include "Common/Session.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/Skills.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace Skills {
 
@@ -179,6 +179,7 @@ SPLIT_PACKET_IMPL(showBerserk, player_id_t playerId, skill_level_t level, bool o
 	return builder;
 }
 
+}
 }
 }
 }

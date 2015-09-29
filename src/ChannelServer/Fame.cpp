@@ -16,14 +16,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Fame.hpp"
-#include "ChannelServer.hpp"
-#include "Database.hpp"
-#include "FamePacket.hpp"
-#include "PacketReader.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
+#include "Common/Database.hpp"
+#include "Common/PacketReader.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/FamePacket.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 auto Fame::handleFame(Player *player, PacketReader &reader) -> void {
 	player_id_t targetId = reader.get<player_id_t>();
@@ -130,4 +131,5 @@ auto Fame::getLastFameSpLog(player_id_t from, player_id_t to) -> SearchResult {
 		SearchResult::NotFound;
 }
 
+}
 }

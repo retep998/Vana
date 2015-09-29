@@ -16,19 +16,20 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Party.hpp"
-#include "ChannelServer.hpp"
-#include "GameConstants.hpp"
-#include "Instance.hpp"
-#include "MapPacket.hpp"
-#include "Maps.hpp"
-#include "PartyPacket.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "PlayerPacket.hpp"
-#include "PlayerSkills.hpp"
-#include "WorldServerConnectPacket.hpp"
+#include "Common/GameConstants.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Instance.hpp"
+#include "ChannelServer/MapPacket.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/PartyPacket.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
+#include "ChannelServer/PlayerSkills.hpp"
+#include "ChannelServer/WorldServerConnectPacket.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 Party::Party(party_id_t partyId) :
 	m_partyId{partyId}
@@ -331,4 +332,5 @@ auto Party::verifyFootholds(const vector_t<vector_t<foothold_id_t>> &footholds) 
 	return winner;
 }
 
+}
 }

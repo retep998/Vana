@@ -16,17 +16,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Quests.hpp"
-#include "ChannelServer.hpp"
-#include "Inventory.hpp"
-#include "ItemDataProvider.hpp"
-#include "NpcDataProvider.hpp"
-#include "NpcHandler.hpp"
-#include "Player.hpp"
-#include "QuestDataProvider.hpp"
-#include "QuestsPacket.hpp"
-#include "PacketReader.hpp"
+#include "Common/ItemDataProvider.hpp"
+#include "Common/NpcDataProvider.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/QuestDataProvider.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Inventory.hpp"
+#include "ChannelServer/NpcHandler.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/QuestsPacket.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 namespace QuestOpcodes {
 	enum : int8_t {
@@ -172,4 +173,5 @@ auto Quests::getQuest(Player *player, PacketReader &reader) -> void {
 	}
 }
 
+}
 }

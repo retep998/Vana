@@ -16,18 +16,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Pet.hpp"
-#include "ChannelServer.hpp"
-#include "Database.hpp"
-#include "GameConstants.hpp"
-#include "ItemDataProvider.hpp"
-#include "Map.hpp"
-#include "PetsPacket.hpp"
-#include "Player.hpp"
-#include "TimeUtilities.hpp"
-#include "Timer.hpp"
+#include "Common/Database.hpp"
+#include "Common/GameConstants.hpp"
+#include "Common/ItemDataProvider.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "Common/Timer.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Map.hpp"
+#include "ChannelServer/PetsPacket.hpp"
+#include "ChannelServer/Player.hpp"
 #include <functional>
 
 namespace Vana {
+namespace ChannelServer {
 
 Pet::Pet(Player *player, Item *item) :
 	MovableLife{0, Point{}, 0},
@@ -101,9 +102,9 @@ auto Pet::modifyFullness(int8_t offset, bool sendPacket) -> void {
 }
 
 auto Pet::startTimer() -> void {
-	Timer::Id id{TimerType::PetTimer, getIndex().get()}; // The timer will automatically stop if another pet gets inserted into this index
+	Vana::Timer::Id id{TimerType::PetTimer, getIndex().get()}; // The timer will automatically stop if another pet gets inserted into this index
 	duration_t repeat = seconds_t{(6 - ChannelServer::getInstance().getItemDataProvider().getPetInfo(getItemId())->hunger) * 60}; // TODO FIXME formula
-	Timer::Timer::create(
+	Vana::Timer::Timer::create(
 		[this](const time_point_t &now) {
 			this->modifyFullness(-1, true);
 		},
@@ -144,4 +145,5 @@ auto Pet::initializePet(const soci::row &row) -> void {
 	m_inventorySlot = row.get<int8_t>("slot");
 }
 
+}
 }

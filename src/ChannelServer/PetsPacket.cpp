@@ -16,18 +16,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PetsPacket.hpp"
-#include "FileTime.hpp"
-#include "GameConstants.hpp"
-#include "Item.hpp"
-#include "ItemConstants.hpp"
-#include "Maps.hpp"
-#include "PacketReader.hpp"
-#include "Pet.hpp"
-#include "Player.hpp"
-#include "Session.hpp"
-#include "SmsgHeader.hpp"
+#include "Common/FileTime.hpp"
+#include "Common/GameConstants.hpp"
+#include "Common/Item.hpp"
+#include "Common/ItemConstants.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/Session.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Pet.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace Pets {
 
@@ -197,6 +198,7 @@ PACKET_IMPL(addInfo, Pet *pet, Item *petItem) {
 	return builder;
 }
 
+}
 }
 }
 }

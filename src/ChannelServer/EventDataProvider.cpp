@@ -16,18 +16,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "EventDataProvider.hpp"
-#include "ChannelServer.hpp"
-#include "InitializeCommon.hpp"
-#include "Instance.hpp"
-#include "Instances.hpp"
-#include "Timer.hpp"
-#include "TimeUtilities.hpp"
+#include "Common/InitializeCommon.hpp"
+#include "Common/Timer.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Instance.hpp"
+#include "ChannelServer/Instances.hpp"
 #include <cstdio>
 #include <functional>
 #include <iomanip>
 #include <iostream>
 
 namespace Vana {
+namespace ChannelServer {
 
 EventDataProvider::EventDataProvider()
 {
@@ -45,13 +46,13 @@ auto EventDataProvider::loadEvents() -> void {
 	// Declarations go here for regular server events or whatever you want to put on a timer
 
 	// Starts a new timer that runs every hour
-	// Timer::Timer::create(bind(&namespace::func, parameters),
-	// Timer::Id{TimerType::EventTimer, ??, ??},
+	// Vana::Timer::Timer::create(bind(&namespace::func, parameters),
+	// Vana::Timer::Id{TimerType::EventTimer, ??, ??},
 	// getTimers(), Timer::Time::getNthSecondOfHour(0), hours_t{1});
 
 	// Same, except runs a class function
-	// Timer::Timer::create(bind(&class::func, class instance, parameters),
-	// Timer::Id{TimerType::EventTimer, ??, ??},
+	// Vana::Timer::Timer::create(bind(&class::func, class instance, parameters),
+	// Vana::Timer::Id{TimerType::EventTimer, ??, ??},
 	// getTimers(), Timer::Time::getNthSecondOfHour(0), hours_t{1});
 
 	std::cout << "DONE" << std::endl;
@@ -151,4 +152,5 @@ auto EventDataProvider::startInstance(const string_t &name, const duration_t &ti
 	instance->beginInstance();
 }
 
+}
 }

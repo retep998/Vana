@@ -16,29 +16,31 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "DropHandler.hpp"
-#include "ChannelServer.hpp"
-#include "Drop.hpp"
-#include "DropDataProvider.hpp"
-#include "DropsPacket.hpp"
-#include "GameLogicUtilities.hpp"
-#include "Inventory.hpp"
-#include "ItemDataProvider.hpp"
-#include "MapDataProvider.hpp"
-#include "Maps.hpp"
-#include "PacketReader.hpp"
-#include "Party.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "Point.hpp"
-#include "QuestDataProvider.hpp"
-#include "Randomizer.hpp"
-#include "ReactorHandler.hpp"
-#include "SkillConstants.hpp"
-#include "SkillDataProvider.hpp"
-#include "Skills.hpp"
+#include "Common/DropDataProvider.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/Item.hpp"
+#include "Common/ItemDataProvider.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/Point.hpp"
+#include "Common/QuestDataProvider.hpp"
+#include "Common/Randomizer.hpp"
+#include "Common/SkillConstants.hpp"
+#include "Common/SkillDataProvider.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Drop.hpp"
+#include "ChannelServer/DropsPacket.hpp"
+#include "ChannelServer/Inventory.hpp"
+#include "ChannelServer/MapDataProvider.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Party.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/ReactorHandler.hpp"
+#include "ChannelServer/Skills.hpp"
 #include <algorithm>
 
 namespace Vana {
+namespace ChannelServer {
 
 auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t droppingLevel, int32_t droppingId, const Point &origin, bool explosive, bool ffa, int32_t taunt, bool isSteal) -> void {
 	auto &channel = ChannelServer::getInstance();
@@ -301,7 +303,7 @@ auto DropHandler::lootItem(Player *player, PacketReader &reader, pet_id_t petId)
 			Inventory::useItem(player, dropItem.getId());
 		}
 		else {
-			Item *item = new Item(dropItem);
+			auto item = new Item{dropItem};
 			slot_qty_t dropAmount = drop->getAmount();
 			if (item->hasKarma()) {
 				item->setKarma(false);
@@ -325,4 +327,5 @@ auto DropHandler::lootItem(Player *player, PacketReader &reader, pet_id_t petId)
 	drop->takeDrop(player, petId);
 }
 
+}
 }

@@ -16,19 +16,20 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaReactor.hpp"
-#include "Drop.hpp"
-#include "GameLogicUtilities.hpp"
-#include "Maps.hpp"
-#include "Mob.hpp"
-#include "Player.hpp"
-#include "PlayerPacket.hpp"
-#include "PlayerDataProvider.hpp"
-#include "Quests.hpp"
-#include "ReactorPacket.hpp"
-#include "Reactor.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "ChannelServer/Drop.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Mob.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/Quests.hpp"
+#include "ChannelServer/ReactorPacket.hpp"
+#include "ChannelServer/Reactor.hpp"
 #include <string>
 
 namespace Vana {
+namespace ChannelServer {
 
 LuaReactor::LuaReactor(const string_t &filename, player_id_t playerId, reactor_id_t reactorId, map_id_t mapId) :
 	LuaScriptable{filename, playerId},
@@ -132,4 +133,5 @@ auto LuaExports::spawnZakum(lua_State *luaVm) -> lua_return_t {
 	return 0;
 }
 
+}
 }

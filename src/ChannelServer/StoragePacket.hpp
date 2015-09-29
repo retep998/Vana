@@ -17,20 +17,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "PacketBuilder.hpp"
-#include "Types.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
-	class Player;
+	namespace ChannelServer {
+		class Player;
 
-	namespace Packets {
-		namespace Storage {
-			PACKET(showStorage, Player *player, npc_id_t npcId);
-			PACKET(addItem, Player *player, inventory_t inv);
-			PACKET(takeItem, Player *player, inventory_t inv);
-			PACKET(changeMesos, storage_slot_t slotCount, mesos_t mesos);
-			PACKET(storageFull);
-			PACKET(noMesos);
+		namespace Packets {
+			namespace Storage {
+				PACKET(showStorage, Player *player, npc_id_t npcId);
+				PACKET(addItem, Player *player, inventory_t inv);
+				PACKET(takeItem, Player *player, inventory_t inv);
+				PACKET(changeMesos, storage_slot_t slotCount, mesos_t mesos);
+				PACKET(storageFull);
+				PACKET(noMesos);
+			}
 		}
 	}
 }

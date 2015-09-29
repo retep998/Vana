@@ -16,24 +16,25 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Instance.hpp"
-#include "ChannelServer.hpp"
-#include "Instances.hpp"
-#include "LuaInstance.hpp"
-#include "MapPacket.hpp"
-#include "Map.hpp"
-#include "Maps.hpp"
-#include "Party.hpp"
-#include "Player.hpp"
-#include "Reactor.hpp"
-#include "TimeUtilities.hpp"
-#include "Timer.hpp"
-#include "TimerContainer.hpp"
-#include "TimeUtilities.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "Common/Timer.hpp"
+#include "Common/TimerContainer.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Instances.hpp"
+#include "ChannelServer/LuaInstance.hpp"
+#include "ChannelServer/MapPacket.hpp"
+#include "ChannelServer/Map.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Party.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/Reactor.hpp"
 #include <functional>
 #include <sstream>
 #include <utility>
 
 namespace Vana {
+namespace ChannelServer {
 
 Instance::Instance(const string_t &name, map_id_t map, player_id_t playerId, const duration_t &time, const duration_t &persistent, bool showTimer) :
 	m_name{name},
@@ -161,8 +162,8 @@ auto Instance::addFutureTimer(const string_t &timerName, seconds_t time, seconds
 		timer.isPersistent = persistence.count() > 0;
 		m_timerActions.emplace(timerName, timer);
 
-		Timer::Id id{TimerType::InstanceTimer, timer.counterId};
-		Timer::Timer::create([this, timerName](const time_point_t &now) { this->timerComplete(timerName, true); },
+		Vana::Timer::Id id{TimerType::InstanceTimer, timer.counterId};
+		Vana::Timer::Timer::create([this, timerName](const time_point_t &now) { this->timerComplete(timerName, true); },
 			id, getTimers(), time, persistence);
 
 		return true;
@@ -177,8 +178,8 @@ auto Instance::addSecondOfHourTimer(const string_t &timerName, int16_t secondOfH
 		timer.isPersistent = persistence.count() > 0;
 		m_timerActions.emplace(timerName, timer);
 
-		Timer::Id id{TimerType::InstanceTimer, timer.counterId};
-		Timer::Timer::create([this, timerName](const time_point_t &now) { this->timerComplete(timerName, true); },
+		Vana::Timer::Id id{TimerType::InstanceTimer, timer.counterId};
+		Vana::Timer::Timer::create([this, timerName](const time_point_t &now) { this->timerComplete(timerName, true); },
 			id, getTimers(), TimeUtilities::getDistanceToNextOccurringSecondOfHour(secondOfHour), persistence);
 
 		return true;
@@ -191,7 +192,7 @@ auto Instance::getTimerSecondsRemaining(const string_t &timerName) -> seconds_t 
 	auto kvp = m_timerActions.find(timerName);
 	if (kvp != std::end(m_timerActions)) {
 		auto &timer = kvp->second;
-		Timer::Id id{TimerType::InstanceTimer, timer.counterId};
+		Vana::Timer::Id id{TimerType::InstanceTimer, timer.counterId};
 		timeLeft = getTimers()->getRemainingTime<seconds_t>(id);
 	}
 	return timeLeft;
@@ -210,7 +211,7 @@ auto Instance::removeTimer(const string_t &timerName, bool performEvent) -> void
 	if (kvp != std::end(m_timerActions)) {
 		const TimerAction &timer = kvp->second;
 		if (getTimerSecondsRemaining(timerName).count() > 0) {
-			Timer::Id id{TimerType::InstanceTimer, timer.counterId};
+			Vana::Timer::Id id{TimerType::InstanceTimer, timer.counterId};
 			getTimers()->removeTimer(id);
 			if (performEvent) {
 				timerEnd(timerName, false);
@@ -242,8 +243,8 @@ auto Instance::setInstanceTimer(const duration_t &time, bool firstRun) -> void {
 		timer.isPersistent = m_persistent.count() > 0;
 		m_timerActions.emplace("instance", timer);
 
-		Timer::Id id{TimerType::InstanceTimer, timer.counterId};
-		Timer::Timer::create(
+		Vana::Timer::Id id{TimerType::InstanceTimer, timer.counterId};
+		Vana::Timer::Timer::create(
 			[this](const time_point_t &now) {
 				this->instanceEnd(false, true);
 			},
@@ -351,7 +352,7 @@ auto Instance::markForDelete() -> void {
 }
 
 auto Instance::respawnMobs(map_id_t mapId) -> void {
-	if (mapId == Maps::NoMap) {
+	if (mapId == Vana::Maps::NoMap) {
 		for (const auto &map : m_maps) {
 			map->respawn(SpawnTypes::Mob);
 		}
@@ -362,7 +363,7 @@ auto Instance::respawnMobs(map_id_t mapId) -> void {
 }
 
 auto Instance::respawnReactors(map_id_t mapId) -> void {
-	if (mapId == Maps::NoMap) {
+	if (mapId == Vana::Maps::NoMap) {
 		for (const auto &map : m_maps) {
 			map->respawn(SpawnTypes::Reactor);
 		}
@@ -397,4 +398,5 @@ auto Instance::showTimer() const -> bool {
 	return m_showTimer;
 }
 
+}
 }

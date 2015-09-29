@@ -16,26 +16,27 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerInventory.hpp"
-#include "Algorithm.hpp"
-#include "ChannelServer.hpp"
-#include "Database.hpp"
-#include "EquipDataProvider.hpp"
-#include "GameLogicUtilities.hpp"
-#include "Inventory.hpp"
-#include "InventoryPacket.hpp"
-#include "InventoryPacketHelper.hpp"
-#include "ItemConstants.hpp"
-#include "ItemDataProvider.hpp"
-#include "Map.hpp"
-#include "MiscUtilities.hpp"
-#include "Pet.hpp"
-#include "PetsPacket.hpp"
-#include "Player.hpp"
-#include "PlayerPacket.hpp"
-#include "PlayerPacketHelper.hpp"
-#include "TimeUtilities.hpp"
+#include "Common/Algorithm.hpp"
+#include "Common/Database.hpp"
+#include "Common/EquipDataProvider.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/ItemConstants.hpp"
+#include "Common/ItemDataProvider.hpp"
+#include "Common/MiscUtilities.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Inventory.hpp"
+#include "ChannelServer/InventoryPacket.hpp"
+#include "ChannelServer/InventoryPacketHelper.hpp"
+#include "ChannelServer/Map.hpp"
+#include "ChannelServer/Pet.hpp"
+#include "ChannelServer/PetsPacket.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
+#include "ChannelServer/PlayerPacketHelper.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 PlayerInventory::PlayerInventory(Player *player, const array_t<inventory_slot_count_t, Inventories::InventoryCount> &maxSlots, mesos_t mesos) :
 	m_maxSlots{maxSlots},
@@ -692,4 +693,5 @@ auto PlayerInventory::checkExpiredItems() -> void {
 	}
 }
 
+}
 }

@@ -17,13 +17,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Types.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
 	class PacketReader;
-	class Player;
 
-	namespace PartyHandler {
-		auto handleRequest(Player *player, PacketReader &reader) -> void;
+	namespace ChannelServer {
+		class Player;
+
+		namespace PartyHandler {
+			auto handleRequest(Player *player, PacketReader &reader) -> void;
+		}
 	}
 }

@@ -16,30 +16,31 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerDataProvider.hpp"
-#include "Algorithm.hpp"
-#include "BuddyListPacket.hpp"
-#include "ChannelServer.hpp"
-#include "Database.hpp"
-#include "InterHeader.hpp"
-#include "InterHelper.hpp"
-#include "PacketBuilder.hpp"
-#include "PacketReader.hpp"
-#include "PacketWrapper.hpp"
-#include "Party.hpp"
-#include "PartyData.hpp"
-#include "PartyPacket.hpp"
-#include "Player.hpp"
-#include "PlayerPacket.hpp"
-#include "PlayersPacket.hpp"
-#include "Session.hpp"
-#include "SmsgHeader.hpp"
-#include "StringUtilities.hpp"
-#include "SyncPacket.hpp"
-#include "TimeUtilities.hpp"
+#include "Common/Algorithm.hpp"
+#include "Common/Database.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/InterHelper.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/PacketWrapper.hpp"
+#include "Common/PartyData.hpp"
+#include "Common/Session.hpp"
+#include "Common/StringUtilities.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "ChannelServer/BuddyListPacket.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Party.hpp"
+#include "ChannelServer/PartyPacket.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
+#include "ChannelServer/PlayersPacket.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
+#include "ChannelServer/SyncPacket.hpp"
 #include <algorithm>
 #include <cstring>
 
 namespace Vana {
+namespace ChannelServer {
 
 auto PlayerDataProvider::parseChannelConnectPacket(PacketReader &reader) -> void {
 	// Players
@@ -255,7 +256,7 @@ auto PlayerDataProvider::handleGroupChat(int8_t chatType, player_id_t playerId, 
 	}
 
 	if (nonPresentReceivers.size() > 0) {
-		ChannelServer::getInstance().sendWorld(Packets::prepend(packet, [&nonPresentReceivers](PacketBuilder &builder) {
+		ChannelServer::getInstance().sendWorld(Vana::Packets::prepend(packet, [&nonPresentReceivers](PacketBuilder &builder) {
 			builder.add<header_t>(IMSG_TO_PLAYER_LIST);
 			builder.add<vector_t<player_id_t>>(nonPresentReceivers);
 		}));
@@ -281,7 +282,7 @@ auto PlayerDataProvider::handleGmChat(Player *player, const chat_t &chat) -> voi
 	}
 
 	if (nonPresentReceivers.size() > 0) {
-		ChannelServer::getInstance().sendWorld(Packets::prepend(packet, [&nonPresentReceivers](PacketBuilder &builder) {
+		ChannelServer::getInstance().sendWorld(Vana::Packets::prepend(packet, [&nonPresentReceivers](PacketBuilder &builder) {
 			builder.add<header_t>(IMSG_TO_PLAYER_LIST);
 			builder.add<vector_t<player_id_t>>(nonPresentReceivers);
 		}));
@@ -634,4 +635,5 @@ auto PlayerDataProvider::readdBuddy(PacketReader &reader) -> void {
 	}
 }
 
+}
 }

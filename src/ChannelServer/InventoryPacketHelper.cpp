@@ -16,9 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InventoryPacketHelper.hpp"
-#include "MapConstants.hpp"
+#include "Common/MapConstants.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace Helpers {
 
@@ -30,12 +31,13 @@ PACKET_IMPL(fillRockPacket, const vector_t<map_id_t> &vec, size_t maxSize) {
 		remaining++;
 	}
 	while (remaining <= maxSize) {
-		builder.add<map_id_t>(Maps::NoMap);
+		builder.add<map_id_t>(Vana::Maps::NoMap);
 		remaining++;
 	}
 	return builder;
 }
 
+}
 }
 }
 }

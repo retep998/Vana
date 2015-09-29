@@ -15,21 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#pragma once
 
-#include "Common/AbstractServerConnection.hpp"
+// No need for header guard, this precompiled header file will never
+// be included twice.
 
-namespace Vana {
-	class PacketReader;
-
-	namespace ChannelServer {
-		class WorldServerConnection final : public AbstractServerConnection {
-			NONCOPYABLE(WorldServerConnection);
-		public:
-			WorldServerConnection();
-			~WorldServerConnection();
-		protected:
-			auto handleRequest(PacketReader &reader) -> void override;
-		};
-	}
-}
+#include "Common/PrecompiledHeader.hpp" // Common project precompiled header

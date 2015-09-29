@@ -16,45 +16,46 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaScriptable.hpp"
-#include "Algorithm.hpp"
-#include "BeautyDataProvider.hpp"
-#include "ChannelServer.hpp"
-#include "Drop.hpp"
-#include "EffectPacket.hpp"
-#include "EventDataProvider.hpp"
-#include "GameConstants.hpp"
-#include "GameLogicUtilities.hpp"
-#include "Instance.hpp"
-#include "Instances.hpp"
-#include "InterHeader.hpp"
-#include "Inventory.hpp"
-#include "InventoryPacket.hpp"
-#include "ItemConstants.hpp"
-#include "ItemDataProvider.hpp"
-#include "MapPacket.hpp"
-#include "Maps.hpp"
-#include "McdbVersion.hpp"
-#include "Mob.hpp"
-#include "Npc.hpp"
-#include "NpcHandler.hpp"
-#include "PacketWrapper.hpp"
-#include "Party.hpp"
-#include "PartyHandler.hpp"
-#include "Player.hpp"
-#include "PlayerPacket.hpp"
-#include "PlayerDataProvider.hpp"
-#include "PlayersPacket.hpp"
-#include "Quests.hpp"
-#include "Randomizer.hpp"
-#include "Reactor.hpp"
-#include "ScriptDataProvider.hpp"
-#include "ShopDataProvider.hpp"
-#include "StringUtilities.hpp"
-#include "TimeUtilities.hpp"
+#include "Common/Algorithm.hpp"
+#include "Common/BeautyDataProvider.hpp"
+#include "Common/GameConstants.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/ItemConstants.hpp"
+#include "Common/ItemDataProvider.hpp"
+#include "Common/McdbVersion.hpp"
+#include "Common/PacketWrapper.hpp"
+#include "Common/Randomizer.hpp"
+#include "Common/ScriptDataProvider.hpp"
+#include "Common/ShopDataProvider.hpp"
+#include "Common/StringUtilities.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Drop.hpp"
+#include "ChannelServer/EffectPacket.hpp"
+#include "ChannelServer/EventDataProvider.hpp"
+#include "ChannelServer/Instance.hpp"
+#include "ChannelServer/Instances.hpp"
+#include "ChannelServer/Inventory.hpp"
+#include "ChannelServer/InventoryPacket.hpp"
+#include "ChannelServer/MapPacket.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Mob.hpp"
+#include "ChannelServer/Npc.hpp"
+#include "ChannelServer/NpcHandler.hpp"
+#include "ChannelServer/Party.hpp"
+#include "ChannelServer/PartyHandler.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/PlayersPacket.hpp"
+#include "ChannelServer/Quests.hpp"
+#include "ChannelServer/Reactor.hpp"
 #include <iostream>
 #include <vector>
 
 namespace Vana {
+namespace ChannelServer {
 
 // TODO FIXME msvc
 // Remove this when MSVC supports static init
@@ -531,7 +532,7 @@ auto LuaExports::showGlobalMessage(lua_State *luaVm) -> lua_return_t {
 	string_t msg = env.get<string_t>(luaVm, 1);
 	int8_t type = env.get<int8_t>(luaVm, 2);
 	ChannelServer::getInstance().sendWorld(
-		Packets::prepend(Packets::Player::showMessage(msg, type), [](PacketBuilder &builder) {
+		Vana::Packets::prepend(Packets::Player::showMessage(msg, type), [](PacketBuilder &builder) {
 			builder.add<header_t>(IMSG_TO_LOGIN);
 			builder.add<header_t>(IMSG_TO_ALL_WORLDS);
 			builder.add<header_t>(IMSG_TO_ALL_CHANNELS);
@@ -545,7 +546,7 @@ auto LuaExports::showWorldMessage(lua_State *luaVm) -> lua_return_t {
 	string_t msg = env.get<string_t>(luaVm, 1);
 	int8_t type = env.get<int8_t>(luaVm, 2);
 	ChannelServer::getInstance().sendWorld(
-		Packets::prepend(Packets::Player::showMessage(msg, type), [](PacketBuilder &builder) {
+		Vana::Packets::prepend(Packets::Player::showMessage(msg, type), [](PacketBuilder &builder) {
 			builder.add<header_t>(IMSG_TO_ALL_CHANNELS);
 			builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
 		}));
@@ -2177,7 +2178,7 @@ auto LuaExports::removeInstancePlayer(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::respawnInstanceMobs(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	map_id_t mapId = Maps::NoMap;
+	map_id_t mapId = Vana::Maps::NoMap;
 	if (env.is(luaVm, 1, LuaType::Number)) {
 		mapId = env.get<map_id_t>(luaVm, 1);
 	}
@@ -2187,7 +2188,7 @@ auto LuaExports::respawnInstanceMobs(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::respawnInstanceReactors(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	map_id_t mapId = Maps::NoMap;
+	map_id_t mapId = Vana::Maps::NoMap;
 	if (env.is(luaVm, 1, LuaType::Number)) {
 		mapId = env.get<map_id_t>(luaVm, 1);
 	}
@@ -2278,4 +2279,5 @@ auto LuaExports::stopInstanceTimer(lua_State *luaVm) -> lua_return_t {
 	return 0;
 }
 
+}
 }

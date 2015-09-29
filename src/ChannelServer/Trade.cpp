@@ -16,17 +16,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Trade.hpp"
-#include "ChannelServer.hpp"
-#include "GameLogicUtilities.hpp"
-#include "Inventory.hpp"
-#include "InventoryPacket.hpp"
-#include "ItemDataProvider.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "TradeHandler.hpp"
-#include "Trades.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/ItemDataProvider.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Inventory.hpp"
+#include "ChannelServer/InventoryPacket.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/TradeHandler.hpp"
+#include "ChannelServer/Trades.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 ActiveTrade::ActiveTrade(Player *sender, Player *receiver, trade_id_t id) :
 	m_id{id}
@@ -213,7 +214,7 @@ auto ActiveTrade::addMesos(Player *holder, TradeInfo *unit, mesos_t amount) -> m
 }
 
 auto ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, trade_slot_t tradeSlot, inventory_slot_t inventorySlot, inventory_t inventory, slot_qty_t amount) -> Item * {
-	Item *use = new Item(item);
+	auto use = new Item{item};
 	if (amount == item->getAmount() || GameLogicUtilities::isEquip(item->getId())) {
 		holder->getInventory()->setItem(inventory, inventorySlot, nullptr);
 
@@ -248,4 +249,5 @@ auto ActiveTrade::getReceiver() -> Player * {
 	return ChannelServer::getInstance().getPlayerDataProvider().getPlayer(m_receiverId);
 }
 
+}
 }

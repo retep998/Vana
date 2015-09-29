@@ -17,24 +17,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "TimerContainerHolder.hpp"
-#include "Types.hpp"
-#include "Variables.hpp"
+#include "Common/TimerContainerHolder.hpp"
+#include "Common/Types.hpp"
+#include "Common/Variables.hpp"
 #include <memory>
 #include <string>
 
 namespace Vana {
-	class EventDataProvider : public TimerContainerHolder {
-	public:
-		EventDataProvider();
-		auto loadData() -> void;
-		auto clearInstances() -> void;
-		auto getVariables() const -> Variables * { return m_variables.get(); }
-	private:
-		auto loadEvents() -> void;
-		auto loadInstances() -> void;
-		auto startInstance(const string_t &name, const duration_t &time, const duration_t &repeat = seconds_t{0}) -> void;
+	namespace ChannelServer {
+		class EventDataProvider : public TimerContainerHolder {
+		public:
+			EventDataProvider();
+			auto loadData() -> void;
+			auto clearInstances() -> void;
+			auto getVariables() const -> Variables * { return m_variables.get(); }
+		private:
+			auto loadEvents() -> void;
+			auto loadInstances() -> void;
+			auto startInstance(const string_t &name, const duration_t &time, const duration_t &repeat = seconds_t{0}) -> void;
 
-		owned_ptr_t<Variables> m_variables;
-	};
+			owned_ptr_t<Variables> m_variables;
+		};
+	}
 }

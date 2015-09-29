@@ -16,15 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "BuffsPacket.hpp"
-#include "Buffs.hpp"
-#include "BuffsPacketHelper.hpp"
-#include "Maps.hpp"
-#include "Player.hpp"
-#include "Session.hpp"
-#include "SkillConstants.hpp"
-#include "SmsgHeader.hpp"
+#include "Common/Session.hpp"
+#include "Common/SkillConstants.hpp"
+#include "ChannelServer/Buffs.hpp"
+#include "ChannelServer/BuffsPacketHelper.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 
 SPLIT_PACKET_IMPL(addBuff, player_id_t playerId, int32_t buffId, const seconds_t &time, const BuffPacketValues &buff, int16_t addedInfo) {
@@ -98,5 +99,6 @@ SPLIT_PACKET_IMPL(endBuff, player_id_t playerId, const BuffPacketValues &buff) {
 	return builder;
 }
 
+}
 }
 }

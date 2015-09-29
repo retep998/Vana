@@ -16,16 +16,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "BuffsPacketHelper.hpp"
-#include "Buffs.hpp"
-#include "PlayerActiveBuffs.hpp"
+#include "ChannelServer/Buffs.hpp"
+#include "ChannelServer/PlayerActiveBuffs.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace Helpers {
 
 PACKET_IMPL(addBuffBytes, const buff_array_t &bytes) {
 	PacketBuilder builder;
-	for (uint8_t i = 0; i < Buffs::ByteQuantity; i++) {
+	for (uint8_t i = 0; i < Vana::Buffs::ByteQuantity; i++) {
 		size_t packetIndex = 0;
 		// This is the order they show up in, ludicrously enough
 		switch (i) {
@@ -83,6 +84,7 @@ PACKET_IMPL(addBuffMapValues, const BuffPacketStructure &buff) {
 	return builder;
 }
 
+}
 }
 }
 }

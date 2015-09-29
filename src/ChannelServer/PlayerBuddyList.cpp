@@ -16,18 +16,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerBuddyList.hpp"
-#include "Algorithm.hpp"
-#include "BuddyListPacket.hpp"
-#include "ChannelServer.hpp"
-#include "Database.hpp"
-#include "GameConstants.hpp"
-#include "MiscUtilities.hpp"
-#include "Player.hpp"
-#include "StringUtilities.hpp"
-#include "SyncPacket.hpp"
+#include "Common/Algorithm.hpp"
+#include "Common/Database.hpp"
+#include "Common/GameConstants.hpp"
+#include "Common/MiscUtilities.hpp"
+#include "Common/StringUtilities.hpp"
+#include "ChannelServer/BuddyListPacket.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/SyncPacket.hpp"
 #include <algorithm>
 
 namespace Vana {
+namespace ChannelServer {
 
 PlayerBuddyList::PlayerBuddyList(Player *player) :
 	m_player{player}
@@ -359,4 +360,5 @@ auto PlayerBuddyList::getBuddyIds() -> vector_t<player_id_t> {
 	return ids;
 }
 
+}
 }

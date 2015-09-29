@@ -16,62 +16,63 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Player.hpp"
-#include "BuddyListHandler.hpp"
-#include "BuddyListPacket.hpp"
-#include "ChannelServer.hpp"
-#include "ChatHandler.hpp"
-#include "CmsgHeader.hpp"
-#include "CommonHeader.hpp"
-#include "CommandHandler.hpp"
-#include "Database.hpp"
-#include "DropHandler.hpp"
-#include "Fame.hpp"
-#include "GameConstants.hpp"
-#include "GameLogicUtilities.hpp"
-#include "Instance.hpp"
-#include "Inventory.hpp"
-#include "InventoryHandler.hpp"
-#include "InventoryPacket.hpp"
-#include "ItemDataProvider.hpp"
-#include "KeyMaps.hpp"
-#include "LevelsPacket.hpp"
-#include "Map.hpp"
-#include "MapPacket.hpp"
-#include "Maps.hpp"
-#include "MobHandler.hpp"
-#include "MonsterBookPacket.hpp"
-#include "MysticDoor.hpp"
-#include "Npc.hpp"
-#include "NpcHandler.hpp"
-#include "PacketBuilder.hpp"
-#include "PacketReader.hpp"
-#include "PacketWrapper.hpp"
-#include "Party.hpp"
-#include "PartyHandler.hpp"
-#include "Pet.hpp"
-#include "PetHandler.hpp"
-#include "PlayerDataProvider.hpp"
-#include "PlayerHandler.hpp"
-#include "PlayerPacket.hpp"
-#include "Quests.hpp"
-#include "Randomizer.hpp"
-#include "ReactorHandler.hpp"
-#include "ServerPacket.hpp"
-#include "Session.hpp"
-#include "SkillMacros.hpp"
-#include "Skills.hpp"
-#include "SplitPacketBuilder.hpp"
-#include "StringUtilities.hpp"
-#include "Summon.hpp"
-#include "SummonHandler.hpp"
-#include "SyncPacket.hpp"
-#include "TimeUtilities.hpp"
-#include "TradeHandler.hpp"
-#include "WorldServerConnection.hpp"
+#include "Common/CommonHeader.hpp"
+#include "Common/Database.hpp"
+#include "Common/GameConstants.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/ItemDataProvider.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/PacketWrapper.hpp"
+#include "Common/Randomizer.hpp"
+#include "Common/Session.hpp"
+#include "Common/SplitPacketBuilder.hpp"
+#include "Common/StringUtilities.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "ChannelServer/BuddyListHandler.hpp"
+#include "ChannelServer/BuddyListPacket.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/ChatHandler.hpp"
+#include "ChannelServer/CmsgHeader.hpp"
+#include "ChannelServer/CommandHandler.hpp"
+#include "ChannelServer/DropHandler.hpp"
+#include "ChannelServer/Fame.hpp"
+#include "ChannelServer/Instance.hpp"
+#include "ChannelServer/Inventory.hpp"
+#include "ChannelServer/InventoryHandler.hpp"
+#include "ChannelServer/InventoryPacket.hpp"
+#include "ChannelServer/KeyMaps.hpp"
+#include "ChannelServer/LevelsPacket.hpp"
+#include "ChannelServer/Map.hpp"
+#include "ChannelServer/MapPacket.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/MobHandler.hpp"
+#include "ChannelServer/MonsterBookPacket.hpp"
+#include "ChannelServer/MysticDoor.hpp"
+#include "ChannelServer/Npc.hpp"
+#include "ChannelServer/NpcHandler.hpp"
+#include "ChannelServer/Party.hpp"
+#include "ChannelServer/PartyHandler.hpp"
+#include "ChannelServer/Pet.hpp"
+#include "ChannelServer/PetHandler.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/PlayerHandler.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
+#include "ChannelServer/Quests.hpp"
+#include "ChannelServer/ReactorHandler.hpp"
+#include "ChannelServer/ServerPacket.hpp"
+#include "ChannelServer/SkillMacros.hpp"
+#include "ChannelServer/Skills.hpp"
+#include "ChannelServer/Summon.hpp"
+#include "ChannelServer/SummonHandler.hpp"
+#include "ChannelServer/SyncPacket.hpp"
+#include "ChannelServer/TradeHandler.hpp"
+#include "ChannelServer/WorldServerConnection.hpp"
 #include <array>
 #include <stdexcept>
 
 namespace Vana {
+namespace ChannelServer {
 
 Player::Player() :
 	MovableLife{0, Point{}, 0}
@@ -363,11 +364,11 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 
 	if (isGm() || isAdmin()) {
 		if (firstConnect) {
-			m_map = Maps::GmMap;
+			m_map = Vana::Maps::GmMap;
 			m_mapPos = -1;
 		}
 	}
-	else if (Maps::getMap(m_map)->getForcedReturn() != Maps::NoMap) {
+	else if (Maps::getMap(m_map)->getForcedReturn() != Vana::Maps::NoMap) {
 		m_map = Maps::getMap(m_map)->getForcedReturn();
 		m_mapPos = -1;
 	}
@@ -838,4 +839,5 @@ auto Player::sendMap(const SplitPacketBuilder &builder) -> void {
 	getMap()->send(builder, this);
 }
 
+}
 }

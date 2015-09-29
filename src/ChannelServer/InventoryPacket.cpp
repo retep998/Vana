@@ -16,22 +16,23 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InventoryPacket.hpp"
-#include "ChannelServer.hpp"
-#include "GameLogicUtilities.hpp"
-#include "InterHeader.hpp"
-#include "Inventory.hpp"
-#include "InventoryPacketHelper.hpp"
-#include "ItemConstants.hpp"
-#include "Map.hpp"
-#include "Maps.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "PlayerInventory.hpp"
-#include "PlayerPacketHelper.hpp"
-#include "Session.hpp"
-#include "SmsgHeader.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/ItemConstants.hpp"
+#include "Common/Session.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Inventory.hpp"
+#include "ChannelServer/InventoryPacketHelper.hpp"
+#include "ChannelServer/Map.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/PlayerInventory.hpp"
+#include "ChannelServer/PlayerPacketHelper.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace Inventory {
 
@@ -391,6 +392,7 @@ PACKET_IMPL(sendItemExpired, const vector_t<item_id_t> &items) {
 	return builder;
 }
 
+}
 }
 }
 }

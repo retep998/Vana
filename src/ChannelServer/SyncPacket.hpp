@@ -17,39 +17,42 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "InterHelper.hpp"
-#include "PacketBuilder.hpp"
-#include "PlayerData.hpp"
-#include "Types.hpp"
+#include "Common/InterHelper.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/PlayerData.hpp"
+#include "Common/Types.hpp"
 #include <string>
 #include <vector>
 
 namespace Vana {
-	class Player;
 	struct RatesConfig;
 
-	namespace Packets {
-		namespace Interserver {
-			namespace Config {
-				PACKET(scrollingHeader, const string_t &message);
-				PACKET(resetRates, int32_t flags);
-				PACKET(modifyRates, const RatesConfig &rates);
-			}
-			namespace Player {
-				PACKET(changeChannel, Vana::Player *info, channel_id_t channel);
-				PACKET(connectableEstablished, player_id_t playerId);
-				PACKET(connect, const PlayerData &player, bool firstConnect);
-				PACKET(disconnect, player_id_t playerId);
-				PACKET(updatePlayer, const PlayerData &player, update_bits_t flags);
-			}
-			namespace Party {
-				PACKET(sync, int8_t type, player_id_t playerId, int32_t target = 0);
-			}
-			namespace Buddy {
-				PACKET(buddyInvite, player_id_t inviterId, player_id_t inviteeId);
-				PACKET(acceptBuddyInvite, player_id_t inviteeId, player_id_t inviterId);
-				PACKET(removeBuddy, player_id_t listOwnerId, player_id_t removalId);
-				PACKET(readdBuddy, player_id_t listOwnerId, player_id_t buddyId);
+	namespace ChannelServer {
+		class Player;
+
+		namespace Packets {
+			namespace Interserver {
+				namespace Config {
+					PACKET(scrollingHeader, const string_t &message);
+					PACKET(resetRates, int32_t flags);
+					PACKET(modifyRates, const RatesConfig &rates);
+				}
+				namespace Player {
+					PACKET(changeChannel, Vana::ChannelServer::Player *info, channel_id_t channel);
+					PACKET(connectableEstablished, player_id_t playerId);
+					PACKET(connect, const PlayerData &player, bool firstConnect);
+					PACKET(disconnect, player_id_t playerId);
+					PACKET(updatePlayer, const PlayerData &player, update_bits_t flags);
+				}
+				namespace Party {
+					PACKET(sync, int8_t type, player_id_t playerId, int32_t target = 0);
+				}
+				namespace Buddy {
+					PACKET(buddyInvite, player_id_t inviterId, player_id_t inviteeId);
+					PACKET(acceptBuddyInvite, player_id_t inviteeId, player_id_t inviterId);
+					PACKET(removeBuddy, player_id_t listOwnerId, player_id_t removalId);
+					PACKET(readdBuddy, player_id_t listOwnerId, player_id_t buddyId);
+				}
 			}
 		}
 	}

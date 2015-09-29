@@ -16,22 +16,23 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayersPacket.hpp"
-#include "AttackData.hpp"
+#include "Common/AttackData.hpp"
+#include "Common/GameConstants.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/ReturnDamageData.hpp"
+#include "Common/Session.hpp"
+#include "Common/WidePoint.hpp"
 #include "ChannelServer.hpp"
-#include "GameConstants.hpp"
-#include "GameLogicUtilities.hpp"
-#include "InterHeader.hpp"
-#include "Maps.hpp"
-#include "PacketReader.hpp"
-#include "Pet.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "ReturnDamageData.hpp"
-#include "Session.hpp"
-#include "SmsgHeader.hpp"
-#include "WidePoint.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Pet.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace Players {
 
@@ -108,7 +109,7 @@ SPLIT_PACKET_IMPL(damagePlayer, player_id_t playerId, damage_t dmg, mob_id_t mob
 	return builder;
 }
 
-PACKET_IMPL(showInfo, Vana::Player *getInfo, bool isSelf) {
+PACKET_IMPL(showInfo, Vana::ChannelServer::Player *getInfo, bool isSelf) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PLAYER_INFO)
@@ -175,7 +176,7 @@ SPLIT_PACKET_IMPL(useMeleeAttack, player_id_t playerId, skill_id_t masterySkillI
 		.add<int8_t>(hitByte)
 		.add<skill_level_t>(attack.skillLevel);
 
-	if (skillId != Skills::All::RegularAttack) {
+	if (skillId != Vana::Skills::All::RegularAttack) {
 		builder.map.add<skill_id_t>(skillId);
 	}
 
@@ -211,7 +212,7 @@ SPLIT_PACKET_IMPL(useRangedAttack, player_id_t playerId, skill_id_t masterySkill
 		.add<int8_t>((attack.targets * 0x10) + attack.hits)
 		.add<skill_level_t>(attack.skillLevel);
 
-	if (skillId != Skills::All::RegularAttack) {
+	if (skillId != Vana::Skills::All::RegularAttack) {
 		builder.map.add<skill_id_t>(skillId);
 	}
 
@@ -232,7 +233,7 @@ SPLIT_PACKET_IMPL(useRangedAttack, player_id_t playerId, skill_id_t masterySkill
 		for (const auto &hit : target.second) {
 			damage_t damage = hit;
 			switch (skillId) {
-				case Skills::Marksman::Snipe: // Snipe is always crit
+				case Vana::Skills::Marksman::Snipe: // Snipe is always crit
 					damage |= 0x80000000; // Critical damage = 0x80000000 + damage
 					break;
 				default:
@@ -333,6 +334,7 @@ SPLIT_PACKET_IMPL(useEnergyChargeAttack, player_id_t playerId, int32_t masterySk
 	return builder;
 }
 
+}
 }
 }
 }

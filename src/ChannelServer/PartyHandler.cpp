@@ -16,16 +16,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PartyHandler.hpp"
-#include "ChannelServer.hpp"
-#include "InterHelper.hpp"
-#include "PacketReader.hpp"
-#include "Party.hpp"
-#include "PartyPacket.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "SyncPacket.hpp"
+#include "Common/InterHelper.hpp"
+#include "Common/PacketReader.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Party.hpp"
+#include "ChannelServer/PartyPacket.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/SyncPacket.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 auto PartyHandler::handleRequest(Player *player, PacketReader &reader) -> void {
 	int8_t type = reader.get<int8_t>();
@@ -73,4 +74,5 @@ auto PartyHandler::handleRequest(Player *player, PacketReader &reader) -> void {
 	}
 }
 
+}
 }

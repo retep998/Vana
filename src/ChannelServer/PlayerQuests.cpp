@@ -16,19 +16,20 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerQuests.hpp"
-#include "Algorithm.hpp"
-#include "ChannelServer.hpp"
-#include "Database.hpp"
-#include "GameLogicUtilities.hpp"
-#include "Inventory.hpp"
-#include "Player.hpp"
-#include "QuestDataProvider.hpp"
-#include "QuestsPacket.hpp"
-#include "Randomizer.hpp"
-#include "TimeUtilities.hpp"
+#include "Common/Algorithm.hpp"
+#include "Common/Database.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/QuestDataProvider.hpp"
+#include "Common/Randomizer.hpp"
+#include "Common/TimeUtilities.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Inventory.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/QuestsPacket.hpp"
 #include <array>
 
 namespace Vana {
+namespace ChannelServer {
 
 PlayerQuests::PlayerQuests(Player *player) :
 	m_player{player}
@@ -444,4 +445,5 @@ auto PlayerQuests::getQuestData(quest_id_t id) -> string_t {
 	return isQuestActive(id) ? m_quests[id].data : "";
 }
 
+}
 }

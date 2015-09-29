@@ -16,12 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Reactor.hpp"
-#include "DropHandler.hpp"
-#include "Maps.hpp"
-#include "Player.hpp"
-#include "ReactorPacket.hpp"
+#include "ChannelServer/DropHandler.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/ReactorPacket.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 Reactor::Reactor(map_id_t mapId, reactor_id_t reactorId, const Point &pos, bool facesLeft) :
 	m_reactorId{reactorId},
@@ -53,4 +54,5 @@ auto Reactor::getMap() const -> Map * {
 	return Maps::getMap(m_mapId);
 }
 
+}
 }

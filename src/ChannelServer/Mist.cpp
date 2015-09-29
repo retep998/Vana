@@ -16,12 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Mist.hpp"
-#include "Maps.hpp"
-#include "Mob.hpp"
-#include "Player.hpp"
-#include "SkillDataProvider.hpp"
+#include "Common/SkillDataProvider.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Mob.hpp"
+#include "ChannelServer/Player.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 Mist::Mist(map_id_t mapId, Player *owner, seconds_t time, const Rect &area, skill_id_t skillId, skill_level_t level, bool isPoison) :
 	m_ownerMap{mapId},
@@ -52,4 +53,5 @@ auto Mist::getMap() const -> Map * {
 	return Maps::getMap(m_ownerMap);
 }
 
+}
 }

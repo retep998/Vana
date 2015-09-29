@@ -16,18 +16,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Buffs.hpp"
-#include "Algorithm.hpp"
-#include "BuffDataProvider.hpp"
-#include "BuffsPacket.hpp"
-#include "ChannelServer.hpp"
-#include "GameLogicUtilities.hpp"
-#include "Map.hpp"
-#include "Player.hpp"
-#include "SkillConstants.hpp"
-#include "SkillDataProvider.hpp"
-#include "SummonHandler.hpp"
+#include "Common/Algorithm.hpp"
+#include "Common/BuffDataProvider.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/SkillConstants.hpp"
+#include "Common/SkillDataProvider.hpp"
+#include "ChannelServer/BuffsPacket.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Map.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/SummonHandler.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 auto Buffs::addBuff(Player *player, skill_id_t skillId, skill_level_t level, int16_t addedInfo, map_object_t mapMobId) -> Result {
 	auto source = BuffSource::fromSkill(skillId, level);
@@ -39,11 +40,11 @@ auto Buffs::addBuff(Player *player, skill_id_t skillId, skill_level_t level, int
 	auto skill = source.getSkillData(ChannelServer::getInstance().getSkillDataProvider());
 	seconds_t time = skill->buffTime;
 	switch (skillId) {
-		case Skills::DragonKnight::DragonRoar:
+		case Vana::Skills::DragonKnight::DragonRoar:
 			time = seconds_t{skill->y};
 			break;
-		case Skills::SuperGm::Hide:
-			time = Buffs::MaxBuffTime;
+		case Vana::Skills::SuperGm::Hide:
+			time = Vana::Buffs::MaxBuffTime;
 			break;
 	}
 
@@ -313,18 +314,18 @@ auto Buffs::getValue(Player *player, const BuffSource &source, const seconds_t &
 
 				case BuffSkillValue::SpecialProcessing:
 					switch (skillId) {
-						case Skills::Crusader::ComboAttack:
-						case Skills::DawnWarrior::ComboAttack:
+						case Vana::Skills::Crusader::ComboAttack:
+						case Vana::Skills::DawnWarrior::ComboAttack:
 							return BuffPacketValue::fromValue(
 								buffValueSize,
 								player->getActiveBuffs()->getCombo() + 1
 							);
-						case Skills::NightLord::ShadowStars:
+						case Vana::Skills::NightLord::ShadowStars:
 							return BuffPacketValue::fromValue(
 								buffValueSize,
 								(player->getInventory()->doShadowStars() % 10000) + 1
 							);
-						case Skills::SuperGm::Hide:
+						case Vana::Skills::SuperGm::Hide:
 							// TODO FIXME BUFFS
 							return BuffPacketValue::fromValue(buffValueSize, 1);
 					}
@@ -401,4 +402,5 @@ auto Buffs::getValue(Player *player, const BuffSource &source, const seconds_t &
 	throw NotImplementedException{"BuffSourceType"};
 }
 
+}
 }

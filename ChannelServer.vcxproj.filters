@@ -648,5 +648,6 @@
     <ClInclude Include="src\ChannelServer\MysticDoor.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
+    <ClInclude Include="src\ChannelServer\PrecompiledHeader.hpp" />
   </ItemGroup>
 </Project>

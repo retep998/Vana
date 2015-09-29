@@ -16,10 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SkillMacros.hpp"
-#include "Database.hpp"
-#include "MiscUtilities.hpp"
+#include "Common/Database.hpp"
+#include "Common/MiscUtilities.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 auto SkillMacros::load(player_id_t charId) -> void {
 	auto &db = Database::getCharDb();
@@ -68,4 +69,5 @@ auto SkillMacros::save(player_id_t charId) -> void {
 	}
 }
 
+}
 }

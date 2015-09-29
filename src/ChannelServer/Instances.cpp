@@ -16,10 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Instances.hpp"
-#include "StringUtilities.hpp"
+#include "Common/StringUtilities.hpp"
 #include <algorithm>
 
 namespace Vana {
+namespace ChannelServer {
 
 auto Instances::addInstance(Instance *instance) -> void {
 	m_instances[instance->getName()] = instance;
@@ -45,4 +46,5 @@ auto Instances::isInstance(const string_t &name) -> bool {
 	return exists;
 }
 
+}
 }

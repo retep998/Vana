@@ -16,11 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "GmPacket.hpp"
-#include "Player.hpp"
-#include "Session.hpp"
-#include "SmsgHeader.hpp"
+#include "Common/Session.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace Gm {
 
@@ -96,6 +97,7 @@ PACKET_IMPL(setGetVarResult, const string_t &name, const string_t &variable, con
 	return builder;
 }
 
+}
 }
 }
 }

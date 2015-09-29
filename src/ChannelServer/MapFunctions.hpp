@@ -17,28 +17,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "ChatHandlerFunctions.hpp"
+#include "ChannelServer/ChatHandlerFunctions.hpp"
 
 namespace Vana {
-	class Player;
+	namespace ChannelServer {
+		class Player;
 
-	namespace MapFunctions {
-		auto eventInstruction(Player *player, const chat_t &args) -> ChatResult;
-		auto instruction(Player *player, const chat_t &args) -> ChatResult;
-		auto timer(Player *player, const chat_t &args) -> ChatResult;
-		auto killMob(Player *player, const chat_t &args) -> ChatResult;
-		auto getMobHp(Player *player, const chat_t &args) -> ChatResult;
-		auto listMobs(Player *player, const chat_t &args) -> ChatResult;
-		auto listPortals(Player *player, const chat_t &args) -> ChatResult;
-		auto listReactors(Player *player, const chat_t &args) -> ChatResult;
-		auto listPlayers(Player *player, const chat_t &args) -> ChatResult;
-		auto listNpcs(Player *player, const chat_t &args) -> ChatResult;
-		auto mapDimensions(Player *player, const chat_t &args) -> ChatResult;
-		auto zakum(Player *player, const chat_t &args) -> ChatResult;
-		auto horntail(Player *player, const chat_t &args) -> ChatResult;
-		auto music(Player *player, const chat_t &args) -> ChatResult;
-		auto summon(Player *player, const chat_t &args) -> ChatResult;
-		auto clearDrops(Player *player, const chat_t &args) -> ChatResult;
-		auto killAllMobs(Player *player, const chat_t &args) -> ChatResult;
+		namespace MapFunctions {
+			auto eventInstruction(Player *player, const chat_t &args) -> ChatResult;
+			auto instruction(Player *player, const chat_t &args) -> ChatResult;
+			auto timer(Player *player, const chat_t &args) -> ChatResult;
+			auto killMob(Player *player, const chat_t &args) -> ChatResult;
+			auto getMobHp(Player *player, const chat_t &args) -> ChatResult;
+			auto listMobs(Player *player, const chat_t &args) -> ChatResult;
+			auto listPortals(Player *player, const chat_t &args) -> ChatResult;
+			auto listReactors(Player *player, const chat_t &args) -> ChatResult;
+			auto listPlayers(Player *player, const chat_t &args) -> ChatResult;
+			auto listNpcs(Player *player, const chat_t &args) -> ChatResult;
+			auto mapDimensions(Player *player, const chat_t &args) -> ChatResult;
+			auto zakum(Player *player, const chat_t &args) -> ChatResult;
+			auto horntail(Player *player, const chat_t &args) -> ChatResult;
+			auto music(Player *player, const chat_t &args) -> ChatResult;
+			auto summon(Player *player, const chat_t &args) -> ChatResult;
+			auto clearDrops(Player *player, const chat_t &args) -> ChatResult;
+			auto killAllMobs(Player *player, const chat_t &args) -> ChatResult;
+		}
 	}
 }

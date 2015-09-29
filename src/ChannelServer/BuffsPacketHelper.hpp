@@ -17,18 +17,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "PacketBuilder.hpp"
-#include "SkillConstants.hpp"
-#include "Types.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/SkillConstants.hpp"
+#include "Common/Types.hpp"
 #include <array>
 
 namespace Vana {
-	struct BuffPacketStructure;
+	namespace ChannelServer {
+		struct BuffPacketStructure;
 
-	namespace Packets {
-		namespace Helpers {
-			PACKET(addBuffBytes, const buff_array_t &bytes);
-			PACKET(addBuffMapValues, const BuffPacketStructure &buff);
+		namespace Packets {
+			namespace Helpers {
+				PACKET(addBuffBytes, const buff_array_t &bytes);
+				PACKET(addBuffMapValues, const BuffPacketStructure &buff);
+			}
 		}
 	}
 }

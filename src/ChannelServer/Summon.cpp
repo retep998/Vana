@@ -16,11 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Summon.hpp"
-#include "ChannelServer.hpp"
-#include "SkillConstants.hpp"
-#include "SkillDataProvider.hpp"
+#include "Common/SkillConstants.hpp"
+#include "Common/SkillDataProvider.hpp"
+#include "ChannelServer/ChannelServer.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 Summon::Summon(summon_id_t id, skill_id_t summonId, skill_level_t level, bool isFacingLeft, const Point &position, foothold_id_t foothold) :
 	MovableLife{foothold, position, 4},
@@ -30,38 +31,38 @@ Summon::Summon(summon_id_t id, skill_id_t summonId, skill_level_t level, bool is
 {
 	m_actionType = Attack;
 	switch (summonId) {
-		case Skills::Ranger::Puppet:
-		case Skills::Sniper::Puppet:
-		case Skills::WindArcher::Puppet:
+		case Vana::Skills::Ranger::Puppet:
+		case Vana::Skills::Sniper::Puppet:
+		case Vana::Skills::WindArcher::Puppet:
 			m_actionType = DoNothing;
 			m_hp = ChannelServer::getInstance().getSkillDataProvider().getSkill(summonId, level)->x;
 			// Intentional fallthrough
-		case Skills::Outlaw::Octopus:
-		case Skills::Corsair::WrathOfTheOctopi:
+		case Vana::Skills::Outlaw::Octopus:
+		case Vana::Skills::Corsair::WrathOfTheOctopi:
 			m_movementType = Static;
 			break;
-		case Skills::Priest::SummonDragon:
-		case Skills::Ranger::SilverHawk:
-		case Skills::Sniper::GoldenEagle:
-		case Skills::Bowmaster::Phoenix:
-		case Skills::Marksman::Frostprey:
+		case Vana::Skills::Priest::SummonDragon:
+		case Vana::Skills::Ranger::SilverHawk:
+		case Vana::Skills::Sniper::GoldenEagle:
+		case Vana::Skills::Bowmaster::Phoenix:
+		case Vana::Skills::Marksman::Frostprey:
 			m_movementType = FlyClose;
 			break;
-		case Skills::Outlaw::Gaviota:
+		case Vana::Skills::Outlaw::Gaviota:
 			m_movementType = FlyFar;
 			break;
-		case Skills::DarkKnight::Beholder:
+		case Vana::Skills::DarkKnight::Beholder:
 			m_actionType = Beholder;
 			// Intentional fallthrough
-		case Skills::Bishop::Bahamut:
-		case Skills::FpArchMage::Elquines:
-		case Skills::IlArchMage::Ifrit:
-		case Skills::DawnWarrior::Soul:
-		case Skills::BlazeWizard::Flame:
-		case Skills::BlazeWizard::Ifrit:
-		case Skills::WindArcher::Storm:
-		case Skills::NightWalker::Darkness:
-		case Skills::ThunderBreaker::Lightning:
+		case Vana::Skills::Bishop::Bahamut:
+		case Vana::Skills::FpArchMage::Elquines:
+		case Vana::Skills::IlArchMage::Ifrit:
+		case Vana::Skills::DawnWarrior::Soul:
+		case Vana::Skills::BlazeWizard::Flame:
+		case Vana::Skills::BlazeWizard::Ifrit:
+		case Vana::Skills::WindArcher::Storm:
+		case Vana::Skills::NightWalker::Darkness:
+		case Vana::Skills::ThunderBreaker::Lightning:
 			m_movementType = Follow;
 			break;
 		default:
@@ -73,4 +74,5 @@ Summon::Summon(summon_id_t id, skill_id_t summonId, skill_level_t level, bool is
 	}
 }
 
+}
 }

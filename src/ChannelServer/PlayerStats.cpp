@@ -16,33 +16,34 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerStats.hpp"
-#include "Algorithm.hpp"
-#include "ChannelServer.hpp"
-#include "EquipDataProvider.hpp"
-#include "GameConstants.hpp"
-#include "GameLogicUtilities.hpp"
-#include "Instance.hpp"
-#include "InterHeader.hpp"
-#include "Inventory.hpp"
-#include "InventoryPacket.hpp"
-#include "LevelsPacket.hpp"
-#include "Maps.hpp"
-#include "MiscUtilities.hpp"
-#include "PacketReader.hpp"
-#include "PacketWrapper.hpp"
-#include "Party.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "PlayerPacket.hpp"
-#include "PlayersPacket.hpp"
-#include "Randomizer.hpp"
-#include "SkillDataProvider.hpp"
-#include "SummonHandler.hpp"
+#include "Common/Algorithm.hpp"
+#include "Common/EquipDataProvider.hpp"
+#include "Common/GameConstants.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/MiscUtilities.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/PacketWrapper.hpp"
+#include "Common/Randomizer.hpp"
+#include "Common/SkillDataProvider.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Instance.hpp"
+#include "ChannelServer/Inventory.hpp"
+#include "ChannelServer/InventoryPacket.hpp"
+#include "ChannelServer/LevelsPacket.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Party.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
+#include "ChannelServer/PlayersPacket.hpp"
+#include "ChannelServer/SummonHandler.hpp"
 #include <iostream>
 #include <limits>
 #include <string>
 
 namespace Vana {
+namespace ChannelServer {
 
 PlayerStats::PlayerStats(Player *player, player_level_t level, job_id_t job, fame_t fame, stat_t str, stat_t dex, stat_t intt, stat_t luk, stat_t ap, health_ap_t hpMpAp, stat_t sp, health_t hp, health_t maxHp, health_t mp, health_t maxMp, experience_t exp) :
 	m_player{player},
@@ -374,7 +375,7 @@ auto PlayerStats::setFame(fame_t fame) -> void {
 }
 
 auto PlayerStats::loseExp() -> void {
-	if (!GameLogicUtilities::isBeginnerJob(getJob()) && getLevel() < GameLogicUtilities::getMaxLevel(getJob()) && m_player->getMapId() != Maps::SorcerersRoom) {
+	if (!GameLogicUtilities::isBeginnerJob(getJob()) && getLevel() < GameLogicUtilities::getMaxLevel(getJob()) && m_player->getMapId() != Vana::Maps::SorcerersRoom) {
 		slot_qty_t charms = m_player->getInventory()->getItemAmount(Items::SafetyCharm);
 		if (charms > 0) {
 			Inventory::takeItem(m_player, Items::SafetyCharm, 1);
@@ -529,7 +530,7 @@ auto PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) -> void {
 						<< m_player->getName() << " on such an amazing achievement!";
 
 				ChannelServer::getInstance().sendWorld(
-					Packets::prepend(Packets::Player::showMessage(message.str(), Packets::Player::NoticeTypes::Blue), [](PacketBuilder &builder) {
+					Vana::Packets::prepend(Packets::Player::showMessage(message.str(), Packets::Player::NoticeTypes::Blue), [](PacketBuilder &builder) {
 						builder.add<header_t>(IMSG_TO_ALL_CHANNELS);
 						builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
 					}));
@@ -720,4 +721,5 @@ auto PlayerStats::getExp(player_level_t level) -> experience_t {
 	return Stats::PlayerExp[level - 1];
 }
 
+}
 }

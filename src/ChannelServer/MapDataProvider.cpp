@@ -16,15 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapDataProvider.hpp"
-#include "Database.hpp"
-#include "GameLogicUtilities.hpp"
-#include "InitializeCommon.hpp"
-#include "Map.hpp"
-#include "MapleTvs.hpp"
-#include "StringUtilities.hpp"
+#include "Common/Database.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/InitializeCommon.hpp"
+#include "Common/StringUtilities.hpp"
+#include "ChannelServer/Map.hpp"
+#include "ChannelServer/MapleTvs.hpp"
 #include <utility>
 
 namespace Vana {
+namespace ChannelServer {
 
 auto MapDataProvider::getMap(map_id_t mapId) -> Map * {
 	if (m_maps.find(mapId) != std::end(m_maps)) {
@@ -281,4 +282,5 @@ auto MapDataProvider::getContinent(map_id_t mapId) const -> opt_int8_t {
 	return kvp->second;
 }
 
+}
 }

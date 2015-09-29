@@ -16,14 +16,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerConnectPacket.hpp"
-#include "ChannelServer.hpp"
-#include "InterHeader.hpp"
-#include "Player.hpp"
-#include "Session.hpp"
-#include "SmsgHeader.hpp"
-#include "WorldServerConnection.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/Session.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
+#include "ChannelServer/WorldServerConnection.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace Interserver {
 
@@ -52,6 +53,7 @@ PACKET_IMPL(rehashConfig) {
 	return builder;
 }
 
+}
 }
 }
 }

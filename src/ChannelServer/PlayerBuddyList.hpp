@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Types.hpp"
+#include "Common/Types.hpp"
 #include <memory>
 #include <queue>
 #include <string>
@@ -27,47 +27,50 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 	class Database;
 	class PacketBuilder;
-	class Player;
 	class soci::row;
 
-	struct Buddy {
-		uint8_t oppositeStatus = 0;
-		player_id_t charId = 0;
-		string_t name;
-		string_t groupName;
-	};
+	namespace ChannelServer {
+		class Player;
 
-	struct BuddyInvite {
-		bool send = true;
-		player_id_t id = 0;
-		string_t name;
-	};
+		struct Buddy {
+			uint8_t oppositeStatus = 0;
+			player_id_t charId = 0;
+			string_t name;
+			string_t groupName;
+		};
 
-	class PlayerBuddyList {
-		NONCOPYABLE(PlayerBuddyList);
-		NO_DEFAULT_CONSTRUCTOR(PlayerBuddyList);
-	public:
-		PlayerBuddyList(Player *player);
+		struct BuddyInvite {
+			bool send = true;
+			player_id_t id = 0;
+			string_t name;
+		};
 
-		auto addBuddy(const string_t &name, const string_t &group, bool invite = true) -> uint8_t;
-		auto removeBuddy(player_id_t charId) -> void;
+		class PlayerBuddyList {
+			NONCOPYABLE(PlayerBuddyList);
+			NO_DEFAULT_CONSTRUCTOR(PlayerBuddyList);
+		public:
+			PlayerBuddyList(Player *player);
 
-		auto getBuddy(player_id_t charId) -> ref_ptr_t<Buddy> { return m_buddies[charId]; }
-		auto listSize() const -> uint8_t { return static_cast<uint8_t>(m_buddies.size()); }
-		auto getBuddyIds() -> vector_t<player_id_t>;
-		auto addBuddyInvite(const BuddyInvite &invite) -> void { m_pendingBuddies.push_back(invite); }
+			auto addBuddy(const string_t &name, const string_t &group, bool invite = true) -> uint8_t;
+			auto removeBuddy(player_id_t charId) -> void;
 
-		auto addBuddies(PacketBuilder &builder) -> void;
-		auto checkForPendingBuddy() -> void;
-		auto buddyAccepted(player_id_t buddyId) -> void;
-		auto removePendingBuddy(player_id_t id, bool accepted) -> void;
-	private:
-		auto addBuddy(Database &db, const soci::row &row) -> void;
-		auto load() -> void;
+			auto getBuddy(player_id_t charId) -> ref_ptr_t<Buddy> { return m_buddies[charId]; }
+			auto listSize() const -> uint8_t { return static_cast<uint8_t>(m_buddies.size()); }
+			auto getBuddyIds() -> vector_t<player_id_t>;
+			auto addBuddyInvite(const BuddyInvite &invite) -> void { m_pendingBuddies.push_back(invite); }
 
-		bool m_sentRequest = false;
-		Player *m_player = nullptr;
-		queue_t<BuddyInvite> m_pendingBuddies;
-		hash_map_t<player_id_t, ref_ptr_t<Buddy>> m_buddies;
-	};
+			auto addBuddies(PacketBuilder &builder) -> void;
+			auto checkForPendingBuddy() -> void;
+			auto buddyAccepted(player_id_t buddyId) -> void;
+			auto removePendingBuddy(player_id_t id, bool accepted) -> void;
+		private:
+			auto addBuddy(Database &db, const soci::row &row) -> void;
+			auto load() -> void;
+
+			bool m_sentRequest = false;
+			Player *m_player = nullptr;
+			queue_t<BuddyInvite> m_pendingBuddies;
+			hash_map_t<player_id_t, ref_ptr_t<Buddy>> m_buddies;
+		};
+	}
 }

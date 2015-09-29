@@ -17,16 +17,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "PacketBuilder.hpp"
-#include "Types.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
-	class Player;
-	class Reactor;
+	namespace ChannelServer {
+		class Player;
+		class Reactor;
 
-	namespace Packets {
-		PACKET(spawnReactor, Reactor *reactor);
-		PACKET(triggerReactor, Reactor *reactor);
-		PACKET(destroyReactor, Reactor *reactor);
+		namespace Packets {
+			PACKET(spawnReactor, Reactor *reactor);
+			PACKET(triggerReactor, Reactor *reactor);
+			PACKET(destroyReactor, Reactor *reactor);
+		}
 	}
 }

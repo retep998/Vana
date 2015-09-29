@@ -16,12 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "FamePacket.hpp"
-#include "Player.hpp"
-#include "PlayerDataProvider.hpp"
-#include "Session.hpp"
-#include "SmsgHeader.hpp"
+#include "Common/Session.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace Fame {
 
@@ -54,6 +55,7 @@ PACKET_IMPL(receiveFame, const string_t &name, uint8_t type) {
 	return builder;
 }
 
+}
 }
 }
 }

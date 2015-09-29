@@ -16,21 +16,22 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerConnection.hpp"
-#include "ChannelServer.hpp"
-#include "ExitCodes.hpp"
-#include "InterHeader.hpp"
-#include "PacketReader.hpp"
-#include "PacketWrapper.hpp"
-#include "PartyHandler.hpp"
-#include "PlayerDataProvider.hpp"
-#include "ServerType.hpp"
-#include "SyncHandler.hpp"
-#include "WorldConfig.hpp"
-#include "WorldServerConnectHandler.hpp"
-#include "WorldServerConnectPacket.hpp"
+#include "Common/ExitCodes.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/PacketWrapper.hpp"
+#include "Common/ServerType.hpp"
+#include "Common/WorldConfig.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/PartyHandler.hpp"
+#include "ChannelServer/PlayerDataProvider.hpp"
+#include "ChannelServer/SyncHandler.hpp"
+#include "ChannelServer/WorldServerConnectHandler.hpp"
+#include "ChannelServer/WorldServerConnectPacket.hpp"
 #include <iostream>
 
 namespace Vana {
+namespace ChannelServer {
 
 WorldServerConnection::WorldServerConnection() :
 	AbstractServerConnection{ServerType::Channel}
@@ -51,19 +52,20 @@ auto WorldServerConnection::handleRequest(PacketReader &reader) -> void {
 		case IMSG_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, reader); break;
 		case IMSG_TO_PLAYER: {
 			player_id_t playerId = reader.get<player_id_t>();
-			ChannelServer::getInstance().getPlayerDataProvider().send(playerId, Packets::identity(reader));
+			ChannelServer::getInstance().getPlayerDataProvider().send(playerId, Vana::Packets::identity(reader));
 			break;
 		}
 		case IMSG_TO_PLAYER_LIST: {
 			vector_t<player_id_t> playerIds = reader.get<vector_t<player_id_t>>();
-			ChannelServer::getInstance().getPlayerDataProvider().send(playerIds, Packets::identity(reader));
+			ChannelServer::getInstance().getPlayerDataProvider().send(playerIds, Vana::Packets::identity(reader));
 			break;
 		}
-		case IMSG_TO_ALL_PLAYERS: ChannelServer::getInstance().getPlayerDataProvider().send(Packets::identity(reader)); break;
+		case IMSG_TO_ALL_PLAYERS: ChannelServer::getInstance().getPlayerDataProvider().send(Vana::Packets::identity(reader)); break;
 		case IMSG_REFRESH_DATA: WorldServerConnectHandler::reloadMcdb(reader); break;
 		case IMSG_REHASH_CONFIG: ChannelServer::getInstance().setConfig(reader.get<WorldConfig>()); break;
 		case IMSG_SYNC: SyncHandler::handle(reader); break;
 	}
 }
 
+}
 }

@@ -21,11 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 
 namespace Vana {
-	class Player;
+	namespace ChannelServer {
+		class Player;
+	}
 
 	struct SeatInfo {
 		seat_id_t id = 0;
-		Player *occupant = nullptr;
+		ChannelServer::Player *occupant = nullptr;
 		Point pos;
 	};
 }

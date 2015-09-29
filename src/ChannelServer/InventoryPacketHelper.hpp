@@ -17,14 +17,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "PacketBuilder.hpp"
-#include "Types.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/Types.hpp"
 #include <vector>
 
 namespace Vana {
-	namespace Packets {
-		namespace Helpers {
-			PACKET(fillRockPacket, const vector_t<map_id_t> &vec, size_t maxSize);
+	namespace ChannelServer {
+		namespace Packets {
+			namespace Helpers {
+				PACKET(fillRockPacket, const vector_t<map_id_t> &vec, size_t maxSize);
+			}
 		}
 	}
 }

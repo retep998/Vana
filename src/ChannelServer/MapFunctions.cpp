@@ -16,21 +16,22 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapFunctions.hpp"
-#include "Algorithm.hpp"
-#include "ChannelServer.hpp"
-#include "Map.hpp"
-#include "Maps.hpp"
-#include "MapPacket.hpp"
-#include "MobConstants.hpp"
-#include "Party.hpp"
-#include "Player.hpp"
-#include "PlayerPacket.hpp"
-#include "MapPosition.hpp"
-#include "StringUtilities.hpp"
+#include "Common/Algorithm.hpp"
+#include "Common/MobConstants.hpp"
+#include "Common/MapPosition.hpp"
+#include "Common/StringUtilities.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Map.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/MapPacket.hpp"
+#include "ChannelServer/Party.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerPacket.hpp"
 #include <chrono>
 #include <iostream>
 
 namespace Vana {
+namespace ChannelServer {
 
 auto MapFunctions::eventInstruction(Player *player, const chat_t &args) -> ChatResult {
 	player->sendMap(Packets::Map::showEventInstructions());
@@ -192,7 +193,7 @@ auto MapFunctions::listPortals(Player *player, const chat_t &args) -> ChatResult
 		coord_t y = row.get<coord_t>(6);
 
 		str << row.get<map_id_t>(0) << " : " << row.get<string_t>(1);
-		if (destination != Maps::NoMap) {
+		if (destination != Vana::Maps::NoMap) {
 			str << " (destination " << destination;
 			if (destinationLabel.is_initialized()) {
 				string_t label = destinationLabel.get();
@@ -519,4 +520,5 @@ auto MapFunctions::killAllMobs(Player *player, const chat_t &args) -> ChatResult
 	return ChatResult::HandledDisplay;
 }
 
+}
 }

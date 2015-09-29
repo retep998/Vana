@@ -17,29 +17,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "ChatHandlerFunctions.hpp"
+#include "ChannelServer/ChatHandlerFunctions.hpp"
 
 namespace Vana {
-	class Player;
+	namespace ChannelServer {
+		class Player;
 
-	namespace PlayerModFunctions {
-		auto disconnect(Player *player, const chat_t &args) -> ChatResult;
-		auto save(Player *player, const chat_t &args) -> ChatResult;
-		auto modMesos(Player *player, const chat_t &args) -> ChatResult;
-		auto heal(Player *player, const chat_t &args) -> ChatResult;
-		auto modStr(Player *player, const chat_t &args) -> ChatResult;
-		auto modDex(Player *player, const chat_t &args) -> ChatResult;
-		auto modInt(Player *player, const chat_t &args) -> ChatResult;
-		auto modLuk(Player *player, const chat_t &args) -> ChatResult;
-		auto maxStats(Player *player, const chat_t &args) -> ChatResult;
-		auto hp(Player *player, const chat_t &args) -> ChatResult;
-		auto mp(Player *player, const chat_t &args) -> ChatResult;
-		auto sp(Player *player, const chat_t &args) -> ChatResult;
-		auto ap(Player *player, const chat_t &args) -> ChatResult;
-		auto fame(Player *player, const chat_t &args) -> ChatResult;
-		auto level(Player *player, const chat_t &args) -> ChatResult;
-		auto job(Player *player, const chat_t &args) -> ChatResult;
-		auto addSp(Player *player, const chat_t &args) -> ChatResult;
-		auto maxSp(Player *player, const chat_t &args) -> ChatResult;
+		namespace PlayerModFunctions {
+			auto disconnect(Player *player, const chat_t &args) -> ChatResult;
+			auto save(Player *player, const chat_t &args) -> ChatResult;
+			auto modMesos(Player *player, const chat_t &args) -> ChatResult;
+			auto heal(Player *player, const chat_t &args) -> ChatResult;
+			auto modStr(Player *player, const chat_t &args) -> ChatResult;
+			auto modDex(Player *player, const chat_t &args) -> ChatResult;
+			auto modInt(Player *player, const chat_t &args) -> ChatResult;
+			auto modLuk(Player *player, const chat_t &args) -> ChatResult;
+			auto maxStats(Player *player, const chat_t &args) -> ChatResult;
+			auto hp(Player *player, const chat_t &args) -> ChatResult;
+			auto mp(Player *player, const chat_t &args) -> ChatResult;
+			auto sp(Player *player, const chat_t &args) -> ChatResult;
+			auto ap(Player *player, const chat_t &args) -> ChatResult;
+			auto fame(Player *player, const chat_t &args) -> ChatResult;
+			auto level(Player *player, const chat_t &args) -> ChatResult;
+			auto job(Player *player, const chat_t &args) -> ChatResult;
+			auto addSp(Player *player, const chat_t &args) -> ChatResult;
+			auto maxSp(Player *player, const chat_t &args) -> ChatResult;
+		}
 	}
 }

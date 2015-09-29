@@ -17,20 +17,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "PacketBuilder.hpp"
-#include "PlayerMonsterBook.hpp"
-#include "SplitPacketBuilder.hpp"
-#include "Types.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/SplitPacketBuilder.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
-	class Player;
-	struct MonsterCard;
-
-	namespace Packets {
-		namespace MonsterBook {
-			PACKET(addCard, item_id_t cardId, uint8_t level, bool full);
-			SPLIT_PACKET(addCardEffect, player_id_t playerId);
-			PACKET(changeCover, item_id_t cardId);
+	namespace ChannelServer {
+		namespace Packets {
+			namespace MonsterBook {
+				PACKET(addCard, item_id_t cardId, uint8_t level, bool full);
+				SPLIT_PACKET(addCardEffect, player_id_t playerId);
+				PACKET(changeCover, item_id_t cardId);
+			}
 		}
 	}
 }

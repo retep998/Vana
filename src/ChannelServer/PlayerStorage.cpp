@@ -16,18 +16,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerStorage.hpp"
-#include "Algorithm.hpp"
-#include "ChannelServer.hpp"
-#include "Database.hpp"
-#include "GameConstants.hpp"
-#include "GameLogicUtilities.hpp"
-#include "Inventory.hpp"
-#include "MiscUtilities.hpp"
-#include "Player.hpp"
-#include "StoragePacket.hpp"
+#include "Common/Algorithm.hpp"
+#include "Common/Database.hpp"
+#include "Common/GameConstants.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/MiscUtilities.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/Inventory.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/StoragePacket.hpp"
 #include <algorithm>
 
 namespace Vana {
+namespace ChannelServer {
 
 PlayerStorage::PlayerStorage(Player *player) :
 	m_player{player}
@@ -168,4 +169,5 @@ auto PlayerStorage::save() -> void {
 	}
 }
 
+}
 }

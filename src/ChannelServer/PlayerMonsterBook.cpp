@@ -16,15 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerMonsterBook.hpp"
-#include "ChannelServer.hpp"
-#include "Database.hpp"
-#include "GameConstants.hpp"
-#include "GameLogicUtilities.hpp"
-#include "ItemDataProvider.hpp"
-#include "MonsterBookPacket.hpp"
-#include "Player.hpp"
+#include "Common/Database.hpp"
+#include "Common/GameConstants.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/ItemDataProvider.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/MonsterBookPacket.hpp"
+#include "ChannelServer/Player.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 PlayerMonsterBook::PlayerMonsterBook(Player *player) :
 	m_player{player}
@@ -166,4 +167,5 @@ auto PlayerMonsterBook::isFull(int32_t cardId) -> bool {
 	return kvp != std::end(m_cards) ? (kvp->second.level == MonsterCards::MaxCardLevel) : false;
 }
 
+}
 }

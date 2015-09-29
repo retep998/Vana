@@ -16,21 +16,22 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Inventory.hpp"
-#include "Buffs.hpp"
-#include "ChannelServer.hpp"
-#include "GameLogicUtilities.hpp"
-#include "InventoryPacket.hpp"
-#include "ItemDataProvider.hpp"
-#include "Map.hpp"
-#include "MonsterBookPacket.hpp"
-#include "Pet.hpp"
-#include "PetsPacket.hpp"
-#include "Player.hpp"
-#include "PlayerMonsterBook.hpp"
-#include "Randomizer.hpp"
-#include "SkillDataProvider.hpp"
+#include "Common/GameLogicUtilities.hpp"
+#include "Common/ItemDataProvider.hpp"
+#include "Common/Randomizer.hpp"
+#include "Common/SkillDataProvider.hpp"
+#include "ChannelServer/Buffs.hpp"
+#include "ChannelServer/ChannelServer.hpp"
+#include "ChannelServer/InventoryPacket.hpp"
+#include "ChannelServer/Map.hpp"
+#include "ChannelServer/MonsterBookPacket.hpp"
+#include "ChannelServer/Pet.hpp"
+#include "ChannelServer/PetsPacket.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/PlayerMonsterBook.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 auto Inventory::addItem(Player *player, Item *item, bool fromDrop) -> slot_qty_t {
 	inventory_t inv = GameLogicUtilities::getInventory(item->getId());
@@ -251,4 +252,5 @@ auto Inventory::useItem(Player *player, item_id_t itemId) -> void {
 	}
 }
 
+}
 }

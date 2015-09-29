@@ -17,21 +17,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "PacketBuilder.hpp"
-#include "SplitPacketBuilder.hpp"
-#include "Types.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/SplitPacketBuilder.hpp"
+#include "Common/Types.hpp"
 #include <string>
 
 namespace Vana {
-	class Player;
+	namespace ChannelServer {
+		class Player;
 
-	namespace Packets {
-		PACKET(playMusic, const string_t &music);
-		PACKET(sendEvent, const string_t &id);
-		PACKET(sendEffect, const string_t &effect);
-		PACKET(playPortalSoundEffect);
-		PACKET(sendFieldSound, const string_t &sound);
-		PACKET(sendMinigameSound, const string_t &sound);
-		SPLIT_PACKET(sendMobItemBuffEffect, player_id_t playerId, item_id_t itemId);
+		namespace Packets {
+			PACKET(playMusic, const string_t &music);
+			PACKET(sendEvent, const string_t &id);
+			PACKET(sendEffect, const string_t &effect);
+			PACKET(playPortalSoundEffect);
+			PACKET(sendFieldSound, const string_t &sound);
+			PACKET(sendMinigameSound, const string_t &sound);
+			SPLIT_PACKET(sendMobItemBuffEffect, player_id_t playerId, item_id_t itemId);
+		}
 	}
 }

@@ -17,17 +17,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Types.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
 	class PacketReader;
-	class Player;
 
-	namespace Fame {
-		auto handleFame(Player *player, PacketReader &reader) -> void;
-		auto canFame(Player *player, player_id_t to) -> int32_t;
-		auto addFameLog(player_id_t from, player_id_t to) -> void;
-		auto getLastFameLog(player_id_t from) -> SearchResult;
-		auto getLastFameSpLog(player_id_t from, player_id_t to) -> SearchResult;
+	namespace ChannelServer {
+		class Player;
+
+		namespace Fame {
+			auto handleFame(Player *player, PacketReader &reader) -> void;
+			auto canFame(Player *player, player_id_t to) -> int32_t;
+			auto addFameLog(player_id_t from, player_id_t to) -> void;
+			auto getLastFameLog(player_id_t from) -> SearchResult;
+			auto getLastFameSpLog(player_id_t from, player_id_t to) -> SearchResult;
+		}
 	}
 }

@@ -16,9 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "KeyMaps.hpp"
-#include "Database.hpp"
+#include "Common/Database.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 
 auto KeyMaps::defaultMap() -> void {
 	// TODO FIXME move to a config file
@@ -103,4 +104,5 @@ auto KeyMaps::save(player_id_t charId) -> void {
 	}
 }
 
+}
 }

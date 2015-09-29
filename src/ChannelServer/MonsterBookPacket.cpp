@@ -16,12 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MonsterBookPacket.hpp"
-#include "ItemDataProvider.hpp"
-#include "Maps.hpp"
-#include "Player.hpp"
-#include "SmsgHeader.hpp"
+#include "Common/ItemDataProvider.hpp"
+#include "ChannelServer/Maps.hpp"
+#include "ChannelServer/Player.hpp"
+#include "ChannelServer/SmsgHeader.hpp"
 
 namespace Vana {
+namespace ChannelServer {
 namespace Packets {
 namespace MonsterBook {
 
@@ -60,6 +61,7 @@ PACKET_IMPL(changeCover, item_id_t cardId) {
 	return builder;
 }
 
+}
 }
 }
 }
