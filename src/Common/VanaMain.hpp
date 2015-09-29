@@ -17,10 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "AbstractServer.hpp"
-#include "ConfigFile.hpp"
-#include "ExitCodes.hpp"
-#include "ThreadPool.hpp"
+#include "Common/AbstractServer.hpp"
+#include "Common/ConfigFile.hpp"
+#include "Common/ExitCodes.hpp"
+#include "Common/ThreadPool.hpp"
 #include <asio.hpp>
 #include <botan/botan.h>
 #include <csignal>

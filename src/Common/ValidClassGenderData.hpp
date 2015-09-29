@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Types.hpp"
-#include "ValidClassData.hpp"
+#include "Common/Types.hpp"
+#include "Common/ValidClassData.hpp"
 
 namespace Vana {
 	struct ValidClassGenderData {

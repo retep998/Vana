@@ -17,10 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "QuestRequestInfo.hpp"
-#include "QuestRewardInfo.hpp"
-#include "QuestStateData.hpp"
-#include "Types.hpp"
+#include "Common/QuestRequestInfo.hpp"
+#include "Common/QuestRewardInfo.hpp"
+#include "Common/QuestStateData.hpp"
+#include "Common/Types.hpp"
 #include <functional>
 #include <iterator>
 #include <map>

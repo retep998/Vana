@@ -17,10 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Decoder.hpp"
-#include "Ip.hpp"
-#include "shared_array.hpp"
-#include "Types.hpp"
+#include "Common/Decoder.hpp"
+#include "Common/Ip.hpp"
+#include "Common/shared_array.hpp"
+#include "Common/Types.hpp"
 #include <asio.hpp>
 #include <memory>
 #include <mutex>

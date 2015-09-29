@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "QuestRewardInfo.hpp"
-#include "Types.hpp"
+#include "Common/QuestRewardInfo.hpp"
+#include "Common/Types.hpp"
 #include <unordered_map>
 #include <vector>
 

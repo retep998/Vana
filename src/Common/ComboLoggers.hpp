@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Logger.hpp"
-#include "Types.hpp"
+#include "Common/Logger.hpp"
+#include "Common/Types.hpp"
 #include <memory>
 #include <string>
 

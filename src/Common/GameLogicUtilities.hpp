@@ -17,12 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "GameConstants.hpp"
-#include "ItemConstants.hpp"
-#include "JobConstants.hpp"
-#include "Point.hpp"
-#include "Rect.hpp"
-#include "SkillConstants.hpp"
+#include "Common/GameConstants.hpp"
+#include "Common/ItemConstants.hpp"
+#include "Common/JobConstants.hpp"
+#include "Common/Point.hpp"
+#include "Common/Rect.hpp"
+#include "Common/SkillConstants.hpp"
 #include <algorithm>
 #include <cmath>
 #include <string>

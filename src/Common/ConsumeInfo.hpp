@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "CardMapRangeInfo.hpp"
-#include "MorphChanceInfo.hpp"
-#include "Types.hpp"
+#include "Common/CardMapRangeInfo.hpp"
+#include "Common/MorphChanceInfo.hpp"
+#include "Common/Types.hpp"
 #include <vector>
 
 namespace Vana {

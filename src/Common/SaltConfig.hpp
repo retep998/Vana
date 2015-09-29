@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "ConfigFile.hpp"
-#include "PasswordTransformationConfig.hpp"
-#include "SaltPolicy.hpp"
-#include "SaltTransformationConfig.hpp"
-#include "Types.hpp"
+#include "Common/ConfigFile.hpp"
+#include "Common/PasswordTransformationConfig.hpp"
+#include "Common/SaltPolicy.hpp"
+#include "Common/SaltTransformationConfig.hpp"
+#include "Common/Types.hpp"
 #include <string>
 #include <vector>
 

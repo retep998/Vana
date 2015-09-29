@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "PacketBuilder.hpp"
+#include "Common/PacketBuilder.hpp"
 
 #define SPLIT_PACKET(TypeName, ...) \
 	auto TypeName(__VA_ARGS__) -> SplitPacketBuilder;

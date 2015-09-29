@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Session.hpp"
-#include "TimerContainerHolder.hpp"
-#include "Types.hpp"
+#include "Common/Session.hpp"
+#include "Common/TimerContainerHolder.hpp"
+#include "Common/Types.hpp"
 #include <string>
 
 namespace Vana {

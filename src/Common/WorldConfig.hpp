@@ -17,14 +17,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "ConfigFile.hpp"
-#include "IPacket.hpp"
-#include "LuaVariant.hpp"
-#include "MajorBossConfig.hpp"
-#include "PacketBuilder.hpp"
-#include "PacketReader.hpp"
-#include "RatesConfig.hpp"
-#include "Types.hpp"
+#include "Common/ConfigFile.hpp"
+#include "Common/IPacket.hpp"
+#include "Common/LuaVariant.hpp"
+#include "Common/MajorBossConfig.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/RatesConfig.hpp"
+#include "Common/Types.hpp"
 #include <string>
 #include <vector>
 

@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "IdLooper.hpp"
-#include "Types.hpp"
+#include "Common/IdLooper.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
 	// Keep track of a pool of identifiers and ensure that identifiers aren't reused

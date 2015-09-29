@@ -17,15 +17,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "BuffSourceType.hpp"
-#include "Types.hpp"
+#include "Common/BuffSourceType.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
 	class ItemDataProvider;
 	class SkillDataProvider;
 	struct ConsumeInfo;
-	struct SkillLevelInfo;
 	struct MobSkillLevelInfo;
+	struct SkillLevelInfo;
 
 	class BuffSource {
 	public:

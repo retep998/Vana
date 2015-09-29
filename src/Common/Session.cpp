@@ -16,14 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Session.hpp"
-#include "AbstractConnection.hpp"
-#include "AbstractServer.hpp"
-#include "ConnectionManager.hpp"
-#include "Decoder.hpp"
-#include "Logger.hpp"
-#include "PacketBuilder.hpp"
-#include "PacketReader.hpp"
-#include "Randomizer.hpp"
+#include "Common/AbstractConnection.hpp"
+#include "Common/AbstractServer.hpp"
+#include "Common/ConnectionManager.hpp"
+#include "Common/Decoder.hpp"
+#include "Common/Logger.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/Randomizer.hpp"
 #include <functional>
 #include <iostream>
 

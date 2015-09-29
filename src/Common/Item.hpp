@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "FileTime.hpp"
-#include "ItemConstants.hpp"
-#include "ItemDbInformation.hpp"
-#include "ItemDbRecord.hpp"
-#include "Types.hpp"
+#include "Common/FileTime.hpp"
+#include "Common/ItemConstants.hpp"
+#include "Common/ItemDbInformation.hpp"
+#include "Common/ItemDbRecord.hpp"
+#include "Common/Types.hpp"
 #include <string>
 #include <vector>
 

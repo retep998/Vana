@@ -16,12 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "DatabaseUpdater.hpp"
-#include "AbstractServer.hpp"
-#include "Database.hpp"
-#include "ExitCodes.hpp"
-#include "MySqlQueryParser.hpp"
-#include "StringUtilities.hpp"
-#include "tokenizer.hpp"
+#include "Common/AbstractServer.hpp"
+#include "Common/Database.hpp"
+#include "Common/ExitCodes.hpp"
+#include "Common/MySqlQueryParser.hpp"
+#include "Common/StringUtilities.hpp"
+#include "Common/tokenizer.hpp"
 #ifdef WIN32
 #include <filesystem>
 #else

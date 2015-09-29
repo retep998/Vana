@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "MobAttackType.hpp"
-#include "Types.hpp"
+#include "Common/MobAttackType.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
 	struct MobAttackInfo {

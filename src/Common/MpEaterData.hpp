@@ -17,10 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "MapConstants.hpp"
-#include "Point.hpp"
-#include "Rect.hpp"
-#include "Types.hpp"
+#include "Common/Types.hpp"
 #include <string>
 #include <unordered_map>
 #include <vector>

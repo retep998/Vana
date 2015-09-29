@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PingPacket.hpp"
-#include "CommonHeader.hpp"
-#include "Session.hpp"
+#include "Common/CommonHeader.hpp"
+#include "Common/Session.hpp"
 
 namespace Vana {
 namespace Packets {

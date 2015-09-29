@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PasswordTransformationConfig.hpp"
-#include "SaltLeftoverPolicy.hpp"
-#include "Types.hpp"
+#include "Common/SaltLeftoverPolicy.hpp"
+#include "Common/Types.hpp"
 #include <cstdlib>
 #include <string>
 #include <vector>

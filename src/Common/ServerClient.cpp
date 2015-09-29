@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ServerClient.hpp"
-#include "AbstractConnection.hpp"
-#include "ConnectionManager.hpp"
-#include "ExitCodes.hpp"
-#include "MapleVersion.hpp"
-#include "PacketReader.hpp"
+#include "Common/AbstractConnection.hpp"
+#include "Common/ConnectionManager.hpp"
+#include "Common/ExitCodes.hpp"
+#include "Common/MapleVersion.hpp"
+#include "Common/PacketReader.hpp"
 #include <cstdio>
 #include <iostream>
 #include <stdexcept>

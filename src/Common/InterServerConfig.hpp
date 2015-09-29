@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "ConfigFile.hpp"
-#include "Ip.hpp"
-#include "Types.hpp"
+#include "Common/ConfigFile.hpp"
+#include "Common/Ip.hpp"
+#include "Common/Types.hpp"
 #include <string>
 
 namespace Vana {

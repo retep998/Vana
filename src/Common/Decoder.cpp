@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Decoder.hpp"
-#include "BitUtilities.hpp"
-#include "CommonHeader.hpp"
-#include "MapleVersion.hpp"
-#include "PacketBuilder.hpp"
-#include "Randomizer.hpp"
+#include "Common/BitUtilities.hpp"
+#include "Common/CommonHeader.hpp"
+#include "Common/MapleVersion.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/Randomizer.hpp"
 
 namespace Vana {
 

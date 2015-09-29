@@ -17,10 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Timer.hpp"
-#include "TimerId.hpp"
-#include "TimerType.hpp"
-#include "Types.hpp"
+#include "Common/Timer.hpp"
+#include "Common/TimerId.hpp"
+#include "Common/TimerType.hpp"
+#include "Common/Types.hpp"
 #include <functional>
 #include <memory>
 #include <unordered_map>

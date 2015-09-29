@@ -17,12 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "IPacket.hpp"
-#include "LuaEnvironment.hpp"
-#include "LuaVariant.hpp"
-#include "PacketBuilder.hpp"
-#include "PacketReader.hpp"
-#include "Types.hpp"
+#include "Common/IPacket.hpp"
+#include "Common/LuaEnvironment.hpp"
+#include "Common/LuaVariant.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/Types.hpp"
 #include <string>
 #include <vector>
 

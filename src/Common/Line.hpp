@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Point.hpp"
-#include "Ratio.hpp"
-#include "Types.hpp"
+#include "Common/Point.hpp"
+#include "Common/Ratio.hpp"
+#include "Common/Types.hpp"
 #include <cmath>
 #include <ostream>
 

@@ -18,15 +18,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 extern "C" {
-	#include "lua.h"
-	#include "lualib.h"
-	#include "lauxlib.h"
+	#include <lua.h>
+	#include <lualib.h>
+	#include <lauxlib.h>
 }
 
-#include "LuaType.hpp"
-#include "LuaVariant.hpp"
-#include "ObjectPool.hpp"
-#include "Types.hpp"
+#include "Common/LuaType.hpp"
+#include "Common/LuaVariant.hpp"
+#include "Common/ObjectPool.hpp"
+#include "Common/Types.hpp"
 #include <stdexcept>
 #include <string>
 #include <vector>

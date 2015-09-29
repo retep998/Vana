@@ -17,14 +17,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "ConnectionManager.hpp"
-#include "ExternalIp.hpp"
-#include "InterServerConfig.hpp"
-#include "Ip.hpp"
-#include "LogConfig.hpp"
-#include "Logger.hpp"
-#include "SaltConfig.hpp"
-#include "Types.hpp"
+#include "Common/ConnectionManager.hpp"
+#include "Common/ExternalIp.hpp"
+#include "Common/InterServerConfig.hpp"
+#include "Common/Ip.hpp"
+#include "Common/LogConfig.hpp"
+#include "Common/Logger.hpp"
+#include "Common/SaltConfig.hpp"
+#include "Common/Types.hpp"
 #include <memory>
 #include <string>
 #include <vector>

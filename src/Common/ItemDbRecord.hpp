@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "ItemDbInformation.hpp"
-#include "Types.hpp"
+#include "Common/ItemDbInformation.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
 	class Item;

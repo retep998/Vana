@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "ExitCodes.hpp"
-#include "VanaMain.hpp"
+#include "Common/ExitCodes.hpp"
+#include "Common/VanaMain.hpp"
 #include <csignal>
 #include <cstdlib>
 #include <iomanip>

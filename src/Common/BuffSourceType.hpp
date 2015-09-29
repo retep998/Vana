@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Types.hpp"
-#include "IPacket.hpp"
+#include "Common/Types.hpp"
+#include "Common/IPacket.hpp"
 
 namespace Vana {
 	enum class BuffSourceType : int8_t {

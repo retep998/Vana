@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ConnectionManager.hpp"
-#include "AbstractConnection.hpp"
-#include "InterServerConfig.hpp"
-#include "ServerClient.hpp"
-#include "ThreadPool.hpp"
+#include "Common/AbstractConnection.hpp"
+#include "Common/InterServerConfig.hpp"
+#include "Common/ServerClient.hpp"
+#include "Common/ThreadPool.hpp"
 
 namespace Vana {
 

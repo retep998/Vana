@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "IPacket.hpp"
-#include "PacketBuilder.hpp"
-#include "PacketReader.hpp"
-#include "Point.hpp"
-#include "Types.hpp"
+#include "Common/IPacket.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/Point.hpp"
+#include "Common/Types.hpp"
 #include <cmath>
 
 namespace Vana {

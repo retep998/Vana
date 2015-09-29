@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractServerAcceptConnection.hpp"
-#include "AbstractServer.hpp"
-#include "AuthenticationPacket.hpp"
-#include "InterHeader.hpp"
-#include "PacketReader.hpp"
-#include "Session.hpp"
+#include "Common/AbstractServer.hpp"
+#include "Common/AuthenticationPacket.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/Session.hpp"
 #include <asio.hpp>
 #include <iostream>
 

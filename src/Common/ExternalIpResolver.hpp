@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "ExternalIp.hpp"
-#include "Ip.hpp"
-#include "Types.hpp"
+#include "Common/ExternalIp.hpp"
+#include "Common/Ip.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
 	class ExternalIpResolver {

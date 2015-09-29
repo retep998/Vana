@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Database.hpp"
-#include "ConfigFile.hpp"
-#include "DbConfig.hpp"
+#include "Common/ConfigFile.hpp"
+#include "Common/DbConfig.hpp"
 #include <soci-mysql.h>
 
 namespace Vana {

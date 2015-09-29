@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "BuffInfo.hpp"
-#include "BuffSkillValue.hpp"
-#include "Types.hpp"
+#include "Common/BuffInfo.hpp"
+#include "Common/BuffSkillValue.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
 	class Buff {

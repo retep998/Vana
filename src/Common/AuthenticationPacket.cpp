@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AuthenticationPacket.hpp"
-#include "AbstractServerConnection.hpp"
-#include "InterHeader.hpp"
-#include "PacketBuilder.hpp"
-#include "Session.hpp"
+#include "Common/AbstractServerConnection.hpp"
+#include "Common/InterHeader.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/Session.hpp"
 #include <algorithm>
 
 namespace Vana {

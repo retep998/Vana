@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "BuffAction.hpp"
-#include "BuffMapInfo.hpp"
-#include "BuffSkillValue.hpp"
-#include "hash_combine.hpp"
-#include "Types.hpp"
+#include "Common/BuffAction.hpp"
+#include "Common/BuffMapInfo.hpp"
+#include "Common/BuffSkillValue.hpp"
+#include "Common/hash_combine.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
 	class BuffInfo {

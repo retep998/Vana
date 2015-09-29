@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MySqlQueryParser.hpp"
-#include "FileUtilities.hpp"
-#include "StringUtilities.hpp"
-#include "tokenizer.hpp"
+#include "Common/FileUtilities.hpp"
+#include "Common/StringUtilities.hpp"
+#include "Common/tokenizer.hpp"
 #include <fstream>
 
 namespace Vana {

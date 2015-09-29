@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "IPacket.hpp"
-#include "shared_array.hpp"
-#include "Types.hpp"
+#include "Common/IPacket.hpp"
+#include "Common/shared_array.hpp"
+#include "Common/Types.hpp"
 #include <cstring>
 #include <iostream>
 #include <limits>

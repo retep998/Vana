@@ -16,12 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ConfigFile.hpp"
-#include "ExitCodes.hpp"
-#include "FileUtilities.hpp"
-#include "Logger.hpp"
-#include "SaltLeftoverPolicy.hpp"
-#include "SaltModifyPolicy.hpp"
-#include "SaltPolicy.hpp"
+#include "Common/ExitCodes.hpp"
+#include "Common/FileUtilities.hpp"
+#include "Common/Logger.hpp"
+#include "Common/SaltLeftoverPolicy.hpp"
+#include "Common/SaltModifyPolicy.hpp"
+#include "Common/SaltPolicy.hpp"
 #include <iostream>
 
 namespace Vana {

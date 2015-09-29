@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 #include "ExternalIpResolver.hpp"
-#include "PacketBuilder.hpp"
-#include "PacketReader.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/PacketReader.hpp"
 #include <stdexcept>
 
 namespace Vana {

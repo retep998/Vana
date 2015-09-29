@@ -17,12 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "BlockCipherIv.hpp"
-#include "MapleVersion.hpp"
-#include "Types.hpp"
-#include <botan/pipe.h>
+#include "Common/BlockCipherIv.hpp"
+#include "Common/MapleVersion.hpp"
+#include "Common/Types.hpp"
 #include <botan/filters.h>
 #include <botan/lookup.h>
+#include <botan/pipe.h>
 #include <string>
 
 namespace Vana {

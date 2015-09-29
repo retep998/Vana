@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "TimerThread.hpp"
-#include "ThreadPool.hpp"
-#include "Timer.hpp"
-#include "TimerContainer.hpp"
-#include "TimeUtilities.hpp"
+#include "Common/ThreadPool.hpp"
+#include "Common/Timer.hpp"
+#include "Common/TimerContainer.hpp"
+#include "Common/TimeUtilities.hpp"
 #include <chrono>
 #include <functional>
 

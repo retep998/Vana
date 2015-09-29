@@ -17,10 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "ConfigFile.hpp"
-#include "LuaVariant.hpp"
-#include "SaltPolicy.hpp"
-#include "Types.hpp"
+#include "Common/ConfigFile.hpp"
+#include "Common/LuaVariant.hpp"
+#include "Common/SaltPolicy.hpp"
+#include "Common/Types.hpp"
 #include <string>
 #include <vector>
 

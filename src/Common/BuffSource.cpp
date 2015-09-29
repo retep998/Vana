@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "BuffSource.hpp"
-#include "ItemDataProvider.hpp"
-#include "SkillDataProvider.hpp"
+#include "Common/ItemDataProvider.hpp"
+#include "Common/SkillDataProvider.hpp"
 
 namespace Vana {
 

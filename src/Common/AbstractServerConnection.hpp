@@ -17,10 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "AbstractConnection.hpp"
-#include "ExternalIp.hpp"
-#include "ServerType.hpp"
-#include "Types.hpp"
+#include "Common/AbstractConnection.hpp"
+#include "Common/ExternalIp.hpp"
+#include "Common/ServerType.hpp"
+#include "Common/Types.hpp"
 #include <string>
 #include <vector>
 

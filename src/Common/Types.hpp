@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "CaseInsensitiveEquals.hpp"
-#include "CaseInsensitiveHash.hpp"
-#include "make_unique.hpp"
+#include "Common/CaseInsensitiveEquals.hpp"
+#include "Common/CaseInsensitiveHash.hpp"
+#include "Common/make_unique.hpp"
 #include <algorithm>
 #include <array>
 #include <chrono>

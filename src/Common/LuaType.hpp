@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 extern "C" {
-	#include "lua.h"
-	#include "lualib.h"
-	#include "lauxlib.h"
+	#include <lua.h>
+	#include <lualib.h>
+	#include <lauxlib.h>
 }
 
 namespace Vana {

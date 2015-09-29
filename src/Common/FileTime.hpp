@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "hash_combine.hpp"
-#include "IPacket.hpp"
-#include "PacketBuilder.hpp"
-#include "PacketReader.hpp"
-#include "Types.hpp"
+#include "Common/hash_combine.hpp"
+#include "Common/IPacket.hpp"
+#include "Common/PacketBuilder.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
 	class UnixTime;

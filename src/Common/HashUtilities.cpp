@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "HashUtilities.hpp"
-#include "SaltConfig.hpp"
-#include "SaltSizeConfig.hpp"
-#include <botan/pipe.h>
+#include "Common/SaltConfig.hpp"
+#include "Common/SaltSizeConfig.hpp"
 #include <botan/filters.h>
+#include <botan/pipe.h>
 
 namespace Vana {
 

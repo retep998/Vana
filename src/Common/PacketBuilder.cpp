@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PacketBuilder.hpp"
-#include "PacketReader.hpp"
-#include "SplitPacketBuilder.hpp"
-#include "StringUtilities.hpp"
+#include "Common/PacketReader.hpp"
+#include "Common/SplitPacketBuilder.hpp"
+#include "Common/StringUtilities.hpp"
 #include <cctype>
 #include <iomanip>
 #include <iostream>
