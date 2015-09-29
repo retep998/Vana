@@ -128,7 +128,7 @@ auto PlayerStats::setEquip(inventory_slot_t slot, Item *equip, bool isLoading) -
 }
 
 // Data acquisition
-auto PlayerStats::connectData(PacketBuilder &builder) -> void {
+auto PlayerStats::connectPacket(PacketBuilder &builder) -> void {
 	builder.add<player_level_t>(getLevel());
 	builder.add<job_id_t>(getJob());
 	builder.add<stat_t>(getStr());

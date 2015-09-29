@@ -759,7 +759,7 @@ auto PlayerSkills::onDisconnect() -> void {
 	}
 }
 
-auto PlayerSkills::connectData(PacketBuilder &builder) const -> void {
+auto PlayerSkills::connectPacket(PacketBuilder &builder) const -> void {
 	// Skill levels
 	builder.add<uint16_t>(static_cast<uint16_t>(m_skills.size()));
 	for (const auto &kvp : m_skills) {
@@ -777,7 +777,7 @@ auto PlayerSkills::connectData(PacketBuilder &builder) const -> void {
 	}
 }
 
-auto PlayerSkills::connectDataForBlessing(PacketBuilder &builder) const -> void {
+auto PlayerSkills::connectPacketForBlessing(PacketBuilder &builder) const -> void {
 	// Orange text wasn't added until sometime after .75 and before .82
 	//if (!m_blessingPlayer.empty()) {
 	//	packet.add<bool>(true);

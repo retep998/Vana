@@ -112,7 +112,7 @@ auto PlayerPets::petInfoPacket(PacketBuilder &builder) -> void {
 	builder.add<int8_t>(0); // End of pets / start of taming mob
 }
 
-auto PlayerPets::connectData(PacketBuilder &builder) -> void {
+auto PlayerPets::connectPacket(PacketBuilder &builder) -> void {
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = getSummoned(i)) {
 			builder.add<int64_t>(pet->getId()); //pet->getCashId() != 0 ? pet->getCashId() : pet->getId());

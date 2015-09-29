@@ -64,8 +64,8 @@ PACKET_IMPL(connectData, Vana::Player *player) {
 		.add<face_id_t>(player->getFace())
 		.add<hair_id_t>(player->getHair());
 
-	player->getPets()->connectData(builder);
-	player->getStats()->connectData(builder); // Stats
+	player->getPets()->connectPacket(builder);
+	player->getStats()->connectPacket(builder); // Stats
 
 	builder
 		.add<int32_t>(0) // Gachapon EXP
@@ -74,10 +74,10 @@ PACKET_IMPL(connectData, Vana::Player *player) {
 		.unk<int32_t>() // Added in .62
 		.add<uint8_t>(player->getBuddyListSize());
 
-	player->getSkills()->connectDataForBlessing(builder);
-	player->getInventory()->connectData(builder);
-	player->getSkills()->connectData(builder);
-	player->getQuests()->connectData(builder);
+	player->getSkills()->connectPacketForBlessing(builder);
+	player->getInventory()->connectPacket(builder);
+	player->getSkills()->connectPacket(builder);
+	player->getQuests()->connectPacket(builder);
 
 	// Must do significant testing on all of the following to verify
 	builder
@@ -87,7 +87,7 @@ PACKET_IMPL(connectData, Vana::Player *player) {
 		.add<int16_t>(0); // I think this is the marriage ring record
 
 	player->getInventory()->rockPacket(builder); // Teleport Rock/VIP Rock maps
-	player->getMonsterBook()->connectData(builder);
+	player->getMonsterBook()->connectPacket(builder);
 
 	builder
 		.unk<int16_t>() 

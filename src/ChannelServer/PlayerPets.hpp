@@ -33,7 +33,7 @@ namespace Vana {
 
 		auto save() -> void;
 		auto petInfoPacket(PacketBuilder &builder) -> void;
-		auto connectData(PacketBuilder &builder) -> void;
+		auto connectPacket(PacketBuilder &builder) -> void;
 
 		auto getPet(pet_id_t petId) -> Pet *;
 		auto getSummoned(int8_t index) -> Pet *;

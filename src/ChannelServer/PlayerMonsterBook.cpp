@@ -112,7 +112,7 @@ auto PlayerMonsterBook::addCard(int32_t cardId, uint8_t level, bool initialLoad)
 	return false;
 }
 
-auto PlayerMonsterBook::connectData(PacketBuilder &builder) -> void {
+auto PlayerMonsterBook::connectPacket(PacketBuilder &builder) -> void {
 	if (getCover() != 0) {
 		optional_t<item_id_t> coverId = ChannelServer::getInstance().getItemDataProvider().getCardId(getCover());
 		if (coverId.is_initialized()) {
@@ -148,7 +148,7 @@ auto PlayerMonsterBook::calculateLevel() -> void {
 	}
 }
 
-auto PlayerMonsterBook::infoData(PacketBuilder &builder) -> void {
+auto PlayerMonsterBook::infoPacket(PacketBuilder &builder) -> void {
 	builder.add<int32_t>(getLevel());
 	builder.add<int32_t>(getNormals());
 	builder.add<int32_t>(getSpecials());

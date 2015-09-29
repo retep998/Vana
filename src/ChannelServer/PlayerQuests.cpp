@@ -410,7 +410,7 @@ auto PlayerQuests::isQuestComplete(quest_id_t questId) -> bool {
 	return m_completed.find(questId) != std::end(m_completed);
 }
 
-auto PlayerQuests::connectData(PacketBuilder &builder) -> void {
+auto PlayerQuests::connectPacket(PacketBuilder &builder) -> void {
 	builder.add<uint16_t>(static_cast<uint16_t>(m_quests.size()));
 	for (const auto &kvp : m_quests) {
 		builder.add<quest_id_t>(kvp.first);

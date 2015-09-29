@@ -123,8 +123,8 @@ PACKET_IMPL(showInfo, Vana::Player *getInfo, bool isSelf) {
 
 	getInfo->getPets()->petInfoPacket(builder);
 	getInfo->getMounts()->mountInfoPacket(builder);
-	getInfo->getInventory()->wishListPacket(builder);
-	getInfo->getMonsterBook()->infoData(builder);
+	getInfo->getInventory()->wishlistInfoPacket(builder);
+	getInfo->getMonsterBook()->infoPacket(builder);
 	return builder;
 }
 

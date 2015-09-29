@@ -103,7 +103,7 @@ namespace Vana {
 		auto getExp(player_level_t level) -> experience_t;
 
 		// Data acquisition
-		auto connectData(PacketBuilder &builder) -> void;
+		auto connectPacket(PacketBuilder &builder) -> void;
 		auto getLevel() const -> player_level_t { return m_level; }
 		auto getJob() const -> job_id_t { return m_job; }
 		auto getExp() const -> experience_t { return m_exp; }

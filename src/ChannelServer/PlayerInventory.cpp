@@ -612,7 +612,7 @@ auto PlayerInventory::addWishListItem(item_id_t itemId) -> void {
 	m_wishlist.push_back(itemId);
 }
 
-auto PlayerInventory::connectData(PacketBuilder &builder) -> void {
+auto PlayerInventory::connectPacket(PacketBuilder &builder) -> void {
 	builder.add<int32_t>(m_mesos);
 
 	for (inventory_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; ++i) {
@@ -665,7 +665,7 @@ auto PlayerInventory::rockPacket(PacketBuilder &builder) -> void {
 	builder.addBuffer(Packets::Helpers::fillRockPacket(m_vipLocations, Inventories::VipRockMax));
 }
 
-auto PlayerInventory::wishListPacket(PacketBuilder &builder) -> void {
+auto PlayerInventory::wishlistInfoPacket(PacketBuilder &builder) -> void {
 	builder.add<uint8_t>(static_cast<uint8_t>(m_wishlist.size()));
 	for (const auto &item : m_wishlist) {
 		builder.add<int32_t>(item);
