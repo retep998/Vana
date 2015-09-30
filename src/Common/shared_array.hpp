@@ -34,8 +34,8 @@ namespace Vana {
 
 			std::shared_ptr<TElement> m_ptr;
 		public:
-			explicit shared_array(TElement *p = nullptr): m_ptr(p, array_deleter<TElement>()) { }
-			shared_array(const shared_array &r): m_ptr(r.m_ptr) { }
+			explicit shared_array(TElement *p = nullptr): m_ptr{p, array_deleter<TElement>{}} { }
+			shared_array(const shared_array &r): m_ptr{r.m_ptr} { }
 
 			auto reset(TElement *p = nullptr) -> void { m_ptr.reset(p); }
 			auto operator[](std::ptrdiff_t i) const -> TElement & { return m_ptr.get()[i]; }
