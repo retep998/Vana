@@ -794,5 +794,14 @@
     <ClInclude Include="src\Common\QuestRequestInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
+    <ClInclude Include="src\Common\Preprocessor.hpp">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\EnumBase.hpp">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\EnumUtilities.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

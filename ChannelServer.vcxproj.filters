@@ -649,5 +649,14 @@
       <Filter>ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\PrecompiledHeader.hpp" />
+    <ClInclude Include="src\ChannelServer\KeyMapAction.hpp">
+      <Filter>ChannelServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\KeyMapKey.hpp">
+      <Filter>ChannelServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\KeyMapType.hpp">
+      <Filter>ChannelServer</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

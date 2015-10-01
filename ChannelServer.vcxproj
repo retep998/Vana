@@ -211,6 +211,9 @@
     <ClInclude Include="src\ChannelServer\ChannelServer.hpp" />
     <ClInclude Include="src\ChannelServer\CmsgHeader.hpp" />
     <ClInclude Include="src\ChannelServer\CustomFunctions.hpp" />
+    <ClInclude Include="src\ChannelServer\KeyMapAction.hpp" />
+    <ClInclude Include="src\ChannelServer\KeyMapKey.hpp" />
+    <ClInclude Include="src\ChannelServer\KeyMapType.hpp" />
     <ClInclude Include="src\ChannelServer\MysticDoor.hpp" />
     <ClInclude Include="src\ChannelServer\Drop.hpp" />
     <ClInclude Include="src\ChannelServer\EffectPacket.hpp" />

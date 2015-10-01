@@ -104,10 +104,10 @@ PACKET_IMPL(showKeys, KeyMaps *keyMaps) {
 		.add<header_t>(SMSG_KEYMAP)
 		.add<int8_t>(0);
 
-	for (size_t i = 0; i < KeyMaps::size; i++) {
+	for (size_t i = 0; i < KeyMaps::KeyCount; i++) {
 		if (KeyMaps::KeyMap *keyMap = keyMaps->getKeyMap(i)) {
 			builder
-				.add<int8_t>(keyMap->type)
+				.add<int8_t>(static_cast<int8_t>(keyMap->type))
 				.add<int32_t>(keyMap->action);
 		}
 		else {

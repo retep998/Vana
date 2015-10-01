@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.hpp"
 #include "Common/CommonHeader.hpp"
 #include "Common/Database.hpp"
+#include "Common/EnumUtilities.hpp"
 #include "Common/GameConstants.hpp"
 #include "Common/GameLogicUtilities.hpp"
 #include "Common/ItemDataProvider.hpp"
@@ -564,16 +565,20 @@ auto Player::changeKey(PacketReader &reader) -> void {
 			return;
 		}
 
-		KeyMaps keyMaps; // We don't need old values here because it is only used to save the new values
+		KeyMaps keyMaps;
+		keyMaps.load(m_id);
 		for (int32_t i = 0; i < howMany; i++) {
 			int32_t pos = reader.get<int32_t>();
-			int8_t type = reader.get<int8_t>();
+			KeyMapType type;
+			if (EnumUtilities::tryCastFromUnderlying(reader.get<int8_t>(), type) != Result::Successful) {
+				// Probably hacking
+				return;
+			}
 			int32_t action = reader.get<int32_t>();
-			keyMaps.add(pos, KeyMaps::KeyMap(type, action));
+			keyMaps.add(pos, KeyMaps::KeyMap{type, action});
 		}
 
-		// Update to MySQL
-		keyMaps.save(getId());
+		keyMaps.save(m_id);
 	}
 	else if (mode == AutoHpPotion) {
 		getInventory()->setAutoHpPot(howMany);

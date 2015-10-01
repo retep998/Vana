@@ -188,6 +188,8 @@
     <ClInclude Include="src\Common\CommonHeader.hpp" />
     <ClInclude Include="src\Common\ConsumeInfo.hpp" />
     <ClInclude Include="src\Common\DropInfo.hpp" />
+    <ClInclude Include="src\Common\EnumBase.hpp" />
+    <ClInclude Include="src\Common\EnumUtilities.hpp" />
     <ClInclude Include="src\Common\EquipInfo.hpp" />
     <ClInclude Include="src\Common\FootholdInfo.hpp" />
     <ClInclude Include="src\Common\GlobalDropInfo.hpp" />
@@ -251,6 +253,7 @@
     <ClInclude Include="src\Common\PortalInfo.hpp" />
     <ClInclude Include="src\Common\PrecompiledHeader.hpp" />
     <ClInclude Include="src\Common\MySqlQueryParser.hpp" />
+    <ClInclude Include="src\Common\Preprocessor.hpp" />
     <ClInclude Include="src\Common\Quest.hpp" />
     <ClInclude Include="src\Common\QuestRequestInfo.hpp" />
     <ClInclude Include="src\Common\QuestRequestsData.hpp" />
