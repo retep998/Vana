@@ -159,7 +159,7 @@ auto ItemDataProvider::loadConsumes(BuffDataProvider &provider) -> void {
 		item.decHunger = row.get<uint8_t>("decrease_hunger");
 		item.decFatigue = row.get<uint8_t>("decrease_fatigue");
 		item.cp = row.get<uint8_t>("carnival_points");
-		item.mcProb = row.get<uint16_t>("prob");
+		item.chance = row.get<uint16_t>("prob");
 		item.buffTime = seconds_t{row.get<int32_t>("buff_time")};
 		item.wAtk = row.get<stat_t>("weapon_attack");
 		item.mAtk = row.get<stat_t>("magic_attack");

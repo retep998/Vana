@@ -64,7 +64,7 @@ namespace Vana {
 		int16_t darknessDef = 0;
 		int16_t sealDef = 0;
 		int16_t dropUpItemRange = 0;
-		uint16_t mcProb = 0;
+		uint16_t chance = 0;
 		item_id_t dropUpItem = 0;
 		map_id_t moveTo = 0;
 		int32_t ailment = 0;

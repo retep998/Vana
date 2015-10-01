@@ -42,7 +42,7 @@ auto BuffDataProvider::loadData() -> void {
 	auto magicDefense = BuffInfo::fromPlayerOnly(4, BuffSkillValue::Mdef);
 	auto accuracy = BuffInfo::fromPlayerOnly(5, BuffSkillValue::Accuracy);
 	auto avoid = BuffInfo::fromPlayerOnly(6, BuffSkillValue::Avoid);
-	// 7 - ???
+	auto craft = BuffInfo::fromPlayerOnly(7, BuffSkillValue::Predefined);
 	auto speed = BuffInfo::fromMapMovement(8, BuffSkillValue::Speed, BuffMapInfo{1, BuffSkillValue::Speed});
 	auto jump = BuffInfo::fromPlayerOnlyMovement(9, BuffSkillValue::Jump);
 	auto magicGuard = BuffInfo::fromPlayerOnly(10, BuffSkillValue::X);
@@ -90,8 +90,8 @@ auto BuffDataProvider::loadData() -> void {
 	// 51 - ???
 	auto crazySkull = BuffInfo::fromMapNoMovement(52, BuffSkillValue::X, BuffMapInfo{4, BuffSkillValue::BitpackedSkillAndLevel32});
 	// 53 - ???
-	// 54 - ???
-	// 55 - ???
+	auto ignoreWeaponImmunity = BuffInfo::fromPlayerOnly(54, BuffSkillValue::Predefined); // Value is a percentage, so 100 means always ignore
+	auto ignoreMagicImmunity = BuffInfo::fromPlayerOnly(55, BuffSkillValue::Predefined); // Value is a percentage, so 100 means always ignore
 	// 56 - ???
 	// ??? - not sure what normally goes here, I use it for GM Hide because it appears to have no ill effects
 	auto unk = BuffInfo::fromPlayerOnly(57, BuffSkillValue::SpecialProcessing);
@@ -603,6 +603,7 @@ auto BuffDataProvider::loadData() -> void {
 	m_basics.accuracy = accuracy;
 	m_basics.avoid = avoid;
 	m_basics.speed = speed;
+	m_basics.craft = craft;
 	m_basics.jump = jump;
 	m_basics.magicGuard = magicGuard;
 	m_basics.darkSight = darkSight;
@@ -642,6 +643,9 @@ auto BuffDataProvider::loadData() -> void {
 	m_basics.concentrate = concentrate;
 	m_basics.zombify = zombify;
 	m_basics.echo = echo;
+	m_basics.crazySkull = crazySkull;
+	m_basics.ignoreWeaponImmunity = ignoreWeaponImmunity;
+	m_basics.ignoreMagicImmunity = ignoreMagicImmunity;
 	m_basics.spark = spark;
 	m_basics.dawnWarriorFinalAttack = dawnFinalAttack;
 	m_basics.windWalkerFinalAttack = windFinalAttack;
@@ -731,10 +735,10 @@ auto BuffDataProvider::addItemInfo(item_id_t itemId, const ConsumeInfo &cons) ->
 
 	}
 	if (cons.ignoreWdef) {
-
+		values.push_back(m_basics.ignoreWeaponImmunity.withPredefinedValue(cons.chance));
 	}
 	if (cons.ignoreMdef) {
-
+		values.push_back(m_basics.ignoreMagicImmunity.withPredefinedValue(cons.chance));
 	}
 	if (cons.mesoUp) {
 

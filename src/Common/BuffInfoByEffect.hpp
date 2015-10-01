@@ -28,6 +28,7 @@ namespace Vana {
 		BuffInfo magicDefense;
 		BuffInfo accuracy;
 		BuffInfo avoid;
+		BuffInfo craft;
 		BuffInfo speed;
 		BuffInfo jump;
 		BuffInfo magicGuard;
@@ -68,6 +69,9 @@ namespace Vana {
 		BuffInfo concentrate;
 		BuffInfo zombify;
 		BuffInfo echo;
+		BuffInfo crazySkull;
+		BuffInfo ignoreWeaponImmunity;
+		BuffInfo ignoreMagicImmunity;
 		BuffInfo spark;
 		BuffInfo dawnWarriorFinalAttack;
 		BuffInfo windWalkerFinalAttack;
