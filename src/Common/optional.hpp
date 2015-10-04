@@ -29,23 +29,62 @@ namespace Vana {
 		class optional {
 		public:
 			optional() = default;
-			optional(const optional<TElement> &r) : m_initialized{r.m_initialized}, m_val{r.m_val} { }
-			optional(optional<TElement> &&r) : m_initialized{r.m_initialized}, m_val{r.m_val} {
-				r.m_initialized = false;
-				r.m_val = {};
+			optional(const optional<TElement> &r) :
+				m_initialized{r.m_initialized}
+			{
+				create(r.get());
 			}
-			optional(const TElement &val) : m_initialized{true}, m_val{val} { }
+			optional(optional<TElement> &&r) :
+				m_initialized{r.m_initialized}
+			{
+				if (r.is_initialized()) {
+					create(r.get()); 
+					r.destroy();
+				}
+			}
+			optional(const TElement &val) :
+				m_initialized{true}
+			{
+				create(val);
+			}
+			~optional() { destroy(); }
 			auto is_initialized() const -> bool { return m_initialized; }
-			auto get() const -> const TElement & { return m_val; }
-			auto get() -> TElement & { return m_val; }
-			auto get(const TElement &defaultValue) const -> const TElement & { return m_initialized ? m_val : defaultValue; }
-			auto get(const TElement &defaultValue) -> TElement { return m_initialized ? m_val : defaultValue; }
-			auto reset() -> void { m_initialized = false; m_val = TElement{}; }
-			auto operator =(TElement val) -> optional<TElement> & { m_initialized = true; m_val = val; return *this; }
-			auto operator =(const optional<TElement> &r) -> optional<TElement> & { m_initialized = r.m_initialized; m_val = r.m_val; return *this; }
+			auto get() const -> const TElement & { return getCastedStorage(); }
+			auto get() -> TElement & { return getCastedStorage(); }
+			auto get(const TElement &defaultValue) const -> const TElement & { return m_initialized ? getCastedStorage() : defaultValue; }
+			auto get(const TElement &defaultValue) -> TElement { return m_initialized ? getCastedStorage() : defaultValue; }
+			auto reset() -> void { destroy(); }
+			auto operator =(TElement val) -> optional<TElement> & {
+				destroy();
+				m_initialized = true;
+				create(val);
+				return *this;
+			}
+			auto operator =(const optional<TElement> &r) -> optional<TElement> & {
+				destroy();
+				if (r.is_initialized()) {
+					m_initialized = true;
+					create(r.get());
+				}
+				return *this;
+			}
 		private:
+			void destroy() {
+				if (m_initialized) {
+					getCastedStorage().~TElement();
+					m_initialized = false;
+				}
+			}
+			void create(const TElement &value) {
+				new (getStorage()) TElement{value};
+			}
+			void * getStorage() { return m_data; }
+			const void * getStorage() const { return m_data; }
+			TElement & getCastedStorage() { return *static_cast<TElement *>(getStorage()); }
+			const TElement & getCastedStorage() const { return *static_cast<const TElement *>(getStorage()); };
+
 			bool m_initialized = false;
-			TElement m_val = {};
+			char m_data[sizeof(TElement)];
 		};
 
 		template <typename TElement>
