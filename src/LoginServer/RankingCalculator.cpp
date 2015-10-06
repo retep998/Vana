@@ -226,16 +226,21 @@ auto RankingCalculator::world(vector_t<RankPlayer> &v) -> void {
 	});
 
 	LoginServer::getInstance().getWorlds().runFunction([&v](World *world) -> bool {
-		world_id_t worldId = world->getId();
+		optional_t<world_id_t> worldId = world->getId();
+		if (!worldId.is_initialized()) {
+			throw CodePathInvalidException{"!worldId.is_initialized()"};
+		}
+
 		player_level_t lastLevel = 0;
 		time_t lastTime = 0;
 		experience_t lastExp = 0;
 		bool first = true;
 		size_t rank = 1;
+		world_id_t cached = worldId.get();
 
 		for (size_t i = 0; i < v.size(); ++i) {
 			RankPlayer &p = v[i];
-			if (p.worldId != worldId) {
+			if (p.worldId != cached) {
 				continue;
 			}
 

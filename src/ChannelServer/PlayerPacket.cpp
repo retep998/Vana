@@ -66,7 +66,7 @@ PACKET_IMPL(connectData, Vana::ChannelServer::Player *player) {
 		.add<hair_id_t>(player->getHair());
 
 	player->getPets()->connectPacket(builder);
-	player->getStats()->connectPacket(builder); // Stats
+	player->getStats()->connectPacket(builder);
 
 	builder
 		.add<int32_t>(0) // Gachapon EXP

@@ -28,7 +28,7 @@ namespace Vana {
 	public:
 		// Provided for default-construction
 		// Not intended to be used directly
-		BuffInfo();
+		BuffInfo() = default;
 
 		static auto fromPlayerOnly(uint8_t bitPosition) -> BuffInfo;
 		static auto fromPlayerOnly(uint8_t bitPosition, BuffSkillValue value) -> BuffInfo;

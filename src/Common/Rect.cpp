@@ -181,7 +181,9 @@ auto Rect::intersects(const Line &line) const -> bool {
 			x = m_leftTop.x;
 			y = y1 + (y2 - y1) * (m_leftTop.x - x1) / (x1 - x2);
 		}
-		else throw InvalidOperationException{"Should not reach here"};
+		else {
+			throw CodePathInvalidException{"If there are no bits set, that case should be taken care of earlier"};
+		}
 
 		if (outsideResult == testResultPt1) {
 			x1 = x;

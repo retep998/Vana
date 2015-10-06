@@ -34,30 +34,44 @@ auto LoginServerAcceptHandler::registerChannel(LoginServerAcceptConnection *conn
 	channel_id_t channel = reader.get<channel_id_t>();
 	Channel *chan = new Channel();
 	const Ip &ip = reader.get<Ip>();
+	optional_t<world_id_t> worldId = connection->getWorldId();
+	if (!worldId.is_initialized()) {
+		throw CodePathInvalidException{"!worldId.is_initialized()"};
+	}
 
 	chan->setExternalIpInformation(ip, reader.get<vector_t<ExternalIp>>());
 	chan->setPort(reader.get<port_t>());
-	LoginServer::getInstance().getWorlds().getWorld(connection->getWorldId())->addChannel(channel, chan);
+	LoginServer::getInstance().getWorlds().getWorld(worldId.get())->addChannel(channel, chan);
 	LoginServer::getInstance().log(LogType::ServerConnect, [&](out_stream_t &log) {
-		log << "World " << static_cast<int32_t>(connection->getWorldId()) << "; Channel " << static_cast<int32_t>(channel);
+		log << "World " << static_cast<int32_t>(worldId.get()) << "; Channel " << static_cast<int32_t>(channel);
 	});
 }
 
 auto LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptConnection *connection, PacketReader &reader) -> void {
 	channel_id_t channel = reader.get<channel_id_t>();
 	int32_t population = reader.get<int32_t>();
+	optional_t<world_id_t> worldId = connection->getWorldId();
+	if (!worldId.is_initialized()) {
+		throw CodePathInvalidException{"!worldId.is_initialized()"};
+	}
 
-	World *world = LoginServer::getInstance().getWorlds().getWorld(connection->getWorldId());
+	auto &worlds = LoginServer::getInstance().getWorlds();
+	World *world = worlds.getWorld(worldId.get());
 	world->getChannel(channel)->setPopulation(population);
-	LoginServer::getInstance().getWorlds().calculatePlayerLoad(world);
+	worlds.calculatePlayerLoad(world);
 }
 
 auto LoginServerAcceptHandler::removeChannel(LoginServerAcceptConnection *connection, PacketReader &reader) -> void {
 	channel_id_t channel = reader.get<channel_id_t>();
 
-	LoginServer::getInstance().getWorlds().getWorld(connection->getWorldId())->removeChannel(channel);
+	optional_t<world_id_t> worldId = connection->getWorldId();
+	if (!worldId.is_initialized()) {
+		throw CodePathInvalidException{"!worldId.is_initialized()"};
+	}
+
+	LoginServer::getInstance().getWorlds().getWorld(worldId.get())->removeChannel(channel);
 	LoginServer::getInstance().log(LogType::ServerDisconnect, [&](out_stream_t &log) {
-		log << "World " << static_cast<int32_t>(connection->getWorldId()) << "; Channel " << static_cast<int32_t>(channel);
+		log << "World " << static_cast<int32_t>(worldId.get()) << "; Channel " << static_cast<int32_t>(channel);
 	});
 }
 

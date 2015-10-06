@@ -45,14 +45,14 @@ namespace Vana {
 			auto setCreationTime(FileTime creationTime) -> void { m_userCreation = creationTime; }
 			auto setGmLevel(int32_t gmLevel) -> void { m_gmLevel = gmLevel; }
 
-			auto getGender() const -> gender_id_t { return m_gender; }
-			auto getWorldId() const -> world_id_t { return m_worldId; }
+			auto getGender() const -> optional_t<gender_id_t> { return m_gender; }
+			auto getWorldId() const -> optional_t<world_id_t> { return m_worldId; }
 			auto isAdmin() const -> bool { return m_admin; }
 			auto getChannel() const -> channel_id_t { return m_channel; }
 			auto getAccountId() const -> account_id_t { return m_accountId; }
 			auto getGmLevel() const -> int32_t { return m_gmLevel; }
 			auto getStatus() const -> PlayerStatus::PlayerStatus { return m_status; }
-			auto getPin() const -> int32_t { return m_pin; }
+			auto getPin() const -> opt_int32_t { return m_pin; }
 			auto getCharDeletePassword() const -> opt_int32_t { return m_charDeletePassword; }
 			auto getQuietBanReason() const -> int8_t { return m_quietBanReason; }
 			auto getQuietBanTime() const -> FileTime { return m_quietBanTime; }
@@ -65,14 +65,14 @@ namespace Vana {
 		private:
 			bool m_admin = false;
 			bool m_checkedPin = false;
-			gender_id_t m_gender = -1;
-			world_id_t m_worldId = -1;
 			int8_t m_quietBanReason = 0;
 			channel_id_t m_channel = 0;
 			account_id_t m_accountId = 0;
-			int32_t m_pin = 0;
 			int32_t m_invalidLogins = 0;
 			int32_t m_gmLevel = 0;
+			optional_t<gender_id_t> m_gender;
+			optional_t<world_id_t> m_worldId;
+			opt_int32_t m_pin;
 			opt_int32_t m_charDeletePassword;
 			FileTime m_quietBanTime = 0;
 			FileTime m_userCreation = 0;

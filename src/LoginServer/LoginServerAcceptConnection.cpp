@@ -32,14 +32,16 @@ namespace Vana {
 namespace LoginServer {
 
 LoginServerAcceptConnection::~LoginServerAcceptConnection() {
-	if (m_worldId != -1) {
+	if (m_worldId.is_initialized()) {
 		auto &server = LoginServer::getInstance();
 
-		World *world = server.getWorlds().getWorld(m_worldId);
+		World *world = server.getWorlds().getWorld(m_worldId.get());
 		world->setConnected(false);
 		world->clearChannels();
 
-		server.log(LogType::ServerDisconnect, [&](out_stream_t &log) { log << "World " << static_cast<int32_t>(m_worldId); });
+		server.log(LogType::ServerDisconnect, [&](out_stream_t &log) {
+			log << "World " << static_cast<int32_t>(m_worldId.get());
+		});
 	}
 }
 
@@ -80,7 +82,7 @@ auto LoginServerAcceptConnection::setWorldId(world_id_t id) -> void {
 	m_worldId = id;
 }
 
-auto LoginServerAcceptConnection::getWorldId() const -> world_id_t {
+auto LoginServerAcceptConnection::getWorldId() const -> optional_t<world_id_t> {
 	return m_worldId;
 }
 

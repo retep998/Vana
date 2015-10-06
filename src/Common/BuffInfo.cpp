@@ -19,10 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Vana {
 
-BuffInfo::BuffInfo()
-{
-}
-
 auto BuffInfo::fromPlayerOnly(uint8_t bitPosition) -> BuffInfo {
 	BuffInfo ret;
 	ret.m_bitPosition = bitPosition;

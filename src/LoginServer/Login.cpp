@@ -142,19 +142,16 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 		});
 
 		user->setAccountId(accountId);
-
 		if (LoginServer::getInstance().getPinEnabled()) {
 			opt_int32_t pin = row.get<opt_int32_t>("pin");
-			if (!pin.is_initialized()) {
-				user->setPin(-1);
-			}
-			else {
+			if (pin.is_initialized()) {
 				user->setPin(pin.get());
 			}
 
-			user->setStatus(user->getPin() == -1 ?
-				PlayerStatus::SetPin :
-				PlayerStatus::AskPin);
+			auto userPin = user->getPin();
+			user->setStatus(userPin.is_initialized() ?
+				PlayerStatus::AskPin :
+				PlayerStatus::SetPin);
 		}
 		else {
 			user->setStatus(PlayerStatus::LoggedIn);
@@ -262,8 +259,12 @@ auto Login::checkPin(UserConnection *user, PacketReader &reader) -> void {
 	}
 	else if (act == 0x01) {
 		int32_t pin = StringUtilities::lexical_cast<int32_t>(reader.get<string_t>());
-		int32_t current = user->getPin();
-		if (pin == current) {
+		opt_int32_t current = user->getPin();
+		if (!current.is_initialized()) {
+			// Hacking
+			return;
+		}
+		if (pin == current.get()) {
 			user->setStatus(PlayerStatus::LoggedIn);
 			handleLogin(user, reader);
 		}
@@ -273,7 +274,12 @@ auto Login::checkPin(UserConnection *user, PacketReader &reader) -> void {
 	}
 	else if (act == 0x02) {
 		int32_t pin = StringUtilities::lexical_cast<int32_t>(reader.get<string_t>());
-		if (pin == user->getPin()) {
+		auto current = user->getPin();
+		if (!current.is_initialized()) {
+			// Hacking
+			return;
+		}
+		if (pin == current.get()) {
 			user->setStatus(PlayerStatus::SetPin);
 			handleLogin(user, reader);
 		}
@@ -289,7 +295,8 @@ auto Login::registerPin(UserConnection *user, PacketReader &reader) -> void {
 		return;
 	}
 	if (reader.get<int8_t>() == 0x00) {
-		if (user->getPin() != -1) {
+		auto pin = user->getPin();
+		if (pin.is_initialized()) {
 			user->setStatus(PlayerStatus::AskPin);
 		}
 		return;

@@ -139,15 +139,18 @@ auto Characters::showAllCharacters(UserConnection *user) -> void {
 auto Characters::showCharacters(UserConnection *user) -> void {
 	auto &db = Database::getCharDb();
 	auto &sql = db.getSession();
-	world_id_t worldId = user->getWorldId();
+	auto worldId = user->getWorldId();
 	account_id_t accountId = user->getAccountId();
+	if (!worldId.is_initialized()) {
+		throw CodePathInvalidException{"!worldId.is_initialized()"};
+	}
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT * "
 		<< "FROM " << db.makeTable("characters") << " c "
 		<< "WHERE c.account_id = :account AND c.world_id = :world ",
 		soci::use(accountId, "account"),
-		soci::use(worldId, "world"));
+		soci::use(worldId.get(), "world"));
 
 	vector_t<Character> chars;
 	for (const auto &row : rs) {
@@ -162,12 +165,12 @@ auto Characters::showCharacters(UserConnection *user) -> void {
 		<< "FROM " << db.makeTable("storage") << " s "
 		<< "WHERE s.account_id = :account AND s.world_id = :world ",
 		soci::use(accountId, "account"),
-		soci::use(worldId, "world"),
+		soci::use(worldId.get(), "world"),
 		soci::into(max);
 
 	if (!sql.got_data() || !max.is_initialized()) {
-		const WorldConfig &world = LoginServer::getInstance().getWorlds().getWorld(worldId)->getConfig();
-		max = world.defaultChars;
+		const auto &config = LoginServer::getInstance().getWorlds().getWorld(worldId.get())->getConfig();
+		max = config.defaultChars;
 	}
 
 	user->send(Packets::showCharacters(chars, max.get()));
@@ -193,7 +196,11 @@ auto Characters::checkCharacterName(UserConnection *user, PacketReader &reader) 
 auto Characters::createItem(item_id_t itemId, UserConnection *user, player_id_t charId, inventory_slot_t slot, slot_qty_t amount) -> void {
 	auto &db = Database::getCharDb();
 	inventory_t inventory = GameLogicUtilities::getInventory(itemId);
-	ItemDbInformation info{slot, charId, user->getAccountId(), user->getWorldId(), Item::Inventory};
+	auto worldId = user->getWorldId();
+	if (!worldId.is_initialized()) {
+		throw CodePathInvalidException{"!worldId.is_initialized()"};
+	}
+	ItemDbInformation info{slot, charId, user->getAccountId(), worldId.get(), Item::Inventory};
 
 	if (inventory == Inventories::EquipInventory) {
 		Item equip{LoginServer::getInstance().getEquipDataProvider(), itemId, Items::StatVariance::None, false};
@@ -249,13 +256,17 @@ auto Characters::createCharacter(UserConnection *user, PacketReader &reader) -> 
 
 	auto &db = Database::getCharDb();
 	auto &sql = db.getSession();
+	optional_t<world_id_t> worldId = user->getWorldId();
+	if (!worldId.is_initialized()) {
+		throw CodePathInvalidException{"!worldId.is_initialized()"};
+	}
 
 	sql.once
 		<< "INSERT INTO " << db.makeTable("characters") << " (name, account_id, world_id, face, hair, skin, gender, str, dex, `int`, luk) "
 		<< "VALUES (:name, :account, :world, :face, :hair, :skin, :gender, :str, :dex, :int, :luk)",
 		soci::use(name, "name"),
 		soci::use(user->getAccountId(), "account"),
-		soci::use(user->getWorldId(), "world"),
+		soci::use(worldId.get(), "world"),
 		soci::use(face, "face"),
 		soci::use(hair + hairColor, "hair"),
 		soci::use(skin, "skin"),
@@ -284,7 +295,7 @@ auto Characters::createCharacter(UserConnection *user, PacketReader &reader) -> 
 	Character charc;
 	loadCharacter(charc, row);
 	user->send(Packets::showCharacter(charc));
-	LoginServer::getInstance().getWorlds().send(user->getWorldId(), Packets::Interserver::Player::characterCreated(id));
+	LoginServer::getInstance().getWorlds().send(worldId.get(), Packets::Interserver::Player::characterCreated(id));
 }
 
 auto Characters::deleteCharacter(UserConnection *user, PacketReader &reader) -> void {
@@ -344,7 +355,7 @@ auto Characters::deleteCharacter(UserConnection *user, PacketReader &reader) -> 
 	}
 
 	user->send(Packets::deleteCharacter(id, result));
-	LoginServer::getInstance().getWorlds().send(user->getWorldId(), Packets::Interserver::Player::characterDeleted(id));
+	LoginServer::getInstance().getWorlds().send(worldId.get(), Packets::Interserver::Player::characterDeleted(id));
 }
 
 auto Characters::connectGame(UserConnection *user, player_id_t charId) -> void {
@@ -357,16 +368,20 @@ auto Characters::connectGame(UserConnection *user, player_id_t charId) -> void {
 		return;
 	}
 
-	auto world = LoginServer::getInstance().getWorlds().getWorld(user->getWorldId());
+	auto worldId = user->getWorldId();
+	if (!worldId.is_initialized()) {
+		throw CodePathInvalidException{"!worldId.is_initialized()"};
+	}
+
+	auto world = LoginServer::getInstance().getWorlds().getWorld(worldId.get());
 	world->send(Packets::Interserver::playerConnectingToChannel(user->getChannel(), charId, user->getIp()));
 
-	Ip chanIp{0};
-	port_t port = -1;
+	optional_t<ClientIp> ip;
+	optional_t<port_t> port;
 	if (Channel *channel = world->getChannel(user->getChannel())) {
-		chanIp = channel->matchIpToSubnet(user->getIp());
+		ip = ClientIp{channel->matchIpToSubnet(user->getIp())};
 		port = channel->getPort();
 	}
-	ClientIp ip{chanIp};
 	user->send(Packets::connectIp(ip, port, charId));
 }
 
@@ -461,7 +476,8 @@ auto Characters::nameTaken(const string_t &name) -> bool {
 }
 
 auto Characters::nameInvalid(const string_t &name) -> bool {
-	return LoginServer::getInstance().getValidCharDataProvider().isForbiddenName(name) ||
+	return
+		LoginServer::getInstance().getValidCharDataProvider().isForbiddenName(name) ||
 		LoginServer::getInstance().getCurseDataProvider().isCurseWord(name);
 }
 

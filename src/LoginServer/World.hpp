@@ -52,7 +52,7 @@ namespace Vana {
 			auto send(const PacketBuilder &builder) -> void;
 
 			auto isConnected() const -> bool { return m_connected; }
-			auto getId() const -> world_id_t { return m_id; }
+			auto getId() const -> optional_t<world_id_t> { return m_id; }
 			auto getRibbon() const -> int8_t { return m_config.ribbon; }
 			auto getPort() const -> port_t { return m_port; }
 			auto getRandomChannel() const -> channel_id_t;
@@ -67,7 +67,7 @@ namespace Vana {
 			auto getConfig() const -> const WorldConfig & { return m_config; }
 		private:
 			bool m_connected = false;
-			world_id_t m_id = -1;
+			optional_t<world_id_t> m_id;
 			port_t m_port = 0;
 			int32_t m_playerLoad = 0;
 			LoginServerAcceptConnection *m_connection = nullptr;

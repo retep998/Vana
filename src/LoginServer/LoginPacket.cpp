@@ -68,7 +68,7 @@ PACKET_IMPL(loginConnect, UserConnection *user, const string_t &username) {
 			builder.add<int8_t>(PlayerStatus::PinSelect);
 			break;
 		default:
-			builder.add<gender_id_t>(user->getGender());
+			builder.add<gender_id_t>(user->getGender().get(-1));
 			break;
 	}
 
@@ -125,7 +125,7 @@ PACKET_IMPL(showWorld, World *world) {
 
 	builder
 		.add<header_t>(SMSG_WORLD_LIST)
-		.add<world_id_t>(world->getId())
+		.add<world_id_t>(world->getId().get(-1))
 		.add<string_t>(world->getName())
 		.add<int8_t>(world->getRibbon())
 		.add<string_t>(world->getEventMessage())
@@ -148,7 +148,7 @@ PACKET_IMPL(showWorld, World *world) {
 		}
 
 		builder
-			.add<world_id_t>(world->getId())
+			.add<world_id_t>(world->getId().get(-1))
 			.add<uint8_t>(i)
 			.unk<uint8_t>(); // Some sort of state
 	}
@@ -263,13 +263,24 @@ PACKET_IMPL(deleteCharacter, player_id_t id, uint8_t result) {
 	return builder;
 }
 
-PACKET_IMPL(connectIp, const ClientIp &ip, port_t port, player_id_t charId) {
+PACKET_IMPL(connectIp, const optional_t<ClientIp> &ip, optional_t<port_t> port, player_id_t charId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_CHANNEL_CONNECT)
-		.unk<int16_t>()
-		.add<ClientIp>(ip)
-		.add<port_t>(port)
+		.unk<int16_t>();
+
+	if (ip.is_initialized() && port.is_initialized()) {
+		builder
+			.add<ClientIp>(ip.get())
+			.add<port_t>(port.get());
+	}
+	else {
+		builder
+			.add<ClientIp>(ClientIp{Ip{0}})
+			.add<port_t>(-1);
+	}
+
+	builder
 		.add<player_id_t>(charId)
 		.unk<int32_t>()
 		.unk<int8_t>();

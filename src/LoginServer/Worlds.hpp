@@ -49,8 +49,8 @@ namespace Vana {
 			auto getWorld(world_id_t id) -> World *;
 
 			// Inter-server
-			auto addWorldServer(LoginServerAcceptConnection *connection) -> world_id_t;
-			auto addChannelServer(LoginServerAcceptConnection *connection) -> world_id_t;
+			auto addWorldServer(LoginServerAcceptConnection *connection) -> optional_t<world_id_t>;
+			auto addChannelServer(LoginServerAcceptConnection *connection) -> optional_t<world_id_t>;
 		private:
 			ord_map_t<world_id_t, World *> m_worlds;
 		};

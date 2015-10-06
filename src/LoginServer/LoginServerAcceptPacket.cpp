@@ -30,7 +30,7 @@ PACKET_IMPL(connect, World *world) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_WORLD_CONNECT)
-		.add<world_id_t>(world->getId())
+		.add<world_id_t>(world->getId().get(-1))
 		.add<port_t>(world->getPort())
 		.add<WorldConfig>(world->getConfig());
 	return builder;
@@ -44,13 +44,13 @@ PACKET_IMPL(noMoreWorld) {
 	return builder;
 }
 
-PACKET_IMPL(connectChannel, world_id_t worldId, const Ip &ip, port_t port) {
+PACKET_IMPL(connectChannel, optional_t<world_id_t> worldId, optional_t<Ip> ip, optional_t<port_t> port) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_LOGIN_CHANNEL_CONNECT)
-		.add<world_id_t>(worldId)
-		.add<Ip>(ip)
-		.add<port_t>(port);
+		.add<world_id_t>(worldId.get(-1))
+		.add<Ip>(ip.get(Ip{0}))
+		.add<port_t>(port.get(0));
 	return builder;
 }
 

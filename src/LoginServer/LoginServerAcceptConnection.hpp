@@ -31,12 +31,12 @@ namespace Vana {
 			~LoginServerAcceptConnection();
 
 			auto setWorldId(world_id_t id) -> void;
-			auto getWorldId() const -> world_id_t;
+			auto getWorldId() const -> optional_t<world_id_t>;
 		protected:
 			auto handleRequest(PacketReader &reader) -> void override;
 			auto authenticated(ServerType type) -> void override;
 		private:
-			world_id_t m_worldId = -1;
+			optional_t<world_id_t> m_worldId;
 		};
 	}
 }

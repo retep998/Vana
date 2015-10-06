@@ -48,7 +48,11 @@ auto Worlds::showWorld(UserConnection *user) -> void {
 }
 
 auto Worlds::addWorld(World *world) -> void {
-	m_worlds[world->getId()] = world;
+	optional_t<world_id_t> worldId = world->getId();
+	if (!worldId.is_initialized()) {
+		throw CodePathInvalidException{"!worldId.is_initialized()"};
+	}
+	m_worlds[worldId.get()] = world;
 }
 
 auto Worlds::selectWorld(UserConnection *user, PacketReader &reader) -> void {
@@ -59,7 +63,6 @@ auto Worlds::selectWorld(UserConnection *user, PacketReader &reader) -> void {
 
 	world_id_t worldId = reader.get<world_id_t>();
 	if (World *world = getWorld(worldId)) {
-		user->setWorldId(worldId);
 		int32_t load = world->getPlayerLoad();
 		int32_t maxLoad = world->getMaxPlayerLoad();
 		int32_t minMaxLoad = (maxLoad / 100) * 90;
@@ -84,11 +87,19 @@ auto Worlds::channelSelect(UserConnection *user, PacketReader &reader) -> void {
 		// Hacking
 		return;
 	}
-	reader.unk<uint8_t>();
+	world_id_t worldId = reader.get<world_id_t>();
+	if (World *world = getWorld(worldId)) {
+		user->setWorldId(worldId);
+	}
+	else {
+		// Hacking
+		return;
+	}
+
 	channel_id_t channelId = reader.get<int8_t>();
 
 	user->send(Packets::channelSelect());
-	World *world = m_worlds[user->getWorldId()];
+	World *world = m_worlds[worldId];
 
 	if (world == nullptr) {
 		// Hacking, lag, or client that hasn't been updated (e.g. in the middle of logging in)
@@ -104,7 +115,7 @@ auto Worlds::channelSelect(UserConnection *user, PacketReader &reader) -> void {
 	}
 }
 
-auto Worlds::addWorldServer(LoginServerAcceptConnection *connection) -> world_id_t {
+auto Worlds::addWorldServer(LoginServerAcceptConnection *connection) -> optional_t<world_id_t> {
 	World *world = nullptr;
 	for (const auto &kvp : m_worlds) {
 		if (!kvp.second->isConnected()) {
@@ -114,26 +125,33 @@ auto Worlds::addWorldServer(LoginServerAcceptConnection *connection) -> world_id
 	}
 
 	auto &server = LoginServer::getInstance();
-	world_id_t worldId = -1;
-	if (world != nullptr) {
-		worldId = world->getId();
-		connection->setWorldId(worldId);
-		world->setConnected(true);
-		world->setConnection(connection);
-
-		connection->send(Packets::Interserver::connect(world));
-
-		server.log(LogType::ServerConnect, [&](out_stream_t &log) { log << "World " << static_cast<int32_t>(worldId); });
-	}
-	else {
+	if (world == nullptr) {
 		connection->send(Packets::Interserver::noMoreWorld());
 		server.log(LogType::Error, "No more worlds to assign.");
 		connection->disconnect();
+		return {};
 	}
-	return worldId;
+
+	optional_t<world_id_t> worldId = world->getId();
+	if (!worldId.is_initialized()) {
+		throw CodePathInvalidException{"!worldId.is_initialized()"};
+	}
+
+	world_id_t cached = worldId.get();
+	connection->setWorldId(cached);
+	world->setConnected(true);
+	world->setConnection(connection);
+
+	connection->send(Packets::Interserver::connect(world));
+
+	server.log(LogType::ServerConnect, [&](out_stream_t &log) {
+		log << "World " << static_cast<int32_t>(cached);
+	});
+
+	return cached;
 }
 
-auto Worlds::addChannelServer(LoginServerAcceptConnection *connection) -> world_id_t {
+auto Worlds::addChannelServer(LoginServerAcceptConnection *connection) -> optional_t<world_id_t> {
 	World *validWorld = nullptr;
 	for (const auto &kvp : m_worlds) {
 		World *world = kvp.second;
@@ -143,16 +161,20 @@ auto Worlds::addChannelServer(LoginServerAcceptConnection *connection) -> world_
 		}
 	}
 
-	world_id_t worldId = -1;
-	if (validWorld != nullptr) {
-		worldId = validWorld->getId();
-		Ip worldIp = validWorld->matchSubnet(connection->getIp());
-		connection->send(Packets::Interserver::connectChannel(worldId, worldIp, validWorld->getPort()));
-	}
-	else {
-		connection->send(Packets::Interserver::connectChannel(worldId, Ip{0}, 0));
+	if (validWorld == nullptr) {
+		connection->send(Packets::Interserver::connectChannel({}, {}, {}));
 		LoginServer::getInstance().log(LogType::Error, "No more channels to assign.");
+		connection->disconnect();
+		return {};
 	}
+
+	optional_t<world_id_t> worldId = validWorld->getId();
+	if (!worldId.is_initialized()) {
+		throw CodePathInvalidException{"!worldId.is_initialized()"};
+	}
+
+	Ip worldIp = validWorld->matchSubnet(connection->getIp());
+	connection->send(Packets::Interserver::connectChannel(worldId.get(), worldIp, validWorld->getPort()));
 	connection->disconnect();
 	return worldId;
 }

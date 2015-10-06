@@ -73,7 +73,7 @@ namespace Vana {
 			PACKET(showCharacter, const Character &charc);
 			PACKET(checkName, const string_t &name, uint8_t message);
 			PACKET(deleteCharacter, player_id_t id, uint8_t result);
-			PACKET(connectIp, const ClientIp &ip, port_t port, player_id_t charId);
+			PACKET(connectIp, const optional_t<ClientIp> &ip, optional_t<port_t> port, player_id_t charId);
 			PACKET(relogResponse);
 		}
 	}
