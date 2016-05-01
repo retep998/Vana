@@ -126,7 +126,7 @@ auto Initializing::checkSchemaVersion(AbstractServer *server, bool update) -> Re
 		}
 		else {
 			// Failed, but we can update it
-			std::cout << std::setw(OutputWidth) << "Updating database...";
+			std::cout << std::setw(OutputWidth) << std::left << "Updating database...";
 
 			db.update();
 

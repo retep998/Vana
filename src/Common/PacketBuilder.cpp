@@ -39,7 +39,7 @@ auto PacketBuilder::unk(int32_t bytes) -> PacketBuilder & {
 	size_t casted = static_cast<size_t>(bytes);
 	size_t alignedMax = casted / alignSize;
 	size_t remainder = casted % alignSize;
-	for (size_t i = 0; i < alignedMax; i += alignSize) {
+	for (size_t i = 0; i < alignedMax; i++) {
 		unk<uint32_t>(0);
 	}
 	if (remainder != 0) {
