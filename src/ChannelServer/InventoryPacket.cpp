@@ -361,8 +361,8 @@ PACKET_IMPL(playCashSong, item_id_t itemId, const string_t &playerName) {
 
 SPLIT_PACKET_IMPL(sendRewardItemAnimation, player_id_t playerId, item_id_t itemId, const string_t &effect) {
 	SplitPacketBuilder builder;
-	PacketBuilder packet;
-	packet
+	PacketBuilder buffer;
+	buffer
 		.add<int8_t>(0x0E)
 		.add<item_id_t>(itemId)
 		.add<int8_t>(1) // Unk...?
@@ -370,12 +370,12 @@ SPLIT_PACKET_IMPL(sendRewardItemAnimation, player_id_t playerId, item_id_t itemI
 
 	builder.player
 		.add<header_t>(SMSG_THEATRICS)
-		.addBuffer(packet);
+		.addBuffer(buffer);
 
 	builder.map
 		.add<header_t>(SMSG_SKILL_SHOW)
 		.add<player_id_t>(playerId)
-		.addBuffer(packet);
+		.addBuffer(buffer);
 	return builder;
 }
 

@@ -444,10 +444,10 @@ auto PlayerHandler::handleAdminMessenger(ref_ptr_t<Player> player, PacketReader 
 		out_stream_t output;
 		output << player->getMedalName() << " : " << line1 << line2 << line3 << line4 << line5;
 
-		auto &basePacket = Packets::Inventory::showSuperMegaphone(output.str(), useWhisper);
+		auto &builder = Packets::Inventory::showSuperMegaphone(output.str(), useWhisper);
 		ChannelServer::getInstance().sendWorld(
-			Vana::Packets::prepend(basePacket, [](PacketBuilder &builder) {
-				builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
+			Vana::Packets::prepend(builder, [](PacketBuilder &header) {
+				header.add<header_t>(IMSG_TO_ALL_PLAYERS);
 			}));
 	}
 }

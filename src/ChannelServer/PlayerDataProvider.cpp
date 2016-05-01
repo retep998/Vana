@@ -243,12 +243,12 @@ auto PlayerDataProvider::disconnect() -> void {
 }
 
 auto PlayerDataProvider::handleGroupChat(int8_t chatType, player_id_t playerId, const vector_t<player_id_t> &receivers, const chat_t &chat) -> void {
-	auto &packet = Packets::Player::groupChat(m_playerData[playerId].name, chat, chatType);
+	auto &builder = Packets::Player::groupChat(m_playerData[playerId].name, chat, chatType);
 
 	vector_t<player_id_t> nonPresentReceivers;
 	for (const auto &playerId : receivers) {
 		if (auto player = getPlayer(playerId)) {
-			player->send(packet);
+			player->send(builder);
 		}
 		else {
 			nonPresentReceivers.push_back(playerId);
@@ -256,9 +256,9 @@ auto PlayerDataProvider::handleGroupChat(int8_t chatType, player_id_t playerId, 
 	}
 
 	if (nonPresentReceivers.size() > 0) {
-		ChannelServer::getInstance().sendWorld(Vana::Packets::prepend(packet, [&nonPresentReceivers](PacketBuilder &builder) {
-			builder.add<header_t>(IMSG_TO_PLAYER_LIST);
-			builder.add<vector_t<player_id_t>>(nonPresentReceivers);
+		ChannelServer::getInstance().sendWorld(Vana::Packets::prepend(builder, [&nonPresentReceivers](PacketBuilder &header) {
+			header.add<header_t>(IMSG_TO_PLAYER_LIST);
+			header.add<vector_t<player_id_t>>(nonPresentReceivers);
 		}));
 	}
 }
@@ -269,12 +269,12 @@ auto PlayerDataProvider::handleGmChat(ref_ptr_t<Player> player, const chat_t &ch
 		<< static_cast<int32_t>(ChannelServer::getInstance().getChannelId() + 1)
 		<< "] : " << chat;
 
-	auto &packet = Packets::Player::showMessage(message.str(), Packets::Player::NoticeTypes::Blue);
+	auto &builder = Packets::Player::showMessage(message.str(), Packets::Player::NoticeTypes::Blue);
 
 	vector_t<player_id_t> nonPresentReceivers;
 	for (const auto &playerId : m_gmList) {
 		if (auto player = getPlayer(playerId)) {
-			player->send(packet);
+			player->send(builder);
 		}
 		else {
 			nonPresentReceivers.push_back(playerId);
@@ -282,9 +282,9 @@ auto PlayerDataProvider::handleGmChat(ref_ptr_t<Player> player, const chat_t &ch
 	}
 
 	if (nonPresentReceivers.size() > 0) {
-		ChannelServer::getInstance().sendWorld(Vana::Packets::prepend(packet, [&nonPresentReceivers](PacketBuilder &builder) {
-			builder.add<header_t>(IMSG_TO_PLAYER_LIST);
-			builder.add<vector_t<player_id_t>>(nonPresentReceivers);
+		ChannelServer::getInstance().sendWorld(Vana::Packets::prepend(builder, [&nonPresentReceivers](PacketBuilder &header) {
+			header.add<header_t>(IMSG_TO_PLAYER_LIST);
+			header.add<vector_t<player_id_t>>(nonPresentReceivers);
 		}));
 	}
 }

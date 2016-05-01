@@ -463,10 +463,10 @@ auto InventoryHandler::useCashItem(ref_ptr_t<Player> player, PacketReader &reade
 			case Items::SuperMegaphone: {
 				string_t msg = player->getMedalName() + " : " + reader.get<string_t>();
 				bool whisper = reader.get<bool>();
-				auto &basePacket = Packets::Inventory::showSuperMegaphone(msg, whisper);
+				auto &builder = Packets::Inventory::showSuperMegaphone(msg, whisper);
 				ChannelServer::getInstance().sendWorld(
-					Vana::Packets::prepend(basePacket, [](PacketBuilder &builder) {
-						builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
+					Vana::Packets::prepend(builder, [](PacketBuilder &header) {
+						header.add<header_t>(IMSG_TO_ALL_PLAYERS);
 					}));
 				used = true;
 				break;
@@ -479,10 +479,10 @@ auto InventoryHandler::useCashItem(ref_ptr_t<Player> player, PacketReader &reade
 				string_t msg3 = reader.get<string_t>();
 				string_t msg4 = reader.get<string_t>();
 
-				auto &basePacket = Packets::Inventory::showMessenger(player->getName(), msg1, msg2, msg3, msg4, reader.getBuffer(), reader.getBufferLength(), itemId);
+				auto &builder = Packets::Inventory::showMessenger(player->getName(), msg1, msg2, msg3, msg4, reader.getBuffer(), reader.getBufferLength(), itemId);
 				ChannelServer::getInstance().sendWorld(
-					Vana::Packets::prepend(basePacket, [](PacketBuilder &builder) {
-						builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
+					Vana::Packets::prepend(builder, [](PacketBuilder &header) {
+						header.add<header_t>(IMSG_TO_ALL_PLAYERS);
 					}));
 				used = true;
 				break;
@@ -501,10 +501,10 @@ auto InventoryHandler::useCashItem(ref_ptr_t<Player> player, PacketReader &reade
 					}
 				}
 
-				auto &basePacket = Packets::Inventory::showItemMegaphone(msg, whisper, item);
+				auto &builder = Packets::Inventory::showItemMegaphone(msg, whisper, item);
 				ChannelServer::getInstance().sendWorld(
-					Vana::Packets::prepend(basePacket, [](PacketBuilder &builder) {
-						builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
+					Vana::Packets::prepend(builder, [](PacketBuilder &header) {
+						header.add<header_t>(IMSG_TO_ALL_PLAYERS);
 					}));
 				used = true;
 				break;
@@ -521,10 +521,10 @@ auto InventoryHandler::useCashItem(ref_ptr_t<Player> player, PacketReader &reade
 				}
 
 				bool whisper = reader.get<bool>();
-				auto &basePacket = Packets::Inventory::showTripleMegaphone(lines, text[0], text[1], text[2], whisper);
+				auto &builder = Packets::Inventory::showTripleMegaphone(lines, text[0], text[1], text[2], whisper);
 				ChannelServer::getInstance().sendWorld(
-					Vana::Packets::prepend(basePacket, [](PacketBuilder &builder) {
-						builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
+					Vana::Packets::prepend(builder, [](PacketBuilder &header) {
+						header.add<header_t>(IMSG_TO_ALL_PLAYERS);
 					}));
 
 				used = true;
@@ -619,12 +619,11 @@ auto InventoryHandler::useCashItem(ref_ptr_t<Player> player, PacketReader &reade
 					ChannelServer::getInstance().getMapleTvs().addMessage(player, receiver, msg1, msg2, msg3, msg4, msg5, itemId - (itemId == Items::Megassenger ? 3 : 0), time);
 
 					if (itemId == Items::Megassenger) {
-						auto &basePacket = Packets::Inventory::showSuperMegaphone(player->getMedalName() + " : " + msg1 + msg2 + msg3 + msg4 + msg5, showWhisper);
+						auto &builder = Packets::Inventory::showSuperMegaphone(player->getMedalName() + " : " + msg1 + msg2 + msg3 + msg4 + msg5, showWhisper);
 						ChannelServer::getInstance().sendWorld(
-							Vana::Packets::prepend(basePacket, [](PacketBuilder &builder) {
-								builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
+							Vana::Packets::prepend(builder, [](PacketBuilder &header) {
+								header.add<header_t>(IMSG_TO_ALL_PLAYERS);
 							}));
-
 					}
 					used = true;
 				}
@@ -644,10 +643,10 @@ auto InventoryHandler::useCashItem(ref_ptr_t<Player> player, PacketReader &reade
 				ChannelServer::getInstance().getMapleTvs().addMessage(player, nullptr, msg1, msg2, msg3, msg4, msg5, itemId - (itemId == Items::StarMegassenger ? 3 : 0), time);
 
 				if (itemId == Items::StarMegassenger) {
-					auto &basePacket = Packets::Inventory::showSuperMegaphone(player->getMedalName() + " : " + msg1 + msg2 + msg3 + msg4 + msg5, showWhisper);
+					auto &builder = Packets::Inventory::showSuperMegaphone(player->getMedalName() + " : " + msg1 + msg2 + msg3 + msg4 + msg5, showWhisper);
 					ChannelServer::getInstance().sendWorld(
-						Vana::Packets::prepend(basePacket, [](PacketBuilder &builder) {
-							builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
+						Vana::Packets::prepend(builder, [](PacketBuilder &header) {
+							header.add<header_t>(IMSG_TO_ALL_PLAYERS);
 						}));
 				}
 				used = true;
@@ -671,10 +670,10 @@ auto InventoryHandler::useCashItem(ref_ptr_t<Player> player, PacketReader &reade
 					ChannelServer::getInstance().getMapleTvs().addMessage(player, receiver, msg1, msg2, msg3, msg4, msg5, itemId - (itemId == Items::HeartMegassenger ? 3 : 0), time);
 
 					if (itemId == Items::HeartMegassenger) {
-						auto &basePacket = Packets::Inventory::showSuperMegaphone(player->getMedalName() + " : " + msg1 + msg2 + msg3 + msg4 + msg5, showWhisper);
+						auto &builder = Packets::Inventory::showSuperMegaphone(player->getMedalName() + " : " + msg1 + msg2 + msg3 + msg4 + msg5, showWhisper);
 						ChannelServer::getInstance().sendWorld(
-							Vana::Packets::prepend(basePacket, [](PacketBuilder &builder) {
-								builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
+							Vana::Packets::prepend(builder, [](PacketBuilder &header) {
+								header.add<header_t>(IMSG_TO_ALL_PLAYERS);
 							}));
 					}
 					used = true;

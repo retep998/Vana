@@ -37,7 +37,7 @@ SPLIT_PACKET_IMPL(addBuff, player_id_t playerId, int32_t buffId, const seconds_t
 	for (const auto &val : buff.player.values) {
 		if (val.type == BuffPacketValueType::SpecialPacket) continue;
 		if (val.type == BuffPacketValueType::Packet) {
-			builder.player.addBuffer(val.packet);
+			builder.player.addBuffer(val.builder);
 			continue;
 		}
 		if (val.type != BuffPacketValueType::Value) throw NotImplementedException{"BuffPacketValueType"};
@@ -60,7 +60,7 @@ SPLIT_PACKET_IMPL(addBuff, player_id_t playerId, int32_t buffId, const seconds_t
 
 	for (const auto &val : buff.player.values) {
 		if (val.type != BuffPacketValueType::SpecialPacket) continue;
-		builder.player.addBuffer(val.packet);
+		builder.player.addBuffer(val.builder);
 	}
 
 	builder.player.add<int16_t>(static_cast<int16_t>(buff.delay.count()));

@@ -44,8 +44,8 @@ PACKET_IMPL(addSkill, skill_id_t skillId, const PlayerSkillInfo &skillInfo) {
 
 SPLIT_PACKET_IMPL(showSkill, player_id_t playerId, skill_id_t skillId, skill_level_t level, uint8_t direction, bool party, bool self) {
 	SplitPacketBuilder builder;
-	PacketBuilder packet;
-	packet
+	PacketBuilder buffer;
+	buffer
 		.add<int8_t>(party ? 2 : 1)
 		.add<skill_id_t>(skillId)
 		.add<skill_level_t>(level);
@@ -54,7 +54,7 @@ SPLIT_PACKET_IMPL(showSkill, player_id_t playerId, skill_id_t skillId, skill_lev
 		case Vana::Skills::Hero::MonsterMagnet:
 		case Vana::Skills::Paladin::MonsterMagnet:
 		case Vana::Skills::DarkKnight::MonsterMagnet:
-			packet.add<uint8_t>(direction);
+			buffer.add<uint8_t>(direction);
 			break;
 	}
 
@@ -67,13 +67,13 @@ SPLIT_PACKET_IMPL(showSkill, player_id_t playerId, skill_id_t skillId, skill_lev
 				.add<header_t>(SMSG_SKILL_SHOW)
 				.add<player_id_t>(playerId);
 		}
-		builder.player.addBuffer(packet);
+		builder.player.addBuffer(buffer);
 	}
 	else {
 		builder.map
 			.add<header_t>(SMSG_SKILL_SHOW)
 			.add<player_id_t>(playerId)
-			.addBuffer(packet);
+			.addBuffer(buffer);
 	}
 	return builder;
 }
@@ -89,19 +89,19 @@ PACKET_IMPL(healHp, health_t hp) {
 
 SPLIT_PACKET_IMPL(showSkillEffect, player_id_t playerId, skill_id_t skillId) {
 	SplitPacketBuilder builder;
-	PacketBuilder packet;
+	PacketBuilder buffer;
 	switch (skillId) {
 		case Vana::Skills::FpWizard::MpEater:
 		case Vana::Skills::IlWizard::MpEater:
 		case Vana::Skills::Cleric::MpEater:
-			packet
+			buffer
 				.add<int8_t>(1)
 				.add<skill_id_t>(skillId)
 				.add<int8_t>(1);
 			break;
 		case Vana::Skills::ChiefBandit::MesoGuard:
 		case Vana::Skills::DragonKnight::DragonBlood:
-			packet
+			buffer
 				.add<int8_t>(5)
 				.add<skill_id_t>(skillId);
 			break;
@@ -111,12 +111,12 @@ SPLIT_PACKET_IMPL(showSkillEffect, player_id_t playerId, skill_id_t skillId) {
 
 	builder.player
 		.add<header_t>(SMSG_THEATRICS)
-		.addBuffer(packet);
+		.addBuffer(buffer);
 
 	builder.map
 		.add<header_t>(SMSG_SKILL_SHOW)
 		.add<player_id_t>(playerId)
-		.addBuffer(packet);
+		.addBuffer(buffer);
 	return builder;
 }
 
@@ -161,8 +161,8 @@ PACKET_IMPL(sendCooldown, skill_id_t skillId, seconds_t time) {
 
 SPLIT_PACKET_IMPL(showBerserk, player_id_t playerId, skill_level_t level, bool on) {
 	SplitPacketBuilder builder;
-	PacketBuilder packet;
-	packet
+	PacketBuilder buffer;
+	buffer
 		.add<int8_t>(1)
 		.add<skill_id_t>(Vana::Skills::DarkKnight::Berserk)
 		.add<skill_level_t>(level)
@@ -170,12 +170,12 @@ SPLIT_PACKET_IMPL(showBerserk, player_id_t playerId, skill_level_t level, bool o
 
 	builder.player
 		.add<header_t>(SMSG_THEATRICS)
-		.addBuffer(packet);
+		.addBuffer(buffer);
 
 	builder.map
 		.add<header_t>(SMSG_SKILL_SHOW)
 		.add<player_id_t>(playerId)
-		.addBuffer(packet);
+		.addBuffer(buffer);
 	return builder;
 }
 

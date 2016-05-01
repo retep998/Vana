@@ -275,11 +275,11 @@ auto Buffs::getValue(ref_ptr_t<Player> player, const BuffSource &source, const s
 					switch (skillId) {
 						// This unusual skill has two "values"
 						case MobSkills::Poison: {
-							PacketBuilder data;
-							data.add<int16_t>(static_cast<int16_t>(skill->x));
-							data.add<int16_t>(skillId);
-							data.add<int16_t>(skillLevel);
-							return BuffPacketValue::fromPacket(data);
+							PacketBuilder builder;
+							builder.add<int16_t>(static_cast<int16_t>(skill->x));
+							builder.add<int16_t>(skillId);
+							builder.add<int16_t>(skillLevel);
+							return BuffPacketValue::fromPacket(builder);
 						}
 					}
 					throw NotImplementedException{"SpecialProcessing mob skill"};
@@ -335,56 +335,56 @@ auto Buffs::getValue(ref_ptr_t<Player> player, const BuffSource &source, const s
 				case BuffSkillValue::SpecialPacket: {
 					auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
 
-					PacketBuilder data;
+					PacketBuilder builder;
 					if (bitPosition == basics.energyCharge) {
-						data.add<int32_t>(player->getActiveBuffs()->getEnergyChargeLevel());
+						builder.add<int32_t>(player->getActiveBuffs()->getEnergyChargeLevel());
 					}
 					else if (bitPosition == basics.dashSpeed) {
-						data.add<int32_t>(skill->x);
+						builder.add<int32_t>(skill->x);
 					}
 					else if (bitPosition == basics.dashJump) {
-						data.add<int32_t>(skill->y);
+						builder.add<int32_t>(skill->y);
 					}
 					else if (bitPosition == basics.mount) {
-						data.add<item_id_t>(player->getActiveBuffs()->getMountItemId());
+						builder.add<item_id_t>(player->getActiveBuffs()->getMountItemId());
 					}
 					else if (bitPosition == basics.speedInfusion) {
-						data.add<int32_t>(skill->x);
+						builder.add<int32_t>(skill->x);
 					}
 					else if (bitPosition == basics.homingBeacon) {
-						data.unk<int32_t>(1);
+						builder.unk<int32_t>(1);
 					}
 					else throw NotImplementedException{"SpecialPacket skill"};
 
-					data.add<int32_t>(
+					builder.add<int32_t>(
 						bitPosition == basics.energyCharge ?
 							0 :
 							skillId);
-					data.unk<int32_t>();
-					data.unk<int8_t>();
+					builder.unk<int32_t>();
+					builder.unk<int8_t>();
 
 					if (bitPosition == basics.energyCharge) {
-						data.add<int16_t>(static_cast<int16_t>(time.count()));
+						builder.add<int16_t>(static_cast<int16_t>(time.count()));
 					}
 					else if (bitPosition == basics.dashSpeed) {
-						data.add<int16_t>(static_cast<int16_t>(time.count()));
+						builder.add<int16_t>(static_cast<int16_t>(time.count()));
 					}
 					else if (bitPosition == basics.dashJump) {
-						data.add<int16_t>(static_cast<int16_t>(time.count()));
+						builder.add<int16_t>(static_cast<int16_t>(time.count()));
 					}
 					else if (bitPosition == basics.mount) {
 						// Intentionally blank
 					}
 					else if (bitPosition == basics.speedInfusion) {
-						data.unk<int32_t>();
-						data.unk<int8_t>();
-						data.add<int16_t>(static_cast<int16_t>(time.count()));
+						builder.unk<int32_t>();
+						builder.unk<int8_t>();
+						builder.add<int16_t>(static_cast<int16_t>(time.count()));
 					}
 					else if (bitPosition == basics.homingBeacon) {
-						data.add<map_object_t>(player->getActiveBuffs()->getHomingBeaconMob());
+						builder.add<map_object_t>(player->getActiveBuffs()->getHomingBeaconMob());
 					}
 
-					return BuffPacketValue::fromSpecialPacket(data);
+					return BuffPacketValue::fromSpecialPacket(builder);
 				}
 
 				case BuffSkillValue::GenderSpecificMorph:

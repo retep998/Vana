@@ -45,16 +45,16 @@ namespace Vana {
 				return ret;
 			}
 
-			static BuffPacketValue fromPacket(PacketBuilder packet) {
+			static BuffPacketValue fromPacket(PacketBuilder builder) {
 				BuffPacketValue ret;
-				ret.packet = packet;
+				ret.builder = builder;
 				ret.type = BuffPacketValueType::Packet;
 				return ret;
 			}
 
-			static BuffPacketValue fromSpecialPacket(PacketBuilder packet) {
+			static BuffPacketValue fromSpecialPacket(PacketBuilder builder) {
 				BuffPacketValue ret;
-				ret.packet = packet;
+				ret.builder = builder;
 				ret.type = BuffPacketValueType::SpecialPacket;
 				return ret;
 			}
@@ -63,7 +63,7 @@ namespace Vana {
 			int64_t value = 0;
 			int32_t time = 0;
 			BuffPacketValueType type;
-			PacketBuilder packet;
+			PacketBuilder builder;
 		private:
 			BuffPacketValue() = default;
 		};

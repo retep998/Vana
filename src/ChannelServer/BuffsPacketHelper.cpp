@@ -59,7 +59,7 @@ PACKET_IMPL(addBuffMapValues, const BuffPacketStructure &buff) {
 	for (const auto &buffValue : buff.values) {
 		if (buffValue.type == BuffPacketValueType::SpecialPacket) continue;
 		if (buffValue.type == BuffPacketValueType::Packet) {
-			builder.addBuffer(buffValue.packet);
+			builder.addBuffer(buffValue.builder);
 			continue;
 		}
 		if (buffValue.type != BuffPacketValueType::Value) throw NotImplementedException{"BuffPacketValueType"};
@@ -78,7 +78,7 @@ PACKET_IMPL(addBuffMapValues, const BuffPacketStructure &buff) {
 
 	for (const auto &buffValue : buff.values) {
 		if (buffValue.type != BuffPacketValueType::SpecialPacket) continue;
-		builder.addBuffer(buffValue.packet);
+		builder.addBuffer(buffValue.builder);
 	}
 
 	return builder;

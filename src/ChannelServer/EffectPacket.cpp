@@ -82,19 +82,19 @@ PACKET_IMPL(sendMinigameSound, const string_t &sound) {
 
 SPLIT_PACKET_IMPL(sendMobItemBuffEffect, player_id_t playerId, item_id_t itemId) {
 	SplitPacketBuilder builder;
-	PacketBuilder packet;
-	packet
+	PacketBuilder buffer;
+	buffer
 		.add<int8_t>(0x0B)
 		.add<item_id_t>(itemId);
 
 	builder.player
 		.add<header_t>(SMSG_THEATRICS)
-		.addBuffer(packet);
+		.addBuffer(buffer);
 
 	builder.map
 		.add<header_t>(SMSG_SKILL_SHOW)
 		.add<player_id_t>(playerId)
-		.addBuffer(packet);
+		.addBuffer(buffer);
 	return builder;
 }
 

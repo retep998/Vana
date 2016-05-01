@@ -153,8 +153,8 @@ auto PlayerDataProvider::send(const vector_t<player_id_t> &playerIds, const Pack
 
 	for (const auto &kvp : sendTargets) {
 		WorldServer::getInstance().getChannels().send(kvp.first, Vana::Packets::prepend(
-			builder, [&](PacketBuilder &packet) {
-				packet
+			builder, [&](PacketBuilder &header) {
+				header
 					.add<header_t>(IMSG_TO_PLAYER_LIST)
 					.add<vector_t<player_id_t>>(kvp.second);
 			}));
@@ -179,8 +179,8 @@ auto PlayerDataProvider::send(const PacketBuilder &builder) -> void {
 
 	for (const auto &kvp : sendTargets) {
 		WorldServer::getInstance().getChannels().send(kvp.first, Vana::Packets::prepend(
-			builder, [&](PacketBuilder &packet) {
-				packet
+			builder, [&](PacketBuilder &header) {
+				header
 					.add<header_t>(IMSG_TO_PLAYER_LIST)
 					.add<vector_t<player_id_t>>(kvp.second);
 			}));

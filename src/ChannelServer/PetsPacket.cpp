@@ -142,13 +142,13 @@ SPLIT_PACKET_IMPL(changeName, player_id_t playerId, Pet *pet) {
 }
 /* TODO FIXME packet
 auto showPet(ref_ptr_t<Player> player, Pet *pet) -> void {
-	PacketBuilder packet;
-	packet.add<header_t>(SMSG_PET_SHOW);
-	packet.add<player_id_t>(player->getId());
-	packet.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1);
-	packet.add<pet_id_t>(pet->getId());
-	packet.add<bool>(pet->hasNameTag());
-	player->send(packet);
+	PacketBuilder builder;
+	builder.add<header_t>(SMSG_PET_SHOW);
+	builder.add<player_id_t>(player->getId());
+	builder.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1);
+	builder.add<pet_id_t>(pet->getId());
+	builder.add<bool>(pet->hasNameTag());
+	player->send(builder);
 }*/
 
 PACKET_IMPL(updateSummonedPets, ref_ptr_t<Player> player) {
