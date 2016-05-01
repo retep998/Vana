@@ -127,8 +127,8 @@ auto PlayerDataProvider::send(player_id_t playerId, const PacketBuilder &builder
 	}
 
 	WorldServer::getInstance().getChannels().send(data.channel.get(), Vana::Packets::prepend(
-		builder, [&](PacketBuilder &packet) {
-			packet
+		builder, [&](PacketBuilder &header) {
+			header
 				.add<header_t>(IMSG_TO_PLAYER)
 				.add<player_id_t>(playerId);
 		}));
