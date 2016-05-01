@@ -52,7 +52,7 @@ namespace Vana {
 		public:
 			auto addMap(Map *map) -> void;
 
-			auto addMessage(Player *sender, Player *receiver, const string_t &msg, const string_t &msg2, const string_t &msg3, const string_t &msg4, const string_t &msg5, item_id_t megaphoneId, int32_t time) -> void;
+			auto addMessage(ref_ptr_t<Player> sender, ref_ptr_t<Player> receiver, const string_t &msg, const string_t &msg2, const string_t &msg3, const string_t &msg4, const string_t &msg5, item_id_t megaphoneId, int32_t time) -> void;
 			auto isMapleTvMap(map_id_t id) const -> bool;
 			auto hasMessage() const -> bool;
 			auto getCounter() -> uint32_t;

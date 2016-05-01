@@ -37,7 +37,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/PlayerDataProvider.hpp"
 #include "ChannelServer/PlayersPacket.hpp"
 #include "ChannelServer/Skills.hpp"
-#include "ChannelServer/WorldServerConnectPacket.hpp"
+#include "ChannelServer/WorldServerPacket.hpp"
 #include <string>
 
 namespace Vana {
@@ -84,10 +84,10 @@ namespace AdminOpcodes {
 	*/
 }
 
-auto CommandHandler::handleCommand(Player *player, PacketReader &reader) -> void {
+auto CommandHandler::handleCommand(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	int8_t type = reader.get<int8_t>();
 	chat_t name = reader.get<chat_t>();
-	Player *receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(name);
+	auto receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(name);
 	// If this player doesn't exist, connect to the world server to see if they're on any other channel
 	switch (type) {
 		case CommandOpcodes::FindPlayer: {
@@ -140,7 +140,7 @@ auto CommandHandler::handleCommand(Player *player, PacketReader &reader) -> void
 	}
 }
 
-auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) -> void {
+auto CommandHandler::handleAdminCommand(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	if (!player->isAdmin()) {
 		// Hacking
 		return;
@@ -175,7 +175,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 			chat_t name = reader.get<chat_t>();
 			map_id_t mapId = reader.get<map_id_t>();
 
-			if (Player *receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(name)) {
+			if (auto receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(name)) {
 				receiver->setMap(mapId);
 			}
 			else {
@@ -224,7 +224,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 		}
 		case AdminOpcodes::Ban: {
 			chat_t victim = reader.get<chat_t>();
-			if (Player *receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(victim)) {
+			if (auto receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(victim)) {
 				receiver->disconnect();
 			}
 			else {
@@ -237,7 +237,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 			int8_t reason = reader.get<int8_t>();
 			int32_t length = reader.get<int32_t>();
 			chat_t reasonMessage = reader.get<chat_t>();
-			if (Player *receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(victim)) {
+			if (auto receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(victim)) {
 				auto &db = Database::getCharDb();
 				auto &sql = db.getSession();
 				sql.once
@@ -271,7 +271,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 		case AdminOpcodes::VarSetGet: {
 			int8_t type = reader.get<int8_t>();
 			chat_t playerName = reader.get<chat_t>();
-			if (Player *victim = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerName)) {
+			if (auto victim = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerName)) {
 				chat_t variableName = reader.get<chat_t>();
 				if (type == 0x0a) {
 					chat_t variableValue = reader.get<chat_t>();
@@ -289,7 +289,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 		case AdminOpcodes::Warn: {
 			chat_t victim = reader.get<chat_t>();
 			chat_t message = reader.get<chat_t>();
-			if (Player *receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(victim)) {
+			if (auto receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(victim)) {
 				receiver->send(Packets::Player::showMessage(message, Packets::Player::NoticeTypes::Box));
 				player->send(Packets::Gm::warning(true));
 			}

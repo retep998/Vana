@@ -27,7 +27,7 @@ namespace Vana {
 
 	struct SeatInfo {
 		seat_id_t id = 0;
-		ChannelServer::Player *occupant = nullptr;
+		ref_ptr_t<ChannelServer::Player> occupant = nullptr;
 		Point pos;
 	};
 }

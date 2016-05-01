@@ -32,7 +32,7 @@ auto MapleTvs::addMap(Map *map) -> void {
 	m_maps[map->getId()] = map;
 }
 
-auto MapleTvs::addMessage(Player *sender, Player *receiver, const string_t &msg, const string_t &msg2, const string_t &msg3, const string_t &msg4, const string_t &msg5, item_id_t megaphoneId, int32_t time) -> void {
+auto MapleTvs::addMessage(ref_ptr_t<Player> sender, ref_ptr_t<Player> receiver, const string_t &msg, const string_t &msg2, const string_t &msg3, const string_t &msg4, const string_t &msg5, item_id_t megaphoneId, int32_t time) -> void {
 	MapleTvMessage message;
 	message.hasReceiver = (receiver != nullptr);
 	message.megaphoneId = megaphoneId;

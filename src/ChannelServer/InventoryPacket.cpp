@@ -36,7 +36,7 @@ namespace ChannelServer {
 namespace Packets {
 namespace Inventory {
 
-SPLIT_PACKET_IMPL(updatePlayer, Player *player) {
+SPLIT_PACKET_IMPL(updatePlayer, ref_ptr_t<Player> player) {
 	SplitPacketBuilder builder;
 	builder.player
 		.add<header_t>(SMSG_PLAYER_CHANGE_LOOK)

@@ -21,13 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer/Channel.hpp"
 #include "WorldServer/LoginServerConnectPacket.hpp"
 #include "WorldServer/WorldServer.hpp"
-#include "WorldServer/WorldServerAcceptConnection.hpp"
+#include "WorldServer/WorldServerAcceptedSession.hpp"
 
 namespace Vana {
 namespace WorldServer {
 
-auto Channels::registerChannel(WorldServerAcceptConnection *connection, channel_id_t channelId, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void {
-	ref_ptr_t<Channel> chan = make_ref_ptr<Channel>(connection, channelId, port);
+auto Channels::registerChannel(ref_ptr_t<WorldServerAcceptedSession> session, channel_id_t channelId, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void {
+	ref_ptr_t<Channel> chan = make_ref_ptr<Channel>(session, channelId, port);
 	chan->setExternalIpInformation(channelIp, extIp);
 	m_channels[channelId] = chan;
 }
@@ -80,7 +80,8 @@ auto Channels::getFirstAvailableChannelId() -> channel_id_t {
 }
 
 auto Channels::disconnect() -> void {
-	for (const auto &kvp : m_channels) {
+	auto copy = m_channels;
+	for (const auto &kvp : copy) {
 		if (auto ref = kvp.second.get()) {
 			ref->disconnect();
 		}

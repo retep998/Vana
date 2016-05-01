@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "WorldServerConnection.hpp"
+#include "WorldServerSession.hpp"
 #include "Common/ExitCodes.hpp"
 #include "Common/InterHeader.hpp"
 #include "Common/PacketReader.hpp"
@@ -26,30 +26,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/PartyHandler.hpp"
 #include "ChannelServer/PlayerDataProvider.hpp"
 #include "ChannelServer/SyncHandler.hpp"
-#include "ChannelServer/WorldServerConnectHandler.hpp"
-#include "ChannelServer/WorldServerConnectPacket.hpp"
+#include "ChannelServer/WorldServerSessionHandler.hpp"
+#include "ChannelServer/WorldServerPacket.hpp"
 #include <iostream>
 
 namespace Vana {
 namespace ChannelServer {
 
-WorldServerConnection::WorldServerConnection() :
-	AbstractServerConnection{ServerType::Channel}
-{
-}
-
-WorldServerConnection::~WorldServerConnection() {
-	if (ChannelServer::getInstance().isConnected()) {
-		ChannelServer::getInstance().log(LogType::ServerDisconnect, "Disconnected from the WorldServer. Shutting down...");
-		ChannelServer::getInstance().getPlayerDataProvider().disconnect();
-		ExitCodes::exit(ExitCodes::ServerDisconnection);
-	}
-}
-
-auto WorldServerConnection::handleRequest(PacketReader &reader) -> void {
+auto WorldServerSession::handle(PacketReader &reader) -> Result {
 	switch (reader.get<header_t>()) {
-		case IMSG_LOGIN_CHANNEL_CONNECT: WorldServerConnectHandler::connectLogin(this, reader); break;
-		case IMSG_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, reader); break;
+		case IMSG_CHANNEL_CONNECT: WorldServerSessionHandler::connect(shared_from_this(), reader); break;
 		case IMSG_TO_PLAYER: {
 			player_id_t playerId = reader.get<player_id_t>();
 			ChannelServer::getInstance().getPlayerDataProvider().send(playerId, Vana::Packets::identity(reader));
@@ -61,10 +47,20 @@ auto WorldServerConnection::handleRequest(PacketReader &reader) -> void {
 			break;
 		}
 		case IMSG_TO_ALL_PLAYERS: ChannelServer::getInstance().getPlayerDataProvider().send(Vana::Packets::identity(reader)); break;
-		case IMSG_REFRESH_DATA: WorldServerConnectHandler::reloadMcdb(reader); break;
+		case IMSG_REFRESH_DATA: WorldServerSessionHandler::reloadMcdb(reader); break;
 		case IMSG_REHASH_CONFIG: ChannelServer::getInstance().setConfig(reader.get<WorldConfig>()); break;
 		case IMSG_SYNC: SyncHandler::handle(reader); break;
+		default: return Result::Failure;
 	}
+	return Result::Successful;
+}
+
+auto WorldServerSession::onConnect() -> void {
+	ChannelServer::getInstance().onConnectToWorld(shared_from_this());
+}
+
+auto WorldServerSession::onDisconnect() -> void {
+	ChannelServer::getInstance().onDisconnectFromWorld();
 }
 
 }

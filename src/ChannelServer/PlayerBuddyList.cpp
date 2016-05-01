@@ -175,7 +175,7 @@ auto PlayerBuddyList::addBuddy(const string_t &name, const string_t &group, bool
 		}
 	}
 
-	m_player->send(Packets::Buddy::update(m_player, Packets::Buddy::ActionTypes::Add));
+	m_player->send(Packets::Buddy::update(ref_ptr_t<Player>{m_player}, Packets::Buddy::ActionTypes::Add));
 	return Packets::Buddy::Errors::None;
 }
 
@@ -204,7 +204,7 @@ auto PlayerBuddyList::removeBuddy(player_id_t charId) -> void {
 		soci::use(m_player->getId(), "char"),
 		soci::use(charId, "buddy");
 
-	m_player->send(Packets::Buddy::update(m_player, Packets::Buddy::ActionTypes::Remove));
+	m_player->send(Packets::Buddy::update(ref_ptr_t<Player>{m_player}, Packets::Buddy::ActionTypes::Remove));
 }
 
 auto PlayerBuddyList::addBuddy(Database &db, const soci::row &row) -> void {
@@ -305,7 +305,7 @@ auto PlayerBuddyList::checkForPendingBuddy() -> void {
 
 auto PlayerBuddyList::buddyAccepted(player_id_t buddyId) -> void {
 	m_buddies[buddyId]->oppositeStatus = Packets::Buddy::OppositeStatus::Registered;
-	m_player->send(Packets::Buddy::update(m_player, Packets::Buddy::ActionTypes::Add));
+	m_player->send(Packets::Buddy::update(ref_ptr_t<Player>{m_player}, Packets::Buddy::ActionTypes::Add));
 }
 
 auto PlayerBuddyList::removePendingBuddy(player_id_t id, bool accepted) -> void {
@@ -342,7 +342,7 @@ auto PlayerBuddyList::removePendingBuddy(player_id_t id, bool accepted) -> void 
 		ChannelServer::getInstance().sendWorld(Packets::Interserver::Buddy::acceptBuddyInvite(m_player->getId(), id));
 	}
 
-	m_player->send(Packets::Buddy::update(m_player, Packets::Buddy::ActionTypes::First));
+	m_player->send(Packets::Buddy::update(ref_ptr_t<Player>{m_player}, Packets::Buddy::ActionTypes::First));
 
 	m_pendingBuddies.pop_front();
 	m_sentRequest = false;

@@ -54,7 +54,7 @@ auto LuaPortal::portalFailed() -> bool {
 // Portal
 auto LuaExports::instantWarp(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	Player *player = getPlayer(luaVm, env);
+	auto player = getPlayer(luaVm, env);
 	string_t portal = env.get<string_t>(luaVm, 1);
 	portal_id_t portalId = player->getMap()->getPortal(portal)->id;
 	player->send(Packets::Map::instantWarp(portalId));

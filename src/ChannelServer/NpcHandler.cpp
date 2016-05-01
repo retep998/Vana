@@ -48,7 +48,7 @@ namespace ShopOpcodes {
 	};
 }
 
-auto NpcHandler::handleNpc(Player *player, PacketReader &reader) -> void {
+auto NpcHandler::handleNpc(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	if (player->getNpc() != nullptr) {
 		return;
 	}
@@ -78,7 +78,7 @@ auto NpcHandler::handleNpc(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto NpcHandler::handleQuestNpc(Player *player, npc_id_t npcId, bool start, quest_id_t questId) -> void {
+auto NpcHandler::handleQuestNpc(ref_ptr_t<Player> player, npc_id_t npcId, bool start, quest_id_t questId) -> void {
 	if (player->getNpc() != nullptr) {
 		return;
 	}
@@ -87,7 +87,7 @@ auto NpcHandler::handleQuestNpc(Player *player, npc_id_t npcId, bool start, ques
 	npc->run();
 }
 
-auto NpcHandler::handleNpcIn(Player *player, PacketReader &reader) -> void {
+auto NpcHandler::handleNpcIn(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	Npc *npc = player->getNpc();
 	if (npc == nullptr) {
 		return;
@@ -162,11 +162,11 @@ auto NpcHandler::handleNpcIn(Player *player, PacketReader &reader) -> void {
 	npc->checkEnd();
 }
 
-auto NpcHandler::handleNpcAnimation(Player *player, PacketReader &reader) -> void {
+auto NpcHandler::handleNpcAnimation(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	player->send(Packets::Npc::animateNpc(reader));
 }
 
-auto NpcHandler::useShop(Player *player, PacketReader &reader) -> void {
+auto NpcHandler::useShop(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	if (player->getShop() == 0) {
 		// Hacking
 		return;
@@ -261,7 +261,7 @@ auto NpcHandler::useShop(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto NpcHandler::useStorage(Player *player, PacketReader &reader) -> void {
+auto NpcHandler::useStorage(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	if (player->getShop() == 0) {
 		// Hacking
 		return;
@@ -359,7 +359,7 @@ auto NpcHandler::useStorage(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto NpcHandler::showShop(Player *player, shop_id_t shopId) -> Result {
+auto NpcHandler::showShop(ref_ptr_t<Player> player, shop_id_t shopId) -> Result {
 	if (ChannelServer::getInstance().getShopDataProvider().isShop(shopId)) {
 		player->setShop(shopId);
 		player->send(Packets::Npc::showShop(ChannelServer::getInstance().getShopDataProvider().getShop(shopId), player->getSkills()->getRechargeableBonus()));
@@ -368,7 +368,7 @@ auto NpcHandler::showShop(Player *player, shop_id_t shopId) -> Result {
 	return Result::Failure;
 }
 
-auto NpcHandler::showStorage(Player *player, npc_id_t npcId) -> Result {
+auto NpcHandler::showStorage(ref_ptr_t<Player> player, npc_id_t npcId) -> Result {
 	if (ChannelServer::getInstance().getNpcDataProvider().getStorageCost(npcId)) {
 		player->setShop(npcId);
 		player->send(Packets::Storage::showStorage(player, npcId));
@@ -377,7 +377,7 @@ auto NpcHandler::showStorage(Player *player, npc_id_t npcId) -> Result {
 	return Result::Failure;
 }
 
-auto NpcHandler::showGuildRank(Player *player, npc_id_t npcId) -> Result {
+auto NpcHandler::showGuildRank(ref_ptr_t<Player> player, npc_id_t npcId) -> Result {
 	if (ChannelServer::getInstance().getNpcDataProvider().isGuildRank(npcId)) {
 		// To be implemented later
 	}

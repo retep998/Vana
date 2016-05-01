@@ -21,15 +21,15 @@ namespace Vana {
 	class PacketReader;
 
 	namespace LoginServer {
-		class UserConnection;
+		class User;
 
 		namespace Login {
-			auto loginUser(UserConnection *user, PacketReader &reader) -> void;
-			auto setGender(UserConnection *user, PacketReader &reader) -> void;
-			auto handleLogin(UserConnection *user, PacketReader &reader) -> void;
-			auto registerPin(UserConnection *user, PacketReader &reader) -> void;
-			auto loginBack(UserConnection *user) -> void;
-			auto checkPin(UserConnection *user, PacketReader &reader) -> void;
+			auto loginUser(ref_ptr_t<User> user, PacketReader &reader) -> void;
+			auto setGender(ref_ptr_t<User> user, PacketReader &reader) -> void;
+			auto handleLogin(ref_ptr_t<User> user, PacketReader &reader) -> void;
+			auto registerPin(ref_ptr_t<User> user, PacketReader &reader) -> void;
+			auto loginBack(ref_ptr_t<User> user) -> void;
+			auto checkPin(ref_ptr_t<User> user, PacketReader &reader) -> void;
 		}
 	}
 }

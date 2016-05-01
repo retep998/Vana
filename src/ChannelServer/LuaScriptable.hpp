@@ -54,8 +54,8 @@ namespace Vana {
 
 		namespace LuaExports {
 			auto getEnvironment(lua_State *luaVm) -> LuaEnvironment &;
-			auto getPlayer(lua_State *luaVm, LuaEnvironment &env) -> Player *;
-			auto getPlayerDeduced(int parameter, lua_State *luaVm, LuaEnvironment &env) -> Player *;
+			auto getPlayer(lua_State *luaVm, LuaEnvironment &env) -> ref_ptr_t<Player>;
+			auto getPlayerDeduced(int parameter, lua_State *luaVm, LuaEnvironment &env) -> ref_ptr_t<Player>;
 			auto getInstance(lua_State *luaVm, LuaEnvironment &env) -> Instance *;
 			auto obtainSetVariablePair(lua_State *luaVm, LuaEnvironment &env) -> pair_t<string_t, string_t>;
 			auto pushGetVariableData(lua_State *luaVm, LuaEnvironment &env, const string_t &value, VariableType::Type returnType) -> lua_return_t;

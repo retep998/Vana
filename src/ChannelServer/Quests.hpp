@@ -27,10 +27,10 @@ namespace Vana {
 		class Player;
 
 		namespace Quests {
-			auto getQuest(Player *player, PacketReader &reader) -> void;
-			auto giveFame(Player *player, fame_t amount) -> Result;
-			auto giveItem(Player *player, item_id_t itemId, slot_qty_t amount, Items::StatVariance variancePolicy = Items::StatVariance::None) -> Result;
-			auto giveMesos(Player *player, mesos_t amount) -> Result;
+			auto getQuest(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto giveFame(ref_ptr_t<Player> player, fame_t amount) -> Result;
+			auto giveItem(ref_ptr_t<Player> player, item_id_t itemId, slot_qty_t amount, Items::StatVariance variancePolicy = Items::StatVariance::None) -> Result;
+			auto giveMesos(ref_ptr_t<Player> player, mesos_t amount) -> Result;
 		}
 	}
 }

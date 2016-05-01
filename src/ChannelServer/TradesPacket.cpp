@@ -27,7 +27,7 @@ namespace ChannelServer {
 namespace Packets {
 namespace Trades {
 
-PACKET_IMPL(sendOpenTrade, Player *player1, Player *player2) {
+PACKET_IMPL(sendOpenTrade, ref_ptr_t<Player> player1, ref_ptr_t<Player> player2) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PLAYER_ROOM)
@@ -103,7 +103,7 @@ PACKET_IMPL(sendTradeChat, bool blue, const string_t &chat) {
 	return builder;
 }
 
-PACKET_IMPL(sendAddUser, Player *newPlayer, int8_t slot) {
+PACKET_IMPL(sendAddUser, ref_ptr_t<Player> newPlayer, int8_t slot) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PLAYER_ROOM)

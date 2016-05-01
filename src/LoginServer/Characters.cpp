@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServer/LoginServer.hpp"
 #include "LoginServer/LoginServerAcceptPacket.hpp"
 #include "LoginServer/SyncPacket.hpp"
-#include "LoginServer/UserConnection.hpp"
+#include "LoginServer/User.hpp"
 #include "LoginServer/World.hpp"
 #include "LoginServer/Worlds.hpp"
 #include <unordered_map>
@@ -102,7 +102,7 @@ auto Characters::loadCharacter(Character &charc, const soci::row &row) -> void {
 	loadEquips(charc.id, charc.equips);
 }
 
-auto Characters::showAllCharacters(UserConnection *user) -> void {
+auto Characters::showAllCharacters(ref_ptr_t<User> user) -> void {
 	auto &db = Database::getCharDb();
 	auto &sql = db.getSession();
 	soci::rowset<> rs = (sql.prepare
@@ -136,7 +136,7 @@ auto Characters::showAllCharacters(UserConnection *user) -> void {
 	}
 }
 
-auto Characters::showCharacters(UserConnection *user) -> void {
+auto Characters::showCharacters(ref_ptr_t<User> user) -> void {
 	auto &db = Database::getCharDb();
 	auto &sql = db.getSession();
 	auto worldId = user->getWorldId();
@@ -176,7 +176,7 @@ auto Characters::showCharacters(UserConnection *user) -> void {
 	user->send(Packets::showCharacters(chars, max.get()));
 }
 
-auto Characters::checkCharacterName(UserConnection *user, PacketReader &reader) -> void {
+auto Characters::checkCharacterName(ref_ptr_t<User> user, PacketReader &reader) -> void {
 	string_t name = reader.get<string_t>();
 	if (!ext::in_range_inclusive<size_t>(name.size(), Vana::Characters::MinNameSize, Vana::Characters::MaxNameSize)) {
 		return;
@@ -193,7 +193,7 @@ auto Characters::checkCharacterName(UserConnection *user, PacketReader &reader) 
 	}
 }
 
-auto Characters::createItem(item_id_t itemId, UserConnection *user, player_id_t charId, inventory_slot_t slot, slot_qty_t amount) -> void {
+auto Characters::createItem(item_id_t itemId, ref_ptr_t<User> user, player_id_t charId, inventory_slot_t slot, slot_qty_t amount) -> void {
 	auto &db = Database::getCharDb();
 	inventory_t inventory = GameLogicUtilities::getInventory(itemId);
 	auto worldId = user->getWorldId();
@@ -212,7 +212,7 @@ auto Characters::createItem(item_id_t itemId, UserConnection *user, player_id_t 
 	}
 }
 
-auto Characters::createCharacter(UserConnection *user, PacketReader &reader) -> void {
+auto Characters::createCharacter(ref_ptr_t<User> user, PacketReader &reader) -> void {
 	if (user->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
@@ -298,7 +298,7 @@ auto Characters::createCharacter(UserConnection *user, PacketReader &reader) -> 
 	LoginServer::getInstance().getWorlds().send(worldId.get(), Packets::Interserver::Player::characterCreated(id));
 }
 
-auto Characters::deleteCharacter(UserConnection *user, PacketReader &reader) -> void {
+auto Characters::deleteCharacter(ref_ptr_t<User> user, PacketReader &reader) -> void {
 	if (user->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
@@ -358,7 +358,7 @@ auto Characters::deleteCharacter(UserConnection *user, PacketReader &reader) -> 
 	LoginServer::getInstance().getWorlds().send(worldId.get(), Packets::Interserver::Player::characterDeleted(id));
 }
 
-auto Characters::connectGame(UserConnection *user, player_id_t charId) -> void {
+auto Characters::connectGame(ref_ptr_t<User> user, player_id_t charId) -> void {
 	if (user->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
@@ -374,24 +374,24 @@ auto Characters::connectGame(UserConnection *user, player_id_t charId) -> void {
 	}
 
 	auto world = LoginServer::getInstance().getWorlds().getWorld(worldId.get());
-	world->send(Packets::Interserver::playerConnectingToChannel(user->getChannel(), charId, user->getIp()));
+	world->send(Packets::Interserver::playerConnectingToChannel(user->getChannel(), charId, user->getIp().get(Ip{0})));
 
 	optional_t<ClientIp> ip;
 	optional_t<port_t> port;
 	if (Channel *channel = world->getChannel(user->getChannel())) {
-		ip = ClientIp{channel->matchIpToSubnet(user->getIp())};
+		ip = ClientIp{channel->matchIpToSubnet(user->getIp().get(Ip{0}))};
 		port = channel->getPort();
 	}
 	user->send(Packets::connectIp(ip, port, charId));
 }
 
-auto Characters::connectGame(UserConnection *user, PacketReader &reader) -> void {
+auto Characters::connectGame(ref_ptr_t<User> user, PacketReader &reader) -> void {
 	player_id_t id = reader.get<player_id_t>();
 
 	connectGame(user, id);
 }
 
-auto Characters::connectGameWorldFromViewAllCharacters(UserConnection *user, PacketReader &reader) -> void {
+auto Characters::connectGameWorldFromViewAllCharacters(ref_ptr_t<User> user, PacketReader &reader) -> void {
 	if (user->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
@@ -442,7 +442,7 @@ auto Characters::connectGameWorldFromViewAllCharacters(UserConnection *user, Pac
 	connectGame(user, id);
 }
 
-auto Characters::ownerCheck(UserConnection *user, int32_t id) -> bool {
+auto Characters::ownerCheck(ref_ptr_t<User> user, int32_t id) -> bool {
 	auto &db = Database::getCharDb();
 	auto &sql = db.getSession();
 	opt_int32_t exists;

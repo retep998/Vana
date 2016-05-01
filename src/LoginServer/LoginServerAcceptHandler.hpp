@@ -21,12 +21,12 @@ namespace Vana {
 	class PacketReader;
 
 	namespace LoginServer {
-		class LoginServerAcceptConnection;
+		class LoginServerAcceptedSession;
 
 		namespace LoginServerAcceptHandler {
-			auto registerChannel(LoginServerAcceptConnection *connection, PacketReader &reader) -> void;
-			auto updateChannelPop(LoginServerAcceptConnection *connection, PacketReader &reader) -> void;
-			auto removeChannel(LoginServerAcceptConnection *connection, PacketReader &reader) -> void;
+			auto registerChannel(ref_ptr_t<LoginServerAcceptedSession> session, PacketReader &reader) -> void;
+			auto updateChannelPop(ref_ptr_t<LoginServerAcceptedSession> session, PacketReader &reader) -> void;
+			auto removeChannel(ref_ptr_t<LoginServerAcceptedSession> session, PacketReader &reader) -> void;
 		}
 	}
 }

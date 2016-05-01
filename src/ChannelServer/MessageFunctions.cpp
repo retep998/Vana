@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 namespace ChannelServer {
 
-auto MessageFunctions::worldMessage(Player *player, const chat_t &args) -> ChatResult {
+auto MessageFunctions::worldMessage(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (.+))", matches) == MatchResult::AnyMatches) {
 		string_t rawType = matches[1];
@@ -47,7 +47,7 @@ auto MessageFunctions::worldMessage(Player *player, const chat_t &args) -> ChatR
 	return ChatResult::ShowSyntax;
 }
 
-auto MessageFunctions::globalMessage(Player *player, const chat_t &args) -> ChatResult {
+auto MessageFunctions::globalMessage(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (.+))", matches) == MatchResult::AnyMatches) {
 		string_t rawType = matches[1];
@@ -70,7 +70,7 @@ auto MessageFunctions::globalMessage(Player *player, const chat_t &args) -> Chat
 	return ChatResult::ShowSyntax;
 }
 
-auto MessageFunctions::channelMessage(Player *player, const chat_t &args) -> ChatResult {
+auto MessageFunctions::channelMessage(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (.+))", matches) == MatchResult::AnyMatches) {
 		string_t rawType = matches[1];
@@ -88,7 +88,7 @@ auto MessageFunctions::channelMessage(Player *player, const chat_t &args) -> Cha
 	return ChatResult::ShowSyntax;
 }
 
-auto MessageFunctions::gmChatMode(Player *player, const chat_t &args) -> ChatResult {
+auto MessageFunctions::gmChatMode(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	player->setGmChat(!player->isGmChat());
 	ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) { message << "GM chat mode " << (player->isGmChat() ? "enabled" : "disabled"); });
 	return ChatResult::HandledDisplay;

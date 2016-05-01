@@ -27,9 +27,9 @@ namespace Vana {
 
 		namespace ChatHandler {
 			auto initializeCommands() -> void;
-			auto handleChat(Player *player, PacketReader &reader) -> void;
-			auto handleCommand(Player *player, const chat_t &message) -> HandleResult;
-			auto handleGroupChat(Player *player, PacketReader &reader) -> void;
+			auto handleChat(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto handleCommand(ref_ptr_t<Player> player, const chat_t &message) -> HandleResult;
+			auto handleGroupChat(ref_ptr_t<Player> player, PacketReader &reader) -> void;
 		}
 	}
 }

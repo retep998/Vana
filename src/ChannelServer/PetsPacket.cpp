@@ -141,7 +141,7 @@ SPLIT_PACKET_IMPL(changeName, player_id_t playerId, Pet *pet) {
 	return builder;
 }
 /* TODO FIXME packet
-auto showPet(Player *player, Pet *pet) -> void {
+auto showPet(ref_ptr_t<Player> player, Pet *pet) -> void {
 	PacketBuilder packet;
 	packet.add<header_t>(SMSG_PET_SHOW);
 	packet.add<player_id_t>(player->getId());
@@ -151,7 +151,7 @@ auto showPet(Player *player, Pet *pet) -> void {
 	player->send(packet);
 }*/
 
-PACKET_IMPL(updateSummonedPets, Player *player) {
+PACKET_IMPL(updateSummonedPets, ref_ptr_t<Player> player) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PLAYER_UPDATE)

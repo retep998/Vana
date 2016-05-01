@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/PacketReader.hpp"
 #include "Common/WorldConfig.hpp"
 #include "WorldServer/Channels.hpp"
-#include "WorldServer/LoginServerConnection.hpp"
+#include "WorldServer/LoginServerSession.hpp"
 #include "WorldServer/PlayerDataProvider.hpp"
 #include "WorldServer/SyncPacket.hpp"
 #include "WorldServer/WorldServer.hpp"
@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 namespace WorldServer {
 
-auto LoginServerConnectHandler::connect(LoginServerConnection *connection, PacketReader &reader) -> void {
+auto LoginServerConnectHandler::connect(ref_ptr_t<LoginServerSession> session, PacketReader &reader) -> void {
 	world_id_t worldId = reader.get<world_id_t>();
 	if (worldId != -1) {
 		port_t port = reader.get<port_t>();

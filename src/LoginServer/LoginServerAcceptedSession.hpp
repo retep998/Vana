@@ -17,19 +17,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Common/AbstractServerConnection.hpp"
+#include "Common/ServerAcceptedSession.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
 	class PacketReader;
 
-	namespace ChannelServer {
-		class WorldServerConnection final : public AbstractServerConnection {
-			NONCOPYABLE(WorldServerConnection);
+	namespace LoginServer {
+		class LoginServerAcceptedSession final : public ServerAcceptedSession, public enable_shared<LoginServerAcceptedSession> {
+			NONCOPYABLE(LoginServerAcceptedSession);
 		public:
-			WorldServerConnection();
-			~WorldServerConnection();
+			LoginServerAcceptedSession(AbstractServer &server);
+
+			auto setWorldId(world_id_t id) -> void;
+			auto getWorldId() const -> optional_t<world_id_t>;
 		protected:
-			auto handleRequest(PacketReader &reader) -> void override;
+			auto handle(PacketReader &reader) -> Result override;
+			auto authenticated(ServerType type) -> void override;
+			auto onDisconnect() -> void override;
+		private:
+			optional_t<world_id_t> m_worldId;
 		};
 	}
 }

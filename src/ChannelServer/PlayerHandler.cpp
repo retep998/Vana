@@ -59,10 +59,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 namespace ChannelServer {
 
-auto PlayerHandler::handleDoorUse(Player *player, PacketReader &reader) -> void {
+auto PlayerHandler::handleDoorUse(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	player_id_t doorPlayerId = reader.get<player_id_t>();
 	bool toTown = !reader.get<bool>();
-	Player *doorHolder = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(doorPlayerId);
+	auto doorHolder = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(doorPlayerId);
 	if (doorHolder == nullptr || (doorHolder->getParty() != player->getParty() && doorHolder != player)) {
 		// Hacking or lag
 		return;
@@ -91,7 +91,7 @@ auto PlayerHandler::handleDoorUse(Player *player, PacketReader &reader) -> void 
 	}
 }
 
-auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
+auto PlayerHandler::handleDamage(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	const int8_t BumpDamage = -1;
 	const int8_t MapDamage = -2;
 
@@ -291,20 +291,20 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 	player->sendMap(Packets::Players::damagePlayer(player->getId(), damage, mobId, hit, type, stance, noDamageId, pgmr));
 }
 
-auto PlayerHandler::handleFacialExpression(Player *player, PacketReader &reader) -> void {
+auto PlayerHandler::handleFacialExpression(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	int32_t face = reader.get<int32_t>();
 	player->sendMap(Packets::Players::faceExpression(player->getId(), face));
 }
 
-auto PlayerHandler::handleGetInfo(Player *player, PacketReader &reader) -> void {
+auto PlayerHandler::handleGetInfo(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	reader.skip<tick_count_t>();
 	player_id_t playerId = reader.get<player_id_t>();
-	if (Player *info = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId)) {
+	if (auto info = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId)) {
 		player->send(Packets::Players::showInfo(info, reader.get<bool>()));
 	}
 }
 
-auto PlayerHandler::handleHeal(Player *player, PacketReader &reader) -> void {
+auto PlayerHandler::handleHeal(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	reader.skip<tick_count_t>();
 	health_t hp = reader.get<health_t>();
 	health_t mp = reader.get<health_t>();
@@ -316,13 +316,13 @@ auto PlayerHandler::handleHeal(Player *player, PacketReader &reader) -> void {
 	player->getStats()->modifyMp(mp);
 }
 
-auto PlayerHandler::handleMoving(Player *player, PacketReader &reader) -> void {
+auto PlayerHandler::handleMoving(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	if (reader.get<uint8_t>() != player->getPortalCount()) {
 		// Portal count doesn't match, usually an indication of hacking
 		return;
 	}
 	reader.reset(11);
-	MovementHandler::parseMovement(player, reader);
+	MovementHandler::parseMovement(player.get(), reader);
 	reader.reset(11);
 	player->sendMap(Packets::Players::showMoving(player->getId(), reader.getBuffer(), reader.getBufferLength()));
 
@@ -351,7 +351,7 @@ auto PlayerHandler::handleMoving(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto PlayerHandler::handleSpecialSkills(Player *player, PacketReader &reader) -> void {
+auto PlayerHandler::handleSpecialSkills(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	skill_id_t skillId = reader.get<skill_id_t>();
 	switch (skillId) {
 		case Vana::Skills::Hero::MonsterMagnet:
@@ -385,7 +385,7 @@ auto PlayerHandler::handleSpecialSkills(Player *player, PacketReader &reader) ->
 	}
 }
 
-auto PlayerHandler::handleMonsterBook(Player *player, PacketReader &reader) -> void {
+auto PlayerHandler::handleMonsterBook(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	item_id_t cardId = reader.get<item_id_t>();
 	if (cardId != 0 && player->getMonsterBook()->getCard(cardId) == 0) {
 		// Hacking
@@ -408,12 +408,12 @@ auto PlayerHandler::handleMonsterBook(Player *player, PacketReader &reader) -> v
 	player->send(Packets::MonsterBook::changeCover(cardId));
 }
 
-auto PlayerHandler::handleAdminMessenger(Player *player, PacketReader &reader) -> void {
+auto PlayerHandler::handleAdminMessenger(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	if (!player->isAdmin()) {
 		// Hacking
 		return;
 	}
-	Player *receiver = nullptr;
+	ref_ptr_t<Player> receiver = nullptr;
 	bool hasTarget = reader.get<int8_t>() == 2;
 	int8_t sort = reader.get<int8_t>();
 	bool useWhisper = reader.get<bool>();
@@ -452,7 +452,7 @@ auto PlayerHandler::handleAdminMessenger(Player *player, PacketReader &reader) -
 	}
 }
 
-auto PlayerHandler::useBombSkill(Player *player, PacketReader &reader) -> void {
+auto PlayerHandler::useBombSkill(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	// TODO FIXME packet
 	// Ignore this position in favor of player->getPos()?
 	WidePoint playerPos = reader.get<WidePoint>();
@@ -471,7 +471,7 @@ auto PlayerHandler::useBombSkill(Player *player, PacketReader &reader) -> void {
 	player->sendMap(Packets::Players::useBombAttack(player->getId(), charge, skillId, playerPos));
 }
 
-auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void {
+auto PlayerHandler::useMeleeAttack(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	AttackData attack = compileAttack(player, reader, SkillType::Melee);
 	if (attack.portals != player->getPortalCount()) {
 		// Usually evidence of hacking
@@ -522,7 +522,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 				connectedHits++;
 				targetTotal += damage;
 			}
-			if (ppok && Randomizer::rand<uint16_t>(99) < picking->prop) {
+			if (ppok && Randomizer::percentage<uint16_t>() < picking->prop) {
 				 // Make sure this is a melee attack and not meso explosion, plus pickpocket being active
 				ppDamages.push_back(damage);
 			}
@@ -669,7 +669,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 			if (skillLevel > 0) {
 				xProperty = ChannelServer::getInstance().getSkillDataProvider().getSkill(Vana::Skills::Paladin::AdvancedCharge, skillLevel)->x;
 			}
-			if ((xProperty != 100) && (xProperty == 0 || Randomizer::rand<int16_t>(99) > (xProperty - 1))) {
+			if ((xProperty != 100) && (xProperty == 0 || Randomizer::percentage<int16_t>() > (xProperty - 1))) {
 				player->getActiveBuffs()->stopCharge();
 			}
 			break;
@@ -681,7 +681,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 	}
 }
 
-auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> void {
+auto PlayerHandler::useRangedAttack(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	AttackData attack = compileAttack(player, reader, SkillType::Ranged);
 	if (attack.portals != player->getPortalCount()) {
 		// Usually evidence of hacking
@@ -750,7 +750,7 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 			if (skillId == Vana::Skills::Ranger::MortalBlow || skillId == Vana::Skills::Sniper::MortalBlow) {
 				auto sk = player->getSkills()->getSkillInfo(skillId);
 				int32_t hpPercentage = maxHp * sk->x / 100; // Percentage of HP required for Mortal Blow activation
-				if (mob->getHp() < hpPercentage && Randomizer::rand<int16_t>(99) < sk->y) {
+				if (mob->getHp() < hpPercentage && Randomizer::percentage<int16_t>() < sk->y) {
 					damage = mob->getHp();
 				}
 			}
@@ -814,7 +814,7 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 	}
 }
 
-auto PlayerHandler::useSpellAttack(Player *player, PacketReader &reader) -> void {
+auto PlayerHandler::useSpellAttack(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	const AttackData &attack = compileAttack(player, reader, SkillType::Magic);
 	if (attack.portals != player->getPortalCount()) {
 		// Usually evidence of hacking
@@ -899,7 +899,7 @@ auto PlayerHandler::useSpellAttack(Player *player, PacketReader &reader) -> void
 	}
 }
 
-auto PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &reader) -> void {
+auto PlayerHandler::useEnergyChargeAttack(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	AttackData attack = compileAttack(player, reader, SkillType::EnergyCharge);
 	skill_id_t masteryId = player->getSkills()->getMastery();
 	player->sendMap(Packets::Players::useEnergyChargeAttack(player->getId(), masteryId, player->getSkills()->getSkillLevel(masteryId), attack));
@@ -946,7 +946,7 @@ auto PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &reader) 
 	}
 }
 
-auto PlayerHandler::useSummonAttack(Player *player, PacketReader &reader) -> void {
+auto PlayerHandler::useSummonAttack(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	AttackData attack = compileAttack(player, reader, SkillType::Summon);
 	Summon *summon = player->getSummons()->getSummon(attack.summonId);
 	if (summon == nullptr) {
@@ -989,7 +989,7 @@ auto PlayerHandler::useSummonAttack(Player *player, PacketReader &reader) -> voi
 	}
 }
 
-auto PlayerHandler::compileAttack(Player *player, PacketReader &reader, SkillType skillType) -> AttackData {
+auto PlayerHandler::compileAttack(ref_ptr_t<Player> player, PacketReader &reader, SkillType skillType) -> AttackData {
 	AttackData attack;
 	int8_t targets = 0;
 	int8_t hits = 0;

@@ -90,8 +90,8 @@ namespace Vana {
 			auto openMysticDoor(const Point &pos, seconds_t doorTime) -> MysticDoorResult;
 			auto closeMysticDoor(bool fromTimer) -> void;
 			auto getMysticDoor() const -> ref_ptr_t<MysticDoor>;
-			auto onJoinParty(Party *party, Player *player) -> void;
-			auto onLeaveParty(Party *party, Player *player, bool kicked) -> void;
+			auto onJoinParty(Party *party, ref_ptr_t<Player> player) -> void;
+			auto onLeaveParty(Party *party, ref_ptr_t<Player> player, bool kicked) -> void;
 			auto onPartyDisband(Party *party) -> void;
 			auto onMapChange() const -> void;
 			auto onDisconnect() -> void;

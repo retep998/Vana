@@ -29,7 +29,7 @@ namespace Vana {
 		namespace Packets {
 			namespace Helpers {
 				PACKET(addItemInfo, inventory_slot_t slot, Item *item, bool shortSlot = false);
-				PACKET(addPlayerDisplay, Vana::ChannelServer::Player *player);
+				PACKET(addPlayerDisplay, ref_ptr_t<Vana::ChannelServer::Player> player);
 			}
 		}
 	}

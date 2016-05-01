@@ -68,7 +68,7 @@ PACKET_IMPL(customError, const string_t &error) {
 	return builder;
 }
 
-PACKET_IMPL(createParty, Vana::ChannelServer::Party *party, Vana::ChannelServer::Player *leader) {
+PACKET_IMPL(createParty, Vana::ChannelServer::Party *party, ref_ptr_t<Vana::ChannelServer::Player> leader) {
 	PacketBuilder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)

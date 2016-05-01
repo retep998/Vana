@@ -81,7 +81,7 @@ namespace Vana {
 					};
 				}
 
-				SPLIT_PACKET(updatePlayer, Player *player);
+				SPLIT_PACKET(updatePlayer, ref_ptr_t<Player> player);
 				SPLIT_PACKET(sitChair, player_id_t playerId, item_id_t chairId);
 				SPLIT_PACKET(stopChair, player_id_t playerId, bool seatTaken);
 				SPLIT_PACKET(useScroll, player_id_t playerId, int8_t succeed, bool destroy, bool legendarySpirit);

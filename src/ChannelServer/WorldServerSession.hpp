@@ -17,29 +17,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Common/AbstractConnection.hpp"
-#include "Common/ExternalIp.hpp"
-#include "Common/ServerType.hpp"
-#include "Common/Types.hpp"
-#include <string>
-#include <vector>
+#include "Common/PacketHandler.hpp"
 
 namespace Vana {
-	class AbstractServer;
 	class PacketReader;
 
-	class AbstractServerConnection : public AbstractConnection {
-	public:
-		auto getType() const -> ServerType { return m_type; }
-	protected:
-		AbstractServerConnection(ServerType type) :
-			AbstractConnection{true},
-			m_type{type}
-		{
-		}
-	private:
-		friend class AbstractServer;
-		auto sendAuth(const string_t &pass, const IpMatrix &extIp) -> void;
-		ServerType m_type = ServerType::None;
-	};
+	namespace ChannelServer {
+		class WorldServerSession final : public PacketHandler, public enable_shared<WorldServerSession> {
+			NONCOPYABLE(WorldServerSession);
+		public:
+			WorldServerSession() = default;
+		protected:
+			auto handle(PacketReader &reader) -> Result override;
+			auto onConnect() -> void override;
+			auto onDisconnect() -> void override;
+		};
+	}
 }

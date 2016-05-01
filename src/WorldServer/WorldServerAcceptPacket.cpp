@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer/Channels.hpp"
 #include "WorldServer/PlayerDataProvider.hpp"
 #include "WorldServer/WorldServer.hpp"
-#include "WorldServer/WorldServerAcceptConnection.hpp"
+#include "WorldServer/WorldServerAcceptedSession.hpp"
 #include <unordered_map>
 #include <map>
 

@@ -17,7 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ChannelServer.hpp"
 #include "Common/ConfigFile.hpp"
+#include "Common/ConnectionListenerConfig.hpp"
 #include "Common/ConnectionManager.hpp"
+#include "Common/ExitCodes.hpp"
 #include "Common/InitializeCommon.hpp"
 #include "Common/MiscUtilities.hpp"
 #include "Common/PacketBuilder.hpp"
@@ -28,8 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/PlayerDataProvider.hpp"
 #include "ChannelServer/ServerPacket.hpp"
 #include "ChannelServer/SyncPacket.hpp"
-#include "ChannelServer/WorldServerConnection.hpp"
-#include "ChannelServer/WorldServerConnectPacket.hpp"
+#include "ChannelServer/WorldServerPacket.hpp"
 
 namespace Vana {
 namespace ChannelServer {
@@ -41,8 +42,26 @@ ChannelServer::ChannelServer() :
 }
 
 auto ChannelServer::listen() -> void {
-	getConnectionManager().accept(Ip::Type::Ipv4, m_port, [] { return new Player{}; }, getInterServerConfig(), false, MapleVersion::ChannelSubversion);
+	m_sessionPool.initialize(1);
+
+	auto &config = getInterServerConfig();
+	getConnectionManager().listen(
+		ConnectionListenerConfig{
+			config.clientPing,
+			config.clientEncryption,
+			ConnectionType::EndUser,
+			MapleVersion::ChannelSubversion,
+			m_port,
+			Ip::Type::Ipv4
+		},
+		[&] { return make_ref_ptr<Player>(); }
+	);
+
 	Initializing::setUsersOffline(this, getOnlineId());
+}
+
+auto ChannelServer::finalizePlayer(ref_ptr_t<Player> session) -> void {
+	m_sessionPool.store(session);
 }
 
 auto ChannelServer::shutdown() -> void {
@@ -80,14 +99,21 @@ auto ChannelServer::loadData() -> Result {
 	ChatHandler::initializeCommands();
 	std::cout << "DONE" << std::endl;
 
-	m_loginConnection = new WorldServerConnection();
 	auto &config = getInterServerConfig();
+	auto result = getConnectionManager().connect(
+		config.loginIp,
+		config.loginPort,
+		config.serverPing,
+		ServerType::Channel,
+		[&] {
+			return make_ref_ptr<LoginServerSession>();
+		});
 
-	if (getConnectionManager().connect(config.loginIp, config.loginPort, config, m_loginConnection) == Result::Failure) {
+	if (result.first == Result::Failure) {
 		return Result::Failure;
 	}
 
-	sendAuth(m_loginConnection);
+	sendAuth(result.second);
 	return Result::Successful;
 }
 
@@ -115,25 +141,58 @@ auto ChannelServer::reloadData(const string_t &args) -> void {
 }
 
 auto ChannelServer::makeLogIdentifier() const -> opt_string_t {
-	return buildLogIdentifier([&](out_stream_t &id) { id << "World: " << static_cast<int32_t>(m_worldId) << "; ID: " << static_cast<int32_t>(m_channelId); });
+	return buildLogIdentifier([&](out_stream_t &id) {
+		id << "World: " << static_cast<int32_t>(m_worldId) << "; ID: " << static_cast<int32_t>(m_channelId);
+	});
 }
 
 auto ChannelServer::getLogPrefix() const -> string_t {
 	return "channel";
 }
 
-auto ChannelServer::connectToWorld(world_id_t worldId, port_t port, const Ip &ip) -> void {
+auto ChannelServer::connectToWorld(world_id_t worldId, port_t port, const Ip &ip) -> Result {
 	m_worldId = worldId;
 	m_worldPort = port;
 	m_worldIp = ip;
 
-	m_worldConnection = new WorldServerConnection();
+	auto &config = getInterServerConfig();
+	auto result = getConnectionManager().connect(
+		ip,
+		port,
+		config.serverPing,
+		ServerType::Channel,
+		[&] {
+			return make_ref_ptr<WorldServerSession>();
+		});
 
-	if (getConnectionManager().connect(ip, port, getInterServerConfig(), m_worldConnection) == Result::Failure) {
-		return;
+	if (result.first == Result::Failure) {
+		return Result::Failure;
 	}
 
-	sendAuth(m_worldConnection);
+	sendAuth(result.second);
+	return Result::Successful;
+}
+
+auto ChannelServer::onConnectToLogin(ref_ptr_t<LoginServerSession> session) -> void {
+	m_loginConnection = session;
+}
+
+auto ChannelServer::onDisconnectFromLogin() -> void {
+	m_loginConnection.reset();
+}
+
+auto ChannelServer::onConnectToWorld(ref_ptr_t<WorldServerSession> session) -> void {
+	m_worldConnection = session;
+}
+
+auto ChannelServer::onDisconnectFromWorld() -> void {
+	m_worldConnection.reset();
+
+	if (isConnected()) {
+		log(LogType::ServerDisconnect, "Disconnected from the WorldServer. Shutting down...");
+		m_playerDataProvider.disconnect();
+		ExitCodes::exit(ExitCodes::ServerDisconnection);
+	}
 }
 
 auto ChannelServer::establishedWorldConnection(channel_id_t channelId, port_t port, const WorldConfig &config) -> void {

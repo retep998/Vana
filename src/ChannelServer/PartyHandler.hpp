@@ -26,7 +26,7 @@ namespace Vana {
 		class Player;
 
 		namespace PartyHandler {
-			auto handleRequest(Player *player, PacketReader &reader) -> void;
+			auto handleRequest(ref_ptr_t<Player> player, PacketReader &reader) -> void;
 		}
 	}
 }

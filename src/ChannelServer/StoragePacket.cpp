@@ -29,7 +29,7 @@ namespace ChannelServer {
 namespace Packets {
 namespace Storage {
 
-PACKET_IMPL(showStorage, Player *player, npc_id_t npcId) {
+PACKET_IMPL(showStorage, ref_ptr_t<Player> player, npc_id_t npcId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_STORAGE)
@@ -52,7 +52,7 @@ PACKET_IMPL(showStorage, Player *player, npc_id_t npcId) {
 	return builder;
 }
 
-PACKET_IMPL(addItem, Player *player, inventory_t inv) {
+PACKET_IMPL(addItem, ref_ptr_t<Player> player, inventory_t inv) {
 	PacketBuilder builder;
 	int8_t type = static_cast<int8_t>(std::pow(2.f, static_cast<int32_t>(inv))) * 2; // Gotta work some magic on type, which starts as inventory
 	builder
@@ -72,7 +72,7 @@ PACKET_IMPL(addItem, Player *player, inventory_t inv) {
 	return builder;
 }
 
-PACKET_IMPL(takeItem, Player *player, int8_t inv) {
+PACKET_IMPL(takeItem, ref_ptr_t<Player> player, int8_t inv) {
 	PacketBuilder builder;
 	int8_t type = static_cast<int8_t>(std::pow(2.f, static_cast<int32_t>(inv))) * 2;
 	builder

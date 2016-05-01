@@ -660,7 +660,7 @@ auto ChatHandlerFunctions::initialize() -> void {
 	CustomFunctions::initialize(sCommandList);
 }
 
-auto ChatHandlerFunctions::getMap(const chat_t &query, Player *player) -> int32_t {
+auto ChatHandlerFunctions::getMap(const chat_t &query, ref_ptr_t<Player> player) -> int32_t {
 	map_id_t mapId = -1;
 	// Special
 	chat_t lowercaseQuery = StringUtilities::toLower(query);
@@ -793,12 +793,12 @@ auto ChatHandlerFunctions::runRegexPattern(const chat_t &args, const chat_t &pat
 	return std::regex_match(args, matches, re) ? MatchResult::AnyMatches : MatchResult::NoMatches;
 }
 
-auto ChatHandlerFunctions::showSyntax(Player *player, const chat_t &command, bool fromHelp) -> void {
+auto ChatHandlerFunctions::showSyntax(ref_ptr_t<Player> player, const chat_t &command, bool fromHelp) -> void {
 	auto kvp = sCommandList.find(command);
 	if (kvp != std::end(sCommandList)) {
 		auto &cmd = kvp->second;
 
-		using overload_t = void (*)(Player *, const chat_t &);
+		using overload_t = void (*)(ref_ptr_t<Player>, const chat_t &);
 		auto displayStyle = fromHelp ?
 			static_cast<overload_t>(showInfo) :
 			static_cast<overload_t>(showError);
@@ -814,31 +814,31 @@ auto ChatHandlerFunctions::showSyntax(Player *player, const chat_t &command, boo
 	}
 }
 
-auto ChatHandlerFunctions::showError(Player *player, const chat_t &message) -> void {
+auto ChatHandlerFunctions::showError(ref_ptr_t<Player> player, const chat_t &message) -> void {
 	player->send(Packets::Player::showMessage(message, Packets::Player::NoticeTypes::Red));
 }
 
-auto ChatHandlerFunctions::showInfo(Player *player, const chat_t &message) -> void {
+auto ChatHandlerFunctions::showInfo(ref_ptr_t<Player> player, const chat_t &message) -> void {
 	player->send(Packets::Player::showMessage(message, Packets::Player::NoticeTypes::Blue));
 }
 
-auto ChatHandlerFunctions::showError(Player *player, function_t<void(chat_stream_t &)> produceMessage) -> void {
+auto ChatHandlerFunctions::showError(ref_ptr_t<Player> player, function_t<void(chat_stream_t &)> produceMessage) -> void {
 	chat_stream_t error;
 	produceMessage(error);
 	showError(player, error.str());
 }
 
-auto ChatHandlerFunctions::showInfo(Player *player, function_t<void(chat_stream_t &)> produceMessage) -> void {
+auto ChatHandlerFunctions::showInfo(ref_ptr_t<Player> player, function_t<void(chat_stream_t &)> produceMessage) -> void {
 	chat_stream_t info;
 	produceMessage(info);
 	showInfo(player, info.str());
 }
 
-auto ChatHandlerFunctions::showError(Player *player, const char *message) -> void {
+auto ChatHandlerFunctions::showError(ref_ptr_t<Player> player, const char *message) -> void {
 	showError(player, chat_t{message});
 }
 
-auto ChatHandlerFunctions::showInfo(Player *player, const char *message) -> void {
+auto ChatHandlerFunctions::showInfo(ref_ptr_t<Player> player, const char *message) -> void {
 	showInfo(player, chat_t{message});
 }
 

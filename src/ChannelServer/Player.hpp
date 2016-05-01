@@ -17,10 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Common/AbstractConnection.hpp"
 #include "Common/ChargeOrStationarySkillData.hpp"
+#include "Common/PacketHandler.hpp"
 #include "Common/SkillDataProvider.hpp"
 #include "Common/TauswortheGenerator.hpp"
+#include "Common/TimerContainerHolder.hpp"
 #include "ChannelServer/MovableLife.hpp"
 #include "ChannelServer/Npc.hpp"
 #include "ChannelServer/PlayerActiveBuffs.hpp"
@@ -52,11 +53,10 @@ namespace Vana {
 		class Map;
 		class Party;
 
-		class Player : public AbstractConnection, public MovableLife {
+		class Player : public PacketHandler, public enable_shared<Player>, public TimerContainerHolder, public MovableLife {
 			NONCOPYABLE(Player);
 		public:
 			Player();
-			~Player();
 
 			auto setGmChat(bool chat) -> void { m_gmChat = chat; }
 			auto setSaveOnDc(bool save) -> void { m_saveOnDc = save; }
@@ -79,7 +79,7 @@ namespace Vana {
 			auto setChargeOrStationarySkill(const ChargeOrStationarySkillData &info) -> void { m_info = info; }
 			auto setNpc(Npc *npc) -> void { m_npc.reset(npc); }
 			auto setParty(Party *party) -> void { m_party = party; }
-			auto setFollow(Player *target) -> void { m_follow = target; }
+			auto setFollow(ref_ptr_t<Player> target) -> void { m_follow = target; }
 			auto setInstance(Instance *instance) -> void { m_instance = instance; }
 			auto parseTransferPacket(PacketReader &reader) -> void;
 
@@ -121,7 +121,7 @@ namespace Vana {
 			auto getTransferPacket() const -> PacketBuilder;
 
 			auto getMap() const -> Map *;
-			auto getFollow() const -> Player * { return m_follow; }
+			auto getFollow() const -> ref_ptr_t<Player> { return m_follow; }
 			auto getNpc() const -> Npc * { return m_npc.get(); }
 			auto getParty() const -> Party * { return m_party; }
 			auto getInstance() const -> Instance * { return m_instance; }
@@ -155,7 +155,8 @@ namespace Vana {
 			auto sendMap(const PacketBuilder &builder, bool excludeSelf = false) -> void;
 			auto sendMap(const SplitPacketBuilder &builder) -> void;
 		protected:
-			auto handleRequest(PacketReader &reader) -> void override;
+			auto handle(PacketReader &reader) -> Result override;
+			auto onDisconnect() -> void override;
 		private:
 			auto playerConnect(PacketReader &reader) -> void;
 			auto changeKey(PacketReader &reader) -> void;
@@ -192,10 +193,10 @@ namespace Vana {
 			int64_t m_onlineTime = 0;
 			Instance *m_instance = nullptr;
 			Party *m_party = nullptr;
-			Player *m_follow = nullptr;
 			string_t m_chalkboard;
 			string_t m_name;
 			ChargeOrStationarySkillData m_info;
+			ref_ptr_t<Player> m_follow = nullptr;
 			owned_ptr_t<Npc> m_npc;
 			owned_ptr_t<PlayerActiveBuffs> m_activeBuffs;
 			owned_ptr_t<PlayerBuddyList> m_buddyList;

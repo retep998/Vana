@@ -136,7 +136,7 @@ auto LuaExports::runNpcNpc(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::showStorage(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	Player *player = getPlayer(luaVm, env);
+	auto player = getPlayer(luaVm, env);
 	player->send(Packets::Storage::showStorage(player, getNpc(luaVm, env)->getNpcId()));
 	return 0;
 }

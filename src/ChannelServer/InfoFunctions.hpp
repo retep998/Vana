@@ -24,14 +24,14 @@ namespace Vana {
 		class Player;
 
 		namespace InfoFunctions {
-			auto help(Player *player, const chat_t &args) -> ChatResult;
-			auto lookup(Player *player, const chat_t &args) -> ChatResult;
-			auto pos(Player *player, const chat_t &args) -> ChatResult;
-			auto online(Player *player, const chat_t &args) -> ChatResult;
-			auto variable(Player *player, const chat_t &args) -> ChatResult;
-			auto questData(Player *player, const chat_t &args) -> ChatResult;
-			auto questKills(Player *player, const chat_t &args) -> ChatResult;
-			auto gmLevel(Player *player, const chat_t &args) -> ChatResult;
+			auto help(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto lookup(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto pos(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto online(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto variable(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto questData(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto questKills(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto gmLevel(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
 		}
 	}
 }

@@ -46,9 +46,6 @@
       <Filter>LoginServer</Filter>
     </ClCompile>
     <ClCompile Include="src\LoginServer\main_login.cpp" />
-    <ClCompile Include="src\LoginServer\LoginServerAcceptConnection.cpp">
-      <Filter>Inter-Server\Channel/World</Filter>
-    </ClCompile>
     <ClCompile Include="src\LoginServer\LoginServerAcceptPacket.cpp">
       <Filter>Inter-Server\Channel/World</Filter>
     </ClCompile>
@@ -60,8 +57,11 @@
     </ClCompile>
     <ClCompile Include="src\LoginServer\LoginServer.cpp" />
     <ClCompile Include="src\LoginServer\PrecompiledHeader.cpp" />
-    <ClCompile Include="src\LoginServer\UserConnection.cpp">
+    <ClCompile Include="src\LoginServer\User.cpp">
       <Filter>LoginServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoginServer\LoginServerAcceptedSession.cpp">
+      <Filter>Inter-Server\Channel/World</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -92,9 +92,6 @@
     <ClInclude Include="src\LoginServer\LoginPacket.hpp">
       <Filter>Packets</Filter>
     </ClInclude>
-    <ClInclude Include="src\LoginServer\LoginServerAcceptConnection.hpp">
-      <Filter>Inter-Server\Channel/World</Filter>
-    </ClInclude>
     <ClInclude Include="src\LoginServer\LoginServerAcceptHandler.hpp">
       <Filter>Inter-Server\Channel/World</Filter>
     </ClInclude>
@@ -106,14 +103,17 @@
     </ClInclude>
     <ClInclude Include="src\LoginServer\PrecompiledHeader.hpp" />
     <ClInclude Include="src\LoginServer\LoginServer.hpp" />
-    <ClInclude Include="src\LoginServer\UserConnection.hpp">
-      <Filter>LoginServer</Filter>
-    </ClInclude>
     <ClInclude Include="src\LoginServer\CmsgHeader.hpp">
       <Filter>Packets\Headers</Filter>
     </ClInclude>
     <ClInclude Include="src\LoginServer\SmsgHeader.hpp">
       <Filter>Packets\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\User.hpp">
+      <Filter>LoginServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\LoginServerAcceptedSession.hpp">
+      <Filter>Inter-Server\Channel/World</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

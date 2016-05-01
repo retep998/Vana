@@ -42,7 +42,7 @@ auto Maps::unloadMap(map_id_t mapId) -> void {
 	ChannelServer::getInstance().unloadMap(mapId);
 }
 
-auto Maps::usePortal(Player *player, const PortalInfo * const portal) -> void {
+auto Maps::usePortal(ref_ptr_t<Player> player, const PortalInfo * const portal) -> void {
 	if (portal->disabled) {
 		player->send(Packets::Map::portalBlocked());
 		player->send(Packets::Player::showMessage("The portal is closed for now.", Packets::Player::NoticeTypes::Red));
@@ -90,7 +90,7 @@ auto Maps::usePortal(Player *player, const PortalInfo * const portal) -> void {
 	}
 }
 
-auto Maps::usePortal(Player *player, PacketReader &reader) -> void {
+auto Maps::usePortal(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	reader.skip<portal_count_t>();
 
 	int32_t opcode = reader.get<int32_t>();
@@ -142,7 +142,7 @@ auto Maps::usePortal(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto Maps::useScriptedPortal(Player *player, PacketReader &reader) -> void {
+auto Maps::useScriptedPortal(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	reader.skip<portal_count_t>();
 	string_t portalName = reader.get<string_t>();
 
@@ -153,7 +153,7 @@ auto Maps::useScriptedPortal(Player *player, PacketReader &reader) -> void {
 	usePortal(player, portal);
 }
 
-auto Maps::addPlayer(Player *player, map_id_t mapId) -> void {
+auto Maps::addPlayer(ref_ptr_t<Player> player, map_id_t mapId) -> void {
 	getMap(mapId)->addPlayer(player);
 	getMap(mapId)->showObjects(player);
 	PetHandler::showPets(player);

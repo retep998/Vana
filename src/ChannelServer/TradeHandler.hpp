@@ -27,9 +27,9 @@ namespace Vana {
 		struct TradeInfo;
 
 		namespace TradeHandler {
-			auto tradeHandler(Player *player, PacketReader &reader) -> void;
+			auto tradeHandler(ref_ptr_t<Player> player, PacketReader &reader) -> void;
 			auto removeTrade(trade_id_t id) -> void;
-			auto cancelTrade(Player *player) -> void;
+			auto cancelTrade(ref_ptr_t<Player> player) -> void;
 
 			auto getTaxLevel(mesos_t mesos) -> int32_t;
 		}

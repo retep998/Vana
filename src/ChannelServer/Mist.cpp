@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 namespace ChannelServer {
 
-Mist::Mist(map_id_t mapId, Player *owner, seconds_t time, const Rect &area, skill_id_t skillId, skill_level_t level, bool isPoison) :
+Mist::Mist(map_id_t mapId, ref_ptr_t<Player> owner, seconds_t time, const Rect &area, skill_id_t skillId, skill_level_t level, bool isPoison) :
 	m_ownerMap{mapId},
 	m_ownerId{owner->getId()},
 	m_skill{skillId},

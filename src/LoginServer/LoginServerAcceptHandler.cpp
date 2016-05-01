@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/StringUtilities.hpp"
 #include "LoginServer/Channel.hpp"
 #include "LoginServer/LoginServer.hpp"
-#include "LoginServer/LoginServerAcceptConnection.hpp"
+#include "LoginServer/LoginServerAcceptedSession.hpp"
 #include "LoginServer/World.hpp"
 #include "LoginServer/Worlds.hpp"
 #include <iostream>
@@ -30,11 +30,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 namespace LoginServer {
 
-auto LoginServerAcceptHandler::registerChannel(LoginServerAcceptConnection *connection, PacketReader &reader) -> void {
+auto LoginServerAcceptHandler::registerChannel(ref_ptr_t<LoginServerAcceptedSession> session, PacketReader &reader) -> void {
 	channel_id_t channel = reader.get<channel_id_t>();
-	Channel *chan = new Channel();
+	Channel *chan = new Channel{};
 	const Ip &ip = reader.get<Ip>();
-	optional_t<world_id_t> worldId = connection->getWorldId();
+	optional_t<world_id_t> worldId = session->getWorldId();
 	if (!worldId.is_initialized()) {
 		throw CodePathInvalidException{"!worldId.is_initialized()"};
 	}
@@ -47,10 +47,10 @@ auto LoginServerAcceptHandler::registerChannel(LoginServerAcceptConnection *conn
 	});
 }
 
-auto LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptConnection *connection, PacketReader &reader) -> void {
+auto LoginServerAcceptHandler::updateChannelPop(ref_ptr_t<LoginServerAcceptedSession> session, PacketReader &reader) -> void {
 	channel_id_t channel = reader.get<channel_id_t>();
 	int32_t population = reader.get<int32_t>();
-	optional_t<world_id_t> worldId = connection->getWorldId();
+	optional_t<world_id_t> worldId = session->getWorldId();
 	if (!worldId.is_initialized()) {
 		throw CodePathInvalidException{"!worldId.is_initialized()"};
 	}
@@ -61,10 +61,10 @@ auto LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptConnection *con
 	worlds.calculatePlayerLoad(world);
 }
 
-auto LoginServerAcceptHandler::removeChannel(LoginServerAcceptConnection *connection, PacketReader &reader) -> void {
+auto LoginServerAcceptHandler::removeChannel(ref_ptr_t<LoginServerAcceptedSession> session, PacketReader &reader) -> void {
 	channel_id_t channel = reader.get<channel_id_t>();
 
-	optional_t<world_id_t> worldId = connection->getWorldId();
+	optional_t<world_id_t> worldId = session->getWorldId();
 	if (!worldId.is_initialized()) {
 		throw CodePathInvalidException{"!worldId.is_initialized()"};
 	}

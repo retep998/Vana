@@ -104,7 +104,7 @@ PACKET_IMPL(showShop, const ShopData &shop, slot_qty_t rechargeableBonus) {
 	builder
 		.add<header_t>(SMSG_SHOP)
 		.add<npc_id_t>(shop.npc)
-		.add<slot_qty_t>(0); // To be set later
+		.defer<slot_qty_t>();
 
 	// Items
 	for (const auto &item : shop.items) {

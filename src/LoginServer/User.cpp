@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "UserConnection.hpp"
+#include "User.hpp"
 #include "Common/Database.hpp"
 #include "Common/PacketBuilder.hpp"
 #include "Common/PacketReader.hpp"
@@ -31,30 +31,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 namespace LoginServer {
 
-UserConnection::~UserConnection() {
-	setOnline(false);
-}
-
-auto UserConnection::handleRequest(PacketReader &reader) -> void {
+auto User::handle(PacketReader &reader) -> Result {
 	try {
 		switch (reader.get<header_t>()) {
-			case CMSG_AUTHENTICATION: Login::loginUser(this, reader); break;
-			case CMSG_PLAYER_LIST: LoginServer::getInstance().getWorlds().channelSelect(this, reader); break;
-			case CMSG_WORLD_STATUS: LoginServer::getInstance().getWorlds().selectWorld(this, reader); break;
-			case CMSG_PIN: Login::handleLogin(this, reader); break;
-			case CMSG_WORLD_LIST:
-			case CMSG_WORLD_LIST_REFRESH: LoginServer::getInstance().getWorlds().showWorld(this); break;
-			case CMSG_CHANNEL_CONNECT: Characters::connectGame(this, reader); break;
+			case CMSG_ACCOUNT_GENDER: Login::setGender(shared_from_this(), reader); break;
+			case CMSG_AUTHENTICATION: Login::loginUser(shared_from_this(), reader); break;
+			case CMSG_CHANNEL_CONNECT: Characters::connectGame(shared_from_this(), reader); break;
 			case CMSG_CLIENT_ERROR: LoginServer::getInstance().log(LogType::ClientError, reader.get<string_t>()); break;
-			case CMSG_CLIENT_STARTED: LoginServer::getInstance().log(LogType::Info, [&](out_stream_t &log) { log << "Client connected and started from " << getIp(); }); break;
-			case CMSG_PLAYER_GLOBAL_LIST: Characters::showAllCharacters(this); break;
-			case CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT: Characters::connectGameWorldFromViewAllCharacters(this, reader); break;
-			case CMSG_PLAYER_NAME_CHECK: Characters::checkCharacterName(this, reader); break;
-			case CMSG_PLAYER_CREATE: Characters::createCharacter(this, reader); break;
-			case CMSG_PLAYER_DELETE: Characters::deleteCharacter(this, reader); break;
-			case CMSG_ACCOUNT_GENDER: Login::setGender(this, reader); break;
-			case CMSG_REGISTER_PIN: Login::registerPin(this, reader); break;
-			case CMSG_LOGIN_RETURN: this->send(Packets::relogResponse()); break;
+			case CMSG_CLIENT_STARTED: LoginServer::getInstance().log(LogType::Info, [&](out_stream_t &log) { log << "Client connected and started from " << getIp().get(Ip{0}); }); break;
+			case CMSG_LOGIN_RETURN: send(Packets::relogResponse()); break;
+			case CMSG_PIN: Login::handleLogin(shared_from_this(), reader); break;
+			case CMSG_PLAYER_CREATE: Characters::createCharacter(shared_from_this(), reader); break;
+			case CMSG_PLAYER_DELETE: Characters::deleteCharacter(shared_from_this(), reader); break;
+			case CMSG_PLAYER_GLOBAL_LIST: Characters::showAllCharacters(shared_from_this()); break;
+			case CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT: Characters::connectGameWorldFromViewAllCharacters(shared_from_this(), reader); break;
+			case CMSG_PLAYER_LIST: LoginServer::getInstance().getWorlds().channelSelect(shared_from_this(), reader); break;
+			case CMSG_PLAYER_NAME_CHECK: Characters::checkCharacterName(shared_from_this(), reader); break;
+			case CMSG_REGISTER_PIN: Login::registerPin(shared_from_this(), reader); break;
+			case CMSG_WORLD_LIST:
+			case CMSG_WORLD_LIST_REFRESH: LoginServer::getInstance().getWorlds().showWorld(shared_from_this()); break;
+			case CMSG_WORLD_STATUS: LoginServer::getInstance().getWorlds().selectWorld(shared_from_this(), reader); break;
 		}
 	}
 	catch (const PacketContentException &e) {
@@ -68,11 +64,18 @@ auto UserConnection::handleRequest(PacketReader &reader) -> void {
 				<< "; Packet: " << reader
 				<< "; Error: " << e.what();
 		});
-		disconnect();
+		return Result::Failure;
 	}
+
+	return Result::Successful;
 }
 
-auto UserConnection::setOnline(bool online) -> void {
+auto User::onDisconnect() -> void {
+	setOnline(false);
+	LoginServer::getInstance().finalizeUser(shared_from_this());
+}
+
+auto User::setOnline(bool online) -> void {
 	auto &db = Database::getCharDb();
 	auto &sql = db.getSession();
 	sql.once

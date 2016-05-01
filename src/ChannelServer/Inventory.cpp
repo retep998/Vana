@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 namespace ChannelServer {
 
-auto Inventory::addItem(Player *player, Item *item, bool fromDrop) -> slot_qty_t {
+auto Inventory::addItem(ref_ptr_t<Player> player, Item *item, bool fromDrop) -> slot_qty_t {
 	inventory_t inv = GameLogicUtilities::getInventory(item->getId());
 	inventory_slot_t freeSlot = 0;
 	for (inventory_slot_t s = 1; s <= player->getInventory()->getMaxSlots(inv); s++) {
@@ -77,7 +77,7 @@ auto Inventory::addItem(Player *player, Item *item, bool fromDrop) -> slot_qty_t
 		player->send(Packets::Inventory::inventoryOperation(fromDrop, ops));
 
 		if (GameLogicUtilities::isPet(item->getId())) {
-			Pet *pet = new Pet(player, item);
+			Pet *pet = new Pet{player.get(), item};
 			player->getPets()->addPet(pet);
 			pet->setInventorySlot(static_cast<int8_t>(freeSlot));
 			player->send(Packets::Pets::updatePet(pet, item));
@@ -88,7 +88,7 @@ auto Inventory::addItem(Player *player, Item *item, bool fromDrop) -> slot_qty_t
 	return item->getAmount();
 }
 
-auto Inventory::addNewItem(Player *player, item_id_t itemId, slot_qty_t amount, Items::StatVariance variancePolicy) -> void {
+auto Inventory::addNewItem(ref_ptr_t<Player> player, item_id_t itemId, slot_qty_t amount, Items::StatVariance variancePolicy) -> void {
 	auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(itemId);
 	if (itemInfo == nullptr) {
 		return;
@@ -133,7 +133,7 @@ auto Inventory::addNewItem(Player *player, item_id_t itemId, slot_qty_t amount, 
 	}
 }
 
-auto Inventory::takeItem(Player *player, item_id_t itemId, slot_qty_t howMany) -> void {
+auto Inventory::takeItem(ref_ptr_t<Player> player, item_id_t itemId, slot_qty_t howMany) -> void {
 	if (player->hasGmBenefits()) {
 		player->send(Packets::Inventory::blankUpdate());
 		return;
@@ -177,7 +177,7 @@ auto Inventory::takeItem(Player *player, item_id_t itemId, slot_qty_t howMany) -
 	}
 }
 
-auto Inventory::takeItemSlot(Player *player, inventory_t inv, inventory_slot_t slot, slot_qty_t amount, bool takeStar, bool overrideGmBenefits) -> void {
+auto Inventory::takeItemSlot(ref_ptr_t<Player> player, inventory_t inv, inventory_slot_t slot, slot_qty_t amount, bool takeStar, bool overrideGmBenefits) -> void {
 	if (!overrideGmBenefits && player->hasGmBenefits()) {
 		return;
 	}
@@ -203,7 +203,7 @@ auto Inventory::takeItemSlot(Player *player, inventory_t inv, inventory_slot_t s
 	}
 }
 
-auto Inventory::useItem(Player *player, item_id_t itemId) -> void {
+auto Inventory::useItem(ref_ptr_t<Player> player, item_id_t itemId) -> void {
 	auto item = ChannelServer::getInstance().getItemDataProvider().getConsumeInfo(itemId);
 	if (item == nullptr) {
 		// Not a consume

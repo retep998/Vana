@@ -26,9 +26,9 @@ namespace Vana {
 
 		namespace Packets {
 			namespace Storage {
-				PACKET(showStorage, Player *player, npc_id_t npcId);
-				PACKET(addItem, Player *player, inventory_t inv);
-				PACKET(takeItem, Player *player, inventory_t inv);
+				PACKET(showStorage, ref_ptr_t<Player> player, npc_id_t npcId);
+				PACKET(addItem, ref_ptr_t<Player> player, inventory_t inv);
+				PACKET(takeItem, ref_ptr_t<Player> player, inventory_t inv);
 				PACKET(changeMesos, storage_slot_t slotCount, mesos_t mesos);
 				PACKET(storageFull);
 				PACKET(noMesos);

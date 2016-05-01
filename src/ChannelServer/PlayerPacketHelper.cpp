@@ -111,7 +111,7 @@ PACKET_IMPL(addItemInfo, inventory_slot_t slot, Item *item, bool shortSlot) {
 	return builder;
 }
 
-PACKET_IMPL(addPlayerDisplay, Vana::ChannelServer::Player *player) {
+PACKET_IMPL(addPlayerDisplay, ref_ptr_t<Vana::ChannelServer::Player> player) {
 	PacketBuilder builder;
 	builder
 		.add<gender_id_t>(player->getGender())

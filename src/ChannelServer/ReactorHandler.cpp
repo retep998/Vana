@@ -39,7 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 namespace ChannelServer {
 
-auto ReactorHandler::hitReactor(Player *player, PacketReader &reader) -> void {
+auto ReactorHandler::hitReactor(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	map_object_t id = Map::makeReactorId(reader.get<map_object_t>());
 
 	Map *map = player->getMap();
@@ -78,7 +78,7 @@ auto ReactorHandler::hitReactor(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto ReactorHandler::touchReactor(Player *player, PacketReader &reader) -> void {
+auto ReactorHandler::touchReactor(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	size_t id = Map::makeReactorId(reader.get<map_object_t>());
 	bool isTouching = reader.get<bool>();
 
@@ -105,11 +105,11 @@ struct Reaction {
 
 	Reactor *reactor = nullptr;
 	Drop *drop = nullptr;
-	Player *player = nullptr;
+	ref_ptr_t<Player> player = nullptr;
 	int8_t state = 0;
 };
 
-auto ReactorHandler::checkDrop(Player *player, Drop *drop) -> void {
+auto ReactorHandler::checkDrop(ref_ptr_t<Player> player, Drop *drop) -> void {
 	Reactor *reactor;
 	Map *map = drop->getMap();
 	for (size_t i = 0; i < map->getNumReactors(); ++i) {

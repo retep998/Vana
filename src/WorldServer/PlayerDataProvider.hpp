@@ -29,11 +29,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 
 namespace Vana {
-	class AbstractConnection;
 	class PacketBuilder;
 	class soci::row;
 
 	namespace WorldServer {
+		class LoginServerSession;
+		class WorldServerAcceptedSession;
+
 		class PlayerDataProvider {
 		public:
 			PlayerDataProvider();
@@ -46,7 +48,8 @@ namespace Vana {
 			auto send(const PacketBuilder &builder) -> void;
 
 			// Handling
-			auto handleSync(AbstractConnection *connection, sync_t type, PacketReader &reader) -> void;
+			auto handleSync(ref_ptr_t<WorldServerAcceptedSession> session, sync_t type, PacketReader &reader) -> void;
+			auto handleSync(ref_ptr_t<LoginServerSession> session, sync_t type, PacketReader &reader) -> void;
 		private:
 			auto loadPlayers(world_id_t worldId) -> void;
 			auto loadPlayer(player_id_t playerId) -> void;
@@ -54,16 +57,17 @@ namespace Vana {
 			auto sendSync(const PacketBuilder &builder) const -> void;
 
 			// Handling
-			auto handlePlayerSync(AbstractConnection *connection, PacketReader &reader) -> void;
-			auto handlePartySync(AbstractConnection *connection, PacketReader &reader) -> void;
-			auto handleBuddySync(AbstractConnection *connection, PacketReader &reader) -> void;
+			auto handlePlayerSync(ref_ptr_t<WorldServerAcceptedSession> session, PacketReader &reader) -> void;
+			auto handlePlayerSync(ref_ptr_t<LoginServerSession> session, PacketReader &reader) -> void;
+			auto handlePartySync(PacketReader &reader) -> void;
+			auto handleBuddySync(PacketReader &reader) -> void;
 
 			// Players
 			auto removePendingPlayer(player_id_t id) -> channel_id_t;
 			auto handlePlayerConnect(channel_id_t channel, PacketReader &reader) -> void;
 			auto handlePlayerDisconnect(channel_id_t channel, PacketReader &reader) -> void;
-			auto handleChangeChannelRequest(AbstractConnection *connection, PacketReader &reader) -> void;
-			auto handleChangeChannel(AbstractConnection *connection, PacketReader &reader) -> void;
+			auto handleChangeChannelRequest(ref_ptr_t<WorldServerAcceptedSession> session, PacketReader &reader) -> void;
+			auto handleChangeChannel(PacketReader &reader) -> void;
 			auto handlePlayerUpdate(PacketReader &reader) -> void;
 			auto handleCharacterCreated(PacketReader &reader) -> void;
 			auto handleCharacterDeleted(PacketReader &reader) -> void;

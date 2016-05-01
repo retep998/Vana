@@ -38,7 +38,7 @@ namespace Vana {
 					PACKET(modifyRates, const RatesConfig &rates);
 				}
 				namespace Player {
-					PACKET(changeChannel, Vana::ChannelServer::Player *info, channel_id_t channel);
+					PACKET(changeChannel, ref_ptr_t<Vana::ChannelServer::Player> info, channel_id_t channel);
 					PACKET(connectableEstablished, player_id_t playerId);
 					PACKET(connect, const PlayerData &player, bool firstConnect);
 					PACKET(disconnect, player_id_t playerId);

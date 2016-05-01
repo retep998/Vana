@@ -52,7 +52,7 @@ auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t dropping
 	// Make a copy of the data so we can modify the object with global drops
 	auto drops = channel.getDropDataProvider().getDrops(droppingId);
 
-	Player *player = channel.getPlayerDataProvider().getPlayer(playerId);
+	auto player = channel.getPlayerDataProvider().getPlayer(playerId);
 	coord_t dropPosCounter = 0;
 	party_id_t partyId = 0;
 	Point pos;
@@ -199,7 +199,7 @@ auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t dropping
 	}
 }
 
-auto DropHandler::dropMesos(Player *player, PacketReader &reader) -> void {
+auto DropHandler::dropMesos(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	reader.skip<tick_count_t>();
 	int32_t amount = reader.get<int32_t>();
 	if (amount < 10 || amount > 50000 || amount > player->getInventory()->getMesos()) {
@@ -212,12 +212,12 @@ auto DropHandler::dropMesos(Player *player, PacketReader &reader) -> void {
 	drop->doDrop(player->getPos());
 }
 
-auto DropHandler::petLoot(Player *player, PacketReader &reader) -> void {
+auto DropHandler::petLoot(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	pet_id_t petId = reader.get<pet_id_t>();
 	lootItem(player, reader, petId);
 }
 
-auto DropHandler::lootItem(Player *player, PacketReader &reader, pet_id_t petId) -> void {
+auto DropHandler::lootItem(ref_ptr_t<Player> player, PacketReader &reader, pet_id_t petId) -> void {
 	reader.unk<uint8_t>();
 	reader.skip<tick_count_t>();
 	Point playerPos = reader.get<Point>();
@@ -248,7 +248,7 @@ auto DropHandler::lootItem(Player *player, PacketReader &reader, pet_id_t petId)
 	if (drop->isMesos()) {
 		int32_t playerRate = 100;
 		mesos_t rawMesos = drop->getObjectId();
-		auto giveMesos = [](Player *p, mesos_t mesos) -> Result {
+		auto giveMesos = [](ref_ptr_t<Player> p, mesos_t mesos) -> Result {
 			if (p->getInventory()->modifyMesos(mesos, true)) {
 				p->send(Packets::Drops::pickupDrop(mesos, 0, true));
 			}
@@ -261,7 +261,7 @@ auto DropHandler::lootItem(Player *player, PacketReader &reader, pet_id_t petId)
 
 		if (player->getParty() != nullptr && !drop->isPlayerDrop()) {
 			// Player gets 100% unless partied and having others on the map, in which case it's 60%
-			vector_t<Player *> members = player->getParty()->getPartyMembers(player->getMapId());
+			vector_t<ref_ptr_t<Player>> members = player->getParty()->getPartyMembers(player->getMapId());
 			if (members.size() != 1) {
 				playerRate = 60;
 				mesos_t mesos = rawMesos * playerRate / 100;
@@ -273,7 +273,7 @@ auto DropHandler::lootItem(Player *player, PacketReader &reader, pet_id_t petId)
 
 				playerRate = 40 / (members.size() - 1);
 				mesos = rawMesos * playerRate / 100;
-				Player *p = nullptr;
+				ref_ptr_t<Player> p = nullptr;
 
 				for (uint8_t j = 0; j < members.size(); ++j) {
 					p = members[j];

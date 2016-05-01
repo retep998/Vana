@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 namespace ChannelServer {
 
-MysticDoor::MysticDoor(Player *owner, map_id_t townId, portal_id_t portalId, const Point &mapPos, const Point &townPos, bool isDisplacement, seconds_t doorTime) :
+MysticDoor::MysticDoor(ref_ptr_t<Player> owner, map_id_t townId, portal_id_t portalId, const Point &mapPos, const Point &townPos, bool isDisplacement, seconds_t doorTime) :
 	m_mapId{owner->getMapId()},
 	m_mapPos{mapPos},
 	m_townId{townId},

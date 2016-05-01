@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 namespace ChannelServer {
 
-auto PartyHandler::handleRequest(Player *player, PacketReader &reader) -> void {
+auto PartyHandler::handleRequest(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	int8_t type = reader.get<int8_t>();
 	switch (type) {
 		case PartyActions::Create:
@@ -58,7 +58,7 @@ auto PartyHandler::handleRequest(Player *player, PacketReader &reader) -> void {
 				// ??
 				return;
 			}
-			if (Player *invitee = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(invName)) {
+			if (auto invitee = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(invName)) {
 				if (invitee->getParty() != nullptr) {
 					player->send(Packets::Party::error(Packets::Party::Errors::PlayerHasParty));
 				}

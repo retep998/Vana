@@ -91,7 +91,7 @@ auto LuaExports::dropItemReactor(lua_State *luaVm) -> lua_return_t {
 		amount = env.get<slot_qty_t>(luaVm, 2);
 	}
 	Reactor *reactor = getReactor(luaVm, env);
-	Player *player = getPlayer(luaVm, env);
+	auto player = getPlayer(luaVm, env);
 	Drop *drop;
 	if (GameLogicUtilities::isEquip(itemId)) {
 		Item f(itemId, true);

@@ -16,21 +16,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AuthenticationPacket.hpp"
-#include "Common/AbstractServerConnection.hpp"
 #include "Common/InterHeader.hpp"
 #include "Common/PacketBuilder.hpp"
-#include "Common/Session.hpp"
 #include <algorithm>
 
 namespace Vana {
 namespace Packets {
 
-PACKET_IMPL(sendPassword, AbstractServerConnection *connection, const string_t &pass, const IpMatrix &extIp) {
+PACKET_IMPL(sendPassword, ServerType serverType, const string_t &pass, const IpMatrix &extIp) {
 	PacketBuilder builder;
 	builder.add<header_t>(IMSG_PASSWORD);
 	builder.add<string_t>(pass);
 	builder.add<vector_t<ExternalIp>>(extIp);
-	builder.add<server_type_t>(static_cast<server_type_t>(connection->getType()));
+	builder.add<server_type_t>(static_cast<server_type_t>(serverType));
 	return builder;
 }
 

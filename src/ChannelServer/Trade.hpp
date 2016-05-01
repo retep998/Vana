@@ -47,27 +47,29 @@ namespace Vana {
 			NONCOPYABLE(ActiveTrade);
 			NO_DEFAULT_CONSTRUCTOR(ActiveTrade);
 		public:
-			ActiveTrade(Player *starter, Player *receiver, trade_id_t id);
+			ActiveTrade(ref_ptr_t<Player> starter, ref_ptr_t<Player> receiver, trade_id_t id);
 
 			auto getId() const -> trade_id_t { return m_id; }
 			auto getSenderTrade() const -> TradeInfo * { return m_sender.get(); }
 			auto getReceiverTrade() const -> TradeInfo * { return m_receiver.get(); }
 
-			auto getSender() -> Player *;
-			auto getReceiver() -> Player *;
+			auto getSender() -> ref_ptr_t<Player>;
+			auto getReceiver() -> ref_ptr_t<Player>;
 
 			auto bothCanTrade() -> bool;
 			auto bothAccepted() -> bool;
 			auto returnTrade() -> void;
 			auto swapTrade() -> void;
 			auto accept(TradeInfo *unit) -> void;
-			auto addMesos(Player *holder, TradeInfo *unit, mesos_t amount) -> mesos_t;
-			auto addItem(Player *holder, TradeInfo *unit, Item *item, trade_slot_t tradeSlot, inventory_slot_t inventorySlot, inventory_t inventory, slot_qty_t amount) -> Item *;
-			auto isItemInSlot(TradeInfo *unit, trade_slot_t tradeSlot) -> bool { return tradeSlot > TradeInfo::TradeSize ? true : unit->items[tradeSlot - 1] != nullptr; }
+			auto addMesos(ref_ptr_t<Player> holder, TradeInfo *unit, mesos_t amount) -> mesos_t;
+			auto addItem(ref_ptr_t<Player> holder, TradeInfo *unit, Item *item, trade_slot_t tradeSlot, inventory_slot_t inventorySlot, inventory_t inventory, slot_qty_t amount) -> Item *;
+			auto isItemInSlot(TradeInfo *unit, trade_slot_t tradeSlot) -> bool {
+				return tradeSlot > TradeInfo::TradeSize ? true : unit->items[tradeSlot - 1] != nullptr;
+			}
 		private:
-			auto canTrade(Player *target, TradeInfo *unit) -> bool;
-			auto giveItems(Player *target, TradeInfo *unit) -> void;
-			auto giveMesos(Player *player, TradeInfo *info, bool traded = false) -> void;
+			auto canTrade(ref_ptr_t<Player> target, TradeInfo *unit) -> bool;
+			auto giveItems(ref_ptr_t<Player> target, TradeInfo *unit) -> void;
+			auto giveMesos(ref_ptr_t<Player> player, TradeInfo *info, bool traded = false) -> void;
 
 			trade_id_t m_id = 0;
 			player_id_t m_senderId = 0;

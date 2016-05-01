@@ -26,15 +26,15 @@ namespace Vana {
 		class Player;
 
 		namespace NpcHandler {
-			auto handleNpc(Player *player, PacketReader &reader) -> void;
-			auto handleNpcIn(Player *player, PacketReader &reader) -> void;
-			auto handleNpcAnimation(Player *player, PacketReader &reader) -> void;
-			auto handleQuestNpc(Player *player, npc_id_t npcId, bool start, quest_id_t questId = 0) -> void;
-			auto useShop(Player *player, PacketReader &reader) -> void;
-			auto useStorage(Player *player, PacketReader &reader) -> void;
-			auto showShop(Player *player, shop_id_t shopId) -> Result;
-			auto showStorage(Player *player, npc_id_t npcId) -> Result;
-			auto showGuildRank(Player *player, npc_id_t npcId) -> Result;
+			auto handleNpc(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto handleNpcIn(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto handleNpcAnimation(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto handleQuestNpc(ref_ptr_t<Player> player, npc_id_t npcId, bool start, quest_id_t questId = 0) -> void;
+			auto useShop(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto useStorage(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto showShop(ref_ptr_t<Player> player, shop_id_t shopId) -> Result;
+			auto showStorage(ref_ptr_t<Player> player, npc_id_t npcId) -> Result;
+			auto showGuildRank(ref_ptr_t<Player> player, npc_id_t npcId) -> Result;
 		}
 	}
 }

@@ -31,46 +31,46 @@ namespace Vana {
 
 	namespace LoginServer {
 		class Channel;
-		class LoginServerAcceptConnection;
+		class LoginServerAcceptedSession;
 
 		class World {
 			NONCOPYABLE(World);
 		public:
 			World() = default;
 
-			auto setConnected(bool connected) -> void { m_connected = connected; }
-			auto setId(world_id_t id) -> void { m_id = id; }
-			auto setPort(port_t port) -> void { m_port = port; }
-			auto setPlayerLoad(int32_t load) -> void { m_playerLoad = load; }
-			auto setConnection(LoginServerAcceptConnection *connection) -> void { m_connection = connection; }
-			auto setConfiguration(const WorldConfig &config) -> void { m_config = config; }
-			auto setEventMessage(const string_t &message) -> void { m_config.eventMessage = message; }
+			auto setConnected(bool connected) -> void;
+			auto setId(world_id_t id) -> void;
+			auto setPort(port_t port) -> void;
+			auto setPlayerLoad(int32_t load) -> void;
+			auto setSession(ref_ptr_t<LoginServerAcceptedSession> session) -> void;
+			auto setConfiguration(const WorldConfig &config) -> void;
+			auto setEventMessage(const string_t &message) -> void;
 			auto runChannelFunction(function_t<void (Channel *)> func) -> void;
-			auto clearChannels() -> void { m_channels.clear(); }
-			auto removeChannel(channel_id_t id) -> void { m_channels.erase(id); }
-			auto addChannel(channel_id_t id, Channel *channel) -> void { m_channels[id].reset(channel); }
+			auto clearChannels() -> void;
+			auto removeChannel(channel_id_t id) -> void;
+			auto addChannel(channel_id_t id, Channel *channel) -> void;
 			auto send(const PacketBuilder &builder) -> void;
 
-			auto isConnected() const -> bool { return m_connected; }
-			auto getId() const -> optional_t<world_id_t> { return m_id; }
-			auto getRibbon() const -> int8_t { return m_config.ribbon; }
-			auto getPort() const -> port_t { return m_port; }
+			auto isConnected() const -> bool;
+			auto getId() const -> optional_t<world_id_t>;
+			auto getRibbon() const -> int8_t;
+			auto getPort() const -> port_t;
 			auto getRandomChannel() const -> channel_id_t;
-			auto getMaxChannels() const -> channel_id_t { return m_config.maxChannels; }
-			auto getPlayerLoad() const -> int32_t { return m_playerLoad; }
-			auto getMaxPlayerLoad() const -> int32_t { return m_config.maxPlayerLoad; }
+			auto getMaxChannels() const -> channel_id_t;
+			auto getPlayerLoad() const -> int32_t;
+			auto getMaxPlayerLoad() const -> int32_t;
 			auto matchSubnet(const Ip &test) -> Ip;
-			auto getChannelCount() const -> channel_id_t { return static_cast<channel_id_t>(m_channels.size()); }
-			auto getName() const -> string_t { return m_config.name; }
-			auto getEventMessage() const -> string_t { return m_config.eventMessage; }
-			auto getChannel(channel_id_t id) -> Channel * { return m_channels.find(id) != std::end(m_channels) ? m_channels[id].get() : nullptr; }
-			auto getConfig() const -> const WorldConfig & { return m_config; }
+			auto getChannelCount() const -> channel_id_t;
+			auto getName() const -> string_t;
+			auto getEventMessage() const -> string_t;
+			auto getChannel(channel_id_t id) -> Channel *;
+			auto getConfig() const -> const WorldConfig &;
 		private:
 			bool m_connected = false;
 			optional_t<world_id_t> m_id;
 			port_t m_port = 0;
 			int32_t m_playerLoad = 0;
-			LoginServerAcceptConnection *m_connection = nullptr;
+			ref_ptr_t<LoginServerAcceptedSession> m_session;
 			WorldConfig m_config;
 			hash_map_t<channel_id_t, ref_ptr_t<Channel>> m_channels;
 		};

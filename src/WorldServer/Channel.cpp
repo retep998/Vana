@@ -17,20 +17,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Channel.hpp"
 #include "Common/PacketBuilder.hpp"
-#include "WorldServer/WorldServerAcceptConnection.hpp"
+#include "WorldServer/WorldServerAcceptedSession.hpp"
 
 namespace Vana {
 namespace WorldServer {
 
-Channel::Channel(WorldServerAcceptConnection *connection, channel_id_t id, port_t port) :
-	m_connection{connection},
+Channel::Channel(ref_ptr_t<WorldServerAcceptedSession> session, channel_id_t id, port_t port) :
+	m_session{session},
 	m_id{id},
 	m_port{port}
 {
 }
 
 auto Channel::send(const PacketBuilder &builder) -> void {
-	m_connection->send(builder);
+	m_session->send(builder);
 }
 
 auto Channel::increasePlayers() -> int32_t {
@@ -50,7 +50,7 @@ auto Channel::getPort() const -> port_t {
 }
 
 auto Channel::disconnect() -> void {
-	m_connection->disconnect();
+	m_session->disconnect();
 }
 
 }

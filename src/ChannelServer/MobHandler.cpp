@@ -41,7 +41,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 namespace ChannelServer {
 
-auto MobHandler::handleBomb(Player *player, PacketReader &reader) -> void {
+auto MobHandler::handleBomb(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	map_object_t mobId = reader.get<map_object_t>();
 	auto mob = player->getMap()->getMob(mobId);
 	if (player->getStats()->isDead() || mob == nullptr) {
@@ -54,7 +54,7 @@ auto MobHandler::handleBomb(Player *player, PacketReader &reader) -> void {
 	mob->explode();
 }
 
-auto MobHandler::friendlyDamaged(Player *player, PacketReader &reader) -> void {
+auto MobHandler::friendlyDamaged(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	map_object_t mobFrom = reader.get<map_object_t>();
 	player_id_t playerId = reader.get<player_id_t>();
 	map_object_t mobTo = reader.get<map_object_t>();
@@ -78,7 +78,7 @@ auto MobHandler::friendlyDamaged(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto MobHandler::handleTurncoats(Player *player, PacketReader &reader) -> void {
+auto MobHandler::handleTurncoats(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	map_object_t mobFrom = reader.get<map_object_t>();
 	player_id_t playerId = reader.get<player_id_t>();
 	map_object_t mobTo = reader.get<map_object_t>();
@@ -95,7 +95,7 @@ auto MobHandler::handleTurncoats(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto MobHandler::monsterControl(Player *player, PacketReader &reader) -> void {
+auto MobHandler::monsterControl(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	map_object_t mobId = reader.get<map_object_t>();
 
 	Map *map = player->getMap();
@@ -166,11 +166,11 @@ auto MobHandler::monsterControl(Player *player, PacketReader &reader) -> void {
 }
 
 auto MobHandler::handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill_id_t skillId, skill_level_t level, item_id_t weapon, int8_t hits, damage_t damage) -> int32_t {
-	Player *player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId);
+	auto player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId);
 	vector_t<StatusInfo> statuses;
 	int16_t y = 0;
 	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
-	bool success = (skillId == 0 ? false : (Randomizer::rand<uint16_t>(99) < skill->prop));
+	bool success = (skillId == 0 ? false : (Randomizer::percentage<uint16_t>() < skill->prop));
 	if (mob->canFreeze()) {
 		// Freezing stuff
 		switch (skillId) {
@@ -230,7 +230,7 @@ auto MobHandler::handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill
 					damage = Randomizer::rand<damage_t>(maxDamage, minDamage);
 
 					for (int8_t counter = 0; ((counter < hits) && (mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount)); ++counter) {
-						success = (Randomizer::rand<uint16_t>(99) < venom->prop);
+						success = (Randomizer::percentage<uint16_t>() < venom->prop);
 						if (success) {
 							statuses.emplace_back(StatusEffects::Mob::VenomousWeapon, damage, vSkill, venom->buffTime);
 							mob->addStatus(player->getId(), statuses);

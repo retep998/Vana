@@ -19,13 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/PacketBuilder.hpp"
 #include "Common/ExternalIp.hpp"
+#include "Common/ServerType.hpp"
 #include "Common/Types.hpp"
 #include <string>
 
 namespace Vana {
-	class AbstractServerConnection;
-
 	namespace Packets {
-		PACKET(sendPassword, AbstractServerConnection *connection, const string_t &pass, const IpMatrix &extIp);
+		PACKET(sendPassword, ServerType serverType, const string_t &pass, const IpMatrix &extIp);
 	}
 }

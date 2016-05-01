@@ -55,8 +55,8 @@ namespace Vana {
 				}
 
 				PACKET(error, uint8_t error);
-				PACKET(update, Player *player, uint8_t type);
-				PACKET(showSize, Player *player);
+				PACKET(update, ref_ptr_t<Player> player, uint8_t type);
+				PACKET(showSize, ref_ptr_t<Player> player);
 				PACKET(invitation, const BuddyInvite &invite);
 				PACKET(online, player_id_t charId, channel_id_t channel, bool cashShop);
 			}

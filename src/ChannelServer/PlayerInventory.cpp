@@ -79,7 +79,7 @@ auto PlayerInventory::load() -> void {
 		addItem(row.get<inventory_t>("inv"), row.get<inventory_slot_t>("slot"), item, true);
 
 		if (item->getPetId() != 0) {
-			Pet *pet = new Pet(m_player, item, row);
+			Pet *pet = new Pet{m_player, item, row};
 			m_player->getPets()->addPet(pet);
 		}
 	}
@@ -234,7 +234,7 @@ auto PlayerInventory::setItem(inventory_t inv, inventory_slot_t slot, Item *item
 		if (slot < 0) {
 			addEquipped(slot, 0);
 			m_player->getStats()->setEquip(slot, nullptr);
-			m_player->getMap()->checkPlayerEquip(m_player);
+			m_player->getMap()->checkPlayerEquip(ref_ptr_t<Player>{m_player});
 		}
 	}
 	else {
@@ -242,7 +242,7 @@ auto PlayerInventory::setItem(inventory_t inv, inventory_slot_t slot, Item *item
 		if (slot < 0) {
 			addEquipped(slot, item->getId());
 			m_player->getStats()->setEquip(slot, item);
-			m_player->getMap()->checkPlayerEquip(m_player);
+			m_player->getMap()->checkPlayerEquip(ref_ptr_t<Player>{m_player});
 		}
 	}
 }
@@ -373,7 +373,7 @@ auto PlayerInventory::doShadowStars() -> item_id_t {
 			continue;
 		}
 		if (GameLogicUtilities::isStar(item->getId()) && item->getAmount() >= Items::ShadowStarsCost) {
-			Inventory::takeItemSlot(m_player, Inventories::UseInventory, s, Items::ShadowStarsCost);
+			Inventory::takeItemSlot(ref_ptr_t<Player>{m_player}, Inventories::UseInventory, s, Items::ShadowStarsCost);
 			return item->getId();
 		}
 	}
@@ -505,7 +505,7 @@ auto PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) 
 				ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, item1, slot1, slot2);
 				ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, remove, swapSlot, slot1);
 				m_player->send(Packets::Inventory::inventoryOperation(true, ops));
-				m_player->sendMap(Packets::Inventory::updatePlayer(m_player));
+				m_player->sendMap(Packets::Inventory::updatePlayer(ref_ptr_t<Player>{m_player}));
 				return;
 			}
 			else {
@@ -682,7 +682,7 @@ auto PlayerInventory::checkExpiredItems() -> void {
 			if (Item *item = getItem(i, s)) {
 				if (item->getExpirationTime() != Items::NoExpiration && item->getExpirationTime() <= serverTime) {
 					expiredItemIds.push_back(item->getId());
-					Inventory::takeItemSlot(m_player, i, s, item->getAmount());
+					Inventory::takeItemSlot(ref_ptr_t<Player>{m_player}, i, s, item->getAmount());
 				}
 			}
 		}

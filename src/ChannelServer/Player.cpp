@@ -68,7 +68,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/SummonHandler.hpp"
 #include "ChannelServer/SyncPacket.hpp"
 #include "ChannelServer/TradeHandler.hpp"
-#include "ChannelServer/WorldServerConnection.hpp"
+#include "ChannelServer/WorldServerSession.hpp"
 #include <array>
 #include <stdexcept>
 
@@ -80,56 +80,7 @@ Player::Player() :
 {
 }
 
-Player::~Player() {
-	if (m_isConnect) {
-		m_disconnecting = true;
-		Map *curMap = Maps::getMap(m_map);
-		if (getMapChair() != 0) {
-			curMap->playerSeated(getMapChair(), nullptr);
-		}
-
-		curMap->removePlayer(this);
-		m_isConnect = false;
-
-		if (isTrading()) {
-			TradeHandler::cancelTrade(this);
-		}
-
-		bool isLeader = false;
-		if (Party *party = getParty()) {
-			isLeader = party->isLeader(getId());
-		}
-
-		getSkills()->onDisconnect();
-
-		if (Instance *instance = getInstance()) {
-			instance->removePlayer(getId());
-			instance->playerDisconnect(getId(), isLeader);
-		}
-		//if (this->getStats()->isDead()) {
-		//	this->acceptDeath();
-		//}
-		// "Bug" in global, would be fixed here:
-		// When disconnecting and dead, you actually go back to forced return map before the death return map
-		// (that means that it's parsed while logging in, not while logging out)
-		if (const PortalInfo * const closest = curMap->getNearestSpawnPoint(getPos())) {
-			m_mapPos = closest->id;
-		}
-
-		if (m_saveOnDc) {
-			saveAll(true);
-			setOnline(false);
-		}
-
-		if (ChannelServer::getInstance().isConnected()) {
-			// Do not connect to worldserver if the worldserver has disconnected
-			ChannelServer::getInstance().sendWorld(Packets::Interserver::Player::disconnect(getId()));
-		}
-		ChannelServer::getInstance().getPlayerDataProvider().removePlayer(this);
-	}
-}
-
-auto Player::handleRequest(PacketReader &reader) -> void {
+auto Player::handle(PacketReader &reader) -> Result {
 	try {
 		header_t header = reader.get<header_t>();
 		if (!m_isConnect) {
@@ -140,84 +91,84 @@ auto Player::handleRequest(PacketReader &reader) -> void {
 		}
 		else {
 			switch (header) {
-				case CMSG_ADMIN_COMMAND: CommandHandler::handleAdminCommand(this, reader); break;
-				case CMSG_ADMIN_MESSENGER: PlayerHandler::handleAdminMessenger(this, reader); break;
-				case CMSG_ATTACK_ENERGY_CHARGE: PlayerHandler::useEnergyChargeAttack(this, reader); break;
-				case CMSG_ATTACK_MAGIC: PlayerHandler::useSpellAttack(this, reader); break;
-				case CMSG_ATTACK_MELEE: PlayerHandler::useMeleeAttack(this, reader); break;
-				case CMSG_ATTACK_RANGED: PlayerHandler::useRangedAttack(this, reader); break;
-				case CMSG_BOMB_SKILL_USE: PlayerHandler::useBombSkill(this, reader); break;
-				case CMSG_BUDDY: BuddyListHandler::handleBuddyList(this, reader); break;
-				case CMSG_BUFF_ITEM_USE: InventoryHandler::useBuffItem(this, reader); break;
-				case CMSG_CASH_ITEM_USE: InventoryHandler::useCashItem(this, reader); break;
+				case CMSG_ADMIN_COMMAND: CommandHandler::handleAdminCommand(shared_from_this(), reader); break;
+				case CMSG_ADMIN_MESSENGER: PlayerHandler::handleAdminMessenger(shared_from_this(), reader); break;
+				case CMSG_ATTACK_ENERGY_CHARGE: PlayerHandler::useEnergyChargeAttack(shared_from_this(), reader); break;
+				case CMSG_ATTACK_MAGIC: PlayerHandler::useSpellAttack(shared_from_this(), reader); break;
+				case CMSG_ATTACK_MELEE: PlayerHandler::useMeleeAttack(shared_from_this(), reader); break;
+				case CMSG_ATTACK_RANGED: PlayerHandler::useRangedAttack(shared_from_this(), reader); break;
+				case CMSG_BOMB_SKILL_USE: PlayerHandler::useBombSkill(shared_from_this(), reader); break;
+				case CMSG_BUDDY: BuddyListHandler::handleBuddyList(shared_from_this(), reader); break;
+				case CMSG_BUFF_ITEM_USE: InventoryHandler::useBuffItem(shared_from_this(), reader); break;
+				case CMSG_CASH_ITEM_USE: InventoryHandler::useCashItem(shared_from_this(), reader); break;
 				case CMSG_CASH_SHOP: send(Packets::Player::sendBlockedMessage(Packets::Player::BlockMessages::NoCashShop)); break;
-				case CMSG_CHAIR: InventoryHandler::handleChair(this, reader); break;
+				case CMSG_CHAIR: InventoryHandler::handleChair(shared_from_this(), reader); break;
 				case CMSG_CHALKBOARD: sendMap(Packets::Inventory::sendChalkboardUpdate(m_id, "")); setChalkboard(""); break;
 				case CMSG_CHANNEL_CHANGE: changeChannel(reader.get<int8_t>()); break;
-				case CMSG_COMMAND: CommandHandler::handleCommand(this, reader); break;
-				case CMSG_DROP_MESOS: DropHandler::dropMesos(this, reader); break;
-				case CMSG_EMOTE: PlayerHandler::handleFacialExpression(this, reader); break;
-				case CMSG_FAME: Fame::handleFame(this, reader); break;
-				case CMSG_FRIENDLY_MOB_DAMAGE: MobHandler::friendlyDamaged(this, reader); break;
-				case CMSG_HAMMER: InventoryHandler::handleHammerTime(this); break;
-				case CMSG_ITEM_CANCEL: InventoryHandler::cancelItem(this, reader); break;
-				case CMSG_ITEM_EFFECT: InventoryHandler::useItemEffect(this, reader); break;
-				case CMSG_ITEM_LOOT: DropHandler::lootItem(this, reader); break;
-				case CMSG_ITEM_MOVE: InventoryHandler::itemMove(this, reader); break;
-				case CMSG_ITEM_USE: InventoryHandler::useItem(this, reader); break;
+				case CMSG_COMMAND: CommandHandler::handleCommand(shared_from_this(), reader); break;
+				case CMSG_DROP_MESOS: DropHandler::dropMesos(shared_from_this(), reader); break;
+				case CMSG_EMOTE: PlayerHandler::handleFacialExpression(shared_from_this(), reader); break;
+				case CMSG_FAME: Fame::handleFame(shared_from_this(), reader); break;
+				case CMSG_FRIENDLY_MOB_DAMAGE: MobHandler::friendlyDamaged(shared_from_this(), reader); break;
+				case CMSG_HAMMER: InventoryHandler::handleHammerTime(shared_from_this()); break;
+				case CMSG_ITEM_CANCEL: InventoryHandler::cancelItem(shared_from_this(), reader); break;
+				case CMSG_ITEM_EFFECT: InventoryHandler::useItemEffect(shared_from_this(), reader); break;
+				case CMSG_ITEM_LOOT: DropHandler::lootItem(shared_from_this(), reader); break;
+				case CMSG_ITEM_MOVE: InventoryHandler::moveItem(shared_from_this(), reader); break;
+				case CMSG_ITEM_USE: InventoryHandler::useItem(shared_from_this(), reader); break;
 				case CMSG_KEYMAP: changeKey(reader); break;
 				case CMSG_MACRO_LIST: changeSkillMacros(reader); break;
-				case CMSG_MAP_CHANGE: Maps::usePortal(this, reader); break;
-				case CMSG_MAP_CHANGE_SPECIAL: Maps::useScriptedPortal(this, reader); break;
-				case CMSG_MESSAGE_GROUP: ChatHandler::handleGroupChat(this, reader); break;
-				case CMSG_MOB_CONTROL: MobHandler::monsterControl(this, reader); break;
-				case CMSG_MOB_EXPLOSION: MobHandler::handleBomb(this, reader); break;
-				case CMSG_MOB_TURNCOAT_DAMAGE: MobHandler::handleTurncoats(this, reader); break;
-				case CMSG_MONSTER_BOOK: PlayerHandler::handleMonsterBook(this, reader); break;
+				case CMSG_MAP_CHANGE: Maps::usePortal(shared_from_this(), reader); break;
+				case CMSG_MAP_CHANGE_SPECIAL: Maps::useScriptedPortal(shared_from_this(), reader); break;
+				case CMSG_MESSAGE_GROUP: ChatHandler::handleGroupChat(shared_from_this(), reader); break;
+				case CMSG_MOB_CONTROL: MobHandler::monsterControl(shared_from_this(), reader); break;
+				case CMSG_MOB_EXPLOSION: MobHandler::handleBomb(shared_from_this(), reader); break;
+				case CMSG_MOB_TURNCOAT_DAMAGE: MobHandler::handleTurncoats(shared_from_this(), reader); break;
+				case CMSG_MONSTER_BOOK: PlayerHandler::handleMonsterBook(shared_from_this(), reader); break;
 				case CMSG_MTS: send(Packets::Player::sendBlockedMessage(Packets::Player::BlockMessages::MtsUnavailable)); break;
 				case CMSG_MULTI_STAT_ADDITION: getStats()->addStatMulti(reader); break;
-				case CMSG_MYSTIC_DOOR_ENTRY: PlayerHandler::handleDoorUse(this, reader); break;
-				case CMSG_NPC_ANIMATE: NpcHandler::handleNpcAnimation(this, reader); break;
-				case CMSG_NPC_TALK: NpcHandler::handleNpc(this, reader); break;
-				case CMSG_NPC_TALK_CONT: NpcHandler::handleNpcIn(this, reader); break;
-				case CMSG_PARTY: PartyHandler::handleRequest(this, reader); break;
-				case CMSG_PET_CHAT: PetHandler::handleChat(this, reader); break;
-				case CMSG_PET_COMMAND: PetHandler::handleCommand(this, reader); break;
-				case CMSG_PET_CONSUME_POTION: PetHandler::handleConsumePotion(this, reader); break;
-				case CMSG_PET_FOOD_USE: PetHandler::handleFeed(this, reader); break;
-				case CMSG_PET_LOOT: DropHandler::petLoot(this, reader); break;
-				case CMSG_PET_MOVEMENT: PetHandler::handleMovement(this, reader); break;
-				case CMSG_PET_SUMMON: PetHandler::handleSummon(this, reader); break;
-				case CMSG_PLAYER_CHAT: ChatHandler::handleChat(this, reader); break;
-				case CMSG_PLAYER_DAMAGE: PlayerHandler::handleDamage(this, reader); break;
-				case CMSG_PLAYER_HEAL: PlayerHandler::handleHeal(this, reader); break;
-				case CMSG_PLAYER_INFO: PlayerHandler::handleGetInfo(this, reader); break;
-				case CMSG_PLAYER_MOVE: PlayerHandler::handleMoving(this, reader); break;
-				case CMSG_PLAYER_ROOM: TradeHandler::tradeHandler(this, reader); break;
-				case CMSG_QUEST_OBTAIN: Quests::getQuest(this, reader); break;
-				case CMSG_REACTOR_HIT: ReactorHandler::hitReactor(this, reader); break;
-				case CMSG_REACTOR_TOUCH: ReactorHandler::touchReactor(this, reader); break;
-				case CMSG_REVIVE_EFFECT: InventoryHandler::useItemEffect(this, reader); break;
-				case CMSG_SCROLL_USE: InventoryHandler::useScroll(this, reader); break;
-				case CMSG_SHOP: NpcHandler::useShop(this, reader); break;
-				case CMSG_SKILL_ADD: Skills::addSkill(this, reader); break;
-				case CMSG_SKILL_CANCEL: Skills::cancelSkill(this, reader); break;
-				case CMSG_SKILL_USE: Skills::useSkill(this, reader); break;
-				case CMSG_SKILLBOOK_USE: InventoryHandler::useSkillbook(this, reader); break;
-				case CMSG_SPECIAL_SKILL: PlayerHandler::handleSpecialSkills(this, reader); break;
+				case CMSG_MYSTIC_DOOR_ENTRY: PlayerHandler::handleDoorUse(shared_from_this(), reader); break;
+				case CMSG_NPC_ANIMATE: NpcHandler::handleNpcAnimation(shared_from_this(), reader); break;
+				case CMSG_NPC_TALK: NpcHandler::handleNpc(shared_from_this(), reader); break;
+				case CMSG_NPC_TALK_CONT: NpcHandler::handleNpcIn(shared_from_this(), reader); break;
+				case CMSG_PARTY: PartyHandler::handleRequest(shared_from_this(), reader); break;
+				case CMSG_PET_CHAT: PetHandler::handleChat(shared_from_this(), reader); break;
+				case CMSG_PET_COMMAND: PetHandler::handleCommand(shared_from_this(), reader); break;
+				case CMSG_PET_CONSUME_POTION: PetHandler::handleConsumePotion(shared_from_this(), reader); break;
+				case CMSG_PET_FOOD_USE: PetHandler::handleFeed(shared_from_this(), reader); break;
+				case CMSG_PET_LOOT: DropHandler::petLoot(shared_from_this(), reader); break;
+				case CMSG_PET_MOVEMENT: PetHandler::handleMovement(shared_from_this(), reader); break;
+				case CMSG_PET_SUMMON: PetHandler::handleSummon(shared_from_this(), reader); break;
+				case CMSG_PLAYER_CHAT: ChatHandler::handleChat(shared_from_this(), reader); break;
+				case CMSG_PLAYER_DAMAGE: PlayerHandler::handleDamage(shared_from_this(), reader); break;
+				case CMSG_PLAYER_HEAL: PlayerHandler::handleHeal(shared_from_this(), reader); break;
+				case CMSG_PLAYER_INFO: PlayerHandler::handleGetInfo(shared_from_this(), reader); break;
+				case CMSG_PLAYER_MOVE: PlayerHandler::handleMoving(shared_from_this(), reader); break;
+				case CMSG_PLAYER_ROOM: TradeHandler::tradeHandler(shared_from_this(), reader); break;
+				case CMSG_QUEST_OBTAIN: Quests::getQuest(shared_from_this(), reader); break;
+				case CMSG_REACTOR_HIT: ReactorHandler::hitReactor(shared_from_this(), reader); break;
+				case CMSG_REACTOR_TOUCH: ReactorHandler::touchReactor(shared_from_this(), reader); break;
+				case CMSG_REVIVE_EFFECT: InventoryHandler::useItemEffect(shared_from_this(), reader); break;
+				case CMSG_SCROLL_USE: InventoryHandler::useScroll(shared_from_this(), reader); break;
+				case CMSG_SHOP: NpcHandler::useShop(shared_from_this(), reader); break;
+				case CMSG_SKILL_ADD: Skills::addSkill(shared_from_this(), reader); break;
+				case CMSG_SKILL_CANCEL: Skills::cancelSkill(shared_from_this(), reader); break;
+				case CMSG_SKILL_USE: Skills::useSkill(shared_from_this(), reader); break;
+				case CMSG_SKILLBOOK_USE: InventoryHandler::useSkillbook(shared_from_this(), reader); break;
+				case CMSG_SPECIAL_SKILL: PlayerHandler::handleSpecialSkills(shared_from_this(), reader); break;
 				case CMSG_STAT_ADDITION: getStats()->addStat(reader); break;
-				case CMSG_STORAGE: NpcHandler::useStorage(this, reader); break;
-				case CMSG_SUMMON_ATTACK: PlayerHandler::useSummonAttack(this, reader); break;
-				case CMSG_SUMMON_BAG_USE: InventoryHandler::useSummonBag(this, reader); break;
-				case CMSG_SUMMON_DAMAGE: SummonHandler::damageSummon(this, reader); break;
-				case CMSG_SUMMON_MOVEMENT: SummonHandler::moveSummon(this, reader); break;
-				case CMSG_SUMMON_SKILL: SummonHandler::summonSkill(this, reader); break;
-				case CMSG_TELEPORT_ROCK: InventoryHandler::handleRockFunctions(this, reader); break;
-				case CMSG_TELEPORT_ROCK_USE: InventoryHandler::handleRockTeleport(this, Items::SpecialTeleportRock, reader); break;
-				case CMSG_TOWN_SCROLL_USE: InventoryHandler::useReturnScroll(this, reader); break;
-				case CMSG_USE_CHAIR: InventoryHandler::useChair(this, reader); break;
-				case CMSG_USE_REWARD_ITEM: InventoryHandler::handleRewardItem(this, reader); break;
-				case CMSG_USE_SCRIPT_ITEM: InventoryHandler::handleScriptItem(this, reader); break;
+				case CMSG_STORAGE: NpcHandler::useStorage(shared_from_this(), reader); break;
+				case CMSG_SUMMON_ATTACK: PlayerHandler::useSummonAttack(shared_from_this(), reader); break;
+				case CMSG_SUMMON_BAG_USE: InventoryHandler::useSummonBag(shared_from_this(), reader); break;
+				case CMSG_SUMMON_DAMAGE: SummonHandler::damageSummon(shared_from_this(), reader); break;
+				case CMSG_SUMMON_MOVEMENT: SummonHandler::moveSummon(shared_from_this(), reader); break;
+				case CMSG_SUMMON_SKILL: SummonHandler::summonSkill(shared_from_this(), reader); break;
+				case CMSG_TELEPORT_ROCK: InventoryHandler::handleRockFunctions(shared_from_this(), reader); break;
+				case CMSG_TELEPORT_ROCK_USE: InventoryHandler::handleRockTeleport(shared_from_this(), Items::SpecialTeleportRock, reader); break;
+				case CMSG_TOWN_SCROLL_USE: InventoryHandler::useReturnScroll(shared_from_this(), reader); break;
+				case CMSG_USE_CHAIR: InventoryHandler::useChair(shared_from_this(), reader); break;
+				case CMSG_USE_REWARD_ITEM: InventoryHandler::handleRewardItem(shared_from_this(), reader); break;
+				case CMSG_USE_SCRIPT_ITEM: InventoryHandler::handleScriptItem(shared_from_this(), reader); break;
 #ifdef DEBUG
 				case CMSG_PONG:
 				case CMSG_PLAYER_MOB_DISTANCE:
@@ -247,7 +198,63 @@ auto Player::handleRequest(PacketReader &reader) -> void {
 				<< "; Error: " << e.what();
 		});
 		disconnect();
+		return Result::Failure;
 	}
+
+	return Result::Successful;
+}
+
+auto Player::onDisconnect() -> void {
+	m_disconnecting = true;
+
+	Map *curMap = Maps::getMap(m_map);
+	if (getMapChair() != 0) {
+		curMap->playerSeated(getMapChair(), nullptr);
+	}
+
+	curMap->removePlayer(shared_from_this());
+	m_isConnect = false;
+
+	if (isTrading()) {
+		TradeHandler::cancelTrade(shared_from_this());
+	}
+
+	bool isLeader = false;
+	if (Party *party = getParty()) {
+		isLeader = party->isLeader(getId());
+	}
+
+	getSkills()->onDisconnect();
+
+	if (Instance *instance = getInstance()) {
+		instance->removePlayer(getId());
+		instance->playerDisconnect(getId(), isLeader);
+	}
+	//if (this->getStats()->isDead()) {
+	//	this->acceptDeath();
+	//}
+	// "Bug" in global, would be fixed here:
+	// When disconnecting and dead, you actually go back to forced return map before the death return map
+	// (that means that it's parsed while logging in, not while logging out)
+	if (const PortalInfo * const closest = curMap->getNearestSpawnPoint(getPos())) {
+		m_mapPos = closest->id;
+	}
+
+	if (m_saveOnDc) {
+		saveAll(true);
+		setOnline(false);
+	}
+
+	if (ChannelServer::getInstance().isConnected()) {
+		// Do not connect to worldserver if the worldserver has disconnected
+		ChannelServer::getInstance().sendWorld(Packets::Interserver::Player::disconnect(getId()));
+	}
+
+	ChannelServer::getInstance().getPlayerDataProvider().removePlayer(shared_from_this());
+
+	// Important: Clean up all external pointers that may be pointing to this at the class level before finalizing
+	m_npc.reset();
+	ChannelServer::getInstance().finalizePlayer(shared_from_this());
 }
 
 auto Player::playerConnect(PacketReader &reader) -> void {
@@ -255,7 +262,7 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 	bool hasTransferPacket = false;
 	auto &channel = ChannelServer::getInstance();
 	auto &provider = channel.getPlayerDataProvider();
-	if (provider.checkPlayer(id, getIp(), hasTransferPacket) == Result::Failure) {
+	if (provider.checkPlayer(id, getIp().get(), hasTransferPacket) == Result::Failure) {
 		// Hacking
 		disconnect();
 		return;
@@ -383,7 +390,7 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 	m_stance = 0;
 	m_foothold = 0;
 
-	send(Packets::Player::connectData(this));
+	send(Packets::Player::connectData(shared_from_this()));
 
 	if (!config.scrollingHeader.empty()) {
 		send(Packets::showScrollingHeader(config.scrollingHeader));
@@ -397,15 +404,17 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 
 	send(Packets::Player::showKeys(&keyMaps));
 
-	send(Packets::Buddy::update(this, Packets::Buddy::ActionTypes::Add));
+	send(Packets::Buddy::update(shared_from_this(), Packets::Buddy::ActionTypes::Add));
 	getBuddyList()->checkForPendingBuddy();
 
 	send(Packets::Player::showSkillMacros(&skillMacros));
 
-	provider.addPlayer(this);
-	Maps::addPlayer(this, m_map);
+	provider.addPlayer(shared_from_this());
+	Maps::addPlayer(shared_from_this(), m_map);
 
-	channel.log(LogType::Info, [&](out_stream_t &log) { log << m_name << " (" << m_id << ") connected from " << getIp(); });
+	channel.log(LogType::Info, [&](out_stream_t &log) {
+		log << m_name << " (" << m_id << ") connected from " << getIp();
+	});
 
 	setOnline(true);
 	m_isConnect = true;
@@ -426,7 +435,7 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 	data.channel = channel.getChannelId();
 	data.map = m_map;
 	data.id = m_id;
-	data.ip = getIp();
+	data.ip = getIp().get();
 
 	channel.sendWorld(Packets::Interserver::Player::connect(data, firstConnectionSinceServerStarted));
 }
@@ -439,7 +448,7 @@ auto Player::internalSetMap(map_id_t mapId, portal_id_t portalId, const Point &p
 	Map *oldMap = Maps::getMap(m_map);
 	Map *newMap = Maps::getMap(mapId);
 
-	oldMap->removePlayer(this);
+	oldMap->removePlayer(shared_from_this());
 	if (m_map != mapId) {
 		m_lastMap = m_map;
 	}
@@ -472,10 +481,10 @@ auto Player::internalSetMap(map_id_t mapId, portal_id_t portalId, const Point &p
 		setChalkboard("");
 	}
 
-	send(Packets::Map::changeMap(this, fromPosition, getPos()));
-	Maps::addPlayer(this, mapId);
+	send(Packets::Map::changeMap(shared_from_this(), fromPosition, getPos()));
+	Maps::addPlayer(shared_from_this(), mapId);
 
-	ChannelServer::getInstance().getPlayerDataProvider().updatePlayerMap(this);
+	ChannelServer::getInstance().getPlayerDataProvider().updatePlayerMap(shared_from_this());
 }
 
 auto Player::setMap(map_id_t mapId, portal_id_t portalId, const Point &pos) -> void {
@@ -519,7 +528,7 @@ auto Player::getMedalName() -> string_t {
 }
 
 auto Player::changeChannel(channel_id_t channel) -> void {
-	ChannelServer::getInstance().sendWorld(Packets::Interserver::Player::changeChannel(this, channel));
+	ChannelServer::getInstance().sendWorld(Packets::Interserver::Player::changeChannel(shared_from_this(), channel));
 }
 
 auto Player::getTransferPacket() const -> PacketBuilder {
@@ -539,8 +548,8 @@ auto Player::parseTransferPacket(PacketReader &reader) -> void {
 	player_id_t followId = reader.get<player_id_t>();
 	if (followId != 0) {
 		auto &provider = ChannelServer::getInstance().getPlayerDataProvider();
-		if (Player *follow = provider.getPlayer(followId)) {
-			provider.addFollower(this, follow);
+		if (auto follow = provider.getPlayer(followId)) {
+			provider.addFollower(shared_from_this(), follow);
 		}
 	}
 
@@ -802,7 +811,7 @@ auto Player::hasGmBenefits() const -> bool {
 
 auto Player::setBuddyListSize(uint8_t size) -> void {
 	m_buddylistSize = size;
-	send(Packets::Buddy::showSize(this));
+	send(Packets::Buddy::showSize(shared_from_this()));
 }
 
 auto Player::getPortalCount(bool add) -> portal_count_t {
@@ -827,7 +836,7 @@ auto Player::initializeRng(PacketBuilder &builder) -> void {
 auto Player::send(const PacketBuilder &builder) -> void {
 	// TODO FIXME resource
 	if (isDisconnecting()) return;
-	AbstractConnection::send(builder);
+	PacketHandler::send(builder);
 }
 
 auto Player::send(const SplitPacketBuilder &builder) -> void {
@@ -837,11 +846,11 @@ auto Player::send(const SplitPacketBuilder &builder) -> void {
 }
 
 auto Player::sendMap(const PacketBuilder &builder, bool excludeSelf) -> void {
-	getMap()->send(builder, excludeSelf ? this : nullptr);
+	getMap()->send(builder, excludeSelf ? shared_from_this() : nullptr);
 }
 
 auto Player::sendMap(const SplitPacketBuilder &builder) -> void {
-	getMap()->send(builder, this);
+	getMap()->send(builder, shared_from_this());
 }
 
 }

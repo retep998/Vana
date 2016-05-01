@@ -46,7 +46,7 @@ auto Reactor::restore() -> void {
 	getMap()->send(Packets::spawnReactor(this));
 }
 
-auto Reactor::drop(Player *player) -> void {
+auto Reactor::drop(ref_ptr_t<Player> player) -> void {
 	DropHandler::doDrops(player->getId(), m_mapId, 0, m_reactorId, m_pos, false, false);
 }
 

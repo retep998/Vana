@@ -72,14 +72,14 @@ Instance::~Instance() {
 	ChannelServer::getInstance().getInstances().removeInstance(this);
 }
 
-auto Instance::addPlayer(Player *player) -> void {
+auto Instance::addPlayer(ref_ptr_t<Player> player) -> void {
 	if (player != nullptr) {
 		m_players[player->getId()] = player;
 		player->setInstance(this);
 	}
 }
 
-auto Instance::removePlayer(Player *player) -> void {
+auto Instance::removePlayer(ref_ptr_t<Player> player) -> void {
 	removePlayer(player->getId());
 	player->setInstance(nullptr);
 }
@@ -341,9 +341,11 @@ auto Instance::markForDelete() -> void {
 	for (const auto &player : m_players) {
 		player.second->setInstance(nullptr);
 	}
+	m_players.clear();
 	for (const auto &party : m_parties) {
 		party->setInstance(nullptr);
 	}
+	m_parties.clear();
 
 	// TODO FIXME lua
 	// TODO FIXME instance

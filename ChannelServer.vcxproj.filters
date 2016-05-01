@@ -43,6 +43,9 @@
     <Filter Include="Packets\Headers">
       <UniqueIdentifier>{54fdf726-3161-438c-b0db-4221fff64580}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Inter-Server\Login">
+      <UniqueIdentifier>{fec8b288-0295-4f17-a679-ac4bb251ca91}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ChannelServer\Buffs.cpp">
@@ -264,15 +267,6 @@
     <ClCompile Include="src\ChannelServer\PartyHandler.cpp">
       <Filter>Handlers</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\WorldServerConnectPacket.cpp">
-      <Filter>Inter-Server\World</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\WorldServerConnection.cpp">
-      <Filter>Inter-Server\World</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\WorldServerConnectHandler.cpp">
-      <Filter>Inter-Server\World</Filter>
-    </ClCompile>
     <ClCompile Include="src\ChannelServer\SyncPacket.cpp">
       <Filter>Inter-Server\Sync</Filter>
     </ClCompile>
@@ -341,6 +335,21 @@
     </ClCompile>
     <ClCompile Include="src\ChannelServer\MysticDoor.cpp">
       <Filter>ChannelServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChannelServer\LoginServerSession.cpp">
+      <Filter>Inter-Server\Login</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChannelServer\WorldServerSession.cpp">
+      <Filter>Inter-Server\World</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChannelServer\WorldServerSessionHandler.cpp">
+      <Filter>Inter-Server\World</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChannelServer\WorldServerPacket.cpp">
+      <Filter>Inter-Server\World</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChannelServer\LoginServerSessionHandler.cpp">
+      <Filter>Inter-Server\Login</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -454,15 +463,6 @@
     </ClInclude>
     <ClInclude Include="src\ChannelServer\SyncPacket.hpp">
       <Filter>Inter-Server\Sync</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\WorldServerConnectHandler.hpp">
-      <Filter>Inter-Server\World</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\WorldServerConnectPacket.hpp">
-      <Filter>Inter-Server\World</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\WorldServerConnection.hpp">
-      <Filter>Inter-Server\World</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\BuffsPacketHelper.hpp">
       <Filter>Packets\Helpers</Filter>
@@ -657,6 +657,21 @@
     </ClInclude>
     <ClInclude Include="src\ChannelServer\KeyMapType.hpp">
       <Filter>ChannelServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\LoginServerSession.hpp">
+      <Filter>Inter-Server\Login</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\WorldServerSession.hpp">
+      <Filter>Inter-Server\World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\WorldServerSessionHandler.hpp">
+      <Filter>Inter-Server\World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\WorldServerPacket.hpp">
+      <Filter>Inter-Server\World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\LoginServerSessionHandler.hpp">
+      <Filter>Inter-Server\Login</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -117,9 +117,9 @@
     <ClCompile Include="src\WorldServer\SyncHandler.cpp" />
     <ClCompile Include="src\WorldServer\SyncPacket.cpp" />
     <ClCompile Include="src\WorldServer\WorldServer.cpp" />
-    <ClCompile Include="src\WorldServer\LoginServerConnection.cpp" />
+    <ClCompile Include="src\WorldServer\LoginServerSession.cpp" />
     <ClCompile Include="src\WorldServer\LoginServerConnectPacket.cpp" />
-    <ClCompile Include="src\WorldServer\WorldServerAcceptConnection.cpp" />
+    <ClCompile Include="src\WorldServer\WorldServerAcceptedSession.cpp" />
     <ClCompile Include="src\WorldServer\WorldServerAcceptPacket.cpp" />
     <ClCompile Include="src\WorldServer\LoginServerConnectHandler.cpp" />
   </ItemGroup>
@@ -131,9 +131,9 @@
     <ClInclude Include="src\WorldServer\SyncHandler.hpp" />
     <ClInclude Include="src\WorldServer\SyncPacket.hpp" />
     <ClInclude Include="src\WorldServer\WorldServer.hpp" />
-    <ClInclude Include="src\WorldServer\LoginServerConnection.hpp" />
+    <ClInclude Include="src\WorldServer\LoginServerSession.hpp" />
     <ClInclude Include="src\WorldServer\LoginServerConnectPacket.hpp" />
-    <ClInclude Include="src\WorldServer\WorldServerAcceptConnection.hpp" />
+    <ClInclude Include="src\WorldServer\WorldServerAcceptedSession.hpp" />
     <ClInclude Include="src\WorldServer\WorldServerAcceptPacket.hpp" />
     <ClInclude Include="src\WorldServer\LoginServerConnectHandler.hpp" />
   </ItemGroup>

@@ -16,7 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SyncPacket.hpp"
-#include "Common/AbstractConnection.hpp"
 #include "Common/InterHeader.hpp"
 #include "Common/InterHelper.hpp"
 #include "Common/MapConstants.hpp"
@@ -27,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer/Channel.hpp"
 #include "WorldServer/Channels.hpp"
 #include "WorldServer/PlayerDataProvider.hpp"
-#include "WorldServer/WorldServerAcceptConnection.hpp"
+#include "WorldServer/WorldServerAcceptedSession.hpp"
 
 namespace Vana {
 namespace WorldServer {

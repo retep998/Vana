@@ -41,7 +41,7 @@ StatusInfo::StatusInfo(int32_t status, int32_t val, int32_t skillId, seconds_t t
 				Randomizer::rand<int32_t>(static_cast<int32_t>(time.count()) * 2)
 			};
 			// The 1 accounts for the skill cast time
-			// Ideally we'd like to remove both these additions with MCDB suport for cast times
+			// Ideally we'd like to remove both these additions with MCDB support for cast times
 			break;
 	}
 }

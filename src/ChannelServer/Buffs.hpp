@@ -86,22 +86,22 @@ namespace Vana {
 		};
 
 		namespace Buffs {
-			auto addBuff(Player *player, item_id_t itemId, const seconds_t &time) -> Result;
-			auto addBuff(Player *player, skill_id_t skillId, skill_level_t level, int16_t addedInfo, map_object_t mapMobId = 0) -> Result;
-			auto addBuff(Player *player, mob_skill_id_t skillId, mob_skill_level_t level, milliseconds_t delay) -> Result;
-			auto endBuff(Player *player, const BuffSource &source, bool fromTimer = false) -> void;
-			auto preprocessBuff(Player *player, skill_id_t skillId, skill_level_t level, const seconds_t &time) -> Buff;
-			auto preprocessBuff(Player *player, item_id_t itemId, const seconds_t &time) -> Buff;
-			auto preprocessBuff(Player *player, mob_skill_id_t skillId, mob_skill_level_t level, const seconds_t &time) -> Buff;
-			auto preprocessBuff(Player *player, const BuffSource &source, const seconds_t &time) -> Buff;
-			auto preprocessBuff(Player *player, const BuffSource &source, const seconds_t &time, const Buff &buff) -> Buff;
+			auto addBuff(ref_ptr_t<Player> player, item_id_t itemId, const seconds_t &time) -> Result;
+			auto addBuff(ref_ptr_t<Player> player, skill_id_t skillId, skill_level_t level, int16_t addedInfo, map_object_t mapMobId = 0) -> Result;
+			auto addBuff(ref_ptr_t<Player> player, mob_skill_id_t skillId, mob_skill_level_t level, milliseconds_t delay) -> Result;
+			auto endBuff(ref_ptr_t<Player> player, const BuffSource &source, bool fromTimer = false) -> void;
+			auto preprocessBuff(ref_ptr_t<Player> player, skill_id_t skillId, skill_level_t level, const seconds_t &time) -> Buff;
+			auto preprocessBuff(ref_ptr_t<Player> player, item_id_t itemId, const seconds_t &time) -> Buff;
+			auto preprocessBuff(ref_ptr_t<Player> player, mob_skill_id_t skillId, mob_skill_level_t level, const seconds_t &time) -> Buff;
+			auto preprocessBuff(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time) -> Buff;
+			auto preprocessBuff(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, const Buff &buff) -> Buff;
 			auto preprocessBuff(const Buff &buff, const vector_t<uint8_t> &bitPositionsToInclude) -> Buff;
 			auto convertToPacketTypes(const Buff &buff) -> BuffPacketValues;
-			auto convertToPacket(Player *player, const BuffSource &source, const seconds_t &time, const Buff &buff) -> BuffPacketValues;
-			auto buffMayApply(Player *player, const BuffSource &source, const seconds_t &time, const BuffInfo &buff) -> bool;
-			auto getValue(Player *player, const BuffSource &source, const seconds_t &time, const BuffInfo &buff) -> BuffPacketValue;
-			auto getValue(Player *player, const BuffSource &source, const seconds_t &time, uint8_t bitPosition, const BuffMapInfo &buff) -> BuffPacketValue;
-			auto getValue(Player *player, const BuffSource &source, const seconds_t &time, uint8_t bitPosition, BuffSkillValue value, uint8_t buffValueSize) -> BuffPacketValue;
+			auto convertToPacket(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, const Buff &buff) -> BuffPacketValues;
+			auto buffMayApply(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, const BuffInfo &buff) -> bool;
+			auto getValue(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, const BuffInfo &buff) -> BuffPacketValue;
+			auto getValue(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, uint8_t bitPosition, const BuffMapInfo &buff) -> BuffPacketValue;
+			auto getValue(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, uint8_t bitPosition, BuffSkillValue value, uint8_t buffValueSize) -> BuffPacketValue;
 		}
 	}
 }

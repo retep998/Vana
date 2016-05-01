@@ -97,7 +97,7 @@ PACKET_IMPL(Player::updatePlayer, const PlayerData &player, update_bits_t flags)
 	return builder;
 }
 
-PACKET_IMPL(Player::changeChannel, Vana::ChannelServer::Player *info, channel_id_t channel) {
+PACKET_IMPL(Player::changeChannel, ref_ptr_t<Vana::ChannelServer::Player> info, channel_id_t channel) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
@@ -105,7 +105,7 @@ PACKET_IMPL(Player::changeChannel, Vana::ChannelServer::Player *info, channel_id
 		.add<sync_t>(Sync::Player::ChangeChannelRequest)
 		.add<player_id_t>(info->getId())
 		.add<channel_id_t>(channel)
-		.add<Ip>(info->getIp())
+		.add<Ip>(info->getIp().get())
 		.addBuffer(info->getTransferPacket());
 
 	return builder;

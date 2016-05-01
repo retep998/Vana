@@ -24,30 +24,30 @@ namespace Vana {
 		class Player;
 
 		namespace ManagementFunctions {
-			auto map(Player *player, const chat_t &args) -> ChatResult;
-			auto warp(Player *player, const chat_t &args) -> ChatResult;
-			auto follow(Player *player, const chat_t &args) -> ChatResult;
-			auto changeChannel(Player *player, const chat_t &args) -> ChatResult;
-			auto lag(Player *player, const chat_t &args) -> ChatResult;
-			auto header(Player *player, const chat_t &args) -> ChatResult;
-			auto shutdown(Player *player, const chat_t &args) -> ChatResult;
-			auto kick(Player *player, const chat_t &args) -> ChatResult;
-			auto relog(Player *player, const chat_t &args) -> ChatResult;
-			auto calculateRanks(Player *player, const chat_t &args) -> ChatResult;
-			auto item(Player *player, const chat_t &args) -> ChatResult;
-			auto storage(Player *player, const chat_t &args) -> ChatResult;
-			auto shop(Player *player, const chat_t &args) -> ChatResult;
-			auto reload(Player *player, const chat_t &args) -> ChatResult;
-			auto npc(Player *player, const chat_t &args) -> ChatResult;
-			auto addNpc(Player *player, const chat_t &args) -> ChatResult;
-			auto killNpc(Player *player, const chat_t &args) -> ChatResult;
-			auto kill(Player *player, const chat_t &args) -> ChatResult;
-			auto ban(Player *player, const chat_t &args) -> ChatResult;
-			auto tempBan(Player *player, const chat_t &args) -> ChatResult;
-			auto ipBan(Player *player, const chat_t &args) -> ChatResult;
-			auto unban(Player *player, const chat_t &args) -> ChatResult;
-			auto rehash(Player *player, const chat_t &args) -> ChatResult;
-			auto rates(Player *player, const chat_t &args) -> ChatResult;
+			auto map(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto warp(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto follow(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto changeChannel(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto lag(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto header(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto shutdown(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto kick(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto relog(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto calculateRanks(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto item(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto storage(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto shop(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto reload(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto npc(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto addNpc(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto killNpc(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto kill(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto ban(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto tempBan(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto ipBan(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto unban(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto rehash(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto rates(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
 		}
 	}
 }

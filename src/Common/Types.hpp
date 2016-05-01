@@ -210,6 +210,7 @@ namespace Vana {
 	}
 
 	// Game protocol/entity types
+	using iv_t = uint32_t;
 	using world_id_t = int8_t;
 	using channel_id_t = int8_t;
 	using item_id_t = int32_t;

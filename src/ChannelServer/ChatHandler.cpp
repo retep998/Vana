@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/PlayerDataProvider.hpp"
 #include "ChannelServer/PlayerPacket.hpp"
 #include "ChannelServer/PlayersPacket.hpp"
-#include "ChannelServer/WorldServerConnectPacket.hpp"
+#include "ChannelServer/WorldServerPacket.hpp"
 #include <algorithm>
 
 namespace Vana {
@@ -36,7 +36,7 @@ auto ChatHandler::initializeCommands() -> void {
 	ChatHandlerFunctions::initialize();
 }
 
-auto ChatHandler::handleChat(Player *player, PacketReader &reader) -> void {
+auto ChatHandler::handleChat(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	chat_t message = reader.get<chat_t>();
 	bool bubbleOnly = reader.get<bool>(); // Skill macros only display chat bubbles
 
@@ -50,7 +50,7 @@ auto ChatHandler::handleChat(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto ChatHandler::handleCommand(Player *player, const chat_t &message) -> HandleResult {
+auto ChatHandler::handleCommand(ref_ptr_t<Player> player, const chat_t &message) -> HandleResult {
 	using ChatHandlerFunctions::sCommandList;
 
 	if (player->isAdmin() && message[0] == '/') {
@@ -81,7 +81,7 @@ auto ChatHandler::handleCommand(Player *player, const chat_t &message) -> Handle
 	return HandleResult::Unhandled;
 }
 
-auto ChatHandler::handleGroupChat(Player *player, PacketReader &reader) -> void {
+auto ChatHandler::handleGroupChat(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	int8_t type = reader.get<int8_t>();
 	uint8_t amount = reader.get<uint8_t>();
 	vector_t<player_id_t> receivers = reader.get<vector_t<player_id_t>>(amount);

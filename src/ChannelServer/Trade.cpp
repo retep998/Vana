@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 namespace ChannelServer {
 
-ActiveTrade::ActiveTrade(Player *sender, Player *receiver, trade_id_t id) :
+ActiveTrade::ActiveTrade(ref_ptr_t<Player> sender, ref_ptr_t<Player> receiver, trade_id_t id) :
 	m_id{id}
 {
 	m_sender = make_owned_ptr<TradeInfo>();
@@ -53,7 +53,7 @@ auto ActiveTrade::bothCanTrade() -> bool {
 	return true;
 }
 
-auto ActiveTrade::canTrade(Player *target, TradeInfo *unit) -> bool {
+auto ActiveTrade::canTrade(ref_ptr_t<Player> target, TradeInfo *unit) -> bool {
 	bool canTrade = true;
 	mesos_t currentMesos = unit->mesos + target->getInventory()->getMesos();
 	if (currentMesos < 0) {
@@ -146,7 +146,7 @@ auto ActiveTrade::canTrade(Player *target, TradeInfo *unit) -> bool {
 	return canTrade;
 }
 
-auto ActiveTrade::giveItems(Player *player, TradeInfo *info) -> void {
+auto ActiveTrade::giveItems(ref_ptr_t<Player> player, TradeInfo *info) -> void {
 	if (info->count > 0) {
 		for (trade_slot_t i = 0; i < TradeInfo::TradeSize; ++i) {
 			if (info->items[i] != nullptr) {
@@ -162,7 +162,7 @@ auto ActiveTrade::giveItems(Player *player, TradeInfo *info) -> void {
 	}
 }
 
-auto ActiveTrade::giveMesos(Player *player, TradeInfo *info, bool traded) -> void {
+auto ActiveTrade::giveMesos(ref_ptr_t<Player> player, TradeInfo *info, bool traded) -> void {
 	if (info->mesos > 0) {
 		int32_t taxLevel = TradeHandler::getTaxLevel(info->mesos);
 		if (traded && taxLevel != 0) {
@@ -176,8 +176,8 @@ auto ActiveTrade::giveMesos(Player *player, TradeInfo *info, bool traded) -> voi
 auto ActiveTrade::returnTrade() -> void {
 	TradeInfo *send = getSenderTrade();
 	TradeInfo *recv = getReceiverTrade();
-	Player *one = getSender();
-	Player *two = getReceiver();
+	auto one = getSender();
+	auto two = getReceiver();
 	if (one != nullptr) {
 		giveItems(one, send);
 		giveMesos(one, send);
@@ -191,8 +191,8 @@ auto ActiveTrade::returnTrade() -> void {
 auto ActiveTrade::swapTrade() -> void {
 	TradeInfo *send = getSenderTrade();
 	TradeInfo *recv = getReceiverTrade();
-	Player *one = getSender();
-	Player *two = getReceiver();
+	auto one = getSender();
+	auto two = getReceiver();
 	giveItems(one, recv);
 	giveItems(two, send);
 	giveMesos(one, recv, true);
@@ -207,13 +207,13 @@ auto ActiveTrade::accept(TradeInfo *unit) -> void {
 	unit->accepted = true;
 }
 
-auto ActiveTrade::addMesos(Player *holder, TradeInfo *unit, mesos_t amount) -> mesos_t {
+auto ActiveTrade::addMesos(ref_ptr_t<Player> holder, TradeInfo *unit, mesos_t amount) -> mesos_t {
 	unit->mesos += amount;
 	holder->getInventory()->modifyMesos(-amount, true);
 	return unit->mesos;
 }
 
-auto ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, trade_slot_t tradeSlot, inventory_slot_t inventorySlot, inventory_t inventory, slot_qty_t amount) -> Item * {
+auto ActiveTrade::addItem(ref_ptr_t<Player> holder, TradeInfo *unit, Item *item, trade_slot_t tradeSlot, inventory_slot_t inventorySlot, inventory_t inventory, slot_qty_t amount) -> Item * {
 	auto use = new Item{item};
 	if (amount == item->getAmount() || GameLogicUtilities::isEquip(item->getId())) {
 		holder->getInventory()->setItem(inventory, inventorySlot, nullptr);
@@ -241,11 +241,11 @@ auto ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, trade_slo
 	return use;
 }
 
-auto ActiveTrade::getSender() -> Player * {
+auto ActiveTrade::getSender() -> ref_ptr_t<Player> {
 	return ChannelServer::getInstance().getPlayerDataProvider().getPlayer(m_senderId);
 }
 
-auto ActiveTrade::getReceiver() -> Player * {
+auto ActiveTrade::getReceiver() -> ref_ptr_t<Player> {
 	return ChannelServer::getInstance().getPlayerDataProvider().getPlayer(m_receiverId);
 }
 

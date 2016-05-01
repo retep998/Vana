@@ -107,4 +107,10 @@ namespace Vana {
 	auto operator <<(std::ostream &out, const Ip &ip) -> std::ostream & {
 		return out << ip.toString();
 	}
+
+	inline
+	auto operator <<(std::ostream &out, const optional_t<Ip> &ip) -> std::ostream & {
+		if (ip.is_initialized()) return out << ip.get();
+		return out << "{invalid IP}";
+	}
 }

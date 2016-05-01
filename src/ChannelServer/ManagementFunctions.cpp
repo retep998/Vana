@@ -31,12 +31,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/PlayerDataProvider.hpp"
 #include "ChannelServer/PlayerPacket.hpp"
 #include "ChannelServer/SyncPacket.hpp"
-#include "ChannelServer/WorldServerConnectPacket.hpp"
+#include "ChannelServer/WorldServerPacket.hpp"
 
 namespace Vana {
 namespace ChannelServer {
 
-auto ManagementFunctions::map(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::map(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+)? ?(\w+|\{(-?\d+)\, ?(-?\d+)\}|\[\d+\])?)", matches) == MatchResult::AnyMatches) {
 		string_t rawMap = matches[1];
@@ -95,7 +95,7 @@ auto ManagementFunctions::map(Player *player, const chat_t &args) -> ChatResult 
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::warp(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::warp(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (\w+) (\w+) ?(\w+)? ?(\w+)?)", matches) == MatchResult::AnyMatches) {
 		string_t sourceType = matches[1];
@@ -106,7 +106,7 @@ auto ManagementFunctions::warp(Player *player, const chat_t &args) -> ChatResult
 		map_id_t sourceMapId = -1;
 		map_id_t destinationMapId = -1;
 		string_t portal;
-		Player *sourcePlayer = nullptr;
+		auto sourcePlayer = ref_ptr_t<Player>{nullptr};
 		bool validCombo = true;
 		bool onlySource = true;
 		bool singleArgumentDestination = false;
@@ -123,7 +123,7 @@ auto ManagementFunctions::warp(Player *player, const chat_t &args) -> ChatResult
 		};
 		auto resolveMapCurrent = [player]() { return player->getMapId(); };
 		auto resolveMapPlayer = [player](const string_t &playerArg) {
-			if (Player *target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerArg)) {
+			if (auto target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerArg)) {
 				return target->getMapId();
 			}
 			return -2;
@@ -239,7 +239,7 @@ auto ManagementFunctions::warp(Player *player, const chat_t &args) -> ChatResult
 			return ChatResult::HandledDisplay;
 		}
 
-		auto warpToMap = [&](Player *target) {
+		auto warpToMap = [&](ref_ptr_t<Player> target) {
 			if (target->getMapId() != destinationMapId) {
 				if (portal == "tp") {
 					target->setMap(destinationMapId, destinationPortal->id, destinationPortal->pos);
@@ -289,11 +289,11 @@ auto ManagementFunctions::warp(Player *player, const chat_t &args) -> ChatResult
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::follow(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::follow(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+)?)", matches) == MatchResult::AnyMatches) {
 		string_t playerName = matches[1];
-		if (Player *follow = player->getFollow()) {
+		if (auto follow = player->getFollow()) {
 			if (!playerName.empty()) {
 				ChatHandlerFunctions::showError(player, "You're already following player " + follow->getName());
 			}
@@ -304,7 +304,7 @@ auto ManagementFunctions::follow(Player *player, const chat_t &args) -> ChatResu
 		}
 		else {
 			if (playerName.size() != 0) {
-				if (Player *target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerName)) {
+				if (auto target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerName)) {
 					ChannelServer::getInstance().getPlayerDataProvider().addFollower(player, target);
 					ChatHandlerFunctions::showInfo(player, "Now following player " + target->getName());
 				}
@@ -322,7 +322,7 @@ auto ManagementFunctions::follow(Player *player, const chat_t &args) -> ChatResu
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::changeChannel(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::changeChannel(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+))", matches) == MatchResult::AnyMatches) {
 		string_t targetChannel = matches[1];
@@ -333,11 +333,11 @@ auto ManagementFunctions::changeChannel(Player *player, const chat_t &args) -> C
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::lag(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::lag(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+))", matches) == MatchResult::AnyMatches) {
 		string_t target = matches[1];
-		if (Player *p = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(target)) {
+		if (auto p = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(target)) {
 			ChatHandlerFunctions::showInfo(player, p->getName() + "'s lag: " + StringUtilities::lexical_cast<string_t>(p->getLatency().count()) + "ms");
 		}
 		else {
@@ -348,12 +348,12 @@ auto ManagementFunctions::lag(Player *player, const chat_t &args) -> ChatResult 
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::header(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::header(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	ChannelServer::getInstance().sendWorld(Packets::Interserver::Config::scrollingHeader(args));
 	return ChatResult::HandledDisplay;
 }
 
-auto ManagementFunctions::shutdown(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::shutdown(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	ChatHandlerFunctions::showInfo(player, "Shutting down the server");
 	ChannelServer::getInstance().log(LogType::GmCommand, "GM shutdown the server. GM: " + player->getName());
 	// TODO FIXME remove this or figure out a better way to post a shutdown than just doing the shutdown here
@@ -361,9 +361,9 @@ auto ManagementFunctions::shutdown(Player *player, const chat_t &args) -> ChatRe
 	return ChatResult::HandledDisplay;
 }
 
-auto ManagementFunctions::kick(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::kick(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
-		if (Player *target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(args)) {
+		if (auto target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(args)) {
 			if (player->getGmLevel() > target->getGmLevel()) {
 				target->disconnect();
 				ChatHandlerFunctions::showInfo(player, "Kicked " + args + " from the server");
@@ -380,18 +380,18 @@ auto ManagementFunctions::kick(Player *player, const chat_t &args) -> ChatResult
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::relog(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::relog(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	player->changeChannel(ChannelServer::getInstance().getChannelId());
 	return ChatResult::HandledDisplay;
 }
 
-auto ManagementFunctions::calculateRanks(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::calculateRanks(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	ChannelServer::getInstance().sendWorld(Packets::Interserver::rankingCalculation());
 	ChatHandlerFunctions::showInfo(player, "Sent a signal to force the calculation of rankings");
 	return ChatResult::HandledDisplay;
 }
 
-auto ManagementFunctions::item(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::item(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) ?(\d*)?)", matches) == MatchResult::AnyMatches) {
 		string_t rawItem = matches[1];
@@ -409,12 +409,12 @@ auto ManagementFunctions::item(Player *player, const chat_t &args) -> ChatResult
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::storage(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::storage(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	NpcHandler::showStorage(player, 1012009);
 	return ChatResult::HandledDisplay;
 }
 
-auto ManagementFunctions::shop(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::shop(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		shop_id_t shopId = -1;
 		if (args == "gear") shopId = 9999999;
@@ -434,7 +434,7 @@ auto ManagementFunctions::shop(Player *player, const chat_t &args) -> ChatResult
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::reload(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::reload(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		if (args == "items" || args == "drops" || args == "shops" ||
 			args == "mobs" || args == "beauty" || args == "scripts" ||
@@ -451,13 +451,13 @@ auto ManagementFunctions::reload(Player *player, const chat_t &args) -> ChatResu
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::npc(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::npc(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+))", matches) == MatchResult::AnyMatches) {
 		auto &provider = ChannelServer::getInstance().getNpcDataProvider();
 		npc_id_t npcId = atoi(args.c_str());
 		if (provider.isValidNpcId(npcId)) {
-			Npc *npc = new Npc(npcId, player);
+			Npc *npc = new Npc{npcId, player};
 			npc->run();
 		}
 		else {
@@ -468,7 +468,7 @@ auto ManagementFunctions::npc(Player *player, const chat_t &args) -> ChatResult 
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::addNpc(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::addNpc(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+))", matches) == MatchResult::AnyMatches) {
 		auto &provider = ChannelServer::getInstance().getNpcDataProvider();
@@ -491,22 +491,22 @@ auto ManagementFunctions::addNpc(Player *player, const chat_t &args) -> ChatResu
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::killNpc(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::killNpc(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	player->setNpc(nullptr);
 	return ChatResult::HandledDisplay;
 }
 
-auto ManagementFunctions::kill(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::kill(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	if (player->getGmLevel() == 1) {
 		player->getStats()->setHp(0);
 	}
 	else {
 		bool proceed = true;
-		auto iterate = [&player](function_t<bool(Player *p)> func) -> int {
+		auto iterate = [&player](function_t<bool(ref_ptr_t<Player> p)> func) -> int {
 			int32_t kills = 0;
 			Map *map = player->getMap();
 			for (size_t i = 0; i < map->getNumPlayers(); ++i) {
-				Player *t = map->getPlayer(i);
+				auto t = map->getPlayer(i);
 				if (t != player) {
 					if (func(t)) kills++;
 				}
@@ -515,7 +515,7 @@ auto ManagementFunctions::kill(Player *player, const chat_t &args) -> ChatResult
 		};
 		if (args == "all") {
 			proceed = false;
-			int32_t kills = iterate([](Player *p) -> bool {
+			int32_t kills = iterate([](ref_ptr_t<Player> p) -> bool {
 				p->getStats()->setHp(0);
 				return true;
 			});
@@ -523,7 +523,7 @@ auto ManagementFunctions::kill(Player *player, const chat_t &args) -> ChatResult
 		}
 		else if (args == "gm" || args == "players") {
 			proceed = false;
-			int32_t kills = iterate([&args](Player *p) -> bool {
+			int32_t kills = iterate([&args](ref_ptr_t<Player> p) -> bool {
 				if ((args == "gm" && p->isGm()) || (args == "players" && !p->isGm())) {
 					p->getStats()->setHp(0);
 					return true;
@@ -537,7 +537,7 @@ auto ManagementFunctions::kill(Player *player, const chat_t &args) -> ChatResult
 				player->getStats()->setHp(0);
 				ChatHandlerFunctions::showInfo(player, "Killed yourself");
 			}
-			else if (Player *kill = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(args)) {
+			else if (auto kill = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(args)) {
 				// Kill by name
 				kill->getStats()->setHp(0);
 				ChatHandlerFunctions::showInfo(player, "Killed " + args);
@@ -551,11 +551,11 @@ auto ManagementFunctions::kill(Player *player, const chat_t &args) -> ChatResult
 	return ChatResult::HandledDisplay;
 }
 
-auto ManagementFunctions::ban(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::ban(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) ?(\d+)?)", matches) == MatchResult::AnyMatches) {
 		string_t targetName = matches[1];
-		if (Player *target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(targetName)) {
+		if (auto target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(targetName)) {
 			target->disconnect();
 		}
 		string_t reasonString = matches[2];
@@ -598,11 +598,11 @@ auto ManagementFunctions::ban(Player *player, const chat_t &args) -> ChatResult 
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::tempBan(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::tempBan(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (\d+) (\d+))", matches) == MatchResult::AnyMatches) {
 		string_t targetName = matches[1];
-		if (Player *target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(targetName)) {
+		if (auto target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(targetName)) {
 			target->disconnect();
 		}
 		string_t reasonString = matches[2];
@@ -646,12 +646,12 @@ auto ManagementFunctions::tempBan(Player *player, const chat_t &args) -> ChatRes
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::ipBan(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::ipBan(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) ?(\d+)?)", matches) == MatchResult::AnyMatches) {
 		string_t targetName = matches[1];
-		if (Player *target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(targetName)) {
-			string_t targetIp = target->getIp().toString();
+		if (auto target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(targetName)) {
+			string_t targetIp = target->getIp().get().toString();
 			target->disconnect();
 
 			string_t reasonString = matches[2];
@@ -687,7 +687,7 @@ auto ManagementFunctions::ipBan(Player *player, const chat_t &args) -> ChatResul
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::unban(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::unban(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	if (!args.empty()) {
 		// Unban account
 		auto &db = Database::getCharDb();
@@ -720,13 +720,13 @@ auto ManagementFunctions::unban(Player *player, const chat_t &args) -> ChatResul
 	return ChatResult::ShowSyntax;
 }
 
-auto ManagementFunctions::rehash(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::rehash(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	ChannelServer::getInstance().sendWorld(Packets::Interserver::rehashConfig());
 	ChatHandlerFunctions::showInfo(player, "Sent a signal to force rehashing world configurations");
 	return ChatResult::HandledDisplay;
 }
 
-auto ManagementFunctions::rates(Player *player, const chat_t &args) -> ChatResult {
+auto ManagementFunctions::rates(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (!args.empty()) {
 		if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) ?(\w+)? ?(\-?\d+)?)", matches) == MatchResult::NoMatches) {

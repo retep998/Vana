@@ -16,9 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ConnectionManager.hpp"
-#include "Common/AbstractConnection.hpp"
+#include "Common/ConnectionListener.hpp"
+#include "Common/ConnectionListenerConfig.hpp"
+#include "Common/EncryptedPacketTransformer.hpp"
+#include "Common/ExitCodes.hpp"
 #include "Common/InterServerConfig.hpp"
-#include "Common/ServerClient.hpp"
+#include "Common/MiscUtilities.hpp"
+#include "Common/Session.hpp"
 #include "Common/ThreadPool.hpp"
 
 namespace Vana {
@@ -36,37 +40,91 @@ ConnectionManager::~ConnectionManager() {
 	m_thread.reset();
 }
 
-ConnectionManager::Listener::Listener(asio::io_service &ioService, const asio::ip::tcp::endpoint &endpoint, function_t<AbstractConnection *()> createConnection, const InterServerConfig &config, bool isServer, const string_t &subversion) :
-	acceptor{ioService, endpoint},
-	isPinging{isServer ? config.serverPing : config.clientPing},
-	isEncrypted{config.clientEncryption || isServer},
-	connectionCreator{createConnection},
-	subversion{subversion},
-	isServer{isServer}
-{
-}
-
-auto ConnectionManager::accept(const Ip::Type &ipType, port_t port, function_t<AbstractConnection *()> createConnection, const InterServerConfig &config, bool isServer, const string_t &subversion) -> void {
+auto ConnectionManager::listen(const ConnectionListenerConfig &config, HandlerCreator handlerCreator) -> void {
 	asio::ip::tcp::endpoint endpoint{
-		ipType == Ip::Type::Ipv4 ?
+		config.ipType == Ip::Type::Ipv4 ?
 			asio::ip::tcp::v4() :
 			asio::ip::tcp::v6(),
-		port};
+		config.port
+	};
 
-	auto listener = make_ref_ptr<Listener>(m_ioService, endpoint, createConnection, config, isServer, subversion);
+	auto listener = make_ref_ptr<ConnectionListener>(config, handlerCreator, m_ioService, endpoint, *this);
 	m_servers.push_back(listener);
-	acceptConnection(listener);
+	listener->beginAccept();
 }
 
-auto ConnectionManager::connect(const Ip &serverIp, port_t serverPort, const InterServerConfig &config, AbstractConnection *connection) -> Result {
-	auto serverConnection = make_ref_ptr<ServerClient>(m_ioService, serverIp, serverPort, *this, connection, config.serverPing);
-	m_sessions.insert(serverConnection);
-	return serverConnection->startConnect();
+auto ConnectionManager::connect(const Ip &destination, port_t port, const PingConfig &ping, ServerType sourceType, HandlerCreator handlerCreator) -> pair_t<Result, ref_ptr_t<Session>> {
+	asio::ip::address endAddress;
+	if (destination.getType() == Ip::Type::Ipv4) {
+		endAddress = asio::ip::address_v4{destination.asIpv4()};
+	}
+	else {
+		throw NotImplementedException{"IPv6 unsupported"};
+	}
+	asio::ip::tcp::endpoint endpoint{endAddress, port};
+	asio::error_code error;
+
+	auto handler = handlerCreator();
+	auto newSession = make_ref_ptr<Session>(
+		m_ioService,
+		*this,
+		handler);
+
+	newSession->getSocket().connect(endpoint, error);
+
+	if (!error) {
+		// Now let's process the connect packet
+		try {
+			auto result = newSession->syncRead(10); // May require maintenance if the IV packet ever dips below 10 bytes
+			if (result.first) {
+				std::cerr << "SESSION SYNCREAD ERROR: " << result.first.message() << std::endl;
+				ExitCodes::exit(ExitCodes::ServerConnectionError);
+				newSession->disconnect();
+			}
+			else {
+				PacketReader &reader = result.second;
+
+				header_t header = reader.get<header_t>(); // Gives us the packet length
+				version_t version = reader.get<version_t>();
+				string_t subversion = reader.get<string_t>();
+				iv_t sendIv = reader.get<iv_t>();
+				iv_t recvIv = reader.get<iv_t>();
+				game_locale_t locale = reader.get<game_locale_t>();
+
+				if (version != MapleVersion::Version || locale != MapleVersion::Locale || subversion != MapleVersion::LoginSubversion) {
+					std::cerr << "ERROR: The server you are connecting to lacks the same MapleStory version." << std::endl;
+					std::cerr << "Expected locale/version (subversion): " << static_cast<int16_t>(locale) << "/" << version << " (" << subversion << ")" << std::endl;
+					std::cerr << "Local locale/version (subversion): " << static_cast<int16_t>(MapleVersion::Locale) << "/" << MapleVersion::Version << " (" << MapleVersion::LoginSubversion << ")" << std::endl;
+					newSession->disconnect();
+					ExitCodes::exit(ExitCodes::ServerVersionMismatch);
+				}
+				else {
+					newSession->setType(MiscUtilities::getConnectionType(sourceType));
+					newSession->start(ping, make_ref_ptr<EncryptedPacketTransformer>(recvIv, sendIv));
+
+					m_sessions.insert(newSession);
+
+					return std::make_pair(Result::Successful, newSession);
+				}
+			}
+		}
+		catch (PacketContentException) {
+			std::cerr << "ERROR: Malformed IV packet" << std::endl;
+			newSession->disconnect();
+			ExitCodes::exit(ExitCodes::ServerMalformedIvPacket);
+		}
+	}
+	else {
+		std::cerr << "CONNECTMANAGER CONNECT ERROR: " << error.message() << std::endl;
+		ExitCodes::exit(ExitCodes::ServerConnectionError);
+	}
+
+	return std::make_pair(Result::Failure, ref_ptr_t<Session>{nullptr});
 }
 
 auto ConnectionManager::stop() -> void {
 	for (auto &server : m_servers) {
-		server->acceptor.close();
+		server->stop();
 	}
 	m_servers.clear();
 
@@ -80,6 +138,10 @@ auto ConnectionManager::stop(ref_ptr_t<Session> session) -> void {
 	m_sessions.erase(session);
 }
 
+auto ConnectionManager::start(ref_ptr_t<Session> session) -> void {
+	m_sessions.insert(session);
+}
+
 auto ConnectionManager::getServer() -> AbstractServer * {
 	return m_server;
 }
@@ -88,24 +150,6 @@ auto ConnectionManager::run() -> void {
 	m_thread = ThreadPool::lease(
 		[this] { m_ioService.run(); },
 		[this] { m_work.reset(); });
-}
-
-auto ConnectionManager::acceptConnection(ref_ptr_t<Listener> listener) -> void {
-	auto newSession = make_ref_ptr<Session>(listener->acceptor.get_io_service(),
-		*this,
-		listener->connectionCreator(),
-		true,
-		listener->isEncrypted,
-		listener->isPinging,
-		listener->subversion);
-
-	m_sessions.insert(newSession);
-	listener->acceptor.async_accept(newSession->getSocket(), [this, listener, newSession](const asio::error_code &error) mutable {
-		if (!error) {
-			newSession->start();
-			this->acceptConnection(listener);
-		}
-	});
 }
 
 }

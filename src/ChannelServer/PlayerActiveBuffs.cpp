@@ -51,7 +51,7 @@ struct BuffRunAction {
 
 	int64_t value = 0;
 	BuffSource source;
-	Player *player = nullptr;
+	ref_ptr_t<Player> player = nullptr;
 	BuffAction act;
 };
 
@@ -620,7 +620,7 @@ auto PlayerActiveBuffs::addCombo() -> void {
 			return;
 		}
 
-		if (advCombo > 0 && Randomizer::rand<uint16_t>(99) < skill->prop) {
+		if (advCombo > 0 && Randomizer::percentage<uint16_t>() < skill->prop) {
 			m_combo += 1;
 		}
 		m_combo += 1;

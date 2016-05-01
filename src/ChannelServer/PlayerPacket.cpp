@@ -37,7 +37,7 @@ namespace ChannelServer {
 namespace Packets {
 namespace Player {
 
-PACKET_IMPL(connectData, Vana::ChannelServer::Player *player) {
+PACKET_IMPL(connectData, ref_ptr_t<Vana::ChannelServer::Player> player) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_CHANGE_MAP)

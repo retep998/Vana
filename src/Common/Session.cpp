@@ -16,27 +16,30 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Session.hpp"
-#include "Common/AbstractConnection.hpp"
 #include "Common/AbstractServer.hpp"
+#include "Common/CommonHeader.hpp"
+#include "Common/CommonPacket.hpp"
 #include "Common/ConnectionManager.hpp"
 #include "Common/Decoder.hpp"
+#include "Common/ExitCodes.hpp"
 #include "Common/Logger.hpp"
 #include "Common/PacketBuilder.hpp"
+#include "Common/PacketHandler.hpp"
 #include "Common/PacketReader.hpp"
 #include "Common/Randomizer.hpp"
+#include "Common/TimeUtilities.hpp"
 #include <functional>
 #include <iostream>
 
 namespace Vana {
-
-Session::Session(asio::io_service &ioService, ConnectionManager &manager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string_t &subversion) :
+Session::Session(
+	asio::io_service &service,
+	ConnectionManager &manager,
+	Handler handler) :
 	m_manager{manager},
-	m_socket{ioService},
-	m_connection{connection},
-	m_isForClient{isForClient},
-	m_subversion{subversion},
-	m_decoder{!isForClient || isEncrypted},
-	m_usePing{usePing}
+	m_socket{service},
+	m_handler{handler},
+	m_ip{0}
 {
 }
 
@@ -44,31 +47,85 @@ auto Session::getSocket() -> asio::ip::tcp::socket & {
 	return m_socket;
 }
 
-auto Session::getDecoder() -> Decoder & {
-	return m_decoder;
+auto Session::getCodec() -> PacketTransformer & {
+	return *m_codec;
 }
 
 auto Session::getBuffer() -> MiscUtilities::shared_array<unsigned char> & {
 	return m_buffer;
 }
 
-auto Session::start() -> void {
-	// TODO FIXME support IPv6
-	m_connection->setSession(this, m_usePing, Ip(m_socket.remote_endpoint().address().to_v4().to_ulong()));
+auto Session::getLatency() const -> milliseconds_t {
+	return m_latency;
+}
 
-	if (m_isForClient) {
-		m_decoder.setRecvIv(Randomizer::rand<uint32_t>());
-		m_decoder.setSendIv(Randomizer::rand<uint32_t>());
+auto Session::getType() const -> ConnectionType {
+	return m_type;
+}
 
-		PacketBuilder connectPacket = getConnectPacket(m_subversion);
-		send(connectPacket.getBuffer(), connectPacket.getSize(), false);
+auto Session::setType(ConnectionType type) -> void {
+	if (m_type != ConnectionType::Unknown) throw InvalidOperationException{"Connection type may only be set once"};
+	m_type = type;
+}
+
+auto Session::ping() -> void {
+	if (m_pingCount == m_maxPingCount) {
+		// We have a timeout now
+		disconnect();
+		return;
 	}
 
+	m_pingCount++;
+	m_lastPing = TimeUtilities::getNow();
+	send(Packets::ping());
+}
+
+auto Session::start(const PingConfig &ping, ref_ptr_t<PacketTransformer> transformer) -> void {
+	// TODO FIXME support IPv6
+	auto &addr = m_socket.remote_endpoint().address();
+	if (addr.is_v4()) {
+		m_ip = Ip{addr.to_v4().to_ulong()};
+	}
+	else {
+		throw NotImplementedException{"IPv6"};
+	}
+
+	if (ping.enable) {
+		m_maxPingCount = ping.timeoutPingCount;
+		Timer::Timer::create(
+			[this](const time_point_t &now) { this->ping(); },
+			Timer::Id{TimerType::PingTimer},
+			getTimers(),
+			ping.initialDelay,
+			ping.interval);
+	}
+
+	m_codec = transformer;
+
+	m_handler->onConnectBase(shared_from_this());
+
+	m_isConnected = true;
 	startReadHeader();
 }
 
+auto Session::syncRead(size_t minimumBytes) -> pair_t<asio::error_code, PacketReader> {
+	asio::error_code error;
+
+	m_buffer.reset(new unsigned char[MaxBufferLen]);
+
+	size_t packetSize = asio::read(m_socket,
+		asio::buffer(m_buffer.get(), MaxBufferLen),
+		asio::transfer_at_least(minimumBytes),
+		error);
+
+	return std::make_pair(error, PacketReader{m_buffer.get(), packetSize});
+}
+
 auto Session::disconnect() -> void {
+	if (!m_isConnected) return;
+	m_handler->onDisconnectBase();
 	m_manager.stop(shared_from_this());
+	m_isConnected = false;
 
 	asio::error_code ec;
 	m_socket.close(ec);
@@ -79,8 +136,8 @@ auto Session::disconnect() -> void {
 	}
 }
 
-auto Session::send(const PacketBuilder &builder) -> void {
-	send(builder.getBuffer(), builder.getSize(), true);
+auto Session::send(const PacketBuilder &builder, bool encrypt) -> void {
+	send(builder.getBuffer(), builder.getSize(), encrypt);
 }
 
 auto Session::send(const unsigned char *buf, int32_t len, bool encrypt) -> void {
@@ -90,13 +147,13 @@ auto Session::send(const unsigned char *buf, int32_t len, bool encrypt) -> void 
 	size_t realLength = len;
 
 	if (encrypt) {
-		realLength += headerLen;
+		realLength += HeaderLen;
 		sendBuffer = new unsigned char[realLength];
 		m_sendPacket.reset(sendBuffer);
 
-		memcpy(sendBuffer + headerLen, buf, len);
-		m_decoder.createHeader(sendBuffer, static_cast<uint16_t>(len));
-		m_decoder.encrypt(sendBuffer + headerLen, len, headerLen);
+		memcpy(sendBuffer + HeaderLen, buf, len);
+		m_codec->setPacketHeader(sendBuffer, static_cast<uint16_t>(len));
+		m_codec->encryptPacket(sendBuffer + HeaderLen, len, HeaderLen);
 	}
 	else {
 		sendBuffer = new unsigned char[realLength];
@@ -112,10 +169,10 @@ auto Session::send(const unsigned char *buf, int32_t len, bool encrypt) -> void 
 }
 
 auto Session::startReadHeader() -> void {
-	m_buffer.reset(new unsigned char[headerLen]);
+	m_buffer.reset(new unsigned char[HeaderLen]);
 
 	asio::async_read(m_socket,
-		asio::buffer(m_buffer.get(), headerLen),
+		asio::buffer(m_buffer.get(), HeaderLen),
 		std::bind(&Session::handleReadHeader, shared_from_this(),
 			std::placeholders::_1,
 			std::placeholders::_2));
@@ -129,65 +186,81 @@ auto Session::handleWrite(const asio::error_code &error, size_t bytesTransferred
 }
 
 auto Session::handleReadHeader(const asio::error_code &error, size_t bytesTransferred) -> void {
-	if (!error) {
-		// TODO FIXME
-		// Figure out how to distinguish between client versions and server versions, can use this after
-		//if (!m_decoder.validPacket(m_buffer.get())) {
-		//	// Hacking or trying to crash server
-		//	disconnect();
-		//	return;
-		//}
-
-		size_t len = m_decoder.getLength(m_buffer.get());
-		if (len < 2) {
-			// Hacking or trying to crash server
-			disconnect();
-			return;
-		}
-
-		m_buffer.reset(new unsigned char[len]);
-
-		asio::async_read(m_socket,
-			asio::buffer(m_buffer.get(), len),
-			std::bind(&Session::handleReadBody, shared_from_this(),
-				std::placeholders::_1,
-				std::placeholders::_2));
-	}
-	else {
+	if (error) {
 		disconnect();
+		return;
 	}
+
+	// TODO FIXME
+	// Figure out how to distinguish between client versions and server versions, can use this after
+	//if (m_codec.testPacket(m_buffer.get()) == ValidityResult::Invalid) {
+	//	// Hacking or trying to crash server
+	//	disconnect();
+	//	return;
+	//}
+
+	size_t len = m_codec->getPacketLength(m_buffer.get());
+	if (len < 2) {
+		// Hacking or trying to crash server
+		disconnect();
+		return;
+	}
+
+	m_buffer.reset(new unsigned char[len]);
+
+	asio::async_read(m_socket,
+		asio::buffer(m_buffer.get(), len),
+		std::bind(&Session::handleReadBody, shared_from_this(),
+			std::placeholders::_1,
+			std::placeholders::_2));
 }
 
 auto Session::handleReadBody(const asio::error_code &error, size_t bytesTransferred) -> void {
-	if (!error) {
-		m_decoder.decrypt(m_buffer.get(), bytesTransferred, headerLen);
-
-		PacketReader packet{m_buffer.get(), bytesTransferred};
-		m_connection->baseHandleRequest(packet);
-
-		startReadHeader();
-	}
-	else {
+	if (error) {
 		disconnect();
+		return;
 	}
+
+	m_codec->decryptPacket(m_buffer.get(), bytesTransferred, HeaderLen);
+
+	PacketReader packet{m_buffer.get(), bytesTransferred};
+	baseHandleRequest(packet);
+
+	startReadHeader();
 }
 
 auto Session::getIp() const -> const Ip & {
-	return m_connection->getIp();
+	return m_ip;
 }
 
-auto Session::getConnectPacket(const string_t &subversion) const -> PacketBuilder {
-	PacketBuilder builder;
-	builder
-		.add<header_t>(0)
-		.add<version_t>(MapleVersion::Version)
-		.add<string_t>(subversion)
-		.add<iv_t>(m_decoder.getRecvIv())
-		.add<iv_t>(m_decoder.getSendIv())
-		.add<game_locale_t>(MapleVersion::Locale);
+auto Session::baseHandleRequest(PacketReader &reader) -> void {
+	try {
+		switch (reader.peek<header_t>()) {
+			case SMSG_PING:
+				if (m_type != ConnectionType::EndUser) {
+					send(Packets::pong());
+				}
+				break;
+			case CMSG_PONG:
+				if (m_pingCount == 0) {
+					// Trying to spoof pongs without pings
+					disconnect();
+					return;
+				}
+				m_pingCount = 0;
+				// This is for the trip to and from, so latency is averaged between them
+				m_latency = duration_cast<milliseconds_t>(TimeUtilities::getNow() - m_lastPing) / 2;
+				break;
+		}
 
-	builder.set<header_t>(static_cast<header_t>(builder.getSize() - sizeof(header_t)), 0);
-	return builder;
+		if (m_handler->handle(reader) == Result::Failure) {
+			disconnect();
+		}
+	}
+	catch (std::exception &e) {
+		// TODO FIXME log?
+		std::cerr << "SESSION BASEHANDLEREQUEST ERROR: " << e.what() << std::endl;
+	}
 }
 
 }

@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 namespace ChannelServer {
 
-auto Fame::handleFame(Player *player, PacketReader &reader) -> void {
+auto Fame::handleFame(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	player_id_t targetId = reader.get<player_id_t>();
 	uint8_t type = reader.get<uint8_t>();
 	if (targetId > 0) {
@@ -39,7 +39,7 @@ auto Fame::handleFame(Player *player, PacketReader &reader) -> void {
 			player->send(Packets::Fame::sendError(checkResult));
 		}
 		else {
-			Player *famee = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(targetId);
+			auto famee = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(targetId);
 			fame_t newFame = famee->getStats()->getFame() + (type == 1 ? 1 : -1);
 			famee->getStats()->setFame(newFame);
 			addFameLog(player->getId(), targetId);
@@ -52,7 +52,7 @@ auto Fame::handleFame(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto Fame::canFame(Player *player, player_id_t to) -> int32_t {
+auto Fame::canFame(ref_ptr_t<Player> player, player_id_t to) -> int32_t {
 	player_id_t from = player->getId();
 	if (player->getStats()->getLevel() < 15) {
 		return Packets::Fame::Errors::LevelUnder15;

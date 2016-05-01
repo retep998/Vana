@@ -18,8 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Common/Decoder.hpp"
+#include "Common/ConnectionType.hpp"
 #include "Common/Ip.hpp"
+#include "Common/PacketTransformer.hpp"
+#include "Common/PingConfig.hpp"
 #include "Common/shared_array.hpp"
+#include "Common/TimerContainerHolder.hpp"
 #include "Common/Types.hpp"
 #include <asio.hpp>
 #include <memory>
@@ -28,43 +32,61 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 namespace Vana {
-	class AbstractConnection;
 	class ConnectionManager;
 	class PacketBuilder;
+	class PacketHandler;
+	class PacketReader;
+	class Session;
 
-	class Session : public enable_shared<Session> {
+	using Handler = ref_ptr_t<PacketHandler>;
+	using HandlerCreator = function_t<Handler()>;
+
+	class Session : public enable_shared<Session>, public TimerContainerHolder {
 	public:
-		Session(asio::io_service &ioService, ConnectionManager &manager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string_t &subversion);
+		Session(
+			asio::io_service &service,
+			ConnectionManager &manager,
+			Handler handler);
 
 		auto disconnect() -> void;
-		auto send(const PacketBuilder &builder) -> void;
+		auto send(const PacketBuilder &builder, bool encrypt = true) -> void;
 		auto getIp() const -> const Ip &;
-	protected:
-		auto getSocket() -> asio::ip::tcp::socket &;
-		auto getDecoder() -> Decoder &;
-		auto getBuffer() -> MiscUtilities::shared_array<unsigned char> &;
-		auto start() -> void;
+		auto getLatency() const -> milliseconds_t;
+		auto getType() const -> ConnectionType;
+		auto setType(ConnectionType type) -> void;
+	private:
+		static const size_t HeaderLen = 4;
+		static const size_t MaxBufferLen = 65535;
+
+		auto syncRead(size_t minimumBytes) -> pair_t<asio::error_code, PacketReader>;
 		auto startReadHeader() -> void;
 		auto handleWrite(const asio::error_code &error, size_t bytesTransferred) -> void;
 		auto handleReadHeader(const asio::error_code &error, size_t bytesTransferred) -> void;
 		auto handleReadBody(const asio::error_code &error, size_t bytesTransferred) -> void;
+		auto getSocket() -> asio::ip::tcp::socket &;
+		auto getCodec() -> PacketTransformer &;
+		auto getBuffer() -> MiscUtilities::shared_array<unsigned char> &;
+		auto start(const PingConfig &ping, ref_ptr_t<PacketTransformer> transformer) -> void;
 		auto send(const unsigned char *buf, int32_t len, bool encrypt = true) -> void;
-		auto getConnectPacket(const string_t &subversion) const -> PacketBuilder;
+		auto ping() -> void;
+		auto baseHandleRequest(PacketReader &reader) -> void;
 
-		static const size_t headerLen = 4;
-		static const size_t maxBufferLen = 65535;
-	private:
 		friend class ConnectionManager;
+		friend class ConnectionListener;
 
-		bool m_isForClient = true;
-		bool m_usePing = false;
-		string_t m_subversion;
-		ref_ptr_t<AbstractConnection> m_connection;
+		bool m_isConnected = false;
+		ConnectionType m_type = ConnectionType::Unknown;
+		int8_t m_pingCount = 0;
+		int32_t m_maxPingCount = 0;
+		milliseconds_t m_latency = milliseconds_t{0};
+		time_point_t m_lastPing;
+		Handler m_handler;
+		Ip m_ip;
 		ConnectionManager &m_manager;
-		Decoder m_decoder;
 		asio::ip::tcp::socket m_socket;
 		MiscUtilities::shared_array<unsigned char> m_buffer;
 		MiscUtilities::shared_array<unsigned char> m_sendPacket;
+		ref_ptr_t<PacketTransformer> m_codec;
 		mutex_t m_sendMutex;
 	};
 }

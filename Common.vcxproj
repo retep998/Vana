@@ -91,15 +91,15 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Common\AbstractServerAcceptConnection.cpp" />
-    <ClCompile Include="src\Common\AbstractServerConnection.cpp" />
     <ClCompile Include="src\Common\Buff.cpp" />
     <ClCompile Include="src\Common\BuffInfo.cpp" />
     <ClCompile Include="src\Common\BuffMapInfo.cpp" />
     <ClCompile Include="src\Common\BuffSource.cpp" />
     <ClCompile Include="src\Common\ClientIp.cpp" />
+    <ClCompile Include="src\Common\ConnectionListener.cpp" />
     <ClCompile Include="src\Common\ConsoleLogger.cpp" />
     <ClCompile Include="src\Common\CurseDataProvider.cpp" />
+    <ClCompile Include="src\Common\EncryptedPacketTransformer.cpp" />
     <ClCompile Include="src\Common\ExitCodes.cpp" />
     <ClCompile Include="src\Common\ExternalIp.cpp" />
     <ClCompile Include="src\Common\ExternalIpResolver.cpp" />
@@ -115,8 +115,10 @@
     <ClCompile Include="src\Common\LuaVariant.cpp" />
     <ClCompile Include="src\Common\NpcDataProvider.cpp" />
     <ClCompile Include="src\Common\PacketBuilder.cpp" />
+    <ClCompile Include="src\Common\PacketHandler.cpp" />
+    <ClCompile Include="src\Common\PacketTransformer.cpp" />
     <ClCompile Include="src\Common\PasswordTransformationConfig.cpp" />
-    <ClCompile Include="src\Common\PingPacket.cpp" />
+    <ClCompile Include="src\Common\CommonPacket.cpp" />
     <ClCompile Include="src\Common\Point.cpp" />
     <ClCompile Include="src\Common\PrecompiledHeader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -137,6 +139,7 @@
     <ClCompile Include="src\Common\Rect.cpp" />
     <ClCompile Include="src\Common\SaltTransformationConfig.cpp" />
     <ClCompile Include="src\Common\ScriptDataProvider.cpp" />
+    <ClCompile Include="src\Common\ServerAcceptedSession.cpp" />
     <ClCompile Include="src\Common\Session.cpp" />
     <ClCompile Include="src\Common\ShopDataProvider.cpp" />
     <ClCompile Include="src\Common\SkillDataProvider.cpp" />
@@ -156,17 +159,13 @@
     <ClCompile Include="src\Common\StringUtilities.cpp" />
     <ClCompile Include="src\Common\TimeUtilities.cpp" />
     <ClCompile Include="src\Common\ConnectionManager.cpp" />
-    <ClCompile Include="src\Common\ServerClient.cpp" />
     <ClCompile Include="src\Common\Decoder.cpp" />
-    <ClCompile Include="src\Common\AbstractConnection.cpp" />
     <ClCompile Include="src\Common\AbstractServer.cpp" />
     <ClCompile Include="src\Common\DatabaseUpdater.cpp" />
     <ClCompile Include="src\Common\VanaMain.cpp" />
     <ClCompile Include="src\Common\Variables.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Common\AbstractServerAcceptConnection.hpp" />
-    <ClInclude Include="src\Common\AbstractServerConnection.hpp" />
     <ClInclude Include="src\Common\Algorithm.hpp" />
     <ClInclude Include="src\Common\AttackData.hpp" />
     <ClInclude Include="src\Common\BanishFieldInfo.hpp" />
@@ -186,8 +185,15 @@
     <ClInclude Include="src\Common\ClientIp.hpp" />
     <ClInclude Include="src\Common\ComboLoggers.hpp" />
     <ClInclude Include="src\Common\CommonHeader.hpp" />
+    <ClInclude Include="src\Common\ConnectionListener.hpp" />
+    <ClInclude Include="src\Common\ConnectionListenerConfig.hpp" />
+    <ClInclude Include="src\Common\FinalizationPool.hpp" />
+    <ClInclude Include="src\Common\PacketHandler.hpp" />
+    <ClInclude Include="src\Common\PingConfig.hpp" />
+    <ClInclude Include="src\Common\ConnectionType.hpp" />
     <ClInclude Include="src\Common\ConsumeInfo.hpp" />
     <ClInclude Include="src\Common\DropInfo.hpp" />
+    <ClInclude Include="src\Common\EncryptedPacketTransformer.hpp" />
     <ClInclude Include="src\Common\EnumBase.hpp" />
     <ClInclude Include="src\Common\EnumUtilities.hpp" />
     <ClInclude Include="src\Common\EquipInfo.hpp" />
@@ -210,6 +216,7 @@
     <ClInclude Include="src\Common\InterHelper.hpp" />
     <ClInclude Include="src\Common\Ip.hpp" />
     <ClInclude Include="src\Common\IPacket.hpp" />
+    <ClInclude Include="src\Common\PacketTransformer.hpp" />
     <ClInclude Include="src\Common\Item.hpp" />
     <ClInclude Include="src\Common\ItemConstants.hpp" />
     <ClInclude Include="src\Common\BlockCipherIv.hpp" />
@@ -278,6 +285,7 @@
     <ClInclude Include="src\Common\ScriptTypes.hpp" />
     <ClInclude Include="src\Common\ScrollInfo.hpp" />
     <ClInclude Include="src\Common\SeatInfo.hpp" />
+    <ClInclude Include="src\Common\ServerAcceptedSession.hpp" />
     <ClInclude Include="src\Common\shared_array.hpp" />
     <ClInclude Include="src\Common\ShopData.hpp" />
     <ClInclude Include="src\Common\ShopInfo.hpp" />
@@ -320,7 +328,7 @@
     <ClInclude Include="src\Common\ConfigFile.hpp" />
     <ClInclude Include="src\Common\Database.hpp" />
     <ClInclude Include="src\Common\PacketReader.hpp" />
-    <ClInclude Include="src\Common\PingPacket.hpp" />
+    <ClInclude Include="src\Common\CommonPacket.hpp" />
     <ClInclude Include="src\Common\InterHeader.hpp" />
     <ClInclude Include="src\Common\AuthenticationPacket.hpp" />
     <ClInclude Include="src\Common\FileUtilities.hpp" />
@@ -330,10 +338,8 @@
     <ClInclude Include="src\Common\StringUtilities.hpp" />
     <ClInclude Include="src\Common\TimeUtilities.hpp" />
     <ClInclude Include="src\Common\ConnectionManager.hpp" />
-    <ClInclude Include="src\Common\ServerClient.hpp" />
     <ClInclude Include="src\Common\Session.hpp" />
     <ClInclude Include="src\Common\Decoder.hpp" />
-    <ClInclude Include="src\Common\AbstractConnection.hpp" />
     <ClInclude Include="src\Common\AbstractServer.hpp" />
     <ClInclude Include="src\Common\GuildLogo.hpp" />
     <ClInclude Include="src\Common\ServerType.hpp" />

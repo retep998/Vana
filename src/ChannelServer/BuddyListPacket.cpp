@@ -33,7 +33,7 @@ PACKET_IMPL(error, uint8_t error) {
 	return builder;
 }
 
-PACKET_IMPL(update, Player *player, uint8_t type) {
+PACKET_IMPL(update, ref_ptr_t<Player> player, uint8_t type) {
 	PacketBuilder builder;
 	uint8_t size = player->getBuddyList()->listSize();
 
@@ -50,7 +50,7 @@ PACKET_IMPL(update, Player *player, uint8_t type) {
 	return builder;
 }
 
-PACKET_IMPL(showSize, Player *player) {
+PACKET_IMPL(showSize, ref_ptr_t<Player> player) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_BUDDY)

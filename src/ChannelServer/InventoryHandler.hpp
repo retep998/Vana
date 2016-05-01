@@ -27,25 +27,24 @@ namespace Vana {
 		class Player;
 
 		namespace InventoryHandler {
-			auto itemMove(Player *player, PacketReader &reader) -> void;
-			auto dropItem(Player *player, PacketReader &reader, Item *item, inventory_slot_t slot, inventory_t inv) -> void;
-			auto moveItem(Player *player, PacketReader &reader) -> void;
-			auto useItem(Player *player, PacketReader &reader) -> void;
-			auto cancelItem(Player *player, PacketReader &reader) -> void;
-			auto useSkillbook(Player *player, PacketReader &reader) -> void;
-			auto useChair(Player *player, PacketReader &reader) -> void;
-			auto useItemEffect(Player *player, PacketReader &reader) -> void;
-			auto handleChair(Player *player, PacketReader &reader) -> void;
-			auto useSummonBag(Player *player, PacketReader &reader) -> void;
-			auto useReturnScroll(Player *player, PacketReader &reader) -> void;
-			auto useScroll(Player *player, PacketReader &reader) -> void;
-			auto useBuffItem(Player *player, PacketReader &reader) -> void;
-			auto useCashItem(Player *player, PacketReader &reader) -> void;
-			auto handleRockFunctions(Player *player, PacketReader &reader) -> void;
-			auto handleRockTeleport(Player *player, item_id_t itemId, PacketReader &reader) -> bool;
-			auto handleHammerTime(Player *player) -> void;
-			auto handleRewardItem(Player *player, PacketReader &reader) -> void;
-			auto handleScriptItem(Player *player, PacketReader &reader) -> void;
+			auto moveItem(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto dropItem(ref_ptr_t<Player> player, PacketReader &reader, Item *item, inventory_slot_t slot, inventory_t inv) -> void;
+			auto useItem(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto cancelItem(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto useSkillbook(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto useChair(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto useItemEffect(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto handleChair(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto useSummonBag(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto useReturnScroll(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto useScroll(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto useBuffItem(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto useCashItem(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto handleRockFunctions(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto handleRockTeleport(ref_ptr_t<Player> player, item_id_t itemId, PacketReader &reader) -> bool;
+			auto handleHammerTime(ref_ptr_t<Player> player) -> void;
+			auto handleRewardItem(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto handleScriptItem(ref_ptr_t<Player> player, PacketReader &reader) -> void;
 		}
 	}
 }

@@ -17,13 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Common/PacketBuilder.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
-
-namespace Packets {
-	PACKET(ping);
-	PACKET(pong);
-}
-
+	class PacketTransformer {
+	public:
+		virtual auto testPacket(unsigned char *header) -> ValidityResult;
+		virtual auto getPacketLength(unsigned char *header) -> uint16_t;
+		virtual auto setPacketHeader(unsigned char *header, uint16_t realPacketSize) -> void;
+		virtual auto encryptPacket(unsigned char *packetData, int32_t realPacketSize, uint16_t headerSize) -> void;
+		virtual auto decryptPacket(unsigned char *packetData, int32_t realPacketSize, uint16_t headerSize) -> void;
+	private:
+		auto getVersionAndSize(unsigned char *header, uint16_t &version, uint16_t &size) -> void;
+	};
 }

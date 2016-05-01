@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "Common/ConnectionType.hpp"
+#include "Common/ServerType.hpp"
 #include "Common/Types.hpp"
 #include <cstdlib>
 #include <string>
@@ -29,6 +31,30 @@ namespace Vana {
 			ForceNotNull = 2,
 			ForceNull = 3
 		};
+
+		inline
+		auto getConnectionType(ServerType type) -> ConnectionType {
+			switch (type) {
+				case ServerType::Login: return ConnectionType::Login;
+				case ServerType::World: return ConnectionType::World;
+				case ServerType::Channel: return ConnectionType::Channel;
+				case ServerType::Cash: return ConnectionType::Cash;
+				case ServerType::Mts: return ConnectionType::Mts;
+				default: throw NotImplementedException{"ServerType"};
+			}
+		}
+
+		inline
+		auto getServerType(ConnectionType type) -> ServerType {
+			switch (type) {
+				case ConnectionType::Login: return ServerType::Login;
+				case ConnectionType::World: return ServerType::World;
+				case ConnectionType::Channel: return ServerType::Channel;
+				case ConnectionType::Cash: return ServerType::Cash;
+				case ConnectionType::Mts: return ServerType::Mts;
+				default: throw NotImplementedException{"ConnectionType"};
+			}
+		}
 
 		template <typename TElement>
 		auto convertLinearScale(

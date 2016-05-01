@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServer.hpp"
+#include "Common/ConnectionListenerConfig.hpp"
 #include "Common/ConnectionManager.hpp"
 #include "Common/InitializeCommon.hpp"
 #include "Common/MajorBossConfig.hpp"
@@ -25,11 +26,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/ServerType.hpp"
 #include "LoginServer/LoginServerAcceptPacket.hpp"
 #include "LoginServer/RankingCalculator.hpp"
-#include "LoginServer/UserConnection.hpp"
+#include "LoginServer/User.hpp"
 #include "LoginServer/World.hpp"
 #include "LoginServer/Worlds.hpp"
-#include <sstream>
 #include <iostream>
+#include <sstream>
 
 namespace Vana {
 namespace LoginServer {
@@ -41,8 +42,41 @@ LoginServer::LoginServer() :
 
 auto LoginServer::listen() -> void {
 	auto &config = getInterServerConfig();
-	getConnectionManager().accept(Ip::Type::Ipv4, m_port, [] { return new UserConnection{}; }, config, false, MapleVersion::LoginSubversion);
-	getConnectionManager().accept(Ip::Type::Ipv4, config.loginPort, [] { return new LoginServerAcceptConnection{}; }, config, true, MapleVersion::LoginSubversion);
+
+	m_userPool.initialize(1);
+	m_sessionPool.initialize(2);
+
+	getConnectionManager().listen(
+		ConnectionListenerConfig{
+			config.clientPing,
+			config.clientEncryption,
+			ConnectionType::EndUser,
+			MapleVersion::LoginSubversion,
+			m_port,
+			Ip::Type::Ipv4
+		},
+		[&] { return make_ref_ptr<User>(); }
+	);
+
+	getConnectionManager().listen(
+		ConnectionListenerConfig{
+			config.serverPing,
+			true,
+			ConnectionType::Unknown,
+			MapleVersion::LoginSubversion,
+			config.loginPort,
+			Ip::Type::Ipv4
+		},
+		[&] { return make_ref_ptr<LoginServerAcceptedSession>(*this); }
+	);
+}
+
+auto LoginServer::finalizeUser(ref_ptr_t<User> user) -> void {
+	m_userPool.store(user);
+}
+
+auto LoginServer::finalizeServerSession(ref_ptr_t<LoginServerAcceptedSession> session) -> void {
+	m_sessionPool.store(session);
 }
 
 auto LoginServer::loadData() -> Result {

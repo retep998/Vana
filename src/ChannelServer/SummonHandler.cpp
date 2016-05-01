@@ -39,7 +39,7 @@ namespace ChannelServer {
 
 IdPool<summon_id_t> SummonHandler::summonIds;
 
-auto SummonHandler::useSummon(Player *player, skill_id_t skillId, skill_level_t level) -> void {
+auto SummonHandler::useSummon(ref_ptr_t<Player> player, skill_id_t skillId, skill_level_t level) -> void {
 	// Determine if any summons need to be removed and do it
 	switch (skillId) {
 		case Vana::Skills::Ranger::Puppet:
@@ -123,7 +123,7 @@ auto SummonHandler::useSummon(Player *player, skill_id_t skillId, skill_level_t 
 	player->sendMap(Packets::showSummon(player->getId(), summon, false));
 }
 
-auto SummonHandler::removeSummon(Player *player, summon_id_t summonId, bool packetOnly, int8_t showMessage, bool fromTimer) -> void {
+auto SummonHandler::removeSummon(ref_ptr_t<Player> player, summon_id_t summonId, bool packetOnly, int8_t showMessage, bool fromTimer) -> void {
 	Summon *summon = player->getSummons()->getSummon(summonId);
 	if (summon != nullptr) {
 		player->sendMap(Packets::removeSummon(player->getId(), summon, showMessage));
@@ -133,20 +133,20 @@ auto SummonHandler::removeSummon(Player *player, summon_id_t summonId, bool pack
 	}
 }
 
-auto SummonHandler::showSummon(Player *player) -> void {
+auto SummonHandler::showSummon(ref_ptr_t<Player> player) -> void {
 	player->getSummons()->forEach([player](Summon *summon) {
 		summon->setPos(player->getPos());
 		player->sendMap(Packets::showSummon(player->getId(), summon));
 	});
 }
 
-auto SummonHandler::showSummons(Player *fromPlayer, Player *toPlayer) -> void {
+auto SummonHandler::showSummons(ref_ptr_t<Player> fromPlayer, ref_ptr_t<Player> toPlayer) -> void {
 	fromPlayer->getSummons()->forEach([fromPlayer, toPlayer](Summon *summon) {
 		toPlayer->send(Packets::showSummon(fromPlayer->getId(), summon));
 	});
 }
 
-auto SummonHandler::moveSummon(Player *player, PacketReader &reader) -> void {
+auto SummonHandler::moveSummon(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	summon_id_t summonId = reader.get<summon_id_t>();
 
 	// I am not certain what this is, but in the Odin source they seemed to think it was original position. However, it caused AIDS.
@@ -163,7 +163,7 @@ auto SummonHandler::moveSummon(Player *player, PacketReader &reader) -> void {
 	player->sendMap(Packets::moveSummon(player->getId(), summon, summon->getPos(), reader.getBuffer(), (reader.getBufferLength() - 9)));
 }
 
-auto SummonHandler::damageSummon(Player *player, PacketReader &reader) -> void {
+auto SummonHandler::damageSummon(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	summon_id_t summonId = reader.get<summon_id_t>();
 	int8_t unk = reader.get<int8_t>();
 	damage_t damage = reader.get<damage_t>();
@@ -182,7 +182,7 @@ auto SummonHandler::damageSummon(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto SummonHandler::makeBuff(Player *player, item_id_t itemId) -> BuffInfo {
+auto SummonHandler::makeBuff(ref_ptr_t<Player> player, item_id_t itemId) -> BuffInfo {
 	const auto &buffData = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
 	switch (itemId) {
 		case Items::BeholderHexWatk: return buffData.physicalAttack;
@@ -195,7 +195,7 @@ auto SummonHandler::makeBuff(Player *player, item_id_t itemId) -> BuffInfo {
 	throw std::invalid_argument{"invalid_argument"};
 }
 
-auto SummonHandler::makeActiveBuff(Player *player, const BuffInfo &data, item_id_t itemId, const SkillLevelInfo *skillInfo) -> BuffPacketValues {
+auto SummonHandler::makeActiveBuff(ref_ptr_t<Player> player, const BuffInfo &data, item_id_t itemId, const SkillLevelInfo *skillInfo) -> BuffPacketValues {
 	BuffPacketValues buff;
 	buff.player.types[data.getBuffByte()] = static_cast<uint8_t>(data.getBuffType());
 	switch (itemId) {
@@ -208,7 +208,7 @@ auto SummonHandler::makeActiveBuff(Player *player, const BuffInfo &data, item_id
 	return buff;
 }
 
-auto SummonHandler::summonSkill(Player *player, PacketReader &reader) -> void {
+auto SummonHandler::summonSkill(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	summon_id_t summonId = reader.get<summon_id_t>();
 	Summon *summon = player->getSummons()->getSummon(summonId);
 	if (summon == nullptr) {

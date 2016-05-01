@@ -31,7 +31,7 @@ namespace Vana {
 		class Trades : public TimerContainerHolder {
 		public:
 			Trades();
-			auto newTrade(Player *start, Player *recv) -> trade_id_t;
+			auto newTrade(ref_ptr_t<Player> start, ref_ptr_t<Player> recv) -> trade_id_t;
 			auto removeTrade(trade_id_t id) -> void;
 			auto stopTimeout(trade_id_t id) -> void;
 			auto getTrade(trade_id_t id) -> ActiveTrade *;
@@ -39,8 +39,8 @@ namespace Vana {
 			static seconds_t TradeTimeout;
 
 			auto getTimerSecondsRemaining(trade_id_t id) -> seconds_t;
-			auto timeout(Player *sender) -> void;
-			auto startTimeout(trade_id_t id, Player *sender) -> void;
+			auto timeout(ref_ptr_t<Player> sender) -> void;
+			auto startTimeout(trade_id_t id, ref_ptr_t<Player> sender) -> void;
 
 			IdPool<trade_id_t> m_tradeIds;
 			hash_map_t<trade_id_t, ref_ptr_t<ActiveTrade>> m_trades;

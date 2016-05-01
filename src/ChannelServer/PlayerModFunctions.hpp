@@ -24,24 +24,24 @@ namespace Vana {
 		class Player;
 
 		namespace PlayerModFunctions {
-			auto disconnect(Player *player, const chat_t &args) -> ChatResult;
-			auto save(Player *player, const chat_t &args) -> ChatResult;
-			auto modMesos(Player *player, const chat_t &args) -> ChatResult;
-			auto heal(Player *player, const chat_t &args) -> ChatResult;
-			auto modStr(Player *player, const chat_t &args) -> ChatResult;
-			auto modDex(Player *player, const chat_t &args) -> ChatResult;
-			auto modInt(Player *player, const chat_t &args) -> ChatResult;
-			auto modLuk(Player *player, const chat_t &args) -> ChatResult;
-			auto maxStats(Player *player, const chat_t &args) -> ChatResult;
-			auto hp(Player *player, const chat_t &args) -> ChatResult;
-			auto mp(Player *player, const chat_t &args) -> ChatResult;
-			auto sp(Player *player, const chat_t &args) -> ChatResult;
-			auto ap(Player *player, const chat_t &args) -> ChatResult;
-			auto fame(Player *player, const chat_t &args) -> ChatResult;
-			auto level(Player *player, const chat_t &args) -> ChatResult;
-			auto job(Player *player, const chat_t &args) -> ChatResult;
-			auto addSp(Player *player, const chat_t &args) -> ChatResult;
-			auto maxSp(Player *player, const chat_t &args) -> ChatResult;
+			auto disconnect(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto save(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto modMesos(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto heal(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto modStr(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto modDex(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto modInt(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto modLuk(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto maxStats(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto hp(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto mp(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto sp(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto ap(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto fame(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto level(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto job(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto addSp(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto maxSp(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
 		}
 	}
 }

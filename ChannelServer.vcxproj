@@ -102,6 +102,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\ChannelServer\CustomFunctions.cpp" />
+    <ClCompile Include="src\ChannelServer\LoginServerSession.cpp" />
+    <ClCompile Include="src\ChannelServer\LoginServerSessionHandler.cpp" />
     <ClCompile Include="src\ChannelServer\MysticDoor.cpp" />
     <ClCompile Include="src\ChannelServer\EffectPacket.cpp" />
     <ClCompile Include="src\ChannelServer\InfoFunctions.cpp" />
@@ -170,9 +172,9 @@
     <ClCompile Include="src\ChannelServer\BuffsPacketHelper.cpp" />
     <ClCompile Include="src\ChannelServer\PlayerPacketHelper.cpp" />
     <ClCompile Include="src\ChannelServer\MapDataProvider.cpp" />
-    <ClCompile Include="src\ChannelServer\WorldServerConnection.cpp" />
-    <ClCompile Include="src\ChannelServer\WorldServerConnectPacket.cpp" />
-    <ClCompile Include="src\ChannelServer\WorldServerConnectHandler.cpp" />
+    <ClCompile Include="src\ChannelServer\WorldServerSession.cpp" />
+    <ClCompile Include="src\ChannelServer\WorldServerPacket.cpp" />
+    <ClCompile Include="src\ChannelServer\WorldServerSessionHandler.cpp" />
     <ClCompile Include="src\ChannelServer\LuaInstance.cpp" />
     <ClCompile Include="src\ChannelServer\LuaNpc.cpp" />
     <ClCompile Include="src\ChannelServer\LuaPortal.cpp" />
@@ -214,6 +216,8 @@
     <ClInclude Include="src\ChannelServer\KeyMapAction.hpp" />
     <ClInclude Include="src\ChannelServer\KeyMapKey.hpp" />
     <ClInclude Include="src\ChannelServer\KeyMapType.hpp" />
+    <ClInclude Include="src\ChannelServer\LoginServerSession.hpp" />
+    <ClInclude Include="src\ChannelServer\LoginServerSessionHandler.hpp" />
     <ClInclude Include="src\ChannelServer\MysticDoor.hpp" />
     <ClInclude Include="src\ChannelServer\Drop.hpp" />
     <ClInclude Include="src\ChannelServer\EffectPacket.hpp" />
@@ -278,9 +282,9 @@
     <ClInclude Include="src\ChannelServer\BuffsPacketHelper.hpp" />
     <ClInclude Include="src\ChannelServer\PlayerPacketHelper.hpp" />
     <ClInclude Include="src\ChannelServer\MapDataProvider.hpp" />
-    <ClInclude Include="src\ChannelServer\WorldServerConnection.hpp" />
-    <ClInclude Include="src\ChannelServer\WorldServerConnectPacket.hpp" />
-    <ClInclude Include="src\ChannelServer\WorldServerConnectHandler.hpp" />
+    <ClInclude Include="src\ChannelServer\WorldServerSession.hpp" />
+    <ClInclude Include="src\ChannelServer\WorldServerPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\WorldServerSessionHandler.hpp" />
     <ClInclude Include="src\ChannelServer\LuaInstance.hpp" />
     <ClInclude Include="src\ChannelServer\LuaNpc.hpp" />
     <ClInclude Include="src\ChannelServer\LuaPortal.hpp" />

@@ -21,18 +21,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <cstring>
 
 namespace Vana {
-	using iv_t = uint32_t;
-
 	class BlockCipherIv {
 	public:
 		BlockCipherIv();
 		explicit BlockCipherIv(iv_t iv);
-	private:
-		friend class Decoder;
 
-		auto getBytes() -> unsigned char * { return m_iv; }
+		auto getBytes() -> unsigned char const * const { return m_iv; }
 		auto getIv() const -> iv_t { return *reinterpret_cast<const iv_t *>(m_iv); }
 		auto shuffle() -> void;
+	private:
+		friend class Decoder;
 		auto updateIv(iv_t iv) -> void;
 
 		inline

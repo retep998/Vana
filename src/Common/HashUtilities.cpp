@@ -22,8 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <botan/pipe.h>
 
 namespace Vana {
+namespace HashUtilities {
 
-auto HashUtilities::hashPassword(const string_t &password) -> string_t {
+auto hashPassword(const string_t &password) -> string_t {
 	Botan::Pipe pipe{
 		new Botan::Chain{
 			new Botan::Hash_Filter{"SHA-512"},
@@ -33,11 +34,11 @@ auto HashUtilities::hashPassword(const string_t &password) -> string_t {
 	return pipe.read_all_as_string();
 }
 
-auto HashUtilities::hashPassword(const string_t &password, const string_t &rawSalt, const SaltConfig &conf) -> string_t {
+auto hashPassword(const string_t &password, const string_t &rawSalt, const SaltConfig &conf) -> string_t {
 	return hashPassword(saltPassword(password, rawSalt, conf));
 }
 
-auto HashUtilities::saltPassword(const string_t &password, const string_t &rawSalt, const SaltConfig &conf) -> string_t {
+auto saltPassword(const string_t &password, const string_t &rawSalt, const SaltConfig &conf) -> string_t {
 	string_t finalizedSalt = rawSalt;
 	for (const auto &policy : conf.modifyPolicies) {
 		finalizedSalt = policy.apply(finalizedSalt);
@@ -46,7 +47,7 @@ auto HashUtilities::saltPassword(const string_t &password, const string_t &rawSa
 	return conf.policy.apply(password, finalizedSalt);
 }
 
-auto HashUtilities::generateSalt(const SaltSizeConfig &conf) -> string_t {
+auto generateSalt(const SaltSizeConfig &conf) -> string_t {
 	int32_t length = 0;
 	switch (conf.policy) {
 		case SaltSizePolicy::Static:
@@ -65,4 +66,5 @@ auto HashUtilities::generateSalt(const SaltSizeConfig &conf) -> string_t {
 	return salt;
 }
 
+}
 }

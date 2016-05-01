@@ -15,16 +15,17 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "AbstractServerConnection.hpp"
-#include "Common/AbstractServer.hpp"
-#include "Common/AuthenticationPacket.hpp"
-#include <asio.hpp>
-#include <iostream>
+#pragma once
+
+#include "Common/PacketBuilder.hpp"
+#include "Common/Types.hpp"
 
 namespace Vana {
 
-auto AbstractServerConnection::sendAuth(const string_t &pass, const IpMatrix &extIp) -> void {
-	send(Packets::sendPassword(this, pass, extIp));
+namespace Packets {
+	PACKET(ping);
+	PACKET(pong);
+	PACKET(connect, const string_t &subversion, iv_t recvIv, iv_t sendIv);
 }
 
 }

@@ -27,9 +27,9 @@ namespace Vana {
 		class Player;
 
 		namespace ReactorHandler {
-			auto hitReactor(Player *player, PacketReader &reader) -> void;
-			auto touchReactor(Player *player, PacketReader &reader) -> void;
-			auto checkDrop(Player *player, Drop *drop) -> void;
+			auto hitReactor(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto touchReactor(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto checkDrop(ref_ptr_t<Player> player, Drop *drop) -> void;
 			auto checkLoot(Drop *drop) -> void;
 		}
 	}

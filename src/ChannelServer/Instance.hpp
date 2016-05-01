@@ -54,8 +54,8 @@ namespace Vana {
 
 			// Players
 			auto getAllPlayerIds() -> vector_t<player_id_t>;
-			auto addPlayer(Player *player) -> void;
-			auto removePlayer(Player *player) -> void;
+			auto addPlayer(ref_ptr_t<Player> player) -> void;
+			auto removePlayer(ref_ptr_t<Player> player) -> void;
 			auto removePlayer(player_id_t id) -> void;
 			auto removeAllPlayers() -> void;
 			auto moveAllPlayers(map_id_t mapId, bool respectInstances, const PortalInfo * const portal = nullptr) -> void;
@@ -126,7 +126,7 @@ namespace Vana {
 			vector_t<Map *> m_maps;
 			vector_t<Party *> m_parties;
 			hash_map_t<string_t, TimerAction> m_timerActions; // Timers indexed by name
-			hash_map_t<player_id_t, Player *> m_players;
+			hash_map_t<player_id_t, ref_ptr_t<Player>> m_players;
 		};
 
 		template <typename ... TArgs>

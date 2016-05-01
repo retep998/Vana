@@ -17,25 +17,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Common/AbstractServerAcceptConnection.hpp"
+#include "Common/ConnectionListenerConfig.hpp"
+#include "Common/Session.hpp"
 #include "Common/Types.hpp"
+#include <asio.hpp>
 
 namespace Vana {
-	class PacketReader;
+	class ConnectionManager;
 
-	namespace WorldServer {
-		class WorldServerAcceptConnection final : public AbstractServerAcceptConnection {
-			NONCOPYABLE(WorldServerAcceptConnection);
-		public:
-			WorldServerAcceptConnection() = default;
-			~WorldServerAcceptConnection();
+	class ConnectionListener {
+	public:
+		ConnectionListener(
+			const ConnectionListenerConfig &config,
+			HandlerCreator handlerCreator,
+			asio::io_service &ioService,
+			asio::ip::tcp::endpoint endpoint,
+			ConnectionManager &manager);
 
-			auto getChannel() const -> channel_id_t;
-		protected:
-			auto handleRequest(PacketReader &reader) -> void override;
-			auto authenticated(ServerType type) -> void override;
-		private:
-			channel_id_t m_channel = 0;
-		};
-	}
+		auto beginAccept() -> void;
+		auto stop() -> void;
+	private:
+		ConnectionListenerConfig m_config;
+		asio::ip::tcp::acceptor m_acceptor;
+		ConnectionManager &m_manager;
+		HandlerCreator m_handlerCreator;
+	};
 }

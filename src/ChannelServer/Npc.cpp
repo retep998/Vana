@@ -29,14 +29,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 namespace ChannelServer {
 
-Npc::Npc(npc_id_t npcId, Player *player, quest_id_t questId, bool isStart) :
+Npc::Npc(npc_id_t npcId, ref_ptr_t<Player> player, quest_id_t questId, bool isStart) :
 	m_player{player},
 	m_npcId{npcId}
 {
 	initScript(getScript(questId, isStart));
 }
 
-Npc::Npc(npc_id_t npcId, Player *player, const Point &pos, quest_id_t questId, bool isStart) :
+Npc::Npc(npc_id_t npcId, ref_ptr_t<Player> player, const Point &pos, quest_id_t questId, bool isStart) :
 	m_pos{pos},
 	m_player{player},
 	m_npcId{npcId}
@@ -44,7 +44,7 @@ Npc::Npc(npc_id_t npcId, Player *player, const Point &pos, quest_id_t questId, b
 	initScript(getScript(questId, isStart));
 }
 
-Npc::Npc(npc_id_t npcId, Player *player, const string_t &script) :
+Npc::Npc(npc_id_t npcId, ref_ptr_t<Player> player, const string_t &script) :
 	m_player{player},
 	m_npcId{npcId}
 {

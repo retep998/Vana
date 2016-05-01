@@ -206,7 +206,7 @@ auto PlayerStats::setLevel(player_level_t level) -> void {
 	m_level = level;
 	m_player->send(Packets::Player::updateStat(Stats::Level, level));
 	m_player->sendMap(Packets::levelUp(m_player->getId()));
-	ChannelServer::getInstance().getPlayerDataProvider().updatePlayerLevel(m_player);
+	ChannelServer::getInstance().getPlayerDataProvider().updatePlayerLevel(ref_ptr_t<Player>{m_player});
 }
 
 auto PlayerStats::setHp(health_t hp, bool sendPacket) -> void {
@@ -236,7 +236,7 @@ auto PlayerStats::damageHp(int32_t damageHp) -> void {
 
 auto PlayerStats::modifiedHp() -> void {
 	if (Party *p = m_player->getParty()) {
-		p->showHpBar(m_player);
+		p->showHpBar(ref_ptr_t<Player>{m_player});
 	}
 	m_player->getActiveBuffs()->checkBerserk();
 	if (m_hp == Stats::MinHp) {
@@ -245,7 +245,7 @@ auto PlayerStats::modifiedHp() -> void {
 		}
 		loseExp();
 		m_player->getSummons()->forEach([this](Summon *summon) {
-			SummonHandler::removeSummon(m_player, summon->getId(), false, SummonMessages::Disappearing);
+			SummonHandler::removeSummon(ref_ptr_t<Player>{m_player}, summon->getId(), false, SummonMessages::Disappearing);
 		});
 	}
 }
@@ -287,7 +287,7 @@ auto PlayerStats::setJob(job_id_t job) -> void {
 	m_job = job;
 	m_player->send(Packets::Player::updateStat(Stats::Job, job));
 	m_player->sendMap(Packets::jobChange(m_player->getId()));
-	ChannelServer::getInstance().getPlayerDataProvider().updatePlayerJob(m_player);
+	ChannelServer::getInstance().getPlayerDataProvider().updatePlayerJob(ref_ptr_t<Player>{m_player});
 }
 
 auto PlayerStats::setStr(stat_t str) -> void {
@@ -340,7 +340,7 @@ auto PlayerStats::setHyperBodyHp(int16_t mod) -> void {
 		setHp(getHp());
 	}
 	if (Party *p = m_player->getParty()) {
-		p->showHpBar(m_player);
+		p->showHpBar(ref_ptr_t<Player>{m_player});
 	}
 	m_player->getActiveBuffs()->checkBerserk();
 }
@@ -378,7 +378,7 @@ auto PlayerStats::loseExp() -> void {
 	if (!GameLogicUtilities::isBeginnerJob(getJob()) && getLevel() < GameLogicUtilities::getMaxLevel(getJob()) && m_player->getMapId() != Vana::Maps::SorcerersRoom) {
 		slot_qty_t charms = m_player->getInventory()->getItemAmount(Items::SafetyCharm);
 		if (charms > 0) {
-			Inventory::takeItem(m_player, Items::SafetyCharm, 1);
+			Inventory::takeItem(ref_ptr_t<Player>{m_player}, Items::SafetyCharm, 1);
 			// TODO FIXME REVIEW
 			charms = --charms;
 			m_player->send(Packets::Inventory::useCharm(static_cast<uint8_t>(charms)));

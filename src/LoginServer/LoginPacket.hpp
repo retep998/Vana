@@ -27,7 +27,7 @@ namespace Vana {
 	class ClientIp;
 
 	namespace LoginServer {
-		class UserConnection;
+		class User;
 		class World;
 		struct Character;
 
@@ -59,7 +59,7 @@ namespace Vana {
 			PACKET(loginError, int16_t errorId);
 			PACKET(loginBan, int8_t reason, FileTime expire);
 			PACKET(loginProcess, int8_t id);
-			PACKET(loginConnect, UserConnection *user, const string_t &username);
+			PACKET(loginConnect, ref_ptr_t<User> user, const string_t &username);
 			PACKET(pinAssigned);
 			PACKET(genderDone, gender_id_t gender);
 			PACKET(showWorld, World *world);

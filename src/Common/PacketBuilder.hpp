@@ -44,6 +44,9 @@ namespace Vana {
 		auto add(const TValue &value) -> PacketBuilder &;
 		template <typename TValue>
 		auto unk() -> PacketBuilder &;
+		// Used in conjunction with packet information that's intended to be set later
+		template <typename TValue>
+		auto defer() -> PacketBuilder &;
 		template <typename TValue>
 		auto unk(const TValue &value) -> PacketBuilder &;
 		auto unk(int32_t bytes) -> PacketBuilder &;
@@ -127,6 +130,12 @@ namespace Vana {
 
 	template <typename TValue>
 	auto PacketBuilder::unk() -> PacketBuilder & {
+		addImpl(TValue{});
+		return *this;
+	}
+
+	template <typename TValue>
+	auto PacketBuilder::defer() -> PacketBuilder & {
 		addImpl(TValue{});
 		return *this;
 	}

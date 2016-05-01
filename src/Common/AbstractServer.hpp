@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 namespace Vana {
-	class AbstractServerConnection;
+	class Session;
 	struct LogConfig;
 
 	class AbstractServer {
@@ -55,7 +55,7 @@ namespace Vana {
 		virtual auto getLogPrefix() const -> string_t = 0;
 
 		auto getInterServerConfig() const -> const InterServerConfig &;
-		auto sendAuth(AbstractServerConnection *connection) const -> void;
+		auto sendAuth(ref_ptr_t<Session> session) const -> void;
 		auto displayLaunchTime() const -> void;
 		auto buildLogIdentifier(function_t<void(out_stream_t &)> produceId) const -> opt_string_t;
 		auto getConnectionManager() -> ConnectionManager & { return m_connectionManager; }

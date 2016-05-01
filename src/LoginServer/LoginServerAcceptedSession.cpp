@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginServerAcceptConnection.hpp"
+#include "LoginServerAcceptedSession.hpp"
 #include "Common/InterHeader.hpp"
 #include "Common/PacketReader.hpp"
 #include "Common/PacketWrapper.hpp"
@@ -31,29 +31,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 namespace LoginServer {
 
-LoginServerAcceptConnection::~LoginServerAcceptConnection() {
-	if (m_worldId.is_initialized()) {
-		auto &server = LoginServer::getInstance();
-
-		World *world = server.getWorlds().getWorld(m_worldId.get());
-		world->setConnected(false);
-		world->clearChannels();
-
-		server.log(LogType::ServerDisconnect, [&](out_stream_t &log) {
-			log << "World " << static_cast<int32_t>(m_worldId.get());
-		});
-	}
+LoginServerAcceptedSession::LoginServerAcceptedSession(AbstractServer &server) :
+	ServerAcceptedSession{server}
+{
 }
 
-auto LoginServerAcceptConnection::handleRequest(PacketReader &reader) -> void {
-	auto &server = LoginServer::getInstance();
-	if (processAuth(server, reader) == Result::Failure) {
-		return;
+auto LoginServerAcceptedSession::handle(PacketReader &reader) -> Result {
+	if (ServerAcceptedSession::handle(reader) == Result::Failure) {
+		return Result::Failure;
 	}
+	auto &server = LoginServer::getInstance();
 	switch (reader.get<header_t>()) {
-		case IMSG_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, reader); break;
-		case IMSG_UPDATE_CHANNEL_POP: LoginServerAcceptHandler::updateChannelPop(this, reader); break;
-		case IMSG_REMOVE_CHANNEL: LoginServerAcceptHandler::removeChannel(this, reader); break;
+		case IMSG_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(shared_from_this(), reader); break;
+		case IMSG_UPDATE_CHANNEL_POP: LoginServerAcceptHandler::updateChannelPop(shared_from_this(), reader); break;
+		case IMSG_REMOVE_CHANNEL: LoginServerAcceptHandler::removeChannel(shared_from_this(), reader); break;
 		case IMSG_CALCULATE_RANKING: RankingCalculator::runThread(); break;
 		case IMSG_TO_WORLD: {
 			world_id_t worldId = reader.get<world_id_t>();
@@ -68,22 +59,38 @@ auto LoginServerAcceptConnection::handleRequest(PacketReader &reader) -> void {
 		case IMSG_TO_ALL_WORLDS: server.getWorlds().send(Packets::identity(reader)); break;
 		case IMSG_REHASH_CONFIG: server.rehashConfig(); break;
 	}
+	return Result::Successful;
 }
 
-auto LoginServerAcceptConnection::authenticated(ServerType type) -> void {
+auto LoginServerAcceptedSession::authenticated(ServerType type) -> void {
 	switch (type) {
-		case ServerType::World: LoginServer::getInstance().getWorlds().addWorldServer(this); break;
-		case ServerType::Channel: LoginServer::getInstance().getWorlds().addChannelServer(this); break;
+		case ServerType::World: LoginServer::getInstance().getWorlds().addWorldServer(shared_from_this()); break;
+		case ServerType::Channel: LoginServer::getInstance().getWorlds().addChannelServer(shared_from_this()); break;
 		default: disconnect();
 	}
 }
 
-auto LoginServerAcceptConnection::setWorldId(world_id_t id) -> void {
+auto LoginServerAcceptedSession::setWorldId(world_id_t id) -> void {
 	m_worldId = id;
 }
 
-auto LoginServerAcceptConnection::getWorldId() const -> optional_t<world_id_t> {
+auto LoginServerAcceptedSession::getWorldId() const -> optional_t<world_id_t> {
 	return m_worldId;
+}
+
+auto LoginServerAcceptedSession::onDisconnect() -> void {
+	auto &server = LoginServer::getInstance();
+	if (m_worldId.is_initialized()) {
+
+		World *world = server.getWorlds().getWorld(m_worldId.get());
+		world->setConnected(false);
+		world->clearChannels();
+
+		server.log(LogType::ServerDisconnect, [&](out_stream_t &log) {
+			log << "World " << static_cast<int32_t>(m_worldId.get());
+		});
+	}
+	server.finalizeServerSession(shared_from_this());
 }
 
 }

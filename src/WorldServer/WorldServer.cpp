@@ -16,7 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServer.hpp"
+#include "Common/ConnectionListenerConfig.hpp"
 #include "Common/ConnectionManager.hpp"
+#include "Common/ExitCodes.hpp"
 #include "Common/InitializeCommon.hpp"
 #include "Common/ServerType.hpp"
 #include "Common/StringUtilities.hpp"
@@ -39,21 +41,60 @@ auto WorldServer::shutdown() -> void {
 }
 
 auto WorldServer::listen() -> void {
-	getConnectionManager().accept(Ip::Type::Ipv4, m_port, [] { return new WorldServerAcceptConnection{}; }, getInterServerConfig(), true, MapleVersion::LoginSubversion);
+	m_sessionPool.initialize(1);
+
+	auto &config = getInterServerConfig();
+	getConnectionManager().listen(
+		ConnectionListenerConfig{
+			config.serverPing,
+			true,
+			ConnectionType::Unknown,
+			MapleVersion::LoginSubversion,
+			m_port,
+			Ip::Type::Ipv4
+		},
+		[&] { return make_ref_ptr<WorldServerAcceptedSession>(*this); }
+	);
+}
+
+auto WorldServer::finalizeServerSession(ref_ptr_t<WorldServerAcceptedSession> session) -> void {
+	m_sessionPool.store(session);
 }
 
 auto WorldServer::loadData() -> Result {
 	Initializing::checkSchemaVersion(this);
 
-	m_loginConnection = new LoginServerConnection{};
 	auto &config = getInterServerConfig();
+	auto result = getConnectionManager().connect(
+		config.loginIp,
+		config.loginPort,
+		config.serverPing,
+		ServerType::World,
+		[&] {
+			return make_ref_ptr<LoginServerSession>();
+		});
 
-	if (getConnectionManager().connect(config.loginIp, config.loginPort, config, m_loginConnection) == Result::Failure) {
+	if (result.first == Result::Failure) {
 		return Result::Failure;
 	}
 
-	sendAuth(m_loginConnection);
+	sendAuth(result.second);
 	return Result::Successful;
+}
+
+auto WorldServer::onConnectToLogin(ref_ptr_t<LoginServerSession> connection) -> void {
+	m_loginSession = connection;
+}
+
+auto WorldServer::onDisconnectFromLogin() -> void {
+	m_loginSession.reset();
+
+	if (isConnected()) {
+		m_worldId = -1;
+		log(LogType::ServerDisconnect, "Disconnected from the LoginServer. Shutting down...");
+		getChannels().disconnect();
+		ExitCodes::exit(ExitCodes::ServerDisconnection);
+	}
 }
 
 auto WorldServer::rehashConfig(const WorldConfig &config) -> void {
@@ -150,7 +191,7 @@ auto WorldServer::setScrollingHeader(const string_t &message) -> void {
 }
 
 auto WorldServer::sendLogin(const PacketBuilder &builder) -> void {
-	m_loginConnection->send(builder);
+	m_loginSession->send(builder);
 }
 
 }

@@ -21,14 +21,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 namespace Vana {
-	class AbstractConnection;
 	class PacketBuilder;
 	class PacketReader;
 
 	namespace WorldServer {
+		class WorldServerAcceptedSession;
+		class LoginServerSession;
+
 		namespace SyncHandler {
 			// Dispatch
-			auto handle(AbstractConnection *connection, PacketReader &reader) -> void;
+			auto handle(ref_ptr_t<WorldServerAcceptedSession> session, PacketReader &reader) -> void;
+			auto handle(ref_ptr_t<LoginServerSession> session, PacketReader &reader) -> void;
 			// Config
 			auto handleConfigSync(PacketReader &reader) -> void;
 		}

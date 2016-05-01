@@ -74,7 +74,7 @@ namespace Vana {
 			size = *reinterpret_cast<uint16_t *>(header + 2);
 		}
 		else {
-			unsigned char *iv = m_recv.getBytes();
+			auto iv = m_recv.getBytes();
 			uint16_t enc = ((iv[3] << 8) | iv[2]);
 			version = (-(*reinterpret_cast<uint16_t *>(header)) - 1) ^ enc;
 			size = *reinterpret_cast<uint16_t *>(header) ^ *reinterpret_cast<uint16_t *>(header + 2);

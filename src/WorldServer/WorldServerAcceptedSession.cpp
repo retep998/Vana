@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "WorldServerAcceptConnection.hpp"
+#include "WorldServerAcceptedSession.hpp"
 #include "Common/InterHeader.hpp"
 #include "Common/MiscUtilities.hpp"
 #include "Common/PacketReader.hpp"
@@ -35,28 +35,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 namespace WorldServer {
 
-WorldServerAcceptConnection::~WorldServerAcceptConnection() {
-	if (isAuthenticated()) {
-		if (getType() == ServerType::Channel) {
-			auto &server = WorldServer::getInstance();
-			if (server.isConnected()) {
-				server.sendLogin(Packets::removeChannel(m_channel));
-			}
-			server.getPlayerDataProvider().channelDisconnect(m_channel);
-			server.getChannels().removeChannel(m_channel);
-
-			server.log(LogType::ServerDisconnect, [&](out_stream_t &log) { log << "Channel " << static_cast<int32_t>(m_channel); });
-		}
-	}
+WorldServerAcceptedSession::WorldServerAcceptedSession(AbstractServer &server) :
+	ServerAcceptedSession{server}
+{
 }
 
-auto WorldServerAcceptConnection::handleRequest(PacketReader &reader) -> void {
-	auto &server = WorldServer::getInstance();
-	if (processAuth(server, reader) == Result::Failure) {
-		return;
+auto WorldServerAcceptedSession::handle(PacketReader &reader) -> Result {
+	if (ServerAcceptedSession::handle(reader) == Result::Failure) {
+		return Result::Failure;
 	}
+
+	auto &server = WorldServer::getInstance();
 	switch (reader.get<header_t>()) {
-		case IMSG_SYNC: SyncHandler::handle(this, reader); break;
+		case IMSG_SYNC: SyncHandler::handle(shared_from_this(), reader); break;
 		case IMSG_TO_LOGIN: server.sendLogin(Vana::Packets::identity(reader)); break;
 		case IMSG_TO_PLAYER: {
 			player_id_t playerId = reader.get<player_id_t>();
@@ -81,16 +72,18 @@ auto WorldServerAcceptConnection::handleRequest(PacketReader &reader) -> void {
 		}
 		case IMSG_TO_ALL_CHANNELS: server.getChannels().send(Vana::Packets::identity(reader)); break;
 	}
+	return Result::Successful;
 }
 
-auto WorldServerAcceptConnection::authenticated(ServerType type) -> void {
+auto WorldServerAcceptedSession::authenticated(ServerType type) -> void {
 	if (type == ServerType::Channel) {
 		auto &server = WorldServer::getInstance();
 		m_channel = server.getChannels().getFirstAvailableChannelId();
 		if (m_channel != -1) {
+			auto ip = getIp().get(Ip{0});
 			port_t port = server.makeChannelPort(m_channel);
 			const IpMatrix &ips = getExternalIps();
-			server.getChannels().registerChannel(this, m_channel, getIp(), ips, port);
+			server.getChannels().registerChannel(shared_from_this(), m_channel, ip, ips, port);
 
 			send(Packets::Interserver::connect(m_channel, port));
 
@@ -99,9 +92,11 @@ auto WorldServerAcceptConnection::authenticated(ServerType type) -> void {
 				server.getPlayerDataProvider().getChannelConnectPacket(builder);
 			}));
 
-			server.sendLogin(Packets::registerChannel(m_channel, getIp(), ips, port));
+			server.sendLogin(Packets::registerChannel(m_channel, ip, ips, port));
 
-			server.log(LogType::ServerConnect, [&](out_stream_t &log) { log << "Channel " << static_cast<int32_t>(m_channel); });
+			server.log(LogType::ServerConnect, [&](out_stream_t &log) {
+				log << "Channel " << static_cast<int32_t>(m_channel);
+			});
 		}
 		else {
 			send(Packets::Interserver::connect(-1, 0));
@@ -111,8 +106,23 @@ auto WorldServerAcceptConnection::authenticated(ServerType type) -> void {
 	}
 }
 
-auto WorldServerAcceptConnection::getChannel() const -> channel_id_t {
+auto WorldServerAcceptedSession::getChannel() const -> channel_id_t {
 	return m_channel;
+}
+
+auto WorldServerAcceptedSession::onDisconnect() -> void {
+	if (isAuthenticated()) {
+		if (getType() == ServerType::Channel) {
+			auto &server = WorldServer::getInstance();
+			if (server.isConnected()) {
+				server.sendLogin(Packets::removeChannel(m_channel));
+			}
+			server.getPlayerDataProvider().channelDisconnect(m_channel);
+			server.getChannels().removeChannel(m_channel);
+
+			server.log(LogType::ServerDisconnect, [&](out_stream_t &log) { log << "Channel " << static_cast<int32_t>(m_channel); });
+		}
+	}
 }
 
 }

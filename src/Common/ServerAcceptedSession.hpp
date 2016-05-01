@@ -17,10 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Common/AbstractConnection.hpp"
+#include "Common/ConnectionType.hpp"
 #include "Common/ExternalIp.hpp"
 #include "Common/ExternalIpResolver.hpp"
+#include "Common/PacketHandler.hpp"
 #include "Common/ServerType.hpp"
+#include "Common/Session.hpp"
 #include "Common/Types.hpp"
 #include <string>
 #include <vector>
@@ -28,25 +30,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 	class AbstractServer;
 	class PacketReader;
+	class ServerAcceptedSession;
 
-	class AbstractServerAcceptConnection : public AbstractConnection {
+	class ServerAcceptedSession : public PacketHandler {
 	public:
-		auto getType() const -> ServerType { return m_type; }
-		auto matchSubnet(const Ip &test) const -> Ip { return m_resolver.matchIpToSubnet(test); }
-		auto setExternalIpInformation(const Ip &defaultIp, const IpMatrix &matrix) -> void { m_resolver.setExternalIpInformation(defaultIp, matrix); }
-	protected:
-		AbstractServerAcceptConnection() :
-			AbstractConnection{true}
-		{
-		}
+		ServerAcceptedSession(AbstractServer &server);
 
-		auto processAuth(AbstractServer &server, PacketReader &reader) -> Result;
-		virtual auto authenticated(ServerType type) -> void = 0;
-		auto isAuthenticated() const -> bool { return m_isAuthenticated; }
-		auto getExternalIps() const -> const IpMatrix & { return m_resolver.getExternalIps(); }
+		auto getType() const -> ServerType;
+		auto isAuthenticated() const -> bool;
+		auto getExternalIps() const -> const IpMatrix &;
+		auto matchSubnet(const Ip &test) const -> Ip;
+		auto setExternalIpInformation(const Ip &defaultIp, const IpMatrix &matrix) -> void;
+	protected:
+		virtual auto handle(PacketReader &reader) -> Result override;
+		virtual auto authenticated(ServerType type) -> void;
+		virtual auto onDisconnect() -> void override;
+		virtual auto onConnect() -> void override;
 	private:
 		bool m_isAuthenticated = false;
 		ServerType m_type = ServerType::None;
+		AbstractServer &m_server;
 		ExternalIpResolver m_resolver;
 	};
 }

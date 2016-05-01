@@ -27,12 +27,12 @@ namespace Vana {
 	class PacketBuilder;
 
 	namespace WorldServer {
-		class WorldServerAcceptConnection;
+		class WorldServerAcceptedSession;
 
 		class Channel : public ExternalIpResolver {
 			NONCOPYABLE(Channel);
 		public:
-			Channel(WorldServerAcceptConnection *connection, channel_id_t id, port_t port);
+			Channel(ref_ptr_t<WorldServerAcceptedSession> session, channel_id_t id, port_t port);
 
 			auto increasePlayers() -> int32_t;
 			auto decreasePlayers() -> int32_t;
@@ -44,7 +44,7 @@ namespace Vana {
 			channel_id_t m_id = 0;
 			port_t m_port = 0;
 			int32_t m_players = 0;
-			WorldServerAcceptConnection *m_connection = nullptr;
+			ref_ptr_t<WorldServerAcceptedSession> m_session = nullptr;
 		};
 	}
 }

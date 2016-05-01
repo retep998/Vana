@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractServer.hpp"
-#include "Common/AbstractServerConnection.hpp"
+#include "Common/AuthenticationPacket.hpp"
 #include "Common/ComboLoggers.hpp"
 #include "Common/ConfigFile.hpp"
 #include "Common/ConnectionManager.hpp"
@@ -26,7 +26,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/HashUtilities.hpp"
 #include "Common/LogConfig.hpp"
 #include "Common/Logger.hpp"
+#include "Common/MiscUtilities.hpp"
 #include "Common/SaltingConfig.hpp"
+#include "Common/Session.hpp"
 #include "Common/SqlLogger.hpp"
 #include "Common/ThreadPool.hpp"
 #include "Common/TimerThread.hpp"
@@ -145,8 +147,12 @@ auto AbstractServer::initComplete() -> void {
 	// Intentionally left blank
 }
 
-auto AbstractServer::sendAuth(AbstractServerConnection *connection) const -> void {
-	connection->sendAuth(getInterPassword(), m_externalIps);
+auto AbstractServer::sendAuth(ref_ptr_t<Session> session) const -> void {
+	session->send(
+		Packets::sendPassword(
+			MiscUtilities::getServerType(session->getType()),
+			getInterPassword(),
+			m_externalIps));
 }
 
 auto AbstractServer::createLogger(const LogConfig &conf) -> void {

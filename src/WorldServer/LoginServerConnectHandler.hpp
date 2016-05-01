@@ -21,10 +21,10 @@ namespace Vana {
 	class PacketReader;
 
 	namespace WorldServer {
-		class LoginServerConnection;
+		class LoginServerSession;
 
 		namespace LoginServerConnectHandler {
-			auto connect(LoginServerConnection *connection, PacketReader &reader) -> void;
+			auto connect(ref_ptr_t<LoginServerSession> session, PacketReader &reader) -> void;
 		}
 	}
 }

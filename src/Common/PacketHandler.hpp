@@ -17,16 +17,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "Common/PacketReader.hpp"
+#include "Common/Session.hpp"
+#include "Common/Types.hpp"
+
 namespace Vana {
-	class PacketReader;
+	class PacketHandler {
+	public:
+		auto getIp() const -> optional_t<Ip>;
+		auto disconnect() -> void;
+		auto send(const PacketBuilder &builder) -> void;
+		auto getLatency() const -> milliseconds_t;
+	protected:
+		friend class Session;
+		virtual auto handle(PacketReader &reader) -> Result;
+		virtual auto onConnect() -> void;
+		virtual auto onDisconnect() -> void;
+		auto onConnectBase(ref_ptr_t<Session> session) -> void;
+		auto onDisconnectBase() -> void;
 
-	namespace ChannelServer {
-		class WorldServerConnection;
-
-		namespace WorldServerConnectHandler {
-			auto connectLogin(WorldServerConnection *player, PacketReader &reader) -> void;
-			auto connect(WorldServerConnection *player, PacketReader &reader) -> void;
-			auto reloadMcdb(PacketReader &reader) -> void;
-		}
-	}
+		bool m_disconnected = false;
+		ref_ptr_t<Session> m_session;
+	};
 }

@@ -169,7 +169,7 @@ auto Decoder::createHeader(unsigned char *header, uint16_t size) -> void {
 	uint16_t version = 0;
 	uint16_t pSize = 0;
 	if (m_encrypted) {
-		unsigned char *iv = m_send.getBytes();
+		auto iv = m_send.getBytes();
 		version = ((iv[3] << 8) | iv[2]);
 		version ^= -(MapleVersion::Version + 1);
 		pSize = version ^ size;

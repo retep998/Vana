@@ -69,7 +69,7 @@ auto Drop::doDrop(const Point &origin) -> void {
 		}
 	}
 	else if (m_owner != 0) {
-		if (Player *player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(m_owner)) {
+		if (auto player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(m_owner)) {
 			if (player->getMapId() == m_mapId) {
 				player->send(Packets::Drops::showDrop(this, Packets::Drops::DropTypes::DropAnimation, origin));
 				player->send(Packets::Drops::showDrop(this, Packets::Drops::DropTypes::ShowDrop, origin));
@@ -78,14 +78,14 @@ auto Drop::doDrop(const Point &origin) -> void {
 	}
 }
 
-auto Drop::showDrop(Player *player) -> void {
+auto Drop::showDrop(ref_ptr_t<Player> player) -> void {
 	if (isQuest() && player->getId() != m_owner) {
 		return;
 	}
 	player->send(Packets::Drops::showDrop(this, Packets::Drops::DropTypes::ShowExisting, Point{}));
 }
 
-auto Drop::takeDrop(Player *player, pet_id_t petId) -> void {
+auto Drop::takeDrop(ref_ptr_t<Player> player, pet_id_t petId) -> void {
 	Map *map = getMap();
 	map->removeDrop(m_id);
 

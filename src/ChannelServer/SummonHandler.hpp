@@ -40,15 +40,15 @@ namespace Vana {
 
 		namespace SummonHandler {
 			extern IdPool<summon_id_t> summonIds;
-			auto useSummon(Player *player, skill_id_t skillId, skill_level_t level) -> void;
-			auto removeSummon(Player *player, summon_id_t summonId, bool packetOnly, int8_t showMessage, bool fromTimer = false) -> void;
-			auto showSummon(Player *player) -> void;
-			auto showSummons(Player *fromPlayer, Player *toPlayer) -> void;
-			auto moveSummon(Player *player, PacketReader &reader) -> void;
-			auto damageSummon(Player *player, PacketReader &reader) -> void;
-			auto makeBuff(Player *player, item_id_t itemId) -> BuffInfo;
-			auto makeActiveBuff(Player *player, const BuffInfo &data, item_id_t itemId, const SkillLevelInfo *skillInfo) -> BuffPacketValues;
-			auto summonSkill(Player *player, PacketReader &reader) -> void;
+			auto useSummon(ref_ptr_t<Player> player, skill_id_t skillId, skill_level_t level) -> void;
+			auto removeSummon(ref_ptr_t<Player> player, summon_id_t summonId, bool packetOnly, int8_t showMessage, bool fromTimer = false) -> void;
+			auto showSummon(ref_ptr_t<Player> player) -> void;
+			auto showSummons(ref_ptr_t<Player> fromPlayer, ref_ptr_t<Player> toPlayer) -> void;
+			auto moveSummon(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto damageSummon(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto makeBuff(ref_ptr_t<Player> player, item_id_t itemId) -> BuffInfo;
+			auto makeActiveBuff(ref_ptr_t<Player> player, const BuffInfo &data, item_id_t itemId, const SkillLevelInfo *skillInfo) -> BuffPacketValues;
+			auto summonSkill(ref_ptr_t<Player> player, PacketReader &reader) -> void;
 		}
 	}
 }

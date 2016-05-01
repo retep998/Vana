@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/ConfigFile.hpp"
 #include "Common/Ip.hpp"
+#include "Common/PingConfig.hpp"
 #include "Common/Types.hpp"
 #include <string>
 
@@ -30,8 +31,8 @@ namespace Vana {
 		}
 
 		bool clientEncryption = true;
-		bool clientPing = true;
-		bool serverPing = true;
+		PingConfig clientPing;
+		PingConfig serverPing;
 		port_t loginPort = 0;
 		Ip loginIp;
 	};
@@ -41,8 +42,8 @@ namespace Vana {
 		auto read(LuaEnvironment &config, const string_t &prefix) -> InterServerConfig {
 			InterServerConfig ret;
 			ret.clientEncryption = config.get<bool>("use_client_encryption");
-			ret.clientPing = config.get<bool>("use_client_ping");
-			ret.serverPing = config.get<bool>("use_inter_ping");
+			ret.clientPing = config.get<PingConfig>("client_ping");
+			ret.serverPing = config.get<PingConfig>("inter_ping");
 			ret.loginIp = Ip{Ip::stringToIpv4(config.get<string_t>("login_ip"))};
 			ret.loginPort = config.get<port_t>("login_inter_port");
 			return ret;

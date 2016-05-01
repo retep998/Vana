@@ -24,10 +24,10 @@ namespace Vana {
 		class Player;
 
 		namespace MessageFunctions {
-			auto worldMessage(Player *player, const chat_t &args) -> ChatResult;
-			auto globalMessage(Player *player, const chat_t &args) -> ChatResult;
-			auto channelMessage(Player *player, const chat_t &args) -> ChatResult;
-			auto gmChatMode(Player *player, const chat_t &args) -> ChatResult;
+			auto worldMessage(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto globalMessage(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto channelMessage(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+			auto gmChatMode(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
 		}
 	}
 }

@@ -394,7 +394,7 @@ auto ItemDataProvider::scrollItem(const EquipDataProvider &provider, item_id_t s
 
 	if (itemInfo.preventSlip || itemInfo.warmSupport) {
 		succeed = 0;
-		if (gmScroller || Randomizer::rand<uint16_t>(99) < itemInfo.success) {
+		if (gmScroller || Randomizer::percentage<uint16_t>() < itemInfo.success) {
 			if (itemInfo.preventSlip) {
 				equip->setPreventSlip(true);
 			}
@@ -407,7 +407,7 @@ auto ItemDataProvider::scrollItem(const EquipDataProvider &provider, item_id_t s
 	else if (itemInfo.randStat) {
 		if (equip->getSlots() > 0) {
 			succeed = 0;
-			if (gmScroller || Randomizer::rand<uint16_t>(99) < itemInfo.success) {
+			if (gmScroller || Randomizer::percentage<uint16_t>() < itemInfo.success) {
 				provider.setEquipStats(equip, Items::StatVariance::ChaosNormal, gmScroller, false);
 
 				equip->incScrolls();
@@ -423,7 +423,7 @@ auto ItemDataProvider::scrollItem(const EquipDataProvider &provider, item_id_t s
 		int8_t recoverSlots = std::min(itemInfo.recover, maxRecoverableSlots);
 		if (recoverSlots > 0) {
 			succeed = 0;
-			if (gmScroller || Randomizer::rand<uint16_t>(99) < itemInfo.success) {
+			if (gmScroller || Randomizer::percentage<uint16_t>() < itemInfo.success) {
 				// Give back slot(s)
 				equip->incSlots(recoverSlots);
 				succeed = 1;
@@ -437,7 +437,7 @@ auto ItemDataProvider::scrollItem(const EquipDataProvider &provider, item_id_t s
 		}
 		if (equip->getSlots() > 0) {
 			succeed = 0;
-			if (gmScroller || Randomizer::rand<uint16_t>(99) < itemInfo.success) {
+			if (gmScroller || Randomizer::percentage<uint16_t>() < itemInfo.success) {
 				succeed = 1;
 				equip->addStr(itemInfo.istr);
 				equip->addDex(itemInfo.idex);
@@ -460,7 +460,7 @@ auto ItemDataProvider::scrollItem(const EquipDataProvider &provider, item_id_t s
 	}
 
 	if (succeed == 0) {
-		if (itemInfo.cursed > 0 && Randomizer::rand<uint16_t>(99) < itemInfo.cursed) {
+		if (itemInfo.cursed > 0 && Randomizer::percentage<uint16_t>() < itemInfo.cursed) {
 			cursed = true;
 		}
 	}

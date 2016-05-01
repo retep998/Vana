@@ -26,8 +26,8 @@ namespace Vana {
 		class Player;
 
 		namespace Fame {
-			auto handleFame(Player *player, PacketReader &reader) -> void;
-			auto canFame(Player *player, player_id_t to) -> int32_t;
+			auto handleFame(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto canFame(ref_ptr_t<Player> player, player_id_t to) -> int32_t;
 			auto addFameLog(player_id_t from, player_id_t to) -> void;
 			auto getLastFameLog(player_id_t from) -> SearchResult;
 			auto getLastFameSpLog(player_id_t from, player_id_t to) -> SearchResult;

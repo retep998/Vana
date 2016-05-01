@@ -330,7 +330,8 @@ auto PlayerQuests::giveRewards(quest_id_t questId, bool start) -> Result {
 
 	vector_t<QuestRewardInfo> items;
 	int32_t chance = 0;
-	questInfo.forEachReward(start, job, [this, &chance, &items](const QuestRewardInfo &info) -> IterationResult {
+	auto refPtr = ref_ptr_t<Player>{m_player};
+	questInfo.forEachReward(start, job, [this, refPtr, &chance, &items](const QuestRewardInfo &info) -> IterationResult {
 		if (info.isItem && info.prop > 0) {
 			chance += info.prop;
 			items.push_back(info);
@@ -338,15 +339,15 @@ auto PlayerQuests::giveRewards(quest_id_t questId, bool start) -> Result {
 		else if (info.isItem) {
 			if (info.count > 0) {
 				m_player->send(Packets::Quests::giveItem(info.id, info.count));
-				Inventory::addNewItem(m_player, info.id, info.count);
+				Inventory::addNewItem(refPtr, info.id, info.count);
 			}
 			else if (info.count < 0) {
 				m_player->send(Packets::Quests::giveItem(info.id, info.count));
-				Inventory::takeItem(m_player, info.id, -info.count);
+				Inventory::takeItem(refPtr, info.id, -info.count);
 			}
 			else if (info.id > 0) {
 				m_player->send(Packets::Quests::giveItem(info.id, -m_player->getInventory()->getItemAmount(info.id)));
-				Inventory::takeItem(m_player, info.id, m_player->getInventory()->getItemAmount(info.id));
+				Inventory::takeItem(refPtr, info.id, m_player->getInventory()->getItemAmount(info.id));
 			}
 		}
 		else if (info.isExp) {
@@ -361,7 +362,7 @@ auto PlayerQuests::giveRewards(quest_id_t questId, bool start) -> Result {
 			m_player->send(Packets::Quests::giveFame(info.id));
 		}
 		else if (info.isBuff) {
-			Inventory::useItem(m_player, info.id);
+			Inventory::useItem(refPtr, info.id);
 		}
 		else if (info.isSkill) {
 			m_player->getSkills()->setMaxSkillLevel(info.id, static_cast<skill_level_t>(info.masterLevel), true);
@@ -380,10 +381,10 @@ auto PlayerQuests::giveRewards(quest_id_t questId, bool start) -> Result {
 			if (chance >= random) {
 				m_player->send(Packets::Quests::giveItem(info.id, info.count));
 				if (info.count > 0) {
-					Inventory::addNewItem(m_player, info.id, info.count);
+					Inventory::addNewItem(refPtr, info.id, info.count);
 				}
 				else {
-					Inventory::takeItem(m_player, info.id, -info.count);
+					Inventory::takeItem(refPtr, info.id, -info.count);
 				}
 				break;
 			}

@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/CurseDataProvider.hpp"
 #include "Common/DropDataProvider.hpp"
 #include "Common/EquipDataProvider.hpp"
+#include "Common/FinalizationPool.hpp"
 #include "Common/Ip.hpp"
 #include "Common/ItemDataProvider.hpp"
 #include "Common/MobDataProvider.hpp"
@@ -37,11 +38,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/WorldConfig.hpp"
 #include "ChannelServer/EventDataProvider.hpp"
 #include "ChannelServer/Instances.hpp"
+#include "ChannelServer/LoginServerSession.hpp"
 #include "ChannelServer/MapDataProvider.hpp"
 #include "ChannelServer/MapleTvs.hpp"
 #include "ChannelServer/PlayerDataProvider.hpp"
 #include "ChannelServer/Trades.hpp"
-#include "ChannelServer/WorldServerConnection.hpp"
+#include "ChannelServer/WorldServerSession.hpp"
 #include <string>
 #include <vector>
 
@@ -51,13 +53,12 @@ namespace Vana {
 
 	namespace ChannelServer {
 		class Map;
-		class WorldServerConnection;
 
 		class ChannelServer final : public AbstractServer {
 			SINGLETON(ChannelServer);
 		public:
 			auto shutdown() -> void override;
-			auto connectToWorld(world_id_t worldId, port_t port, const Ip &ip) -> void;
+			auto connectToWorld(world_id_t worldId, port_t port, const Ip &ip) -> Result;
 			auto establishedWorldConnection(channel_id_t channelId, port_t port, const WorldConfig &config) -> void;
 
 			// TODO FIXME api
@@ -99,6 +100,11 @@ namespace Vana {
 			auto getOnlineId() const -> int32_t;
 			auto getConfig() const -> const WorldConfig &;
 			auto sendWorld(const PacketBuilder &builder) -> void;
+			auto onConnectToLogin(ref_ptr_t<LoginServerSession> session) -> void;
+			auto onDisconnectFromLogin() -> void;
+			auto onConnectToWorld(ref_ptr_t<WorldServerSession> session) -> void;
+			auto onDisconnectFromWorld() -> void;
+			auto finalizePlayer(ref_ptr_t<Player> session) -> void;
 		protected:
 			auto loadData() -> Result override;
 			auto listen() -> void;
@@ -111,8 +117,9 @@ namespace Vana {
 			port_t m_port = 0;
 			Ip m_worldIp;
 			WorldConfig m_config;
-			WorldServerConnection *m_worldConnection;
-			WorldServerConnection *m_loginConnection;
+			ref_ptr_t<WorldServerSession> m_worldConnection;
+			ref_ptr_t<LoginServerSession> m_loginConnection;
+			FinalizationPool<Player> m_sessionPool;
 
 			ValidCharDataProvider m_validCharDataProvider;
 			EquipDataProvider m_equipDataProvider;

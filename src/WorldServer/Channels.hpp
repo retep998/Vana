@@ -29,11 +29,11 @@ namespace Vana {
 
 	namespace WorldServer {
 		class Channel;
-		class WorldServerAcceptConnection;
+		class WorldServerAcceptedSession;
 
 		class Channels {
 		public:
-			auto registerChannel(WorldServerAcceptConnection *connection, channel_id_t channelId, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void;
+			auto registerChannel(ref_ptr_t<WorldServerAcceptedSession> session, channel_id_t channelId, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void;
 			auto removeChannel(channel_id_t channelId) -> void;
 			auto getChannel(channel_id_t num) -> Channel *;
 			auto increasePopulation(channel_id_t channelId) -> void;

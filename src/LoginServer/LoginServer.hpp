@@ -20,11 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/AbstractServer.hpp"
 #include "Common/CurseDataProvider.hpp"
 #include "Common/EquipDataProvider.hpp"
+#include "Common/FinalizationPool.hpp"
 #include "Common/SaltConfig.hpp"
 #include "Common/SaltSizeConfig.hpp"
 #include "Common/Types.hpp"
 #include "Common/ValidCharDataProvider.hpp"
-#include "LoginServer/LoginServerAcceptConnection.hpp"
+#include "LoginServer/LoginServerAcceptedSession.hpp"
 #include "LoginServer/Worlds.hpp"
 
 namespace Vana {
@@ -41,6 +42,8 @@ namespace Vana {
 			auto getWorlds() -> Worlds &;
 			auto getCharacterAccountSaltSize() const -> const SaltSizeConfig &;
 			auto getCharacterAccountSaltingPolicy() const -> const SaltConfig &;
+			auto finalizeUser(ref_ptr_t<User> user) -> void;
+			auto finalizeServerSession(ref_ptr_t<LoginServerAcceptedSession> session) -> void;
 		protected:
 			auto initComplete() -> void override;
 			auto loadData() -> Result override;
@@ -59,6 +62,8 @@ namespace Vana {
 			EquipDataProvider m_equipDataProvider;
 			CurseDataProvider m_curseDataProvider;
 			Worlds m_worlds;
+			FinalizationPool<User> m_userPool;
+			FinalizationPool<LoginServerAcceptedSession> m_sessionPool;
 		};
 	}
 }

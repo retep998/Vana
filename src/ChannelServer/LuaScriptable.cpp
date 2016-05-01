@@ -81,7 +81,7 @@ auto LuaScriptable::initialize() -> void {
 	set<vector_t<string_t>>("system_path", getScriptPath());
 	setEnvironmentVariables();
 
-	Player *player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(m_playerId);
+	auto player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(m_playerId);
 	if (player != nullptr && player->getInstance() != nullptr) {
 		set<string_t>("system_instance_name", player->getInstance()->getName());
 	}
@@ -392,7 +392,7 @@ auto LuaScriptable::setEnvironmentVariables() -> void {
 
 auto LuaScriptable::handleError(const string_t &filename, const string_t &error) -> void {
 	auto &channel = ChannelServer::getInstance();
-	Player *player = channel.getPlayerDataProvider().getPlayer(m_playerId);
+	auto player = channel.getPlayerDataProvider().getPlayer(m_playerId);
 
 	channel.log(LogType::ScriptLog, "Script error in " + filename + ": " + error);
 	if (player == nullptr) {
@@ -412,13 +412,13 @@ auto LuaExports::getEnvironment(lua_State *luaVm) -> LuaEnvironment & {
 	return LuaEnvironment::getEnvironment(luaVm);
 }
 
-auto LuaExports::getPlayer(lua_State *luaVm, LuaEnvironment &env) -> Player * {
+auto LuaExports::getPlayer(lua_State *luaVm, LuaEnvironment &env) -> ref_ptr_t<Player> {
 	player_id_t playerId = env.get<player_id_t>(luaVm, "system_player_id");
 	return ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId);
 }
 
-auto LuaExports::getPlayerDeduced(int parameter, lua_State *luaVm, LuaEnvironment &env) -> Player * {
-	Player *player = nullptr;
+auto LuaExports::getPlayerDeduced(int parameter, lua_State *luaVm, LuaEnvironment &env) -> ref_ptr_t<Player> {
+	ref_ptr_t<Player> player = nullptr;
 	if (env.is(luaVm, parameter, LuaType::String)) {
 		player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(env.get<string_t>(luaVm, parameter));
 	}
@@ -801,7 +801,7 @@ auto LuaExports::isValidSkin(lua_State *luaVm) -> lua_return_t {
 // Buddy
 auto LuaExports::addBuddySlots(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	Player *p = getPlayer(luaVm, env);
+	auto p = getPlayer(luaVm, env);
 	uint8_t csize = p->getBuddyListSize();
 	int8_t mod = env.get<int8_t>(luaVm, 1);
 	p->setBuddyListSize(csize + mod);
@@ -869,7 +869,7 @@ auto LuaExports::isQuestActive(lua_State *luaVm) -> lua_return_t {
 auto LuaExports::isQuestInactive(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	quest_id_t questId = env.get<quest_id_t>(luaVm, 1);
-	Player *player = getPlayer(luaVm, env);
+	auto player = getPlayer(luaVm, env);
 	bool active = !(player->getQuests()->isQuestActive(questId) || player->getQuests()->isQuestComplete(questId));
 	env.push<bool>(luaVm, active);
 	return 1;
@@ -909,7 +909,7 @@ auto LuaExports::addStorageSlots(lua_State *luaVm) -> lua_return_t {
 auto LuaExports::destroyEquippedItem(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	item_id_t itemId = env.get<item_id_t>(luaVm, 1);
-	Player *player = getPlayer(luaVm, env);
+	auto player = getPlayer(luaVm, env);
 	bool destroyed = player->getInventory()->isEquippedItem(itemId);
 	if (destroyed) {
 		player->getInventory()->destroyEquippedItem(itemId);
@@ -1380,7 +1380,7 @@ auto LuaExports::setMp(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::setPlayer(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	Player *player = getPlayerDeduced(1, luaVm, env);
+	auto player = getPlayerDeduced(1, luaVm, env);
 	if (player != nullptr) {
 		env.set<player_id_t>(luaVm, "system_old_player_id", env.get<player_id_t>(luaVm, "system_player_id"));
 		env.set<player_id_t>(luaVm, "system_player_id", player->getId());
@@ -1414,7 +1414,7 @@ auto LuaExports::setStyle(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	int32_t id = env.get<int32_t>(luaVm, 1);
 	int32_t type = GameLogicUtilities::getItemType(id);
-	Player *player = getPlayer(luaVm, env);
+	auto player = getPlayer(luaVm, env);
 	if (type == 0) {
 		player->setSkin(static_cast<skin_id_t>(id));
 	}
@@ -1491,7 +1491,7 @@ auto LuaExports::setMusic(lua_State *luaVm) -> lua_return_t {
 	if (env.is(luaVm, 2, LuaType::Number)) {
 		mapId = env.get<map_id_t>(luaVm, 2);
 	}
-	else if (Player *player = getPlayer(luaVm, env)) {
+	else if (auto player = getPlayer(luaVm, env)) {
 		mapId = player->getMapId();
 	}
 
@@ -1661,7 +1661,7 @@ auto LuaExports::showMapTimer(lua_State *luaVm) -> lua_return_t {
 auto LuaExports::spawnMob(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	mob_id_t mobId = env.get<mob_id_t>(luaVm, 1);
-	Player *player = getPlayer(luaVm, env);
+	auto player = getPlayer(luaVm, env);
 	env.push<map_object_t>(luaVm, player->getMap()->spawnMob(mobId, player->getPos())->getMapMobId());
 	return 1;
 }
@@ -1945,7 +1945,7 @@ auto LuaExports::getPartyId(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::getPartyMapCount(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	Player *player = getPlayer(luaVm, env);
+	auto player = getPlayer(luaVm, env);
 	Party *p = player->getParty();
 	int8_t members = 0;
 	if (p != nullptr) {
@@ -1958,7 +1958,7 @@ auto LuaExports::getPartyMapCount(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::isPartyInLevelRange(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	Player *player = getPlayer(luaVm, env);
+	auto player = getPlayer(luaVm, env);
 	Party *p = player->getParty();
 	bool isWithin = false;
 	if (p != nullptr) {
@@ -1972,7 +1972,7 @@ auto LuaExports::isPartyInLevelRange(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::isPartyLeader(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	Player *player = getPlayer(luaVm, env);
+	auto player = getPlayer(luaVm, env);
 	Party *p = player->getParty();
 	bool isLeader = false;
 	if (p != nullptr) {
@@ -2002,7 +2002,7 @@ auto LuaExports::warpParty(lua_State *luaVm) -> lua_return_t {
 		// Optional portal parameter
 		string_t to = env.get<string_t>(luaVm, 2);
 	}
-	Player *player = getPlayer(luaVm, env);
+	auto player = getPlayer(luaVm, env);
 	Party *p = player->getParty();
 	if (p != nullptr) {
 		p->warpAllMembers(mapId, to);
@@ -2029,7 +2029,7 @@ auto LuaExports::addInstanceParty(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::addInstancePlayer(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	Player *player = getPlayerDeduced(1, luaVm, env);
+	auto player = getPlayerDeduced(1, luaVm, env);
 	getInstance(luaVm, env)->addPlayer(player);
 	return 0;
 }
@@ -2049,7 +2049,7 @@ auto LuaExports::createInstance(lua_State *luaVm) -> lua_return_t {
 	seconds_t persistent{0};
 	map_id_t map = 0;
 	player_id_t id = 0;
-	Player *player = getPlayer(luaVm, env);
+	auto player = getPlayer(luaVm, env);
 	if (env.is(luaVm, 4, LuaType::Number)) {
 		persistent = env.get<seconds_t>(luaVm, 4);
 	}
@@ -2089,7 +2089,7 @@ auto LuaExports::getInstancePlayerCount(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::getInstancePlayerId(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	Player *player = getPlayerDeduced(1, luaVm, env);
+	auto player = getPlayerDeduced(1, luaVm, env);
 	env.push<player_id_t>(luaVm, player->getId());
 	return 1;
 }
@@ -2171,7 +2171,7 @@ auto LuaExports::removeAllInstancePlayers(lua_State *luaVm) -> lua_return_t {
 
 auto LuaExports::removeInstancePlayer(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
-	Player *player = getPlayerDeduced(1, luaVm, env);
+	auto player = getPlayerDeduced(1, luaVm, env);
 	getInstance(luaVm, env)->removePlayer(player);
 	return 0;
 }

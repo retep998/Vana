@@ -40,8 +40,18 @@ PlayerSummons::PlayerSummons(Player *player) :
 auto PlayerSummons::addSummon(Summon *summon, seconds_t time) -> void {
 	summon_id_t summonId = summon->getId();
 	Vana::Timer::Id id{TimerType::BuffTimer, summonId, 1};
-	Vana::Timer::Timer::create([this, summonId](const time_point_t &now) { SummonHandler::removeSummon(m_player, summonId, false, SummonMessages::OutOfTime, true); },
-		id, m_player->getTimerContainer(), time);
+	Vana::Timer::Timer::create(
+		[this, summonId](const time_point_t &now) {
+			SummonHandler::removeSummon(
+				ref_ptr_t<Player>{m_player},
+				summonId,
+				false,
+				SummonMessages::OutOfTime,
+				true);
+		},
+		id,
+		m_player->getTimerContainer(),
+		time);
 
 	m_summons.push_back(summon);
 }
@@ -79,7 +89,11 @@ auto PlayerSummons::changedMap() -> void {
 	auto copy = m_summons;
 	for (auto &summon : copy) {
 		if (summon->getMovementType() == Summon::Static) {
-			SummonHandler::removeSummon(m_player, summon->getId(), false, SummonMessages::None);
+			SummonHandler::removeSummon(
+				ref_ptr_t<Player>{m_player},
+				summon->getId(),
+				false,
+				SummonMessages::None);
 		}
 	}
 }

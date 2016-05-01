@@ -45,7 +45,7 @@ namespace Vana {
 			auto facesLeft() const -> bool { return m_facesLeft; }
 
 			auto restore() -> void;
-			auto drop(Player *player) -> void;
+			auto drop(ref_ptr_t<Player> player) -> void;
 			auto getMap() const -> Map *;
 		private:
 			bool m_alive = true;

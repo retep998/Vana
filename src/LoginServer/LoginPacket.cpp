@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServer/LoginPacketHelper.hpp"
 #include "LoginServer/PlayerStatus.hpp"
 #include "LoginServer/SmsgHeader.hpp"
-#include "LoginServer/UserConnection.hpp"
+#include "LoginServer/User.hpp"
 #include "LoginServer/World.hpp"
 
 namespace Vana {
@@ -52,7 +52,7 @@ PACKET_IMPL(loginBan, int8_t reason, FileTime expire) {
 	return builder;
 }
 
-PACKET_IMPL(loginConnect, UserConnection *user, const string_t &username) {
+PACKET_IMPL(loginConnect, ref_ptr_t<User> user, const string_t &username) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_AUTHENTICATION)

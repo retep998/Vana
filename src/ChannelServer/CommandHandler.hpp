@@ -24,8 +24,8 @@ namespace Vana {
 		class Player;
 
 		namespace CommandHandler {
-			auto handleCommand(Player *player, PacketReader &reader) -> void;
-			auto handleAdminCommand(Player *player, PacketReader &reader) -> void;
+			auto handleCommand(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto handleAdminCommand(ref_ptr_t<Player> player, PacketReader &reader) -> void;
 		}
 	}
 }

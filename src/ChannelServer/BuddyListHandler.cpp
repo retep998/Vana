@@ -32,7 +32,7 @@ namespace BuddyOpcodes {
 	};
 }
 
-auto BuddyListHandler::handleBuddyList(Player *player, PacketReader &reader) -> void {
+auto BuddyListHandler::handleBuddyList(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	int8_t type = reader.get<int8_t>();
 	switch (type) {
 		case BuddyOpcodes::Add: {

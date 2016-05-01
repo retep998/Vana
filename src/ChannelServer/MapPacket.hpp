@@ -31,9 +31,9 @@ namespace Vana {
 
 		namespace Packets {
 			namespace Map {
-				PACKET(playerPacket, Vana::ChannelServer::Player *player);
+				PACKET(playerPacket, ref_ptr_t<Vana::ChannelServer::Player> player);
 				PACKET(removePlayer, player_id_t playerId);
-				PACKET(changeMap, Vana::ChannelServer::Player *player, bool spawnByPosition, const Point &spawnPosition);
+				PACKET(changeMap, ref_ptr_t<Vana::ChannelServer::Player> player, bool spawnByPosition, const Point &spawnPosition);
 				PACKET(portalBlocked);
 				PACKET(showClock, int8_t hour, int8_t min, int8_t sec);
 				PACKET(showTimer, const seconds_t &sec);

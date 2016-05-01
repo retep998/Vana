@@ -109,7 +109,7 @@ SPLIT_PACKET_IMPL(damagePlayer, player_id_t playerId, damage_t dmg, mob_id_t mob
 	return builder;
 }
 
-PACKET_IMPL(showInfo, Vana::ChannelServer::Player *getInfo, bool isSelf) {
+PACKET_IMPL(showInfo, ref_ptr_t<Vana::ChannelServer::Player> getInfo, bool isSelf) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PLAYER_INFO)

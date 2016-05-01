@@ -157,7 +157,7 @@ namespace Vana {
 			int32_t m_battleshipHp = 0;
 			map_object_t m_markedMob = 0;
 			uint32_t m_debuffMask = 0;
-			Player *m_player = nullptr;
+			ref_ptr_t<Player> m_player = nullptr;
 			vector_t<LocalBuffInfo> m_buffs;
 		};
 	}

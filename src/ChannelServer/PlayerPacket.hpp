@@ -50,7 +50,7 @@ namespace Vana {
 					};
 				}
 
-				PACKET(connectData, Vana::ChannelServer::Player *player);
+				PACKET(connectData, ref_ptr_t<Vana::ChannelServer::Player> player);
 				PACKET(showKeys, KeyMaps *keymaps);
 				PACKET(showSkillMacros, SkillMacros *macros);
 				PACKET(updateStat, int32_t updateBits, int32_t value, bool itemResponse = false);

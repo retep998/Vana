@@ -34,7 +34,7 @@ Trades::Trades() :
 {
 }
 
-auto Trades::newTrade(Player *start, Player *recv) -> trade_id_t {
+auto Trades::newTrade(ref_ptr_t<Player> start, ref_ptr_t<Player> recv) -> trade_id_t {
 	trade_id_t id = m_tradeIds.lease();
 	m_trades[id] = make_ref_ptr<ActiveTrade>(start, recv, id);
 	startTimeout(id, start);
@@ -45,7 +45,7 @@ auto Trades::removeTrade(trade_id_t id) -> void {
 	if (getTimerSecondsRemaining(id).count() > 0) {
 		stopTimeout(id);
 	}
-	Player *p = m_trades[id]->getSender();
+	auto p = m_trades[id]->getSender();
 	if (p != nullptr) {
 		p->setTrading(false);
 		p->setTradeId(0);
@@ -68,7 +68,7 @@ auto Trades::getTimerSecondsRemaining(trade_id_t id) -> seconds_t {
 	return getTimers()->getRemainingTime<seconds_t>(timerId);
 }
 
-auto Trades::timeout(Player *sender) -> void {
+auto Trades::timeout(ref_ptr_t<Player> sender) -> void {
 	TradeHandler::cancelTrade(sender);
 }
 
@@ -77,7 +77,7 @@ auto Trades::stopTimeout(trade_id_t id) -> void {
 	getTimers()->removeTimer(timerId);
 }
 
-auto Trades::startTimeout(trade_id_t id, Player *sender) -> void {
+auto Trades::startTimeout(trade_id_t id, ref_ptr_t<Player> sender) -> void {
 	Vana::Timer::Id timerId{TimerType::TradeTimer, id};
 	Vana::Timer::Timer::create(
 		[this, sender](const time_point_t &now) {

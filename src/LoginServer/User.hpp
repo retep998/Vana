@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Common/AbstractConnection.hpp"
 #include "Common/FileTime.hpp"
+#include "Common/PacketHandler.hpp"
 #include "Common/Types.hpp"
 #include "LoginServer/PlayerStatus.hpp"
 
@@ -26,11 +26,10 @@ namespace Vana {
 	class PacketReader;
 
 	namespace LoginServer {
-		class UserConnection : public AbstractConnection {
-			NONCOPYABLE(UserConnection);
+		class User final : public PacketHandler, public enable_shared<User> {
+			NONCOPYABLE(User);
 		public:
-			UserConnection() = default;
-			~UserConnection();
+			User() = default;
 
 			auto setGender(gender_id_t gender) -> void { m_gender = gender; }
 			auto setWorldId(world_id_t worldId) -> void { m_worldId = worldId; }
@@ -61,7 +60,8 @@ namespace Vana {
 			auto addInvalidLogin() -> int32_t { return ++m_invalidLogins; }
 			auto setOnline(bool online) -> void;
 		protected:
-			auto handleRequest(PacketReader &reader) -> void override;
+			auto handle(PacketReader &reader) -> Result override;
+			auto onDisconnect() -> void override;
 		private:
 			bool m_admin = false;
 			bool m_checkedPin = false;

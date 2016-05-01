@@ -16,7 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SyncHandler.hpp"
-#include "Common/AbstractConnection.hpp"
 #include "Common/Database.hpp"
 #include "Common/InterHeader.hpp"
 #include "Common/InterHelper.hpp"
@@ -28,18 +27,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer/PlayerDataProvider.hpp"
 #include "WorldServer/SyncPacket.hpp"
 #include "WorldServer/WorldServer.hpp"
-#include "WorldServer/WorldServerAcceptConnection.hpp"
+#include "WorldServer/WorldServerAcceptedSession.hpp"
 #include "WorldServer/WorldServerAcceptPacket.hpp"
 
 namespace Vana {
 namespace WorldServer {
 
-auto SyncHandler::handle(AbstractConnection *connection, PacketReader &reader) -> void {
+auto SyncHandler::handle(ref_ptr_t<WorldServerAcceptedSession> session, PacketReader &reader) -> void {
 	sync_t type = reader.get<sync_t>();
 	switch (type) {
 		case Sync::SyncTypes::Config: handleConfigSync(reader); break;
-		default: WorldServer::getInstance().getPlayerDataProvider().handleSync(connection, type, reader); break;
+		default: WorldServer::getInstance().getPlayerDataProvider().handleSync(session, type, reader); break;
 	}
+}
+
+auto SyncHandler::handle(ref_ptr_t<LoginServerSession> session, PacketReader &reader) -> void {
+	sync_t type = reader.get<sync_t>();
+	WorldServer::getInstance().getPlayerDataProvider().handleSync(session, type, reader);
 }
 
 auto SyncHandler::handleConfigSync(PacketReader &reader) -> void {

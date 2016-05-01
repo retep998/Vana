@@ -24,7 +24,7 @@ namespace Vana {
 		class Player;
 
 		namespace BuddyListHandler {
-			auto handleBuddyList(Player *player, PacketReader &reader) -> void;
+			auto handleBuddyList(ref_ptr_t<Player> player, PacketReader &reader) -> void;
 		}
 	}
 }

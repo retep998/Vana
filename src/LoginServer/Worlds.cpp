@@ -23,17 +23,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServer/Characters.hpp"
 #include "LoginServer/LoginPacket.hpp"
 #include "LoginServer/LoginServer.hpp"
-#include "LoginServer/LoginServerAcceptConnection.hpp"
+#include "LoginServer/LoginServerAcceptedSession.hpp"
 #include "LoginServer/LoginServerAcceptPacket.hpp"
 #include "LoginServer/PlayerStatus.hpp"
-#include "LoginServer/UserConnection.hpp"
+#include "LoginServer/User.hpp"
 #include "LoginServer/World.hpp"
 #include <iostream>
 
 namespace Vana {
 namespace LoginServer {
 
-auto Worlds::showWorld(UserConnection *user) -> void {
+auto Worlds::showWorld(ref_ptr_t<User> user) -> void {
 	if (user->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
@@ -55,7 +55,7 @@ auto Worlds::addWorld(World *world) -> void {
 	m_worlds[worldId.get()] = world;
 }
 
-auto Worlds::selectWorld(UserConnection *user, PacketReader &reader) -> void {
+auto Worlds::selectWorld(ref_ptr_t<User> user, PacketReader &reader) -> void {
 	if (user->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
@@ -82,7 +82,7 @@ auto Worlds::selectWorld(UserConnection *user, PacketReader &reader) -> void {
 	}
 }
 
-auto Worlds::channelSelect(UserConnection *user, PacketReader &reader) -> void {
+auto Worlds::channelSelect(ref_ptr_t<User> user, PacketReader &reader) -> void {
 	if (user->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
@@ -115,7 +115,7 @@ auto Worlds::channelSelect(UserConnection *user, PacketReader &reader) -> void {
 	}
 }
 
-auto Worlds::addWorldServer(LoginServerAcceptConnection *connection) -> optional_t<world_id_t> {
+auto Worlds::addWorldServer(ref_ptr_t<LoginServerAcceptedSession> session) -> optional_t<world_id_t> {
 	World *world = nullptr;
 	for (const auto &kvp : m_worlds) {
 		if (!kvp.second->isConnected()) {
@@ -126,9 +126,9 @@ auto Worlds::addWorldServer(LoginServerAcceptConnection *connection) -> optional
 
 	auto &server = LoginServer::getInstance();
 	if (world == nullptr) {
-		connection->send(Packets::Interserver::noMoreWorld());
+		session->send(Packets::Interserver::noMoreWorld());
 		server.log(LogType::Error, "No more worlds to assign.");
-		connection->disconnect();
+		session->disconnect();
 		return {};
 	}
 
@@ -138,11 +138,11 @@ auto Worlds::addWorldServer(LoginServerAcceptConnection *connection) -> optional
 	}
 
 	world_id_t cached = worldId.get();
-	connection->setWorldId(cached);
+	session->setWorldId(cached);
 	world->setConnected(true);
-	world->setConnection(connection);
+	world->setSession(session);
 
-	connection->send(Packets::Interserver::connect(world));
+	session->send(Packets::Interserver::connect(world));
 
 	server.log(LogType::ServerConnect, [&](out_stream_t &log) {
 		log << "World " << static_cast<int32_t>(cached);
@@ -151,7 +151,7 @@ auto Worlds::addWorldServer(LoginServerAcceptConnection *connection) -> optional
 	return cached;
 }
 
-auto Worlds::addChannelServer(LoginServerAcceptConnection *connection) -> optional_t<world_id_t> {
+auto Worlds::addChannelServer(ref_ptr_t<LoginServerAcceptedSession> session) -> optional_t<world_id_t> {
 	World *validWorld = nullptr;
 	for (const auto &kvp : m_worlds) {
 		World *world = kvp.second;
@@ -162,9 +162,9 @@ auto Worlds::addChannelServer(LoginServerAcceptConnection *connection) -> option
 	}
 
 	if (validWorld == nullptr) {
-		connection->send(Packets::Interserver::connectChannel({}, {}, {}));
+		session->send(Packets::Interserver::connectChannel({}, {}, {}));
 		LoginServer::getInstance().log(LogType::Error, "No more channels to assign.");
-		connection->disconnect();
+		session->disconnect();
 		return {};
 	}
 
@@ -173,9 +173,9 @@ auto Worlds::addChannelServer(LoginServerAcceptConnection *connection) -> option
 		throw CodePathInvalidException{"!worldId.is_initialized()"};
 	}
 
-	Ip worldIp = validWorld->matchSubnet(connection->getIp());
-	connection->send(Packets::Interserver::connectChannel(worldId.get(), worldIp, validWorld->getPort()));
-	connection->disconnect();
+	Ip worldIp = validWorld->matchSubnet(session->getIp().get(Ip{0}));
+	session->send(Packets::Interserver::connectChannel(worldId.get(), worldIp, validWorld->getPort()));
+	session->disconnect();
 	return worldId;
 }
 

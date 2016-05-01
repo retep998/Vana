@@ -28,11 +28,11 @@ namespace Vana {
 		class Player;
 
 		namespace Inventory {
-			auto addItem(Player *player, Item *item, bool fromDrop = false) -> slot_qty_t;
-			auto addNewItem(Player *player, item_id_t itemId, slot_qty_t amount, Items::StatVariance variancePolicy = Items::StatVariance::None) -> void;
-			auto takeItem(Player *player, item_id_t itemId, slot_qty_t howMany) -> void;
-			auto useItem(Player *player, item_id_t itemId) -> void;
-			auto takeItemSlot(Player *player, inventory_t inv, inventory_slot_t slot, slot_qty_t amount, bool takeStar = false, bool overrideGmBenefits = false) -> void;
+			auto addItem(ref_ptr_t<Player> player, Item *item, bool fromDrop = false) -> slot_qty_t;
+			auto addNewItem(ref_ptr_t<Player> player, item_id_t itemId, slot_qty_t amount, Items::StatVariance variancePolicy = Items::StatVariance::None) -> void;
+			auto takeItem(ref_ptr_t<Player> player, item_id_t itemId, slot_qty_t howMany) -> void;
+			auto useItem(ref_ptr_t<Player> player, item_id_t itemId) -> void;
+			auto takeItemSlot(ref_ptr_t<Player> player, inventory_t inv, inventory_slot_t slot, slot_qty_t amount, bool takeStar = false, bool overrideGmBenefits = false) -> void;
 		}
 	}
 }

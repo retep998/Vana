@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerConnectPacket.hpp"
 #include "Common/InterHeader.hpp"
 #include "Common/Session.hpp"
-#include "WorldServer/LoginServerConnection.hpp"
+#include "WorldServer/LoginServerSession.hpp"
 #include "WorldServer/WorldServer.hpp"
 
 namespace Vana {

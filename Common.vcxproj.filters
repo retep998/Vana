@@ -165,17 +165,11 @@
     <ClCompile Include="src\Common\Decoder.cpp">
       <Filter>Source\Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\ServerClient.cpp">
-      <Filter>Connection</Filter>
-    </ClCompile>
     <ClCompile Include="src\Common\Quest.cpp">
       <Filter>Data Structures</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\TauswortheGenerator.cpp">
       <Filter>Utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\BlockCipherIv.cpp">
-      <Filter>Connection</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\CurseDataProvider.cpp">
       <Filter>Data Loading\MCDB</Filter>
@@ -190,9 +184,6 @@
       <Filter>Database</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\AbstractServer.cpp">
-      <Filter>Connection</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\AbstractConnection.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\PrecompiledHeader.cpp" />
@@ -210,15 +201,6 @@
     </ClCompile>
     <ClCompile Include="src\Common\PacketBuilder.cpp">
       <Filter>Packets</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\PingPacket.cpp">
-      <Filter>Packets</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\AbstractServerConnection.cpp">
-      <Filter>Connection</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\AbstractServerAcceptConnection.cpp">
-      <Filter>Connection</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\LuaEnvironment.cpp">
       <Filter>Scripting</Filter>
@@ -267,6 +249,27 @@
     <ClCompile Include="src\Common\ThreadPool.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="src\Common\EncryptedPacketTransformer.cpp">
+      <Filter>Encryption</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\BlockCipherIv.cpp">
+      <Filter>Encryption</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ConnectionListener.cpp">
+      <Filter>Connection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\PacketTransformer.cpp">
+      <Filter>Encryption</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\CommonPacket.cpp">
+      <Filter>Packets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ServerAcceptedSession.cpp">
+      <Filter>Connection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\PacketHandler.cpp">
+      <Filter>Connection</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common\GameConstants.hpp">
@@ -301,9 +304,6 @@
     </ClInclude>
     <ClInclude Include="src\Common\StringUtilities.hpp">
       <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\PingPacket.hpp">
-      <Filter>Packets</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\PacketReader.hpp">
       <Filter>Packets</Filter>
@@ -407,9 +407,6 @@
     <ClInclude Include="src\Common\Decoder.hpp">
       <Filter>Source\Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ServerClient.hpp">
-      <Filter>Connection</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\Quest.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
@@ -427,9 +424,6 @@
     </ClInclude>
     <ClInclude Include="src\Common\optional.hpp">
       <Filter>Lib</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\BlockCipherIv.hpp">
-      <Filter>Connection</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\SociExtensions.hpp">
       <Filter>Lib</Filter>
@@ -454,9 +448,6 @@
     </ClInclude>
     <ClInclude Include="src\Common\IPacket.hpp">
       <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\AbstractConnection.hpp">
-      <Filter>Connection</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\ExitCodes.hpp" />
     <ClInclude Include="src\Common\PrecompiledHeader.hpp" />
@@ -503,12 +494,6 @@
     </ClInclude>
     <ClInclude Include="src\Common\SplitPacketBuilder.hpp">
       <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\AbstractServerConnection.hpp">
-      <Filter>Connection</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\AbstractServerAcceptConnection.hpp">
-      <Filter>Connection</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\LuaEnvironment.hpp">
       <Filter>Scripting</Filter>
@@ -801,6 +786,39 @@
       <Filter>Lib</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\EnumUtilities.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ConnectionType.hpp">
+      <Filter>Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\EncryptedPacketTransformer.hpp">
+      <Filter>Encryption</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\BlockCipherIv.hpp">
+      <Filter>Encryption</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ConnectionListener.hpp">
+      <Filter>Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ConnectionListenerConfig.hpp">
+      <Filter>Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\PingConfig.hpp">
+      <Filter>Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\PacketTransformer.hpp">
+      <Filter>Encryption</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\CommonPacket.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ServerAcceptedSession.hpp">
+      <Filter>Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\PacketHandler.hpp">
+      <Filter>Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\FinalizationPool.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>

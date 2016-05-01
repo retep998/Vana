@@ -63,8 +63,8 @@ namespace Vana {
 			auto getObjectId() -> int32_t;
 
 			auto doDrop(const Point &origin) -> void;
-			auto showDrop(Player *player) -> void;
-			auto takeDrop(Player *player, pet_id_t petId) -> void;
+			auto showDrop(ref_ptr_t<Player> player) -> void;
+			auto takeDrop(ref_ptr_t<Player> player, pet_id_t petId) -> void;
 			auto removeDrop(bool showPacket = true) -> void;
 
 			auto getMap() const -> Map *;

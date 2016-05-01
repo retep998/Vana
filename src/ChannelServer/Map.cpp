@@ -171,7 +171,7 @@ auto Map::addTimeMob(ref_ptr_t<TimeMob> info) -> void {
 }
 
 // Players
-auto Map::addPlayer(Player *player) -> void {
+auto Map::addPlayer(ref_ptr_t<Player> player) -> void {
 	m_players.push_back(player);
 	if (m_info->forceMapEquip) {
 		player->send(Packets::Map::forceMapEquip());
@@ -200,7 +200,7 @@ auto Map::addPlayer(Player *player) -> void {
 	checkPlayerEquip(player);
 }
 
-auto Map::checkPlayerEquip(Player *player) -> void {
+auto Map::checkPlayerEquip(ref_ptr_t<Player> player) -> void {
 	if (!player->hasGmBenefits()) {
 		damage_t dps = m_info->damagePerSecond;
 		if (dps > 0) {
@@ -239,21 +239,21 @@ auto Map::getNumPlayers() const -> size_t {
 	return m_players.size();
 }
 
-auto Map::getPlayer(size_t index) const -> Player * {
+auto Map::getPlayer(size_t index) const -> ref_ptr_t<Player> {
 	return m_players[index];
 }
 
 auto Map::getPlayerNames() -> string_t {
 	out_stream_t names;
 	for (size_t i = 0; i < m_players.size(); i++) {
-		if (Player *player = m_players[i]) {
+		if (auto player = m_players[i]) {
 			names << player->getName() << " ";
 		}
 	}
 	return names.str();
 }
 
-auto Map::removePlayer(Player *player) -> void {
+auto Map::removePlayer(ref_ptr_t<Player> player) -> void {
 	player_id_t playerId = player->getId();
 	for (size_t i = 0; i < m_players.size(); i++) {
 		if (m_players[i] == player) {
@@ -277,16 +277,16 @@ auto Map::removePlayer(Player *player) -> void {
 	}
 }
 
-auto Map::runFunctionPlayers(const Rect &dimensions, int16_t prop, function_t<void(Player *)> successFunc) -> void {
+auto Map::runFunctionPlayers(const Rect &dimensions, int16_t prop, function_t<void(ref_ptr_t<Player>)> successFunc) -> void {
 	runFunctionPlayers(dimensions, prop, 0, successFunc);
 }
 
-auto Map::runFunctionPlayers(const Rect &dimensions, int16_t prop, int16_t count, function_t<void(Player *)> successFunc) -> void {
+auto Map::runFunctionPlayers(const Rect &dimensions, int16_t prop, int16_t count, function_t<void(ref_ptr_t<Player>)> successFunc) -> void {
 	int16_t done = 0;
 	// Prevent iterator invalidation
 	auto copy = m_players;
 	for (const auto &player : copy) {
-		if (dimensions.contains(player->getPos()) && Randomizer::rand<int16_t>(99) < prop) {
+		if (dimensions.contains(player->getPos()) && Randomizer::percentage<int16_t>() < prop) {
 			successFunc(player);
 			done++;
 		}
@@ -296,7 +296,7 @@ auto Map::runFunctionPlayers(const Rect &dimensions, int16_t prop, int16_t count
 	}
 }
 
-auto Map::runFunctionPlayers(function_t<void(Player *)> successFunc) -> void {
+auto Map::runFunctionPlayers(function_t<void(ref_ptr_t<Player>)> successFunc) -> void {
 	// Prevent iterator invalidation
 	auto copy = m_players;
 	for (const auto &player : copy) {
@@ -313,7 +313,7 @@ auto Map::buffPlayers(item_id_t buffId) -> void {
 	}
 }
 
-auto Map::gmHideChange(Player *player) -> void {
+auto Map::gmHideChange(ref_ptr_t<Player> player) -> void {
 	if (player->isUsingGmHide()) {
 		updateMobControl(player);
 		send(Packets::Map::removePlayer(player->getId()), player);
@@ -539,7 +539,7 @@ auto Map::getSpawnPoint(portal_id_t portalId) const -> const PortalInfo * const 
 	return &iter->second;
 }
 
-auto Map::queryPortalName(const string_t &name, Player *player) const -> const PortalInfo * const {
+auto Map::queryPortalName(const string_t &name, ref_ptr_t<Player> player) const -> const PortalInfo * const {
 	return name.empty() ?
 		nullptr :
 		(name == "sp" ?
@@ -575,11 +575,11 @@ auto Map::getPortalNames() const -> vector_t<string_t> {
 	return ret;
 }
 
-auto Map::getTownMysticDoorPortal(Player *player) const -> MysticDoorOpenResult {
+auto Map::getTownMysticDoorPortal(ref_ptr_t<Player> player) const -> MysticDoorOpenResult {
 	return getTownMysticDoorPortal(player, 0);
 }
 
-auto Map::getTownMysticDoorPortal(Player *player, uint8_t zeroBasedPartyIndex) const -> MysticDoorOpenResult {
+auto Map::getTownMysticDoorPortal(ref_ptr_t<Player> player, uint8_t zeroBasedPartyIndex) const -> MysticDoorOpenResult {
 	if (m_info->limitations.mysticDoor) {
 		return MysticDoorOpenResult{MysticDoorResult::Hacking};
 	}
@@ -597,11 +597,11 @@ auto Map::getTownMysticDoorPortal(Player *player, uint8_t zeroBasedPartyIndex) c
 	return town->getMysticDoorPortal(player, zeroBasedPartyIndex);
 }
 
-auto Map::getMysticDoorPortal(Player *player) const -> MysticDoorOpenResult {
+auto Map::getMysticDoorPortal(ref_ptr_t<Player> player) const -> MysticDoorOpenResult {
 	return getMysticDoorPortal(player, 0);
 }
 
-auto Map::getMysticDoorPortal(Player *player, uint8_t zeroBasedPartyIndex) const -> MysticDoorOpenResult {
+auto Map::getMysticDoorPortal(ref_ptr_t<Player> player, uint8_t zeroBasedPartyIndex) const -> MysticDoorOpenResult {
 	if (m_doorPoints.size() == 0) {
 		return MysticDoorOpenResult{MysticDoorResult::NoDoorPoints};
 	}
@@ -702,7 +702,7 @@ auto Map::getMob(map_object_t mapMobId) -> ref_ptr_t<Mob> {
 	return kvp != std::end(m_mobs) ? kvp->second : nullptr;
 }
 
-auto Map::updateMobControl(Player *player) -> void {
+auto Map::updateMobControl(ref_ptr_t<Player> player) -> void {
 	for (const auto &kvp : m_mobs) {
 		if (auto mob = kvp.second) {
 			if (mob->getController() == player) {
@@ -712,9 +712,9 @@ auto Map::updateMobControl(Player *player) -> void {
 	}
 }
 
-auto Map::updateMobControl(ref_ptr_t<Mob> mob, MobSpawnType spawn, Player *display) -> void {
-	Player *newController = nullptr;
-	Player *oldController = mob->getController();
+auto Map::updateMobControl(ref_ptr_t<Mob> mob, MobSpawnType spawn, ref_ptr_t<Player> display) -> void {
+	ref_ptr_t<Player> newController = nullptr;
+	ref_ptr_t<Player> oldController = mob->getController();
 	if (mob->getControlStatus() != MobControlStatus::None) {
 		newController = findController(mob);
 	}
@@ -724,15 +724,15 @@ auto Map::updateMobControl(ref_ptr_t<Mob> mob, MobSpawnType spawn, Player *displ
 	mob->setController(newController, spawn, display);
 }
 
-auto Map::switchController(ref_ptr_t<Mob> mob, Player *newController) -> void {
-	Player *oldController = mob->getController();
+auto Map::switchController(ref_ptr_t<Mob> mob, ref_ptr_t<Player> newController) -> void {
+	auto oldController = mob->getController();
 	mob->endControl();
 	mob->setController(newController, MobSpawnType::Existing, nullptr);
 }
 
-auto Map::findController(ref_ptr_t<Mob> mob) -> Player * {
+auto Map::findController(ref_ptr_t<Mob> mob) -> ref_ptr_t<Player> {
 	int32_t maxPos = 200000;
-	Player *controller = nullptr;
+	ref_ptr_t<Player> controller = nullptr;
 	for (const auto &player : m_players) {
 		if (!player->isUsingGmHide()) {
 			int32_t curPos = mob->getPos() - player->getPos();
@@ -842,7 +842,7 @@ auto Map::mobDeath(ref_ptr_t<Mob> mob, bool fromExplosion) -> void {
 			if (spawn.time != -1) {
 				// Add spawn point to respawns if mob was spawned by a spawn point
 				// Randomly spawn between 1x and 2x the spawn time
-				seconds_t timeModifier = seconds_t{spawn.time * (Randomizer::rand<int32_t>(200, 100)) / 100};
+				seconds_t timeModifier = seconds_t{Randomizer::twofold(spawn.time)};
 				time_point_t spawnTime = TimeUtilities::getNowWithTimeAdded<seconds_t>(timeModifier);
 				m_mobRespawns.emplace_back(spawnId, spawnTime);
 				spawn.spawned = false;
@@ -871,7 +871,7 @@ auto Map::mobSummonSkillUsed(ref_ptr_t<Mob> mob, const MobSkillLevelInfo * const
 	}
 }
 
-auto Map::killMobs(Player *player, bool distributeExpAndDrops, mob_id_t mobId) -> int32_t {
+auto Map::killMobs(ref_ptr_t<Player> player, bool distributeExpAndDrops, mob_id_t mobId) -> int32_t {
 	// Iterator invalidation
 	auto mobMap = m_mobs;
 	int32_t mobsKilled = 0;
@@ -1019,7 +1019,7 @@ auto Map::seatOccupied(seat_id_t id) -> bool {
 	return seat->second.occupant != nullptr;
 }
 
-auto Map::playerSeated(seat_id_t id, Player *player) -> void {
+auto Map::playerSeated(seat_id_t id, ref_ptr_t<Player> player) -> void {
 	auto seat = m_seats.find(id);
 	if (seat == std::end(m_seats)) {
 		// Hacking
@@ -1214,7 +1214,7 @@ auto Map::mapTick(const time_point_t &now) -> void {
 	damage_t dps = m_info->damagePerSecond;
 	if (dps > 0 && m_playersWithoutProtectItem.size() > 0) {
 		for (const auto &kvp : m_playersWithoutProtectItem) {
-			if (Player *player = kvp.second) {
+			if (auto player = kvp.second) {
 				if (!player->getStats()->isDead() && !player->hasGmBenefits()) {
 					player->getStats()->damageHp(dps);
 				}
@@ -1263,7 +1263,7 @@ auto Map::setMapTimer(const seconds_t &timer) -> void {
 	}
 }
 
-auto Map::showObjects(Player *player) -> void {
+auto Map::showObjects(ref_ptr_t<Player> player) -> void {
 	// Music
 	if (m_music != m_info->defaultMusic) {
 		player->send(Packets::playMusic(m_music));
@@ -1346,7 +1346,7 @@ auto Map::showObjects(Player *player) -> void {
 	}
 }
 
-auto Map::send(const PacketBuilder &builder, Player *sender) -> void {
+auto Map::send(const PacketBuilder &builder, ref_ptr_t<Player> sender) -> void {
 	for (const auto &mapPlayer : m_players) {
 		if (mapPlayer != sender) {
 			mapPlayer->send(builder);
@@ -1354,7 +1354,7 @@ auto Map::send(const PacketBuilder &builder, Player *sender) -> void {
 	}
 }
 
-auto Map::send(const SplitPacketBuilder &builder, Player *sender) -> void {
+auto Map::send(const SplitPacketBuilder &builder, ref_ptr_t<Player> sender) -> void {
 	if (builder.player.getSize() > 0) {
 		sender->send(builder.player);
 	}
@@ -1370,7 +1370,7 @@ auto Map::send(const SplitPacketBuilder &builder, Player *sender) -> void {
 	}
 }
 
-auto Map::createWeather(Player *player, bool adminWeather, int32_t time, int32_t itemId, const string_t &message) -> bool {
+auto Map::createWeather(ref_ptr_t<Player> player, bool adminWeather, int32_t time, int32_t itemId, const string_t &message) -> bool {
 	Vana::Timer::Id timerId{TimerType::WeatherTimer}; // Just to check if there's already a weather item running and adding a new one
 	if (getTimers()->isTimerRunning(timerId)) {
 		// Hacking

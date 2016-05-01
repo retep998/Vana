@@ -30,16 +30,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServer/LoginPacket.hpp"
 #include "LoginServer/LoginServer.hpp"
 #include "LoginServer/PlayerStatus.hpp"
-#include "LoginServer/UserConnection.hpp"
+#include "LoginServer/User.hpp"
 #include <iostream>
 
 namespace Vana {
 namespace LoginServer {
 
-auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
+auto Login::loginUser(ref_ptr_t<User> user, PacketReader &reader) -> void {
 	string_t username = reader.get<string_t>();
 	string_t password = reader.get<string_t>();
-	string_t ip = user->getIp().toString();
 
 	if (!ext::in_range_inclusive<size_t>(username.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
 		// Hacking
@@ -63,6 +62,11 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 
 	bool valid = true;
 	account_id_t accountId = 0;
+	auto userIp = user->getIp();
+	string_t ip = userIp.is_initialized() ?
+		userIp.get().toString() :
+		"disconnected";
+
 	if (!sql.got_data()) {
 		user->send(Packets::loginError(Packets::Errors::InvalidUsername));
 		valid = false;
@@ -138,7 +142,7 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 	}
 	else {
 		LoginServer::getInstance().log(LogType::Login, [&](out_stream_t &log) {
-			log << username << " from IP " << user->getIp();
+			log << username << " from IP " << ip;
 		});
 
 		user->setAccountId(accountId);
@@ -190,7 +194,7 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 	}
 }
 
-auto Login::setGender(UserConnection *user, PacketReader &reader) -> void {
+auto Login::setGender(ref_ptr_t<User> user, PacketReader &reader) -> void {
 	if (user->getStatus() != PlayerStatus::SetGender) {
 		// Hacking
 		return;
@@ -226,7 +230,7 @@ auto Login::setGender(UserConnection *user, PacketReader &reader) -> void {
 	}
 }
 
-auto Login::handleLogin(UserConnection *user, PacketReader &reader) -> void {
+auto Login::handleLogin(ref_ptr_t<User> user, PacketReader &reader) -> void {
 	auto status = user->getStatus();
 	if (status == PlayerStatus::SetPin) {
 		user->send(Packets::loginProcess(PlayerStatus::SetPin));
@@ -245,7 +249,7 @@ auto Login::handleLogin(UserConnection *user, PacketReader &reader) -> void {
 	}
 }
 
-auto Login::checkPin(UserConnection *user, PacketReader &reader) -> void {
+auto Login::checkPin(ref_ptr_t<User> user, PacketReader &reader) -> void {
 	if (!LoginServer::getInstance().getPinEnabled()) {
 		// Hacking
 		return;
@@ -289,7 +293,7 @@ auto Login::checkPin(UserConnection *user, PacketReader &reader) -> void {
 	}
 }
 
-auto Login::registerPin(UserConnection *user, PacketReader &reader) -> void {
+auto Login::registerPin(ref_ptr_t<User> user, PacketReader &reader) -> void {
 	if (!LoginServer::getInstance().getPinEnabled() || user->getStatus() != PlayerStatus::SetPin) {
 		// Hacking
 		return;

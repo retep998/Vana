@@ -55,7 +55,7 @@ namespace Vana {
 			auto explode() -> void;
 			auto kill() -> void;
 			auto consumeMp(int32_t mp) -> void;
-			auto mpEat(Player *player, MpEaterData *mp) -> void;
+			auto mpEat(ref_ptr_t<Player> player, MpEaterData *mp) -> void;
 			auto setSkillFeasibility(bool skillFeasible) -> void { m_skillFeasible = skillFeasible; }
 			auto useAnticipatedSkill() -> Result;
 			auto resetAnticipatedSkill() -> void;
@@ -66,9 +66,9 @@ namespace Vana {
 			auto getWeaponReflection() -> optional_t<StatusInfo>;
 			auto getMagicReflection() -> optional_t<StatusInfo>;
 
-			auto addMarker(Player *player) -> void;
-			auto removeMarker(Player *player) -> void;
-			auto chooseRandomSkill(Player *player, mob_skill_id_t &skillId, mob_skill_level_t &skillLevel) -> void;
+			auto addMarker(ref_ptr_t<Player> player) -> void;
+			auto removeMarker(ref_ptr_t<Player> player) -> void;
+			auto chooseRandomSkill(ref_ptr_t<Player> player, mob_skill_id_t &skillId, mob_skill_level_t &skillLevel) -> void;
 			auto getSkillFeasibility() const -> bool { return m_skillFeasible; }
 			auto getAnticipatedSkill() const -> mob_skill_id_t { return m_anticipatedSkill; }
 			auto getAnticipatedSkillLevel() const -> mob_skill_level_t { return m_anticipatedSkillLevel; }
@@ -99,7 +99,7 @@ namespace Vana {
 			auto getPos() const -> Point override { return Point{m_pos.x, m_pos.y - 1}; }
 			auto getControlStatus() const -> MobControlStatus { return m_controlStatus; }
 
-			auto getController() const -> Player * { return m_controller; }
+			auto getController() const -> ref_ptr_t<Player> { return m_controller; }
 			auto getMap() const -> Map *;
 		private:
 			static auto isSponge(mob_id_t mobId) -> bool;
@@ -107,9 +107,9 @@ namespace Vana {
 
 			friend class Map;
 
-			auto setController(Player *control, MobSpawnType spawn = MobSpawnType::Existing, Player *display = nullptr) -> void;
-			auto die(Player *player, bool fromExplosion = false) -> void;
-			auto distributeExpAndGetDropRecipient(Player *killer) -> player_id_t;
+			auto setController(ref_ptr_t<Player> control, MobSpawnType spawn = MobSpawnType::Existing, ref_ptr_t<Player> display = nullptr) -> void;
+			auto die(ref_ptr_t<Player> player, bool fromExplosion = false) -> void;
+			auto distributeExpAndGetDropRecipient(ref_ptr_t<Player> killer) -> player_id_t;
 			auto naturalHeal(int32_t hpHeal, int32_t mpHeal) -> void;
 			auto removeStatus(int32_t status, bool fromTimer = false) -> void;
 			auto endControl() -> void;
@@ -140,13 +140,13 @@ namespace Vana {
 			int32_t m_status = 0;
 			player_id_t m_webPlayerId = 0;
 			uint64_t m_totalHealth = 0;
-			Player *m_controller = nullptr;
+			ref_ptr_t<Player> m_controller = nullptr;
 			MobControlStatus m_controlStatus = MobControlStatus::Normal;
 			time_point_t m_lastSkillUse;
 			view_ptr_t<Mob> m_owner;
 			view_ptr_t<Mob> m_sponge;
 			const ref_ptr_t<MobInfo> m_info;
-			vector_t<Player *> m_markers;
+			vector_t<ref_ptr_t<Player>> m_markers;
 			ord_map_t<int32_t, StatusInfo> m_statuses;
 			hash_map_t<player_id_t, uint64_t> m_damages;
 			hash_map_t<uint8_t, time_point_t> m_skillUse;

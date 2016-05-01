@@ -41,8 +41,8 @@ namespace Vana {
 				SPLIT_PACKET(changeName, player_id_t playerId, Pet *pet);
 				// TODO FIXME packet
 				// This doesn't appear to be used anywhere, not sure if that's by mistake or not
-				//auto showPet(Player *player, Pet *pet) -> void;
-				PACKET(updateSummonedPets, Player *player);
+				//auto showPet(ref_ptr_t<Player> player, Pet *pet) -> void;
+				PACKET(updateSummonedPets, ref_ptr_t<Player> player);
 				PACKET(blankUpdate);
 				PACKET(addInfo, Pet *pet, Item *petItem);
 			}

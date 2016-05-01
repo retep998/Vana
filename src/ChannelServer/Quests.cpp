@@ -40,7 +40,7 @@ namespace QuestOpcodes {
 	};
 }
 
-auto Quests::giveItem(Player *player, item_id_t itemId, slot_qty_t amount, Items::StatVariance variancePolicy) -> Result {
+auto Quests::giveItem(ref_ptr_t<Player> player, item_id_t itemId, slot_qty_t amount, Items::StatVariance variancePolicy) -> Result {
 	if (amount > 0) {
 		if (!player->getInventory()->hasOpenSlotsFor(itemId, amount)) {
 			return Result::Failure;
@@ -59,7 +59,7 @@ auto Quests::giveItem(Player *player, item_id_t itemId, slot_qty_t amount, Items
 	return Result::Successful;
 }
 
-auto Quests::giveMesos(Player *player, mesos_t amount) -> Result {
+auto Quests::giveMesos(ref_ptr_t<Player> player, mesos_t amount) -> Result {
 	if (amount < 0 && player->getInventory()->getMesos() + amount < 0) {
 		// Do a bit of checking if meso is being taken to see if it's enough
 		return Result::Failure;
@@ -69,13 +69,13 @@ auto Quests::giveMesos(Player *player, mesos_t amount) -> Result {
 	return Result::Successful;
 }
 
-auto Quests::giveFame(Player *player, fame_t amount) -> Result {
+auto Quests::giveFame(ref_ptr_t<Player> player, fame_t amount) -> Result {
 	player->getStats()->setFame(player->getStats()->getFame() + amount);
 	player->send(Packets::Quests::giveFame(amount));
 	return Result::Successful;
 }
 
-auto Quests::getQuest(Player *player, PacketReader &reader) -> void {
+auto Quests::getQuest(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	int8_t act = reader.get<int8_t>();
 	quest_id_t questId = reader.get<quest_id_t>();
 

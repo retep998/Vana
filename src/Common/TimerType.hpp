@@ -40,6 +40,7 @@ namespace Vana {
 		SkillActTimer,
 		SpongeCleanupTimer,
 		TradeTimer,
-		WeatherTimer
+		WeatherTimer,
+		FinalizeTimer,
 	};
 }

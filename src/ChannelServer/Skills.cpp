@@ -43,7 +43,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 namespace ChannelServer {
 
-auto Skills::addSkill(Player *player, PacketReader &reader) -> void {
+auto Skills::addSkill(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	reader.skip<tick_count_t>();
 	skill_id_t skillId = reader.get<skill_id_t>();
 	if (!GameLogicUtilities::isBeginnerSkill(skillId)) {
@@ -61,7 +61,7 @@ auto Skills::addSkill(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto Skills::cancelSkill(Player *player, PacketReader &reader) -> void {
+auto Skills::cancelSkill(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	int32_t identifier = reader.get<int32_t>();
 
 	// Both buffs and "standing" skills e.g. Hurricane go through this packet
@@ -83,7 +83,7 @@ auto Skills::cancelSkill(Player *player, PacketReader &reader) -> void {
 	stopSkill(player, player->getActiveBuffs()->translateToSource(identifier));
 }
 
-auto Skills::stopSkill(Player *player, const BuffSource &source, bool fromTimer) -> void {
+auto Skills::stopSkill(ref_ptr_t<Player> player, const BuffSource &source, bool fromTimer) -> void {
 	switch (source.getType()) {
 		case BuffSourceType::Item:
 		case BuffSourceType::Skill:
@@ -108,8 +108,8 @@ auto Skills::stopSkill(Player *player, const BuffSource &source, bool fromTimer)
 	}
 }
 
-auto Skills::getAffectedPartyMembers(Party *party, int8_t affected, int8_t members) -> const vector_t<Player *> {
-	vector_t<Player *> ret;
+auto Skills::getAffectedPartyMembers(Party *party, int8_t affected, int8_t members) -> const vector_t<ref_ptr_t<Player>> {
+	vector_t<ref_ptr_t<Player>> ret;
 	if (affected & GameLogicUtilities::getPartyMember1(members)) {
 		ret.push_back(party->getMemberByIndex(1));
 	}
@@ -131,7 +131,7 @@ auto Skills::getAffectedPartyMembers(Party *party, int8_t affected, int8_t membe
 	return ret;
 }
 
-auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
+auto Skills::useSkill(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	reader.skip<tick_count_t>();
 	skill_id_t skillId = reader.get<skill_id_t>();
 	int16_t addedInfo = 0;
@@ -204,7 +204,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 			for (uint8_t k = 0; k < mobs; k++) {
 				map_object_t mapMobId = reader.get<map_object_t>();
 				if (auto mob = player->getMap()->getMob(mapMobId)) {
-					if (Randomizer::rand<uint16_t>(99) < skill->prop) {
+					if (Randomizer::percentage<uint16_t>() < skill->prop) {
 						mob->doCrashSkill(skillId);
 					}
 				}
@@ -267,7 +267,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 				const auto members = getAffectedPartyMembers(party, affected, party->getMembersCount());
 				for (const auto &partyMember : members) {
 					if (partyMember != nullptr && partyMember != player && partyMember->getMap() == player->getMap()) {
-						if (Randomizer::rand<uint16_t>(99) < skill->prop) {
+						if (Randomizer::percentage<uint16_t>() < skill->prop) {
 							partyMember->send(Packets::Skills::showSkill(partyMember->getId(), skillId, level, direction, true, true));
 							partyMember->sendMap(Packets::Skills::showSkill(partyMember->getId(), skillId, level, direction, true));
 							partyMember->getActiveBuffs()->usePlayerDispel();
@@ -282,7 +282,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 			for (int8_t k = 0; k < affected; k++) {
 				map_object_t mapMobId = reader.get<map_object_t>();
 				if (auto mob = player->getMap()->getMob(mapMobId)) {
-					if (Randomizer::rand<uint16_t>(99) < skill->prop) {
+					if (Randomizer::percentage<uint16_t>() < skill->prop) {
 						mob->dispelBuffs();
 					}
 				}
@@ -380,32 +380,32 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 		case Vana::Skills::SuperGm::HealPlusDispel:
 		case Vana::Skills::SuperGm::Resurrection: {
 			uint8_t players = reader.get<uint8_t>();
-			function_t<bool(Player *)> doAction;
-			function_t<void(Player *)> action;
+			function_t<bool(ref_ptr_t<Player>)> doAction;
+			function_t<void(ref_ptr_t<Player>)> action;
 			switch (skillId) {
 				case Vana::Skills::SuperGm::HealPlusDispel:
-					doAction = [](Player *target) { return !target->getStats()->isDead(); };
-					action = [](Player *target) {
+					doAction = [](ref_ptr_t<Player> target) { return !target->getStats()->isDead(); };
+					action = [](ref_ptr_t<Player> target) {
 						target->getStats()->setHp(target->getStats()->getMaxHp());
 						target->getStats()->setMp(target->getStats()->getMaxMp());
 						target->getActiveBuffs()->usePlayerDispel();
 					};
 					break;
 				case Vana::Skills::SuperGm::Resurrection:
-					doAction = [](Player *target) { return target->getStats()->isDead(); };
-					action = [](Player *target) {
+					doAction = [](ref_ptr_t<Player> target) { return target->getStats()->isDead(); };
+					action = [](ref_ptr_t<Player> target) {
 						target->getStats()->setHp(target->getStats()->getMaxHp());
 					};
 					break;
 				default:
-					doAction = [](Player *target) { return true; };
-					action = [skillId, level](Player *target) {
+					doAction = [](ref_ptr_t<Player> target) { return true; };
+					action = [skillId, level](ref_ptr_t<Player> target) {
 						Buffs::addBuff(target, skillId, level, 0);
 					};
 			}
 			for (uint8_t i = 0; i < players; i++) {
 				player_id_t playerId = reader.get<player_id_t>();
-				Player *target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId);
+				auto target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId);
 				if (target != nullptr && target != player && doAction(target)) {
 					player->send(Packets::Skills::showSkill(player->getId(), skillId, level, direction, true, true));
 					player->sendMap(Packets::Skills::showSkill(player->getId(), skillId, level, direction, true));
@@ -442,7 +442,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto Skills::applySkillCosts(Player *player, skill_id_t skillId, skill_level_t level, bool elementalAmp) -> Result {
+auto Skills::applySkillCosts(ref_ptr_t<Player> player, skill_id_t skillId, skill_level_t level, bool elementalAmp) -> Result {
 	if (player->hasGmBenefits()) {
 		// Ensure we don't lock, but don't actually use anything
 		player->getStats()->setHp(player->getStats()->getHp(), true);
@@ -508,7 +508,7 @@ auto Skills::applySkillCosts(Player *player, skill_id_t skillId, skill_level_t l
 	return Result::Successful;
 }
 
-auto Skills::useAttackSkill(Player *player, skill_id_t skillId) -> Result {
+auto Skills::useAttackSkill(ref_ptr_t<Player> player, skill_id_t skillId) -> Result {
 	if (skillId != Vana::Skills::All::RegularAttack) {
 		skill_level_t level = player->getSkills()->getSkillLevel(skillId);
 		if (!ChannelServer::getInstance().getSkillDataProvider().isValidSkill(skillId) || level == 0) {
@@ -519,7 +519,7 @@ auto Skills::useAttackSkill(Player *player, skill_id_t skillId) -> Result {
 	return Result::Successful;
 }
 
-auto Skills::useAttackSkillRanged(Player *player, skill_id_t skillId, inventory_slot_t projectilePos, inventory_slot_t cashProjectilePos, item_id_t projectileId) -> Result {
+auto Skills::useAttackSkillRanged(ref_ptr_t<Player> player, skill_id_t skillId, inventory_slot_t projectilePos, inventory_slot_t cashProjectilePos, item_id_t projectileId) -> Result {
 	skill_level_t level = 0;
 	if (skillId != Vana::Skills::All::RegularAttack) {
 		level = player->getSkills()->getSkillLevel(skillId);
@@ -614,7 +614,7 @@ auto Skills::useAttackSkillRanged(Player *player, skill_id_t skillId, inventory_
 	return Result::Successful;
 }
 
-auto Skills::heal(Player *player, int64_t value, const BuffSource &source) -> void {
+auto Skills::heal(ref_ptr_t<Player> player, int64_t value, const BuffSource &source) -> void {
 	if (player->getStats()->getHp() < player->getStats()->getMaxHp() && player->getStats()->getHp() > 0) {
 		health_t val = static_cast<health_t>(value);
 		player->getStats()->modifyHp(val);
@@ -622,7 +622,7 @@ auto Skills::heal(Player *player, int64_t value, const BuffSource &source) -> vo
 	}
 }
 
-auto Skills::hurt(Player *player, int64_t value, const BuffSource &source) -> void {
+auto Skills::hurt(ref_ptr_t<Player> player, int64_t value, const BuffSource &source) -> void {
 	health_t val = static_cast<health_t>(value);
 	if (source.getType() != BuffSourceType::Skill) throw NotImplementedException{"hurt BuffSourceType"};
 	if (player->getStats()->getHp() - val > 1) {
@@ -634,7 +634,7 @@ auto Skills::hurt(Player *player, int64_t value, const BuffSource &source) -> vo
 	}
 }
 
-auto Skills::startCooldown(Player *player, skill_id_t skillId, seconds_t coolTime, bool initialLoad) -> void {
+auto Skills::startCooldown(ref_ptr_t<Player> player, skill_id_t skillId, seconds_t coolTime, bool initialLoad) -> void {
 	if (isCooling(player, skillId)) {
 		// Hacking
 		return;
@@ -652,7 +652,7 @@ auto Skills::startCooldown(Player *player, skill_id_t skillId, seconds_t coolTim
 		seconds_t{coolTime});
 }
 
-auto Skills::stopCooldown(Player *player, skill_id_t skillId) -> void {
+auto Skills::stopCooldown(ref_ptr_t<Player> player, skill_id_t skillId) -> void {
 	player->getSkills()->removeCooldown(skillId);
 	player->send(Packets::Skills::sendCooldown(skillId, seconds_t{0}));
 	if (skillId == Vana::Skills::Corsair::Battleship) {
@@ -666,12 +666,12 @@ auto Skills::stopCooldown(Player *player, skill_id_t skillId) -> void {
 	}
 }
 
-auto Skills::isCooling(Player *player, skill_id_t skillId) -> bool {
+auto Skills::isCooling(ref_ptr_t<Player> player, skill_id_t skillId) -> bool {
 	Vana::Timer::Id id{TimerType::CoolTimer, skillId};
 	return player->getTimerContainer()->isTimerRunning(id);
 }
 
-auto Skills::getCooldownTimeLeft(Player *player, skill_id_t skillId) -> int16_t {
+auto Skills::getCooldownTimeLeft(ref_ptr_t<Player> player, skill_id_t skillId) -> int16_t {
 	int16_t coolTime = 0;
 	if (isCooling(player, skillId)) {
 		Vana::Timer::Id id{TimerType::CoolTimer, skillId};

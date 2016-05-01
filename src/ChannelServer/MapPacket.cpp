@@ -40,7 +40,7 @@ namespace ChannelServer {
 namespace Packets {
 namespace Map {
 
-PACKET_IMPL(playerPacket, Vana::ChannelServer::Player *player) {
+PACKET_IMPL(playerPacket, ref_ptr_t<Vana::ChannelServer::Player> player) {
 	PacketBuilder builder;
 
 	builder
@@ -112,7 +112,7 @@ PACKET_IMPL(removePlayer, player_id_t playerId) {
 	return builder;
 }
 
-PACKET_IMPL(changeMap, Vana::ChannelServer::Player *player, bool spawnByPosition, const Point &spawnPosition) {
+PACKET_IMPL(changeMap, ref_ptr_t<Vana::ChannelServer::Player> player, bool spawnByPosition, const Point &spawnPosition) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_CHANGE_MAP)

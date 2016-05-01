@@ -114,7 +114,7 @@ auto Mob::applyDamage(player_id_t playerId, damage_t damage, bool poison) -> voi
 
 	if (!poison) {
 		// HP bar packet does nothing for showing damage when poison is damaging for whatever reason
-		Player *player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId);
+		auto player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId);
 		Map *map = getMap();
 
 		uint8_t percent = static_cast<uint8_t>(m_hp * 100 / m_info->hp);
@@ -312,7 +312,7 @@ auto Mob::getWeaponReflection() -> optional_t<StatusInfo> {
 	return getStatusValue(StatusEffects::Mob::WeaponDamageReflect);
 }
 
-auto Mob::setController(Player *control, MobSpawnType spawn, Player *display) -> void {
+auto Mob::setController(ref_ptr_t<Player> control, MobSpawnType spawn, ref_ptr_t<Player> display) -> void {
 	endControl();
 
 	m_controller = control;
@@ -342,13 +342,13 @@ auto Mob::endControl() -> void {
 	}
 }
 
-auto Mob::die(Player *player, bool fromExplosion) -> void {
+auto Mob::die(ref_ptr_t<Player> player, bool fromExplosion) -> void {
 	Map *map = getMap();
 
 	endControl();
 
 	while (m_markers.size() > 0) {
-		Player *marker = m_markers[0];
+		auto marker = m_markers[0];
 		auto source = marker->getActiveBuffs()->getHomingBeaconSource();
 		if (source.is_initialized()) {
 			auto &buffSource = source.get();
@@ -393,17 +393,25 @@ auto Mob::consumeMp(int32_t mp) -> void {
 	m_mp = std::max(m_mp - mp, 0);
 }
 
-auto Mob::distributeExpAndGetDropRecipient(Player *killer) -> player_id_t {
+auto Mob::distributeExpAndGetDropRecipient(ref_ptr_t<Player> killer) -> player_id_t {
 	player_id_t highestDamager = 0;
 	uint64_t highestDamage = 0;
 
 	if (m_damages.size() > 0) {
 		struct PartyExp {
-			PartyExp() : totalExp(0), party(nullptr), highestDamager(nullptr), highestDamage(0), minHitLevel(Stats::PlayerLevels) { }
+			PartyExp() :
+				totalExp{0},
+				party{nullptr},
+				highestDamager{nullptr},
+				highestDamage{0},
+				minHitLevel{Stats::PlayerLevels}
+			{
+			}
+
 			player_level_t minHitLevel;
 			uint64_t totalExp;
 			uint64_t highestDamage;
-			Player *highestDamager;
+			ref_ptr_t<Player> highestDamager;
 			Party *party;
 		};
 
@@ -420,7 +428,7 @@ auto Mob::distributeExpAndGetDropRecipient(Player *killer) -> player_id_t {
 				highestDamage = damage;
 			}
 
-			Player *damager = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(damagerId);
+			auto damager = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(damagerId);
 			if (damager == nullptr || damager->getMapId() != m_mapId || damager->getStats()->isDead()) {
 				// Only give EXP if the damager is in the same channel, on the same map and is alive
 				continue;
@@ -464,7 +472,7 @@ auto Mob::distributeExpAndGetDropRecipient(Player *killer) -> player_id_t {
 			for (const auto &kvp : parties) {
 				const PartyExp &info = kvp.second;
 				Party *damagerParty = info.party;
-				vector_t<Player *> partyMembers = damagerParty->getPartyMembers(getMapId());
+				vector_t<ref_ptr_t<Player>> partyMembers = damagerParty->getPartyMembers(getMapId());
 				uint16_t totalLevel = 0;
 				uint16_t leechCount = 0;
 				for (const auto &partyMember : partyMembers) {
@@ -539,8 +547,8 @@ auto Mob::doCrashSkill(skill_id_t skillId) -> void {
 	}
 }
 
-auto Mob::mpEat(Player *player, MpEaterData *mp) -> void {
-	if (m_mpEaterCount < 3 && getMp() > 0 && Randomizer::rand<uint16_t>(99) < mp->prop) {
+auto Mob::mpEat(ref_ptr_t<Player> player, MpEaterData *mp) -> void {
+	if (m_mpEaterCount < 3 && getMp() > 0 && Randomizer::percentage<uint16_t>() < mp->prop) {
 		mp->used = true;
 		int32_t eatenMp = getMaxMp() * mp->x / 100;
 
@@ -555,13 +563,13 @@ auto Mob::mpEat(Player *player, MpEaterData *mp) -> void {
 	}
 }
 
-auto Mob::addMarker(Player *player) -> void {
+auto Mob::addMarker(ref_ptr_t<Player> player) -> void {
 	m_markers.push_back(player);
 }
 
-auto Mob::removeMarker(Player *player) -> void {
+auto Mob::removeMarker(ref_ptr_t<Player> player) -> void {
 	for (size_t i = 0; i < m_markers.size(); i++) {
-		Player *test = m_markers[i];
+		auto test = m_markers[i];
 		if (test == player) {
 			m_markers.erase(m_markers.begin() + i);
 			return;
@@ -569,7 +577,7 @@ auto Mob::removeMarker(Player *player) -> void {
 	}
 }
 
-auto Mob::chooseRandomSkill(Player *player, mob_skill_id_t &skillId, mob_skill_level_t &skillLevel) -> void {
+auto Mob::chooseRandomSkill(ref_ptr_t<Player> player, mob_skill_id_t &skillId, mob_skill_level_t &skillLevel) -> void {
 	if (m_info->skillCount == 0 || m_anticipatedSkill != 0 || !canCastSkills()) {
 		return;
 	}
@@ -721,14 +729,14 @@ auto Mob::useAnticipatedSkill() -> Result {
 		case MobSkills::Seduce:
 		case MobSkills::CrazySkull:
 		case MobSkills::Zombify: {
-			auto func = [skillId, level, delay](Player *player) {
+			auto func = [skillId, level, delay](ref_ptr_t<Player> player) {
 				Buffs::addBuff(player, skillId, level, delay);
 			};
 			map->runFunctionPlayers(skillArea, skillLevelInfo->prop, skillLevelInfo->count, func);
 			break;
 		}
 		case MobSkills::Dispel: {
-			map->runFunctionPlayers(skillArea, skillLevelInfo->prop, [](Player *player) {
+			map->runFunctionPlayers(skillArea, skillLevelInfo->prop, [](ref_ptr_t<Player> player) {
 				player->getActiveBuffs()->dispelBuffs();
 			});
 			break;
@@ -739,7 +747,7 @@ auto Mob::useAnticipatedSkill() -> Result {
 				string_t message = banishInfo->message;
 				const PortalInfo * const portal = Maps::getMap(field)->queryPortalName(banishInfo->portal);
 
-				auto func = [&message, &field, &portal](Player *player) {
+				auto func = [&message, &field, &portal](ref_ptr_t<Player> player) {
 					if (!message.empty()) {
 						player->send(Packets::Player::showMessage(message, Packets::Player::NoticeTypes::Blue));
 					}

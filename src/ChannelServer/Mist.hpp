@@ -34,7 +34,7 @@ namespace Vana {
 			NONCOPYABLE(Mist);
 			NO_DEFAULT_CONSTRUCTOR(Mist);
 		public:
-			Mist(map_id_t mapId, Player *owner, seconds_t time, const Rect &area, skill_id_t skillId, skill_level_t level, bool isPoison = false);
+			Mist(map_id_t mapId, ref_ptr_t<Player> owner, seconds_t time, const Rect &area, skill_id_t skillId, skill_level_t level, bool isPoison = false);
 			Mist(map_id_t mapId, Mob *owner, seconds_t time, const Rect &area, mob_skill_id_t skillId, mob_skill_level_t level);
 
 			auto setId(mist_id_t id) -> void { m_id = id; }

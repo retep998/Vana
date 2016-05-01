@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 namespace ChannelServer {
 
-auto InfoFunctions::help(Player *player, const chat_t &args) -> ChatResult {
+auto InfoFunctions::help(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	using ChatHandlerFunctions::sCommandList;
 	if (!args.empty()) {
 		if (sCommandList.find(args) != std::end(sCommandList)) {
@@ -59,7 +59,7 @@ auto InfoFunctions::help(Player *player, const chat_t &args) -> ChatResult {
 	return ChatResult::HandledDisplay;
 }
 
-auto InfoFunctions::lookup(Player *player, const chat_t &args) -> ChatResult {
+auto InfoFunctions::lookup(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) ?(.+)?)", matches) == MatchResult::AnyMatches) {
 		uint16_t type = 0;
@@ -351,17 +351,17 @@ auto InfoFunctions::lookup(Player *player, const chat_t &args) -> ChatResult {
 	return ChatResult::ShowSyntax;
 }
 
-auto InfoFunctions::pos(Player *player, const chat_t &args) -> ChatResult {
+auto InfoFunctions::pos(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) { message << player->getMapPosition(); });
 	return ChatResult::HandledDisplay;
 }
 
-auto InfoFunctions::online(Player *player, const chat_t &args) -> ChatResult {
+auto InfoFunctions::online(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	out_stream_t igns;
 	igns << "IGNs: ";
 	int32_t i = 0;
 	const int32_t max = 100;
-	ChannelServer::getInstance().getPlayerDataProvider().run([&i, &max, &igns](Player *player) {
+	ChannelServer::getInstance().getPlayerDataProvider().run([&i, &max, &igns](ref_ptr_t<Player> player) {
 		if (i < max) {
 			if (i != 0) {
 				igns << ", ";
@@ -374,7 +374,7 @@ auto InfoFunctions::online(Player *player, const chat_t &args) -> ChatResult {
 	return ChatResult::HandledDisplay;
 }
 
-auto InfoFunctions::variable(Player *player, const chat_t &args) -> ChatResult {
+auto InfoFunctions::variable(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+))", matches) == MatchResult::NoMatches) {
 		return ChatResult::ShowSyntax;
@@ -391,7 +391,7 @@ auto InfoFunctions::variable(Player *player, const chat_t &args) -> ChatResult {
 	return ChatResult::HandledDisplay;
 }
 
-auto InfoFunctions::questData(Player *player, const chat_t &args) -> ChatResult {
+auto InfoFunctions::questData(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) (\w+))", matches) == MatchResult::NoMatches) {
 		return ChatResult::ShowSyntax;
@@ -404,7 +404,7 @@ auto InfoFunctions::questData(Player *player, const chat_t &args) -> ChatResult 
 	return ChatResult::HandledDisplay;
 }
 
-auto InfoFunctions::questKills(Player *player, const chat_t &args) -> ChatResult {
+auto InfoFunctions::questKills(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) (\d+))", matches) == MatchResult::NoMatches) {
 		return ChatResult::ShowSyntax;
@@ -423,7 +423,7 @@ auto InfoFunctions::questKills(Player *player, const chat_t &args) -> ChatResult
 	return ChatResult::HandledDisplay;
 }
 
-auto InfoFunctions::gmLevel(Player *player, const chat_t &args) -> ChatResult {
+auto InfoFunctions::gmLevel(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
 	ChatHandlerFunctions::showInfo(player, [&](chat_stream_t &message) { message << "Your GM level: " << player->getGmLevel(); });
 	return ChatResult::HandledDisplay;
 }

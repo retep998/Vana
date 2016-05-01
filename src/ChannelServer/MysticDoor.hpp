@@ -28,7 +28,7 @@ namespace Vana {
 		class MysticDoor {
 			NONCOPYABLE(MysticDoor);
 		public:
-			MysticDoor(Player *owner, map_id_t townId, portal_id_t portalId, const Point &mapPos, const Point &townPos, bool isDisplacement, seconds_t doorTime);
+			MysticDoor(ref_ptr_t<Player> owner, map_id_t townId, portal_id_t portalId, const Point &mapPos, const Point &townPos, bool isDisplacement, seconds_t doorTime);
 			MysticDoor(player_id_t ownerId, map_id_t mapId, const Point &mapPos, map_id_t townId, portal_id_t portalId, const Point &townPos, seconds_t doorTime);
 
 			static const portal_id_t PortalId = 80;

@@ -26,7 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 namespace Vana {
-	class AbstractConnection;
 	class PacketBuilder;
 	class PacketReader;
 	struct RatesConfig;

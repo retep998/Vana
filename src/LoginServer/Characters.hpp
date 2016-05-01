@@ -26,7 +26,7 @@ namespace Vana {
 	class soci::row;
 
 	namespace LoginServer {
-		class UserConnection;
+		class User;
 
 		struct CharEquip {
 			item_id_t id = 0;
@@ -64,18 +64,18 @@ namespace Vana {
 		};
 
 		namespace Characters {
-			auto connectGame(UserConnection *user, player_id_t charId) -> void;
-			auto connectGame(UserConnection *user, PacketReader &reader) -> void;
-			auto connectGameWorldFromViewAllCharacters(UserConnection *user, PacketReader &reader) -> void;
-			auto checkCharacterName(UserConnection *user, PacketReader &reader) -> void;
-			auto createCharacter(UserConnection *user, PacketReader &reader) -> void;
-			auto deleteCharacter(UserConnection *user, PacketReader &reader) -> void;
-			auto showAllCharacters(UserConnection *user) -> void;
-			auto showCharacters(UserConnection *user) -> void;
+			auto connectGame(ref_ptr_t<User> user, player_id_t charId) -> void;
+			auto connectGame(ref_ptr_t<User> user, PacketReader &reader) -> void;
+			auto connectGameWorldFromViewAllCharacters(ref_ptr_t<User> user, PacketReader &reader) -> void;
+			auto checkCharacterName(ref_ptr_t<User> user, PacketReader &reader) -> void;
+			auto createCharacter(ref_ptr_t<User> user, PacketReader &reader) -> void;
+			auto deleteCharacter(ref_ptr_t<User> user, PacketReader &reader) -> void;
+			auto showAllCharacters(ref_ptr_t<User> user) -> void;
+			auto showCharacters(ref_ptr_t<User> user) -> void;
 			auto loadCharacter(Character &charc, const soci::row &row) -> void;
 			auto loadEquips(player_id_t id, vector_t<CharEquip> &vec) -> void;
-			auto createItem(item_id_t itemId, UserConnection *user, player_id_t charId, inventory_slot_t slot, slot_qty_t amount = 1) -> void;
-			auto ownerCheck(UserConnection *user, player_id_t id) -> bool;
+			auto createItem(item_id_t itemId, ref_ptr_t<User> user, player_id_t charId, inventory_slot_t slot, slot_qty_t amount = 1) -> void;
+			auto ownerCheck(ref_ptr_t<User> user, player_id_t id) -> bool;
 			auto nameTaken(const string_t &name) -> bool;
 			auto nameInvalid(const string_t &name) -> bool;
 		}

@@ -27,14 +27,14 @@ namespace Vana {
 		class Player;
 
 		namespace PetHandler {
-			auto showPets(Player *player) -> void;
-			auto handleChat(Player *player, PacketReader &reader) -> void;
-			auto handleFeed(Player *player, PacketReader &reader) -> void;
-			auto handleMovement(Player *player, PacketReader &reader) -> void;
-			auto handleSummon(Player *player, PacketReader &reader) -> void;
-			auto handleCommand(Player *player, PacketReader &reader) -> void;
-			auto handleConsumePotion(Player *player, PacketReader &reader) -> void;
-			auto changeName(Player *player, const string_t &name) -> void;
+			auto showPets(ref_ptr_t<Player> player) -> void;
+			auto handleChat(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto handleFeed(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto handleMovement(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto handleSummon(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto handleCommand(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto handleConsumePotion(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto changeName(ref_ptr_t<Player> player, const string_t &name) -> void;
 		}
 	}
 }

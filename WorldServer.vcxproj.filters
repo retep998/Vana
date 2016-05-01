@@ -27,14 +27,8 @@
     <ClCompile Include="src\WorldServer\LoginServerConnectHandler.cpp">
       <Filter>Inter-Server\Login</Filter>
     </ClCompile>
-    <ClCompile Include="src\WorldServer\LoginServerConnection.cpp">
-      <Filter>Inter-Server\Login</Filter>
-    </ClCompile>
     <ClCompile Include="src\WorldServer\LoginServerConnectPacket.cpp">
       <Filter>Inter-Server\Login</Filter>
-    </ClCompile>
-    <ClCompile Include="src\WorldServer\WorldServerAcceptConnection.cpp">
-      <Filter>Inter-Server\Channel</Filter>
     </ClCompile>
     <ClCompile Include="src\WorldServer\WorldServerAcceptPacket.cpp">
       <Filter>Inter-Server\Channel</Filter>
@@ -51,6 +45,12 @@
     <ClCompile Include="src\WorldServer\PlayerDataProvider.cpp">
       <Filter>Inter-Server\Sync</Filter>
     </ClCompile>
+    <ClCompile Include="src\WorldServer\LoginServerSession.cpp">
+      <Filter>Inter-Server\Login</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WorldServer\WorldServerAcceptedSession.cpp">
+      <Filter>Inter-Server\Channel</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\WorldServer\Channel.hpp">
@@ -59,9 +59,6 @@
     <ClInclude Include="src\WorldServer\Channels.hpp">
       <Filter>WorldServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\WorldServer\WorldServerAcceptConnection.hpp">
-      <Filter>Inter-Server\Channel</Filter>
-    </ClInclude>
     <ClInclude Include="src\WorldServer\WorldServerAcceptPacket.hpp">
       <Filter>Inter-Server\Channel</Filter>
     </ClInclude>
@@ -69,9 +66,6 @@
       <Filter>Inter-Server\Login</Filter>
     </ClInclude>
     <ClInclude Include="src\WorldServer\LoginServerConnectPacket.hpp">
-      <Filter>Inter-Server\Login</Filter>
-    </ClInclude>
-    <ClInclude Include="src\WorldServer\LoginServerConnection.hpp">
       <Filter>Inter-Server\Login</Filter>
     </ClInclude>
     <ClInclude Include="src\WorldServer\SyncHandler.hpp">
@@ -84,6 +78,12 @@
     <ClInclude Include="src\WorldServer\WorldServer.hpp" />
     <ClInclude Include="src\WorldServer\PlayerDataProvider.hpp">
       <Filter>Inter-Server\Sync</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WorldServer\LoginServerSession.hpp">
+      <Filter>Inter-Server\Login</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WorldServer\WorldServerAcceptedSession.hpp">
+      <Filter>Inter-Server\Channel</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

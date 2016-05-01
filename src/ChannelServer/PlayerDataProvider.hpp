@@ -51,19 +51,19 @@ namespace Vana {
 			auto handleSync(sync_t type, PacketReader &reader) -> void;
 
 			// Online players
-			auto addPlayer(Player *player) -> void;
-			auto removePlayer(Player *player) -> void;
-			auto updatePlayerLevel(Player *player) -> void;
-			auto updatePlayerMap(Player *player) -> void;
-			auto updatePlayerJob(Player *player) -> void;
-			auto getPlayer(player_id_t id) -> Player *;
-			auto getPlayer(const string_t &name) -> Player *;
-			auto run(function_t<void(Player *)> func) -> void;
+			auto addPlayer(ref_ptr_t<Player> player) -> void;
+			auto removePlayer(ref_ptr_t<Player> player) -> void;
+			auto updatePlayerLevel(ref_ptr_t<Player> player) -> void;
+			auto updatePlayerMap(ref_ptr_t<Player> player) -> void;
+			auto updatePlayerJob(ref_ptr_t<Player> player) -> void;
+			auto getPlayer(player_id_t id) -> ref_ptr_t<Player>;
+			auto getPlayer(const string_t &name) -> ref_ptr_t<Player>;
+			auto run(function_t<void(ref_ptr_t<Player>)> func) -> void;
 			auto send(player_id_t playerId, const PacketBuilder &builder) -> void;
 			auto send(const vector_t<player_id_t> &playerIds, const PacketBuilder &builder) -> void;
 			auto send(const PacketBuilder &builder) -> void;
-			auto addFollower(Player *follower, Player *target) -> void;
-			auto stopFollowing(Player *follower) -> void;
+			auto addFollower(ref_ptr_t<Player> follower, ref_ptr_t<Player> target) -> void;
+			auto stopFollowing(ref_ptr_t<Player> follower) -> void;
 			auto disconnect() -> void;
 
 			// Player data
@@ -75,7 +75,7 @@ namespace Vana {
 
 			// Chat
 			auto handleGroupChat(int8_t chatType, player_id_t playerId, const vector_t<player_id_t> &receivers, const chat_t &chat) -> void;
-			auto handleGmChat(Player *player, const chat_t &chat) -> void;
+			auto handleGmChat(ref_ptr_t<Player> player, const chat_t &chat) -> void;
 
 			// Connections
 			auto checkPlayer(player_id_t id, const Ip &ip, bool &hasPacket) const -> Result;
@@ -114,11 +114,11 @@ namespace Vana {
 
 			hash_set_t<player_id_t> m_gmList;
 			hash_map_t<player_id_t, PlayerData> m_playerData;
-			hash_map_t<player_id_t, vector_t<Player *>> m_followers;
+			hash_map_t<player_id_t, vector_t<ref_ptr_t<Player>>> m_followers;
 			case_insensitive_hash_map_t<PlayerData *> m_playerDataByName;
 			hash_map_t<party_id_t, ref_ptr_t<Party>> m_parties;
-			hash_map_t<player_id_t, Player *> m_players;
-			case_insensitive_hash_map_t<Player *> m_playersByName;
+			hash_map_t<player_id_t, ref_ptr_t<Player>> m_players;
+			case_insensitive_hash_map_t<ref_ptr_t<Player>> m_playersByName;
 			hash_map_t<player_id_t, ConnectingPlayer> m_connections;
 		};
 	}

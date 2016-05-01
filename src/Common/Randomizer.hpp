@@ -56,6 +56,15 @@ namespace Vana {
 			return s_rand.rand(max, min);
 		}
 
+		static auto percentage() -> int32_t {
+			return percentage<int32_t>();
+		}
+
+		template <typename TNumber>
+		static auto percentage() -> std::enable_if_t<std::is_integral<TNumber>::value, TNumber> {
+			return s_rand.rand(99, 0);
+		}
+
 		template <typename TNumber>
 		static auto rand(TNumber max, TNumber min = 0) -> std::enable_if_t<std::is_integral<TNumber>::value, TNumber> {
 			return s_rand.rand(max, min);
@@ -64,6 +73,16 @@ namespace Vana {
 		template <typename TNumber>
 		static auto rand(TNumber max, TNumber min = 0) -> std::enable_if_t<std::is_floating_point<TNumber>::value, TNumber> {
 			return s_rand.rand(max, min);
+		}
+
+		template <typename TNumber>
+		static auto twofold(TNumber min) -> std::enable_if_t<std::is_integral<TNumber>::value, TNumber> {
+			return min + s_rand.rand(min, 0);
+		}
+
+		template <typename TNumber>
+		static auto twofold(TNumber min) -> std::enable_if_t<std::is_floating_point<TNumber>::value, TNumber> {
+			return min + s_rand.rand(min, 0);
 		}
 
 		template <typename TContainer>

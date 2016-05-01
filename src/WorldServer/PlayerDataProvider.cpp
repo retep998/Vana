@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer/SyncHandler.hpp"
 #include "WorldServer/SyncPacket.hpp"
 #include "WorldServer/WorldServer.hpp"
-#include "WorldServer/WorldServerAcceptConnection.hpp"
+#include "WorldServer/WorldServerAcceptedSession.hpp"
 #include "WorldServer/WorldServerAcceptPacket.hpp"
 #include <iomanip>
 #include <iostream>
@@ -188,29 +188,42 @@ auto PlayerDataProvider::send(const PacketBuilder &builder) -> void {
 }
 
 // Handlers
-auto PlayerDataProvider::handleSync(AbstractConnection *connection, sync_t type, PacketReader &reader) -> void {
+auto PlayerDataProvider::handleSync(ref_ptr_t<WorldServerAcceptedSession> session, sync_t type, PacketReader &reader) -> void {
 	switch (type) {
-		case Sync::SyncTypes::Player: handlePlayerSync(connection, reader); break;
-		case Sync::SyncTypes::Party: handlePartySync(connection, reader); break;
-		case Sync::SyncTypes::Buddy: handleBuddySync(connection, reader); break;
+		case Sync::SyncTypes::Player: handlePlayerSync(session, reader); break;
+		case Sync::SyncTypes::Party: handlePartySync(reader); break;
+		case Sync::SyncTypes::Buddy: handleBuddySync(reader); break;
 		default: throw NotImplementedException{"Sync type"};
 	}
 }
 
-auto PlayerDataProvider::handlePlayerSync(AbstractConnection *connection, PacketReader &reader) -> void {
+auto PlayerDataProvider::handleSync(ref_ptr_t<LoginServerSession> session, sync_t type, PacketReader &reader) -> void {
+	switch (type) {
+		case Sync::SyncTypes::Player: handlePlayerSync(session, reader); break;
+		default: throw NotImplementedException{"Sync type"};
+	}
+}
+
+auto PlayerDataProvider::handlePlayerSync(ref_ptr_t<WorldServerAcceptedSession> session, PacketReader &reader) -> void {
 	switch (reader.get<sync_t>()) {
-		case Sync::Player::ChangeChannelRequest: handleChangeChannelRequest(connection, reader); break;
-		case Sync::Player::ChangeChannelGo: handleChangeChannel(connection, reader); break;
-		case Sync::Player::Connect: handlePlayerConnect(static_cast<WorldServerAcceptConnection *>(connection)->getChannel(), reader); break;
-		case Sync::Player::Disconnect: handlePlayerDisconnect(static_cast<WorldServerAcceptConnection *>(connection)->getChannel(), reader); break;
+		case Sync::Player::ChangeChannelRequest: handleChangeChannelRequest(session, reader); break;
+		case Sync::Player::ChangeChannelGo: handleChangeChannel(reader); break;
+		case Sync::Player::Connect: handlePlayerConnect(session->getChannel(), reader); break;
+		case Sync::Player::Disconnect: handlePlayerDisconnect(session->getChannel(), reader); break;
 		case Sync::Player::UpdatePlayer: handlePlayerUpdate(reader); break;
+		default: throw NotImplementedException{"PlayerSync type"};
+	}
+}
+
+auto PlayerDataProvider::handlePlayerSync(ref_ptr_t<LoginServerSession> session, PacketReader &reader) -> void {
+	switch (reader.get<sync_t>()) {
 		case Sync::Player::CharacterCreated: handleCharacterCreated(reader); break;
 		case Sync::Player::CharacterDeleted: handleCharacterDeleted(reader); break;
 		default: throw NotImplementedException{"PlayerSync type"};
 	}
 }
 
-auto PlayerDataProvider::handlePartySync(AbstractConnection *connection, PacketReader &reader) -> void {
+auto PlayerDataProvider::handlePartySync(PacketReader &reader) -> void {
 	sync_t type = reader.get<sync_t>();
 	player_id_t playerId = reader.get<player_id_t>();
 	switch (type) {
@@ -223,7 +236,7 @@ auto PlayerDataProvider::handlePartySync(AbstractConnection *connection, PacketR
 	}
 }
 
-auto PlayerDataProvider::handleBuddySync(AbstractConnection *connection, PacketReader &reader) -> void {
+auto PlayerDataProvider::handleBuddySync(PacketReader &reader) -> void {
 	switch (reader.get<sync_t>()) {
 		case Sync::Buddy::Invite: buddyInvite(reader); break;
 		case Sync::Buddy::AcceptInvite: acceptBuddyInvite(reader); break;
@@ -339,7 +352,7 @@ auto PlayerDataProvider::handleCharacterDeleted(PacketReader &reader) -> void {
 	sendSync(Packets::Interserver::Player::characterDeleted(id));
 }
 
-auto PlayerDataProvider::handleChangeChannelRequest(AbstractConnection *connection, PacketReader &reader) -> void {
+auto PlayerDataProvider::handleChangeChannelRequest(ref_ptr_t<WorldServerAcceptedSession> session, PacketReader &reader) -> void {
 	player_id_t playerId = reader.get<player_id_t>();
 	Channel *channel = WorldServer::getInstance().getChannels().getChannel(reader.get<channel_id_t>());
 	Ip ip{0};
@@ -355,13 +368,11 @@ auto PlayerDataProvider::handleChangeChannelRequest(AbstractConnection *connecti
 		channel->send(Packets::Interserver::Player::newConnectable(playerId, ip, reader));
 	}
 	else {
-		connection->send(Packets::Interserver::Player::playerChangeChannel(playerId, -1, ip, port));
+		session->send(Packets::Interserver::Player::playerChangeChannel(playerId, -1, ip, port));
 	}
 }
 
-auto PlayerDataProvider::handleChangeChannel(AbstractConnection *connection, PacketReader &reader) -> void {
-	// TODO FIXME
-	// This request comes from the destination channel so I can't remove the ->getConnection() calls
+auto PlayerDataProvider::handleChangeChannel(PacketReader &reader) -> void {
 	player_id_t playerId = reader.get<player_id_t>();
 
 	auto &player = m_players.find(playerId)->second;

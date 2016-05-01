@@ -57,7 +57,7 @@ namespace Vana {
 				PACKET(error, int8_t error);
 				PACKET(inviteError, int8_t error, const string_t &target);
 				PACKET(customError, const string_t &error = "");
-				PACKET(createParty, Vana::ChannelServer::Party *party, Vana::ChannelServer::Player *leader);
+				PACKET(createParty, Vana::ChannelServer::Party *party, ref_ptr_t<Vana::ChannelServer::Player> leader);
 				PACKET(joinParty, map_id_t targetMapId, Vana::ChannelServer::Party *party, const string_t &player);
 				PACKET(leaveParty, map_id_t targetMapId, Vana::ChannelServer::Party *party, player_id_t playerId, const string_t &name, bool kicked);
 				PACKET(invitePlayer, Vana::ChannelServer::Party *party, const string_t &inviter);

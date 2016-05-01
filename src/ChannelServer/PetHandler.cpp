@@ -35,7 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 namespace ChannelServer {
 
-auto PetHandler::handleMovement(Player *player, PacketReader &reader) -> void {
+auto PetHandler::handleMovement(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	pet_id_t petId = reader.get<pet_id_t>();
 	Pet *pet = player->getPets()->getPet(petId);
 	if (pet == nullptr) {
@@ -49,7 +49,7 @@ auto PetHandler::handleMovement(Player *player, PacketReader &reader) -> void {
 	player->sendMap(Packets::Pets::showMovement(player->getId(), pet, reader.getBuffer(), reader.getBufferLength() - 9));
 }
 
-auto PetHandler::handleChat(Player *player, PacketReader &reader) -> void {
+auto PetHandler::handleChat(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	pet_id_t petId = reader.get<pet_id_t>();
 	if (player->getPets()->getPet(petId) == nullptr) {
 		// Hacking
@@ -61,7 +61,7 @@ auto PetHandler::handleChat(Player *player, PacketReader &reader) -> void {
 	player->sendMap(Packets::Pets::showChat(player->getId(), player->getPets()->getPet(petId), message, act));
 }
 
-auto PetHandler::handleSummon(Player *player, PacketReader &reader) -> void {
+auto PetHandler::handleSummon(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	reader.skip<tick_count_t>();
 	inventory_slot_t slot = reader.get<inventory_slot_t>();
 	bool master = reader.get<int8_t>() == 1; // Might possibly fit under getBool criteria
@@ -142,7 +142,7 @@ auto PetHandler::handleSummon(Player *player, PacketReader &reader) -> void {
 	player->send(Packets::Pets::blankUpdate());
 }
 
-auto PetHandler::handleFeed(Player *player, PacketReader &reader) -> void {
+auto PetHandler::handleFeed(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	reader.skip<tick_count_t>();
 	inventory_slot_t slot = reader.get<inventory_slot_t>();
 	item_id_t itemId = reader.get<item_id_t>();
@@ -156,7 +156,7 @@ auto PetHandler::handleFeed(Player *player, PacketReader &reader) -> void {
 			player->send(Packets::Pets::showAnimation(player->getId(), pet, 1));
 
 			pet->modifyFullness(Stats::PetFeedFullness, false);
-			if (Randomizer::rand<int32_t>(99) < 60) {
+			if (Randomizer::percentage() < 60) {
 				// 60% chance for feed to add closeness
 				pet->addCloseness(1);
 			}
@@ -167,7 +167,7 @@ auto PetHandler::handleFeed(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto PetHandler::handleCommand(Player *player, PacketReader &reader) -> void {
+auto PetHandler::handleCommand(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	pet_id_t petId = reader.get<pet_id_t>();
 	Pet *pet = player->getPets()->getPet(petId);
 	if (pet == nullptr) {
@@ -182,14 +182,14 @@ auto PetHandler::handleCommand(Player *player, PacketReader &reader) -> void {
 		return;
 	}
 
-	if (Randomizer::rand<uint32_t>(100) < action->prob) {
+	if (Randomizer::percentage<uint32_t>() < action->prob) {
 		pet->addCloseness(action->increase);
 	}
 
 	player->send(Packets::Pets::showAnimation(player->getId(), pet, act));
 }
 
-auto PetHandler::handleConsumePotion(Player *player, PacketReader &reader) -> void {
+auto PetHandler::handleConsumePotion(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	pet_id_t petId = reader.get<pet_id_t>();
 	Pet *pet = player->getPets()->getPet(petId);
 	if (pet == nullptr || !pet->isSummoned() || player->getStats()->isDead()) {
@@ -223,13 +223,13 @@ auto PetHandler::handleConsumePotion(Player *player, PacketReader &reader) -> vo
 	Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
 }
 
-auto PetHandler::changeName(Player *player, const string_t &name) -> void {
+auto PetHandler::changeName(ref_ptr_t<Player> player, const string_t &name) -> void {
 	if (Pet *pet = player->getPets()->getSummoned(0)) {
 		pet->setName(name);
 	}
 }
 
-auto PetHandler::showPets(Player *player) -> void {
+auto PetHandler::showPets(ref_ptr_t<Player> player) -> void {
 	for (int8_t i = 0; i < Inventories::MaxPetCount; ++i) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
 			pet->setPos(player->getPos());

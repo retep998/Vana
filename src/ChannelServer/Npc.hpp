@@ -32,9 +32,9 @@ namespace Vana {
 			NONCOPYABLE(Npc);
 			NO_DEFAULT_CONSTRUCTOR(Npc);
 		public:
-			Npc(npc_id_t npcId, Player *player, quest_id_t questId = 0, bool isStart = false);
-			Npc(npc_id_t npcId, Player *player, const Point &pos, quest_id_t questId = 0, bool isStart = false);
-			Npc(npc_id_t npcId, Player *player, const string_t &script);
+			Npc(npc_id_t npcId, ref_ptr_t<Player> player, quest_id_t questId = 0, bool isStart = false);
+			Npc(npc_id_t npcId, ref_ptr_t<Player> player, const Point &pos, quest_id_t questId = 0, bool isStart = false);
+			Npc(npc_id_t npcId, ref_ptr_t<Player> player, const string_t &script);
 
 			static auto hasScript(npc_id_t npcId, quest_id_t questId, bool start) -> bool;
 
@@ -59,7 +59,7 @@ namespace Vana {
 			auto proceedNumber(int32_t number) -> void;
 			auto proceedText(const string_t &text) -> void;
 
-			auto getPlayer() const -> Player * { return m_player; }
+			auto getPlayer() const -> ref_ptr_t<Player> { return m_player; }
 			auto getSentDialog() const -> uint8_t { return m_sentDialog; }
 			auto getNpcId() const -> npc_id_t { return m_npcId; }
 			auto getNumber() const -> int32_t { return m_getNum; }
@@ -100,7 +100,7 @@ namespace Vana {
 			npc_id_t m_npcId = 0;
 			int32_t m_getNum = 0;
 			uint32_t m_state = 0;
-			Player *m_player = nullptr;
+			ref_ptr_t<Player> m_player = nullptr;
 			string_t m_text;
 			string_t m_getText;
 			string_t m_script;

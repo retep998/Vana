@@ -78,7 +78,7 @@ auto PlayerSkills::load() -> void {
 	for (const auto &row : rs) {
 		skill_id_t skillId = row.get<skill_id_t>("skill_id");
 		seconds_t timeLeft = seconds_t{row.get<int16_t>("remaining_time")};
-		Skills::startCooldown(m_player, skillId, timeLeft, true);
+		Skills::startCooldown(ref_ptr_t<Player>{m_player}, skillId, timeLeft, true);
 		m_cooldowns[skillId] = timeLeft;
 	}
 
@@ -155,7 +155,7 @@ auto PlayerSkills::save(bool saveCooldowns) -> void {
 
 			for (const auto &kvp : m_cooldowns) {
 				skillId = kvp.first;
-				remainingTime = Skills::getCooldownTimeLeft(m_player, kvp.first);
+				remainingTime = Skills::getCooldownTimeLeft(ref_ptr_t<Player>{m_player}, kvp.first);
 				st.execute(true);
 			}
 		}
@@ -495,7 +495,7 @@ auto PlayerSkills::removeAllCooldowns() -> void {
 	auto dupe = m_cooldowns;
 	for (const auto &kvp : dupe) {
 		if (kvp.first != Vana::Skills::Buccaneer::TimeLeap) {
-			Skills::stopCooldown(m_player, kvp.first);
+			Skills::stopCooldown(ref_ptr_t<Player>{m_player}, kvp.first);
 		}
 	}
 }
@@ -506,12 +506,12 @@ auto PlayerSkills::openMysticDoor(const Point &pos, seconds_t doorTime) -> Mysti
 
 	uint8_t zeroBasedPartyIndex = 0;
 	if (party != nullptr) {
-		zeroBasedPartyIndex = party->getZeroBasedIndexByMember(m_player);
+		zeroBasedPartyIndex = party->getZeroBasedIndexByMember(ref_ptr_t<Player>{m_player});
 	}
 
 	MysticDoorOpenResult result = party == nullptr ?
-		m_player->getMap()->getTownMysticDoorPortal(m_player) :
-		m_player->getMap()->getTownMysticDoorPortal(m_player, zeroBasedPartyIndex);
+		m_player->getMap()->getTownMysticDoorPortal(ref_ptr_t<Player>{m_player}) :
+		m_player->getMap()->getTownMysticDoorPortal(ref_ptr_t<Player>{m_player}, zeroBasedPartyIndex);
 
 	if (result.result != MysticDoorResult::Success) {
 		return result.result;
@@ -519,7 +519,7 @@ auto PlayerSkills::openMysticDoor(const Point &pos, seconds_t doorTime) -> Mysti
 
 	if (isDisplacement) {
 		if (party != nullptr) {
-			party->runFunction([&](Player *partyMember) {
+			party->runFunction([&](ref_ptr_t<Player> partyMember) {
 				if (partyMember->getMapId() == m_mysticDoor->getMapId()) {
 					partyMember->send(Packets::Map::removeDoor(m_mysticDoor, false));
 				}
@@ -532,10 +532,10 @@ auto PlayerSkills::openMysticDoor(const Point &pos, seconds_t doorTime) -> Mysti
 
 	auto townId = result.townId;
 	auto portal = result.portal;
-	m_mysticDoor = make_ref_ptr<MysticDoor>(m_player, townId, portal->id, pos, portal->pos, isDisplacement, doorTime);
+	m_mysticDoor = make_ref_ptr<MysticDoor>(ref_ptr_t<Player>{m_player}, townId, portal->id, pos, portal->pos, isDisplacement, doorTime);
 
 	if (party != nullptr) {
-		party->runFunction([&](Player *partyMember) {
+		party->runFunction([&](ref_ptr_t<Player> partyMember) {
 			bool sendSpawnPacket = false;
 			bool inTown = false;
 			if (partyMember->getMapId() == m_mysticDoor->getMapId()) {
@@ -576,9 +576,9 @@ auto PlayerSkills::closeMysticDoor(bool fromTimer) -> void {
 	m_mysticDoor.reset();
 
 	if (Party *party = m_player->getParty()) {
-		uint8_t zeroBasedPartyIndex = party->getZeroBasedIndexByMember(m_player);
+		uint8_t zeroBasedPartyIndex = party->getZeroBasedIndexByMember(ref_ptr_t<Player>{m_player});
 
-		party->runFunction([&](Player *partyMember) {
+		party->runFunction([&](ref_ptr_t<Player> partyMember) {
 			map_id_t memberMap = partyMember->getMapId();
 			if (memberMap == door->getMapId()) {
 				partyMember->send(Packets::Map::removeDoor(door, fromTimer));
@@ -601,8 +601,8 @@ auto PlayerSkills::getMysticDoor() const -> ref_ptr_t<MysticDoor> {
 	return m_mysticDoor;
 }
 
-auto PlayerSkills::onJoinParty(Party *party, Player *player) -> void {
-	if (player == m_player) {
+auto PlayerSkills::onJoinParty(Party *party, ref_ptr_t<Player> player) -> void {
+	if (player.get() == m_player) {
 		if (m_mysticDoor == nullptr) {
 			return;
 		}
@@ -630,8 +630,8 @@ auto PlayerSkills::onJoinParty(Party *party, Player *player) -> void {
 	}
 
 	if (m_mysticDoor != nullptr) {
-		uint8_t zeroBasedPartyIndex = party->getZeroBasedIndexByMember(m_player);
-		MysticDoorOpenResult result = m_mysticDoor->getMap()->getTownMysticDoorPortal(m_player, zeroBasedPartyIndex);
+		uint8_t zeroBasedPartyIndex = party->getZeroBasedIndexByMember(ref_ptr_t<Player>{m_player});
+		MysticDoorOpenResult result = m_mysticDoor->getMap()->getTownMysticDoorPortal(ref_ptr_t<Player>{m_player}, zeroBasedPartyIndex);
 		if (result.result != MysticDoorResult::Success) {
 			// ???
 			return;
@@ -646,8 +646,8 @@ auto PlayerSkills::onJoinParty(Party *party, Player *player) -> void {
 	}
 }
 
-auto PlayerSkills::onLeaveParty(Party *party, Player *player, bool kicked) -> void {
-	if (player == m_player) {
+auto PlayerSkills::onLeaveParty(Party *party, ref_ptr_t<Player> player, bool kicked) -> void {
+	if (player.get() == m_player) {
 		if (m_mysticDoor == nullptr) {
 			return;
 		}
@@ -679,8 +679,8 @@ auto PlayerSkills::onLeaveParty(Party *party, Player *player, bool kicked) -> vo
 	}
 
 	if (m_mysticDoor != nullptr) {
-		uint8_t zeroBasedPartyIndex = party->getZeroBasedIndexByMember(m_player);
-		MysticDoorOpenResult result = m_mysticDoor->getMap()->getTownMysticDoorPortal(m_player, zeroBasedPartyIndex);
+		uint8_t zeroBasedPartyIndex = party->getZeroBasedIndexByMember(ref_ptr_t<Player>{m_player});
+		MysticDoorOpenResult result = m_mysticDoor->getMap()->getTownMysticDoorPortal(ref_ptr_t<Player>{m_player}, zeroBasedPartyIndex);
 		if (result.result != MysticDoorResult::Success) {
 			// ???
 			return;
@@ -700,18 +700,18 @@ auto PlayerSkills::onPartyDisband(Party *party) -> void {
 		return;
 	}
 
-	uint8_t zeroBasedPartyIndex = party->getZeroBasedIndexByMember(m_player);
-	party->runFunction([&](Player *partyMember) {
+	uint8_t zeroBasedPartyIndex = party->getZeroBasedIndexByMember(ref_ptr_t<Player>{m_player});
+	party->runFunction([&](ref_ptr_t<Player> partyMember) {
 		map_id_t memberMap = partyMember->getMapId();
 		if (memberMap == m_mysticDoor->getTownId()) {
 			partyMember->send(Packets::Party::updateDoor(zeroBasedPartyIndex, nullptr));
 		}
-		else if (partyMember != m_player && memberMap == m_mysticDoor->getMapId()) {
+		else if (partyMember.get() != m_player && memberMap == m_mysticDoor->getMapId()) {
 			partyMember->send(Packets::Map::removeDoor(m_mysticDoor, false));
 		}
 	});
 
-	MysticDoorOpenResult result = m_mysticDoor->getMap()->getTownMysticDoorPortal(m_player);
+	MysticDoorOpenResult result = m_mysticDoor->getMap()->getTownMysticDoorPortal(ref_ptr_t<Player>{m_player});
 	if (result.result != MysticDoorResult::Success) {
 		// ???
 		return;
@@ -730,7 +730,7 @@ auto PlayerSkills::onPartyDisband(Party *party) -> void {
 
 auto PlayerSkills::onMapChange() const -> void {
 	if (Party *party = m_player->getParty()) {
-		party->runFunction([&](Player *partyMember) {
+		party->runFunction([&](ref_ptr_t<Player> partyMember) {
 			if (ref_ptr_t<MysticDoor> door = partyMember->getSkills()->getMysticDoor()) {
 				if (m_player->getMapId() == door->getMapId()) {
 					m_player->send(Packets::Map::spawnDoor(door, false, true));

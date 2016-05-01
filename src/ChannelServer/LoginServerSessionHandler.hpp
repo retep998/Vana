@@ -15,24 +15,16 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "PingPacket.hpp"
-#include "Common/CommonHeader.hpp"
-#include "Common/Session.hpp"
+#pragma once
 
 namespace Vana {
-namespace Packets {
+	class PacketReader;
 
-PACKET_IMPL(ping) {
-	PacketBuilder builder;
-	builder.add<header_t>(SMSG_PING);
-	return builder;
-}
+	namespace ChannelServer {
+		class LoginServerSession;
 
-PACKET_IMPL(pong) {
-	PacketBuilder builder;
-	builder.add<header_t>(CMSG_PONG);
-	return builder;
-}
-
-}
+		namespace LoginServerSessionHandler {
+			auto connect(ref_ptr_t<LoginServerSession> session, PacketReader &reader) -> void;
+		}
+	}
 }

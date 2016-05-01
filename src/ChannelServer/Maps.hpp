@@ -29,10 +29,10 @@ namespace Vana {
 		namespace Maps {
 			auto getMap(map_id_t mapId) -> Map *;
 			auto unloadMap(map_id_t mapId) -> void;
-			auto usePortal(Player *player, const PortalInfo * const portal) -> void;
-			auto usePortal(Player *player, PacketReader &reader) -> void;
-			auto useScriptedPortal(Player *player, PacketReader &reader) -> void;
-			auto addPlayer(Player *player, map_id_t mapId) -> void;
+			auto usePortal(ref_ptr_t<Player> player, const PortalInfo * const portal) -> void;
+			auto usePortal(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto useScriptedPortal(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+			auto addPlayer(ref_ptr_t<Player> player, map_id_t mapId) -> void;
 		}
 	}
 }

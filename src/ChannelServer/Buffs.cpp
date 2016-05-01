@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Vana {
 namespace ChannelServer {
 
-auto Buffs::addBuff(Player *player, skill_id_t skillId, skill_level_t level, int16_t addedInfo, map_object_t mapMobId) -> Result {
+auto Buffs::addBuff(ref_ptr_t<Player> player, skill_id_t skillId, skill_level_t level, int16_t addedInfo, map_object_t mapMobId) -> Result {
 	auto source = BuffSource::fromSkill(skillId, level);
 	auto &buffProvider = ChannelServer::getInstance().getBuffDataProvider();
 	if (!buffProvider.isBuff(source)) {
@@ -63,7 +63,7 @@ auto Buffs::addBuff(Player *player, skill_id_t skillId, skill_level_t level, int
 	return player->getActiveBuffs()->addBuff(source, buffs, time);
 }
 
-auto Buffs::addBuff(Player *player, item_id_t itemId, const seconds_t &time) -> Result {
+auto Buffs::addBuff(ref_ptr_t<Player> player, item_id_t itemId, const seconds_t &time) -> Result {
 	auto source = BuffSource::fromItem(itemId);
 	if (!ChannelServer::getInstance().getBuffDataProvider().isBuff(source)) {
 		return Result::Failure;
@@ -75,7 +75,7 @@ auto Buffs::addBuff(Player *player, item_id_t itemId, const seconds_t &time) -> 
 	return player->getActiveBuffs()->addBuff(source, buffs, time);
 }
 
-auto Buffs::addBuff(Player *player, mob_skill_id_t skillId, mob_skill_level_t level, milliseconds_t delay) -> Result {
+auto Buffs::addBuff(ref_ptr_t<Player> player, mob_skill_id_t skillId, mob_skill_level_t level, milliseconds_t delay) -> Result {
 	auto source = BuffSource::fromMobSkill(skillId, level);
 	if (!ChannelServer::getInstance().getBuffDataProvider().isDebuff(source)) {
 		return Result::Failure;
@@ -94,11 +94,11 @@ auto Buffs::addBuff(Player *player, mob_skill_id_t skillId, mob_skill_level_t le
 	return player->getActiveBuffs()->addBuff(source, buffs.withDelay(delay), time);
 }
 
-auto Buffs::endBuff(Player *player, const BuffSource &source, bool fromTimer) -> void {
+auto Buffs::endBuff(ref_ptr_t<Player> player, const BuffSource &source, bool fromTimer) -> void {
 	player->getActiveBuffs()->removeBuff(source, preprocessBuff(player, source, seconds_t{0}), fromTimer);
 }
 
-auto Buffs::buffMayApply(Player *player, const BuffSource &source, const seconds_t &time, const BuffInfo &buff) -> bool {
+auto Buffs::buffMayApply(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, const BuffInfo &buff) -> bool {
 	switch (source.getType()) {
 		case BuffSourceType::Skill: {
 			skill_id_t skillId = source.getSkillId();
@@ -124,22 +124,22 @@ auto Buffs::buffMayApply(Player *player, const BuffSource &source, const seconds
 	throw NotImplementedException{"BuffSourceType"};
 }
 
-auto Buffs::preprocessBuff(Player *player, skill_id_t skillId, skill_level_t level, const seconds_t &time) -> Buff {
+auto Buffs::preprocessBuff(ref_ptr_t<Player> player, skill_id_t skillId, skill_level_t level, const seconds_t &time) -> Buff {
 	auto source = BuffSource::fromSkill(skillId, level);
 	return preprocessBuff(player, source, time);
 }
 
-auto Buffs::preprocessBuff(Player *player, item_id_t itemId, const seconds_t &time) -> Buff {
+auto Buffs::preprocessBuff(ref_ptr_t<Player> player, item_id_t itemId, const seconds_t &time) -> Buff {
 	auto source = BuffSource::fromItem(itemId);
 	return preprocessBuff(player, source, time);
 }
 
-auto Buffs::preprocessBuff(Player *player, mob_skill_id_t skillId, mob_skill_level_t level, const seconds_t &time) -> Buff {
+auto Buffs::preprocessBuff(ref_ptr_t<Player> player, mob_skill_id_t skillId, mob_skill_level_t level, const seconds_t &time) -> Buff {
 	auto source = BuffSource::fromMobSkill(skillId, level);
 	return preprocessBuff(player, source, time);
 }
 
-auto Buffs::preprocessBuff(Player *player, const BuffSource &source, const seconds_t &time) -> Buff {
+auto Buffs::preprocessBuff(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time) -> Buff {
 	auto &buffProvider = ChannelServer::getInstance().getBuffDataProvider();
 
 	if (source.getType() == BuffSourceType::Item) {
@@ -160,11 +160,11 @@ auto Buffs::preprocessBuff(Player *player, const BuffSource &source, const secon
 	return preprocessBuff(player, source, time, skillsInfo);
 }
 
-auto Buffs::preprocessBuff(Player *player, const BuffSource &source, const seconds_t &time, const Buff &buff) -> Buff {
+auto Buffs::preprocessBuff(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, const Buff &buff) -> Buff {
 	vector_t<BuffInfo> applicableBuffs;
 	vector_t<BuffInfo> existingBuffs;
 	if (buff.isSelectionBuff()) {
-		int16_t chance = Randomizer::rand<int16_t>(99);
+		int16_t chance = Randomizer::percentage<int16_t>();
 		for (const auto &buffInfo : buff.getBuffInfo()) {
 			if (chance < buffInfo.getChance()) {
 				existingBuffs.push_back(buffInfo);
@@ -217,7 +217,7 @@ auto Buffs::convertToPacketTypes(const Buff &buff) -> BuffPacketValues {
 	return ret;
 }
 
-auto Buffs::convertToPacket(Player *player, const BuffSource &source, const seconds_t &time, const Buff &buff) -> BuffPacketValues {
+auto Buffs::convertToPacket(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, const Buff &buff) -> BuffPacketValues {
 	BuffPacketValues ret;
 	bool anyMap = false;
 	for (const auto &buffInfo : buff.getBuffInfo()) {
@@ -241,21 +241,21 @@ auto Buffs::convertToPacket(Player *player, const BuffSource &source, const seco
 	return ret;
 }
 
-auto Buffs::getValue(Player *player, const BuffSource &source, const seconds_t &time, const BuffInfo &buff) -> BuffPacketValue {
+auto Buffs::getValue(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, const BuffInfo &buff) -> BuffPacketValue {
 	if (buff.getValue() == BuffSkillValue::Predefined) {
 		return BuffPacketValue::fromValue(2, buff.getPredefinedValue());
 	}
 	return getValue(player, source, time, buff.getBitPosition(), buff.getValue(), 2);
 }
 
-auto Buffs::getValue(Player *player, const BuffSource &source, const seconds_t &time, uint8_t bitPosition, const BuffMapInfo &buff) -> BuffPacketValue {
+auto Buffs::getValue(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, uint8_t bitPosition, const BuffMapInfo &buff) -> BuffPacketValue {
 	if (buff.getValue() == BuffSkillValue::Predefined) {
 		return BuffPacketValue::fromValue(buff.getSize(), buff.getPredefinedValue());
 	}
 	return getValue(player, source, time, bitPosition, buff.getValue(), buff.getSize());
 }
 
-auto Buffs::getValue(Player *player, const BuffSource &source, const seconds_t &time, uint8_t bitPosition, BuffSkillValue value, uint8_t buffValueSize) -> BuffPacketValue {
+auto Buffs::getValue(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, uint8_t bitPosition, BuffSkillValue value, uint8_t buffValueSize) -> BuffPacketValue {
 	switch (source.getType()) {
 		case BuffSourceType::Item: {
 			throw NotImplementedException{"Item BuffSkillValue type"};

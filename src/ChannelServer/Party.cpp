@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/PlayerDataProvider.hpp"
 #include "ChannelServer/PlayerPacket.hpp"
 #include "ChannelServer/PlayerSkills.hpp"
-#include "ChannelServer/WorldServerConnectPacket.hpp"
+#include "ChannelServer/WorldServerPacket.hpp"
 
 namespace Vana {
 namespace ChannelServer {
@@ -39,7 +39,7 @@ Party::Party(party_id_t partyId) :
 auto Party::setLeader(player_id_t playerId, bool showPacket) -> void {
 	m_leaderId = playerId;
 	if (showPacket) {
-		runFunction([this, playerId](Player *player) {
+		runFunction([this, playerId](ref_ptr_t<Player> player) {
 			player->send(Packets::Party::setLeader(this, playerId));
 		});
 	}
@@ -47,7 +47,7 @@ auto Party::setLeader(player_id_t playerId, bool showPacket) -> void {
 
 namespace Functors {
 	struct JoinPartyUpdate {
-		auto operator()(Player *target) -> void {
+		auto operator()(ref_ptr_t<Player> target) -> void {
 			target->send(Packets::Party::joinParty(target->getMapId(), party, player));
 		}
 		Party *party;
@@ -55,7 +55,7 @@ namespace Functors {
 	};
 }
 
-auto Party::addMember(Player *player, bool first) -> void {
+auto Party::addMember(ref_ptr_t<Player> player, bool first) -> void {
 	m_members[player->getId()] = player;
 	player->setParty(this);
 	showHpBar(player);
@@ -66,7 +66,7 @@ auto Party::addMember(Player *player, bool first) -> void {
 		// The town position will need to change upon joining
 		player->getSkills()->onJoinParty(this, player);
 
-		runFunction([&](Player *partyMember) {
+		runFunction([&](ref_ptr_t<Player> partyMember) {
 			if (partyMember != player) {
 				partyMember->getSkills()->onJoinParty(this, player);
 			}
@@ -85,13 +85,13 @@ auto Party::addMember(player_id_t id, const string_t &name, bool first) -> void 
 	}
 }
 
-auto Party::setMember(player_id_t playerId, Player *player) -> void {
+auto Party::setMember(player_id_t playerId, ref_ptr_t<Player> player) -> void {
 	m_members[playerId] = player;
 }
 
 namespace Functors {
 	struct LeavePartyUpdate {
-		auto operator()(Player *target) -> void {
+		auto operator()(ref_ptr_t<Player> target) -> void {
 			target->send(Packets::Party::leaveParty(target->getMapId(), party, playerId, player, kicked));
 		}
 		Party *party;
@@ -101,7 +101,7 @@ namespace Functors {
 	};
 }
 
-auto Party::deleteMember(Player *player, bool kicked) -> void {
+auto Party::deleteMember(ref_ptr_t<Player> player, bool kicked) -> void {
 	player->getSkills()->onLeaveParty(this, player, kicked);
 
 	m_members.erase(player->getId());
@@ -110,7 +110,7 @@ auto Party::deleteMember(Player *player, bool kicked) -> void {
 		instance->removePartyMember(getId(), player->getId());
 	}
 
-	runFunction([&](Player *partyMember) {
+	runFunction([&](ref_ptr_t<Player> partyMember) {
 		if (partyMember != player) {
 			partyMember->getSkills()->onLeaveParty(this, player, kicked);
 		}
@@ -137,13 +137,13 @@ auto Party::disband() -> void {
 		setInstance(nullptr);
 	}
 
-	runFunction([&](Player *partyMember) {
+	runFunction([&](ref_ptr_t<Player> partyMember) {
 		partyMember->getSkills()->onPartyDisband(this);
 	});
 
 	auto temp = m_members;
 	for (const auto &kvp : temp) {
-		if (Player *player = kvp.second) {
+		if (auto player = kvp.second) {
 			player->setParty(nullptr);
 			player->send(Packets::Party::disbandParty(this));
 		}
@@ -152,13 +152,13 @@ auto Party::disband() -> void {
 }
 
 auto Party::silentUpdate() -> void {
-	runFunction([this](Player *player) {
+	runFunction([this](ref_ptr_t<Player> player) {
 		player->send(Packets::Party::silentUpdate(player->getMapId(), this));
 	});
 }
 
-auto Party::getMemberByIndex(uint8_t oneBasedIndex) -> Player * {
-	Player *member = nullptr;
+auto Party::getMemberByIndex(uint8_t oneBasedIndex) -> ref_ptr_t<Player> {
+	ref_ptr_t<Player> member = nullptr;
 	if (oneBasedIndex <= m_members.size()) {
 		uint8_t f = 0;
 		for (const auto &kvp : m_members) {
@@ -172,7 +172,7 @@ auto Party::getMemberByIndex(uint8_t oneBasedIndex) -> Player * {
 	return member;
 }
 
-auto Party::getZeroBasedIndexByMember(Player *player) -> int8_t {
+auto Party::getZeroBasedIndexByMember(ref_ptr_t<Player> player) -> int8_t {
 	int8_t index = 0;
 	for (const auto &kvp : m_members) {
 		if (kvp.second == player) {
@@ -183,9 +183,9 @@ auto Party::getZeroBasedIndexByMember(Player *player) -> int8_t {
 	return -1;
 }
 
-auto Party::runFunction(function_t<void(Player *)> func) -> void {
+auto Party::runFunction(function_t<void(ref_ptr_t<Player>)> func) -> void {
 	for (const auto &kvp : m_members) {
-		if (Player *player = kvp.second) {
+		if (auto player = kvp.second) {
 			func(player);
 		}
 	}
@@ -199,9 +199,9 @@ auto Party::getAllPlayerIds() -> vector_t<player_id_t> {
 	return playerIds;
 }
 
-auto Party::getPartyMembers(map_id_t mapId) -> vector_t<Player *> {
-	vector_t<Player *> players;
-	runFunction([&players, &mapId](Player *player) {
+auto Party::getPartyMembers(map_id_t mapId) -> vector_t<ref_ptr_t<Player>> {
+	vector_t<ref_ptr_t<Player>> players;
+	runFunction([&players, &mapId](ref_ptr_t<Player> player) {
 		if (mapId == -1 || player->getMapId() == mapId) {
 			players.push_back(player);
 		}
@@ -209,16 +209,16 @@ auto Party::getPartyMembers(map_id_t mapId) -> vector_t<Player *> {
 	return players;
 }
 
-auto Party::showHpBar(Player *player) -> void {
-	runFunction([&player](Player *testPlayer) {
+auto Party::showHpBar(ref_ptr_t<Player> player) -> void {
+	runFunction([&player](ref_ptr_t<Player> testPlayer) {
 		if (testPlayer != player && testPlayer->getMapId() == player->getMapId()) {
 			testPlayer->send(Packets::Player::showHpBar(player->getId(), player->getStats()->getHp(), player->getStats()->getMaxHp()));
 		}
 	});
 }
 
-auto Party::receiveHpBar(Player *player) -> void {
-	runFunction([&player](Player *testPlayer) {
+auto Party::receiveHpBar(ref_ptr_t<Player> player) -> void {
+	runFunction([&player](ref_ptr_t<Player> testPlayer) {
 		if (testPlayer != player && testPlayer->getMapId() == player->getMapId()) {
 			player->send(Packets::Player::showHpBar(testPlayer->getId(), testPlayer->getStats()->getHp(), testPlayer->getStats()->getMaxHp()));
 		}
@@ -228,7 +228,7 @@ auto Party::receiveHpBar(Player *player) -> void {
 auto Party::getMemberCountOnMap(map_id_t mapId) -> int8_t {
 	int8_t count = 0;
 	for (const auto &kvp : m_members) {
-		if (Player *test = kvp.second) {
+		if (auto test = kvp.second) {
 			if (test->getMapId() == mapId) {
 				count++;
 			}
@@ -240,7 +240,7 @@ auto Party::getMemberCountOnMap(map_id_t mapId) -> int8_t {
 auto Party::isWithinLevelRange(player_level_t lowBound, player_level_t highBound) -> bool {
 	bool ret = true;
 	for (const auto &kvp : m_members) {
-		if (Player *test = kvp.second) {
+		if (auto test = kvp.second) {
 			if (test->getStats()->getLevel() < lowBound || test->getStats()->getLevel() > highBound) {
 				ret = false;
 				break;
@@ -253,7 +253,7 @@ auto Party::isWithinLevelRange(player_level_t lowBound, player_level_t highBound
 auto Party::warpAllMembers(map_id_t mapId, const string_t &portalName) -> void {
 	if (Map *destination = Maps::getMap(mapId)) {
 		const PortalInfo * const destinationPortal = destination->queryPortalName(portalName);
-		runFunction([&](Player *test) {
+		runFunction([&](ref_ptr_t<Player> test) {
 			test->setMap(mapId, destinationPortal);
 		});
 	}
@@ -268,7 +268,7 @@ auto Party::checkFootholds(int8_t memberCount, const vector_t<vector_t<foothold_
 	for (size_t group = 0; group < footholds.size(); group++) {
 		const auto &groupFootholds = footholds[group];
 		for (const auto &kvp : m_members) {
-			if (Player *test = kvp.second) {
+			if (auto test = kvp.second) {
 				for (const auto &foothold : groupFootholds) {
 					if (test->getFoothold() == foothold) {
 						if (footholdGroupsUsed.find(group) != std::end(footholdGroupsUsed)) {
@@ -305,7 +305,7 @@ auto Party::verifyFootholds(const vector_t<vector_t<foothold_id_t>> &footholds) 
 	for (size_t group = 0; group < footholds.size(); group++) {
 		const auto &groupFootholds = footholds[group];
 		for (const auto &kvp : m_members) {
-			if (Player *test = kvp.second) {
+			if (auto test = kvp.second) {
 				for (const auto &foothold : groupFootholds) {
 					if (test->getFoothold() == foothold) {
 						if (footholdGroupsUsed.find(group) != std::end(footholdGroupsUsed)) {
