@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/i_packet.hpp"
 #include "common/packet_builder.hpp"
 #include "common/packet_reader.hpp"
-#include "common/point_temp.hpp"
-#include "common/types_temp.hpp"
+#include "common/point.hpp"
+#include "common/types.hpp"
 #include <cmath>
 
 namespace vana {

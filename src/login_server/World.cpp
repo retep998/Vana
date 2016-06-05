@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "World.hpp"
 #include "login_server/LoginServerAcceptedSession.hpp"
 #include "common/packet_builder.hpp"
-#include "common/randomizer_temp.hpp"
+#include "common/randomizer.hpp"
 
 namespace vana {
 namespace login_server {

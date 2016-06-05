@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MobsPacket.hpp"
-#include "common/session_temp.hpp"
+#include "common/session.hpp"
 #include "common/wide_point.hpp"
 #include "channel_server/Maps.hpp"
 #include "channel_server/Mob.hpp"

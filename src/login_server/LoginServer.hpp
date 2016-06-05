@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/finalization_pool.hpp"
 #include "common/salt_config.hpp"
 #include "common/salt_size_config.hpp"
-#include "common/types_temp.hpp"
+#include "common/types.hpp"
 #include "common/valid_char_data_provider.hpp"
 #include "login_server/LoginServerAcceptedSession.hpp"
 #include "login_server/Worlds.hpp"

@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/config_file.hpp"
 #include "common/lua_variant.hpp"
 #include "common/salt_policy.hpp"
-#include "common/types_temp.hpp"
+#include "common/types.hpp"
 #include <string>
 #include <vector>
 

@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/password_transformation_config.hpp"
 #include "common/salt_policy.hpp"
 #include "common/salt_transformation_config.hpp"
-#include "common/types_temp.hpp"
+#include "common/types.hpp"
 #include <string>
 #include <vector>
 

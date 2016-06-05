@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PartyPacket.hpp"
 #include "common/game_constants.hpp"
 #include "common/inter_helper.hpp"
-#include "common/session_temp.hpp"
+#include "common/session.hpp"
 #include "common/wide_point.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/MysticDoor.hpp"

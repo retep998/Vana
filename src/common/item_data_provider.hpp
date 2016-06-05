@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/scroll_info.hpp"
 #include "common/skillbook_info.hpp"
 #include "common/summon_bag_info.hpp"
-#include "common/types_temp.hpp"
+#include "common/types.hpp"
 #include <string>
 #include <unordered_map>
 #include <vector>

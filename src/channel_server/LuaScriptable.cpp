@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaScriptable.hpp"
-#include "common/algorithm_temp.hpp"
+#include "common/algorithm.hpp"
 #include "common/beauty_data_provider.hpp"
 #include "common/game_constants.hpp"
 #include "common/game_logic_utilities.hpp"
@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/item_data_provider.hpp"
 #include "common/mcdb_version.hpp"
 #include "common/packet_wrapper.hpp"
-#include "common/randomizer_temp.hpp"
+#include "common/randomizer.hpp"
 #include "common/script_data_provider.hpp"
 #include "common/shop_data_provider.hpp"
 #include "common/string_utilities.hpp"

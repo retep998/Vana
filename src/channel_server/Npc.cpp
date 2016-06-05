@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Npc.hpp"
 #include "common/file_utilities.hpp"
 #include "common/script_data_provider.hpp"
-#include "common/session_temp.hpp"
+#include "common/session.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/LuaNpc.hpp"
 #include "channel_server/NpcPacket.hpp"

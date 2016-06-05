@@ -19,9 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "common/abstract_server.hpp"
 #include "common/finalization_pool.hpp"
-#include "common/ip_temp.hpp"
+#include "common/ip.hpp"
 #include "common/rates_config.hpp"
-#include "common/types_temp.hpp"
+#include "common/types.hpp"
 #include "common/world_config.hpp"
 #include "world_server/Channels.hpp"
 #include "world_server/LoginServerSession.hpp"

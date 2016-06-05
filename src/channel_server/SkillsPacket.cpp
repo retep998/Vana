@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillsPacket.hpp"
 #include "common/charge_or_stationary_skill_data.hpp"
 #include "common/game_constants.hpp"
-#include "common/session_temp.hpp"
+#include "common/session.hpp"
 #include "channel_server/Maps.hpp"
 #include "channel_server/Player.hpp"
 #include "channel_server/Skills.hpp"

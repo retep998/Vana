@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/logger_temp.hpp"
+#include "common/logger.hpp"
 #include <string>
 
 namespace vana {

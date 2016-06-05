@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "common/card_map_range_info.hpp"
 #include "common/morph_chance_info.hpp"
-#include "common/types_temp.hpp"
+#include "common/types.hpp"
 #include <vector>
 
 namespace vana {

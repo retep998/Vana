@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/exit_codes.hpp"
 #include "common/inter_server_config.hpp"
 #include "common/misc_utilities.hpp"
-#include "common/session_temp.hpp"
+#include "common/session.hpp"
 #include "common/thread_pool.hpp"
 
 namespace vana {

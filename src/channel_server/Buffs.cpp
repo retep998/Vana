@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Buffs.hpp"
-#include "common/algorithm_temp.hpp"
+#include "common/algorithm.hpp"
 #include "common/buff_data_provider.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/skill_constants.hpp"

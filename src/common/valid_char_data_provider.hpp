@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/types_temp.hpp"
+#include "common/types.hpp"
 #include "common/valid_class_data.hpp"
 #include "common/valid_class_gender_data.hpp"
 #include "common/valid_item_type.hpp"

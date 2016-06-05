@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/quest_data_provider.hpp"
 #include "common/reactor_data_provider.hpp"
 #include "common/script_data_provider.hpp"
-#include "common/session_temp.hpp"
+#include "common/session.hpp"
 #include "common/shop_data_provider.hpp"
 #include "common/skill_data_provider.hpp"
 #include "common/world_config.hpp"

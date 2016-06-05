@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapPacket.hpp"
 #include "common/file_time.hpp"
-#include "common/point_temp.hpp"
-#include "common/session_temp.hpp"
+#include "common/point.hpp"
+#include "common/session.hpp"
 #include "common/time_utilities.hpp"
 #include "common/wide_point.hpp"
 #include "channel_server/Buffs.hpp"

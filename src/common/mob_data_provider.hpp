@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/mob_attack_info.hpp"
 #include "common/mob_info.hpp"
 #include "common/mob_skill_info.hpp"
-#include "common/types_temp.hpp"
+#include "common/types.hpp"
 #include <memory>
 #include <string>
 #include <unordered_map>

@@ -16,14 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "item_data_provider.hpp"
-#include "common/algorithm_temp.hpp"
+#include "common/algorithm.hpp"
 #include "common/buff_data_provider.hpp"
-#include "common/database_temp.hpp"
+#include "common/database.hpp"
 #include "common/equip_data_provider.hpp"
 #include "common/game_constants.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/initialize_common.hpp"
-#include "common/randomizer_temp.hpp"
+#include "common/randomizer.hpp"
 #include "common/shop_data_provider.hpp"
 #include "common/string_utilities.hpp"
 #include <iomanip>

@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DropsPacket.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/item_constants.hpp"
-#include "common/session_temp.hpp"
+#include "common/session.hpp"
 #include "channel_server/Drop.hpp"
 #include "channel_server/Maps.hpp"
 #include "channel_server/Player.hpp"

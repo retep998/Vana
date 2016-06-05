@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/connection_manager.hpp"
 #include "common/encrypted_packet_transformer.hpp"
 #include "common/inter_server_config.hpp"
-#include "common/session_temp.hpp"
+#include "common/session.hpp"
 #include "common/thread_pool.hpp"
 
 namespace vana {

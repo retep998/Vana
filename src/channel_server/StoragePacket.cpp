@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StoragePacket.hpp"
 #include "common/game_constants.hpp"
 #include "common/game_logic_utilities.hpp"
-#include "common/session_temp.hpp"
+#include "common/session.hpp"
 #include "channel_server/Inventory.hpp"
 #include "channel_server/Player.hpp"
 #include "channel_server/PlayerPacketHelper.hpp"

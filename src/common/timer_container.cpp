@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "timer_container.hpp"
 #include "common/timer_thread.hpp"
-#include "common/timer_temp.hpp"
+#include "common/timer.hpp"
 #include <chrono>
 
 namespace vana {

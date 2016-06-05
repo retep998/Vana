@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerBuddyList.hpp"
-#include "common/algorithm_temp.hpp"
-#include "common/database_temp.hpp"
+#include "common/algorithm.hpp"
+#include "common/database.hpp"
 #include "common/game_constants.hpp"
 #include "common/misc_utilities.hpp"
 #include "common/string_utilities.hpp"

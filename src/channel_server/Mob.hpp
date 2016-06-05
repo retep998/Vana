@@ -19,9 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "common/mob_constants.hpp"
 #include "common/mob_data_provider.hpp"
-#include "common/point_temp.hpp"
+#include "common/point.hpp"
 #include "common/timer_container_holder.hpp"
-#include "common/types_temp.hpp"
+#include "common/types.hpp"
 #include "channel_server/MovableLife.hpp"
 #include <map>
 #include <memory>

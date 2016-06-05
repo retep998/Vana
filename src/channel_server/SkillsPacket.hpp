@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "common/packet_builder.hpp"
 #include "common/split_packet_builder.hpp"
-#include "common/types_temp.hpp"
+#include "common/types.hpp"
 
 namespace vana {
 	struct charge_or_stationary_skill_data;

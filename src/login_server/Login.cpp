@@ -16,14 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Login.hpp"
-#include "common/algorithm_temp.hpp"
-#include "common/database_temp.hpp"
+#include "common/algorithm.hpp"
+#include "common/database.hpp"
 #include "common/file_time.hpp"
 #include "common/game_constants.hpp"
 #include "common/hash_utilities.hpp"
 #include "common/packet_reader.hpp"
-#include "common/randomizer_temp.hpp"
-#include "common/session_temp.hpp"
+#include "common/randomizer.hpp"
+#include "common/session.hpp"
 #include "common/string_utilities.hpp"
 #include "common/time_utilities.hpp"
 #include "common/unix_time.hpp"

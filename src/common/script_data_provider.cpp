@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "script_data_provider.hpp"
 #include "common/abstract_server.hpp"
-#include "common/algorithm_temp.hpp"
-#include "common/database_temp.hpp"
+#include "common/algorithm.hpp"
+#include "common/database.hpp"
 #include "common/file_utilities.hpp"
 #include "common/initialize_common.hpp"
 #include "common/string_utilities.hpp"

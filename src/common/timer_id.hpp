@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "common/hash_combine.hpp"
 #include "common/timer_type.hpp"
-#include "common/types_temp.hpp"
+#include "common/types.hpp"
 #include <algorithm>
 #include <functional>
 

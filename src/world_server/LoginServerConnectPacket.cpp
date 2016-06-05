@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerConnectPacket.hpp"
 #include "common/inter_header.hpp"
-#include "common/session_temp.hpp"
+#include "common/session.hpp"
 #include "world_server/LoginServerSession.hpp"
 #include "world_server/WorldServer.hpp"
 

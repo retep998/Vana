@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common_packet.hpp"
 #include "common/common_header.hpp"
 #include "common/maple_version.hpp"
-#include "common/session_temp.hpp"
+#include "common/session.hpp"
 
 namespace vana {
 namespace packets {

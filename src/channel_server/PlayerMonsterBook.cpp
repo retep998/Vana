@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerMonsterBook.hpp"
-#include "common/database_temp.hpp"
+#include "common/database.hpp"
 #include "common/game_constants.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/item_data_provider.hpp"

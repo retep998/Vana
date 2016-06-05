@@ -16,14 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "shop_data_provider.hpp"
-#include "common/algorithm_temp.hpp"
+#include "common/algorithm.hpp"
 #include "common/common_header.hpp"
-#include "common/database_temp.hpp"
+#include "common/database.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/initialize_common.hpp"
 #include "common/item_data_provider.hpp"
 #include "common/packet_builder.hpp"
-#include "common/session_temp.hpp"
+#include "common/session.hpp"
 #include <iomanip>
 #include <iostream>
 

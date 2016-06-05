@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "common/map_position.hpp"
-#include "common/point_temp.hpp"
+#include "common/point.hpp"
 
 namespace vana {
 	namespace channel_server {

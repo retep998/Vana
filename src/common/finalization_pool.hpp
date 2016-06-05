@@ -17,10 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/timer_temp.hpp"
+#include "common/timer.hpp"
 #include "common/timer_thread.hpp"
 #include "common/timer_type.hpp"
-#include "common/types_temp.hpp"
+#include "common/types.hpp"
 
 namespace vana {
 	// Keep track of a pool of objects and query them from time to time until only one reference remains

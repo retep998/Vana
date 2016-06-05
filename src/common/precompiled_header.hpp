@@ -45,7 +45,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <utility>
 #include <vector>
 // Dependencies, can't do alphabetical order here
-#include "common/types_temp.hpp"
+#include "common/types.hpp"
 #include "common/maple_version.hpp"
 #include "common/game_constants.hpp"
 #include "common/job_constants.hpp"
@@ -53,6 +53,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/game_logic_utilities.hpp"
 #include "common/packet_builder.hpp"
 #include "common/packet_reader.hpp"
-#include "common/randomizer_temp.hpp"
-#include "common/database_temp.hpp"
+#include "common/randomizer.hpp"
+#include "common/database.hpp"
 #include "common/string_utilities.hpp"

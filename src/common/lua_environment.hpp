@@ -26,7 +26,7 @@ extern "C" {
 #include "common/lua_type.hpp"
 #include "common/lua_variant.hpp"
 #include "common/object_pool.hpp"
-#include "common/types_temp.hpp"
+#include "common/types.hpp"
 #include <stdexcept>
 #include <string>
 #include <vector>

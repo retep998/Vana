@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/common_header.hpp"
 #include "common/maple_version.hpp"
 #include "common/packet_builder.hpp"
-#include "common/randomizer_temp.hpp"
+#include "common/randomizer.hpp"
 #include <botan/filters.h>
 #include <botan/lookup.h>
 #include <botan/pipe.h>

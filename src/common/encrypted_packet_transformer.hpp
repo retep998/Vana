@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "common/block_cipher_iv.hpp"
 #include "common/packet_transformer.hpp"
-#include "common/types_temp.hpp"
+#include "common/types.hpp"
 #include <botan/lookup.h>
 
 namespace vana {

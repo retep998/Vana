@@ -69,7 +69,7 @@
     <ClCompile Include="src\common\initialize_common.cpp">
       <Filter>Data Loading</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\database_temp.cpp">
+    <ClCompile Include="src\common\database.cpp">
       <Filter>Database</Filter>
     </ClCompile>
     <ClCompile Include="src\common\packet_reader.cpp">
@@ -78,7 +78,7 @@
     <ClCompile Include="src\common\file_utilities.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\randomizer_temp.cpp">
+    <ClCompile Include="src\common\randomizer.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
     <ClCompile Include="src\common\string_utilities.cpp">
@@ -90,7 +90,7 @@
     <ClCompile Include="src\common\connection_manager.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\variables_temp.cpp">
+    <ClCompile Include="src\common\variables.cpp">
       <Filter>Data Structures</Filter>
     </ClCompile>
     <ClCompile Include="src\common\beauty_data_provider.cpp">
@@ -129,7 +129,7 @@
     <ClCompile Include="src\common\valid_char_data_provider.cpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\item_temp.cpp">
+    <ClCompile Include="src\common\item.cpp">
       <Filter>Data Structures</Filter>
     </ClCompile>
     <ClCompile Include="src\common\console_logger.cpp">
@@ -138,13 +138,13 @@
     <ClCompile Include="src\common\file_logger.cpp">
       <Filter>Loggers</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\logger_temp.cpp">
+    <ClCompile Include="src\common\logger.cpp">
       <Filter>Loggers</Filter>
     </ClCompile>
     <ClCompile Include="src\common\sql_logger.cpp">
       <Filter>Loggers</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\timer_temp.cpp">
+    <ClCompile Include="src\common\timer.cpp">
       <Filter>Timer</Filter>
     </ClCompile>
     <ClCompile Include="src\common\timer_container.cpp">
@@ -156,16 +156,16 @@
     <ClCompile Include="src\common\authentication_packet.cpp">
       <Filter>Inter-Server</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\decoder_temp.cpp">
+    <ClCompile Include="src\common\decoder.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\session_temp.cpp">
+    <ClCompile Include="src\common\session.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\decoder_temp.cpp">
+    <ClCompile Include="src\common\decoder.cpp">
       <Filter>Source\Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\quest_temp.cpp">
+    <ClCompile Include="src\common\quest.cpp">
       <Filter>Data Structures</Filter>
     </ClCompile>
     <ClCompile Include="src\common\tausworthe_generator.cpp">
@@ -187,7 +187,7 @@
       <Filter>Connection</Filter>
     </ClCompile>
     <ClCompile Include="src\common\precompiled_header.cpp" />
-    <ClCompile Include="src\common\ip_temp.cpp">
+    <ClCompile Include="src\common\ip.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
     <ClCompile Include="src\common\external_ip.cpp">
@@ -207,7 +207,7 @@
     </ClCompile>
     <ClCompile Include="src\common\exit_codes.cpp" />
     <ClCompile Include="src\common\vana_main.cpp" />
-    <ClCompile Include="src\common\buff_temp.cpp">
+    <ClCompile Include="src\common\buff.cpp">
       <Filter>Data Structures\Buffs</Filter>
     </ClCompile>
     <ClCompile Include="src\common\buff_info.cpp">
@@ -216,10 +216,10 @@
     <ClCompile Include="src\common\buff_source.cpp">
       <Filter>Data Structures\Buffs</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\line_temp.cpp">
+    <ClCompile Include="src\common\line.cpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\rect_temp.cpp">
+    <ClCompile Include="src\common\rect.cpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="src\common\buff_map_info.cpp">
@@ -240,10 +240,10 @@
     <ClCompile Include="src\common\password_transformation_config.cpp">
       <Filter>Configuration</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\point_temp.cpp">
+    <ClCompile Include="src\common\point.cpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\ratio_temp.cpp">
+    <ClCompile Include="src\common\ratio.cpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="src\common\thread_pool.cpp">
@@ -299,7 +299,7 @@
     <ClInclude Include="src\common\misc_utilities.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\randomizer_temp.hpp">
+    <ClInclude Include="src\common\randomizer.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="src\common\string_utilities.hpp">
@@ -317,10 +317,10 @@
     <ClInclude Include="src\common\file_logger.hpp">
       <Filter>Loggers</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\logger_temp.hpp">
+    <ClInclude Include="src\common\logger.hpp">
       <Filter>Loggers</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\database_temp.hpp">
+    <ClInclude Include="src\common\database.hpp">
       <Filter>Database</Filter>
     </ClInclude>
     <ClInclude Include="src\common\beauty_data_provider.hpp">
@@ -365,16 +365,16 @@
     <ClInclude Include="src\common\initialize_common.hpp">
       <Filter>Data Loading</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\variables_temp.hpp">
+    <ClInclude Include="src\common\variables.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\item_temp.hpp">
+    <ClInclude Include="src\common\item.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
     <ClInclude Include="src\common\connection_manager.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\timer_temp.hpp">
+    <ClInclude Include="src\common\timer.hpp">
       <Filter>Timer</Filter>
     </ClInclude>
     <ClInclude Include="src\common\timer_container.hpp">
@@ -398,16 +398,16 @@
     <ClInclude Include="src\common\bit_utilities.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\decoder_temp.hpp">
+    <ClInclude Include="src\common\decoder.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\session_temp.hpp">
+    <ClInclude Include="src\common\session.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\decoder_temp.hpp">
+    <ClInclude Include="src\common\decoder.hpp">
       <Filter>Source\Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\quest_temp.hpp">
+    <ClInclude Include="src\common\quest.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
     <ClInclude Include="src\common\tausworthe_generator.hpp">
@@ -451,8 +451,8 @@
     </ClInclude>
     <ClInclude Include="src\common\exit_codes.hpp" />
     <ClInclude Include="src\common\precompiled_header.hpp" />
-    <ClInclude Include="src\common\types_temp.hpp" />
-    <ClInclude Include="src\common\ip_temp.hpp">
+    <ClInclude Include="src\common\types.hpp" />
+    <ClInclude Include="src\common\ip.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
     <ClInclude Include="src\common\external_ip.hpp">
@@ -483,7 +483,7 @@
       <Filter>Timer</Filter>
     </ClInclude>
     <ClInclude Include="src\common\vana_main.hpp" />
-    <ClInclude Include="src\common\algorithm_temp.hpp">
+    <ClInclude Include="src\common\algorithm.hpp">
       <Filter>Lib</Filter>
     </ClInclude>
     <ClInclude Include="src\common\packet_builder.hpp">
@@ -513,7 +513,7 @@
     <ClInclude Include="src\common\object_pool.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\buff_temp.hpp">
+    <ClInclude Include="src\common\buff.hpp">
       <Filter>Data Structures\Buffs</Filter>
     </ClInclude>
     <ClInclude Include="src\common\buff_action.hpp">
@@ -531,13 +531,13 @@
     <ClInclude Include="src\common\buff_source.hpp">
       <Filter>Data Structures\Buffs</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\line_temp.hpp">
+    <ClInclude Include="src\common\line.hpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\point_temp.hpp">
+    <ClInclude Include="src\common\point.hpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\rect_temp.hpp">
+    <ClInclude Include="src\common\rect.hpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="src\common\wide_point.hpp">
@@ -612,7 +612,7 @@
     <ClInclude Include="src\common\map_position.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\ratio_temp.hpp">
+    <ClInclude Include="src\common\ratio.hpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="src\common\thread_pool.hpp">
@@ -629,7 +629,7 @@
     <ClInclude Include="src\common\party_data.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\respawnable_temp.hpp">
+    <ClInclude Include="src\common\respawnable.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
     <ClInclude Include="src\common\guild_logo.hpp">
@@ -779,7 +779,7 @@
     <ClInclude Include="src\common\quest_request_info.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\preprocessor_temp.hpp">
+    <ClInclude Include="src\common\preprocessor.hpp">
       <Filter>Lib</Filter>
     </ClInclude>
     <ClInclude Include="src\common\enum_base.hpp">

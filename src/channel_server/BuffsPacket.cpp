@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "BuffsPacket.hpp"
-#include "common/session_temp.hpp"
+#include "common/session.hpp"
 #include "common/skill_constants.hpp"
 #include "channel_server/Buffs.hpp"
 #include "channel_server/BuffsPacketHelper.hpp"

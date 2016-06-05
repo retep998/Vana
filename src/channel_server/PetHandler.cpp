@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/item_data_provider.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
-#include "common/randomizer_temp.hpp"
+#include "common/randomizer.hpp"
 #include "common/skill_constants.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/Inventory.hpp"

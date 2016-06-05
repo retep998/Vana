@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerSummons.hpp"
-#include "common/algorithm_temp.hpp"
+#include "common/algorithm.hpp"
 #include "common/game_constants.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/packet_reader.hpp"
-#include "common/timer_temp.hpp"
+#include "common/timer.hpp"
 #include "common/time_utilities.hpp"
 #include "channel_server/Map.hpp"
 #include "channel_server/Player.hpp"

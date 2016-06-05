@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/quest_temp.hpp"
-#include "common/types_temp.hpp"
+#include "common/quest.hpp"
+#include "common/types.hpp"
 #include <unordered_map>
 
 namespace vana {

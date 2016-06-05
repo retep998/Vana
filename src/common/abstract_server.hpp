@@ -20,11 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/connection_manager.hpp"
 #include "common/external_ip.hpp"
 #include "common/inter_server_config.hpp"
-#include "common/ip_temp.hpp"
+#include "common/ip.hpp"
 #include "common/log_config.hpp"
-#include "common/logger_temp.hpp"
+#include "common/logger.hpp"
 #include "common/salt_config.hpp"
-#include "common/types_temp.hpp"
+#include "common/types.hpp"
 #include <memory>
 #include <string>
 #include <vector>

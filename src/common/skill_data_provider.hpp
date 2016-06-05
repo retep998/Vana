@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/morph_info.hpp"
 #include "common/skill_constants.hpp"
 #include "common/skill_level_info.hpp"
-#include "common/types_temp.hpp"
+#include "common/types.hpp"
 #include <unordered_map>
 
 namespace vana {

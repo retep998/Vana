@@ -16,13 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerSkills.hpp"
-#include "common/algorithm_temp.hpp"
-#include "common/database_temp.hpp"
+#include "common/algorithm.hpp"
+#include "common/database.hpp"
 #include "common/game_constants.hpp"
 #include "common/game_logic_utilities.hpp"
-#include "common/randomizer_temp.hpp"
+#include "common/randomizer.hpp"
 #include "common/skill_data_provider.hpp"
-#include "common/timer_temp.hpp"
+#include "common/timer.hpp"
 #include "common/timer_id.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/Map.hpp"

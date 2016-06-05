@@ -17,10 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/buff_temp.hpp"
+#include "common/buff.hpp"
 #include "common/buff_info.hpp"
 #include "common/buff_info_by_effect.hpp"
-#include "common/types_temp.hpp"
+#include "common/types.hpp"
 #include <unordered_map>
 #include <vector>
 

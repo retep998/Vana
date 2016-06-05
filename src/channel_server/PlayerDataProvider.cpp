@@ -16,15 +16,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerDataProvider.hpp"
-#include "common/algorithm_temp.hpp"
-#include "common/database_temp.hpp"
+#include "common/algorithm.hpp"
+#include "common/database.hpp"
 #include "common/inter_header.hpp"
 #include "common/inter_helper.hpp"
 #include "common/packet_builder.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
 #include "common/party_data.hpp"
-#include "common/session_temp.hpp"
+#include "common/session.hpp"
 #include "common/string_utilities.hpp"
 #include "common/time_utilities.hpp"
 #include "channel_server/BuddyListPacket.hpp"

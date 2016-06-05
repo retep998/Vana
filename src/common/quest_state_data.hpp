@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "common/quest_requests_data.hpp"
 #include "common/quest_rewards_data.hpp"
-#include "common/types_temp.hpp"
+#include "common/types.hpp"
 
 namespace vana {
 	struct quest_state_data {

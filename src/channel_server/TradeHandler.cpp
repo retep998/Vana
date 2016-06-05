@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/maple_version.hpp"
 #include "common/packet_reader.hpp"
 #include "common/time_utilities.hpp"
-#include "common/timer_temp.hpp"
+#include "common/timer.hpp"
 #include "common/timer_thread.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/Player.hpp"
