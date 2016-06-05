@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Randomizer.hpp"
 
-namespace Vana {
+namespace vana {
 
-Randomizer::_impl Randomizer::s_rand = Randomizer::_impl{};
+randomizer::_impl randomizer::s_rand = randomizer::_impl{};
 
 }

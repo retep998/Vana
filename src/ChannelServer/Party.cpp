@@ -28,142 +28,142 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/PlayerSkills.hpp"
 #include "ChannelServer/WorldServerPacket.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-Party::Party(party_id_t partyId) :
-	m_partyId{partyId}
+party::party(game_party_id party_id) :
+	m_party_id{party_id}
 {
 }
 
-auto Party::setLeader(player_id_t playerId, bool showPacket) -> void {
-	m_leaderId = playerId;
-	if (showPacket) {
-		runFunction([this, playerId](ref_ptr_t<Player> player) {
-			player->send(Packets::Party::setLeader(this, playerId));
+auto party::set_leader(game_player_id player_id, bool show_packet) -> void {
+	m_leader_id = player_id;
+	if (show_packet) {
+		run_function([this, player_id](ref_ptr<player> player) {
+			player->send(packets::party::set_leader(this, player_id));
 		});
 	}
 }
 
-namespace Functors {
-	struct JoinPartyUpdate {
-		auto operator()(ref_ptr_t<Player> target) -> void {
-			target->send(Packets::Party::joinParty(target->getMapId(), party, player));
+namespace functors {
+	struct join_party_update {
+		auto operator()(ref_ptr<player> target) -> void {
+			target->send(packets::party::join_party(target->get_map_id(), party, player));
 		}
-		Party *party;
-		string_t player;
+		party *party;
+		string player;
 	};
 }
 
-auto Party::addMember(ref_ptr_t<Player> player, bool first) -> void {
-	m_members[player->getId()] = player;
-	player->setParty(this);
-	showHpBar(player);
-	receiveHpBar(player);
+auto party::add_member(ref_ptr<player> player_value, bool first) -> void {
+	m_members[player_value->get_id()] = player_value;
+	player_value->set_party(this);
+	show_hp_bar(player_value);
+	receive_hp_bar(player_value);
 
 	if (!first) {
 		// This must be executed first in case the player has an open door already
 		// The town position will need to change upon joining
-		player->getSkills()->onJoinParty(this, player);
+		player_value->get_skills()->on_join_party(this, player_value);
 
-		runFunction([&](ref_ptr_t<Player> partyMember) {
-			if (partyMember != player) {
-				partyMember->getSkills()->onJoinParty(this, player);
+		run_function([&](ref_ptr<player> party_member) {
+			if (party_member != player_value) {
+				party_member->get_skills()->on_join_party(this, player_value);
 			}
 		});
 
-		Functors::JoinPartyUpdate func = {this, player->getName()};
-		runFunction(func);
+		functors::join_party_update func = {this, player_value->get_name()};
+		run_function(func);
 	}
 }
 
-auto Party::addMember(player_id_t id, const string_t &name, bool first) -> void {
+auto party::add_member(game_player_id id, const string &name, bool first) -> void {
 	m_members[id] = nullptr;
 	if (!first) {
-		Functors::JoinPartyUpdate func = {this, name};
-		runFunction(func);
+		functors::join_party_update func = {this, name};
+		run_function(func);
 	}
 }
 
-auto Party::setMember(player_id_t playerId, ref_ptr_t<Player> player) -> void {
-	m_members[playerId] = player;
+auto party::set_member(game_player_id player_id, ref_ptr<player> player) -> void {
+	m_members[player_id] = player;
 }
 
-namespace Functors {
-	struct LeavePartyUpdate {
-		auto operator()(ref_ptr_t<Player> target) -> void {
-			target->send(Packets::Party::leaveParty(target->getMapId(), party, playerId, player, kicked));
+namespace functors {
+	struct leave_party_update {
+		auto operator()(ref_ptr<player> target) -> void {
+			target->send(packets::party::leave_party(target->get_map_id(), party, player_id, player, kicked));
 		}
-		Party *party;
-		player_id_t playerId;
-		string_t player;
+		party *party;
+		game_player_id player_id;
+		string player;
 		bool kicked;
 	};
 }
 
-auto Party::deleteMember(ref_ptr_t<Player> player, bool kicked) -> void {
-	player->getSkills()->onLeaveParty(this, player, kicked);
+auto party::delete_member(ref_ptr<player> player_value, bool kicked) -> void {
+	player_value->get_skills()->on_leave_party(this, player_value, kicked);
 
-	m_members.erase(player->getId());
-	player->setParty(nullptr);
-	if (Instance *instance = getInstance()) {
-		instance->removePartyMember(getId(), player->getId());
+	m_members.erase(player_value->get_id());
+	player_value->set_party(nullptr);
+	if (instance *inst = get_instance()) {
+		inst->remove_party_member(get_id(), player_value->get_id());
 	}
 
-	runFunction([&](ref_ptr_t<Player> partyMember) {
-		if (partyMember != player) {
-			partyMember->getSkills()->onLeaveParty(this, player, kicked);
+	run_function([&](ref_ptr<player> party_member) {
+		if (party_member != player_value) {
+			party_member->get_skills()->on_leave_party(this, player_value, kicked);
 		}
 	});
 
-	Functors::LeavePartyUpdate func = {this, player->getId(), player->getName(), kicked};
-	func(player);
-	runFunction(func);
+	functors::leave_party_update func = {this, player_value->get_id(), player_value->get_name(), kicked};
+	func(player_value);
+	run_function(func);
 }
 
-auto Party::deleteMember(player_id_t id, const string_t &name, bool kicked) -> void {
-	if (Instance *instance = getInstance()) {
-		instance->removePartyMember(getId(), id);
+auto party::delete_member(game_player_id id, const string &name, bool kicked) -> void {
+	if (instance *inst = get_instance()) {
+		inst->remove_party_member(get_id(), id);
 	}
 	m_members.erase(id);
 
-	Functors::LeavePartyUpdate func = {this, id, name, kicked};
-	runFunction(func);
+	functors::leave_party_update func = {this, id, name, kicked};
+	run_function(func);
 }
 
-auto Party::disband() -> void {
-	if (Instance *instance = getInstance()) {
-		instance->partyDisband(getId());
-		setInstance(nullptr);
+auto party::disband() -> void {
+	if (instance *inst = get_instance()) {
+		inst->party_disband(get_id());
+		set_instance(nullptr);
 	}
 
-	runFunction([&](ref_ptr_t<Player> partyMember) {
-		partyMember->getSkills()->onPartyDisband(this);
+	run_function([&](ref_ptr<player> party_member) {
+		party_member->get_skills()->on_party_disband(this);
 	});
 
 	auto temp = m_members;
 	for (const auto &kvp : temp) {
 		if (auto player = kvp.second) {
-			player->setParty(nullptr);
-			player->send(Packets::Party::disbandParty(this));
+			player->set_party(nullptr);
+			player->send(packets::party::disband_party(this));
 		}
 		m_members.erase(kvp.first);
 	}
 }
 
-auto Party::silentUpdate() -> void {
-	runFunction([this](ref_ptr_t<Player> player) {
-		player->send(Packets::Party::silentUpdate(player->getMapId(), this));
+auto party::silent_update() -> void {
+	run_function([this](ref_ptr<player> player) {
+		player->send(packets::party::silent_update(player->get_map_id(), this));
 	});
 }
 
-auto Party::getMemberByIndex(uint8_t oneBasedIndex) -> ref_ptr_t<Player> {
-	ref_ptr_t<Player> member = nullptr;
-	if (oneBasedIndex <= m_members.size()) {
+auto party::get_member_by_index(uint8_t one_based_index) -> ref_ptr<player> {
+	ref_ptr<player> member = nullptr;
+	if (one_based_index <= m_members.size()) {
 		uint8_t f = 0;
 		for (const auto &kvp : m_members) {
 			f++;
-			if (f == oneBasedIndex) {
+			if (f == one_based_index) {
 				member = kvp.second;
 				break;
 			}
@@ -172,7 +172,7 @@ auto Party::getMemberByIndex(uint8_t oneBasedIndex) -> ref_ptr_t<Player> {
 	return member;
 }
 
-auto Party::getZeroBasedIndexByMember(ref_ptr_t<Player> player) -> int8_t {
+auto party::get_zero_based_index_by_member(ref_ptr<player> player) -> int8_t {
 	int8_t index = 0;
 	for (const auto &kvp : m_members) {
 		if (kvp.second == player) {
@@ -183,7 +183,7 @@ auto Party::getZeroBasedIndexByMember(ref_ptr_t<Player> player) -> int8_t {
 	return -1;
 }
 
-auto Party::runFunction(function_t<void(ref_ptr_t<Player>)> func) -> void {
+auto party::run_function(function<void(ref_ptr<player>)> func) -> void {
 	for (const auto &kvp : m_members) {
 		if (auto player = kvp.second) {
 			func(player);
@@ -191,45 +191,45 @@ auto Party::runFunction(function_t<void(ref_ptr_t<Player>)> func) -> void {
 	}
 }
 
-auto Party::getAllPlayerIds() -> vector_t<player_id_t> {
-	vector_t<player_id_t> playerIds;
+auto party::get_all_player_ids() -> vector<game_player_id> {
+	vector<game_player_id> player_ids;
 	for (const auto &kvp : m_members) {
-		playerIds.push_back(kvp.first);
+		player_ids.push_back(kvp.first);
 	}
-	return playerIds;
+	return player_ids;
 }
 
-auto Party::getPartyMembers(map_id_t mapId) -> vector_t<ref_ptr_t<Player>> {
-	vector_t<ref_ptr_t<Player>> players;
-	runFunction([&players, &mapId](ref_ptr_t<Player> player) {
-		if (mapId == -1 || player->getMapId() == mapId) {
+auto party::get_party_members(game_map_id map_id) -> vector<ref_ptr<player>> {
+	vector<ref_ptr<player>> players;
+	run_function([&players, &map_id](ref_ptr<player> player) {
+		if (map_id == -1 || player->get_map_id() == map_id) {
 			players.push_back(player);
 		}
 	});
 	return players;
 }
 
-auto Party::showHpBar(ref_ptr_t<Player> player) -> void {
-	runFunction([&player](ref_ptr_t<Player> testPlayer) {
-		if (testPlayer != player && testPlayer->getMapId() == player->getMapId()) {
-			testPlayer->send(Packets::Player::showHpBar(player->getId(), player->getStats()->getHp(), player->getStats()->getMaxHp()));
+auto party::show_hp_bar(ref_ptr<player> player_value) -> void {
+	run_function([&player_value](ref_ptr<player> test_player) {
+		if (test_player != player_value && test_player->get_map_id() == player_value->get_map_id()) {
+			test_player->send(packets::player::show_hp_bar(player_value->get_id(), player_value->get_stats()->get_hp(), player_value->get_stats()->get_max_hp()));
 		}
 	});
 }
 
-auto Party::receiveHpBar(ref_ptr_t<Player> player) -> void {
-	runFunction([&player](ref_ptr_t<Player> testPlayer) {
-		if (testPlayer != player && testPlayer->getMapId() == player->getMapId()) {
-			player->send(Packets::Player::showHpBar(testPlayer->getId(), testPlayer->getStats()->getHp(), testPlayer->getStats()->getMaxHp()));
+auto party::receive_hp_bar(ref_ptr<player> player_value) -> void {
+	run_function([&player_value](ref_ptr<player> test_player) {
+		if (test_player != player_value && test_player->get_map_id() == player_value->get_map_id()) {
+			player_value->send(packets::player::show_hp_bar(test_player->get_id(), test_player->get_stats()->get_hp(), test_player->get_stats()->get_max_hp()));
 		}
 	});
 }
 
-auto Party::getMemberCountOnMap(map_id_t mapId) -> int8_t {
+auto party::get_member_count_on_map(game_map_id map_id) -> int8_t {
 	int8_t count = 0;
 	for (const auto &kvp : m_members) {
 		if (auto test = kvp.second) {
-			if (test->getMapId() == mapId) {
+			if (test->get_map_id() == map_id) {
 				count++;
 			}
 		}
@@ -237,11 +237,11 @@ auto Party::getMemberCountOnMap(map_id_t mapId) -> int8_t {
 	return count;
 }
 
-auto Party::isWithinLevelRange(player_level_t lowBound, player_level_t highBound) -> bool {
+auto party::is_within_level_range(game_player_level low_bound, game_player_level high_bound) -> bool {
 	bool ret = true;
 	for (const auto &kvp : m_members) {
 		if (auto test = kvp.second) {
-			if (test->getStats()->getLevel() < lowBound || test->getStats()->getLevel() > highBound) {
+			if (test->get_stats()->get_level() < low_bound || test->get_stats()->get_level() > high_bound) {
 				ret = false;
 				break;
 			}
@@ -250,84 +250,84 @@ auto Party::isWithinLevelRange(player_level_t lowBound, player_level_t highBound
 	return ret;
 }
 
-auto Party::warpAllMembers(map_id_t mapId, const string_t &portalName) -> void {
-	if (Map *destination = Maps::getMap(mapId)) {
-		const PortalInfo * const destinationPortal = destination->queryPortalName(portalName);
-		runFunction([&](ref_ptr_t<Player> test) {
-			test->setMap(mapId, destinationPortal);
+auto party::warp_all_members(game_map_id map_id, const string &portal_name) -> void {
+	if (map *destination = maps::get_map(map_id)) {
+		const portal_info * const destination_portal = destination->query_portal_name(portal_name);
+		run_function([&](ref_ptr<player> test) {
+			test->set_map(map_id, destination_portal);
 		});
 	}
 }
 
-auto Party::checkFootholds(int8_t memberCount, const vector_t<vector_t<foothold_id_t>> &footholds) -> Result {
+auto party::check_footholds(int8_t member_count, const vector<vector<game_foothold_id>> &footholds) -> result {
 	// Determines if the players are properly arranged (i.e. 5 people on 5 barrels in Kerning PQ)
-	Result winner = Result::Successful;
-	int8_t membersOnFootholds = 0;
-	hash_set_t<size_t> footholdGroupsUsed;
+	result winner = result::successful;
+	int8_t members_on_footholds = 0;
+	hash_set<size_t> foothold_groups_used;
 
 	for (size_t group = 0; group < footholds.size(); group++) {
-		const auto &groupFootholds = footholds[group];
+		const auto &group_footholds = footholds[group];
 		for (const auto &kvp : m_members) {
 			if (auto test = kvp.second) {
-				for (const auto &foothold : groupFootholds) {
-					if (test->getFoothold() == foothold) {
-						if (footholdGroupsUsed.find(group) != std::end(footholdGroupsUsed)) {
-							winner = Result::Failure;
+				for (const auto &foothold : group_footholds) {
+					if (test->get_foothold() == foothold) {
+						if (foothold_groups_used.find(group) != std::end(foothold_groups_used)) {
+							winner = result::failure;
 						}
 						else {
-							footholdGroupsUsed.insert(group);
-							membersOnFootholds++;
+							foothold_groups_used.insert(group);
+							members_on_footholds++;
 						}
 						break;
 					}
 				}
 			}
-			if (winner == Result::Failure) {
+			if (winner == result::failure) {
 				break;
 			}
 		}
-		if (winner == Result::Failure) {
+		if (winner == result::failure) {
 			break;
 		}
 	}
-	if (winner == Result::Successful && membersOnFootholds != memberCount) {
+	if (winner == result::successful && members_on_footholds != member_count) {
 		// Not all the foothold groups were indexed
-		winner = Result::Failure;
+		winner = result::failure;
 	}
 	return winner;
 }
 
-auto Party::verifyFootholds(const vector_t<vector_t<foothold_id_t>> &footholds) -> Result {
+auto party::verify_footholds(const vector<vector<game_foothold_id>> &footholds) -> result {
 	// Determines if the players match your selected footholds
-	Result winner = Result::Successful;
-	hash_set_t<size_t> footholdGroupsUsed;
+	result winner = result::successful;
+	hash_set<size_t> foothold_groups_used;
 
 	for (size_t group = 0; group < footholds.size(); group++) {
-		const auto &groupFootholds = footholds[group];
+		const auto &group_footholds = footholds[group];
 		for (const auto &kvp : m_members) {
 			if (auto test = kvp.second) {
-				for (const auto &foothold : groupFootholds) {
-					if (test->getFoothold() == foothold) {
-						if (footholdGroupsUsed.find(group) != std::end(footholdGroupsUsed)) {
-							winner = Result::Failure;
+				for (const auto &foothold : group_footholds) {
+					if (test->get_foothold() == foothold) {
+						if (foothold_groups_used.find(group) != std::end(foothold_groups_used)) {
+							winner = result::failure;
 						}
 						else {
-							footholdGroupsUsed.insert(group);
+							foothold_groups_used.insert(group);
 						}
 						break;
 					}
 				}
-				if (winner == Result::Failure) {
+				if (winner == result::failure) {
 					break;
 				}
 			}
 		}
-		if (winner == Result::Failure) {
+		if (winner == result::failure) {
 			break;
 		}
 	}
-	if (winner == Result::Successful) {
-		winner = footholdGroupsUsed.size() == footholds.size() ? Result::Successful : Result::Failure;
+	if (winner == result::successful) {
+		winner = foothold_groups_used.size() == footholds.size() ? result::successful : result::failure;
 	}
 	return winner;
 }

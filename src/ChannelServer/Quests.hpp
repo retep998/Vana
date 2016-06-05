@@ -20,17 +20,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/ItemConstants.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class PacketReader;
+namespace vana {
+	class packet_reader;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		namespace Quests {
-			auto getQuest(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto giveFame(ref_ptr_t<Player> player, fame_t amount) -> Result;
-			auto giveItem(ref_ptr_t<Player> player, item_id_t itemId, slot_qty_t amount, Items::StatVariance variancePolicy = Items::StatVariance::None) -> Result;
-			auto giveMesos(ref_ptr_t<Player> player, mesos_t amount) -> Result;
+		namespace quests {
+			auto get_quest(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto give_fame(ref_ptr<player> player, game_fame amount) -> result;
+			auto give_item(ref_ptr<player> player, game_item_id item_id, game_slot_qty amount, items::stat_variance variance_policy = items::stat_variance::none) -> result;
+			auto give_mesos(ref_ptr<player> player, game_mesos amount) -> result;
 		}
 	}
 }

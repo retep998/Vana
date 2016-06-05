@@ -20,11 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <vector>
 
-namespace Vana {
-	struct ValidClassData {
+namespace vana {
+	struct valid_class_data {
 		auto clear() -> void {
 			hair.clear();
-			hairColor.clear();
+			hair_color.clear();
 			faces.clear();
 			skin.clear();
 			top.clear();
@@ -33,13 +33,13 @@ namespace Vana {
 			weapons.clear();
 		}
 
-		vector_t<hair_id_t> hair;
-		vector_t<hair_id_t> hairColor;
-		vector_t<face_id_t> faces;
-		vector_t<skin_id_t> skin;
-		vector_t<item_id_t> top;
-		vector_t<item_id_t> bottom;
-		vector_t<item_id_t> shoes;
-		vector_t<item_id_t> weapons;
+		vector<game_hair_id> hair;
+		vector<game_hair_id> hair_color;
+		vector<game_face_id> faces;
+		vector<game_skin_id> skin;
+		vector<game_item_id> top;
+		vector<game_item_id> bottom;
+		vector<game_item_id> shoes;
+		vector<game_item_id> weapons;
 	};
 }

@@ -21,67 +21,67 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	struct DbConfig {
-		port_t port = 0;
-		string_t database;
-		string_t tablePrefix;
-		string_t host;
-		string_t username;
-		string_t password;
+namespace vana {
+	struct db_config {
+		connection_port port = 0;
+		string database;
+		string table_prefix;
+		string host;
+		string username;
+		string password;
 	};
 
 	template <>
-	struct LuaSerialize<DbConfig> {
-		auto read(LuaEnvironment &config, const string_t &prefix) -> DbConfig {
-			DbConfig ret;
+	struct lua_serialize<db_config> {
+		auto read(lua_environment &config, const string &prefix) -> db_config {
+			db_config ret;
 
-			LuaVariant obj = config.get<LuaVariant>(prefix);
-			config.validateObject(LuaType::Table, obj, prefix);
+			lua_variant obj = config.get<lua_variant>(prefix);
+			config.validate_object(lua::lua_type::table, obj, prefix);
 
-			auto map = obj.as<hash_map_t<LuaVariant, LuaVariant>>();
-			bool hasDatabase = false;
-			bool hasHost = false;
-			bool hasPort = false;
-			bool hasUsername = false;
+			auto map = obj.as<hash_map<lua_variant, lua_variant>>();
+			bool has_db = false;
+			bool has_host = false;
+			bool has_port = false;
+			bool has_user = false;
 			for (const auto &kvp : map) {
-				config.validateKey(LuaType::String, kvp.first, prefix);
+				config.validate_key(lua::lua_type::string, kvp.first, prefix);
 
-				string_t key = kvp.first.as<string_t>();
+				string key = kvp.first.as<string>();
 				if (key == "database") {
-					hasDatabase = true;
-					config.validateValue(LuaType::String, kvp.second, key, prefix);
-					ret.database = kvp.second.as<string_t>();
+					has_db = true;
+					config.validate_value(lua::lua_type::string, kvp.second, key, prefix);
+					ret.database = kvp.second.as<string>();
 				}
 				else if (key == "host") {
-					hasHost = true;
-					config.validateValue(LuaType::String, kvp.second, key, prefix);
-					ret.host = kvp.second.as<string_t>();
+					has_host = true;
+					config.validate_value(lua::lua_type::string, kvp.second, key, prefix);
+					ret.host = kvp.second.as<string>();
 				}
 				else if (key == "username") {
-					hasUsername = true;
-					config.validateValue(LuaType::String, kvp.second, key, prefix);
-					ret.username = kvp.second.as<string_t>();
+					has_user = true;
+					config.validate_value(lua::lua_type::string, kvp.second, key, prefix);
+					ret.username = kvp.second.as<string>();
 				}
 				else if (key == "port") {
-					hasPort = true;
-					config.validateValue(LuaType::Number, kvp.second, key, prefix);
-					ret.port = kvp.second.as<port_t>();
+					has_port = true;
+					config.validate_value(lua::lua_type::number, kvp.second, key, prefix);
+					ret.port = kvp.second.as<connection_port>();
 				}
 				else if (key == "password") {
-					if (config.validateValue(LuaType::String, kvp.second, key, prefix, true) == LuaType::Nil) continue;
-					ret.password = kvp.second.as<string_t>();
+					if (config.validate_value(lua::lua_type::string, kvp.second, key, prefix, true) == lua::lua_type::nil) continue;
+					ret.password = kvp.second.as<string>();
 				}
 				else if (key == "table_prefix") {
-					if (config.validateValue(LuaType::String, kvp.second, key, prefix, true) == LuaType::Nil) continue;
-					ret.tablePrefix = kvp.second.as<string_t>();
+					if (config.validate_value(lua::lua_type::string, kvp.second, key, prefix, true) == lua::lua_type::nil) continue;
+					ret.table_prefix = kvp.second.as<string>();
 				}
 			}
 
-			config.required(hasDatabase, "database", prefix);
-			config.required(hasHost, "host", prefix);
-			config.required(hasUsername, "username", prefix);
-			config.required(hasPort, "port", prefix);
+			config.required(has_db, "database", prefix);
+			config.required(has_host, "host", prefix);
+			config.required(has_user, "username", prefix);
+			config.required(has_port, "port", prefix);
 
 			return ret;
 		}

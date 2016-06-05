@@ -20,48 +20,48 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <unordered_map>
 
-namespace Vana {
-	class PacketBuilder;
+namespace vana {
+	class packet_builder;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		struct MountData {
+		struct mount_data {
 			int16_t exp = 0;
 			int8_t tiredness = 0;
 			int8_t level = 0;
 		};
 
-		class PlayerMounts {
-			NONCOPYABLE(PlayerMounts);
-			NO_DEFAULT_CONSTRUCTOR(PlayerMounts);
+		class player_mounts {
+			NONCOPYABLE(player_mounts);
+			NO_DEFAULT_CONSTRUCTOR(player_mounts);
 		public:
-			PlayerMounts(Player *player);
+			player_mounts(player *player);
 
 			auto save() -> void;
 			auto load() -> void;
 
-			auto mountInfoPacket(PacketBuilder &builder) -> void;
-			auto mountInfoMapSpawnPacket(PacketBuilder &builder) -> void;
+			auto mount_info_packet(packet_builder &builder) -> void;
+			auto mount_info_map_spawn_packet(packet_builder &builder) -> void;
 
-			auto getCurrentMount() const -> item_id_t { return m_currentMount; }
-			auto getCurrentExp() -> int16_t;
-			auto getCurrentLevel() -> int8_t;
-			auto getCurrentTiredness() -> int8_t;
-			auto setCurrentMount(item_id_t id) -> void { m_currentMount = id; }
-			auto setCurrentExp(int16_t exp) -> void;
-			auto setCurrentLevel(int8_t level) -> void;
-			auto setCurrentTiredness(int8_t tiredness) -> void;
+			auto get_current_mount() const -> game_item_id { return m_current_mount; }
+			auto get_current_exp() -> int16_t;
+			auto get_current_level() -> int8_t;
+			auto get_current_tiredness() -> int8_t;
+			auto set_current_mount(game_item_id id) -> void { m_current_mount = id; }
+			auto set_current_exp(int16_t exp) -> void;
+			auto set_current_level(int8_t level) -> void;
+			auto set_current_tiredness(int8_t tiredness) -> void;
 
-			auto addMount(item_id_t id) -> void;
+			auto add_mount(game_item_id id) -> void;
 
-			auto getMountExp(item_id_t id) -> int16_t;
-			auto getMountLevel(item_id_t id) -> int8_t;
-			auto getMountTiredness(item_id_t id) -> int8_t;
+			auto get_mount_exp(game_item_id id) -> int16_t;
+			auto get_mount_level(game_item_id id) -> int8_t;
+			auto get_mount_tiredness(game_item_id id) -> int8_t;
 		private:
-			item_id_t m_currentMount = 0;
-			Player *m_player = nullptr;
-			hash_map_t<item_id_t, MountData> m_mounts;
+			game_item_id m_current_mount = 0;
+			player *m_player = nullptr;
+			hash_map<game_item_id, mount_data> m_mounts;
 		};
 	}
 }

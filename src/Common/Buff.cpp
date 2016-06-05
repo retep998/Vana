@@ -18,72 +18,72 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Buff.hpp"
 #include "Common/Algorithm.hpp"
 
-namespace Vana {
+namespace vana {
 
-Buff::Buff()
+buff::buff()
 {
 }
 
-Buff::Buff(const init_list_t<BuffInfo> &buffInfo) :
-	m_buffInfo{buffInfo}
+buff::buff(const init_list<buff_info> &buff_info) :
+	m_buff_info{buff_info}
 {
-	parseBuffsForData();
+	parse_buffs_for_data();
 	sort();
 }
 
-Buff::Buff(const vector_t<BuffInfo> &buffInfo) :
-	m_buffInfo{buffInfo}
+buff::buff(const vector<buff_info> &buff_info) :
+	m_buff_info{buff_info}
 {
-	parseBuffsForData();
+	parse_buffs_for_data();
 	sort();
 }
 
-auto Buff::parseBuffsForData() -> void {
-	for (const auto &buff : m_buffInfo) {
-		if (ext::in_range_inclusive<int16_t>(buff.getChance(), 0, 99)) {
-			m_isSelectionBuff = true;
+auto buff::parse_buffs_for_data() -> void {
+	for (const auto &buff : m_buff_info) {
+		if (ext::in_range_inclusive<int16_t>(buff.get_chance(), 0, 99)) {
+			m_is_selection_buff = true;
 		}
-		if (buff.hasAct()) {
-			m_anyActs = true;
+		if (buff.has_act()) {
+			m_any_acts = true;
 		}
 	}
 }
 
-auto Buff::sort() -> void {
-	std::sort(m_buffInfo.begin(), m_buffInfo.end(), [](const BuffInfo &l, const BuffInfo &r) {
-		return l.getBitPosition() < r.getBitPosition();
+auto buff::sort() -> void {
+	std::sort(m_buff_info.begin(), m_buff_info.end(), [](const buff_info &l, const buff_info &r) {
+		return l.get_bit_position() < r.get_bit_position();
 	});
 }
 
-auto Buff::getDelay() const -> milliseconds_t {
+auto buff::get_delay() const -> milliseconds {
 	return m_delay;
 }
 
-auto Buff::getBuffInfo() const -> const vector_t<BuffInfo> & {
-	return m_buffInfo;
+auto buff::get_buff_info() const -> const vector<buff_info> & {
+	return m_buff_info;
 }
 
-auto Buff::isSelectionBuff() const -> bool {
-	return m_isSelectionBuff;
+auto buff::is_selection_buff() const -> bool {
+	return m_is_selection_buff;
 }
 
-auto Buff::anyBuffs() const -> bool {
-	return m_buffInfo.size() > 0;
+auto buff::any_buffs() const -> bool {
+	return m_buff_info.size() > 0;
 }
 
-auto Buff::anyActs() const -> bool {
-	return m_anyActs;
+auto buff::any_acts() const -> bool {
+	return m_any_acts;
 }
 
-auto Buff::withBuffs(const vector_t<BuffInfo> &buffInfo) const -> Buff {
-	Buff result{*this};
-	result.m_buffInfo = buffInfo;
+auto buff::with_buffs(const vector<buff_info> &buff_info) const -> buff {
+	buff result{*this};
+	result.m_buff_info = buff_info;
 	result.sort();
 	return result;
 }
 
-auto Buff::withDelay(milliseconds_t value) const -> Buff {
-	Buff result{*this};
+auto buff::with_delay(milliseconds value) const -> buff {
+	buff result{*this};
 	result.m_delay = value;
 	return result;
 }

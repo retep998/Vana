@@ -22,95 +22,95 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 #include <string>
 
-namespace Vana {
-	class PacketBuilder;
-	class PacketReader;
+namespace vana {
+	class packet_builder;
+	class packet_reader;
 
-	class Ip {
+	class ip {
 	public:
-		class Type {
+		class type {
 		public:
-			Type(int8_t ipType) :
-				m_type{ipType}
+			type(int8_t ip_type) :
+				m_type{ip_type}
 			{
-				if (ipType != Ipv4 && ipType != Ipv6) {
-					throw std::invalid_argument{"Must pass Ip::Type::Ipv4 or Ip::Type::Ipv6 to the constructor"};
+				if (ip_type != ipv4 && ip_type != ipv6) {
+					throw std::invalid_argument{"Must pass ip::type::ipv4 or ip::type::ipv6 to the constructor"};
 				}
 			}
 
-			auto operator==(const Type &right) const -> bool { return right.m_type == this->m_type; }
+			auto operator==(const type &right) const -> bool { return right.m_type == this->m_type; }
 			auto operator==(const int8_t &right) const -> bool { return right == this->m_type; }
-			auto operator!=(const Type &right) const -> bool { return right.m_type != this->m_type; }
+			auto operator!=(const type &right) const -> bool { return right.m_type != this->m_type; }
 			auto operator!=(const int8_t &right) const -> bool { return right != this->m_type; }
 
-			static const int8_t Ipv4 = 1;
-			static const int8_t Ipv6 = 2;
+			static const int8_t ipv4 = 1;
+			static const int8_t ipv6 = 2;
 		private:
-			friend class Ip;
-			friend struct PacketSerialize<Ip::Type>;
-			Type() = default;
+			friend class ip;
+			friend struct packet_serialize<ip::type>;
+			type() = default;
 			int8_t m_type = -1;
 		};
 
-		Ip(const string_t &addr, Ip::Type type);
-		explicit Ip(uint32_t ipv4);
+		ip(const string &addr, ip::type type);
+		explicit ip(uint32_t ipv4);
 
-		auto toString() const -> string_t;
-		auto asIpv4() const -> uint32_t;
-		auto getType() const -> const Ip::Type &;
-		auto isInitialized() const -> bool;
+		auto to_string() const -> string;
+		auto as_ipv4() const -> uint32_t;
+		auto get_type() const -> const ip::type &;
+		auto is_initialized() const -> bool;
 
-		auto operator==(const Ip &right) const -> bool { return right.m_type == this->m_type && right.m_ipv4 == this->m_ipv4; }
-		auto operator!=(const Ip &right) const -> bool { return right.m_type != this->m_type || right.m_ipv4 != this->m_ipv4; }
-		friend auto operator <<(std::ostream &out, const Ip &ip) -> std::ostream &;
+		auto operator==(const ip &right) const -> bool { return right.m_type == this->m_type && right.m_ipv4 == this->m_ipv4; }
+		auto operator!=(const ip &right) const -> bool { return right.m_type != this->m_type || right.m_ipv4 != this->m_ipv4; }
+		friend auto operator <<(std::ostream &out, const ip &ip) -> std::ostream &;
 
-		static auto stringToIpv4(const string_t &name) -> uint32_t;
+		static auto string_to_ipv4(const string &name) -> uint32_t;
 	protected:
-		friend class ExternalIp;
-		friend struct PacketSerialize<Ip>;
-		Ip() = default;
+		friend class external_ip;
+		friend struct packet_serialize<ip>;
+		ip() = default;
 
 		uint32_t m_ipv4 = 0;
-		Ip::Type m_type = Ip::Type::Ipv4;
+		ip::type m_type = ip::type::ipv4;
 	};
 
 	template <>
-	struct PacketSerialize<Ip::Type> {
-		auto read(PacketReader &reader) -> Ip::Type {
-			Ip::Type ret(reader.get<int8_t>());
+	struct packet_serialize<ip::type> {
+		auto read(packet_reader &reader) -> ip::type {
+			ip::type ret(reader.get<int8_t>());
 			return ret;
 		}
-		auto write(PacketBuilder &builder, const Ip::Type &obj) -> void {
+		auto write(packet_builder &builder, const ip::type &obj) -> void {
 			builder.add<int8_t>(obj.m_type);
 		}
 	};
 
 	template <>
-	struct PacketSerialize<Ip> {
-		auto read(PacketReader &reader) -> Ip {
-			Ip ret;
-			ret.m_type = reader.get<Ip::Type>();
-			if (ret.m_type == Ip::Type::Ipv4) {
+	struct packet_serialize<ip> {
+		auto read(packet_reader &reader) -> ip {
+			ip ret;
+			ret.m_type = reader.get<ip::type>();
+			if (ret.m_type == ip::type::ipv4) {
 				ret.m_ipv4 = reader.get<uint32_t>();
 			}
 			return ret;
 		}
-		auto write(PacketBuilder &builder, const Ip &obj) -> void {
-			builder.add<Ip::Type>(obj.getType());
-			if (obj.getType() == Ip::Type::Ipv4) {
-				builder.add<uint32_t>(obj.asIpv4());
+		auto write(packet_builder &builder, const ip &obj) -> void {
+			builder.add<ip::type>(obj.get_type());
+			if (obj.get_type() == ip::type::ipv4) {
+				builder.add<uint32_t>(obj.as_ipv4());
 			}
 		}
 	};
 
 	inline
-	auto operator <<(std::ostream &out, const Ip &ip) -> std::ostream & {
-		return out << ip.toString();
+	auto operator <<(std::ostream &out, const ip &ip) -> std::ostream & {
+		return out << ip.to_string();
 	}
 
 	inline
-	auto operator <<(std::ostream &out, const optional_t<Ip> &ip) -> std::ostream & {
+	auto operator <<(std::ostream &out, const optional<ip> &ip) -> std::ostream & {
 		if (ip.is_initialized()) return out << ip.get();
-		return out << "{invalid IP}";
+		return out << "{invalid ip}";
 	}
 }

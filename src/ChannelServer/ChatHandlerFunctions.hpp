@@ -23,59 +23,59 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-namespace Vana {
-	namespace ChannelServer {
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class player;
 
-		enum class ChatResult {
-			HandledDisplay,
-			ShowSyntax,
+		enum class chat_result {
+			handled_display,
+			show_syntax,
 		};
 
-		using ChatHandlerFunction = ChatResult(*)(ref_ptr_t<Player>, const chat_t &args);
-		struct ChatCommand {
-			auto addToMap() -> ChatCommand {
+		using chat_handler_function = chat_result(*)(ref_ptr<player>, const game_chat &args);
+		struct chat_command {
+			auto add_to_map() -> chat_command {
 				// Duplicates the command and then clears the data to ease addition syntax, intentionally leaving out level
-				ChatCommand x = *this;
+				chat_command x = *this;
 				notes.clear();
 				syntax = "";
 				return x;
 			}
 
-			ChatHandlerFunction command;
+			chat_handler_function command;
 			int32_t level = 0;
-			chat_t syntax;
-			vector_t<chat_t> notes;
+			game_chat syntax;
+			vector<game_chat> notes;
 		};
 
-		struct MapPair {
-			MapPair(map_id_t mapId, chat_t category) :
-				mapId{mapId},
+		struct map_pair {
+			map_pair(game_map_id map_id, game_chat category) :
+				map_id{map_id},
 				category{category}
 			{
 			}
 
-			map_id_t mapId;
-			chat_t category;
+			game_map_id map_id;
+			game_chat category;
 		};
 
-		namespace ChatHandlerFunctions {
-			extern case_insensitive_hash_map_t<ChatCommand, chat_t> sCommandList;
-			extern const case_insensitive_hash_map_t<MapPair, chat_t> sMapAssociations;
+		namespace chat_handler_functions {
+			extern case_insensitive_hash_map<chat_command, game_chat> g_command_list;
+			extern const case_insensitive_hash_map<map_pair, game_chat> g_map_associations;
 
 			auto initialize() -> void;
-			auto getMessageType(const chat_t &query) -> int8_t;
-			auto getMap(const chat_t &query, ref_ptr_t<Player> player) -> map_id_t;
-			auto getJob(const chat_t &query) -> job_id_t;
-			auto getBanString(int8_t reason) -> chat_t;
-			auto runRegexPattern(const chat_t &args, const chat_t &pattern, match_t &matches) -> MatchResult;
-			auto showSyntax(ref_ptr_t<Player> player, const chat_t &command, bool fromHelp = false) -> void;
-			auto showError(ref_ptr_t<Player> player, const chat_t &message) -> void;
-			auto showInfo(ref_ptr_t<Player> player, const chat_t &message) -> void;
-			auto showError(ref_ptr_t<Player> player, function_t<void(chat_stream_t &)> produceMessage) -> void;
-			auto showInfo(ref_ptr_t<Player> player, function_t<void(chat_stream_t &)> produceMessage) -> void;
-			auto showError(ref_ptr_t<Player> player, const char *message) -> void;
-			auto showInfo(ref_ptr_t<Player> player, const char *message) -> void;
+			auto get_message_type(const game_chat &query) -> int8_t;
+			auto get_map(const game_chat &query, ref_ptr<player> player) -> game_map_id;
+			auto get_job(const game_chat &query) -> game_job_id;
+			auto get_ban_string(int8_t reason) -> game_chat;
+			auto run_regex_pattern(const game_chat &args, const game_chat &pattern, match &matches) -> match_result;
+			auto show_syntax(ref_ptr<player> player, const game_chat &command, bool from_help = false) -> void;
+			auto show_error(ref_ptr<player> player, const game_chat &message) -> void;
+			auto show_info(ref_ptr<player> player, const game_chat &message) -> void;
+			auto show_error(ref_ptr<player> player, function<void(game_chat_stream &)> produce_message) -> void;
+			auto show_info(ref_ptr<player> player, function<void(game_chat_stream &)> produce_message) -> void;
+			auto show_error(ref_ptr<player> player, const char *message) -> void;
+			auto show_info(ref_ptr<player> player, const char *message) -> void;
 		}
 	}
 }

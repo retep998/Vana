@@ -26,149 +26,149 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Player.hpp"
 #include "ChannelServer/QuestsPacket.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-namespace QuestOpcodes {
+namespace quest_opcodes {
 	enum : int8_t {
-		RestoreLostQuestItem = 0x00,
-		StartQuest = 0x01,
-		FinishQuest = 0x02,
-		ForfeitQuest = 0x03,
-		StartNpcQuestChat = 0x04,
-		EndNpcQuestChat = 0x05
+		restore_lost_quest_item = 0x00,
+		start_quest = 0x01,
+		finish_quest = 0x02,
+		forfeit_quest = 0x03,
+		start_npc_quest_chat = 0x04,
+		end_npc_quest_chat = 0x05
 	};
 }
 
-auto Quests::giveItem(ref_ptr_t<Player> player, item_id_t itemId, slot_qty_t amount, Items::StatVariance variancePolicy) -> Result {
+auto quests::give_item(ref_ptr<player> player, game_item_id item_id, game_slot_qty amount, items::stat_variance variance_policy) -> result {
 	if (amount > 0) {
-		if (!player->getInventory()->hasOpenSlotsFor(itemId, amount)) {
-			return Result::Failure;
+		if (!player->get_inventory()->has_open_slots_for(item_id, amount)) {
+			return result::failure;
 		}
-		Inventory::addNewItem(player, itemId, amount, variancePolicy);
+		inventory::add_new_item(player, item_id, amount, variance_policy);
 	}
 	else {
-		if (player->getInventory()->getItemAmount(itemId) < -amount) {
+		if (player->get_inventory()->get_item_amount(item_id) < -amount) {
 			// Player does not have (enough of) what is being taken
-			return Result::Failure;
+			return result::failure;
 		}
-		Inventory::takeItem(player, itemId, -amount);
+		inventory::take_item(player, item_id, -amount);
 	}
 
-	player->send(Packets::Quests::giveItem(itemId, amount));
-	return Result::Successful;
+	player->send(packets::quests::give_item(item_id, amount));
+	return result::successful;
 }
 
-auto Quests::giveMesos(ref_ptr_t<Player> player, mesos_t amount) -> Result {
-	if (amount < 0 && player->getInventory()->getMesos() + amount < 0) {
+auto quests::give_mesos(ref_ptr<player> player, game_mesos amount) -> result {
+	if (amount < 0 && player->get_inventory()->get_mesos() + amount < 0) {
 		// Do a bit of checking if meso is being taken to see if it's enough
-		return Result::Failure;
+		return result::failure;
 	}
-	player->getInventory()->modifyMesos(amount);
-	player->send(Packets::Quests::giveMesos(amount));
-	return Result::Successful;
+	player->get_inventory()->modify_mesos(amount);
+	player->send(packets::quests::give_mesos(amount));
+	return result::successful;
 }
 
-auto Quests::giveFame(ref_ptr_t<Player> player, fame_t amount) -> Result {
-	player->getStats()->setFame(player->getStats()->getFame() + amount);
-	player->send(Packets::Quests::giveFame(amount));
-	return Result::Successful;
+auto quests::give_fame(ref_ptr<player> player, game_fame amount) -> result {
+	player->get_stats()->set_fame(player->get_stats()->get_fame() + amount);
+	player->send(packets::quests::give_fame(amount));
+	return result::successful;
 }
 
-auto Quests::getQuest(ref_ptr_t<Player> player, PacketReader &reader) -> void {
+auto quests::get_quest(ref_ptr<player> player, packet_reader &reader) -> void {
 	int8_t act = reader.get<int8_t>();
-	quest_id_t questId = reader.get<quest_id_t>();
+	game_quest_id quest_id = reader.get<game_quest_id>();
 
-	if (!ChannelServer::getInstance().getQuestDataProvider().isQuest(questId)) {
+	if (!channel_server::get_instance().get_quest_data_provider().is_quest(quest_id)) {
 		// Hacking
 		return;
 	}
-	if (act == QuestOpcodes::ForfeitQuest) {
-		if (player->getQuests()->isQuestActive(questId)) {
-			player->getQuests()->removeQuest(questId);
+	if (act == quest_opcodes::forfeit_quest) {
+		if (player->get_quests()->is_quest_active(quest_id)) {
+			player->get_quests()->remove_quest(quest_id);
 		}
 		else {
-			ChannelServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &log) {
-				log << "Player (ID: " << player->getId()
-					<< ", Name: " << player->getName()
+			channel_server::get_instance().log(log_type::malformed_packet, [&](out_stream &log) {
+				log << "Player (ID: " << player->get_id()
+					<< ", Name: " << player->get_name()
 					<< ") tried to forfeit a quest that wasn't started yet."
-					<< " (Quest ID: " << questId << ")";
+					<< " (Quest ID: " << quest_id << ")";
 			});
 		}
 		return;
 	}
 
-	npc_id_t npcId = reader.get<npc_id_t>();
-	if (act != QuestOpcodes::StartQuest && act != QuestOpcodes::StartNpcQuestChat) {
-		if (!player->getQuests()->isQuestActive(questId)) {
+	game_npc_id npc_id = reader.get<game_npc_id>();
+	if (act != quest_opcodes::start_quest && act != quest_opcodes::start_npc_quest_chat) {
+		if (!player->get_quests()->is_quest_active(quest_id)) {
 			// Hacking
-			ChannelServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &log) {
-				log << "Player (ID: " << player->getId()
-					<< ", Name: " << player->getName()
+			channel_server::get_instance().log(log_type::malformed_packet, [&](out_stream &log) {
+				log << "Player (ID: " << player->get_id()
+					<< ", Name: " << player->get_name()
 					<< ") tried to perform an action with a non-started quest."
-					<< " (Quest ID: " << questId << ")";
+					<< " (Quest ID: " << quest_id << ")";
 			});
 			return;
 		}
 	}
-	// QuestOpcodes::RestoreLostQuestItem for some reason appears to use "NPC ID" as a different kind of identifier, maybe quantity?
+	// quest_opcodes::restore_lost_quest_item for some reason appears to use "NPC ID" as a different kind of identifier, maybe quantity?
 
-	if (act != QuestOpcodes::RestoreLostQuestItem && !ChannelServer::getInstance().getNpcDataProvider().isValidNpcId(npcId)) {
-		ChannelServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &log) {
-			log << "Player (ID: " << player->getId()
-				<< ", Name: " << player->getName()
+	if (act != quest_opcodes::restore_lost_quest_item && !channel_server::get_instance().get_npc_data_provider().is_valid_npc_id(npc_id)) {
+		channel_server::get_instance().log(log_type::malformed_packet, [&](out_stream &log) {
+			log << "Player (ID: " << player->get_id()
+				<< ", Name: " << player->get_name()
 				<< ") tried to do a quest action with an invalid NPC ID."
-				<< " (NPC ID: " << npcId
-				<< " (Quest ID: " << questId << ")";
+				<< " (NPC ID: " << npc_id
+				<< " (Quest ID: " << quest_id << ")";
 		});
 		return;
 	}
 
 	switch (act) {
-		case QuestOpcodes::RestoreLostQuestItem: {
-			item_id_t itemId = reader.get<item_id_t>();
-			auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(itemId);
-			if (itemInfo == nullptr) {
+		case quest_opcodes::restore_lost_quest_item: {
+			game_item_id item_id = reader.get<game_item_id>();
+			auto item_info = channel_server::get_instance().get_item_data_provider().get_item_info(item_id);
+			if (item_info == nullptr) {
 				// Hacking
 				return;
 			}
 
-			if (itemInfo->quest) {
-				player->send(Packets::Quests::giveItem(itemId, 1));
-				Inventory::addNewItem(player, itemId, 1);
+			if (item_info->quest) {
+				player->send(packets::quests::give_item(item_id, 1));
+				inventory::add_new_item(player, item_id, 1);
 			}
 			else {
-				ChannelServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &log) {
-					log << "Player (ID: " << player->getId()
-						<< ", Name: " << player->getName()
+				channel_server::get_instance().log(log_type::malformed_packet, [&](out_stream &log) {
+					log << "Player (ID: " << player->get_id()
+						<< ", Name: " << player->get_name()
 						<< ") tried to restore a lost quest item which isn't a quest item."
-						<< " (Item ID: " << itemId
-						<< ", NPC ID: " << npcId
-						<< ", Quest ID: " << questId << ")";
+						<< " (Item ID: " << item_id
+						<< ", NPC ID: " << npc_id
+						<< ", Quest ID: " << quest_id << ")";
 				});
 			}
 			break;
 		}
-		case QuestOpcodes::StartQuest:
-			if (player->getQuests()->isQuestActive(questId)) {
-				ChannelServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &log) {
-					log << "Player (ID: " << player->getId()
-						<< ", Name: " << player->getName()
+		case quest_opcodes::start_quest:
+			if (player->get_quests()->is_quest_active(quest_id)) {
+				channel_server::get_instance().log(log_type::malformed_packet, [&](out_stream &log) {
+					log << "Player (ID: " << player->get_id()
+						<< ", Name: " << player->get_name()
 						<< ") tried to start an already started quest."
-						<< " (NPC ID: " << npcId
-						<< ", Quest ID: " << questId << ")";
+						<< " (NPC ID: " << npc_id
+						<< ", Quest ID: " << quest_id << ")";
 				});
 			}
 			else {
-				player->getQuests()->addQuest(questId, npcId);
+				player->get_quests()->add_quest(quest_id, npc_id);
 			}
 			break;
-		case QuestOpcodes::FinishQuest:
-			player->getQuests()->finishQuest(questId, npcId);
+		case quest_opcodes::finish_quest:
+			player->get_quests()->finish_quest(quest_id, npc_id);
 			break;
-		case QuestOpcodes::StartNpcQuestChat:
-		case QuestOpcodes::EndNpcQuestChat:
-			NpcHandler::handleQuestNpc(player, npcId, act == QuestOpcodes::StartNpcQuestChat, questId);
+		case quest_opcodes::start_npc_quest_chat:
+		case quest_opcodes::end_npc_quest_chat:
+			npc_handler::handle_quest_npc(player, npc_id, act == quest_opcodes::start_npc_quest_chat, quest_id);
 			break;
 	}
 }

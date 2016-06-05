@@ -30,28 +30,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer/WorldServerAcceptedSession.hpp"
 #include "WorldServer/WorldServerAcceptPacket.hpp"
 
-namespace Vana {
-namespace WorldServer {
+namespace vana {
+namespace world_server {
 
-auto SyncHandler::handle(ref_ptr_t<WorldServerAcceptedSession> session, PacketReader &reader) -> void {
-	sync_t type = reader.get<sync_t>();
+auto sync_handler::handle(ref_ptr<world_server_accepted_session> session, packet_reader &reader) -> void {
+	protocol_sync type = reader.get<protocol_sync>();
 	switch (type) {
-		case Sync::SyncTypes::Config: handleConfigSync(reader); break;
-		default: WorldServer::getInstance().getPlayerDataProvider().handleSync(session, type, reader); break;
+		case sync::sync_types::config: handle_config_sync(reader); break;
+		default: world_server::get_instance().get_player_data_provider().handle_sync(session, type, reader); break;
 	}
 }
 
-auto SyncHandler::handle(ref_ptr_t<LoginServerSession> session, PacketReader &reader) -> void {
-	sync_t type = reader.get<sync_t>();
-	WorldServer::getInstance().getPlayerDataProvider().handleSync(session, type, reader);
+auto sync_handler::handle(ref_ptr<login_server_session> session, packet_reader &reader) -> void {
+	protocol_sync type = reader.get<protocol_sync>();
+	world_server::get_instance().get_player_data_provider().handle_sync(session, type, reader);
 }
 
-auto SyncHandler::handleConfigSync(PacketReader &reader) -> void {
-	switch (reader.get<sync_t>()) {
-		case Sync::Config::RateSet: WorldServer::getInstance().setRates(reader.get<RatesConfig>()); break;
-		case Sync::Config::RateReset: WorldServer::getInstance().resetRates(reader.get<int32_t>()); break;
-		case Sync::Config::ScrollingHeader: WorldServer::getInstance().setScrollingHeader(reader.get<string_t>()); break;
-		default: throw NotImplementedException{"ConfigSync type"};
+auto sync_handler::handle_config_sync(packet_reader &reader) -> void {
+	switch (reader.get<protocol_sync>()) {
+		case sync::config::rate_set: world_server::get_instance().set_rates(reader.get<rates_config>()); break;
+		case sync::config::rate_reset: world_server::get_instance().reset_rates(reader.get<int32_t>()); break;
+		case sync::config::scrolling_header: world_server::get_instance().set_scrolling_header(reader.get<string>()); break;
+		default: throw not_implemented_exception{"config_sync type"};
 	}
 }
 

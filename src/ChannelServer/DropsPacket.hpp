@@ -20,34 +20,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/PacketBuilder.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct Point;
+namespace vana {
+	struct point;
 
-	namespace ChannelServer {
-		class Drop;
-		class Pet;
-		class Player;
+	namespace channel_server {
+		class drop;
+		class pet;
+		class player;
 
-		namespace Packets {
-			namespace Drops {
-				namespace DropTypes {
-					enum DropTypes : int8_t {
-						ShowDrop = 0,
-						DropAnimation = 1,
-						ShowExisting = 2,
-						DisappearDuringDrop = 3
+		namespace packets {
+			namespace drops {
+				namespace drop_types {
+					enum drop_types : int8_t {
+						show_drop = 0,
+						drop_animation = 1,
+						show_existing = 2,
+						disappear_during_drop = 3
 					};
 				}
 
-				PACKET(showDrop, Drop *drop, int8_t type, const Point &origin);
-				PACKET(takeDrop, player_id_t playerId, map_object_t dropId, int8_t petIndex = -1);
-				PACKET(dontTake);
-				PACKET(removeDrop, map_object_t dropId);
-				PACKET(explodeDrop, map_object_t dropId);
-				PACKET(dropNotAvailableForPickup);
-				PACKET(cantGetAnymoreItems);
-				PACKET(pickupDrop, map_object_t id, int32_t amount, bool isMesos = false, int16_t cafeBonus = 0);
-				PACKET(pickupDropSpecial, map_object_t id);
+				PACKET(show_drop, drop *drop, int8_t type, const point &origin);
+				PACKET(take_drop, game_player_id player_id, game_map_object drop_id, int8_t pet_index = -1);
+				PACKET(dont_take);
+				PACKET(remove_drop, game_map_object drop_id);
+				PACKET(explode_drop, game_map_object drop_id);
+				PACKET(drop_not_available_for_pickup);
+				PACKET(cant_get_anymore_items);
+				PACKET(pickup_drop, game_map_object id, int32_t amount, bool is_mesos = false, int16_t cafe_bonus = 0);
+				PACKET(pickup_drop_special, game_map_object id);
 			}
 		}
 	}

@@ -34,61 +34,61 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Skills.hpp"
 #include "ChannelServer/SkillsPacket.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-PlayerSkills::PlayerSkills(Player *player) :
+player_skills::player_skills(player *player) :
 	m_player{player}
 {
 	load();
 }
 
-auto PlayerSkills::load() -> void {
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
-	PlayerSkillInfo skill;
-	player_id_t playerId = m_player->getId();
-	skill_id_t skillId = 0;
+auto player_skills::load() -> void {
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
+	player_skill_info skill;
+	game_player_id player_id = m_player->get_id();
+	game_skill_id skill_id = 0;
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT s.skill_id, s.points, s.max_level "
-		<< "FROM " << db.makeTable("skills") << " s "
+		<< "FROM " << db.make_table("skills") << " s "
 		<< "WHERE s.character_id = :char",
-		soci::use(playerId, "char"));
+		soci::use(player_id, "char"));
 
 	for (const auto &row : rs) {
-		skillId = row.get<skill_id_t>("skill_id");
-		if (GameLogicUtilities::isBlessingOfTheFairy(skillId)) {
+		skill_id = row.get<game_skill_id>("skill_id");
+		if (game_logic_utilities::is_blessing_of_the_fairy(skill_id)) {
 			continue;
 		}
 
-		skill = PlayerSkillInfo{};
-		skill.level = row.get<skill_level_t>("points");
-		skill.maxSkillLevel = ChannelServer::getInstance().getSkillDataProvider().getMaxLevel(skillId);
-		skill.playerMaxSkillLevel = row.get<skill_level_t>("max_level");
-		m_skills[skillId] = skill;
+		skill = player_skill_info{};
+		skill.level = row.get<game_skill_level>("points");
+		skill.max_skill_level = channel_server::get_instance().get_skill_data_provider().get_max_level(skill_id);
+		skill.player_max_skill_level = row.get<game_skill_level>("max_level");
+		m_skills[skill_id] = skill;
 	}
 
 	rs = (sql.prepare
 		<< "SELECT c.* "
-		<< "FROM " << db.makeTable("cooldowns") << " c "
+		<< "FROM " << db.make_table("cooldowns") << " c "
 		<< "WHERE c.character_id = :char",
-		soci::use(playerId, "char"));
+		soci::use(player_id, "char"));
 
 	for (const auto &row : rs) {
-		skill_id_t skillId = row.get<skill_id_t>("skill_id");
-		seconds_t timeLeft = seconds_t{row.get<int16_t>("remaining_time")};
-		Skills::startCooldown(ref_ptr_t<Player>{m_player}, skillId, timeLeft, true);
-		m_cooldowns[skillId] = timeLeft;
+		game_skill_id skill_id = row.get<game_skill_id>("skill_id");
+		seconds time_left = seconds{row.get<int16_t>("remaining_time")};
+		skills::start_cooldown(ref_ptr<player>{m_player}, skill_id, time_left, true);
+		m_cooldowns[skill_id] = time_left;
 	}
 
-	skillId = getBlessingOfTheFairy();
+	skill_id = get_blessing_of_the_fairy();
 
-	opt_string_t blessingPlayerName;
-	optional_t<player_level_t> blessingPlayerLevel;
+	opt_string blessing_player_name;
+	optional<game_player_level> blessing_player_level;
 
-	account_id_t accountId = m_player->getAccountId();
-	world_id_t worldId = m_player->getWorldId();
+	game_account_id account_id = m_player->get_account_id();
+	game_world_id world_id = m_player->get_world_id();
 
 	// TODO FIXME skill
 	// Allow Cygnus <-> Adventurer selection here or allow it to be ignored
@@ -96,644 +96,645 @@ auto PlayerSkills::load() -> void {
 	// Some later versions lifted this restriction entirely
 	sql.once
 		<< "SELECT c.name, c.level "
-		<< "FROM " << db.makeTable("characters") << " c "
+		<< "FROM " << db.make_table("characters") << " c "
 		<< "WHERE c.world_id = :world AND c.account_id = :account AND c.character_id <> :char "
 		<< "ORDER BY c.level DESC "
 		<< "LIMIT 1 ",
-		soci::use(accountId, "account"),
-		soci::use(worldId, "world"),
-		soci::use(playerId, "char"),
-		soci::into(blessingPlayerName),
-		soci::into(blessingPlayerLevel);
+		soci::use(account_id, "account"),
+		soci::use(world_id, "world"),
+		soci::use(player_id, "char"),
+		soci::into(blessing_player_name),
+		soci::into(blessing_player_level);
 
-	if (blessingPlayerLevel.is_initialized()) {
-		skill = PlayerSkillInfo{};
-		skill.maxSkillLevel = ChannelServer::getInstance().getSkillDataProvider().getMaxLevel(skillId);
-		skill.level = std::min<skill_level_t>(blessingPlayerLevel.get() / 10, skill.maxSkillLevel);
-		m_blessingPlayer = blessingPlayerName.get();
-		m_skills[skillId] = skill;
+	if (blessing_player_level.is_initialized()) {
+		skill = player_skill_info{};
+		skill.max_skill_level = channel_server::get_instance().get_skill_data_provider().get_max_level(skill_id);
+		skill.level = std::min<game_skill_level>(blessing_player_level.get() / 10, skill.max_skill_level);
+		m_blessing_player = blessing_player_name.get();
+		m_skills[skill_id] = skill;
 	}
 }
 
-auto PlayerSkills::save(bool saveCooldowns) -> void {
+auto player_skills::save(bool save_cooldowns) -> void {
 	using namespace soci;
-	player_id_t playerId = m_player->getId();
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
+	game_player_id player_id = m_player->get_id();
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
 
-	skill_id_t skillId = 0;
-	skill_level_t level = 0;
-	skill_level_t maxLevel = 0;
+	game_skill_id skill_id = 0;
+	game_skill_level level = 0;
+	game_skill_level max_level = 0;
 	statement st = (sql.prepare
-		<< "REPLACE INTO " << db.makeTable("skills") << " VALUES (:player, :skill, :level, :maxLevel)",
-		use(playerId, "player"),
-		use(skillId, "skill"),
+		<< "REPLACE INTO " << db.make_table("skills") << " VALUES (:player, :skill, :level, :max_level)",
+		use(player_id, "player"),
+		use(skill_id, "skill"),
 		use(level, "level"),
-		use(maxLevel, "maxLevel"));
+		use(max_level, "max_level"));
 
 	for (const auto &kvp : m_skills) {
-		if (GameLogicUtilities::isBlessingOfTheFairy(kvp.first)) {
+		if (game_logic_utilities::is_blessing_of_the_fairy(kvp.first)) {
 			continue;
 		}
-		skillId = kvp.first;
+		skill_id = kvp.first;
 		level = kvp.second.level;
-		maxLevel = kvp.second.playerMaxSkillLevel;
+		max_level = kvp.second.player_max_skill_level;
 		st.execute(true);
 	}
 
-	if (saveCooldowns) {
-		sql.once << "DELETE FROM " << db.makeTable("cooldowns") << " WHERE character_id = :char", soci::use(playerId, "char");
+	if (save_cooldowns) {
+		sql.once << "DELETE FROM " << db.make_table("cooldowns") << " WHERE character_id = :char",
+			soci::use(player_id, "char");
 
 		if (m_cooldowns.size() > 0) {
-			int16_t remainingTime = 0;
+			int16_t remaining_time = 0;
 			st = (sql.prepare
-				<< "INSERT INTO " << db.makeTable("cooldowns") << " (character_id, skill_id, remaining_time) "
+				<< "INSERT INTO " << db.make_table("cooldowns") << " (character_id, skill_id, remaining_time) "
 				<< "VALUES (:char, :skill, :time)",
-				use(playerId, "char"),
-				use(skillId, "skill"),
-				use(remainingTime, "time"));
+				use(player_id, "char"),
+				use(skill_id, "skill"),
+				use(remaining_time, "time"));
 
 			for (const auto &kvp : m_cooldowns) {
-				skillId = kvp.first;
-				remainingTime = Skills::getCooldownTimeLeft(ref_ptr_t<Player>{m_player}, kvp.first);
+				skill_id = kvp.first;
+				remaining_time = skills::get_cooldown_time_left(ref_ptr<player>{m_player}, kvp.first);
 				st.execute(true);
 			}
 		}
 	}
 }
 
-auto PlayerSkills::addSkillLevel(skill_id_t skillId, skill_level_t amount, bool sendPacket) -> bool {
-	if (!ChannelServer::getInstance().getSkillDataProvider().isValidSkill(skillId)) {
+auto player_skills::add_skill_level(game_skill_id skill_id, game_skill_level amount, bool send_packet) -> bool {
+	if (!channel_server::get_instance().get_skill_data_provider().is_valid_skill(skill_id)) {
 		return false;
 	}
 
 	// Keep people from adding too much SP and prevent it from going negative
 
-	auto kvp = m_skills.find(skillId);
-	skill_level_t newLevel = (kvp != std::end(m_skills) ? kvp->second.level : 0) + amount;
-	skill_level_t maxSkillLevel = ChannelServer::getInstance().getSkillDataProvider().getMaxLevel(skillId);
-	if (newLevel > maxSkillLevel || (GameLogicUtilities::isFourthJobSkill(skillId) && newLevel > getMaxSkillLevel(skillId))) {
+	auto kvp = m_skills.find(skill_id);
+	game_skill_level new_level = (kvp != std::end(m_skills) ? kvp->second.level : 0) + amount;
+	game_skill_level max_skill_level = channel_server::get_instance().get_skill_data_provider().get_max_level(skill_id);
+	if (new_level > max_skill_level || (game_logic_utilities::is_fourth_job_skill(skill_id) && new_level > get_max_skill_level(skill_id))) {
 		return false;
 	}
 
-	m_skills[skillId].level = newLevel;
-	m_skills[skillId].maxSkillLevel = maxSkillLevel;
-	if (sendPacket) {
-		m_player->send(Packets::Skills::addSkill(skillId, m_skills[skillId]));
+	m_skills[skill_id].level = new_level;
+	m_skills[skill_id].max_skill_level = max_skill_level;
+	if (send_packet) {
+		m_player->send(packets::skills::add_skill(skill_id, m_skills[skill_id]));
 	}
 	return true;
 }
 
-auto PlayerSkills::getSkillLevel(skill_id_t skillId) const -> skill_level_t {
-	auto skill = ext::find_value_ptr(m_skills, skillId);
+auto player_skills::get_skill_level(game_skill_id skill_id) const -> game_skill_level {
+	auto skill = ext::find_value_ptr(m_skills, skill_id);
 	return skill == nullptr ? 0 : skill->level;
 }
 
-auto PlayerSkills::setMaxSkillLevel(skill_id_t skillId, skill_level_t maxLevel, bool sendPacket) -> void {
+auto player_skills::set_max_skill_level(game_skill_id skill_id, game_skill_level max_level, bool send_packet) -> void {
 	// Set max level for 4th job skills
-	m_skills[skillId].playerMaxSkillLevel = maxLevel;
+	m_skills[skill_id].player_max_skill_level = max_level;
 
-	if (sendPacket) {
-		m_player->getSkills()->addSkillLevel(skillId, 0);
+	if (send_packet) {
+		m_player->get_skills()->add_skill_level(skill_id, 0);
 	}
 }
 
-auto PlayerSkills::getMaxSkillLevel(skill_id_t skillId) const -> skill_level_t {
+auto player_skills::get_max_skill_level(game_skill_id skill_id) const -> game_skill_level {
 	// Get max level for 4th job skills
-	if (m_skills.find(skillId) != std::end(m_skills)) {
-		const PlayerSkillInfo &info = m_skills.find(skillId)->second;
-		if (GameLogicUtilities::isFourthJobSkill(skillId)) {
-			return info.playerMaxSkillLevel;
+	if (m_skills.find(skill_id) != std::end(m_skills)) {
+		const player_skill_info &info = m_skills.find(skill_id)->second;
+		if (game_logic_utilities::is_fourth_job_skill(skill_id)) {
+			return info.player_max_skill_level;
 		}
-		return info.maxSkillLevel;
+		return info.max_skill_level;
 	}
 	return 0;
 }
 
-auto PlayerSkills::getSkillInfo(skill_id_t skillId) const -> const SkillLevelInfo * const {
-	auto skill = ext::find_value_ptr(m_skills, skillId);
-	return skill == nullptr ? nullptr : ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, skill->level);
+auto player_skills::get_skill_info(game_skill_id skill_id) const -> const skill_level_info * const {
+	auto skill = ext::find_value_ptr(m_skills, skill_id);
+	return skill == nullptr ? nullptr : channel_server::get_instance().get_skill_data_provider().get_skill(skill_id, skill->level);
 }
 
-auto PlayerSkills::hasSkill(skill_id_t skillId) const -> bool {
-	return skillId != 0 && getSkillLevel(skillId) > 0;
+auto player_skills::has_skill(game_skill_id skill_id) const -> bool {
+	return skill_id != 0 && get_skill_level(skill_id) > 0;
 }
 
-auto PlayerSkills::hasElementalAmp() const -> bool {
-	return hasSkill(getElementalAmp());
+auto player_skills::has_elemental_amp() const -> bool {
+	return has_skill(get_elemental_amp());
 }
 
-auto PlayerSkills::hasAchilles() const -> bool {
-	return hasSkill(getAchilles());
+auto player_skills::has_achilles() const -> bool {
+	return has_skill(get_achilles());
 }
 
-auto PlayerSkills::hasEnergyCharge() const -> bool {
-	return hasSkill(getEnergyCharge());
+auto player_skills::has_energy_charge() const -> bool {
+	return has_skill(get_energy_charge());
 }
 
-auto PlayerSkills::hasHpIncrease() const -> bool {
-	return hasSkill(getHpIncrease());
+auto player_skills::has_hp_increase() const -> bool {
+	return has_skill(get_hp_increase());
 }
 
-auto PlayerSkills::hasMpIncrease() const -> bool {
-	return hasSkill(getMpIncrease());
+auto player_skills::has_mp_increase() const -> bool {
+	return has_skill(get_mp_increase());
 }
 
-auto PlayerSkills::hasVenomousWeapon() const -> bool {
-	return hasSkill(getVenomousWeapon());
+auto player_skills::has_venomous_weapon() const -> bool {
+	return has_skill(get_venomous_weapon());
 }
 
-auto PlayerSkills::hasDarkSightInterruptionSkill() const -> bool {
-	return hasSkill(getDarkSightInterruptionSkill());
+auto player_skills::has_dark_sight_interruption_skill() const -> bool {
+	return has_skill(get_dark_sight_interruption_skill());
 }
 
-auto PlayerSkills::hasNoDamageSkill() const -> bool {
-	return hasSkill(getNoDamageSkill());
+auto player_skills::has_no_damage_skill() const -> bool {
+	return has_skill(get_no_damage_skill());
 }
 
-auto PlayerSkills::hasFollowTheLead() const -> bool {
-	return hasSkill(getFollowTheLead());
+auto player_skills::has_follow_the_lead() const -> bool {
+	return has_skill(get_follow_the_lead());
 }
 
-auto PlayerSkills::hasLegendarySpirit() const -> bool {
-	return hasSkill(getLegendarySpirit());
+auto player_skills::has_legendary_spirit() const -> bool {
+	return has_skill(get_legendary_spirit());
 }
 
-auto PlayerSkills::hasMaker() const -> bool {
-	return hasSkill(getMaker());
+auto player_skills::has_maker() const -> bool {
+	return has_skill(get_maker());
 }
 
-auto PlayerSkills::hasBlessingOfTheFairy() const -> bool {
-	return hasSkill(getBlessingOfTheFairy());
+auto player_skills::has_blessing_of_the_fairy() const -> bool {
+	return has_skill(get_blessing_of_the_fairy());
 }
 
-auto PlayerSkills::getElementalAmp() const -> skill_id_t {
-	skill_id_t skillId = 0;
-	switch (m_player->getStats()->getJob()) {
-		case Jobs::JobIds::FpMage:
-		case Jobs::JobIds::FpArchMage: skillId = Vana::Skills::FpMage::ElementAmplification; break;
-		case Jobs::JobIds::IlMage:
-		case Jobs::JobIds::IlArchMage: skillId = Vana::Skills::IlMage::ElementAmplification; break;
-		case Jobs::JobIds::BlazeWizard3:
-		case Jobs::JobIds::BlazeWizard4: skillId = Vana::Skills::BlazeWizard::ElementAmplification; break;
+auto player_skills::get_elemental_amp() const -> game_skill_id {
+	game_skill_id skill_id = 0;
+	switch (m_player->get_stats()->get_job()) {
+		case jobs::job_ids::fp_mage:
+		case jobs::job_ids::fp_arch_mage: skill_id = vana::skills::fp_mage::element_amplification; break;
+		case jobs::job_ids::il_mage:
+		case jobs::job_ids::il_arch_mage: skill_id = vana::skills::il_mage::element_amplification; break;
+		case jobs::job_ids::blaze_wizard3:
+		case jobs::job_ids::blaze_wizard4: skill_id = vana::skills::blaze_wizard::element_amplification; break;
 	}
-	return skillId;
+	return skill_id;
 }
 
-auto PlayerSkills::getAchilles() const -> skill_id_t {
-	skill_id_t skillId = 0;
-	switch (m_player->getStats()->getJob()) {
-		case Jobs::JobIds::Hero: skillId = Vana::Skills::Hero::Achilles; break;
-		case Jobs::JobIds::Paladin: skillId = Vana::Skills::Paladin::Achilles; break;
-		case Jobs::JobIds::DarkKnight: skillId = Vana::Skills::DarkKnight::Achilles; break;
+auto player_skills::get_achilles() const -> game_skill_id {
+	game_skill_id skill_id = 0;
+	switch (m_player->get_stats()->get_job()) {
+		case jobs::job_ids::hero: skill_id = vana::skills::hero::achilles; break;
+		case jobs::job_ids::paladin: skill_id = vana::skills::paladin::achilles; break;
+		case jobs::job_ids::dark_knight: skill_id = vana::skills::dark_knight::achilles; break;
 	}
-	return skillId;
+	return skill_id;
 }
 
-auto PlayerSkills::getEnergyCharge() const -> skill_id_t {
-	skill_id_t skillId = 0;
-	switch (m_player->getStats()->getJob()) {
-		case Jobs::JobIds::Marauder:
-		case Jobs::JobIds::Buccaneer: skillId = Vana::Skills::Marauder::EnergyCharge; break;
-		case Jobs::JobIds::ThunderBreaker2:
-		case Jobs::JobIds::ThunderBreaker3:
-		case Jobs::JobIds::ThunderBreaker4: skillId = Vana::Skills::ThunderBreaker::EnergyCharge; break;
+auto player_skills::get_energy_charge() const -> game_skill_id {
+	game_skill_id skill_id = 0;
+	switch (m_player->get_stats()->get_job()) {
+		case jobs::job_ids::marauder:
+		case jobs::job_ids::buccaneer: skill_id = vana::skills::marauder::energy_charge; break;
+		case jobs::job_ids::thunder_breaker2:
+		case jobs::job_ids::thunder_breaker3:
+		case jobs::job_ids::thunder_breaker4: skill_id = vana::skills::thunder_breaker::energy_charge; break;
 	}
-	return skillId;
+	return skill_id;
 }
 
-auto PlayerSkills::getAdvancedCombo() const -> skill_id_t {
-	skill_id_t skillId = 0;
-	switch (m_player->getStats()->getJob()) {
-		case Jobs::JobIds::Hero: skillId = Vana::Skills::Hero::AdvancedComboAttack; break;
-		case Jobs::JobIds::DawnWarrior3:
-		case Jobs::JobIds::DawnWarrior4: skillId = Vana::Skills::DawnWarrior::AdvancedCombo; break;
+auto player_skills::get_advanced_combo() const -> game_skill_id {
+	game_skill_id skill_id = 0;
+	switch (m_player->get_stats()->get_job()) {
+		case jobs::job_ids::hero: skill_id = vana::skills::hero::advanced_combo_attack; break;
+		case jobs::job_ids::dawn_warrior3:
+		case jobs::job_ids::dawn_warrior4: skill_id = vana::skills::dawn_warrior::advanced_combo; break;
 	}
-	return skillId;
+	return skill_id;
 }
 
-auto PlayerSkills::getAlchemist() const -> skill_id_t {
-	skill_id_t skillId = 0;
-	switch (m_player->getStats()->getJob()) {
-		case Jobs::JobIds::Hermit:
-		case Jobs::JobIds::NightLord: skillId = Vana::Skills::Hermit::Alchemist; break;
-		case Jobs::JobIds::NightWalker3:
-		case Jobs::JobIds::NightWalker4: skillId = Vana::Skills::NightWalker::Alchemist; break;
+auto player_skills::get_alchemist() const -> game_skill_id {
+	game_skill_id skill_id = 0;
+	switch (m_player->get_stats()->get_job()) {
+		case jobs::job_ids::hermit:
+		case jobs::job_ids::night_lord: skill_id = vana::skills::hermit::alchemist; break;
+		case jobs::job_ids::night_walker3:
+		case jobs::job_ids::night_walker4: skill_id = vana::skills::night_walker::alchemist; break;
 	}
-	return skillId;
+	return skill_id;
 }
 
-auto PlayerSkills::getHpIncrease() const -> skill_id_t {
-	skill_id_t skillId = 0;
-	switch (GameLogicUtilities::getJobTrack(m_player->getStats()->getJob())) {
-		case Jobs::JobTracks::Warrior: skillId = Vana::Skills::Swordsman::ImprovedMaxHpIncrease; break;
-		case Jobs::JobTracks::DawnWarrior: skillId = Vana::Skills::DawnWarrior::MaxHpEnhancement; break;
-		case Jobs::JobTracks::ThunderBreaker: skillId = Vana::Skills::ThunderBreaker::ImproveMaxHp; break;
-		case Jobs::JobTracks::Pirate:
-			if ((m_player->getStats()->getJob() / 10) == (Jobs::JobIds::Brawler / 10)) {
-				skillId = Vana::Skills::Brawler::ImproveMaxHp;
+auto player_skills::get_hp_increase() const -> game_skill_id {
+	game_skill_id skill_id = 0;
+	switch (game_logic_utilities::get_job_track(m_player->get_stats()->get_job())) {
+		case jobs::job_tracks::warrior: skill_id = vana::skills::swordsman::improved_max_hp_increase; break;
+		case jobs::job_tracks::dawn_warrior: skill_id = vana::skills::dawn_warrior::max_hp_enhancement; break;
+		case jobs::job_tracks::thunder_breaker: skill_id = vana::skills::thunder_breaker::improve_max_hp; break;
+		case jobs::job_tracks::pirate:
+			if ((m_player->get_stats()->get_job() / 10) == (jobs::job_ids::brawler / 10)) {
+				skill_id = vana::skills::brawler::improve_max_hp;
 			}
 			break;
 	}
-	return skillId;
+	return skill_id;
 }
 
-auto PlayerSkills::getMpIncrease() const -> skill_id_t {
-	skill_id_t skillId = 0;
-	switch (GameLogicUtilities::getJobTrack(m_player->getStats()->getJob())) {
-		case Jobs::JobTracks::Magician: skillId = Vana::Skills::Magician::ImprovedMaxMpIncrease; break;
-		case Jobs::JobTracks::BlazeWizard: skillId = Vana::Skills::BlazeWizard::IncreasingMaxMp; break;
+auto player_skills::get_mp_increase() const -> game_skill_id {
+	game_skill_id skill_id = 0;
+	switch (game_logic_utilities::get_job_track(m_player->get_stats()->get_job())) {
+		case jobs::job_tracks::magician: skill_id = vana::skills::magician::improved_max_mp_increase; break;
+		case jobs::job_tracks::blaze_wizard: skill_id = vana::skills::blaze_wizard::increasing_max_mp; break;
 	}
-	return skillId;
+	return skill_id;
 }
 
-auto PlayerSkills::getMastery() const -> skill_id_t {
-	skill_id_t masteryId = 0;
-	switch (GameLogicUtilities::getItemType(m_player->getInventory()->getEquippedId(EquipSlots::Weapon))) {
-		case Items::Types::Weapon1hSword:
-		case Items::Types::Weapon2hSword:
-			switch (m_player->getStats()->getJob()) {
-				case Jobs::JobIds::Fighter:
-				case Jobs::JobIds::Crusader:
-				case Jobs::JobIds::Hero: masteryId = Vana::Skills::Fighter::SwordMastery; break;
-				case Jobs::JobIds::Page:
-				case Jobs::JobIds::WhiteKnight:
-				case Jobs::JobIds::Paladin: masteryId = Vana::Skills::Page::SwordMastery; break;
+auto player_skills::get_mastery() const -> game_skill_id {
+	game_skill_id mastery_id = 0;
+	switch (game_logic_utilities::get_item_type(m_player->get_inventory()->get_equipped_id(equip_slots::weapon))) {
+		case items::types::weapon_1h_sword:
+		case items::types::weapon_2h_sword:
+			switch (m_player->get_stats()->get_job()) {
+				case jobs::job_ids::fighter:
+				case jobs::job_ids::crusader:
+				case jobs::job_ids::hero: mastery_id = vana::skills::fighter::sword_mastery; break;
+				case jobs::job_ids::page:
+				case jobs::job_ids::white_knight:
+				case jobs::job_ids::paladin: mastery_id = vana::skills::page::sword_mastery; break;
 			}
 			break;
-		case Items::Types::Weapon1hAxe:
-		case Items::Types::Weapon2hAxe: masteryId = Vana::Skills::Fighter::AxeMastery; break;
-		case Items::Types::Weapon1hMace:
-		case Items::Types::Weapon2hMace: masteryId = Vana::Skills::Page::BwMastery; break;
-		case Items::Types::WeaponSpear: masteryId = Vana::Skills::Spearman::SpearMastery; break;
-		case Items::Types::WeaponPolearm: masteryId = Vana::Skills::Spearman::PolearmMastery; break;
-		case Items::Types::WeaponDagger: masteryId = Vana::Skills::Bandit::DaggerMastery; break;
-		case Items::Types::WeaponKnuckle: masteryId = Vana::Skills::Brawler::KnucklerMastery; break;
-		case Items::Types::WeaponBow: masteryId = Vana::Skills::Hunter::BowMastery; break;
-		case Items::Types::WeaponCrossbow: masteryId = Vana::Skills::Crossbowman::CrossbowMastery; break;
-		case Items::Types::WeaponClaw: masteryId = Vana::Skills::Assassin::ClawMastery; break;
-		case Items::Types::WeaponGun: masteryId = Vana::Skills::Gunslinger::GunMastery; break;
+		case items::types::weapon_1h_axe:
+		case items::types::weapon_2h_axe: mastery_id = vana::skills::fighter::axe_mastery; break;
+		case items::types::weapon_1h_mace:
+		case items::types::weapon_2h_mace: mastery_id = vana::skills::page::bw_mastery; break;
+		case items::types::weapon_spear: mastery_id = vana::skills::spearman::spear_mastery; break;
+		case items::types::weapon_polearm: mastery_id = vana::skills::spearman::polearm_mastery; break;
+		case items::types::weapon_dagger: mastery_id = vana::skills::bandit::dagger_mastery; break;
+		case items::types::weapon_knuckle: mastery_id = vana::skills::brawler::knuckler_mastery; break;
+		case items::types::weapon_bow: mastery_id = vana::skills::hunter::bow_mastery; break;
+		case items::types::weapon_crossbow: mastery_id = vana::skills::crossbowman::crossbow_mastery; break;
+		case items::types::weapon_claw: mastery_id = vana::skills::assassin::claw_mastery; break;
+		case items::types::weapon_gun: mastery_id = vana::skills::gunslinger::gun_mastery; break;
 	}
-	return masteryId;
+	return mastery_id;
 }
 
-auto PlayerSkills::getMpEater() const -> skill_id_t {
-	skill_id_t skillId = 0;
-	switch (m_player->getStats()->getJob()) {
-		case Jobs::JobIds::FpWizard:
-		case Jobs::JobIds::FpMage:
-		case Jobs::JobIds::FpArchMage: skillId = Vana::Skills::FpWizard::MpEater; break;
-		case Jobs::JobIds::IlWizard:
-		case Jobs::JobIds::IlMage:
-		case Jobs::JobIds::IlArchMage: skillId = Vana::Skills::IlWizard::MpEater; break;
-		case Jobs::JobIds::Cleric:
-		case Jobs::JobIds::Priest:
-		case Jobs::JobIds::Bishop: skillId = Vana::Skills::Cleric::MpEater; break;
+auto player_skills::get_mp_eater() const -> game_skill_id {
+	game_skill_id skill_id = 0;
+	switch (m_player->get_stats()->get_job()) {
+		case jobs::job_ids::fp_wizard:
+		case jobs::job_ids::fp_mage:
+		case jobs::job_ids::fp_arch_mage: skill_id = vana::skills::fp_wizard::mp_eater; break;
+		case jobs::job_ids::il_wizard:
+		case jobs::job_ids::il_mage:
+		case jobs::job_ids::il_arch_mage: skill_id = vana::skills::il_wizard::mp_eater; break;
+		case jobs::job_ids::cleric:
+		case jobs::job_ids::priest:
+		case jobs::job_ids::bishop: skill_id = vana::skills::cleric::mp_eater; break;
 	}
-	return skillId;
+	return skill_id;
 }
 
-auto PlayerSkills::getVenomousWeapon() const -> skill_id_t {
-	skill_id_t skillId = 0;
-	switch (m_player->getStats()->getJob()) {
-		case Jobs::JobIds::NightLord: skillId = Vana::Skills::NightLord::VenomousStar; break;
-		case Jobs::JobIds::Shadower: skillId = Vana::Skills::Shadower::VenomousStab; break;
-		case Jobs::JobIds::NightWalker3: 
-		case Jobs::JobIds::NightWalker4: skillId = Vana::Skills::NightWalker::Venom; break;
+auto player_skills::get_venomous_weapon() const -> game_skill_id {
+	game_skill_id skill_id = 0;
+	switch (m_player->get_stats()->get_job()) {
+		case jobs::job_ids::night_lord: skill_id = vana::skills::night_lord::venomous_star; break;
+		case jobs::job_ids::shadower: skill_id = vana::skills::shadower::venomous_stab; break;
+		case jobs::job_ids::night_walker3: 
+		case jobs::job_ids::night_walker4: skill_id = vana::skills::night_walker::venom; break;
 	}
-	return skillId;
+	return skill_id;
 }
 
-auto PlayerSkills::getDarkSightInterruptionSkill() const -> skill_id_t {
-	skill_id_t skillId = 0;
-	switch (m_player->getStats()->getJob()) {
-		case Jobs::JobIds::NightWalker2:
-		case Jobs::JobIds::NightWalker3:
-		case Jobs::JobIds::NightWalker4: skillId = Vana::Skills::NightWalker::Vanish; break;
-		case Jobs::JobIds::WindArcher2:
-		case Jobs::JobIds::WindArcher3: 
-		case Jobs::JobIds::WindArcher4: skillId = Vana::Skills::WindArcher::WindWalk; break;
+auto player_skills::get_dark_sight_interruption_skill() const -> game_skill_id {
+	game_skill_id skill_id = 0;
+	switch (m_player->get_stats()->get_job()) {
+		case jobs::job_ids::night_walker2:
+		case jobs::job_ids::night_walker3:
+		case jobs::job_ids::night_walker4: skill_id = vana::skills::night_walker::vanish; break;
+		case jobs::job_ids::wind_archer2:
+		case jobs::job_ids::wind_archer3: 
+		case jobs::job_ids::wind_archer4: skill_id = vana::skills::wind_archer::wind_walk; break;
 	}
-	return skillId;
+	return skill_id;
 }
 
-auto PlayerSkills::getNoDamageSkill() const -> skill_id_t {
-	skill_id_t skillId = 0;
-	switch (m_player->getStats()->getJob()) {
-		case Jobs::JobIds::NightLord: skillId = Vana::Skills::NightLord::ShadowShifter; break;
-		case Jobs::JobIds::Shadower: skillId = Vana::Skills::Shadower::ShadowShifter; break;
-		case Jobs::JobIds::Hero: skillId = Vana::Skills::Hero::Guardian; break;
-		case Jobs::JobIds::Paladin: skillId = Vana::Skills::Paladin::Guardian; break;
+auto player_skills::get_no_damage_skill() const -> game_skill_id {
+	game_skill_id skill_id = 0;
+	switch (m_player->get_stats()->get_job()) {
+		case jobs::job_ids::night_lord: skill_id = vana::skills::night_lord::shadow_shifter; break;
+		case jobs::job_ids::shadower: skill_id = vana::skills::shadower::shadow_shifter; break;
+		case jobs::job_ids::hero: skill_id = vana::skills::hero::guardian; break;
+		case jobs::job_ids::paladin: skill_id = vana::skills::paladin::guardian; break;
 	}
-	return skillId;
+	return skill_id;
 }
 
-auto PlayerSkills::getFollowTheLead() const -> skill_id_t {
-	skill_id_t skillId = 0;
-	switch (GameLogicUtilities::getJobType(m_player->getStats()->getJob())) {
-		case Jobs::JobType::Adventurer: skillId = Vana::Skills::Beginner::FollowTheLead; break;
-		case Jobs::JobType::Cygnus: skillId = Vana::Skills::Noblesse::FollowTheLead; break;
+auto player_skills::get_follow_the_lead() const -> game_skill_id {
+	game_skill_id skill_id = 0;
+	switch (game_logic_utilities::get_job_type(m_player->get_stats()->get_job())) {
+		case jobs::job_type::adventurer: skill_id = vana::skills::beginner::follow_the_lead; break;
+		case jobs::job_type::cygnus: skill_id = vana::skills::noblesse::follow_the_lead; break;
 	}
-	return skillId;
+	return skill_id;
 }
 
-auto PlayerSkills::getLegendarySpirit() const -> skill_id_t {
-	skill_id_t skillId = 0;
-	switch (GameLogicUtilities::getJobType(m_player->getStats()->getJob())) {
-		case Jobs::JobType::Adventurer: skillId = Vana::Skills::Beginner::LegendarySpirit; break;
-		case Jobs::JobType::Cygnus: skillId = Vana::Skills::Noblesse::LegendarySpirit; break;
+auto player_skills::get_legendary_spirit() const -> game_skill_id {
+	game_skill_id skill_id = 0;
+	switch (game_logic_utilities::get_job_type(m_player->get_stats()->get_job())) {
+		case jobs::job_type::adventurer: skill_id = vana::skills::beginner::legendary_spirit; break;
+		case jobs::job_type::cygnus: skill_id = vana::skills::noblesse::legendary_spirit; break;
 	}
-	return skillId;
+	return skill_id;
 }
 
-auto PlayerSkills::getMaker() const -> skill_id_t {
-	skill_id_t skillId = 0;
-	switch (GameLogicUtilities::getJobType(m_player->getStats()->getJob())) {
-		case Jobs::JobType::Adventurer: skillId = Vana::Skills::Beginner::Maker; break;
-		case Jobs::JobType::Cygnus: skillId = Vana::Skills::Noblesse::Maker; break;
+auto player_skills::get_maker() const -> game_skill_id {
+	game_skill_id skill_id = 0;
+	switch (game_logic_utilities::get_job_type(m_player->get_stats()->get_job())) {
+		case jobs::job_type::adventurer: skill_id = vana::skills::beginner::maker; break;
+		case jobs::job_type::cygnus: skill_id = vana::skills::noblesse::maker; break;
 	}
-	return skillId;
+	return skill_id;
 }
 
-auto PlayerSkills::getBlessingOfTheFairy() const -> skill_id_t {
-	skill_id_t skillId = 0;
-	switch (GameLogicUtilities::getJobType(m_player->getStats()->getJob())) {
-		case Jobs::JobType::Adventurer: skillId = Vana::Skills::Beginner::BlessingOfTheFairy; break;
-		case Jobs::JobType::Cygnus: skillId = Vana::Skills::Noblesse::BlessingOfTheFairy; break;
+auto player_skills::get_blessing_of_the_fairy() const -> game_skill_id {
+	game_skill_id skill_id = 0;
+	switch (game_logic_utilities::get_job_type(m_player->get_stats()->get_job())) {
+		case jobs::job_type::adventurer: skill_id = vana::skills::beginner::blessing_of_the_fairy; break;
+		case jobs::job_type::cygnus: skill_id = vana::skills::noblesse::blessing_of_the_fairy; break;
 	}
-	return skillId;
+	return skill_id;
 }
 
-auto PlayerSkills::getRechargeableBonus() const -> slot_qty_t {
-	slot_qty_t bonus = 0;
-	switch (m_player->getStats()->getJob()) {
-		case Jobs::JobIds::Assassin:
-		case Jobs::JobIds::Hermit:
-		case Jobs::JobIds::NightLord: bonus = getSkillLevel(Vana::Skills::Assassin::ClawMastery) * 10; break;
-		case Jobs::JobIds::Gunslinger:
-		case Jobs::JobIds::Outlaw:
-		case Jobs::JobIds::Corsair: bonus = getSkillLevel(Vana::Skills::Gunslinger::GunMastery) * 10; break;
-		case Jobs::JobIds::NightWalker2:
-		case Jobs::JobIds::NightWalker3:
-		case Jobs::JobIds::NightWalker4: bonus = getSkillLevel(Vana::Skills::NightWalker::ClawMastery) * 10; break;
+auto player_skills::get_rechargeable_bonus() const -> game_slot_qty {
+	game_slot_qty bonus = 0;
+	switch (m_player->get_stats()->get_job()) {
+		case jobs::job_ids::assassin:
+		case jobs::job_ids::hermit:
+		case jobs::job_ids::night_lord: bonus = get_skill_level(vana::skills::assassin::claw_mastery) * 10; break;
+		case jobs::job_ids::gunslinger:
+		case jobs::job_ids::outlaw:
+		case jobs::job_ids::corsair: bonus = get_skill_level(vana::skills::gunslinger::gun_mastery) * 10; break;
+		case jobs::job_ids::night_walker2:
+		case jobs::job_ids::night_walker3:
+		case jobs::job_ids::night_walker4: bonus = get_skill_level(vana::skills::night_walker::claw_mastery) * 10; break;
 	}
 	return bonus;
 }
 
-auto PlayerSkills::addCooldown(skill_id_t skillId, seconds_t time) -> void {
-	m_cooldowns[skillId] = time;
+auto player_skills::add_cooldown(game_skill_id skill_id, seconds time) -> void {
+	m_cooldowns[skill_id] = time;
 }
 
-auto PlayerSkills::removeCooldown(skill_id_t skillId) -> void {
-	auto kvp = m_cooldowns.find(skillId);
+auto player_skills::remove_cooldown(game_skill_id skill_id) -> void {
+	auto kvp = m_cooldowns.find(skill_id);
 	if (kvp != std::end(m_cooldowns)) {
 		m_cooldowns.erase(kvp);
 	}
 }
 
-auto PlayerSkills::removeAllCooldowns() -> void {
+auto player_skills::remove_all_cooldowns() -> void {
 	auto dupe = m_cooldowns;
 	for (const auto &kvp : dupe) {
-		if (kvp.first != Vana::Skills::Buccaneer::TimeLeap) {
-			Skills::stopCooldown(ref_ptr_t<Player>{m_player}, kvp.first);
+		if (kvp.first != vana::skills::buccaneer::time_leap) {
+			skills::stop_cooldown(ref_ptr<player>{m_player}, kvp.first);
 		}
 	}
 }
 
-auto PlayerSkills::openMysticDoor(const Point &pos, seconds_t doorTime) -> MysticDoorResult {
-	Party *party = m_player->getParty();
-	bool isDisplacement = m_mysticDoor != nullptr;
+auto player_skills::open_mystic_door(const point &pos, seconds door_time) -> mystic_door_result {
+	party *party = m_player->get_party();
+	bool is_displacement = m_mystic_door != nullptr;
 
-	uint8_t zeroBasedPartyIndex = 0;
+	uint8_t zero_based_party_index = 0;
 	if (party != nullptr) {
-		zeroBasedPartyIndex = party->getZeroBasedIndexByMember(ref_ptr_t<Player>{m_player});
+		zero_based_party_index = party->get_zero_based_index_by_member(ref_ptr<player>{m_player});
 	}
 
-	MysticDoorOpenResult result = party == nullptr ?
-		m_player->getMap()->getTownMysticDoorPortal(ref_ptr_t<Player>{m_player}) :
-		m_player->getMap()->getTownMysticDoorPortal(ref_ptr_t<Player>{m_player}, zeroBasedPartyIndex);
+	mystic_door_open_result result = party == nullptr ?
+		m_player->get_map()->get_town_mystic_door_portal(ref_ptr<player>{m_player}) :
+		m_player->get_map()->get_town_mystic_door_portal(ref_ptr<player>{m_player}, zero_based_party_index);
 
-	if (result.result != MysticDoorResult::Success) {
+	if (result.result != mystic_door_result::success) {
 		return result.result;
 	}
 
-	if (isDisplacement) {
+	if (is_displacement) {
 		if (party != nullptr) {
-			party->runFunction([&](ref_ptr_t<Player> partyMember) {
-				if (partyMember->getMapId() == m_mysticDoor->getMapId()) {
-					partyMember->send(Packets::Map::removeDoor(m_mysticDoor, false));
+			party->run_function([&](ref_ptr<player> party_member) {
+				if (party_member->get_map_id() == m_mystic_door->get_map_id()) {
+					party_member->send(packets::map::remove_door(m_mystic_door, false));
 				}
 			});
 		}
 		else {
-			m_player->send(Packets::Map::removeDoor(m_mysticDoor, false));
+			m_player->send(packets::map::remove_door(m_mystic_door, false));
 		}
 	}
 
-	auto townId = result.townId;
+	auto town_id = result.town_id;
 	auto portal = result.portal;
-	m_mysticDoor = make_ref_ptr<MysticDoor>(ref_ptr_t<Player>{m_player}, townId, portal->id, pos, portal->pos, isDisplacement, doorTime);
+	m_mystic_door = make_ref_ptr<mystic_door>(ref_ptr<player>{m_player}, town_id, portal->id, pos, portal->pos, is_displacement, door_time);
 
 	if (party != nullptr) {
-		party->runFunction([&](ref_ptr_t<Player> partyMember) {
-			bool sendSpawnPacket = false;
-			bool inTown = false;
-			if (partyMember->getMapId() == m_mysticDoor->getMapId()) {
-				sendSpawnPacket = true;
+		party->run_function([&](ref_ptr<player> party_member) {
+			bool send_spawn_packet = false;
+			bool in_town = false;
+			if (party_member->get_map_id() == m_mystic_door->get_map_id()) {
+				send_spawn_packet = true;
 			}
-			else if (partyMember->getMapId() == m_mysticDoor->getTownId()) {
-				sendSpawnPacket = true;
-				inTown = true;
+			else if (party_member->get_map_id() == m_mystic_door->get_town_id()) {
+				send_spawn_packet = true;
+				in_town = true;
 			}
-			if (sendSpawnPacket) {
-				partyMember->send(Packets::Map::spawnDoor(m_mysticDoor, false, false));
-				partyMember->send(Packets::Party::updateDoor(zeroBasedPartyIndex, m_mysticDoor));
+			if (send_spawn_packet) {
+				party_member->send(packets::map::spawn_door(m_mystic_door, false, false));
+				party_member->send(packets::party::update_door(zero_based_party_index, m_mystic_door));
 			}
 		});
 	}
 	else {
-		m_player->send(Packets::Map::spawnDoor(m_mysticDoor, false, false));
-		m_player->send(Packets::Map::spawnPortal(m_mysticDoor, m_player->getMapId()));
+		m_player->send(packets::map::spawn_door(m_mystic_door, false, false));
+		m_player->send(packets::map::spawn_portal(m_mystic_door, m_player->get_map_id()));
 	}
 
-	Vana::Timer::Timer::create(
-		[this](const time_point_t &now) {
-			this->closeMysticDoor(true);
+	vana::timer::timer::create(
+		[this](const time_point &now) {
+			this->close_mystic_door(true);
 		},
-		Vana::Timer::Id{TimerType::DoorTimer},
-		m_player->getTimerContainer(),
-		m_mysticDoor->getDoorTime());
+		vana::timer::id{timer_type::door_timer},
+		m_player->get_timer_container(),
+		m_mystic_door->get_door_time());
 
-	return MysticDoorResult::Success;
+	return mystic_door_result::success;
 }
 
-auto PlayerSkills::closeMysticDoor(bool fromTimer) -> void {
-	if (!fromTimer) {
-		m_player->getTimerContainer()->removeTimer(Vana::Timer::Id{TimerType::DoorTimer});
+auto player_skills::close_mystic_door(bool from_timer) -> void {
+	if (!from_timer) {
+		m_player->get_timer_container()->remove_timer(vana::timer::id{timer_type::door_timer});
 	}
 
-	ref_ptr_t<MysticDoor> door = m_mysticDoor;
-	m_mysticDoor.reset();
+	ref_ptr<mystic_door> door = m_mystic_door;
+	m_mystic_door.reset();
 
-	if (Party *party = m_player->getParty()) {
-		uint8_t zeroBasedPartyIndex = party->getZeroBasedIndexByMember(ref_ptr_t<Player>{m_player});
+	if (party *party = m_player->get_party()) {
+		uint8_t zero_based_party_index = party->get_zero_based_index_by_member(ref_ptr<player>{m_player});
 
-		party->runFunction([&](ref_ptr_t<Player> partyMember) {
-			map_id_t memberMap = partyMember->getMapId();
-			if (memberMap == door->getMapId()) {
-				partyMember->send(Packets::Map::removeDoor(door, fromTimer));
+		party->run_function([&](ref_ptr<player> party_member) {
+			game_map_id member_map = party_member->get_map_id();
+			if (member_map == door->get_map_id()) {
+				party_member->send(packets::map::remove_door(door, from_timer));
 			}
-			else if (memberMap == door->getTownId()) {
-				partyMember->send(Packets::Party::updateDoor(zeroBasedPartyIndex, m_mysticDoor));
+			else if (member_map == door->get_town_id()) {
+				party_member->send(packets::party::update_door(zero_based_party_index, m_mystic_door));
 			}
 		});
 	}
 	else {
-		map_id_t playerMap = m_player->getMapId();
-		if (fromTimer && (playerMap == door->getMapId() || playerMap == door->getTownId())) {
-			m_player->send(Packets::Map::removeDoor(door, true));
-			m_player->send(Packets::Map::removePortal());
+		game_map_id player_map = m_player->get_map_id();
+		if (from_timer && (player_map == door->get_map_id() || player_map == door->get_town_id())) {
+			m_player->send(packets::map::remove_door(door, true));
+			m_player->send(packets::map::remove_portal());
 		}
 	}
 }
 
-auto PlayerSkills::getMysticDoor() const -> ref_ptr_t<MysticDoor> {
-	return m_mysticDoor;
+auto player_skills::get_mystic_door() const -> ref_ptr<mystic_door> {
+	return m_mystic_door;
 }
 
-auto PlayerSkills::onJoinParty(Party *party, ref_ptr_t<Player> player) -> void {
-	if (player.get() == m_player) {
-		if (m_mysticDoor == nullptr) {
+auto player_skills::on_join_party(party *party, ref_ptr<player> player_value) -> void {
+	if (player_value.get() == m_player) {
+		if (m_mystic_door == nullptr) {
 			return;
 		}
 
-		uint8_t zeroBasedPartyIndex = party->getZeroBasedIndexByMember(player);
-		MysticDoorOpenResult result = m_mysticDoor->getMap()->getTownMysticDoorPortal(player, zeroBasedPartyIndex);
-		if (result.result != MysticDoorResult::Success) {
+		uint8_t zero_based_party_index = party->get_zero_based_index_by_member(player_value);
+		mystic_door_open_result result = m_mystic_door->get_map()->get_town_mystic_door_portal(player_value, zero_based_party_index);
+		if (result.result != mystic_door_result::success) {
 			// ???
 			return;
 		}
 
 		auto portal = result.portal;
-		m_mysticDoor = m_mysticDoor->withNewPortal(portal->id, portal->pos);
+		m_mystic_door = m_mystic_door->with_new_portal(portal->id, portal->pos);
+
+		// The actual door itself doesn't have to be modified on the map if the player_value happens to be there
+		// If the player_value is in town, the join party packet takes care of it
+
+		return;
+	}
+
+	if (ref_ptr<mystic_door> door = player_value->get_skills()->get_mystic_door()) {
+		if (m_player->get_map_id() == door->get_map_id()) {
+			m_player->send(packets::map::spawn_door(door, false, true));
+		}
+	}
+
+	if (m_mystic_door != nullptr) {
+		uint8_t zero_based_party_index = party->get_zero_based_index_by_member(ref_ptr<player>{m_player});
+		mystic_door_open_result result = m_mystic_door->get_map()->get_town_mystic_door_portal(ref_ptr<player>{m_player}, zero_based_party_index);
+		if (result.result != mystic_door_result::success) {
+			// ???
+			return;
+		}
+
+		auto portal = result.portal;
+		m_mystic_door = m_mystic_door->with_new_portal(portal->id, portal->pos);
+
+		if (player_value->get_map_id() == m_mystic_door->get_map_id()) {
+			player_value->send(packets::map::spawn_door(m_mystic_door, false, true));
+		}
+	}
+}
+
+auto player_skills::on_leave_party(party *party, ref_ptr<player> player_value, bool kicked) -> void {
+	if (player_value.get() == m_player) {
+		if (m_mystic_door == nullptr) {
+			return;
+		}
+
+		mystic_door_open_result result = m_mystic_door->get_map()->get_town_mystic_door_portal(player_value);
+		if (result.result != mystic_door_result::success) {
+			// ???
+			return;
+		}
+
+		auto portal = result.portal;
+		m_mystic_door = m_mystic_door->with_new_portal(portal->id, portal->pos);
 
 		// The actual door itself doesn't have to be modified on the map if the player happens to be there
-		// If the player is in town, the join party packet takes care of it
+
+		if (player_value->get_map_id() == m_mystic_door->get_town_id()) {
+			player_value->send(packets::party::update_door(0, nullptr));
+			player_value->send(packets::map::spawn_door(m_mystic_door, true, true));
+			player_value->send(packets::map::spawn_portal(m_mystic_door, player_value->get_map_id()));
+		}
 
 		return;
 	}
 
-	if (ref_ptr_t<MysticDoor> door = player->getSkills()->getMysticDoor()) {
-		if (m_player->getMapId() == door->getMapId()) {
-			m_player->send(Packets::Map::spawnDoor(door, false, true));
+	if (ref_ptr<mystic_door> door = player_value->get_skills()->get_mystic_door()) {
+		if (m_player->get_map_id() == door->get_map_id()) {
+			m_player->send(packets::map::remove_door(door, false));
 		}
 	}
 
-	if (m_mysticDoor != nullptr) {
-		uint8_t zeroBasedPartyIndex = party->getZeroBasedIndexByMember(ref_ptr_t<Player>{m_player});
-		MysticDoorOpenResult result = m_mysticDoor->getMap()->getTownMysticDoorPortal(ref_ptr_t<Player>{m_player}, zeroBasedPartyIndex);
-		if (result.result != MysticDoorResult::Success) {
+	if (m_mystic_door != nullptr) {
+		uint8_t zero_based_party_index = party->get_zero_based_index_by_member(ref_ptr<player>{m_player});
+		mystic_door_open_result result = m_mystic_door->get_map()->get_town_mystic_door_portal(ref_ptr<player>{m_player}, zero_based_party_index);
+		if (result.result != mystic_door_result::success) {
 			// ???
 			return;
 		}
 
 		auto portal = result.portal;
-		m_mysticDoor = m_mysticDoor->withNewPortal(portal->id, portal->pos);
+		m_mystic_door = m_mystic_door->with_new_portal(portal->id, portal->pos);
 
-		if (player->getMapId() == m_mysticDoor->getMapId()) {
-			player->send(Packets::Map::spawnDoor(m_mysticDoor, false, true));
+		if (player_value->get_map_id() == m_mystic_door->get_map_id()) {
+			player_value->send(packets::map::remove_door(m_mystic_door, false));
 		}
 	}
 }
 
-auto PlayerSkills::onLeaveParty(Party *party, ref_ptr_t<Player> player, bool kicked) -> void {
-	if (player.get() == m_player) {
-		if (m_mysticDoor == nullptr) {
-			return;
-		}
-
-		MysticDoorOpenResult result = m_mysticDoor->getMap()->getTownMysticDoorPortal(player);
-		if (result.result != MysticDoorResult::Success) {
-			// ???
-			return;
-		}
-
-		auto portal = result.portal;
-		m_mysticDoor = m_mysticDoor->withNewPortal(portal->id, portal->pos);
-
-		// The actual door itself doesn't have to be modified on the map if the player happens to be there
-
-		if (player->getMapId() == m_mysticDoor->getTownId()) {
-			player->send(Packets::Party::updateDoor(0, nullptr));
-			player->send(Packets::Map::spawnDoor(m_mysticDoor, true, true));
-			player->send(Packets::Map::spawnPortal(m_mysticDoor, player->getMapId()));
-		}
-
+auto player_skills::on_party_disband(party *party) -> void {
+	if (m_mystic_door == nullptr) {
 		return;
 	}
 
-	if (ref_ptr_t<MysticDoor> door = player->getSkills()->getMysticDoor()) {
-		if (m_player->getMapId() == door->getMapId()) {
-			m_player->send(Packets::Map::removeDoor(door, false));
+	uint8_t zero_based_party_index = party->get_zero_based_index_by_member(ref_ptr<player>{m_player});
+	party->run_function([&](ref_ptr<player> party_member) {
+		game_map_id member_map = party_member->get_map_id();
+		if (member_map == m_mystic_door->get_town_id()) {
+			party_member->send(packets::party::update_door(zero_based_party_index, nullptr));
 		}
-	}
-
-	if (m_mysticDoor != nullptr) {
-		uint8_t zeroBasedPartyIndex = party->getZeroBasedIndexByMember(ref_ptr_t<Player>{m_player});
-		MysticDoorOpenResult result = m_mysticDoor->getMap()->getTownMysticDoorPortal(ref_ptr_t<Player>{m_player}, zeroBasedPartyIndex);
-		if (result.result != MysticDoorResult::Success) {
-			// ???
-			return;
-		}
-
-		auto portal = result.portal;
-		m_mysticDoor = m_mysticDoor->withNewPortal(portal->id, portal->pos);
-
-		if (player->getMapId() == m_mysticDoor->getMapId()) {
-			player->send(Packets::Map::removeDoor(m_mysticDoor, false));
-		}
-	}
-}
-
-auto PlayerSkills::onPartyDisband(Party *party) -> void {
-	if (m_mysticDoor == nullptr) {
-		return;
-	}
-
-	uint8_t zeroBasedPartyIndex = party->getZeroBasedIndexByMember(ref_ptr_t<Player>{m_player});
-	party->runFunction([&](ref_ptr_t<Player> partyMember) {
-		map_id_t memberMap = partyMember->getMapId();
-		if (memberMap == m_mysticDoor->getTownId()) {
-			partyMember->send(Packets::Party::updateDoor(zeroBasedPartyIndex, nullptr));
-		}
-		else if (partyMember.get() != m_player && memberMap == m_mysticDoor->getMapId()) {
-			partyMember->send(Packets::Map::removeDoor(m_mysticDoor, false));
+		else if (party_member.get() != m_player && member_map == m_mystic_door->get_map_id()) {
+			party_member->send(packets::map::remove_door(m_mystic_door, false));
 		}
 	});
 
-	MysticDoorOpenResult result = m_mysticDoor->getMap()->getTownMysticDoorPortal(ref_ptr_t<Player>{m_player});
-	if (result.result != MysticDoorResult::Success) {
+	mystic_door_open_result result = m_mystic_door->get_map()->get_town_mystic_door_portal(ref_ptr<player>{m_player});
+	if (result.result != mystic_door_result::success) {
 		// ???
 		return;
 	}
 
 	auto portal = result.portal;
-	auto newDoor = m_mysticDoor->withNewPortal(portal->id, portal->pos);
+	auto new_door = m_mystic_door->with_new_portal(portal->id, portal->pos);
 
-	if (m_player->getMapId() == newDoor->getTownId()) {
-		m_player->send(Packets::Map::spawnDoor(newDoor, true, true));
-		m_player->send(Packets::Map::spawnPortal(newDoor, m_player->getMapId()));
+	if (m_player->get_map_id() == new_door->get_town_id()) {
+		m_player->send(packets::map::spawn_door(new_door, true, true));
+		m_player->send(packets::map::spawn_portal(new_door, m_player->get_map_id()));
 	}
 
-	m_mysticDoor = newDoor;
+	m_mystic_door = new_door;
 }
 
-auto PlayerSkills::onMapChange() const -> void {
-	if (Party *party = m_player->getParty()) {
-		party->runFunction([&](ref_ptr_t<Player> partyMember) {
-			if (ref_ptr_t<MysticDoor> door = partyMember->getSkills()->getMysticDoor()) {
-				if (m_player->getMapId() == door->getMapId()) {
-					m_player->send(Packets::Map::spawnDoor(door, false, true));
+auto player_skills::on_map_change() const -> void {
+	if (party *party = m_player->get_party()) {
+		party->run_function([&](ref_ptr<player> party_member) {
+			if (ref_ptr<mystic_door> door = party_member->get_skills()->get_mystic_door()) {
+				if (m_player->get_map_id() == door->get_map_id()) {
+					m_player->send(packets::map::spawn_door(door, false, true));
 				}
 			}
 		});
@@ -742,47 +743,47 @@ auto PlayerSkills::onMapChange() const -> void {
 		return;
 	}
 
-	if (m_mysticDoor == nullptr) {
+	if (m_mystic_door == nullptr) {
 		return;
 	}
 
-	map_id_t mapId = m_player->getMapId();
-	bool inTown = mapId == m_mysticDoor->getTownId();
-	if (mapId == m_mysticDoor->getMapId() || inTown) {
-		m_player->send(Packets::Map::spawnDoor(m_mysticDoor, inTown, true));
-		m_player->send(Packets::Map::spawnPortal(m_mysticDoor, mapId));
+	game_map_id map_id = m_player->get_map_id();
+	bool in_town = map_id == m_mystic_door->get_town_id();
+	if (map_id == m_mystic_door->get_map_id() || in_town) {
+		m_player->send(packets::map::spawn_door(m_mystic_door, in_town, true));
+		m_player->send(packets::map::spawn_portal(m_mystic_door, map_id));
 	}
 }
 
-auto PlayerSkills::onDisconnect() -> void {
-	if (m_mysticDoor != nullptr) {
-		closeMysticDoor(false);
+auto player_skills::on_disconnect() -> void {
+	if (m_mystic_door != nullptr) {
+		close_mystic_door(false);
 	}
 }
 
-auto PlayerSkills::connectPacket(PacketBuilder &builder) const -> void {
+auto player_skills::connect_packet(packet_builder &builder) const -> void {
 	// Skill levels
 	builder.add<uint16_t>(static_cast<uint16_t>(m_skills.size()));
 	for (const auto &kvp : m_skills) {
-		builder.add<skill_id_t>(kvp.first);
+		builder.add<game_skill_id>(kvp.first);
 		builder.add<int32_t>(kvp.second.level);
-		if (GameLogicUtilities::isFourthJobSkill(kvp.first)) {
-			builder.add<int32_t>(kvp.second.playerMaxSkillLevel);
+		if (game_logic_utilities::is_fourth_job_skill(kvp.first)) {
+			builder.add<int32_t>(kvp.second.player_max_skill_level);
 		}
 	}
 	// Cooldowns
 	builder.add<uint16_t>(static_cast<uint16_t>(m_cooldowns.size()));
 	for (const auto &kvp : m_cooldowns) {
-		builder.add<skill_id_t>(kvp.first);
+		builder.add<game_skill_id>(kvp.first);
 		builder.add<int16_t>(static_cast<int16_t>(kvp.second.count()));
 	}
 }
 
-auto PlayerSkills::connectPacketForBlessing(PacketBuilder &builder) const -> void {
+auto player_skills::connect_packet_for_blessing(packet_builder &builder) const -> void {
 	// Orange text wasn't added until sometime after .75 and before .82
-	//if (!m_blessingPlayer.empty()) {
+	//if (!m_blessing_player.empty()) {
 	//	packet.add<bool>(true);
-	//	packet.add<string_t>(m_blessingPlayer);
+	//	packet.add<string>(m_blessing_player);
 	//}
 	//else {
 	//	packet.add<bool>(false);

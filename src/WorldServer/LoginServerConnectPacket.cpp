@@ -21,35 +21,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer/LoginServerSession.hpp"
 #include "WorldServer/WorldServer.hpp"
 
-namespace Vana {
-namespace WorldServer {
-namespace Packets {
+namespace vana {
+namespace world_server {
+namespace packets {
 
-PACKET_IMPL(registerChannel, channel_id_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port) {
-	PacketBuilder builder;
+PACKET_IMPL(register_channel, game_channel_id channel, const ip &channel_ip, const ip_matrix &ext_ip, connection_port port) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_REGISTER_CHANNEL)
-		.add<channel_id_t>(channel)
-		.add<Ip>(channelIp)
-		.add<vector_t<ExternalIp>>(extIp)
-		.add<port_t>(port);
+		.add<packet_header>(IMSG_REGISTER_CHANNEL)
+		.add<game_channel_id>(channel)
+		.add<ip>(channel_ip)
+		.add<vector<external_ip>>(ext_ip)
+		.add<connection_port>(port);
 	return builder;
 }
 
-PACKET_IMPL(updateChannelPop, channel_id_t channel, int32_t population) {
-	PacketBuilder builder;
+PACKET_IMPL(update_channel_pop, game_channel_id channel, int32_t population) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_UPDATE_CHANNEL_POP)
-		.add<channel_id_t>(channel)
+		.add<packet_header>(IMSG_UPDATE_CHANNEL_POP)
+		.add<game_channel_id>(channel)
 		.add<int32_t>(population);
 	return builder;
 }
 
-PACKET_IMPL(removeChannel, channel_id_t channel) {
-	PacketBuilder builder;
+PACKET_IMPL(remove_channel, game_channel_id channel) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_REMOVE_CHANNEL)
-		.add<channel_id_t>(channel);
+		.add<packet_header>(IMSG_REMOVE_CHANNEL)
+		.add<game_channel_id>(channel);
 	return builder;
 }
 

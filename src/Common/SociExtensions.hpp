@@ -24,27 +24,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 namespace soci {
-	using UnixTime = Vana::UnixTime;
-	using string_t = Vana::string_t;
-	using int8_t = Vana::int8_t;
-	using int16_t = Vana::int16_t;
-	using int32_t = Vana::int32_t;
-	using int64_t = Vana::int64_t;
-	using uint8_t = Vana::uint8_t;
-	using uint16_t = Vana::uint16_t;
-	using uint32_t = Vana::uint32_t;
-	using uint64_t = Vana::uint64_t;
+	using unix_time = vana::unix_time;
+	using string = vana::string;
+	using int8_t = vana::int8_t;
+	using int16_t = vana::int16_t;
+	using int32_t = vana::int32_t;
+	using int64_t = vana::int64_t;
+	using uint8_t = vana::uint8_t;
+	using uint16_t = vana::uint16_t;
+	using uint32_t = vana::uint32_t;
+	using uint64_t = vana::uint64_t;
 	template <typename TElement>
-	using optional_t = Vana::optional_t<TElement>;
+	using optional = vana::optional<TElement>;
 
 	template <>
-	struct type_conversion<Vana::UnixTime> {
+	struct type_conversion<unix_time> {
 		using base_type = std::tm;
-		using target_type = UnixTime;
+		using target_type = unix_time;
 
 		static void from_base(const base_type &in, indicator &ind, target_type &out) {
 			if (ind == i_null) {
-				out = UnixTime{0};
+				out = unix_time{0};
 			}
 			else {
 				out = mktime(&const_cast<std::tm &>(in));
@@ -59,9 +59,9 @@ namespace soci {
 	};
 
 	template <>
-	struct type_conversion<string_t> {
-		using base_type = string_t;
-		using target_type = string_t;
+	struct type_conversion<string> {
+		using base_type = string;
+		using target_type = string;
 
 		static void from_base(const base_type &in, indicator &ind, target_type &out) {
 			if (ind == i_null) {
@@ -304,10 +304,10 @@ namespace soci {
 	};
 
 	template <typename T>
-	struct type_conversion<optional_t<T>> {
+	struct type_conversion<optional<T>> {
 		using base_type = typename type_conversion<T>::base_type;
 
-		static void from_base(const base_type &in, indicator ind, optional_t<T> &out) {
+		static void from_base(const base_type &in, indicator ind, optional<T> &out) {
 			if (ind == i_null) {
 				out.reset();
 			}
@@ -318,7 +318,7 @@ namespace soci {
 			}
 		}
 
-		static void to_base(const optional_t<T> &in, base_type &out, indicator &ind) {
+		static void to_base(const optional<T> &in, base_type &out, indicator &ind) {
 			if (in.is_initialized()) {
 				type_conversion<T>::to_base(in.get(), out, ind);
 			}

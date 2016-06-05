@@ -21,21 +21,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/SplitPacketBuilder.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	namespace Packets {
+namespace vana {
+	namespace packets {
 		inline
-		auto prepend(const PacketBuilder &builder, function_t<void(PacketBuilder &)> wrapFunction) -> PacketBuilder {
-			PacketBuilder packet;
-			wrapFunction(packet);
-			packet.addBuffer(builder);
+		auto prepend(const packet_builder &builder, function<void(packet_builder &)> wrap_function) -> packet_builder {
+			packet_builder packet;
+			wrap_function(packet);
+			packet.add_buffer(builder);
 			return packet;
 		}
 
 		// Converts the type of packet to PacketBuilder
 		inline
-		auto identity(const PacketReader &reader) -> PacketBuilder {
-			PacketBuilder builder;
-			builder.addBuffer(reader);
+		auto identity(const packet_reader &reader) -> packet_builder {
+			packet_builder builder;
+			builder.add_buffer(reader);
 			return builder;
 		}
 	}

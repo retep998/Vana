@@ -31,11 +31,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 #include <iostream>
 
-namespace Vana {
-Session::Session(
+namespace vana {
+session::session(
 	asio::io_service &service,
-	ConnectionManager &manager,
-	Handler handler) :
+	connection_manager &manager,
+	handler handler) :
 	m_manager{manager},
 	m_socket{service},
 	m_handler{handler},
@@ -43,149 +43,149 @@ Session::Session(
 {
 }
 
-auto Session::getSocket() -> asio::ip::tcp::socket & {
+auto session::get_socket() -> asio::ip::tcp::socket & {
 	return m_socket;
 }
 
-auto Session::getCodec() -> PacketTransformer & {
+auto session::get_codec() -> packet_transformer & {
 	return *m_codec;
 }
 
-auto Session::getBuffer() -> MiscUtilities::shared_array<unsigned char> & {
+auto session::get_buffer() -> utilities::misc::shared_array<unsigned char> & {
 	return m_buffer;
 }
 
-auto Session::getLatency() const -> milliseconds_t {
+auto session::get_latency() const -> milliseconds {
 	return m_latency;
 }
 
-auto Session::getType() const -> ConnectionType {
+auto session::get_type() const -> connection_type {
 	return m_type;
 }
 
-auto Session::setType(ConnectionType type) -> void {
-	if (m_type != ConnectionType::Unknown) throw InvalidOperationException{"Connection type may only be set once"};
+auto session::set_type(connection_type type) -> void {
+	if (m_type != connection_type::unknown) throw invalid_operation_exception{"Connection type may only be set once"};
 	m_type = type;
 }
 
-auto Session::ping() -> void {
-	if (m_pingCount == m_maxPingCount) {
+auto session::ping() -> void {
+	if (m_ping_count == m_max_ping_count) {
 		// We have a timeout now
 		disconnect();
 		return;
 	}
 
-	m_pingCount++;
-	m_lastPing = TimeUtilities::getNow();
-	send(Packets::ping());
+	m_ping_count++;
+	m_last_ping = utilities::time::get_now();
+	send(packets::ping());
 }
 
-auto Session::start(const PingConfig &ping, ref_ptr_t<PacketTransformer> transformer) -> void {
+auto session::start(const ping_config &ping, ref_ptr<packet_transformer> transformer) -> void {
 	// TODO FIXME support IPv6
 	auto &addr = m_socket.remote_endpoint().address();
 	if (addr.is_v4()) {
-		m_ip = Ip{addr.to_v4().to_ulong()};
+		m_ip = ip{addr.to_v4().to_ulong()};
 	}
 	else {
-		throw NotImplementedException{"IPv6"};
+		throw not_implemented_exception{"i_pv6"};
 	}
 
 	if (ping.enable) {
-		m_maxPingCount = ping.timeoutPingCount;
-		Timer::Timer::create(
-			[this](const time_point_t &now) { this->ping(); },
-			Timer::Id{TimerType::PingTimer},
-			getTimers(),
-			ping.initialDelay,
+		m_max_ping_count = ping.timeout_ping_count;
+		timer::timer::create(
+			[this](const time_point &now) { this->ping(); },
+			timer::id{timer_type::ping_timer},
+			get_timers(),
+			ping.initial_delay,
 			ping.interval);
 	}
 
 	m_codec = transformer;
 
-	m_handler->onConnectBase(shared_from_this());
+	m_handler->on_connect_base(shared_from_this());
 
-	m_isConnected = true;
-	startReadHeader();
+	m_is_connected = true;
+	start_read_header();
 }
 
-auto Session::syncRead(size_t minimumBytes) -> pair_t<asio::error_code, PacketReader> {
+auto session::sync_read(size_t minimum_bytes) -> pair<asio::error_code, packet_reader> {
 	asio::error_code error;
 
-	m_buffer.reset(new unsigned char[MaxBufferLen]);
+	m_buffer.reset(new unsigned char[max_buffer_len]);
 
-	size_t packetSize = asio::read(m_socket,
-		asio::buffer(m_buffer.get(), MaxBufferLen),
-		asio::transfer_at_least(minimumBytes),
+	size_t packet_size = asio::read(m_socket,
+		asio::buffer(m_buffer.get(), max_buffer_len),
+		asio::transfer_at_least(minimum_bytes),
 		error);
 
-	return std::make_pair(error, PacketReader{m_buffer.get(), packetSize});
+	return std::make_pair(error, packet_reader{m_buffer.get(), packet_size});
 }
 
-auto Session::disconnect() -> void {
-	if (!m_isConnected) return;
-	m_handler->onDisconnectBase();
+auto session::disconnect() -> void {
+	if (!m_is_connected) return;
+	m_handler->on_disconnect_base();
 	m_manager.stop(shared_from_this());
-	m_isConnected = false;
+	m_is_connected = false;
 
 	asio::error_code ec;
 	m_socket.close(ec);
 	if (ec) {
-		m_manager.getServer()->log(LogType::Error, [&](out_stream_t &str) {
+		m_manager.get_server()->log(log_type::error, [&](out_stream &str) {
 			str << "FAILURE TO CLOSE SESSION (" << ec.value() << "): " << ec.message();
 		});
 	}
 }
 
-auto Session::send(const PacketBuilder &builder, bool encrypt) -> void {
-	send(builder.getBuffer(), builder.getSize(), encrypt);
+auto session::send(const packet_builder &builder, bool encrypt) -> void {
+	send(builder.get_buffer(), builder.get_size(), encrypt);
 }
 
-auto Session::send(const unsigned char *buf, int32_t len, bool encrypt) -> void {
-	owned_lock_t<mutex_t> l{m_sendMutex};
+auto session::send(const unsigned char *buf, int32_t len, bool encrypt) -> void {
+	owned_lock<mutex> l{m_send_mutex};
 
-	unsigned char *sendBuffer;
-	size_t realLength = len;
+	unsigned char *send_buffer;
+	size_t real_length = len;
 
 	if (encrypt) {
-		realLength += HeaderLen;
-		sendBuffer = new unsigned char[realLength];
-		m_sendPacket.reset(sendBuffer);
+		real_length += header_len;
+		send_buffer = new unsigned char[real_length];
+		m_send_packet.reset(send_buffer);
 
-		memcpy(sendBuffer + HeaderLen, buf, len);
-		m_codec->setPacketHeader(sendBuffer, static_cast<uint16_t>(len));
-		m_codec->encryptPacket(sendBuffer + HeaderLen, len, HeaderLen);
+		memcpy(send_buffer + header_len, buf, len);
+		m_codec->set_packet_header(send_buffer, static_cast<uint16_t>(len));
+		m_codec->encrypt_packet(send_buffer + header_len, len, header_len);
 	}
 	else {
-		sendBuffer = new unsigned char[realLength];
-		m_sendPacket.reset(sendBuffer);
+		send_buffer = new unsigned char[real_length];
+		m_send_packet.reset(send_buffer);
 
-		memcpy(sendBuffer, buf, len);
+		memcpy(send_buffer, buf, len);
 	}
 
-	asio::async_write(m_socket, asio::buffer(sendBuffer, realLength),
-		std::bind(&Session::handleWrite, shared_from_this(),
+	asio::async_write(m_socket, asio::buffer(send_buffer, real_length),
+		std::bind(&session::handle_write, shared_from_this(),
 			std::placeholders::_1,
 			std::placeholders::_2));
 }
 
-auto Session::startReadHeader() -> void {
-	m_buffer.reset(new unsigned char[HeaderLen]);
+auto session::start_read_header() -> void {
+	m_buffer.reset(new unsigned char[header_len]);
 
 	asio::async_read(m_socket,
-		asio::buffer(m_buffer.get(), HeaderLen),
-		std::bind(&Session::handleReadHeader, shared_from_this(),
+		asio::buffer(m_buffer.get(), header_len),
+		std::bind(&session::handle_read_header, shared_from_this(),
 			std::placeholders::_1,
 			std::placeholders::_2));
 }
 
-auto Session::handleWrite(const asio::error_code &error, size_t bytesTransferred) -> void {
-	owned_lock_t<mutex_t> l{m_sendMutex};
+auto session::handle_write(const asio::error_code &error, size_t bytes_transferred) -> void {
+	owned_lock<mutex> l{m_send_mutex};
 	if (error) {
 		disconnect();
 	}
 }
 
-auto Session::handleReadHeader(const asio::error_code &error, size_t bytesTransferred) -> void {
+auto session::handle_read_header(const asio::error_code &error, size_t bytes_transferred) -> void {
 	if (error) {
 		disconnect();
 		return;
@@ -199,7 +199,7 @@ auto Session::handleReadHeader(const asio::error_code &error, size_t bytesTransf
 	//	return;
 	//}
 
-	size_t len = m_codec->getPacketLength(m_buffer.get());
+	size_t len = m_codec->get_packet_length(m_buffer.get());
 	if (len < 2) {
 		// Hacking or trying to crash server
 		disconnect();
@@ -210,50 +210,50 @@ auto Session::handleReadHeader(const asio::error_code &error, size_t bytesTransf
 
 	asio::async_read(m_socket,
 		asio::buffer(m_buffer.get(), len),
-		std::bind(&Session::handleReadBody, shared_from_this(),
+		std::bind(&session::handle_read_body, shared_from_this(),
 			std::placeholders::_1,
 			std::placeholders::_2));
 }
 
-auto Session::handleReadBody(const asio::error_code &error, size_t bytesTransferred) -> void {
+auto session::handle_read_body(const asio::error_code &error, size_t bytes_transferred) -> void {
 	if (error) {
 		disconnect();
 		return;
 	}
 
-	m_codec->decryptPacket(m_buffer.get(), bytesTransferred, HeaderLen);
+	m_codec->decrypt_packet(m_buffer.get(), bytes_transferred, header_len);
 
-	PacketReader packet{m_buffer.get(), bytesTransferred};
-	baseHandleRequest(packet);
+	packet_reader packet{m_buffer.get(), bytes_transferred};
+	base_handle_request(packet);
 
-	startReadHeader();
+	start_read_header();
 }
 
-auto Session::getIp() const -> const Ip & {
+auto session::get_ip() const -> const ip & {
 	return m_ip;
 }
 
-auto Session::baseHandleRequest(PacketReader &reader) -> void {
+auto session::base_handle_request(packet_reader &reader) -> void {
 	try {
-		switch (reader.peek<header_t>()) {
+		switch (reader.peek<packet_header>()) {
 			case SMSG_PING:
-				if (m_type != ConnectionType::EndUser) {
-					send(Packets::pong());
+				if (m_type != connection_type::end_user) {
+					send(packets::pong());
 				}
 				break;
 			case CMSG_PONG:
-				if (m_pingCount == 0) {
+				if (m_ping_count == 0) {
 					// Trying to spoof pongs without pings
 					disconnect();
 					return;
 				}
-				m_pingCount = 0;
+				m_ping_count = 0;
 				// This is for the trip to and from, so latency is averaged between them
-				m_latency = duration_cast<milliseconds_t>(TimeUtilities::getNow() - m_lastPing) / 2;
+				m_latency = duration_cast<milliseconds>(utilities::time::get_now() - m_last_ping) / 2;
 				break;
 		}
 
-		if (m_handler->handle(reader) == Result::Failure) {
+		if (m_handler->handle(reader) == result::failure) {
 			disconnect();
 		}
 	}

@@ -24,58 +24,58 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-	class LuaVariant;
+namespace vana {
+	class lua_variant;
 
-	class SaltTransformationConfig {
+	class salt_transformation_config {
 	public:
-		SaltTransformationConfig(SaltModifyPolicy policy, vector_t<LuaVariant> args);
+		salt_transformation_config(salt_modify_policy policy, vector<lua_variant> args);
 
-		auto static validateArgs(SaltModifyPolicy policy, const vector_t<LuaVariant> &args) -> ValidityResult;
-		auto apply(string_t input) const -> string_t;
+		auto static validate_args(salt_modify_policy policy, const vector<lua_variant> &args) -> validity_result;
+		auto apply(string input) const -> string;
 	private:
-		SaltTransformationConfig() = default;
-		friend struct LuaVariantInto<SaltTransformationConfig>;
+		salt_transformation_config() = default;
+		friend struct lua_variant_into<salt_transformation_config>;
 
-		SaltModifyPolicy m_policy = SaltModifyPolicy::None;
-		vector_t<LuaVariant> m_args;
+		salt_modify_policy m_policy = salt_modify_policy::none;
+		vector<lua_variant> m_args;
 	};
 
 	template <>
-	struct LuaVariantInto<SaltTransformationConfig> {
-		auto transform(LuaEnvironment &config, const LuaVariant &src, const string_t &prefix) -> SaltTransformationConfig {
-			SaltTransformationConfig ret;
+	struct lua_variant_into<salt_transformation_config> {
+		auto transform(lua_environment &config, const lua_variant &src, const string &prefix) -> salt_transformation_config {
+			salt_transformation_config ret;
 
-			config.validateObject(LuaType::Table, src, prefix);
+			config.validate_object(lua::lua_type::table, src, prefix);
 
-			auto map = src.as<hash_map_t<LuaVariant, LuaVariant>>();
-			bool hasType = false;
-			bool hasArgs = false;
-			SaltModifyPolicy saltPolicyData;
-			LuaVariant args;
+			auto map = src.as<hash_map<lua_variant, lua_variant>>();
+			bool has_type = false;
+			bool has_args = false;
+			salt_modify_policy salt_policy_data;
+			lua_variant args;
 			for (const auto &kvp : map) {
-				config.validateKey(LuaType::String, kvp.first, prefix);
+				config.validate_key(lua::lua_type::string, kvp.first, prefix);
 
-				string_t key = kvp.first.as<string_t>();
+				string key = kvp.first.as<string>();
 				if (key == "type") {
-					hasType = true;
-					config.validateValue(LuaType::Number, kvp.second, key, prefix);
-					saltPolicyData = static_cast<SaltModifyPolicy>(kvp.second.as<int32_t>());
+					has_type = true;
+					config.validate_value(lua::lua_type::number, kvp.second, key, prefix);
+					salt_policy_data = static_cast<salt_modify_policy>(kvp.second.as<int32_t>());
 				}
 				else if (key == "args") {
-					hasArgs = true;
-					config.validateValue(LuaType::Table, kvp.second, key, prefix);
+					has_args = true;
+					config.validate_value(lua::lua_type::table, kvp.second, key, prefix);
 					args = kvp.second;
 				}
 			}
 
-			config.required(hasType, "type", prefix);
-			config.required(hasArgs, "args", prefix);
+			config.required(has_type, "type", prefix);
+			config.required(has_args, "args", prefix);
 
-			ret.m_policy = saltPolicyData;
-			ret.m_args = args.as<vector_t<LuaVariant>>();
+			ret.m_policy = salt_policy_data;
+			ret.m_args = args.as<vector<lua_variant>>();
 
-			if (SaltTransformationConfig::validateArgs(ret.m_policy, ret.m_args) == ValidityResult::Invalid) {
+			if (salt_transformation_config::validate_args(ret.m_policy, ret.m_args) == validity_result::invalid) {
 				config.error("Arguments for salt transformation " + prefix + " are invalid. Please consult the documentation.");
 			}
 

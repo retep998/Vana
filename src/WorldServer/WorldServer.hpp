@@ -29,43 +29,43 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer/WorldServerAcceptedSession.hpp"
 #include <string>
 
-namespace Vana {
-	class PacketBuilder;
+namespace vana {
+	class packet_builder;
 
-	namespace WorldServer {
-		class WorldServer final : public AbstractServer {
-			SINGLETON(WorldServer);
+	namespace world_server {
+		class world_server final : public abstract_server {
+			SINGLETON(world_server);
 		public:
 			auto shutdown() -> void override;
-			auto establishedLoginConnection(world_id_t worldId, port_t port, const WorldConfig &conf) -> void;
-			auto rehashConfig(const WorldConfig &config) -> void;
-			auto setScrollingHeader(const string_t &message) -> void;
-			auto setRates(const RatesConfig &rates) -> void;
-			auto resetRates(int32_t flags) -> void;
-			auto getPlayerDataProvider() -> PlayerDataProvider &;
-			auto getChannels() -> Channels &;
-			auto isConnected() const -> bool;
-			auto getWorldId() const -> world_id_t;
-			auto makeChannelPort(channel_id_t channelId) const -> port_t;
-			auto getConfig() -> const WorldConfig &;
-			auto sendLogin(const PacketBuilder &builder) -> void;
-			auto onConnectToLogin(ref_ptr_t<LoginServerSession> connection) -> void;
-			auto onDisconnectFromLogin() -> void;
-			auto finalizeServerSession(ref_ptr_t<WorldServerAcceptedSession> session) -> void;
+			auto established_login_connection(game_world_id world_id, connection_port port, const world_config &conf) -> void;
+			auto rehash_config(const world_config &config) -> void;
+			auto set_scrolling_header(const string &message) -> void;
+			auto set_rates(const rates_config &rates) -> void;
+			auto reset_rates(int32_t flags) -> void;
+			auto get_player_data_provider() -> player_data_provider &;
+			auto get_channels() -> channels &;
+			auto is_connected() const -> bool;
+			auto get_world_id() const -> game_world_id;
+			auto make_channel_port(game_channel_id channel_id) const -> connection_port;
+			auto get_config() -> const world_config &;
+			auto send_login(const packet_builder &builder) -> void;
+			auto on_connect_to_login(ref_ptr<login_server_session> connection) -> void;
+			auto on_disconnect_from_login() -> void;
+			auto finalize_server_session(ref_ptr<world_server_accepted_session> session) -> void;
 		protected:
 			auto listen() -> void;
-			auto loadData() -> Result override;
-			auto makeLogIdentifier() const -> opt_string_t override;
-			auto getLogPrefix() const -> string_t override;
+			auto load_data() -> result override;
+			auto make_log_identifier() const -> opt_string override;
+			auto get_log_prefix() const -> string override;
 		private:
-			world_id_t m_worldId = -1;
-			port_t m_port = 0;
-			WorldConfig m_config;
-			RatesConfig m_defaultRates;
-			ref_ptr_t<LoginServerSession> m_loginSession;
-			PlayerDataProvider m_playerDataProvider;
-			Channels m_channels;
-			FinalizationPool<WorldServerAcceptedSession> m_sessionPool;
+			game_world_id m_world_id = -1;
+			connection_port m_port = 0;
+			world_config m_config;
+			rates_config m_default_rates;
+			ref_ptr<login_server_session> m_login_session;
+			player_data_provider m_player_data_provider;
+			channels m_channels;
+			finalization_pool<world_server_accepted_session> m_session_pool;
 		};
 	}
 }

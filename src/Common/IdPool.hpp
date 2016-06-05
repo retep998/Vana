@@ -20,12 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/IdLooper.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
+namespace vana {
 	// Keep track of a pool of identifiers and ensure that identifiers aren't reused
 	template <typename TIdentifier>
-	class IdPool {
+	class id_pool {
 	public:
-		explicit IdPool(TIdentifier minimum = 1, TIdentifier maximum = std::numeric_limits<TIdentifier>::max()) :
+		explicit id_pool(TIdentifier minimum = 1, TIdentifier maximum = std::numeric_limits<TIdentifier>::max()) :
 			m_identifiers{minimum, maximum}
 		{
 		}
@@ -60,7 +60,7 @@ namespace Vana {
 			}
 		}
 	private:
-		IdLooper<TIdentifier> m_identifiers;
-		hash_set_t<TIdentifier> m_taken;
+		id_looper<TIdentifier> m_identifiers;
+		hash_set<TIdentifier> m_taken;
 	};
 }

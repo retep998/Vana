@@ -24,108 +24,108 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <string>
 
-namespace Vana {
+namespace vana {
 
-auto DropDataProvider::loadData() -> void {
-	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Drops... ";
+auto drop_data_provider::load_data() -> void {
+	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Drops... ";
 
-	loadDrops();
-	loadGlobalDrops();
+	load_drops();
+	load_global_drops();
 
 	std::cout << "DONE" << std::endl;
 }
 
-auto DropDataProvider::loadDrops() -> void {
-	m_dropInfo.clear();
+auto drop_data_provider::load_drops() -> void {
+	m_drop_info.clear();
 
-	DropInfo drop;
-	auto dropFlags = [&drop](const opt_string_t &flags) {
-		StringUtilities::runFlags(flags, [&drop](const string_t &cmp) {
-			if (cmp == "is_mesos") drop.isMesos = true;
+	drop_info drop;
+	auto drop_flags = [&drop](const opt_string &flags) {
+		utilities::str::run_flags(flags, [&drop](const string &cmp) {
+			if (cmp == "is_mesos") drop.is_mesos = true;
 		});
 	};
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("drop_data"));
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("drop_data"));
 
 	for (const auto &row : rs) {
-		drop = DropInfo{};
+		drop = drop_info{};
 
 		int32_t dropper = row.get<int32_t>("dropperid");
-		drop.itemId = row.get<item_id_t>("itemid");
-		drop.minAmount = row.get<int32_t>("minimum_quantity");
-		drop.maxAmount = row.get<int32_t>("maximum_quantity");
-		drop.questId = row.get<quest_id_t>("questid");
+		drop.item_id = row.get<game_item_id>("itemid");
+		drop.min_amount = row.get<int32_t>("minimum_quantity");
+		drop.max_amount = row.get<int32_t>("maximum_quantity");
+		drop.quest_id = row.get<game_quest_id>("questid");
 		drop.chance = row.get<uint32_t>("chance");
-		dropFlags(row.get<opt_string_t>("flags"));
+		drop_flags(row.get<opt_string>("flags"));
 
-		m_dropInfo[dropper].push_back(drop);
+		m_drop_info[dropper].push_back(drop);
 	}
 
-	rs = (sql.prepare << "SELECT * FROM " << db.makeTable("user_drop_data") << " ORDER BY dropperid");
-	int32_t lastDropperId = -1;
+	rs = (sql.prepare << "SELECT * FROM " << db.make_table("user_drop_data") << " ORDER BY dropperid");
+	int32_t last_dropper_id = -1;
 	bool dropped = false;
 
 	for (const auto &row : rs) {
-		drop = DropInfo{};
+		drop = drop_info{};
 
 		int32_t dropper = row.get<int32_t>("dropperid");
-		drop.itemId = row.get<item_id_t>("itemid");
-		drop.minAmount = row.get<int32_t>("minimum_quantity");
-		drop.maxAmount = row.get<int32_t>("maximum_quantity");
-		drop.questId = row.get<quest_id_t>("questid");
+		drop.item_id = row.get<game_item_id>("itemid");
+		drop.min_amount = row.get<int32_t>("minimum_quantity");
+		drop.max_amount = row.get<int32_t>("maximum_quantity");
+		drop.quest_id = row.get<game_quest_id>("questid");
 		drop.chance = row.get<uint32_t>("chance");
-		dropFlags(row.get<opt_string_t>("flags"));
+		drop_flags(row.get<opt_string>("flags"));
 
-		if (dropper != lastDropperId) {
+		if (dropper != last_dropper_id) {
 			dropped = false;
 		}
-		if (!dropped && m_dropInfo.find(dropper) != std::end(m_dropInfo)) {
-			m_dropInfo.erase(dropper);
+		if (!dropped && m_drop_info.find(dropper) != std::end(m_drop_info)) {
+			m_drop_info.erase(dropper);
 			dropped = true;
 		}
-		m_dropInfo[dropper].push_back(drop);
-		lastDropperId = dropper;
+		m_drop_info[dropper].push_back(drop);
+		last_dropper_id = dropper;
 	}
 }
 
-auto DropDataProvider::loadGlobalDrops() -> void {
-	m_globalDrops.clear();
+auto drop_data_provider::load_global_drops() -> void {
+	m_global_drops.clear();
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("drop_global_data"));
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("drop_global_data"));
 
 	for (const auto &row : rs) {
-		GlobalDropInfo drop;
+		global_drop_info drop;
 
 		drop.continent = row.get<int8_t>("continent");
-		drop.itemId = row.get<item_id_t>("itemid");
-		drop.minAmount = row.get<slot_qty_t>("minimum_quantity");
-		drop.maxAmount = row.get<slot_qty_t>("maximum_quantity");
-		drop.minLevel = row.get<player_level_t>("minimum_level");
-		drop.maxLevel = row.get<player_level_t>("maximum_level");
-		drop.questId = row.get<quest_id_t>("questid");
+		drop.item_id = row.get<game_item_id>("itemid");
+		drop.min_amount = row.get<game_slot_qty>("minimum_quantity");
+		drop.max_amount = row.get<game_slot_qty>("maximum_quantity");
+		drop.min_level = row.get<game_player_level>("minimum_level");
+		drop.max_level = row.get<game_player_level>("maximum_level");
+		drop.quest_id = row.get<game_quest_id>("questid");
 		drop.chance = row.get<uint32_t>("chance");
-		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&drop](const string_t &cmp) {
-			if (cmp == "is_mesos") drop.isMesos = true;
+		utilities::str::run_flags(row.get<opt_string>("flags"), [&drop](const string &cmp) {
+			if (cmp == "is_mesos") drop.is_mesos = true;
 		});
 
-		m_globalDrops.push_back(drop);
+		m_global_drops.push_back(drop);
 	}
 }
 
-auto DropDataProvider::hasDrops(int32_t objectId) const -> bool {
-	return ext::is_element(m_dropInfo, objectId);
+auto drop_data_provider::has_drops(int32_t object_id) const -> bool {
+	return ext::is_element(m_drop_info, object_id);
 }
 
-auto DropDataProvider::getDrops(int32_t objectId) const -> const vector_t<DropInfo> & {
-	return m_dropInfo.find(objectId)->second;
+auto drop_data_provider::get_drops(int32_t object_id) const -> const vector<drop_info> & {
+	return m_drop_info.find(object_id)->second;
 }
 
-auto DropDataProvider::getGlobalDrops() const -> const vector_t<GlobalDropInfo> & {
-	return m_globalDrops;
+auto drop_data_provider::get_global_drops() const -> const vector<global_drop_info> & {
+	return m_global_drops;
 }
 
 }

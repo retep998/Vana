@@ -28,69 +28,69 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServer/World.hpp"
 #include "LoginServer/Worlds.hpp"
 
-namespace Vana {
-namespace LoginServer {
+namespace vana {
+namespace login_server {
 
-LoginServerAcceptedSession::LoginServerAcceptedSession(AbstractServer &server) :
-	ServerAcceptedSession{server}
+login_server_accepted_session::login_server_accepted_session(abstract_server &server) :
+	server_accepted_session{server}
 {
 }
 
-auto LoginServerAcceptedSession::handle(PacketReader &reader) -> Result {
-	if (ServerAcceptedSession::handle(reader) == Result::Failure) {
-		return Result::Failure;
+auto login_server_accepted_session::handle(packet_reader &reader) -> result {
+	if (server_accepted_session::handle(reader) == result::failure) {
+		return result::failure;
 	}
-	auto &server = LoginServer::getInstance();
-	switch (reader.get<header_t>()) {
-		case IMSG_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(shared_from_this(), reader); break;
-		case IMSG_UPDATE_CHANNEL_POP: LoginServerAcceptHandler::updateChannelPop(shared_from_this(), reader); break;
-		case IMSG_REMOVE_CHANNEL: LoginServerAcceptHandler::removeChannel(shared_from_this(), reader); break;
-		case IMSG_CALCULATE_RANKING: RankingCalculator::runThread(); break;
+	auto &server = login_server::get_instance();
+	switch (reader.get<packet_header>()) {
+		case IMSG_REGISTER_CHANNEL: login_server_accept_handler::register_channel(shared_from_this(), reader); break;
+		case IMSG_UPDATE_CHANNEL_POP: login_server_accept_handler::update_channel_pop(shared_from_this(), reader); break;
+		case IMSG_REMOVE_CHANNEL: login_server_accept_handler::remove_channel(shared_from_this(), reader); break;
+		case IMSG_CALCULATE_RANKING: ranking_calculator::run_thread(); break;
 		case IMSG_TO_WORLD: {
-			world_id_t worldId = reader.get<world_id_t>();
-			server.getWorlds().send(worldId, Packets::identity(reader));
+			game_world_id world_id = reader.get<game_world_id>();
+			server.get_worlds().send(world_id, packets::identity(reader));
 			break;
 		}
 		case IMSG_TO_WORLD_LIST: {
-			vector_t<world_id_t> worlds = reader.get<vector_t<world_id_t>>();
-			server.getWorlds().send(worlds, Packets::identity(reader));
+			vector<game_world_id> worlds = reader.get<vector<game_world_id>>();
+			server.get_worlds().send(worlds, packets::identity(reader));
 			break;
 		}
-		case IMSG_TO_ALL_WORLDS: server.getWorlds().send(Packets::identity(reader)); break;
-		case IMSG_REHASH_CONFIG: server.rehashConfig(); break;
+		case IMSG_TO_ALL_WORLDS: server.get_worlds().send(packets::identity(reader)); break;
+
+		case IMSG_REHASH_CONFIG: server.rehash_config(); break;
 	}
-	return Result::Successful;
+	return result::successful;
 }
 
-auto LoginServerAcceptedSession::authenticated(ServerType type) -> void {
+auto login_server_accepted_session::authenticated(server_type type) -> void {
 	switch (type) {
-		case ServerType::World: LoginServer::getInstance().getWorlds().addWorldServer(shared_from_this()); break;
-		case ServerType::Channel: LoginServer::getInstance().getWorlds().addChannelServer(shared_from_this()); break;
+		case server_type::world: login_server::get_instance().get_worlds().add_world_server(shared_from_this()); break;
+		case server_type::channel: login_server::get_instance().get_worlds().add_channel_server(shared_from_this()); break;
 		default: disconnect();
 	}
 }
 
-auto LoginServerAcceptedSession::setWorldId(world_id_t id) -> void {
-	m_worldId = id;
+auto login_server_accepted_session::set_world_id(game_world_id id) -> void {
+	m_world_id = id;
 }
 
-auto LoginServerAcceptedSession::getWorldId() const -> optional_t<world_id_t> {
-	return m_worldId;
+auto login_server_accepted_session::get_world_id() const -> optional<game_world_id> {
+	return m_world_id;
 }
 
-auto LoginServerAcceptedSession::onDisconnect() -> void {
-	auto &server = LoginServer::getInstance();
-	if (m_worldId.is_initialized()) {
+auto login_server_accepted_session::on_disconnect() -> void {
+	auto &server = login_server::get_instance();
+	if (m_world_id.is_initialized()) {
+		world *world_value = server.get_worlds().get_world(m_world_id.get());
+		world_value->set_connected(false);
+		world_value->clear_channels();
 
-		World *world = server.getWorlds().getWorld(m_worldId.get());
-		world->setConnected(false);
-		world->clearChannels();
-
-		server.log(LogType::ServerDisconnect, [&](out_stream_t &log) {
-			log << "World " << static_cast<int32_t>(m_worldId.get());
+		server.log(log_type::server_disconnect, [&](out_stream &log) {
+			log << "World " << static_cast<int32_t>(m_world_id.get());
 		});
 	}
-	server.finalizeServerSession(shared_from_this());
+	server.finalize_server_session(shared_from_this());
 }
 
 }

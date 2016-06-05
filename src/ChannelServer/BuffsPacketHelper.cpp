@@ -19,56 +19,56 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Buffs.hpp"
 #include "ChannelServer/PlayerActiveBuffs.hpp"
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
-namespace Helpers {
+namespace vana {
+namespace channel_server {
+namespace packets {
+namespace helpers {
 
-PACKET_IMPL(addBuffBytes, const buff_array_t &bytes) {
-	PacketBuilder builder;
-	for (uint8_t i = 0; i < Vana::Buffs::ByteQuantity; i++) {
-		size_t packetIndex = 0;
+PACKET_IMPL(add_buff_bytes, const buff_array &bytes) {
+	packet_builder builder;
+	for (uint8_t i = 0; i < vana::buffs::byte_quantity; i++) {
+		size_t packet_index = 0;
 		// This is the order they show up in, ludicrously enough
 		switch (i) {
-			case 12: packetIndex = 0; break;
-			case 13: packetIndex = 1; break;
-			case 14: packetIndex = 2; break;
-			case 15: packetIndex = 3; break;
-			case 8: packetIndex = 4; break;
-			case 9: packetIndex = 5; break;
-			case 10: packetIndex = 6; break;
-			case 11: packetIndex = 7; break;
-			case 4: packetIndex = 8; break;
-			case 5: packetIndex = 9; break;
-			case 6: packetIndex = 10; break;
-			case 7: packetIndex = 11; break;
-			case 0: packetIndex = 12; break;
-			case 1: packetIndex = 13; break;
-			case 2: packetIndex = 14; break;
-			case 3: packetIndex = 15; break;
+			case 12: packet_index = 0; break;
+			case 13: packet_index = 1; break;
+			case 14: packet_index = 2; break;
+			case 15: packet_index = 3; break;
+			case 8: packet_index = 4; break;
+			case 9: packet_index = 5; break;
+			case 10: packet_index = 6; break;
+			case 11: packet_index = 7; break;
+			case 4: packet_index = 8; break;
+			case 5: packet_index = 9; break;
+			case 6: packet_index = 10; break;
+			case 7: packet_index = 11; break;
+			case 0: packet_index = 12; break;
+			case 1: packet_index = 13; break;
+			case 2: packet_index = 14; break;
+			case 3: packet_index = 15; break;
 		}
-		builder.add<uint8_t>(bytes[packetIndex]);
+		builder.add<uint8_t>(bytes[packet_index]);
 	}
 	return builder;
 }
 
-PACKET_IMPL(addBuffMapValues, const BuffPacketStructure &buff) {
-	PacketBuilder builder;
-	builder.addBuffer(addBuffBytes(buff.types));
+PACKET_IMPL(add_buff_map_values, const buff_packet_structure &buff) {
+	packet_builder builder;
+	builder.add_buffer(add_buff_bytes(buff.types));
 
-	for (const auto &buffValue : buff.values) {
-		if (buffValue.type == BuffPacketValueType::SpecialPacket) continue;
-		if (buffValue.type == BuffPacketValueType::Packet) {
-			builder.addBuffer(buffValue.builder);
+	for (const auto &buff_value : buff.values) {
+		if (buff_value.type == buff_packet_value_type::special_packet) continue;
+		if (buff_value.type == buff_packet_value_type::packet) {
+			builder.add_buffer(buff_value.builder);
 			continue;
 		}
-		if (buffValue.type != BuffPacketValueType::Value) throw NotImplementedException{"BuffPacketValueType"};
+		if (buff_value.type != buff_packet_value_type::value) throw not_implemented_exception{"buff_packet_value_type"};
 
-		switch (buffValue.valueSize) {
-			case 1: builder.add<int8_t>(static_cast<int8_t>(buffValue.value)); break;
-			case 2: builder.add<int16_t>(static_cast<int16_t>(buffValue.value)); break;
-			case 4: builder.add<int32_t>(static_cast<int32_t>(buffValue.value)); break;
-			case 8: builder.add<int64_t>(buffValue.value); break;
+		switch (buff_value.value_size) {
+			case 1: builder.add<int8_t>(static_cast<int8_t>(buff_value.value)); break;
+			case 2: builder.add<int16_t>(static_cast<int16_t>(buff_value.value)); break;
+			case 4: builder.add<int32_t>(static_cast<int32_t>(buff_value.value)); break;
+			case 8: builder.add<int64_t>(buff_value.value); break;
 		}
 	}
 
@@ -76,9 +76,9 @@ PACKET_IMPL(addBuffMapValues, const BuffPacketStructure &buff) {
 		.unk<uint8_t>()
 		.unk<uint8_t>();
 
-	for (const auto &buffValue : buff.values) {
-		if (buffValue.type != BuffPacketValueType::SpecialPacket) continue;
-		builder.addBuffer(buffValue.builder);
+	for (const auto &buff_value : buff.values) {
+		if (buff_value.type != buff_packet_value_type::special_packet) continue;
+		builder.add_buffer(buff_value.builder);
 	}
 
 	return builder;

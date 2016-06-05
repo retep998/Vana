@@ -20,37 +20,39 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <cmath>
 #include <cstdint>
 
-namespace Vana {
-	namespace BitUtilities {
-		template <typename TInteger>
-		inline
-		auto rotateRight(TInteger val, int32_t shifts) -> TInteger {
-			const size_t size = sizeof(TInteger) * 8;
-			shifts &= size - 1;
-			return static_cast<TInteger>((val >> shifts) | (val << (size - shifts)));
-		}
-
-		template <typename TInteger>
-		inline
-		auto rotateLeft(TInteger val, int32_t shifts) -> TInteger {
-			const size_t size = sizeof(TInteger) * 8;
-			shifts &= size - 1;
-			return static_cast<TInteger>((val << shifts) | (val >> (size - shifts)));
-		}
-
-		template <typename TInteger>
-		inline
-		auto reverse(TInteger val) -> TInteger {
-			const size_t size = sizeof(TInteger) * 8;
-			const size_t max = size / 2;
-			TInteger ret = 0;
-			for (size_t i = 0; i < max; i++) {
-				TInteger lowShift = 1 << i;
-				TInteger highShift = 1 << (size - i - 1);
-				if ((val & lowShift) == lowShift) ret |= highShift;
-				if ((val & highShift) == highShift) ret |= lowShift;
+namespace vana {
+	namespace utilities {
+		namespace bit {
+			template <typename TInteger>
+			inline
+			auto rotate_right(TInteger val, int32_t shifts) -> TInteger {
+				const size_t size = sizeof(TInteger) * 8;
+				shifts &= size - 1;
+				return static_cast<TInteger>((val >> shifts) | (val << (size - shifts)));
 			}
-			return ret;
+
+			template <typename TInteger>
+			inline
+			auto rotate_left(TInteger val, int32_t shifts) -> TInteger {
+				const size_t size = sizeof(TInteger) * 8;
+				shifts &= size - 1;
+				return static_cast<TInteger>((val << shifts) | (val >> (size - shifts)));
+			}
+
+			template <typename TInteger>
+			inline
+			auto reverse(TInteger val) -> TInteger {
+				const size_t size = sizeof(TInteger) * 8;
+				const size_t max = size / 2;
+				TInteger ret = 0;
+				for (size_t i = 0; i < max; i++) {
+					TInteger low_shift = 1 << i;
+					TInteger high_shift = 1 << (size - i - 1);
+					if ((val & low_shift) == low_shift) ret |= high_shift;
+					if ((val & high_shift) == high_shift) ret |= low_shift;
+				}
+				return ret;
+			}
 		}
 	}
 }

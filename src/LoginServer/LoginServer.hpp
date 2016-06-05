@@ -28,42 +28,42 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServer/LoginServerAcceptedSession.hpp"
 #include "LoginServer/Worlds.hpp"
 
-namespace Vana {
-	namespace LoginServer {
-		class LoginServer final : public AbstractServer {
-			SINGLETON(LoginServer);
+namespace vana {
+	namespace login_server {
+		class login_server final : public abstract_server {
+			SINGLETON(login_server);
 		public:
-			auto getPinEnabled() const -> bool;
-			auto rehashConfig() -> void;
-			auto getInvalidLoginThreshold() const -> int32_t;
-			auto getValidCharDataProvider() const -> const ValidCharDataProvider &;
-			auto getEquipDataProvider() const -> const EquipDataProvider &;
-			auto getCurseDataProvider() const -> const CurseDataProvider &;
-			auto getWorlds() -> Worlds &;
-			auto getCharacterAccountSaltSize() const -> const SaltSizeConfig &;
-			auto getCharacterAccountSaltingPolicy() const -> const SaltConfig &;
-			auto finalizeUser(ref_ptr_t<User> user) -> void;
-			auto finalizeServerSession(ref_ptr_t<LoginServerAcceptedSession> session) -> void;
+			auto get_pin_enabled() const -> bool;
+			auto rehash_config() -> void;
+			auto get_invalid_login_threshold() const -> int32_t;
+			auto get_valid_char_data_provider() const -> const valid_char_data_provider &;
+			auto get_equip_data_provider() const -> const equip_data_provider &;
+			auto get_curse_data_provider() const -> const curse_data_provider &;
+			auto get_worlds() -> worlds &;
+			auto get_character_account_salt_size() const -> const salt_size_config &;
+			auto get_character_account_salting_policy() const -> const salt_config &;
+			auto finalize_user(ref_ptr<user> user_value) -> void;
+			auto finalize_server_session(ref_ptr<login_server_accepted_session> session) -> void;
 		protected:
-			auto initComplete() -> void override;
-			auto loadData() -> Result override;
-			auto loadConfig() -> Result override;
+			auto init_complete() -> void override;
+			auto load_data() -> result override;
+			auto load_config() -> result override;
 			auto listen() -> void;
-			auto loadWorlds() -> void;
-			auto makeLogIdentifier() const -> opt_string_t override;
-			auto getLogPrefix() const -> string_t override;
+			auto load_worlds() -> void;
+			auto make_log_identifier() const -> opt_string override;
+			auto get_log_prefix() const -> string override;
 		private:
-			bool m_pinEnabled = false;
-			port_t m_port = 0;
-			int32_t m_maxInvalidLogins = 0;
-			SaltSizeConfig m_accountSaltSize;
-			SaltConfig m_accountSaltingPolicy;
-			ValidCharDataProvider m_validCharDataProvider;
-			EquipDataProvider m_equipDataProvider;
-			CurseDataProvider m_curseDataProvider;
-			Worlds m_worlds;
-			FinalizationPool<User> m_userPool;
-			FinalizationPool<LoginServerAcceptedSession> m_sessionPool;
+			bool m_pin_enabled = false;
+			connection_port m_port = 0;
+			int32_t m_max_invalid_logins = 0;
+			salt_size_config m_account_salt_size;
+			salt_config m_account_salting_policy;
+			valid_char_data_provider m_valid_char_data_provider;
+			equip_data_provider m_equip_data_provider;
+			curse_data_provider m_curse_data_provider;
+			worlds m_worlds;
+			finalization_pool<user> m_user_pool;
+			finalization_pool<login_server_accepted_session> m_session_pool;
 		};
 	}
 }

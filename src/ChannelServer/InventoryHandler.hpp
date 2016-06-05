@@ -19,32 +19,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class Item;
-	class PacketReader;
+namespace vana {
+	class item;
+	class packet_reader;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		namespace InventoryHandler {
-			auto moveItem(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto dropItem(ref_ptr_t<Player> player, PacketReader &reader, Item *item, inventory_slot_t slot, inventory_t inv) -> void;
-			auto useItem(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto cancelItem(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto useSkillbook(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto useChair(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto useItemEffect(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleChair(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto useSummonBag(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto useReturnScroll(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto useScroll(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto useBuffItem(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto useCashItem(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleRockFunctions(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleRockTeleport(ref_ptr_t<Player> player, item_id_t itemId, PacketReader &reader) -> bool;
-			auto handleHammerTime(ref_ptr_t<Player> player) -> void;
-			auto handleRewardItem(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleScriptItem(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+		namespace inventory_handler {
+			auto move_item(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto drop_item(ref_ptr<player> player, packet_reader &reader, item *item_value, game_inventory_slot slot, game_inventory inv) -> void;
+			auto use_item(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto cancel_item(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto use_skillbook(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto use_chair(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto use_item_effect(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_chair(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto use_summon_bag(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto use_return_scroll(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto use_scroll(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto use_buff_item(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto use_cash_item(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_rock_functions(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_rock_teleport(ref_ptr<player> player, game_item_id item_id, packet_reader &reader) -> bool;
+			auto handle_hammer_time(ref_ptr<player> player) -> void;
+			auto handle_reward_item(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_script_item(ref_ptr<player> player, packet_reader &reader) -> void;
 		}
 	}
 }

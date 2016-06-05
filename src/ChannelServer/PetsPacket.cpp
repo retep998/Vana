@@ -27,172 +27,172 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Player.hpp"
 #include "ChannelServer/SmsgHeader.hpp"
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
-namespace Pets {
+namespace vana {
+namespace channel_server {
+namespace packets {
+namespace pets {
 
-SPLIT_PACKET_IMPL(petSummoned, player_id_t playerId, Pet *pet, bool kick, int8_t index) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(pet_summoned, game_player_id player_id, pet *pet, bool kick, int8_t index) {
+	split_packet_builder builder;
 	builder.player
-		.add<header_t>(SMSG_PET_SUMMON)
-		.add<player_id_t>(playerId)
-		.add<int8_t>(index != -1 ? index : (pet->isSummoned() ? pet->getIndex().get() : -1))
-		.add<bool>(pet->isSummoned())
+		.add<packet_header>(SMSG_PET_SUMMON)
+		.add<game_player_id>(player_id)
+		.add<int8_t>(index != -1 ? index : (pet->is_summoned() ? pet->get_index().get() : -1))
+		.add<bool>(pet->is_summoned())
 		.add<bool>(kick); // Kick existing pet (only when player doesn't have follow the lead)
 
-	if (pet->isSummoned()) {
+	if (pet->is_summoned()) {
 		builder.player
-			.add<item_id_t>(pet->getItemId())
-			.add<string_t>(pet->getName())
-			.add<pet_id_t>(pet->getId())
-			.add<Point>(pet->getPos())
-			.add<int8_t>(pet->getStance())
-			.add<foothold_id_t>(pet->getFoothold())
-			.add<bool>(pet->hasNameTag())
-			.add<bool>(pet->hasQuoteItem());
+			.add<game_item_id>(pet->get_item_id())
+			.add<string>(pet->get_name())
+			.add<game_pet_id>(pet->get_id())
+			.add<point>(pet->get_pos())
+			.add<int8_t>(pet->get_stance())
+			.add<game_foothold_id>(pet->get_foothold())
+			.add<bool>(pet->has_name_tag())
+			.add<bool>(pet->has_quote_item());
 	}
 
-	builder.map.addBuffer(builder.player);
+	builder.map.add_buffer(builder.player);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(showChat, player_id_t playerId, Pet *pet, const string_t &message, int8_t act) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(show_chat, game_player_id player_id, pet *pet, const string &message, int8_t act) {
+	split_packet_builder builder;
 	builder.map
-		.add<header_t>(SMSG_PET_MESSAGE)
-		.add<player_id_t>(playerId)
-		.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1)
+		.add<packet_header>(SMSG_PET_MESSAGE)
+		.add<game_player_id>(player_id)
+		.add<int8_t>(pet->is_summoned() ? pet->get_index().get() : -1)
 		.unk<int8_t>()
 		.add<int8_t>(act)
-		.add<string_t>(message)
-		.add<bool>(pet->hasQuoteItem());
+		.add<string>(message)
+		.add<bool>(pet->has_quote_item());
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(showMovement, player_id_t playerId, Pet *pet, unsigned char *buf, int32_t bufLen) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(show_movement, game_player_id player_id, pet *pet, unsigned char *buf, int32_t buf_len) {
+	split_packet_builder builder;
 	builder.map
-		.add<header_t>(SMSG_PET_MOVEMENT)
-		.add<player_id_t>(playerId)
-		.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1)
-		.addBuffer(buf, bufLen);
+		.add<packet_header>(SMSG_PET_MOVEMENT)
+		.add<game_player_id>(player_id)
+		.add<int8_t>(pet->is_summoned() ? pet->get_index().get() : -1)
+		.add_buffer(buf, buf_len);
 	return builder;
 }
 
-PACKET_IMPL(showAnimation, player_id_t playerId, Pet *pet, int8_t animation) {
-	PacketBuilder builder;
+PACKET_IMPL(show_animation, game_player_id player_id, pet *pet, int8_t animation) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_PET_ANIMATION)
-		.add<player_id_t>(playerId)
-		.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1)
+		.add<packet_header>(SMSG_PET_ANIMATION)
+		.add<game_player_id>(player_id)
+		.add<int8_t>(pet->is_summoned() ? pet->get_index().get() : -1)
 		.add<bool>(animation == 1)
 		.add<int8_t>(animation)
 		.unk<int8_t>()
-		.add<bool>(pet->hasQuoteItem());
+		.add<bool>(pet->has_quote_item());
 	return builder;
 }
 
-PACKET_IMPL(updatePet, Pet *pet, Item *petItem) {
+PACKET_IMPL(update_pet, pet *pet, item *pet_item) {
 	// TODO FIXME remove this and add addInfo packet to addItemInfo and then modify the inventory update packet to support pets
-	PacketBuilder builder;
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_INVENTORY_OPERATION)
+		.add<packet_header>(SMSG_INVENTORY_OPERATION)
 		.add<int8_t>(0)
 		.add<int8_t>(2)
 		.add<int8_t>(3)
 		.add<int8_t>(5)
-		.add<inventory_slot_t>(pet->getInventorySlot())
+		.add<game_inventory_slot>(pet->get_inventory_slot())
 		.add<int8_t>(0)
 		.add<int8_t>(5)
-		.add<inventory_slot_t>(pet->getInventorySlot())
-		.addBuffer(addInfo(pet, petItem));
+		.add<game_inventory_slot>(pet->get_inventory_slot())
+		.add_buffer(add_info(pet, pet_item));
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(levelUp, player_id_t playerId, Pet *pet) {
-	SplitPacketBuilder builder;
-	PacketBuilder packet;
+SPLIT_PACKET_IMPL(level_up, game_player_id player_id, pet *pet) {
+	split_packet_builder builder;
+	packet_builder packet;
 	packet
 		.add<int16_t>(4)
-		.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1);
+		.add<int8_t>(pet->is_summoned() ? pet->get_index().get() : -1);
 
 	builder.player
-		.add<header_t>(SMSG_THEATRICS)
-		.addBuffer(packet);
+		.add<packet_header>(SMSG_THEATRICS)
+		.add_buffer(packet);
 
 	builder.map
-		.add<header_t>(SMSG_SKILL_SHOW)
-		.add<player_id_t>(playerId)
-		.addBuffer(packet);
+		.add<packet_header>(SMSG_SKILL_SHOW)
+		.add<game_player_id>(player_id)
+		.add_buffer(packet);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(changeName, player_id_t playerId, Pet *pet) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(change_name, game_player_id player_id, pet *pet) {
+	split_packet_builder builder;
 	builder.player
-		.add<header_t>(SMSG_PET_NAME_CHANGE)
-		.add<player_id_t>(playerId)
-		.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1)
-		.add<string_t>(pet->getName())
-		.add<bool>(pet->hasNameTag());
+		.add<packet_header>(SMSG_PET_NAME_CHANGE)
+		.add<game_player_id>(player_id)
+		.add<int8_t>(pet->is_summoned() ? pet->get_index().get() : -1)
+		.add<string>(pet->get_name())
+		.add<bool>(pet->has_name_tag());
 
-	builder.map.addBuffer(builder.player);
+	builder.map.add_buffer(builder.player);
 	return builder;
 }
 /* TODO FIXME packet
-auto showPet(ref_ptr_t<Player> player, Pet *pet) -> void {
+auto showPet(ref_ptr<player> player, Pet *pet) -> void {
 	PacketBuilder builder;
-	builder.add<header_t>(SMSG_PET_SHOW);
-	builder.add<player_id_t>(player->getId());
+	builder.add<packet_header>(SMSG_PET_SHOW);
+	builder.add<game_player_id>(player->get_id());
 	builder.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1);
-	builder.add<pet_id_t>(pet->getId());
+	builder.add<game_pet_id>(pet->get_id());
 	builder.add<bool>(pet->hasNameTag());
 	player->send(builder);
 }*/
 
-PACKET_IMPL(updateSummonedPets, ref_ptr_t<Player> player) {
-	PacketBuilder builder;
+PACKET_IMPL(update_summoned_pets, ref_ptr<player> player) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_PLAYER_UPDATE)
+		.add<packet_header>(SMSG_PLAYER_UPDATE)
 		.add<int8_t>(0)
-		.add<int16_t>(Stats::Pet)
+		.add<int16_t>(stats::pet)
 		.add<int16_t>(0x18);
 
-	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
-		if (Pet *pet = player->getPets()->getSummoned(i)) {
-			builder.add<pet_id_t>(pet->getId());
+	for (int8_t i = 0; i < inventories::max_pet_count; i++) {
+		if (pet *pet = player->get_pets()->get_summoned(i)) {
+			builder.add<game_pet_id>(pet->get_id());
 		}
 		else {
-			builder.add<pet_id_t>(0);
+			builder.add<game_pet_id>(0);
 		}
 	}
 	builder.unk<int8_t>();
 	return builder;
 }
 
-PACKET_IMPL(blankUpdate) {
-	PacketBuilder builder;
+PACKET_IMPL(blank_update) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_PLAYER_UPDATE)
+		.add<packet_header>(SMSG_PLAYER_UPDATE)
 		.add<int8_t>(1)
 		.unk<int32_t>();
 	return builder;
 }
 
-PACKET_IMPL(addInfo, Pet *pet, Item *petItem) {
-	PacketBuilder builder;
+PACKET_IMPL(add_info, pet *pet, item *pet_item) {
+	packet_builder builder;
 	builder
 		.add<int8_t>(3)
-		.add<item_id_t>(pet->getItemId())
+		.add<game_item_id>(pet->get_item_id())
 		.add<int8_t>(1)
-		.add<pet_id_t>(pet->getId())
+		.add<game_pet_id>(pet->get_id())
 		.add<int64_t>(0LL)
-		.add<string_t>(pet->getName(), 13)
-		.add<int8_t>(pet->getLevel())
-		.add<int16_t>(pet->getCloseness())
-		.add<int8_t>(pet->getFullness())
-		.add<FileTime>(petItem->getExpirationTime())
+		.add<string>(pet->get_name(), 13)
+		.add<int8_t>(pet->get_level())
+		.add<int16_t>(pet->get_closeness())
+		.add<int8_t>(pet->get_fullness())
+		.add<file_time>(pet_item->get_expiration_time())
 		.unk<int32_t>()
 		.add<int32_t>(0); // Time to expire (for trial pet)
 	return builder;

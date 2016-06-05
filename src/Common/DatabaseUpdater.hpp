@@ -21,32 +21,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <map>
 #include <string>
 
-namespace Vana {
-	class AbstractServer;
+namespace vana {
+	class abstract_server;
 
-	enum class VersionCheckResult {
-		FullyUpdated,
-		NeedsUpdate,
-		DatabaseUnavailable,
+	enum class version_check_result {
+		fully_updated,
+		needs_update,
+		database_unavailable,
 	};
 
-	class DatabaseUpdater {
+	class database_updater {
 	public:
-		DatabaseUpdater(AbstractServer *server, bool update);
-		auto checkVersion() -> VersionCheckResult;
+		database_updater(abstract_server *server, bool update);
+		auto check_version() -> version_check_result;
 		auto update() -> void;
 	private:
-		auto loadDatabaseInfo() -> void;
-		auto loadSqlFiles() const -> pair_t<size_t, ord_map_t<int32_t, string_t>>;
+		auto load_database_info() -> void;
+		auto load_sql_files() const -> pair<size_t, ord_map<int32_t, string>>;
 		auto update(size_t version) -> void;
-		auto runQueries(const string_t &filename) -> void;
-		static auto createInfoTable() -> void;
-		static auto updateInfoTable(size_t version) -> void;
+		auto run_queries(const string &filename) -> void;
+		static auto create_info_table() -> void;
+		static auto update_info_table(size_t version) -> void;
 
-		size_t m_fileVersion = 0;
-		size_t m_sqlVersion = 0;
+		size_t m_file_version = 0;
+		size_t m_sql_version = 0;
 		bool m_update = false;
-		bool m_dbAvailable = false;
-		AbstractServer *m_server = nullptr;
+		bool m_db_available = false;
+		abstract_server *m_server = nullptr;
 	};
 }

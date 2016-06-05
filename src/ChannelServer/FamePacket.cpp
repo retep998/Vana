@@ -21,36 +21,36 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/PlayerDataProvider.hpp"
 #include "ChannelServer/SmsgHeader.hpp"
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
-namespace Fame {
+namespace vana {
+namespace channel_server {
+namespace packets {
+namespace fame {
 
-PACKET_IMPL(sendError, int32_t reason) {
-	PacketBuilder builder;
+PACKET_IMPL(send_error, int32_t reason) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_FAME)
+		.add<packet_header>(SMSG_FAME)
 		.add<int32_t>(reason);
 	return builder;
 }
 
-PACKET_IMPL(sendFame, const string_t &name, uint8_t type, int32_t newFame) {
-	PacketBuilder builder;
+PACKET_IMPL(send_fame, const string &name, uint8_t type, int32_t new_fame) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_FAME)
+		.add<packet_header>(SMSG_FAME)
 		.add<int8_t>(0x00)
-		.add<string_t>(name)
+		.add<string>(name)
 		.add<int8_t>(type)
-		.add<int32_t>(newFame);
+		.add<int32_t>(new_fame);
 	return builder;
 }
 
-PACKET_IMPL(receiveFame, const string_t &name, uint8_t type) {
-	PacketBuilder builder;
+PACKET_IMPL(receive_fame, const string &name, uint8_t type) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_FAME)
+		.add<packet_header>(SMSG_FAME)
 		.add<int8_t>(0x05)
-		.add<string_t>(name)
+		.add<string>(name)
 		.add<int8_t>(type);
 	return builder;
 }

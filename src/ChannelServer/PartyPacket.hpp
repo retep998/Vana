@@ -21,51 +21,51 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	namespace ChannelServer {
-		class MysticDoor;
-		class Party;
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class mystic_door;
+		class party;
+		class player;
 
-		namespace Packets {
-			namespace Party {
-				namespace Errors {
+		namespace packets {
+			namespace party {
+				namespace errors {
 					enum : int8_t {
-						PlayerHasParty2 = 0x09,
-						BeginnerCannotCreateParty = 0x0A,
-						PlayerHasNotJoinedParty = 0x0D,
-						PlayerHasParty = 0x10,
-						PartyFull = 0x11,
-						DifferingChannel = 0x12,
-						UnableToFind = 0x13,
-						CannotKickUserInMap = 0x19,
-						MemberMustBeCloseToPassLeader = 0x1C,
-						AutomaticLeaderPassFailed = 0x1D,
-						MemberMustBeOnSameChannelToPassLeader = 0x1E,
-						GmCannotCreateParty = 0x20,
-						UnableToFind2 = 0x21,
+						player_has_party2 = 0x09,
+						beginner_cannot_create_party = 0x0A,
+						player_has_not_joined_party = 0x0D,
+						player_has_party = 0x10,
+						party_full = 0x11,
+						differing_channel = 0x12,
+						unable_to_find = 0x13,
+						cannot_kick_user_in_map = 0x19,
+						member_must_be_close_to_pass_leader = 0x1C,
+						automatic_leader_pass_failed = 0x1D,
+						member_must_be_on_same_channel_to_pass_leader = 0x1E,
+						gm_cannot_create_party = 0x20,
+						unable_to_find2 = 0x21,
 					};
 				}
-				namespace InviteErrors {
+				namespace invite_errors {
 					enum : int8_t {
-						TargetBlockingInvitations = 0x15,
-						TargetAlreadyInvitedToSomeParty = 0x16,
-						TargetDeniedInvitation = 0x17,
+						target_blocking_invitations = 0x15,
+						target_already_invited_to_some_party = 0x16,
+						target_denied_invitation = 0x17,
 					};
 				}
 
 				PACKET(error, int8_t error);
-				PACKET(inviteError, int8_t error, const string_t &target);
-				PACKET(customError, const string_t &error = "");
-				PACKET(createParty, Vana::ChannelServer::Party *party, ref_ptr_t<Vana::ChannelServer::Player> leader);
-				PACKET(joinParty, map_id_t targetMapId, Vana::ChannelServer::Party *party, const string_t &player);
-				PACKET(leaveParty, map_id_t targetMapId, Vana::ChannelServer::Party *party, player_id_t playerId, const string_t &name, bool kicked);
-				PACKET(invitePlayer, Vana::ChannelServer::Party *party, const string_t &inviter);
-				PACKET(disbandParty, Vana::ChannelServer::Party *party);
-				PACKET(setLeader, Vana::ChannelServer::Party *party, player_id_t newLeader);
-				PACKET(silentUpdate, map_id_t targetMapId, Vana::ChannelServer::Party *party);
-				PACKET(updateParty, map_id_t targetMapId, Vana::ChannelServer::Party *party);
-				PACKET(updateDoor, uint8_t zeroBasedPlayerIndex, ref_ptr_t<MysticDoor> door);
+				PACKET(invite_error, int8_t error, const string &target);
+				PACKET(custom_error, const string &error = "");
+				PACKET(create_party, vana::channel_server::party *party, ref_ptr<vana::channel_server::player> leader);
+				PACKET(join_party, game_map_id target_map_id, vana::channel_server::party *party, const string &player);
+				PACKET(leave_party, game_map_id target_map_id, vana::channel_server::party *party, game_player_id player_id, const string &name, bool kicked);
+				PACKET(invite_player, vana::channel_server::party *party, const string &inviter);
+				PACKET(disband_party, vana::channel_server::party *party);
+				PACKET(set_leader, vana::channel_server::party *party, game_player_id new_leader);
+				PACKET(silent_update, game_map_id target_map_id, vana::channel_server::party *party);
+				PACKET(update_party, game_map_id target_map_id, vana::channel_server::party *party);
+				PACKET(update_door, uint8_t zero_based_player_index, ref_ptr<mystic_door> door);
 			}
 		}
 	}

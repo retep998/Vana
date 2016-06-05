@@ -19,29 +19,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ChannelServer/ChatHandlerFunctions.hpp"
 
-namespace Vana {
-	namespace ChannelServer {
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class player;
 
-		namespace PlayerModFunctions {
-			auto disconnect(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto save(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto modMesos(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto heal(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto modStr(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto modDex(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto modInt(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto modLuk(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto maxStats(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto hp(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto mp(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto sp(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto ap(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto fame(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto level(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto job(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto addSp(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto maxSp(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+		namespace player_mod_functions {
+			auto disconnect(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto save(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto mod_mesos(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto heal(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto mod_str(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto mod_dex(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto mod_int(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto mod_luk(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto max_stats(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto hp(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto mp(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto sp(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto ap(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto fame(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto level(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto job(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto add_sp(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto max_sp(ref_ptr<player> player, const game_chat &args) -> chat_result;
 		}
 	}
 }

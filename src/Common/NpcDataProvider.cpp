@@ -25,23 +25,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-namespace Vana {
+namespace vana {
 
-auto NpcDataProvider::loadData() -> void {
-	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing NPCs... ";
+auto npc_data_provider::load_data() -> void {
+	std::cout << std::setw(initializing::output_width) << std::left << "Initializing NPCs... ";
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("npc_data"));
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("npc_data"));
 
 	for (const auto &row : rs) {
-		NpcInfo npc;
-		npc_id_t id = row.get<npc_id_t>("npcid");
-		npc.storageCost = row.get<mesos_t>("storage_cost");
+		npc_info npc;
+		game_npc_id id = row.get<game_npc_id>("npcid");
+		npc.storage_cost = row.get<game_mesos>("storage_cost");
 
-		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&npc](const string_t &cmp) {
-			if (cmp == "maple_tv") npc.isMapleTv = true;
-			else if (cmp == "is_guild_rank") npc.isGuildRank = true;
+		utilities::str::run_flags(row.get<opt_string>("flags"), [&npc](const string &cmp) {
+			if (cmp == "maple_tv") npc.is_maple_tv = true;
+			else if (cmp == "is_guild_rank") npc.is_guild_rank = true;
 		});
 
 		m_data[id] = npc;
@@ -50,19 +50,19 @@ auto NpcDataProvider::loadData() -> void {
 	std::cout << "DONE" << std::endl;
 }
 
-auto NpcDataProvider::getStorageCost(npc_id_t npc) const -> mesos_t {
-	return m_data.find(npc)->second.storageCost;
+auto npc_data_provider::get_storage_cost(game_npc_id npc) const -> game_mesos {
+	return m_data.find(npc)->second.storage_cost;
 }
 
-auto NpcDataProvider::isMapleTv(npc_id_t npc) const -> bool {
-	return m_data.find(npc)->second.isMapleTv;
+auto npc_data_provider::is_maple_tv(game_npc_id npc) const -> bool {
+	return m_data.find(npc)->second.is_maple_tv;
 }
 
-auto NpcDataProvider::isGuildRank(npc_id_t npc) const -> bool {
-	return m_data.find(npc)->second.isGuildRank;
+auto npc_data_provider::is_guild_rank(game_npc_id npc) const -> bool {
+	return m_data.find(npc)->second.is_guild_rank;
 }
 
-auto NpcDataProvider::isValidNpcId(npc_id_t npc) const -> bool {
+auto npc_data_provider::is_valid_npc_id(game_npc_id npc) const -> bool {
 	return ext::is_element(m_data, npc);
 }
 

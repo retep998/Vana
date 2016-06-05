@@ -25,24 +25,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <memory>
 #include <unordered_map>
 
-namespace Vana {
-	namespace Timer {
-		class Container {
+namespace vana {
+	namespace timer {
+		class container {
 		public:
 			template <typename TDuration>
-			auto getRemainingTime(const Id &id) const -> TDuration;
-			auto isTimerRunning(const Id &id) const -> bool;
-			auto registerTimer(ref_ptr_t<Timer> timer, const Id &id, time_point_t runAt) -> void;
-			auto removeTimer(const Id &id) -> void;
+			auto get_remaining_time(const id &id) const -> TDuration;
+			auto is_timer_running(const id &id) const -> bool;
+			auto register_timer(ref_ptr<timer> timer, const id &id, time_point run_at) -> void;
+			auto remove_timer(const id &id) -> void;
 		private:
-			hash_map_t<Id, ref_ptr_t<Timer>> m_timers;
+			hash_map<id, ref_ptr<timer>> m_timers;
 		};
 
 		template <typename TDuration>
-		auto Container::getRemainingTime(const Id &id) const -> TDuration {
+		auto container::get_remaining_time(const id &id) const -> TDuration {
 			auto iter = m_timers.find(id);
 			if (iter != std::end(m_timers)) {
-				return duration_cast<TDuration>(iter->second->getTimeLeft());
+				return duration_cast<TDuration>(iter->second->get_time_left());
 			}
 			return TDuration{0};
 		}

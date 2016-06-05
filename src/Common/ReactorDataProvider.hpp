@@ -21,17 +21,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <unordered_map>
 
-namespace Vana {
-	class ReactorDataProvider {
+namespace vana {
+	class reactor_data_provider {
 	public:
-		auto loadData() -> void;
+		auto load_data() -> void;
 
-		auto getReactorData(reactor_id_t reactorId, bool respectLink = false) const -> const ReactorInfo &;
+		auto get_reactor_data(game_reactor_id reactor_id, bool respect_link = false) const -> const reactor_info &;
 	private:
-		auto loadReactors() -> void;
-		auto loadStates() -> void;
-		auto loadTriggerSkills() -> void;
+		auto load_reactors() -> void;
+		auto load_states() -> void;
+		auto load_trigger_skills() -> void;
 
-		hash_map_t<reactor_id_t, ReactorInfo> m_reactorInfo;
+		hash_map<game_reactor_id, reactor_info> m_reactor_info;
 	};
 }

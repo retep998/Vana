@@ -23,19 +23,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-namespace Vana {
-	class DropDataProvider {
+namespace vana {
+	class drop_data_provider {
 	public:
-		auto loadData() -> void;
+		auto load_data() -> void;
 
-		auto hasDrops(int32_t objectId) const -> bool;
-		auto getDrops(int32_t objectId) const -> const vector_t<DropInfo> &;
-		auto getGlobalDrops() const -> const vector_t<GlobalDropInfo> &;
+		auto has_drops(int32_t object_id) const -> bool;
+		auto get_drops(int32_t object_id) const -> const vector<drop_info> &;
+		auto get_global_drops() const -> const vector<global_drop_info> &;
 	private:
-		auto loadDrops() -> void;
-		auto loadGlobalDrops() -> void;
+		auto load_drops() -> void;
+		auto load_global_drops() -> void;
 
-		hash_map_t<int32_t, vector_t<DropInfo>> m_dropInfo;
-		vector_t<GlobalDropInfo> m_globalDrops;
+		hash_map<int32_t, vector<drop_info>> m_drop_info;
+		vector<global_drop_info> m_global_drops;
 	};
 }

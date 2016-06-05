@@ -24,28 +24,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
-namespace Quests {
+namespace vana {
+namespace channel_server {
+namespace packets {
+namespace quests {
 
-PACKET_IMPL(acceptQuest, quest_id_t questId, npc_id_t npcId) {
-	PacketBuilder builder;
+PACKET_IMPL(accept_quest, game_quest_id quest_id, game_npc_id npc_id) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_QUEST_UPDATE)
+		.add<packet_header>(SMSG_QUEST_UPDATE)
 		.add<int8_t>(8)
-		.add<quest_id_t>(questId)
-		.add<npc_id_t>(npcId)
+		.add<game_quest_id>(quest_id)
+		.add<game_npc_id>(npc_id)
 		.unk<int32_t>();
 	return builder;
 }
 
-PACKET_IMPL(acceptQuestNotice, quest_id_t questId) {
-	PacketBuilder builder;
+PACKET_IMPL(accept_quest_notice, game_quest_id quest_id) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_NOTICE)
+		.add<packet_header>(SMSG_NOTICE)
 		.add<int8_t>(1)
-		.add<quest_id_t>(questId)
+		.add<game_quest_id>(quest_id)
 		.unk<int8_t>(1)
 		.unk<int32_t>()
 		.unk<int32_t>()
@@ -53,112 +53,112 @@ PACKET_IMPL(acceptQuestNotice, quest_id_t questId) {
 	return builder;
 }
 
-PACKET_IMPL(completeQuestNotice, quest_id_t questId, FileTime time) {
-	PacketBuilder builder;
+PACKET_IMPL(complete_quest_notice, game_quest_id quest_id, file_time time) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_NOTICE)
+		.add<packet_header>(SMSG_NOTICE)
 		.add<int8_t>(1)
-		.add<quest_id_t>(questId)
+		.add<game_quest_id>(quest_id)
 		.unk<int8_t>(2)
-		.add<FileTime>(time);
+		.add<file_time>(time);
 	return builder;
 }
 
-PACKET_IMPL(completeQuest, quest_id_t questId, npc_id_t npcId, quest_id_t nextQuest) {
-	PacketBuilder builder;
+PACKET_IMPL(complete_quest, game_quest_id quest_id, game_npc_id npc_id, game_quest_id next_quest) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_QUEST_UPDATE)
+		.add<packet_header>(SMSG_QUEST_UPDATE)
 		.add<int8_t>(8)
-		.add<quest_id_t>(questId)
-		.add<npc_id_t>(npcId)
-		.add<quest_id_t>(nextQuest);
+		.add<game_quest_id>(quest_id)
+		.add<game_npc_id>(npc_id)
+		.add<game_quest_id>(next_quest);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(completeQuestAnimation, player_id_t playerId) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(complete_quest_animation, game_player_id player_id) {
+	split_packet_builder builder;
 	builder.player
-		.add<header_t>(SMSG_THEATRICS)
+		.add<packet_header>(SMSG_THEATRICS)
 		.add<int8_t>(9);
 
 	builder.map
-		.add<header_t>(SMSG_SKILL_SHOW)
-		.add<player_id_t>(playerId)
+		.add<packet_header>(SMSG_SKILL_SHOW)
+		.add<game_player_id>(player_id)
 		.add<int8_t>(9);
 	return builder;
 }
 
-PACKET_IMPL(updateQuest, const ActiveQuest &quest) {
-	PacketBuilder builder;
+PACKET_IMPL(update_quest, const active_quest &quest) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_NOTICE)
+		.add<packet_header>(SMSG_NOTICE)
 		.add<int8_t>(1)
-		.add<quest_id_t>(quest.id)
+		.add<game_quest_id>(quest.id)
 		.unk<int8_t>(1)
-		.add<string_t>(quest.getQuestData());
+		.add<string>(quest.get_quest_data());
 	return builder;
 }
 
-PACKET_IMPL(doneQuest, quest_id_t questId) {
-	PacketBuilder builder;
+PACKET_IMPL(done_quest, game_quest_id quest_id) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_QUEST_COMPLETED)
-		.add<quest_id_t>(questId);
+		.add<packet_header>(SMSG_QUEST_COMPLETED)
+		.add<game_quest_id>(quest_id);
 	return builder;
 }
 
-PACKET_IMPL(questError, quest_id_t questId, int8_t errorCode) {
-	PacketBuilder builder;
+PACKET_IMPL(quest_error, game_quest_id quest_id, int8_t error_code) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_QUEST_UPDATE)
-		.add<int8_t>(errorCode)
-		.add<quest_id_t>(questId);
+		.add<packet_header>(SMSG_QUEST_UPDATE)
+		.add<int8_t>(error_code)
+		.add<game_quest_id>(quest_id);
 	return builder;
 }
 
-PACKET_IMPL(questExpire, quest_id_t questId) {
-	PacketBuilder builder;
+PACKET_IMPL(quest_expire, game_quest_id quest_id) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_QUEST_UPDATE)
+		.add<packet_header>(SMSG_QUEST_UPDATE)
 		.add<int8_t>(0x0F)
-		.add<quest_id_t>(questId);
+		.add<game_quest_id>(quest_id);
 	return builder;
 }
 
-PACKET_IMPL(forfeitQuest, quest_id_t questId) {
-	PacketBuilder builder;
+PACKET_IMPL(forfeit_quest, game_quest_id quest_id) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_NOTICE)
+		.add<packet_header>(SMSG_NOTICE)
 		.add<int8_t>(1)
-		.add<quest_id_t>(questId)
+		.add<game_quest_id>(quest_id)
 		.unk<int8_t>();
 	return builder;
 }
 
-PACKET_IMPL(giveItem, item_id_t itemId, slot_qty_t amount) {
-	PacketBuilder builder;
+PACKET_IMPL(give_item, game_item_id item_id, game_slot_qty amount) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_THEATRICS)
+		.add<packet_header>(SMSG_THEATRICS)
 		.add<int8_t>(3)
 		.add<int8_t>(1) // Number of different items (itemId and amount gets repeated)
-		.add<item_id_t>(itemId)
+		.add<game_item_id>(item_id)
 		.add<int32_t>(amount);
 	return builder;
 }
 
-PACKET_IMPL(giveMesos, mesos_t amount) {
-	PacketBuilder builder;
+PACKET_IMPL(give_mesos, game_mesos amount) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_NOTICE)
+		.add<packet_header>(SMSG_NOTICE)
 		.add<int8_t>(5)
-		.add<mesos_t>(amount);
+		.add<game_mesos>(amount);
 	return builder;
 }
 
-PACKET_IMPL(giveFame, fame_t amount) {
-	PacketBuilder builder;
+PACKET_IMPL(give_fame, game_fame amount) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_NOTICE)
+		.add<packet_header>(SMSG_NOTICE)
 		.add<int8_t>(4)
 		.add<int32_t>(amount);
 	return builder;

@@ -17,51 +17,51 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "BuffMapInfo.hpp"
 
-namespace Vana {
+namespace vana {
 
-BuffMapInfo::BuffMapInfo()
+buff_map_info::buff_map_info()
 {
 }
 
-BuffMapInfo::BuffMapInfo(BuffSkillValue value) :
+buff_map_info::buff_map_info(buff_skill_value value) :
 	m_value{value}
 {
 }
 
-BuffMapInfo::BuffMapInfo(uint8_t size, BuffSkillValue value) :
+buff_map_info::buff_map_info(uint8_t size, buff_skill_value value) :
 	m_size{size},
 	m_value{value}
 {
 }
 
-BuffMapInfo::BuffMapInfo(uint8_t size, int64_t predefinedValue) :
+buff_map_info::buff_map_info(uint8_t size, int64_t predefined_value) :
 	m_size{size},
-	m_predefinedValue{predefinedValue}
+	m_predefined_value{predefined_value}
 {
 }
 
-auto BuffMapInfo::getPredefinedValue() const -> int64_t {
-	return m_predefinedValue;
+auto buff_map_info::get_predefined_value() const -> int64_t {
+	return m_predefined_value;
 }
 
-auto BuffMapInfo::getSize() const -> uint8_t {
+auto buff_map_info::get_size() const -> uint8_t {
 	return m_size;
 }
 
-auto BuffMapInfo::getValue() const -> BuffSkillValue {
+auto buff_map_info::get_value() const -> buff_skill_value {
 	return m_value;
 }
 
-auto BuffMapInfo::withValue(BuffSkillValue value) const -> BuffMapInfo {
-	BuffMapInfo result{*this};
+auto buff_map_info::with_value(buff_skill_value value) const -> buff_map_info {
+	buff_map_info result{*this};
 	result.m_value= value;
 	return result;
 }
 
-auto BuffMapInfo::withPredefinedValue(int16_t value) const -> BuffMapInfo {
-	BuffMapInfo result{*this};
-	result.m_value = BuffSkillValue::Predefined;
-	result.m_predefinedValue = value;
+auto buff_map_info::with_predefined_value(int16_t value) const -> buff_map_info {
+	buff_map_info result{*this};
+	result.m_value = buff_skill_value::predefined;
+	result.m_predefined_value = value;
 	return result;
 }
 

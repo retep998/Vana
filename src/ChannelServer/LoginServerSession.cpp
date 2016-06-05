@@ -29,23 +29,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/LoginServerSessionHandler.hpp"
 #include <iostream>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto LoginServerSession::handle(PacketReader &reader) -> Result {
-	switch (reader.get<header_t>()) {
-		case IMSG_LOGIN_CHANNEL_CONNECT: LoginServerSessionHandler::connect(shared_from_this(), reader); break;
-		default: return Result::Failure;
+auto login_server_session::handle(packet_reader &reader) -> result {
+	switch (reader.get<packet_header>()) {
+		case IMSG_LOGIN_CHANNEL_CONNECT: login_server_session_handler::connect(shared_from_this(), reader); break;
+		default: return result::failure;
 	}
-	return Result::Successful;
+	return result::successful;
 }
 
-auto LoginServerSession::onConnect() -> void {
-	ChannelServer::getInstance().onConnectToLogin(shared_from_this());
+auto login_server_session::on_connect() -> void {
+	channel_server::get_instance().on_connect_to_login(shared_from_this());
 }
 
-auto LoginServerSession::onDisconnect() -> void {
-	ChannelServer::getInstance().onDisconnectFromLogin();
+auto login_server_session::on_disconnect() -> void {
+	channel_server::get_instance().on_disconnect_from_login();
 }
 
 }

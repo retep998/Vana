@@ -18,6 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/VanaMain.hpp"
 #include "ChannelServer/ChannelServer.hpp"
 
-auto main() -> Vana::exit_code_t {
-	return Vana::main<Vana::ChannelServer::ChannelServer>();
+auto main() -> vana::exit_code_underlying {
+	return vana::main<vana::channel_server::channel_server>();
 }

@@ -23,60 +23,60 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <cmath>
 #include <ostream>
 
-namespace Vana {
-	struct Line;
+namespace vana {
+	struct line;
 
 	// IMPORTANT
-	// The assumption made in the Point, Line, and Rect classes are that the coordinate system works like you'd expect for x, but is inverted for y
+	// The assumption made in the point, line, and rect classes are that the coordinate system works like you'd expect for x, but is inverted for y
 	// That is, -1000 x is on the left side, 1000 x is on the right side
 	// However, -1000 y is on the top and 1000 y is on the bottom
 	// Be VERY careful when dealing with things that require the Y position
-	class Rect {
+	class rect {
 	public:
-		Rect() = default;
-		Rect(const Point &leftTop, const Point &rightBottom);
-		Rect(const Point &leftTop, coord_t width, coord_t height);
-		Rect(coord_t leftTopX, coord_t leftTopY, coord_t width, coord_t height);
+		rect() = default;
+		rect(const point &left_top, const point &right_bottom);
+		rect(const point &left_top, game_coord width, game_coord height);
+		rect(game_coord left_top_x, game_coord left_top_y, game_coord width, game_coord height);
 
-		auto left() const -> Line;
-		auto right() const -> Line;
-		auto top() const -> Line;
-		auto bottom() const -> Line;
-		auto diagonalLeftTopRightBottom() const -> Line;
-		auto diagonalLeftBottomRightTop() const -> Line;
-		auto rightTop() const -> Point;
-		auto leftTop() const -> Point;
-		auto leftBottom() const -> Point;
-		auto rightBottom() const -> Point;
-		auto center() const -> Point;
+		auto left() const -> line;
+		auto right() const -> line;
+		auto top() const -> line;
+		auto bottom() const -> line;
+		auto diagonal_left_top_right_bottom() const -> line;
+		auto diagonal_left_bottom_right_top() const -> line;
+		auto right_top() const -> point;
+		auto left_top() const -> point;
+		auto left_bottom() const -> point;
+		auto right_bottom() const -> point;
+		auto center() const -> point;
 		auto area() const -> int32_t;
 		auto perimeter() const -> int32_t;
 		auto hypotenuse() const -> int32_t;
 		auto height() const -> int32_t;
 		auto width() const -> int32_t;
-		auto contains(const Point &pos) const -> bool;
-		auto containsAnyPartOfLine(const Line &line) const -> bool;
-		auto containsFullLine(const Line &line) const -> bool;
-		auto intersects(const Line &line) const -> bool;
-		auto move(coord_t xMod, coord_t yMod) const -> Rect;
-		auto move(const Point &pos) const -> Rect;
-		auto resize(coord_t mod) const -> Rect;
-		auto deform(coord_t leftTopMod, coord_t rightBottomMod) const -> Rect;
-		auto swap(bool swapHorizontal, bool swapVertical) const -> Rect;
-		auto normalize() const -> Rect;
-		auto intersection(const Rect &other) const -> Rect;
-		auto combine(const Rect &other) const -> Rect;
-		auto findOverlap(const Rect &other) const -> SearchResult;
+		auto contains(const point &pos) const -> bool;
+		auto contains_any_part_of_line(const line &line) const -> bool;
+		auto contains_full_line(const line &line) const -> bool;
+		auto intersects(const line &line) const -> bool;
+		auto move(game_coord offset_x, game_coord offset_y) const -> rect;
+		auto move(const point &pos) const -> rect;
+		auto resize(game_coord mod) const -> rect;
+		auto deform(game_coord left_top_mod, game_coord right_bottom_mod) const -> rect;
+		auto swap(bool swap_horizontal, bool swap_vertical) const -> rect;
+		auto normalize() const -> rect;
+		auto intersection(const rect &other) const -> rect;
+		auto combine(const rect &other) const -> rect;
+		auto find_overlap(const rect &other) const -> search_result;
 
-		friend auto operator <<(std::ostream &out, const Rect &rect) -> std::ostream &;
+		friend auto operator <<(std::ostream &out, const rect &rect) -> std::ostream &;
 	private:
-		Point m_leftTop;
-		Point m_rightBottom;
+		point m_left_top;
+		point m_right_bottom;
 	};
 
 	inline
-	auto operator <<(std::ostream &out, const Rect &rect) -> std::ostream & {
-		Rect normalized = rect.normalize();
-		return out << "(" << normalized.m_leftTop << ", " << normalized.m_rightBottom << ")";
+	auto operator <<(std::ostream &out, const rect &value) -> std::ostream & {
+		rect normalized = value.normalize();
+		return out << "(" << normalized.m_left_top << ", " << normalized.m_right_bottom << ")";
 	}
 }

@@ -40,25 +40,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <limits>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto WorldServerSessionHandler::connect(ref_ptr_t<WorldServerSession> session, PacketReader &reader) -> void {
-	channel_id_t channel = reader.get<channel_id_t>();
+auto world_server_session_handler::connect(ref_ptr<world_server_session> session, packet_reader &reader) -> void {
+	game_channel_id channel = reader.get<game_channel_id>();
 	if (channel != -1) {
-		port_t port = reader.get<port_t>();
-		WorldConfig conf = reader.get<WorldConfig>();
-		ChannelServer::getInstance().establishedWorldConnection(channel, port, conf);
+		connection_port port = reader.get<connection_port>();
+		world_config conf = reader.get<world_config>();
+		channel_server::get_instance().established_world_connection(channel, port, conf);
 	}
 	else {
-		ChannelServer::getInstance().log(LogType::CriticalError, "No channel to handle");
-		ChannelServer::getInstance().shutdown();
+		channel_server::get_instance().log(log_type::critical_error, "no channel to handle");
+		channel_server::get_instance().shutdown();
 	}
 }
 
-auto WorldServerSessionHandler::reloadMcdb(PacketReader &reader) -> void {
-	string_t args = reader.get<string_t>();
-	ChannelServer::getInstance().reloadData(args);
+auto world_server_session_handler::reload_mcdb(packet_reader &reader) -> void {
+	string args = reader.get<string>();
+	channel_server::get_instance().reload_data(args);
 }
 
 }

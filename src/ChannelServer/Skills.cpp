@@ -40,237 +40,237 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/SummonHandler.hpp"
 #include <functional>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto Skills::addSkill(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	reader.skip<tick_count_t>();
-	skill_id_t skillId = reader.get<skill_id_t>();
-	if (!GameLogicUtilities::isBeginnerSkill(skillId)) {
-		if (player->getStats()->getSp() == 0) {
+auto skills::add_skill(ref_ptr<player> player, packet_reader &reader) -> void {
+	reader.skip<game_tick_count>();
+	game_skill_id skill_id = reader.get<game_skill_id>();
+	if (!game_logic_utilities::is_beginner_skill(skill_id)) {
+		if (player->get_stats()->get_sp() == 0) {
 			// Hacking
 			return;
 		}
-		if (!player->isGm() && !GameLogicUtilities::skillMatchesJob(skillId, player->getStats()->getJob())) {
+		if (!player->is_gm() && !game_logic_utilities::skill_matches_job(skill_id, player->get_stats()->get_job())) {
 			// Hacking
 			return;
 		}
 	}
-	if (player->getSkills()->addSkillLevel(skillId, 1) && !GameLogicUtilities::isBeginnerSkill(skillId)) {
-		player->getStats()->setSp(player->getStats()->getSp() - 1);
+	if (player->get_skills()->add_skill_level(skill_id, 1) && !game_logic_utilities::is_beginner_skill(skill_id)) {
+		player->get_stats()->set_sp(player->get_stats()->get_sp() - 1);
 	}
 }
 
-auto Skills::cancelSkill(ref_ptr_t<Player> player, PacketReader &reader) -> void {
+auto skills::cancel_skill(ref_ptr<player> player, packet_reader &reader) -> void {
 	int32_t identifier = reader.get<int32_t>();
 
 	// Both buffs and "standing" skills e.g. Hurricane go through this packet
 	// Handle "standing" skills here, otherwise dispatch to buffs
 
 	switch (identifier) {
-		case Vana::Skills::Bowmaster::Hurricane:
-		case Vana::Skills::WindArcher::Hurricane:
-		case Vana::Skills::Marksman::PiercingArrow:
-		case Vana::Skills::FpArchMage::BigBang:
-		case Vana::Skills::IlArchMage::BigBang:
-		case Vana::Skills::Bishop::BigBang:
-		case Vana::Skills::Corsair::RapidFire:
-			player->sendMap(Packets::Skills::endChargeOrStationarySkill(player->getId(), player->getChargeOrStationarySkill()));
-			player->setChargeOrStationarySkill(ChargeOrStationarySkillData{});
+		case vana::skills::bowmaster::hurricane:
+		case vana::skills::wind_archer::hurricane:
+		case vana::skills::marksman::piercing_arrow:
+		case vana::skills::fp_arch_mage::big_bang:
+		case vana::skills::il_arch_mage::big_bang:
+		case vana::skills::bishop::big_bang:
+		case vana::skills::corsair::rapid_fire:
+			player->send_map(packets::skills::end_charge_or_stationary_skill(player->get_id(), player->get_charge_or_stationary_skill()));
+			player->set_charge_or_stationary_skill(charge_or_stationary_skill_data{});
 			return;
 	}
 
-	stopSkill(player, player->getActiveBuffs()->translateToSource(identifier));
+	stop_skill(player, player->get_active_buffs()->translate_to_source(identifier));
 }
 
-auto Skills::stopSkill(ref_ptr_t<Player> player, const BuffSource &source, bool fromTimer) -> void {
-	switch (source.getType()) {
-		case BuffSourceType::Item:
-		case BuffSourceType::Skill:
-			if (source.getSkillLevel() == 0) {
+auto skills::stop_skill(ref_ptr<player> player, const buff_source &source, bool from_timer) -> void {
+	switch (source.get_type()) {
+		case buff_source_type::item:
+		case buff_source_type::skill:
+			if (source.get_skill_level() == 0) {
 				// Hacking
 				return;
 			}
 			break;
-		case BuffSourceType::MobSkill:
-			if (source.getMobSkillLevel() == 0) {
+		case buff_source_type::mob_skill:
+			if (source.get_mob_skill_level() == 0) {
 				// Hacking
 				return;
 			}
 			break;
 	}
 
-	Buffs::endBuff(player, source, fromTimer);
+	buffs::end_buff(player, source, from_timer);
 
-	if (source.getSkillId() == Vana::Skills::SuperGm::Hide) {
-		player->send(Packets::Gm::endHide());
-		player->getMap()->gmHideChange(player);
+	if (source.get_skill_id() == vana::skills::super_gm::hide) {
+		player->send(packets::gm::end_hide());
+		player->get_map()->gm_hide_change(player);
 	}
 }
 
-auto Skills::getAffectedPartyMembers(Party *party, int8_t affected, int8_t members) -> const vector_t<ref_ptr_t<Player>> {
-	vector_t<ref_ptr_t<Player>> ret;
-	if (affected & GameLogicUtilities::getPartyMember1(members)) {
-		ret.push_back(party->getMemberByIndex(1));
+auto skills::get_affected_party_members(party *party, int8_t affected, int8_t members) -> const vector<ref_ptr<player>> {
+	vector<ref_ptr<player>> ret;
+	if (affected & game_logic_utilities::get_party_member1(members)) {
+		ret.push_back(party->get_member_by_index(1));
 	}
-	if (affected & GameLogicUtilities::getPartyMember2(members)) {
-		ret.push_back(party->getMemberByIndex(2));
+	if (affected & game_logic_utilities::get_party_member2(members)) {
+		ret.push_back(party->get_member_by_index(2));
 	}
-	if (affected & GameLogicUtilities::getPartyMember3(members)) {
-		ret.push_back(party->getMemberByIndex(3));
+	if (affected & game_logic_utilities::get_party_member3(members)) {
+		ret.push_back(party->get_member_by_index(3));
 	}
-	if (affected & GameLogicUtilities::getPartyMember4(members)) {
-		ret.push_back(party->getMemberByIndex(4));
+	if (affected & game_logic_utilities::get_party_member4(members)) {
+		ret.push_back(party->get_member_by_index(4));
 	}
-	if (affected & GameLogicUtilities::getPartyMember5(members)) {
-		ret.push_back(party->getMemberByIndex(5));
+	if (affected & game_logic_utilities::get_party_member5(members)) {
+		ret.push_back(party->get_member_by_index(5));
 	}
-	if (affected & GameLogicUtilities::getPartyMember6(members)) {
-		ret.push_back(party->getMemberByIndex(6));
+	if (affected & game_logic_utilities::get_party_member6(members)) {
+		ret.push_back(party->get_member_by_index(6));
 	}
 	return ret;
 }
 
-auto Skills::useSkill(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	reader.skip<tick_count_t>();
-	skill_id_t skillId = reader.get<skill_id_t>();
-	int16_t addedInfo = 0;
-	skill_level_t level = reader.get<skill_level_t>();
+auto skills::use_skill(ref_ptr<player> player_value, packet_reader &reader) -> void {
+	reader.skip<game_tick_count>();
+	game_skill_id skill_id = reader.get<game_skill_id>();
+	int16_t added_info = 0;
+	game_skill_level level = reader.get<game_skill_level>();
 	uint8_t type = 0;
 	uint8_t direction = 0;
-	if (level == 0 || player->getSkills()->getSkillLevel(skillId) != level) {
+	if (level == 0 || player_value->get_skills()->get_skill_level(skill_id) != level) {
 		// Hacking
 		return;
 	}
 
-	if (player->getStats()->isDead()) {
+	if (player_value->get_stats()->is_dead()) {
 		// Possibly hacking, possibly lag
 		return;
 	}
 
-	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
-	if (skillId == Vana::Skills::Priest::MysticDoor) {
-		Point origin = reader.get<Point>();
-		MysticDoorResult result = player->getSkills()->openMysticDoor(origin, skill->buffTime);
-		if (result == MysticDoorResult::Hacking) {
+	auto skill = channel_server::get_instance().get_skill_data_provider().get_skill(skill_id, level);
+	if (skill_id == vana::skills::priest::mystic_door) {
+		point origin = reader.get<point>();
+		mystic_door_result result = player_value->get_skills()->open_mystic_door(origin, skill->buff_time);
+		if (result == mystic_door_result::hacking) {
 			return;
 		}
-		if (result == MysticDoorResult::NoSpace || result == MysticDoorResult::NoDoorPoints) {
+		if (result == mystic_door_result::no_space || result == mystic_door_result::no_door_points) {
 			// TODO FIXME packet?
 			// There's probably some packet to indicate failure
 			return;
 		}
 	}
 
-	if (applySkillCosts(player, skillId, level) == Result::Failure) {
+	if (apply_skill_costs(player_value, skill_id, level) == result::failure) {
 		// Most likely hacking, could feasibly be lag
 		return;
 	}
 
-	switch (skillId) {
-		case Vana::Skills::Priest::MysticDoor:
+	switch (skill_id) {
+		case vana::skills::priest::mystic_door:
 			// Prevent the default case from executing, there's no packet data left for it
 			break;
-		case Vana::Skills::Brawler::MpRecovery: {
-			health_t modHp = player->getStats()->getMaxHp() * skill->x / 100;
-			health_t healMp = modHp * skill->y / 100;
-			player->getStats()->modifyHp(-modHp);
-			player->getStats()->modifyMp(healMp);
+		case vana::skills::brawler::mp_recovery: {
+			game_health mod_hp = player_value->get_stats()->get_max_hp() * skill->x / 100;
+			game_health heal_mp = mod_hp * skill->y / 100;
+			player_value->get_stats()->modify_hp(-mod_hp);
+			player_value->get_stats()->modify_mp(heal_mp);
 			break;
 		}
-		case Vana::Skills::Shadower::Smokescreen: {
-			Point origin = reader.get<Point>();
-			Mist *m = new Mist{
-				player->getMapId(),
-				player,
-				skill->buffTime,
-				skill->dimensions.move(player->getPos()),
-				skillId,
+		case vana::skills::shadower::smokescreen: {
+			point origin = reader.get<point>();
+			mist *m = new mist{
+				player_value->get_map_id(),
+				player_value,
+				skill->buff_time,
+				skill->dimensions.move(player_value->get_pos()),
+				skill_id,
 				level};
 			break;
 		}
-		case Vana::Skills::Corsair::Battleship:
+		case vana::skills::corsair::battleship:
 			// TODO FIXME hacking? Remove?
-			if (player->getActiveBuffs()->getBattleshipHp() == 0) {
-				player->getActiveBuffs()->resetBattleshipHp();
+			if (player_value->get_active_buffs()->get_battleship_hp() == 0) {
+				player_value->get_active_buffs()->reset_battleship_hp();
 			}
 			break;
-		case Vana::Skills::Crusader::ArmorCrash:
-		case Vana::Skills::WhiteKnight::MagicCrash:
-		case Vana::Skills::DragonKnight::PowerCrash: {
+		case vana::skills::crusader::armor_crash:
+		case vana::skills::white_knight::magic_crash:
+		case vana::skills::dragon_knight::power_crash: {
 			// Might be CRC
 			reader.unk<uint32_t>();
 			uint8_t mobs = reader.get<uint8_t>();
 			for (uint8_t k = 0; k < mobs; k++) {
-				map_object_t mapMobId = reader.get<map_object_t>();
-				if (auto mob = player->getMap()->getMob(mapMobId)) {
-					if (Randomizer::percentage<uint16_t>() < skill->prop) {
-						mob->doCrashSkill(skillId);
+				game_map_object map_mob_id = reader.get<game_map_object>();
+				if (auto mob = player_value->get_map()->get_mob(map_mob_id)) {
+					if (randomizer::percentage<uint16_t>() < skill->prop) {
+						mob->do_crash_skill(skill_id);
 					}
 				}
 			}
 			break;
 		}
-		case Vana::Skills::Hero::MonsterMagnet:
-		case Vana::Skills::Paladin::MonsterMagnet:
-		case Vana::Skills::DarkKnight::MonsterMagnet: {
+		case vana::skills::hero::monster_magnet:
+		case vana::skills::paladin::monster_magnet:
+		case vana::skills::dark_knight::monster_magnet: {
 			int32_t mobs = reader.get<int32_t>();
 			for (int32_t k = 0; k < mobs; k++) {
-				map_object_t mapMobId = reader.get<map_object_t>();
+				game_map_object map_mob_id = reader.get<game_map_object>();
 				uint8_t success = reader.get<uint8_t>();
-				player->sendMap(Packets::Skills::showMagnetSuccess(mapMobId, success));
+				player_value->send_map(packets::skills::show_magnet_success(map_mob_id, success));
 			}
 			direction = reader.get<uint8_t>();
 			break;
 		}
-		case Vana::Skills::FpWizard::Slow:
-		case Vana::Skills::IlWizard::Slow:
-		case Vana::Skills::BlazeWizard::Slow:
-		case Vana::Skills::Page::Threaten:
+		case vana::skills::fp_wizard::slow:
+		case vana::skills::il_wizard::slow:
+		case vana::skills::blaze_wizard::slow:
+		case vana::skills::page::threaten:
 			// Might be CRC
 			reader.unk<uint32_t>();
 			// Intentional fallthrough
-		case Vana::Skills::FpMage::Seal:
-		case Vana::Skills::IlMage::Seal:
-		case Vana::Skills::BlazeWizard::Seal:
-		case Vana::Skills::Priest::Doom:
-		case Vana::Skills::Hermit::ShadowWeb:
-		case Vana::Skills::NightWalker::ShadowWeb:
-		case Vana::Skills::Shadower::NinjaAmbush:
-		case Vana::Skills::NightLord::NinjaAmbush: {
+		case vana::skills::fp_mage::seal:
+		case vana::skills::il_mage::seal:
+		case vana::skills::blaze_wizard::seal:
+		case vana::skills::priest::doom:
+		case vana::skills::hermit::shadow_web:
+		case vana::skills::night_walker::shadow_web:
+		case vana::skills::shadower::ninja_ambush:
+		case vana::skills::night_lord::ninja_ambush: {
 			uint8_t mobs = reader.get<uint8_t>();
 			for (uint8_t k = 0; k < mobs; k++) {
-				if (auto mob = player->getMap()->getMob(reader.get<int32_t>())) {
-					MobHandler::handleMobStatus(player->getId(), mob, skillId, level, 0, 0);
+				if (auto mob = player_value->get_map()->get_mob(reader.get<int32_t>())) {
+					mob_handler::handle_mob_status(player_value->get_id(), mob, skill_id, level, 0, 0);
 				}
 			}
 			break;
 		}
-		case Vana::Skills::Bishop::HerosWill:
-		case Vana::Skills::IlArchMage::HerosWill:
-		case Vana::Skills::FpArchMage::HerosWill:
-		case Vana::Skills::DarkKnight::HerosWill:
-		case Vana::Skills::Hero::HerosWill:
-		case Vana::Skills::Paladin::HerosWill:
-		case Vana::Skills::NightLord::HerosWill:
-		case Vana::Skills::Shadower::HerosWill:
-		case Vana::Skills::Bowmaster::HerosWill:
-		case Vana::Skills::Marksman::HerosWill:
-		case Vana::Skills::Buccaneer::HerosWill:
-		case Vana::Skills::Corsair::HerosWill:
-			player->getActiveBuffs()->removeDebuff(MobSkills::Seduce);
+		case vana::skills::bishop::heros_will:
+		case vana::skills::il_arch_mage::heros_will:
+		case vana::skills::fp_arch_mage::heros_will:
+		case vana::skills::dark_knight::heros_will:
+		case vana::skills::hero::heros_will:
+		case vana::skills::paladin::heros_will:
+		case vana::skills::night_lord::heros_will:
+		case vana::skills::shadower::heros_will:
+		case vana::skills::bowmaster::heros_will:
+		case vana::skills::marksman::heros_will:
+		case vana::skills::buccaneer::heros_will:
+		case vana::skills::corsair::heros_will:
+			player_value->get_active_buffs()->remove_debuff(mob_skills::seduce);
 			break;
-		case Vana::Skills::Priest::Dispel: {
+		case vana::skills::priest::dispel: {
 			int8_t affected = reader.get<int8_t>();
-			player->getActiveBuffs()->usePlayerDispel();
-			if (Party *party = player->getParty()) {
-				const auto members = getAffectedPartyMembers(party, affected, party->getMembersCount());
-				for (const auto &partyMember : members) {
-					if (partyMember != nullptr && partyMember != player && partyMember->getMap() == player->getMap()) {
-						if (Randomizer::percentage<uint16_t>() < skill->prop) {
-							partyMember->send(Packets::Skills::showSkill(partyMember->getId(), skillId, level, direction, true, true));
-							partyMember->sendMap(Packets::Skills::showSkill(partyMember->getId(), skillId, level, direction, true));
-							partyMember->getActiveBuffs()->usePlayerDispel();
+			player_value->get_active_buffs()->use_player_dispel();
+			if (party *party = player_value->get_party()) {
+				const auto members = get_affected_party_members(party, affected, party->get_members_count());
+				for (const auto &party_member : members) {
+					if (party_member != nullptr && party_member != player_value && party_member->get_map() == player_value->get_map()) {
+						if (randomizer::percentage<uint16_t>() < skill->prop) {
+							party_member->send(packets::skills::show_skill(party_member->get_id(), skill_id, level, direction, true, true));
+							party_member->send_map(packets::skills::show_skill(party_member->get_id(), skill_id, level, direction, true));
+							party_member->get_active_buffs()->use_player_dispel();
 						}
 					}
 				}
@@ -280,90 +280,90 @@ auto Skills::useSkill(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 
 			affected = reader.get<int8_t>();
 			for (int8_t k = 0; k < affected; k++) {
-				map_object_t mapMobId = reader.get<map_object_t>();
-				if (auto mob = player->getMap()->getMob(mapMobId)) {
-					if (Randomizer::percentage<uint16_t>() < skill->prop) {
-						mob->dispelBuffs();
+				game_map_object map_mob_id = reader.get<game_map_object>();
+				if (auto mob = player_value->get_map()->get_mob(map_mob_id)) {
+					if (randomizer::percentage<uint16_t>() < skill->prop) {
+						mob->dispel_buffs();
 					}
 				}
 			}
 			break;
 		}
-		case Vana::Skills::Cleric::Heal: {
-			uint16_t healRate = skill->hpProp;
-			if (healRate > 100) {
-				healRate = 100;
+		case vana::skills::cleric::heal: {
+			uint16_t heal_rate = skill->hp_prop;
+			if (heal_rate > 100) {
+				heal_rate = 100;
 			}
-			Party *party = player->getParty();
-			int8_t partyPlayers = (party != nullptr ? party->getMembersCount() : 1);
-			health_t heal = (healRate * player->getStats()->getMaxHp() / 100) / partyPlayers;
+			party *party = player_value->get_party();
+			int8_t party_players = (party != nullptr ? party->get_members_count() : 1);
+			game_health heal = (heal_rate * player_value->get_stats()->get_max_hp() / 100) / party_players;
 
 			if (party != nullptr) {
-				experience_t expIncrease = 0;
-				const auto members = party->getPartyMembers(player->getMapId());
-				for (const auto &partyMember : members) {
-					health_t chp = partyMember->getStats()->getHp();
-					if (chp > 0 && chp < partyMember->getStats()->getMaxHp()) {
-						partyMember->getStats()->modifyHp(heal);
-						if (player != partyMember) {
-							expIncrease += 20 * (partyMember->getStats()->getHp() - chp) / (8 * partyMember->getStats()->getLevel() + 190);
+				game_experience exp_increase = 0;
+				const auto members = party->get_party_members(player_value->get_map_id());
+				for (const auto &party_member : members) {
+					game_health chp = party_member->get_stats()->get_hp();
+					if (chp > 0 && chp < party_member->get_stats()->get_max_hp()) {
+						party_member->get_stats()->modify_hp(heal);
+						if (player_value != party_member) {
+							exp_increase += 20 * (party_member->get_stats()->get_hp() - chp) / (8 * party_member->get_stats()->get_level() + 190);
 						}
 					}
 				}
-				if (expIncrease > 0) {
-					player->getStats()->giveExp(expIncrease);
+				if (exp_increase > 0) {
+					player_value->get_stats()->give_exp(exp_increase);
 				}
 			}
 			else {
-				player->getStats()->modifyHp(heal);
+				player_value->get_stats()->modify_hp(heal);
 			}
 			break;
 		}
-		case Vana::Skills::Fighter::Rage:
-		case Vana::Skills::DawnWarrior::Rage:
-		case Vana::Skills::Spearman::IronWill:
-		case Vana::Skills::Spearman::HyperBody:
-		case Vana::Skills::FpWizard::Meditation:
-		case Vana::Skills::IlWizard::Meditation:
-		case Vana::Skills::BlazeWizard::Meditation:
-		case Vana::Skills::Cleric::Bless:
-		case Vana::Skills::Priest::HolySymbol:
-		case Vana::Skills::Bishop::Resurrection:
-		case Vana::Skills::Bishop::HolyShield:
-		case Vana::Skills::Bowmaster::SharpEyes:
-		case Vana::Skills::Marksman::SharpEyes:
-		case Vana::Skills::Assassin::Haste:
-		case Vana::Skills::NightWalker::Haste:
-		case Vana::Skills::Hermit::MesoUp:
-		case Vana::Skills::Bandit::Haste:
-		case Vana::Skills::Buccaneer::SpeedInfusion:
-		case Vana::Skills::ThunderBreaker::SpeedInfusion:
-		case Vana::Skills::Buccaneer::TimeLeap:
-		case Vana::Skills::Hero::MapleWarrior:
-		case Vana::Skills::Paladin::MapleWarrior:
-		case Vana::Skills::DarkKnight::MapleWarrior:
-		case Vana::Skills::FpArchMage::MapleWarrior:
-		case Vana::Skills::IlArchMage::MapleWarrior:
-		case Vana::Skills::Bishop::MapleWarrior:
-		case Vana::Skills::Bowmaster::MapleWarrior:
-		case Vana::Skills::Marksman::MapleWarrior:
-		case Vana::Skills::NightLord::MapleWarrior:
-		case Vana::Skills::Shadower::MapleWarrior:
-		case Vana::Skills::Buccaneer::MapleWarrior:
-		case Vana::Skills::Corsair::MapleWarrior: {
-			if (skillId == Vana::Skills::Buccaneer::TimeLeap) {
-				player->getSkills()->removeAllCooldowns();
+		case vana::skills::fighter::rage:
+		case vana::skills::dawn_warrior::rage:
+		case vana::skills::spearman::iron_will:
+		case vana::skills::spearman::hyper_body:
+		case vana::skills::fp_wizard::meditation:
+		case vana::skills::il_wizard::meditation:
+		case vana::skills::blaze_wizard::meditation:
+		case vana::skills::cleric::bless:
+		case vana::skills::priest::holy_symbol:
+		case vana::skills::bishop::resurrection:
+		case vana::skills::bishop::holy_shield:
+		case vana::skills::bowmaster::sharp_eyes:
+		case vana::skills::marksman::sharp_eyes:
+		case vana::skills::assassin::haste:
+		case vana::skills::night_walker::haste:
+		case vana::skills::hermit::meso_up:
+		case vana::skills::bandit::haste:
+		case vana::skills::buccaneer::speed_infusion:
+		case vana::skills::thunder_breaker::speed_infusion:
+		case vana::skills::buccaneer::time_leap:
+		case vana::skills::hero::maple_warrior:
+		case vana::skills::paladin::maple_warrior:
+		case vana::skills::dark_knight::maple_warrior:
+		case vana::skills::fp_arch_mage::maple_warrior:
+		case vana::skills::il_arch_mage::maple_warrior:
+		case vana::skills::bishop::maple_warrior:
+		case vana::skills::bowmaster::maple_warrior:
+		case vana::skills::marksman::maple_warrior:
+		case vana::skills::night_lord::maple_warrior:
+		case vana::skills::shadower::maple_warrior:
+		case vana::skills::buccaneer::maple_warrior:
+		case vana::skills::corsair::maple_warrior: {
+			if (skill_id == vana::skills::buccaneer::time_leap) {
+				player_value->get_skills()->remove_all_cooldowns();
 			}
-			if (Party *party = player->getParty()) {
+			if (party *party = player_value->get_party()) {
 				int8_t affected = reader.get<int8_t>();
-				const auto members = getAffectedPartyMembers(party, affected, party->getMembersCount());
-				for (const auto &partyMember : members) {
-					if (partyMember != nullptr && partyMember != player && partyMember->getMap() == player->getMap()) {
-						partyMember->send(Packets::Skills::showSkill(partyMember->getId(), skillId, level, direction, true, true));
-						partyMember->sendMap(Packets::Skills::showSkill(partyMember->getId(), skillId, level, direction, true));
-						Buffs::addBuff(partyMember, skillId, level, 0);
-						if (skillId == Vana::Skills::Buccaneer::TimeLeap) {
-							partyMember->getSkills()->removeAllCooldowns();
+				const auto members = get_affected_party_members(party, affected, party->get_members_count());
+				for (const auto &party_member : members) {
+					if (party_member != nullptr && party_member != player_value && party_member->get_map() == player_value->get_map()) {
+						party_member->send(packets::skills::show_skill(party_member->get_id(), skill_id, level, direction, true, true));
+						party_member->send_map(packets::skills::show_skill(party_member->get_id(), skill_id, level, direction, true));
+						buffs::add_buff(party_member, skill_id, level, 0);
+						if (skill_id == vana::skills::buccaneer::time_leap) {
+							party_member->get_skills()->remove_all_cooldowns();
 						}
 					}
 				}
@@ -371,44 +371,44 @@ auto Skills::useSkill(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 			break;
 		}
 
-		case Vana::Skills::Beginner::EchoOfHero:
-		case Vana::Skills::Noblesse::EchoOfHero:
-		case Vana::Skills::SuperGm::Haste:
-		case Vana::Skills::SuperGm::HolySymbol:
-		case Vana::Skills::SuperGm::Bless:
-		case Vana::Skills::SuperGm::HyperBody:
-		case Vana::Skills::SuperGm::HealPlusDispel:
-		case Vana::Skills::SuperGm::Resurrection: {
+		case vana::skills::beginner::echo_of_hero:
+		case vana::skills::noblesse::echo_of_hero:
+		case vana::skills::super_gm::haste:
+		case vana::skills::super_gm::holy_symbol:
+		case vana::skills::super_gm::bless:
+		case vana::skills::super_gm::hyper_body:
+		case vana::skills::super_gm::heal_plus_dispel:
+		case vana::skills::super_gm::resurrection: {
 			uint8_t players = reader.get<uint8_t>();
-			function_t<bool(ref_ptr_t<Player>)> doAction;
-			function_t<void(ref_ptr_t<Player>)> action;
-			switch (skillId) {
-				case Vana::Skills::SuperGm::HealPlusDispel:
-					doAction = [](ref_ptr_t<Player> target) { return !target->getStats()->isDead(); };
-					action = [](ref_ptr_t<Player> target) {
-						target->getStats()->setHp(target->getStats()->getMaxHp());
-						target->getStats()->setMp(target->getStats()->getMaxMp());
-						target->getActiveBuffs()->usePlayerDispel();
+			function<bool(ref_ptr<player>)> do_action;
+			function<void(ref_ptr<player>)> action;
+			switch (skill_id) {
+				case vana::skills::super_gm::heal_plus_dispel:
+					do_action = [](ref_ptr<player> target) { return !target->get_stats()->is_dead(); };
+					action = [](ref_ptr<player> target) {
+						target->get_stats()->set_hp(target->get_stats()->get_max_hp());
+						target->get_stats()->set_mp(target->get_stats()->get_max_mp());
+						target->get_active_buffs()->use_player_dispel();
 					};
 					break;
-				case Vana::Skills::SuperGm::Resurrection:
-					doAction = [](ref_ptr_t<Player> target) { return target->getStats()->isDead(); };
-					action = [](ref_ptr_t<Player> target) {
-						target->getStats()->setHp(target->getStats()->getMaxHp());
+				case vana::skills::super_gm::resurrection:
+					do_action = [](ref_ptr<player> target) { return target->get_stats()->is_dead(); };
+					action = [](ref_ptr<player> target) {
+						target->get_stats()->set_hp(target->get_stats()->get_max_hp());
 					};
 					break;
 				default:
-					doAction = [](ref_ptr_t<Player> target) { return true; };
-					action = [skillId, level](ref_ptr_t<Player> target) {
-						Buffs::addBuff(target, skillId, level, 0);
+					do_action = [](ref_ptr<player> target) { return true; };
+					action = [skill_id, level](ref_ptr<player> target) {
+						buffs::add_buff(target, skill_id, level, 0);
 					};
 			}
 			for (uint8_t i = 0; i < players; i++) {
-				player_id_t playerId = reader.get<player_id_t>();
-				auto target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId);
-				if (target != nullptr && target != player && doAction(target)) {
-					player->send(Packets::Skills::showSkill(player->getId(), skillId, level, direction, true, true));
-					player->sendMap(Packets::Skills::showSkill(player->getId(), skillId, level, direction, true));
+				game_player_id player_id = reader.get<game_player_id>();
+				auto target = channel_server::get_instance().get_player_data_provider().get_player(player_id);
+				if (target != nullptr && target != player_value && do_action(target)) {
+					player_value->send(packets::skills::show_skill(player_value->get_id(), skill_id, level, direction, true, true));
+					player_value->send_map(packets::skills::show_skill(player_value->get_id(), skill_id, level, direction, true));
 
 					action(target);
 				}
@@ -419,265 +419,265 @@ auto Skills::useSkill(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 			type = reader.get<int8_t>();
 			switch (type) {
 				case 0x80:
-					addedInfo = reader.get<int16_t>();
+					added_info = reader.get<int16_t>();
 					break;
 			}
 			break;
 	}
 
-	player->sendMap(Packets::Skills::showSkill(player->getId(), skillId, level, direction));
+	player_value->send_map(packets::skills::show_skill(player_value->get_id(), skill_id, level, direction));
 
-	if (Buffs::addBuff(player, skillId, level, addedInfo) == Result::Successful) {
-		if (skillId == Vana::Skills::SuperGm::Hide) {
-			player->send(Packets::Gm::beginHide());
-			player->getMap()->gmHideChange(player);
+	if (buffs::add_buff(player_value, skill_id, level, added_info) == result::successful) {
+		if (skill_id == vana::skills::super_gm::hide) {
+			player_value->send(packets::gm::begin_hide());
+			player_value->get_map()->gm_hide_change(player_value);
 		}
 
 		return;
 	}
 
-	if (GameLogicUtilities::isSummon(skillId)) {
-		Point pos = reader.get<Point>(); // Useful?
-		SummonHandler::useSummon(player, skillId, level);
+	if (game_logic_utilities::is_summon(skill_id)) {
+		point pos = reader.get<point>(); // Useful?
+		summon_handler::use_summon(player_value, skill_id, level);
 	}
 }
 
-auto Skills::applySkillCosts(ref_ptr_t<Player> player, skill_id_t skillId, skill_level_t level, bool elementalAmp) -> Result {
-	if (player->hasGmBenefits()) {
+auto skills::apply_skill_costs(ref_ptr<player> player, game_skill_id skill_id, game_skill_level level, bool elemental_amp) -> result {
+	if (player->has_gm_benefits()) {
 		// Ensure we don't lock, but don't actually use anything
-		player->getStats()->setHp(player->getStats()->getHp(), true);
-		player->getStats()->setMp(player->getStats()->getMp(), true);
-		return Result::Successful;
+		player->get_stats()->set_hp(player->get_stats()->get_hp(), true);
+		player->get_stats()->set_mp(player->get_stats()->get_mp(), true);
+		return result::successful;
 	}
 
-	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
-	seconds_t coolTime = skill->coolTime;
-	health_t mpUse = skill->mp;
-	health_t hpUse = skill->hp;
-	int16_t moneyConsume = skill->moneyConsume;
-	item_id_t item = skill->item;
-	if (mpUse > 0) {
-		auto concentrate = player->getActiveBuffs()->getConcentrateSource();
+	auto skill = channel_server::get_instance().get_skill_data_provider().get_skill(skill_id, level);
+	seconds cool_time = skill->cool_time;
+	game_health mp_use = skill->mp;
+	game_health hp_use = skill->hp;
+	int16_t money_consume = skill->money_consume;
+	game_item_id item = skill->item;
+	if (mp_use > 0) {
+		auto concentrate = player->get_active_buffs()->get_concentrate_source();
 		if (concentrate.is_initialized()) {
-			auto skill = player->getActiveBuffs()->getBuffSkillInfo(concentrate.get());
-			mpUse = (mpUse * skill->x) / 100;
+			auto skill = player->get_active_buffs()->get_buff_skill_info(concentrate.get());
+			mp_use = (mp_use * skill->x) / 100;
 		}
-		else if (elementalAmp && player->getSkills()->hasElementalAmp()) {
-			mpUse = (mpUse * player->getSkills()->getSkillInfo(player->getSkills()->getElementalAmp())->x) / 100;
+		else if (elemental_amp && player->get_skills()->has_elemental_amp()) {
+			mp_use = (mp_use * player->get_skills()->get_skill_info(player->get_skills()->get_elemental_amp())->x) / 100;
 		}
 
-		if (player->getStats()->getMp() < mpUse) {
-			return Result::Failure;
+		if (player->get_stats()->get_mp() < mp_use) {
+			return result::failure;
 		}
-		player->getStats()->modifyMp(-mpUse, true);
+		player->get_stats()->modify_mp(-mp_use, true);
 	}
 	else {
-		player->getStats()->setMp(player->getStats()->getMp(), true);
+		player->get_stats()->set_mp(player->get_stats()->get_mp(), true);
 	}
-	if (hpUse > 0) {
-		if (player->getStats()->getHp() < hpUse) {
-			return Result::Failure;
+	if (hp_use > 0) {
+		if (player->get_stats()->get_hp() < hp_use) {
+			return result::failure;
 		}
-		player->getStats()->modifyHp(-hpUse);
+		player->get_stats()->modify_hp(-hp_use);
 	}
 	if (item > 0) {
-		if (player->getInventory()->getItemAmount(item) < skill->itemCount) {
-			return Result::Failure;
+		if (player->get_inventory()->get_item_amount(item) < skill->item_count) {
+			return result::failure;
 		}
-		Inventory::takeItem(player, item, skill->itemCount);
+		inventory::take_item(player, item, skill->item_count);
 	}
-	if (coolTime.count() > 0 && skillId != Vana::Skills::Corsair::Battleship) {
-		if (isCooling(player, skillId)) {
-			return Result::Failure;
+	if (cool_time.count() > 0 && skill_id != vana::skills::corsair::battleship) {
+		if (is_cooling(player, skill_id)) {
+			return result::failure;
 		}
-		startCooldown(player, skillId, coolTime);
+		start_cooldown(player, skill_id, cool_time);
 	}
 
-	if (moneyConsume > 0) {
-		int16_t minMesos = moneyConsume - (80 + level * 5);
-		int16_t maxMesos = moneyConsume + (80 + level * 5);
-		int16_t amount = Randomizer::rand<int16_t>(maxMesos, minMesos);
-		mesos_t mesos = player->getInventory()->getMesos();
+	if (money_consume > 0) {
+		int16_t min_mesos = money_consume - (80 + level * 5);
+		int16_t max_mesos = money_consume + (80 + level * 5);
+		int16_t amount = randomizer::rand<int16_t>(max_mesos, min_mesos);
+		game_mesos mesos = player->get_inventory()->get_mesos();
 		if (mesos - amount < 0) {
 			// Hacking
-			return Result::Failure;
+			return result::failure;
 		}
-		player->getInventory()->modifyMesos(-amount);
+		player->get_inventory()->modify_mesos(-amount);
 	}
 
-	return Result::Successful;
+	return result::successful;
 }
 
-auto Skills::useAttackSkill(ref_ptr_t<Player> player, skill_id_t skillId) -> Result {
-	if (skillId != Vana::Skills::All::RegularAttack) {
-		skill_level_t level = player->getSkills()->getSkillLevel(skillId);
-		if (!ChannelServer::getInstance().getSkillDataProvider().isValidSkill(skillId) || level == 0) {
-			return Result::Failure;
+auto skills::use_attack_skill(ref_ptr<player> player, game_skill_id skill_id) -> result {
+	if (skill_id != vana::skills::all::regular_attack) {
+		game_skill_level level = player->get_skills()->get_skill_level(skill_id);
+		if (!channel_server::get_instance().get_skill_data_provider().is_valid_skill(skill_id) || level == 0) {
+			return result::failure;
 		}
-		return applySkillCosts(player, skillId, level, true);
+		return apply_skill_costs(player, skill_id, level, true);
 	}
-	return Result::Successful;
+	return result::successful;
 }
 
-auto Skills::useAttackSkillRanged(ref_ptr_t<Player> player, skill_id_t skillId, inventory_slot_t projectilePos, inventory_slot_t cashProjectilePos, item_id_t projectileId) -> Result {
-	skill_level_t level = 0;
-	if (skillId != Vana::Skills::All::RegularAttack) {
-		level = player->getSkills()->getSkillLevel(skillId);
-		if (!ChannelServer::getInstance().getSkillDataProvider().isValidSkill(skillId) || level == 0) {
-			return Result::Failure;
+auto skills::use_attack_skill_ranged(ref_ptr<player> player, game_skill_id skill_id, game_inventory_slot projectile_pos, game_inventory_slot cash_projectile_pos, game_item_id projectile_id) -> result {
+	game_skill_level level = 0;
+	if (skill_id != vana::skills::all::regular_attack) {
+		level = player->get_skills()->get_skill_level(skill_id);
+		if (!channel_server::get_instance().get_skill_data_provider().is_valid_skill(skill_id) || level == 0) {
+			return result::failure;
 		}
-		if (applySkillCosts(player, skillId, level) == Result::Failure) {
-			return Result::Failure;
+		if (apply_skill_costs(player, skill_id, level) == result::failure) {
+			return result::failure;
 		}
 	}
 
-	if (player->hasGmBenefits()) {
-		return Result::Successful;
+	if (player->has_gm_benefits()) {
+		return result::successful;
 	}
 
-	switch (GameLogicUtilities::getJobTrack(player->getStats()->getJob())) {
-		case Jobs::JobTracks::Bowman:
-		case Jobs::JobTracks::WindArcher:
-			if (player->getActiveBuffs()->hasSoulArrow()) {
-				return Result::Successful;
+	switch (game_logic_utilities::get_job_track(player->get_stats()->get_job())) {
+		case jobs::job_tracks::bowman:
+		case jobs::job_tracks::wind_archer:
+			if (player->get_active_buffs()->has_soul_arrow()) {
+				return result::successful;
 			}
-			if (!GameLogicUtilities::isArrow(projectileId)) {
-				return Result::Failure;
+			if (!game_logic_utilities::is_arrow(projectile_id)) {
+				return result::failure;
 			}
 			break;
-		case Jobs::JobTracks::Thief:
-		case Jobs::JobTracks::NightWalker:
-			if (player->getActiveBuffs()->hasShadowStars()) {
-				return Result::Successful;
+		case jobs::job_tracks::thief:
+		case jobs::job_tracks::night_walker:
+			if (player->get_active_buffs()->has_shadow_stars()) {
+				return result::successful;
 			}
-			if (cashProjectilePos > 0) {
-				Item *cashItem = player->getInventory()->getItem(Inventories::CashInventory, cashProjectilePos);
-				if (cashItem == nullptr || cashItem->getId() != projectileId) {
-					return Result::Failure;
+			if (cash_projectile_pos > 0) {
+				item *cash_item = player->get_inventory()->get_item(inventories::cash, cash_projectile_pos);
+				if (cash_item == nullptr || cash_item->get_id() != projectile_id) {
+					return result::failure;
 				}
 
-				Item *projectile = player->getInventory()->getItem(Inventories::UseInventory, projectilePos);
+				item *projectile = player->get_inventory()->get_item(inventories::use, projectile_pos);
 				if (projectile == nullptr) {
-					return Result::Failure;
+					return result::failure;
 				}
 
-				projectileId = projectile->getId();
+				projectile_id = projectile->get_id();
 			}
-			if (!GameLogicUtilities::isStar(projectileId)) {
-				return Result::Failure;
-			}
-			break;
-		case Jobs::JobTracks::Pirate:
-			if (!GameLogicUtilities::isBullet(projectileId)) {
-				return Result::Failure;
+			if (!game_logic_utilities::is_star(projectile_id)) {
+				return result::failure;
 			}
 			break;
-	}
-
-	if (projectilePos <= 0) {
-		return Result::Failure;
-	}
-
-	Item *projectile = player->getInventory()->getItem(Inventories::UseInventory, projectilePos);
-	if (projectile == nullptr || projectile->getId() != projectileId) {
-		return Result::Failure;
-	}
-
-	slot_qty_t hits = 1;
-	if (skillId != Vana::Skills::All::RegularAttack) {
-		auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
-		item_id_t optionalItem = skill->optionalItem;
-
-		if (optionalItem != 0 && optionalItem == projectileId) {
-			if (projectile->getAmount() < skill->itemCount) {
-				return Result::Failure;
+		case jobs::job_tracks::pirate:
+			if (!game_logic_utilities::is_bullet(projectile_id)) {
+				return result::failure;
 			}
-			Inventory::takeItemSlot(player, Inventories::UseInventory, projectilePos, skill->itemCount);
-			return Result::Successful;
+			break;
+	}
+
+	if (projectile_pos <= 0) {
+		return result::failure;
+	}
+
+	item *projectile = player->get_inventory()->get_item(inventories::use, projectile_pos);
+	if (projectile == nullptr || projectile->get_id() != projectile_id) {
+		return result::failure;
+	}
+
+	game_slot_qty hits = 1;
+	if (skill_id != vana::skills::all::regular_attack) {
+		auto skill = channel_server::get_instance().get_skill_data_provider().get_skill(skill_id, level);
+		game_item_id optional_item = skill->optional_item;
+
+		if (optional_item != 0 && optional_item == projectile_id) {
+			if (projectile->get_amount() < skill->item_count) {
+				return result::failure;
+			}
+			inventory::take_item_slot(player, inventories::use, projectile_pos, skill->item_count);
+			return result::successful;
 		}
 
-		slot_qty_t bullets = skill->bulletConsume;
+		game_slot_qty bullets = skill->bullet_consume;
 		if (bullets > 0) {
 			hits = bullets;
 		}
 	}
 
-	if (player->getActiveBuffs()->hasShadowPartner()) {
+	if (player->get_active_buffs()->has_shadow_partner()) {
 		hits *= 2;
 	}
 
-	if (projectile->getAmount() < hits) {
-		return Result::Failure;
+	if (projectile->get_amount() < hits) {
+		return result::failure;
 	}
 
-	Inventory::takeItemSlot(player, Inventories::UseInventory, projectilePos, hits);
-	return Result::Successful;
+	inventory::take_item_slot(player, inventories::use, projectile_pos, hits);
+	return result::successful;
 }
 
-auto Skills::heal(ref_ptr_t<Player> player, int64_t value, const BuffSource &source) -> void {
-	if (player->getStats()->getHp() < player->getStats()->getMaxHp() && player->getStats()->getHp() > 0) {
-		health_t val = static_cast<health_t>(value);
-		player->getStats()->modifyHp(val);
-		player->send(Packets::Skills::healHp(val));
+auto skills::heal(ref_ptr<player> player, int64_t value, const buff_source &source) -> void {
+	if (player->get_stats()->get_hp() < player->get_stats()->get_max_hp() && player->get_stats()->get_hp() > 0) {
+		game_health val = static_cast<game_health>(value);
+		player->get_stats()->modify_hp(val);
+		player->send(packets::skills::heal_hp(val));
 	}
 }
 
-auto Skills::hurt(ref_ptr_t<Player> player, int64_t value, const BuffSource &source) -> void {
-	health_t val = static_cast<health_t>(value);
-	if (source.getType() != BuffSourceType::Skill) throw NotImplementedException{"hurt BuffSourceType"};
-	if (player->getStats()->getHp() - val > 1) {
-		player->getStats()->modifyHp(-val);
-		player->sendMap(Packets::Skills::showSkillEffect(player->getId(), source.getSkillId()));
+auto skills::hurt(ref_ptr<player> player, int64_t value, const buff_source &source) -> void {
+	game_health val = static_cast<game_health>(value);
+	if (source.get_type() != buff_source_type::skill) throw not_implemented_exception{"hurt buff_source_type"};
+	if (player->get_stats()->get_hp() - val > 1) {
+		player->get_stats()->modify_hp(-val);
+		player->send_map(packets::skills::show_skill_effect(player->get_id(), source.get_skill_id()));
 	}
 	else {
-		Buffs::endBuff(player, source);
+		buffs::end_buff(player, source);
 	}
 }
 
-auto Skills::startCooldown(ref_ptr_t<Player> player, skill_id_t skillId, seconds_t coolTime, bool initialLoad) -> void {
-	if (isCooling(player, skillId)) {
+auto skills::start_cooldown(ref_ptr<player> player, game_skill_id skill_id, seconds cool_time, bool initial_load) -> void {
+	if (is_cooling(player, skill_id)) {
 		// Hacking
 		return;
 	}
-	if (!initialLoad) {
-		player->send(Packets::Skills::sendCooldown(skillId, coolTime));
-		player->getSkills()->addCooldown(skillId, coolTime);
+	if (!initial_load) {
+		player->send(packets::skills::send_cooldown(skill_id, cool_time));
+		player->get_skills()->add_cooldown(skill_id, cool_time);
 	}
-	Vana::Timer::Timer::create(
-		[player, skillId](const time_point_t &now) {
-			Skills::stopCooldown(player, skillId);
+	vana::timer::timer::create(
+		[player, skill_id](const time_point &now) {
+			skills::stop_cooldown(player, skill_id);
 		},
-		Vana::Timer::Id{TimerType::CoolTimer, skillId},
-		player->getTimerContainer(),
-		seconds_t{coolTime});
+		vana::timer::id{timer_type::cool_timer, skill_id},
+		player->get_timer_container(),
+		seconds{cool_time});
 }
 
-auto Skills::stopCooldown(ref_ptr_t<Player> player, skill_id_t skillId) -> void {
-	player->getSkills()->removeCooldown(skillId);
-	player->send(Packets::Skills::sendCooldown(skillId, seconds_t{0}));
-	if (skillId == Vana::Skills::Corsair::Battleship) {
-		player->getActiveBuffs()->resetBattleshipHp();
+auto skills::stop_cooldown(ref_ptr<player> player, game_skill_id skill_id) -> void {
+	player->get_skills()->remove_cooldown(skill_id);
+	player->send(packets::skills::send_cooldown(skill_id, seconds{0}));
+	if (skill_id == vana::skills::corsair::battleship) {
+		player->get_active_buffs()->reset_battleship_hp();
 	}
 
-	Vana::Timer::Id id{TimerType::CoolTimer, skillId};
-	auto container = player->getTimerContainer();
-	if (container->isTimerRunning(id)) {
-		container->removeTimer(id);
+	vana::timer::id id{timer_type::cool_timer, skill_id};
+	auto container = player->get_timer_container();
+	if (container->is_timer_running(id)) {
+		container->remove_timer(id);
 	}
 }
 
-auto Skills::isCooling(ref_ptr_t<Player> player, skill_id_t skillId) -> bool {
-	Vana::Timer::Id id{TimerType::CoolTimer, skillId};
-	return player->getTimerContainer()->isTimerRunning(id);
+auto skills::is_cooling(ref_ptr<player> player, game_skill_id skill_id) -> bool {
+	vana::timer::id id{timer_type::cool_timer, skill_id};
+	return player->get_timer_container()->is_timer_running(id);
 }
 
-auto Skills::getCooldownTimeLeft(ref_ptr_t<Player> player, skill_id_t skillId) -> int16_t {
-	int16_t coolTime = 0;
-	if (isCooling(player, skillId)) {
-		Vana::Timer::Id id{TimerType::CoolTimer, skillId};
-		coolTime = static_cast<int16_t>(player->getTimerContainer()->getRemainingTime<seconds_t>(id).count());
+auto skills::get_cooldown_time_left(ref_ptr<player> player, game_skill_id skill_id) -> int16_t {
+	int16_t cool_time = 0;
+	if (is_cooling(player, skill_id)) {
+		vana::timer::id id{timer_type::cool_timer, skill_id};
+		cool_time = static_cast<int16_t>(player->get_timer_container()->get_remaining_time<seconds>(id).count());
 	}
-	return coolTime;
+	return cool_time;
 }
 
 }

@@ -21,58 +21,58 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <vector>
 
-namespace Vana {
-	struct MobInfo {
+namespace vana {
+	struct mob_info {
 		bool boss = false;
-		bool canFreeze = false;
-		bool canPoison = false;
+		bool can_freeze = false;
+		bool can_poison = false;
 		bool undead = false;
 		bool flying = false;
 		bool friendly = false;
-		bool publicReward = false;
-		bool explosiveReward = false;
+		bool public_reward = false;
+		bool explosive_reward = false;
 		bool invincible = false;
 		bool damageable = true;
-		bool canDoBumpDamage = true;
-		bool autoAggro = false;
-		bool keepCorpse = false;
-		bool onlyNormalAttacks = false;
-		int8_t carnivalPoints = 0;
-		int8_t hpColor = 0;
-		int8_t hpBackgroundColor = 0;
-		uint8_t skillCount = 0;
-		int16_t wAtk = 0;
-		int16_t wDef = 0;
-		int16_t mAtk = 0;
-		int16_t mDef = 0;
+		bool can_do_bump_damage = true;
+		bool auto_aggro = false;
+		bool keep_corpse = false;
+		bool only_normal_attacks = false;
+		int8_t carnival_points = 0;
+		int8_t hp_color = 0;
+		int8_t hp_background_color = 0;
+		uint8_t skill_count = 0;
+		int16_t w_atk = 0;
+		int16_t w_def = 0;
+		int16_t m_atk = 0;
+		int16_t m_def = 0;
 		int16_t acc = 0;
 		int16_t avo = 0;
 		int16_t speed = 0;
-		int16_t chaseSpeed = 0;
-		int16_t summonType = 0;
+		int16_t chase_speed = 0;
+		int16_t summon_type = 0;
 		uint16_t level = 0;
-		int32_t selfDestruction = 0;
-		item_id_t buff = 0;
-		mob_id_t link = 0;
-		int32_t removeAfter = 0;
+		int32_t self_destruction = 0;
+		game_item_id buff = 0;
+		game_mob_id link = 0;
+		int32_t remove_after = 0;
 		int32_t knockback = 0;
-		damage_t fixedDamage = 0;
-		skill_id_t damagedBySkill = 0;
-		mob_id_t damagedByMob = 0;
+		game_damage fixed_damage = 0;
+		game_skill_id damaged_by_skill = 0;
+		game_mob_id damaged_by_mob = 0;
 		uint32_t hp = 0;
 		uint32_t mp = 0;
-		experience_t exp = 0;
-		uint32_t hpRecovery = 0;
-		uint32_t mpRecovery = 0;
+		game_experience exp = 0;
+		uint32_t hp_recovery = 0;
+		uint32_t mp_recovery = 0;
 		double traction = 0.;
-		MobElementalAttribute iceAttr = MobElementalAttribute::Normal;
-		MobElementalAttribute fireAttr = MobElementalAttribute::Normal;
-		MobElementalAttribute poisonAttr = MobElementalAttribute::Normal;
-		MobElementalAttribute lightningAttr = MobElementalAttribute::Normal;
-		MobElementalAttribute holyAttr = MobElementalAttribute::Normal;
-		MobElementalAttribute nonElemAttr = MobElementalAttribute::Normal;
-		vector_t<mob_id_t> summon;
+		mob_elemental_attribute ice_attr = mob_elemental_attribute::normal;
+		mob_elemental_attribute fire_attr = mob_elemental_attribute::normal;
+		mob_elemental_attribute poison_attr = mob_elemental_attribute::normal;
+		mob_elemental_attribute lightning_attr = mob_elemental_attribute::normal;
+		mob_elemental_attribute holy_attr = mob_elemental_attribute::normal;
+		mob_elemental_attribute non_elem_attr = mob_elemental_attribute::normal;
+		vector<game_mob_id> summon;
 
-		auto hasHpBar() const -> bool { return hpColor > 0; }
+		auto has_hp_bar() const -> bool { return hp_color > 0; }
 	};
 }

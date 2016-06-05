@@ -21,33 +21,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	struct Point;
+namespace vana {
+	struct point;
 
-	namespace ChannelServer {
-		class Mist;
-		class MysticDoor;
-		class Player;
+	namespace channel_server {
+		class mist;
+		class mystic_door;
+		class player;
 
-		namespace Packets {
-			namespace Map {
-				PACKET(playerPacket, ref_ptr_t<Vana::ChannelServer::Player> player);
-				PACKET(removePlayer, player_id_t playerId);
-				PACKET(changeMap, ref_ptr_t<Vana::ChannelServer::Player> player, bool spawnByPosition, const Point &spawnPosition);
-				PACKET(portalBlocked);
-				PACKET(showClock, int8_t hour, int8_t min, int8_t sec);
-				PACKET(showTimer, const seconds_t &sec);
-				PACKET(forceMapEquip);
-				PACKET(showEventInstructions);
-				PACKET(spawnMist, Mist *mist, bool mapEntry);
-				PACKET(removeMist, map_object_t id);
-				PACKET(spawnDoor, ref_ptr_t<MysticDoor> door, bool isInsideTown, bool alreadyOpen);
-				PACKET(removeDoor, ref_ptr_t<MysticDoor> door, bool isFade);
-				PACKET(spawnPortal, ref_ptr_t<MysticDoor> door, map_id_t callingMap);
-				PACKET(removePortal);
-				PACKET(instantWarp, portal_id_t portalId);
-				PACKET(boatDockUpdate, bool docked, int8_t shipKind);
-				PACKET(changeWeather, bool adminWeather, item_id_t itemId = 0, const string_t &message = "");
+		namespace packets {
+			namespace map {
+				PACKET(player_packet, ref_ptr<vana::channel_server::player> player);
+				PACKET(remove_player, game_player_id player_id);
+				PACKET(change_map, ref_ptr<vana::channel_server::player> player, bool spawn_by_position, const point &spawn_position);
+				PACKET(portal_blocked);
+				PACKET(show_clock, int8_t hour, int8_t min, int8_t sec);
+				PACKET(show_timer, const seconds &sec);
+				PACKET(force_map_equip);
+				PACKET(show_event_instructions);
+				PACKET(spawn_mist, mist *mist, bool map_entry);
+				PACKET(remove_mist, game_map_object id);
+				PACKET(spawn_door, ref_ptr<mystic_door> door, bool is_inside_town, bool already_open);
+				PACKET(remove_door, ref_ptr<mystic_door> door, bool is_fade);
+				PACKET(spawn_portal, ref_ptr<mystic_door> door, game_map_id calling_map);
+				PACKET(remove_portal);
+				PACKET(instant_warp, game_portal_id portal_id);
+				PACKET(boat_dock_update, bool docked, int8_t ship_kind);
+				PACKET(change_weather, bool admin_weather, game_item_id item_id = 0, const string &message = "");
 			}
 		}
 	}

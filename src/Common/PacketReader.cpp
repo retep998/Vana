@@ -21,44 +21,44 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sstream>
 #include <stdexcept>
 
-namespace Vana {
+namespace vana {
 
-PacketReader::PacketReader(unsigned char *buffer, size_t length) :
+packet_reader::packet_reader(unsigned char *buffer, size_t length) :
 	m_buffer{buffer},
 	m_length{length}
 {
 }
 
-auto PacketReader::skip(int32_t len) -> PacketReader & {
+auto packet_reader::skip(int32_t len) -> packet_reader & {
 	m_pos += len;
 	return *this;
 }
 
-auto PacketReader::getBuffer() const -> unsigned char * {
+auto packet_reader::get_buffer() const -> unsigned char * {
 	return m_buffer + m_pos;
 }
 
-auto PacketReader::getBufferLength() const -> size_t {
-	return getSize() - m_pos;
+auto packet_reader::get_buffer_length() const -> size_t {
+	return get_size() - m_pos;
 }
 
-auto PacketReader::getConsumedLength() const -> size_t {
+auto packet_reader::get_consumed_length() const -> size_t {
 	return m_pos;
 }
 
-auto PacketReader::reset(int32_t len) -> PacketReader & {
+auto packet_reader::reset(int32_t len) -> packet_reader & {
 	if (len >= 0) {
 		m_pos = len;
 	}
 	else {
-		m_pos = getSize() + len; // In this case, len is negative here so we take the total length and plus (minus) it by len
+		m_pos = get_size() + len; // In this case, len is negative here so we take the total length and plus (minus) it by len
 	}
 
 	return *this;
 }
 
-auto PacketReader::toString() const -> string_t {
-	return StringUtilities::bytesToHex(getBuffer(), getBufferLength());
+auto packet_reader::to_string() const -> string {
+	return utilities::str::bytes_to_hex(get_buffer(), get_buffer_length());
 }
 
 }

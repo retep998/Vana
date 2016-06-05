@@ -22,24 +22,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <asio.hpp>
 
-namespace Vana {
-	class ConnectionManager;
+namespace vana {
+	class connection_manager;
 
-	class ConnectionListener {
+	class connection_listener {
 	public:
-		ConnectionListener(
-			const ConnectionListenerConfig &config,
-			HandlerCreator handlerCreator,
-			asio::io_service &ioService,
+		connection_listener(
+			const connection_listener_config &config,
+			handler_creator handler_creator,
+			asio::io_service &io_service,
 			asio::ip::tcp::endpoint endpoint,
-			ConnectionManager &manager);
+			connection_manager &manager);
 
-		auto beginAccept() -> void;
+		auto begin_accept() -> void;
 		auto stop() -> void;
 	private:
-		ConnectionListenerConfig m_config;
+		connection_listener_config m_config;
 		asio::ip::tcp::acceptor m_acceptor;
-		ConnectionManager &m_manager;
-		HandlerCreator m_handlerCreator;
+		connection_manager &m_manager;
+		handler_creator m_handler_creator;
 	};
 }

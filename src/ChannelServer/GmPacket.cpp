@@ -20,63 +20,63 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Player.hpp"
 #include "ChannelServer/SmsgHeader.hpp"
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
-namespace Gm {
+namespace vana {
+namespace channel_server {
+namespace packets {
+namespace gm {
 
-PACKET_IMPL(beginHide) {
-	PacketBuilder builder;
+PACKET_IMPL(begin_hide) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_GM)
+		.add<packet_header>(SMSG_GM)
 		.add<int8_t>(0x10)
 		.add<bool>(true);
 	return builder;
 }
 
-PACKET_IMPL(endHide) {
-	PacketBuilder builder;
+PACKET_IMPL(end_hide) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_GM)
+		.add<packet_header>(SMSG_GM)
 		.add<int8_t>(0x10)
 		.add<bool>(false);
 	return builder;
 }
 
 PACKET_IMPL(warning, bool succeed) {
-	PacketBuilder builder;
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_GM)
+		.add<packet_header>(SMSG_GM)
 		.add<int8_t>(0x1d)
 		.add<bool>(succeed);
 	return builder;
 }
 
 PACKET_IMPL(block) {
-	PacketBuilder builder;
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_GM)
+		.add<packet_header>(SMSG_GM)
 		.add<int8_t>(0x04)
 		.unk<int8_t>(); // Might be something like succeed but it isn't displayed
 	return builder;
 }
 
-PACKET_IMPL(invalidCharacterName) {
-	PacketBuilder builder;
+PACKET_IMPL(invalid_character_name) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_GM)
+		.add<packet_header>(SMSG_GM)
 		.add<int8_t>(0x06)
 		.unk<int8_t>(1);
 	return builder;
 }
 
-PACKET_IMPL(hiredMerchantPlace, int8_t mode, int32_t id) {
-	PacketBuilder builder;
+PACKET_IMPL(hired_merchant_place, int8_t mode, int32_t id) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_GM)
+		.add<packet_header>(SMSG_GM)
 		.add<int8_t>(0x13)
 		.add<int8_t>(mode);
-	if (mode == HiredMerchantModes::Channel) {
+	if (mode == hired_merchant_modes::channel) {
 		// "Not found" can be expressed by -2
 		builder.add<int8_t>(static_cast<int8_t>(id));
 	}
@@ -86,14 +86,14 @@ PACKET_IMPL(hiredMerchantPlace, int8_t mode, int32_t id) {
 	return builder;
 }
 
-PACKET_IMPL(setGetVarResult, const string_t &name, const string_t &variable, const string_t &value) {
-	PacketBuilder builder;
+PACKET_IMPL(set_get_var_result, const string &name, const string &variable, const string &value) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_GM)
+		.add<packet_header>(SMSG_GM)
 		.add<int8_t>(0x09)
-		.add<string_t>(name)
-		.add<string_t>(variable)
-		.add<string_t>(value);
+		.add<string>(name)
+		.add<string>(variable)
+		.add<string>(value);
 	return builder;
 }
 

@@ -26,82 +26,82 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-	struct RatesConfig {
-		struct Types {
-			static const int32_t mobExpRate = 0x01;
-			static const int32_t questExpRate = 0x02;
-			static const int32_t dropMeso = 0x04;
-			static const int32_t dropRate = 0x08;
-			static const int32_t globalDropRate = 0x10;
-			static const int32_t globalDropMeso = 0x20;
+namespace vana {
+	struct rates_config {
+		struct types {
+			static const int32_t mob_exp_rate = 0x01;
+			static const int32_t quest_exp_rate = 0x02;
+			static const int32_t drop_meso = 0x04;
+			static const int32_t drop_rate = 0x08;
+			static const int32_t global_drop_rate = 0x10;
+			static const int32_t global_drop_meso = 0x20;
 
 			static const int32_t global =
-				globalDropRate |
-				globalDropMeso;
+				global_drop_rate |
+				global_drop_meso;
 
 			static const int32_t all =
-				mobExpRate |
-				questExpRate |
-				dropMeso |
-				dropRate |
-				globalDropRate |
-				globalDropMeso;
+				mob_exp_rate |
+				quest_exp_rate |
+				drop_meso |
+				drop_rate |
+				global_drop_rate |
+				global_drop_meso;
 		};
 
-		static const int32_t consistentRateBetweenGlobalAndRegular = -1;
+		static const int32_t consistent_rate_between_global_and_regular = -1;
 
-		int32_t mobExpRate = 1;
-		int32_t questExpRate = 1;
-		int32_t dropMeso = 1;
-		int32_t dropRate = 1;
-		int32_t globalDropRate = consistentRateBetweenGlobalAndRegular;
-		int32_t globalDropMeso = consistentRateBetweenGlobalAndRegular;
+		int32_t mob_exp_rate = 1;
+		int32_t quest_exp_rate = 1;
+		int32_t drop_meso = 1;
+		int32_t drop_rate = 1;
+		int32_t global_drop_rate = consistent_rate_between_global_and_regular;
+		int32_t global_drop_meso = consistent_rate_between_global_and_regular;
 
-		auto isGlobalDropConsistentWithRegularDropRate() const -> bool {
-			return globalDropRate == consistentRateBetweenGlobalAndRegular;
+		auto is_global_drop_consistent_with_regular_drop_rate() const -> bool {
+			return global_drop_rate == consistent_rate_between_global_and_regular;
 		}
 
-		auto isGlobalDropMesoConsistentWithRegularDropMesoRate() const -> bool {
-			return globalDropMeso == consistentRateBetweenGlobalAndRegular;
+		auto is_global_drop_meso_consistent_with_regular_drop_meso_rate() const -> bool {
+			return global_drop_meso == consistent_rate_between_global_and_regular;
 		}
 	};
 
 	template <>
-	struct LuaVariantInto<RatesConfig> {
-		auto transform(LuaEnvironment &config, const LuaVariant &obj, const string_t &prefix) -> RatesConfig {
-			config.validateObject(LuaType::Table, obj, prefix);
+	struct lua_variant_into<rates_config> {
+		auto transform(lua_environment &config, const lua_variant &obj, const string &prefix) -> rates_config {
+			config.validate_object(lua::lua_type::table, obj, prefix);
 		
-			RatesConfig ret;
+			rates_config ret;
 
-			auto &values = obj.as<hash_map_t<LuaVariant, LuaVariant>>();
+			auto &values = obj.as<hash_map<lua_variant, lua_variant>>();
 			for (const auto &value : values) {
-				config.validateKey(LuaType::String, value.first, prefix);
+				config.validate_key(lua::lua_type::string, value.first, prefix);
 
-				string_t key = value.first.as<string_t>();
+				string key = value.first.as<string>();
 				if (key == "mob_exp") {
-					if (config.validateValue(LuaType::Number, value.second, key, prefix, true) == LuaType::Nil) continue;
-					ret.mobExpRate = value.second.as<int32_t>();
+					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					ret.mob_exp_rate = value.second.as<int32_t>();
 				}
 				else if (key == "quest_exp") {
-					if (config.validateValue(LuaType::Number, value.second, key, prefix, true) == LuaType::Nil) continue;
-					ret.questExpRate = value.second.as<int32_t>();
+					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					ret.quest_exp_rate = value.second.as<int32_t>();
 				}
 				else if (key == "drop_meso") {
-					if (config.validateValue(LuaType::Number, value.second, key, prefix, true) == LuaType::Nil) continue;
-					ret.dropMeso = value.second.as<int32_t>();
+					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					ret.drop_meso = value.second.as<int32_t>();
 				}
 				else if (key == "drop_rate") {
-					if (config.validateValue(LuaType::Number, value.second, key, prefix, true) == LuaType::Nil) continue;
-					ret.dropRate = value.second.as<int32_t>();
+					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					ret.drop_rate = value.second.as<int32_t>();
 				}
 				else if (key == "global_drop_rate") {
-					if (config.validateValue(LuaType::Number, value.second, key, prefix, true) == LuaType::Nil) continue;
-					ret.globalDropRate = value.second.as<int32_t>();
+					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					ret.global_drop_rate = value.second.as<int32_t>();
 				}
 				else if (key == "global_drop_meso") {
-					if (config.validateValue(LuaType::Number, value.second, key, prefix, true) == LuaType::Nil) continue;
-					ret.globalDropMeso = value.second.as<int32_t>();
+					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					ret.global_drop_meso = value.second.as<int32_t>();
 				}
 			}
 
@@ -110,24 +110,24 @@ namespace Vana {
 	};
 
 	template <>
-	struct PacketSerialize<RatesConfig> {
-		auto read(PacketReader &reader) -> RatesConfig {
-			RatesConfig ret;
-			ret.mobExpRate = reader.get<int32_t>();
-			ret.questExpRate = reader.get<int32_t>();
-			ret.dropRate = reader.get<int32_t>();
-			ret.dropMeso = reader.get<int32_t>();
-			ret.globalDropRate = reader.get<int32_t>();
-			ret.globalDropMeso = reader.get<int32_t>();
+	struct packet_serialize<rates_config> {
+		auto read(packet_reader &reader) -> rates_config {
+			rates_config ret;
+			ret.mob_exp_rate = reader.get<int32_t>();
+			ret.quest_exp_rate = reader.get<int32_t>();
+			ret.drop_rate = reader.get<int32_t>();
+			ret.drop_meso = reader.get<int32_t>();
+			ret.global_drop_rate = reader.get<int32_t>();
+			ret.global_drop_meso = reader.get<int32_t>();
 			return ret;
 		}
-		auto write(PacketBuilder &builder, const RatesConfig &obj) -> void {
-			builder.add<int32_t>(obj.mobExpRate);
-			builder.add<int32_t>(obj.questExpRate);
-			builder.add<int32_t>(obj.dropRate);
-			builder.add<int32_t>(obj.dropMeso);
-			builder.add<int32_t>(obj.globalDropRate);
-			builder.add<int32_t>(obj.globalDropMeso);
+		auto write(packet_builder &builder, const rates_config &obj) -> void {
+			builder.add<int32_t>(obj.mob_exp_rate);
+			builder.add<int32_t>(obj.quest_exp_rate);
+			builder.add<int32_t>(obj.drop_rate);
+			builder.add<int32_t>(obj.drop_meso);
+			builder.add<int32_t>(obj.global_drop_rate);
+			builder.add<int32_t>(obj.global_drop_meso);
 		}
 	};
 }

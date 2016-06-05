@@ -28,30 +28,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/PlayerSkills.hpp"
 #include "ChannelServer/SmsgHeader.hpp"
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
-namespace Party {
+namespace vana {
+namespace channel_server {
+namespace packets {
+namespace party {
 
 PACKET_IMPL(error, int8_t error) {
-	PacketBuilder builder;
+	packet_builder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
 		.add<int8_t>(error);
 	return builder;
 }
 
-PACKET_IMPL(inviteError, int8_t error, const string_t &player) {
-	PacketBuilder builder;
+PACKET_IMPL(invite_error, int8_t error, const string &player) {
+	packet_builder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
 		.add<int8_t>(error)
-		.add<string_t>(player);
+		.add<string>(player);
 	return builder;
 }
 
-PACKET_IMPL(customError, const string_t &error) {
-	PacketBuilder builder;
+PACKET_IMPL(custom_error, const string &error) {
+	packet_builder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
 		.add<int8_t>(0x24);
@@ -59,7 +59,7 @@ PACKET_IMPL(customError, const string_t &error) {
 	if (error.empty()) {
 		builder
 			.add<bool>(true)
-			.add<string_t>(error);
+			.add<string>(error);
 	}
 	else {
 		builder.add<bool>(false);
@@ -68,132 +68,132 @@ PACKET_IMPL(customError, const string_t &error) {
 	return builder;
 }
 
-PACKET_IMPL(createParty, Vana::ChannelServer::Party *party, ref_ptr_t<Vana::ChannelServer::Player> leader) {
-	PacketBuilder builder;
+PACKET_IMPL(create_party, vana::channel_server::party *party, ref_ptr<vana::channel_server::player> leader) {
+	packet_builder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
 		.add<int8_t>(0x08)
-		.add<party_id_t>(party->getId());
+		.add<game_party_id>(party->get_id());
 
-	if (ref_ptr_t<MysticDoor> door = leader->getSkills()->getMysticDoor()) {
-		if (door->getMapId() == leader->getMapId()) {
+	if (ref_ptr<mystic_door> door = leader->get_skills()->get_mystic_door()) {
+		if (door->get_map_id() == leader->get_map_id()) {
 			builder
-				.add<map_id_t>(door->getMapId())
-				.add<map_id_t>(door->getTownId())
-				.add<Point>(door->getMapPos());
+				.add<game_map_id>(door->get_map_id())
+				.add<game_map_id>(door->get_town_id())
+				.add<point>(door->get_map_pos());
 		}
 		else {
 			builder
-				.add<map_id_t>(door->getTownId())
-				.add<map_id_t>(door->getMapId())
-				.add<Point>(door->getTownPos());
+				.add<game_map_id>(door->get_town_id())
+				.add<game_map_id>(door->get_map_id())
+				.add<point>(door->get_town_pos());
 		}
 	}
 	else {
 		builder
-			.add<map_id_t>(Vana::Maps::NoMap)
-			.add<map_id_t>(Vana::Maps::NoMap)
-			.add<Point>(Point{});
+			.add<game_map_id>(vana::maps::no_map)
+			.add<game_map_id>(vana::maps::no_map)
+			.add<point>(point{});
 	}
 	return builder;
 }
 
-PACKET_IMPL(joinParty, map_id_t targetMapId, Vana::ChannelServer::Party *party, const string_t &player) {
-	PacketBuilder builder;
+PACKET_IMPL(join_party, game_map_id target_map_id, vana::channel_server::party *party, const string &player) {
+	packet_builder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
 		.add<int8_t>(0x0F)
-		.add<party_id_t>(party->getId())
-		.add<string_t>(player)
-		.addBuffer(updateParty(targetMapId, party));
+		.add<game_party_id>(party->get_id())
+		.add<string>(player)
+		.add_buffer(update_party(target_map_id, party));
 	return builder;
 }
 
-PACKET_IMPL(leaveParty, map_id_t targetMapId, Vana::ChannelServer::Party *party, player_id_t playerId, const string_t &name, bool kicked) {
-	PacketBuilder builder;
+PACKET_IMPL(leave_party, game_map_id target_map_id, vana::channel_server::party *party, game_player_id player_id, const string &name, bool kicked) {
+	packet_builder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
 		.add<int8_t>(0x0C)
-		.add<party_id_t>(party->getId())
-		.add<player_id_t>(playerId)
+		.add<game_party_id>(party->get_id())
+		.add<game_player_id>(player_id)
 		.add<bool>(true) // Is a regular leave (aka not disbanding)
 		.add<bool>(kicked)
-		.add<string_t>(name)
-		.addBuffer(updateParty(targetMapId, party));
+		.add<string>(name)
+		.add_buffer(update_party(target_map_id, party));
 	return builder;
 }
 
-PACKET_IMPL(invitePlayer, Vana::ChannelServer::Party *party, const string_t &inviter) {
-	PacketBuilder builder;
+PACKET_IMPL(invite_player, vana::channel_server::party *party, const string &inviter) {
+	packet_builder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
 		.add<int8_t>(0x04)
-		.add<party_id_t>(party->getId())
-		.add<string_t>(inviter)
+		.add<game_party_id>(party->get_id())
+		.add<string>(inviter)
 		.unk<int8_t>();
 	return builder;
 }
 
-PACKET_IMPL(disbandParty, Vana::ChannelServer::Party *party) {
-	PacketBuilder builder;
+PACKET_IMPL(disband_party, vana::channel_server::party *party) {
+	packet_builder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
 		.add<int8_t>(0x0C)
-		.add<party_id_t>(party->getId())
-		.add<player_id_t>(party->getLeaderId())
+		.add<game_party_id>(party->get_id())
+		.add<game_player_id>(party->get_leader_id())
 		.add<bool>(false) // Is not a regular leave (aka disbanding)
-		.add<party_id_t>(party->getId());
+		.add<game_party_id>(party->get_id());
 	return builder;
 }
 
-PACKET_IMPL(setLeader, Vana::ChannelServer::Party *party, player_id_t newLeader) {
-	PacketBuilder builder;
+PACKET_IMPL(set_leader, vana::channel_server::party *party, game_player_id new_leader) {
+	packet_builder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
 		.add<int8_t>(0x1B)
-		.add<player_id_t>(newLeader)
+		.add<game_player_id>(new_leader)
 		.add<bool>(false);
 	return builder;
 }
 
-PACKET_IMPL(silentUpdate, map_id_t targetMapId, Vana::ChannelServer::Party *party) {
-	PacketBuilder builder;
+PACKET_IMPL(silent_update, game_map_id target_map_id, vana::channel_server::party *party) {
+	packet_builder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
 		.add<int8_t>(0x07)
-		.add<party_id_t>(party->getId())
-		.addBuffer(updateParty(targetMapId, party));
+		.add<game_party_id>(party->get_id())
+		.add_buffer(update_party(target_map_id, party));
 	return builder;
 }
 
-PACKET_IMPL(updateParty, map_id_t targetMapId, Vana::ChannelServer::Party *party) {
-	PacketBuilder builder;
-	auto &members = party->getMembers();
-	size_t offset = Parties::MaxMembers - members.size();
+PACKET_IMPL(update_party, game_map_id target_map_id, vana::channel_server::party *party) {
+	packet_builder builder;
+	auto &members = party->get_members();
+	size_t offset = parties::max_members - members.size();
 	size_t i = 0;
-	channel_id_t channelId = ChannelServer::getInstance().getChannelId();
-	auto &provider = ChannelServer::getInstance().getPlayerDataProvider();
+	game_channel_id channel_id = channel_server::get_instance().get_channel_id();
+	auto &provider = channel_server::get_instance().get_player_data_provider();
 
 	// Add party member IDs to packet
 	for (const auto &kvp : members) {
-		builder.add<player_id_t>(kvp.first);
+		builder.add<game_player_id>(kvp.first);
 	}
 	for (i = 0; i < offset; i++) {
-		builder.add<player_id_t>(0);
+		builder.add<game_player_id>(0);
 	}
 
 	// Add party member names to packet
 	for (const auto &kvp : members) {
-		auto player = provider.getPlayerData(kvp.first);
-		builder.add<string_t>(player->name, 13);
+		auto player = provider.get_player_data(kvp.first);
+		builder.add<string>(player->name, 13);
 	}
 	for (i = 0; i < offset; i++) {
-		builder.add<string_t>("", 13);
+		builder.add<string>("", 13);
 	}
 
 	// Add party member jobs to packet
 	for (const auto &kvp : members) {
-		auto player = provider.getPlayerData(kvp.first);
+		auto player = provider.get_player_data(kvp.first);
 		builder.add<int32_t>(player->job.get(-1));
 	}
 	for (i = 0; i < offset; i++) {
@@ -202,7 +202,7 @@ PACKET_IMPL(updateParty, map_id_t targetMapId, Vana::ChannelServer::Party *party
 
 	// Add party member levels to packet
 	for (const auto &kvp : members) {
-		auto player = provider.getPlayerData(kvp.first);
+		auto player = provider.get_player_data(kvp.first);
 		builder.add<int32_t>(player->level.is_initialized() ?
 			player->level.get() :
 			-1);
@@ -213,8 +213,8 @@ PACKET_IMPL(updateParty, map_id_t targetMapId, Vana::ChannelServer::Party *party
 
 	// Add party member channels to packet
 	for (const auto &kvp : members) {
-		auto player = provider.getPlayerData(kvp.first);
-		builder.add<int32_t>(player->cashShop ?
+		auto player = provider.get_player_data(kvp.first);
+		builder.add<int32_t>(player->cash_shop ?
 			-1 :
 			player->channel.get(-2));
 	}
@@ -222,70 +222,70 @@ PACKET_IMPL(updateParty, map_id_t targetMapId, Vana::ChannelServer::Party *party
 		builder.add<int32_t>(-2);
 	}
 
-	builder.add<player_id_t>(party->getLeaderId());
+	builder.add<game_player_id>(party->get_leader_id());
 
 	// Add party member maps to packet
 	for (const auto &kvp : members) {
-		auto player = provider.getPlayerData(kvp.first);
-		if (!player->cashShop && !player->mts && player->channel == channelId && player->map == targetMapId) {
-			builder.add<map_id_t>(targetMapId);
+		auto player = provider.get_player_data(kvp.first);
+		if (!player->cash_shop && !player->mts && player->channel == channel_id && player->map == target_map_id) {
+			builder.add<game_map_id>(target_map_id);
 		}
 		else {
-			builder.add<map_id_t>(0);
+			builder.add<game_map_id>(0);
 		}
 	}
 	for (i = 0; i < offset; i++) {
-		builder.add<map_id_t>(-2);
+		builder.add<game_map_id>(-2);
 	}
 
 	// Mystic Door information
 	for (const auto &kvp : members) {
 		if (kvp.second == nullptr) {
 			builder
-				.add<map_id_t>(Vana::Maps::NoMap)
-				.add<map_id_t>(Vana::Maps::NoMap)
-				.add<WidePoint>(WidePoint{-1, -1});
+				.add<game_map_id>(vana::maps::no_map)
+				.add<game_map_id>(vana::maps::no_map)
+				.add<wide_point>(wide_point{-1, -1});
 		}
-		else if (ref_ptr_t<MysticDoor> door = kvp.second->getSkills()->getMysticDoor()) {
+		else if (ref_ptr<mystic_door> door = kvp.second->get_skills()->get_mystic_door()) {
 			builder
-				.add<map_id_t>(door->getTownId())
-				.add<map_id_t>(door->getMapId())
-				.add<WidePoint>(WidePoint{door->getMapPos()});
+				.add<game_map_id>(door->get_town_id())
+				.add<game_map_id>(door->get_map_id())
+				.add<wide_point>(wide_point{door->get_map_pos()});
 		}
 		else {
 			builder
-				.add<map_id_t>(Vana::Maps::NoMap)
-				.add<map_id_t>(Vana::Maps::NoMap)
-				.add<WidePoint>(WidePoint{-1, -1});
+				.add<game_map_id>(vana::maps::no_map)
+				.add<game_map_id>(vana::maps::no_map)
+				.add<wide_point>(wide_point{-1, -1});
 		}
 	}
 	for (i = 0; i < offset; i++) {
 		builder
-			.add<map_id_t>(Vana::Maps::NoMap)
-			.add<map_id_t>(Vana::Maps::NoMap)
-			.add<WidePoint>(WidePoint{-1, -1});
+			.add<game_map_id>(vana::maps::no_map)
+			.add<game_map_id>(vana::maps::no_map)
+			.add<wide_point>(wide_point{-1, -1});
 	}
 	return builder;
 }
 
-PACKET_IMPL(updateDoor, uint8_t zeroBasedPlayerIndex, ref_ptr_t<MysticDoor> door) {
-	PacketBuilder builder;
+PACKET_IMPL(update_door, uint8_t zero_based_player_index, ref_ptr<mystic_door> door) {
+	packet_builder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
 		.add<int8_t>(0x25)
-		.add<uint8_t>(zeroBasedPlayerIndex);
+		.add<uint8_t>(zero_based_player_index);
 
 	if (door == nullptr) {
 		builder
-			.add<map_id_t>(Vana::Maps::NoMap)
-			.add<map_id_t>(Vana::Maps::NoMap)
-			.add<WidePoint>(WidePoint{-1, -1});
+			.add<game_map_id>(vana::maps::no_map)
+			.add<game_map_id>(vana::maps::no_map)
+			.add<wide_point>(wide_point{-1, -1});
 	}
 	else {
 		builder
-			.add<map_id_t>(door->getTownId())
-			.add<map_id_t>(door->getMapId())
-			.add<WidePoint>(WidePoint{door->getMapPos()});
+			.add<game_map_id>(door->get_town_id())
+			.add<game_map_id>(door->get_map_id())
+			.add<wide_point>(wide_point{door->get_map_pos()});
 	}
 
 	return builder;

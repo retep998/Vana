@@ -20,40 +20,40 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Rect.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct SkillLevelInfo {
-		int8_t mobCount = 0;
-		int8_t hitCount = 0;
+namespace vana {
+	struct skill_level_info {
+		int8_t mob_count = 0;
+		int8_t hit_count = 0;
 		int8_t mastery = 0;
-		uint8_t criticalDamage = 0;
-		skill_level_t level = 0;
-		health_t mp = 0;
-		health_t hp = 0;
-		slot_qty_t itemCount = 0;
-		slot_qty_t bulletConsume = 0;
-		int16_t moneyConsume = 0;
+		uint8_t critical_damage = 0;
+		game_skill_level level = 0;
+		game_health mp = 0;
+		game_health hp = 0;
+		game_slot_qty item_count = 0;
+		game_slot_qty bullet_consume = 0;
+		int16_t money_consume = 0;
 		int16_t x = 0;
 		int16_t y = 0;
-		stat_t speed = 0;
-		stat_t jump = 0;
-		stat_t str = 0;
-		stat_t wAtk = 0;
-		stat_t wDef = 0;
-		stat_t mAtk = 0;
-		stat_t mDef = 0;
-		stat_t acc = 0;
-		stat_t avo = 0;
+		game_stat speed = 0;
+		game_stat jump = 0;
+		game_stat str = 0;
+		game_stat w_atk = 0;
+		game_stat w_def = 0;
+		game_stat m_atk = 0;
+		game_stat m_def = 0;
+		game_stat acc = 0;
+		game_stat avo = 0;
 		int16_t morph = 0;
 		int16_t damage = 0;
 		int16_t range = 0;
-		uint16_t hpProp = 0;
-		uint16_t mpProp = 0;
+		uint16_t hp_prop = 0;
+		uint16_t mp_prop = 0;
 		uint16_t prop = 0;
-		damage_t fixedDamage = 0;
-		item_id_t item = 0;
-		item_id_t optionalItem = 0;
-		seconds_t buffTime = seconds_t{0};
-		seconds_t coolTime = seconds_t{0};
-		Rect dimensions;
+		game_damage fixed_damage = 0;
+		game_item_id item = 0;
+		game_item_id optional_item = 0;
+		seconds buff_time = seconds{0};
+		seconds cool_time = seconds{0};
+		rect dimensions;
 	};
 }

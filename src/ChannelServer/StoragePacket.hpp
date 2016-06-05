@@ -20,18 +20,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/PacketBuilder.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	namespace ChannelServer {
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class player;
 
-		namespace Packets {
-			namespace Storage {
-				PACKET(showStorage, ref_ptr_t<Player> player, npc_id_t npcId);
-				PACKET(addItem, ref_ptr_t<Player> player, inventory_t inv);
-				PACKET(takeItem, ref_ptr_t<Player> player, inventory_t inv);
-				PACKET(changeMesos, storage_slot_t slotCount, mesos_t mesos);
-				PACKET(storageFull);
-				PACKET(noMesos);
+		namespace packets {
+			namespace storage {
+				PACKET(show_storage, ref_ptr<player> player, game_npc_id npc_id);
+				PACKET(add_item, ref_ptr<player> player, game_inventory inv);
+				PACKET(take_item, ref_ptr<player> player, game_inventory inv);
+				PACKET(change_mesos, game_storage_slot slot_count, game_mesos mesos);
+				PACKET(storage_full);
+				PACKET(no_mesos);
 			}
 		}
 	}

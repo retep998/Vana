@@ -19,26 +19,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Randomizer.hpp"
 #include "Common/SkillConstants.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-StatusInfo::StatusInfo(int32_t status, int32_t val, int32_t skillId, seconds_t time) :
+status_info::status_info(int32_t status, int32_t val, int32_t skill_id, seconds time) :
 	status{status},
 	val{val},
-	skillId{skillId},
+	skill_id{skill_id},
 	time{time},
 	reflection{0}
 {
 	switch (val) {
-		case StatusEffects::Mob::Freeze:
-			if (skillId == Vana::Skills::FpArchMage::Paralyze) {
+		case status_effects::mob::freeze:
+			if (skill_id == vana::skills::fp_arch_mage::paralyze) {
 				break;
 			}
-		case StatusEffects::Mob::Stun:
-			time = seconds_t{
+		case status_effects::mob::stun:
+			time = seconds{
 				time.count() +
-				(skillId == Vana::Skills::IlArchMage::Blizzard ? 3 : 1) +
-				Randomizer::rand<int32_t>(static_cast<int32_t>(time.count()) * 2)
+				(skill_id == vana::skills::il_arch_mage::blizzard ? 3 : 1) +
+				randomizer::rand<int32_t>(static_cast<int32_t>(time.count()) * 2)
 			};
 			// The 1 accounts for the skill cast time
 			// Ideally we'd like to remove both these additions with MCDB support for cast times
@@ -46,21 +46,21 @@ StatusInfo::StatusInfo(int32_t status, int32_t val, int32_t skillId, seconds_t t
 	}
 }
 
-StatusInfo::StatusInfo(int32_t status, int32_t val, int16_t mobSkill, int16_t level, seconds_t time) :
+status_info::status_info(int32_t status, int32_t val, int16_t mob_skill, int16_t level, seconds time) :
 	status{status},
 	val{val},
-	skillId{-1},
-	mobSkill{mobSkill},
+	skill_id{-1},
+	mob_skill{mob_skill},
 	level{level},
 	time{time}
 {
 }
 
-StatusInfo::StatusInfo(int32_t status, int32_t val, int16_t mobSkill, int16_t level, int32_t reflect, seconds_t time) :
+status_info::status_info(int32_t status, int32_t val, int16_t mob_skill, int16_t level, int32_t reflect, seconds time) :
 	status{status},
 	val{val},
-	skillId{-1},
-	mobSkill{mobSkill},
+	skill_id{-1},
+	mob_skill{mob_skill},
 	level{level},
 	time{time},
 	reflection{reflect}

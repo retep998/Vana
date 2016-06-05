@@ -33,481 +33,486 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/SyncPacket.hpp"
 #include "ChannelServer/WorldServerPacket.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto ManagementFunctions::map(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	match_t matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+)? ?(\w+|\{(-?\d+)\, ?(-?\d+)\}|\[\d+\])?)", matches) == MatchResult::AnyMatches) {
-		string_t rawMap = matches[1];
-		string_t rawPortal = matches[2];
-		if (rawMap.empty()) {
-			ChatHandlerFunctions::showInfo(player, "Current map: " + StringUtilities::lexical_cast<string_t>(player->getMapId()));
-			return ChatResult::HandledDisplay;
+auto management_functions::user_warp(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	match matches;
+	if (chat_handler_functions::run_regex_pattern(args, R"((\w+)? ?(\w+|\{(-?\d+)\, ?(-?\d+)\}|\[\d+\])?)", matches) == match_result::any_matches) {
+		string raw_map = matches[1];
+		string raw_portal = matches[2];
+		if (raw_map.empty()) {
+			chat_handler_functions::show_info(player, "Current map: " + utilities::str::lexical_cast<string>(player->get_map_id()));
+			return chat_result::handled_display;
 		}
 
-		map_id_t mapId = ChatHandlerFunctions::getMap(rawMap, player);
-		if (mapId != -1 && Maps::getMap(mapId) != nullptr) {
-			Map *map = Maps::getMap(mapId);
+		game_map_id map_id = chat_handler_functions::get_map(raw_map, player);
+		map *map = map_id == -1 ?
+			nullptr :
+			maps::get_map(map_id);
+
+		if (map != nullptr) {
 			// We determine here if we're looking for a position or a portal
-			if (!rawPortal.empty() && ChatHandlerFunctions::runRegexPattern(rawPortal, R"(\{(-?\d+)\, ?(-?\d+)\})", matches) == MatchResult::AnyMatches) {
-				string_t xPosition = matches[1];
-				string_t yPosition = matches[2];
-				Point pos{
-					StringUtilities::lexical_cast<coord_t>(xPosition),
-					StringUtilities::lexical_cast<coord_t>(yPosition)
+			if (!raw_portal.empty() && chat_handler_functions::run_regex_pattern(raw_portal, R"(\{(-?\d+)\, ?(-?\d+)\})", matches) == match_result::any_matches) {
+				string x_position = matches[1];
+				string y_position = matches[2];
+				point pos{
+					utilities::str::lexical_cast<game_coord>(x_position),
+					utilities::str::lexical_cast<game_coord>(y_position)
 				};
-				player->setMap(mapId, MysticDoor::PortalId, pos);
+				player->set_map(map_id, mystic_door::portal_id, pos);
 			}
-			else if (!rawPortal.empty() && ChatHandlerFunctions::runRegexPattern(rawPortal, R"(\[(\d+)\])", matches) == MatchResult::AnyMatches) {
-				string_t footholdId = matches[1];
-				foothold_id_t foothold = StringUtilities::lexical_cast<foothold_id_t>(footholdId);
-				if (!map->isValidFoothold(foothold) || map->isVerticalFoothold(foothold)) {
-					ChatHandlerFunctions::showError(player, "Invalid foothold: " + footholdId);
-					return ChatResult::HandledDisplay;
+			else if (!raw_portal.empty() && chat_handler_functions::run_regex_pattern(raw_portal, R"(\[(\d+)\])", matches) == match_result::any_matches) {
+				string foothold_id = matches[1];
+				game_foothold_id foothold = utilities::str::lexical_cast<game_foothold_id>(foothold_id);
+				if (!map->is_valid_foothold(foothold) || map->is_vertical_foothold(foothold)) {
+					chat_handler_functions::show_error(player, "Invalid foothold: " + foothold_id);
+					return chat_result::handled_display;
 				}
-				Point pos = map->getPositionAtFoothold(foothold);
-				player->setMap(mapId, MysticDoor::PortalId, pos);
+				point pos = map->get_position_at_foothold(foothold);
+				player->set_map(map_id, mystic_door::portal_id, pos);
 			}
 			else {
-				const PortalInfo * const destinationPortal = map->queryPortalName(rawPortal);
+				const portal_info * const destination_portal = map->query_portal_name(raw_portal);
 
-				if (!rawPortal.empty() && destinationPortal == nullptr) {
-					ChatHandlerFunctions::showError(player, "Invalid portal: " + rawPortal);
-					return ChatResult::HandledDisplay;
+				if (!raw_portal.empty() && destination_portal == nullptr) {
+					chat_handler_functions::show_error(player, "Invalid portal: " + raw_portal);
+					return chat_result::handled_display;
 				}
 
-				if (rawPortal == "tp") {
-					player->setMap(mapId, destinationPortal->id, destinationPortal->pos);
+				if (raw_portal == "tp") {
+					player->set_map(map_id, destination_portal->id, destination_portal->pos);
 				}
 				else {
-					player->setMap(mapId, destinationPortal);
+					player->set_map(map_id, destination_portal);
 				}
 			}
 		}
 		else {
-			ChatHandlerFunctions::showError(player, "Invalid map: " + rawMap);
+			chat_handler_functions::show_error(player, "Invalid map: " + raw_map);
 		}
 
-		return ChatResult::HandledDisplay;
+		return chat_result::handled_display;
 	}
 
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto ManagementFunctions::warp(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	match_t matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (\w+) (\w+) ?(\w+)? ?(\w+)?)", matches) == MatchResult::AnyMatches) {
-		string_t sourceType = matches[1];
-		string_t destinationType = matches[2];
-		string_t rawMap = matches[3];
-		string_t optional = matches[4];
-		string_t moreOptional = matches[5];
-		map_id_t sourceMapId = -1;
-		map_id_t destinationMapId = -1;
-		string_t portal;
-		auto sourcePlayer = ref_ptr_t<Player>{nullptr};
-		bool validCombo = true;
-		bool onlySource = true;
-		bool singleArgumentDestination = false;
-		bool portalSpecified = false;
+auto management_functions::warp(ref_ptr<player> player_value, const game_chat &args) -> chat_result {
+	match matches;
+	if (chat_handler_functions::run_regex_pattern(args, R"((\w+) (\w+) (\w+) ?(\w+)? ?(\w+)?)", matches) == match_result::any_matches) {
+		string source_type = matches[1];
+		string destination_type = matches[2];
+		string raw_map = matches[3];
+		string optional = matches[4];
+		string more_optional = matches[5];
+		game_map_id source_map_id = -1;
+		game_map_id destination_map_id = -1;
+		string portal;
+		auto source_player = ref_ptr<player>{nullptr};
+		bool valid_combo = true;
+		bool only_source = true;
+		bool single_argument_destination = false;
+		bool portal_specified = false;
 
-		auto resolvePlayer = [](const string_t &playerArg) { return ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerArg); };
-		auto resolveMapArg = [player](const string_t &mapArg) { return ChatHandlerFunctions::getMap(mapArg, player); };
-		auto resolveMapPortal = [&portal, player](const string_t &portalArg) {
-			if (!portalArg.empty()) {
-				portal = portalArg;
+		auto resolve_player = [](const string &player_arg) { return channel_server::get_instance().get_player_data_provider().get_player(player_arg); };
+		auto resolve_map_arg = [player_value](const string &map_arg) { return chat_handler_functions::get_map(map_arg, player_value); };
+		auto resolve_map_portal = [&portal, player_value](const string &portal_arg) {
+			if (!portal_arg.empty()) {
+				portal = portal_arg;
 				return true;
 			}
 			return false;
 		};
-		auto resolveMapCurrent = [player]() { return player->getMapId(); };
-		auto resolveMapPlayer = [player](const string_t &playerArg) {
-			if (auto target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerArg)) {
-				return target->getMapId();
+		auto resolve_map_current = [player_value]() { return player_value->get_map_id(); };
+		auto resolve_map_player = [player_value](const string &player_arg) {
+			if (auto target = channel_server::get_instance().get_player_data_provider().get_player(player_arg)) {
+				return target->get_map_id();
 			}
 			return -2;
 		};
 
-		if (sourceType == "map") {
-			onlySource = false;
+		if (source_type == "map") {
+			only_source = false;
 
-			sourceMapId = resolveMapArg(rawMap);
-			if (sourceMapId == -1 || Maps::getMap(sourceMapId) == nullptr) {
-				ChatHandlerFunctions::showError(player, "Invalid source map: " + rawMap);
-				return ChatResult::HandledDisplay;
+			source_map_id = resolve_map_arg(raw_map);
+			if (source_map_id == -1 || maps::get_map(source_map_id) == nullptr) {
+				chat_handler_functions::show_error(player_value, "Invalid source map: " + raw_map);
+				return chat_result::handled_display;
 			}
 
-			if (destinationType == "map") {
-				destinationMapId = resolveMapArg(optional);
-				portalSpecified = resolveMapPortal(moreOptional);
+			if (destination_type == "map") {
+				destination_map_id = resolve_map_arg(optional);
+				portal_specified = resolve_map_portal(more_optional);
 			}
-			else if (destinationType == "current" || destinationType == "self") {
-				destinationMapId = resolveMapCurrent();
-				portalSpecified = resolveMapPortal(optional);
+			else if (destination_type == "current" || destination_type == "self") {
+				destination_map_id = resolve_map_current();
+				portal_specified = resolve_map_portal(optional);
 			}
-			else if (destinationType == "player") {
-				destinationMapId = resolveMapPlayer(optional);
-				portalSpecified = resolveMapPortal(moreOptional);
+			else if (destination_type == "player") {
+				destination_map_id = resolve_map_player(optional);
+				portal_specified = resolve_map_portal(more_optional);
 			}
 			else {
-				validCombo = false;
+				valid_combo = false;
 			}
 		}
-		else if (sourceType == "player") {
-			onlySource = false;
+		else if (source_type == "player") {
+			only_source = false;
 
-			sourcePlayer = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(rawMap);
-			if (sourcePlayer == nullptr) {
-				ChatHandlerFunctions::showError(player, "Invalid source player: " + rawMap);
-				return ChatResult::HandledDisplay;
+			source_player = channel_server::get_instance().get_player_data_provider().get_player(raw_map);
+			if (source_player == nullptr) {
+				chat_handler_functions::show_error(player_value, "Invalid source player: " + raw_map);
+				return chat_result::handled_display;
 			}
 
-			if (destinationType == "map") {
-				destinationMapId = resolveMapArg(optional);
-				portalSpecified = resolveMapPortal(moreOptional);
+			if (destination_type == "map") {
+				destination_map_id = resolve_map_arg(optional);
+				portal_specified = resolve_map_portal(more_optional);
 			}
-			else if (destinationType == "current" || destinationType == "self") {
-				destinationMapId = resolveMapCurrent();
-				portalSpecified = resolveMapPortal(optional);
+			else if (destination_type == "current" || destination_type == "self") {
+				destination_map_id = resolve_map_current();
+				portal_specified = resolve_map_portal(optional);
 			}
-			else if (destinationType == "player") {
-				destinationMapId = resolveMapPlayer(optional);
-				portalSpecified = resolveMapPortal(moreOptional);
+			else if (destination_type == "player") {
+				destination_map_id = resolve_map_player(optional);
+				portal_specified = resolve_map_portal(more_optional);
 			}
 			else {
-				validCombo = false;
+				valid_combo = false;
 			}
 		}
-		else if (sourceType == "current" || sourceType == "self") {
-			sourceMapId = resolveMapCurrent();
-			if (destinationType == "map") {
-				destinationMapId = resolveMapArg(rawMap);
-				portalSpecified = resolveMapPortal(optional);
+		else if (source_type == "current" || source_type == "self") {
+			source_map_id = resolve_map_current();
+			if (destination_type == "map") {
+				destination_map_id = resolve_map_arg(raw_map);
+				portal_specified = resolve_map_portal(optional);
 			}
-			else if (destinationType == "player") {
-				destinationMapId = resolveMapPlayer(rawMap);
-				portalSpecified = resolveMapPortal(optional);
+			else if (destination_type == "player") {
+				destination_map_id = resolve_map_player(raw_map);
+				portal_specified = resolve_map_portal(optional);
 			}
 			else {
-				validCombo = false;
+				valid_combo = false;
 			}
 		}
-		else if (sourceType == "channel") {
-			if (destinationType == "map") {
-				destinationMapId = resolveMapArg(rawMap);
-				portalSpecified = resolveMapPortal(optional);
+		else if (source_type == "channel") {
+			if (destination_type == "map") {
+				destination_map_id = resolve_map_arg(raw_map);
+				portal_specified = resolve_map_portal(optional);
 			}
-			else if (destinationType == "current" || destinationType == "self") {
-				destinationMapId = resolveMapCurrent();
-				portalSpecified = resolveMapPortal(rawMap);
-				singleArgumentDestination = true;
+			else if (destination_type == "current" || destination_type == "self") {
+				destination_map_id = resolve_map_current();
+				portal_specified = resolve_map_portal(raw_map);
+				single_argument_destination = true;
 			}
-			else if (destinationType == "player") {
-				destinationMapId = resolveMapPlayer(rawMap);
-				portalSpecified = resolveMapPortal(optional);
+			else if (destination_type == "player") {
+				destination_map_id = resolve_map_player(raw_map);
+				portal_specified = resolve_map_portal(optional);
 			}
 			else {
-				validCombo = false;
+				valid_combo = false;
 			}
 		}
 		else {
-			ChatHandlerFunctions::showError(player, "Invalid source type: " + sourceType);
-			return ChatResult::HandledDisplay;
+			chat_handler_functions::show_error(player_value, "Invalid source type: " + source_type);
+			return chat_result::handled_display;
 		}
 
-		if (!validCombo) {
-			ChatHandlerFunctions::showError(player, "Invalid destination type for source type \"" + sourceType + "\": " + destinationType);
-			return ChatResult::HandledDisplay;
+		if (!valid_combo) {
+			chat_handler_functions::show_error(player_value, "Invalid destination type for source type \"" + source_type + "\": " + destination_type);
+			return chat_result::handled_display;
 		}
 
-		if (destinationMapId == -2) {
-			ChatHandlerFunctions::showError(player, "Invalid destination player: " + (onlySource ? rawMap : optional));
-			return ChatResult::HandledDisplay;
+		if (destination_map_id == -2) {
+			chat_handler_functions::show_error(player_value, "Invalid destination player: " + (only_source ? raw_map : optional));
+			return chat_result::handled_display;
 		}
 
-		if (destinationMapId == -1 || Maps::getMap(destinationMapId) == nullptr) {
-			ChatHandlerFunctions::showError(player, "Invalid destination map: " + (onlySource ? rawMap : optional));
-			return ChatResult::HandledDisplay;
+		map *destination = destination_map_id == -1 ?
+			nullptr :
+			maps::get_map(destination_map_id);
+
+		if (destination_map_id == -1 || destination == nullptr) {
+			chat_handler_functions::show_error(player_value, "Invalid destination map: " + (only_source ? raw_map : optional));
+			return chat_result::handled_display;
 		}
 
-		Map *destination = Maps::getMap(destinationMapId);
-		const PortalInfo * const destinationPortal = destination->queryPortalName(portal);
-
-		if (portalSpecified && destinationPortal == nullptr) {
-			ChatHandlerFunctions::showError(player, "Invalid destination portal: " + (singleArgumentDestination ? rawMap : (onlySource ? optional : moreOptional)));
-			return ChatResult::HandledDisplay;
+		const portal_info * const destination_portal = destination->query_portal_name(portal);
+		if (portal_specified && destination_portal == nullptr) {
+			chat_handler_functions::show_error(player_value, "Invalid destination portal: " + (single_argument_destination ? raw_map : (only_source ? optional : more_optional)));
+			return chat_result::handled_display;
 		}
 
-		auto warpToMap = [&](ref_ptr_t<Player> target) {
-			if (target->getMapId() != destinationMapId) {
+		auto warp_to_map = [&](ref_ptr<player> target) {
+			if (target->get_map_id() != destination_map_id) {
 				if (portal == "tp") {
-					target->setMap(destinationMapId, destinationPortal->id, destinationPortal->pos);
+					target->set_map(destination_map_id, destination_portal->id, destination_portal->pos);
 				}
 				else {
-					target->setMap(destinationMapId, destinationPortal);
+					target->set_map(destination_map_id, destination_portal);
 				}
 			}
 		};
 
-		if (sourceType == "map" || sourceType == "current") {
-			out_stream_t message;
-			message << "Warped all players on map ID " << sourceMapId << " to map ID " << destinationMapId;
+		if (source_type == "map" || source_type == "current") {
+			out_stream message;
+			message << "Warped all players on map ID " << source_map_id << " to map ID " << destination_map_id;
 			if (!portal.empty()) {
 				message << " (portal " << portal << ")";
 			}
 
-			Maps::getMap(sourceMapId)->runFunctionPlayers(warpToMap);
-			ChatHandlerFunctions::showInfo(player, message.str());
+			maps::get_map(source_map_id)->run_function_players(warp_to_map);
+			chat_handler_functions::show_info(player_value, message.str());
 		}
-		else if (sourceType == "player") {
-			out_stream_t message;
-			message << "Warped player " << rawMap << " to map ID " << destinationMapId;
+		else if (source_type == "player") {
+			out_stream message;
+			message << "Warped player " << raw_map << " to map ID " << destination_map_id;
 			if (!portal.empty()) {
 				message << " (portal " << portal << ")";
 			}
 
-			warpToMap(sourcePlayer);
-			ChatHandlerFunctions::showInfo(player, message.str());
+			warp_to_map(source_player);
+			chat_handler_functions::show_info(player_value, message.str());
 		}
-		else if (sourceType == "self") {
-			warpToMap(player);
+		else if (source_type == "self") {
+			warp_to_map(player_value);
 		}
-		else if (sourceType == "channel") {
-			out_stream_t message;
-			message << "Warped everyone in the channel to map ID " << destinationMapId;
+		else if (source_type == "channel") {
+			out_stream message;
+			message << "Warped everyone in the channel to map ID " << destination_map_id;
 			if (!portal.empty()) {
 				message << " (portal " << portal << ")";
 			}
 
-			ChannelServer::getInstance().getPlayerDataProvider().run(warpToMap);
-			ChatHandlerFunctions::showInfo(player, message.str());
+			channel_server::get_instance().get_player_data_provider().run(warp_to_map);
+			chat_handler_functions::show_info(player_value, message.str());
 		}
 
-		return ChatResult::HandledDisplay;
+		return chat_result::handled_display;
 	}
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto ManagementFunctions::follow(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	match_t matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+)?)", matches) == MatchResult::AnyMatches) {
-		string_t playerName = matches[1];
-		if (auto follow = player->getFollow()) {
-			if (!playerName.empty()) {
-				ChatHandlerFunctions::showError(player, "You're already following player " + follow->getName());
+auto management_functions::follow(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	match matches;
+	if (chat_handler_functions::run_regex_pattern(args, R"((\w+)?)", matches) == match_result::any_matches) {
+		string player_name = matches[1];
+		if (auto follow = player->get_follow()) {
+			if (!player_name.empty()) {
+				chat_handler_functions::show_error(player, "You're already following player " + follow->get_name());
 			}
 			else {
-				ChannelServer::getInstance().getPlayerDataProvider().stopFollowing(player);
-				ChatHandlerFunctions::showInfo(player, "No longer following " + follow->getName());
+				channel_server::get_instance().get_player_data_provider().stop_following(player);
+				chat_handler_functions::show_info(player, "No longer following " + follow->get_name());
 			}
 		}
 		else {
-			if (playerName.size() != 0) {
-				if (auto target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerName)) {
-					ChannelServer::getInstance().getPlayerDataProvider().addFollower(player, target);
-					ChatHandlerFunctions::showInfo(player, "Now following player " + target->getName());
+			if (player_name.size() != 0) {
+				if (auto target = channel_server::get_instance().get_player_data_provider().get_player(player_name)) {
+					channel_server::get_instance().get_player_data_provider().add_follower(player, target);
+					chat_handler_functions::show_info(player, "Now following player " + target->get_name());
 				}
 				else {
-					ChatHandlerFunctions::showError(player, "Invalid player: " + playerName);
+					chat_handler_functions::show_error(player, "Invalid player: " + player_name);
 				}
 			}
 			else {
-				ChatHandlerFunctions::showError(player, "You must specify a player to follow");
+				chat_handler_functions::show_error(player, "You must specify a player to follow");
 			}
 		}
-		return ChatResult::HandledDisplay;
+		return chat_result::handled_display;
 	}
 
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto ManagementFunctions::changeChannel(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	match_t matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+))", matches) == MatchResult::AnyMatches) {
-		string_t targetChannel = matches[1];
-		channel_id_t channel = atoi(targetChannel.c_str()) - 1;
-		player->changeChannel(channel);
-		return ChatResult::HandledDisplay;
+auto management_functions::change_channel(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	match matches;
+	if (chat_handler_functions::run_regex_pattern(args, R"((\d+))", matches) == match_result::any_matches) {
+		string target_channel = matches[1];
+		game_channel_id channel = atoi(target_channel.c_str()) - 1;
+		player->change_channel(channel);
+		return chat_result::handled_display;
 	}
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto ManagementFunctions::lag(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	match_t matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+))", matches) == MatchResult::AnyMatches) {
-		string_t target = matches[1];
-		if (auto p = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(target)) {
-			ChatHandlerFunctions::showInfo(player, p->getName() + "'s lag: " + StringUtilities::lexical_cast<string_t>(p->getLatency().count()) + "ms");
+auto management_functions::lag(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	match matches;
+	if (chat_handler_functions::run_regex_pattern(args, R"((\w+))", matches) == match_result::any_matches) {
+		string target = matches[1];
+		if (auto p = channel_server::get_instance().get_player_data_provider().get_player(target)) {
+			chat_handler_functions::show_info(player, p->get_name() + "'s lag: " + utilities::str::lexical_cast<string>(p->get_latency().count()) + "ms");
 		}
 		else {
-			ChatHandlerFunctions::showError(player, "Invalid player: " + target);
+			chat_handler_functions::show_error(player, "Invalid player: " + target);
 		}
-		return ChatResult::HandledDisplay;
+		return chat_result::handled_display;
 	}
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto ManagementFunctions::header(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	ChannelServer::getInstance().sendWorld(Packets::Interserver::Config::scrollingHeader(args));
-	return ChatResult::HandledDisplay;
+auto management_functions::header(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	channel_server::get_instance().send_world(packets::interserver::config::scrolling_header(args));
+	return chat_result::handled_display;
 }
 
-auto ManagementFunctions::shutdown(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	ChatHandlerFunctions::showInfo(player, "Shutting down the server");
-	ChannelServer::getInstance().log(LogType::GmCommand, "GM shutdown the server. GM: " + player->getName());
+auto management_functions::shutdown(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	chat_handler_functions::show_info(player, "Shutting down the server");
+	channel_server::get_instance().log(log_type::gm_command, "GM shutdown the server. GM: " + player->get_name());
 	// TODO FIXME remove this or figure out a better way to post a shutdown than just doing the shutdown here
-	ExitCodes::exit(ExitCodes::ForcedByGm);
-	return ChatResult::HandledDisplay;
+	exit(exit_code::forced_by_gm);
+	return chat_result::handled_display;
 }
 
-auto ManagementFunctions::kick(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
+auto management_functions::kick(ref_ptr<player> player, const game_chat &args) -> chat_result {
 	if (!args.empty()) {
-		if (auto target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(args)) {
-			if (player->getGmLevel() > target->getGmLevel()) {
+		if (auto target = channel_server::get_instance().get_player_data_provider().get_player(args)) {
+			if (player->get_gm_level() > target->get_gm_level()) {
 				target->disconnect();
-				ChatHandlerFunctions::showInfo(player, "Kicked " + args + " from the server");
+				chat_handler_functions::show_info(player, "Kicked " + args + " from the server");
 			}
 			else {
-				ChatHandlerFunctions::showError(player, "Player " + args + " is your peer or outranks you");
+				chat_handler_functions::show_error(player, "Player " + args + " is your peer or outranks you");
 			}
 		}
 		else {
-			ChatHandlerFunctions::showError(player, "Invalid player: " + args);
+			chat_handler_functions::show_error(player, "Invalid player: " + args);
 		}
-		return ChatResult::HandledDisplay;
+		return chat_result::handled_display;
 	}
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto ManagementFunctions::relog(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	player->changeChannel(ChannelServer::getInstance().getChannelId());
-	return ChatResult::HandledDisplay;
+auto management_functions::relog(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	player->change_channel(channel_server::get_instance().get_channel_id());
+	return chat_result::handled_display;
 }
 
-auto ManagementFunctions::calculateRanks(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	ChannelServer::getInstance().sendWorld(Packets::Interserver::rankingCalculation());
-	ChatHandlerFunctions::showInfo(player, "Sent a signal to force the calculation of rankings");
-	return ChatResult::HandledDisplay;
+auto management_functions::calculate_ranks(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	channel_server::get_instance().send_world(packets::interserver::ranking_calculation());
+	chat_handler_functions::show_info(player, "Sent a signal to force the calculation of rankings");
+	return chat_result::handled_display;
 }
 
-auto ManagementFunctions::item(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	match_t matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) ?(\d*)?)", matches) == MatchResult::AnyMatches) {
-		string_t rawItem = matches[1];
-		item_id_t itemId = atoi(rawItem.c_str());
-		if (ChannelServer::getInstance().getItemDataProvider().getItemInfo(itemId) != nullptr) {
-			string_t countString = matches[2];
-			uint16_t count = countString.empty() ? 1 : atoi(countString.c_str());
-			Inventory::addNewItem(player, itemId, count, Items::StatVariance::Gachapon);
+auto management_functions::item(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	match matches;
+	if (chat_handler_functions::run_regex_pattern(args, R"((\d+) ?(\d*)?)", matches) == match_result::any_matches) {
+		string raw_item = matches[1];
+		game_item_id item_id = atoi(raw_item.c_str());
+		if (channel_server::get_instance().get_item_data_provider().get_item_info(item_id) != nullptr) {
+			string count_string = matches[2];
+			uint16_t count = count_string.empty() ? 1 : atoi(count_string.c_str());
+			inventory::add_new_item(player, item_id, count, items::stat_variance::gachapon);
 		}
 		else {
-			ChatHandlerFunctions::showError(player, "Invalid item: " + rawItem);
+			chat_handler_functions::show_error(player, "Invalid item: " + raw_item);
 		}
-		return ChatResult::HandledDisplay;
+		return chat_result::handled_display;
 	}
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto ManagementFunctions::storage(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	NpcHandler::showStorage(player, 1012009);
-	return ChatResult::HandledDisplay;
+auto management_functions::storage(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	npc_handler::show_storage(player, 1012009);
+	return chat_result::handled_display;
 }
 
-auto ManagementFunctions::shop(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
+auto management_functions::shop(ref_ptr<player> player, const game_chat &args) -> chat_result {
 	if (!args.empty()) {
-		shop_id_t shopId = -1;
-		if (args == "gear") shopId = 9999999;
-		else if (args == "scrolls") shopId = 9999998;
-		else if (args == "nx") shopId = 9999997;
-		else if (args == "face") shopId = 9999996;
-		else if (args == "ring") shopId = 9999995;
-		else if (args == "chair") shopId = 9999994;
-		else if (args == "mega") shopId = 9999993;
-		else if (args == "pet") shopId = 9999992;
-		else shopId = atoi(args.c_str());
+		game_shop_id shop_id = -1;
+		if (args == "gear") shop_id = 9999999;
+		else if (args == "scrolls") shop_id = 9999998;
+		else if (args == "nx") shop_id = 9999997;
+		else if (args == "face") shop_id = 9999996;
+		else if (args == "ring") shop_id = 9999995;
+		else if (args == "chair") shop_id = 9999994;
+		else if (args == "mega") shop_id = 9999993;
+		else if (args == "pet") shop_id = 9999992;
+		else shop_id = atoi(args.c_str());
 
-		if (NpcHandler::showShop(player, shopId) == Result::Successful) {
-			return ChatResult::HandledDisplay;
+		if (npc_handler::show_shop(player, shop_id) == result::successful) {
+			return chat_result::handled_display;
 		}
 	}
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto ManagementFunctions::reload(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
+auto management_functions::reload(ref_ptr<player> player, const game_chat &args) -> chat_result {
 	if (!args.empty()) {
 		if (args == "items" || args == "drops" || args == "shops" ||
 			args == "mobs" || args == "beauty" || args == "scripts" ||
 			args == "skills" || args == "reactors" || args == "pets" ||
 			args == "quests" || args == "all") {
-			ChannelServer::getInstance().sendWorld(Packets::Interserver::reloadMcdb(args));
-			ChatHandlerFunctions::showInfo(player, "Reloading message for " + args + " sent to all channels");
+			channel_server::get_instance().send_world(packets::interserver::reload_mcdb(args));
+			chat_handler_functions::show_info(player, "Reloading message for " + args + " sent to all channels");
 		}
 		else {
-			ChatHandlerFunctions::showError(player, "Invalid reload type: " + args);
+			chat_handler_functions::show_error(player, "Invalid reload type: " + args);
 		}
-		return ChatResult::HandledDisplay;
+		return chat_result::handled_display;
 	}
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto ManagementFunctions::npc(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	match_t matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+))", matches) == MatchResult::AnyMatches) {
-		auto &provider = ChannelServer::getInstance().getNpcDataProvider();
-		npc_id_t npcId = atoi(args.c_str());
-		if (provider.isValidNpcId(npcId)) {
-			Npc *npc = new Npc{npcId, player};
-			npc->run();
+auto management_functions::run_npc(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	match matches;
+	if (chat_handler_functions::run_regex_pattern(args, R"((\d+))", matches) == match_result::any_matches) {
+		auto &provider = channel_server::get_instance().get_npc_data_provider();
+		game_npc_id npc_id = atoi(args.c_str());
+		if (provider.is_valid_npc_id(npc_id)) {
+			npc *value = new npc{npc_id, player};
+			value->run();
 		}
 		else {
-			ChatHandlerFunctions::showError(player, "Invalid NPC ID: " + args);
+			chat_handler_functions::show_error(player, "Invalid NPC ID: " + args);
 		}
-		return ChatResult::HandledDisplay;
+		return chat_result::handled_display;
 	}
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto ManagementFunctions::addNpc(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	match_t matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+))", matches) == MatchResult::AnyMatches) {
-		auto &provider = ChannelServer::getInstance().getNpcDataProvider();
-		npc_id_t npcId = atoi(args.c_str());
-		if (provider.isValidNpcId(npcId)) {
-			NpcSpawnInfo npc;
-			npc.id = npcId;
+auto management_functions::add_npc(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	match matches;
+	if (chat_handler_functions::run_regex_pattern(args, R"((\d+))", matches) == match_result::any_matches) {
+		auto &provider = channel_server::get_instance().get_npc_data_provider();
+		game_npc_id npc_id = atoi(args.c_str());
+		if (provider.is_valid_npc_id(npc_id)) {
+			npc_spawn_info npc;
+			npc.id = npc_id;
 			npc.foothold = 0;
-			npc.pos = player->getPos();
+			npc.pos = player->get_pos();
 			npc.rx0 = npc.pos.x - 50;
 			npc.rx1 = npc.pos.x + 50;
-			map_object_t id = player->getMap()->addNpc(npc);
-			ChatHandlerFunctions::showInfo(player, "Spawned NPC " + args + " with object ID " + StringUtilities::lexical_cast<string_t>(id));
+			game_map_object id = player->get_map()->add_npc(npc);
+			chat_handler_functions::show_info(player, "Spawned NPC " + args + " with object ID " + utilities::str::lexical_cast<string>(id));
 		}
 		else {
-			ChatHandlerFunctions::showError(player, "Invalid NPC ID: " + args);
+			chat_handler_functions::show_error(player, "Invalid NPC ID: " + args);
 		}
-		return ChatResult::HandledDisplay;
+		return chat_result::handled_display;
 	}
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto ManagementFunctions::killNpc(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	player->setNpc(nullptr);
-	return ChatResult::HandledDisplay;
+auto management_functions::kill_npc(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	player->set_npc(nullptr);
+	return chat_result::handled_display;
 }
 
-auto ManagementFunctions::kill(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	if (player->getGmLevel() == 1) {
-		player->getStats()->setHp(0);
+auto management_functions::kill(ref_ptr<player> player_value, const game_chat &args) -> chat_result {
+	if (player_value->get_gm_level() == 1) {
+		player_value->get_stats()->set_hp(0);
 	}
 	else {
 		bool proceed = true;
-		auto iterate = [&player](function_t<bool(ref_ptr_t<Player> p)> func) -> int {
+		auto iterate = [&player_value](function<bool(ref_ptr<player> p)> func) -> int {
 			int32_t kills = 0;
-			Map *map = player->getMap();
-			for (size_t i = 0; i < map->getNumPlayers(); ++i) {
-				auto t = map->getPlayer(i);
-				if (t != player) {
+			map *map = player_value->get_map();
+			for (size_t i = 0; i < map->get_num_players(); ++i) {
+				auto t = map->get_player(i);
+				if (t != player_value) {
 					if (func(t)) kills++;
 				}
 			}
@@ -515,186 +520,187 @@ auto ManagementFunctions::kill(ref_ptr_t<Player> player, const chat_t &args) -> 
 		};
 		if (args == "all") {
 			proceed = false;
-			int32_t kills = iterate([](ref_ptr_t<Player> p) -> bool {
-				p->getStats()->setHp(0);
+			int32_t kills = iterate([](ref_ptr<player> p) -> bool {
+				p->get_stats()->set_hp(0);
 				return true;
 			});
-			ChatHandlerFunctions::showInfo(player, "Killed " + StringUtilities::lexical_cast<string_t>(kills) + " players in the current map");
+			chat_handler_functions::show_info(player_value, "Killed " + utilities::str::lexical_cast<string>(kills) + " players in the current map");
 		}
 		else if (args == "gm" || args == "players") {
 			proceed = false;
-			int32_t kills = iterate([&args](ref_ptr_t<Player> p) -> bool {
-				if ((args == "gm" && p->isGm()) || (args == "players" && !p->isGm())) {
-					p->getStats()->setHp(0);
+			int32_t kills = iterate([&args](ref_ptr<player> p) -> bool {
+				if ((args == "gm" && p->is_gm()) || (args == "players" && !p->is_gm())) {
+					p->get_stats()->set_hp(0);
 					return true;
 				}
 				return false;
 			});
-			ChatHandlerFunctions::showInfo(player, "Killed " + StringUtilities::lexical_cast<string_t>(kills) + " " + (args == "gm" ? "GMs" : "players") + " in the current map");
+			chat_handler_functions::show_info(player_value, "Killed " + utilities::str::lexical_cast<string>(kills) + " " + (args == "gm" ? "GMs" : "players") + " in the current map");
 		}
 		if (proceed) {
 			if (args == "me") {
-				player->getStats()->setHp(0);
-				ChatHandlerFunctions::showInfo(player, "Killed yourself");
+				player_value->get_stats()->set_hp(0);
+				chat_handler_functions::show_info(player_value, "Killed yourself");
 			}
-			else if (auto kill = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(args)) {
+			else if (auto kill = channel_server::get_instance().get_player_data_provider().get_player(args)) {
 				// Kill by name
-				kill->getStats()->setHp(0);
-				ChatHandlerFunctions::showInfo(player, "Killed " + args);
+				kill->get_stats()->set_hp(0);
+				chat_handler_functions::show_info(player_value, "Killed " + args);
 			}
 			else {
 				// Nothing valid
-				return ChatResult::ShowSyntax;
+				return chat_result::show_syntax;
 			}
 		}
 	}
-	return ChatResult::HandledDisplay;
+	return chat_result::handled_display;
 }
 
-auto ManagementFunctions::ban(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	match_t matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) ?(\d+)?)", matches) == MatchResult::AnyMatches) {
-		string_t targetName = matches[1];
-		if (auto target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(targetName)) {
+auto management_functions::ban(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	match matches;
+	if (chat_handler_functions::run_regex_pattern(args, R"((\w+) ?(\d+)?)", matches) == match_result::any_matches) {
+		string target_name = matches[1];
+		if (auto target = channel_server::get_instance().get_player_data_provider().get_player(target_name)) {
 			target->disconnect();
 		}
-		string_t reasonString = matches[2];
-		int8_t reason = reasonString.empty() ? 1 : atoi(reasonString.c_str());
+		string reason_string = matches[2];
+		int8_t reason = reason_string.empty() ? 1 : atoi(reason_string.c_str());
 
 		// Ban account
-		string_t expire{"2130-00-00 00:00:00"};
+		string expire{"2130-00-00 00:00:00"};
 
-		auto &db = Database::getCharDb();
-		auto &sql = db.getSession();
+		auto &db = database::get_char_db();
+		auto &sql = db.get_session();
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << db.makeTable("accounts") << " u "
-			<< "INNER JOIN " << db.makeTable("characters") << " c ON u.account_id = c.account_id "
+			<< "UPDATE " << db.make_table("accounts") << " u "
+			<< "INNER JOIN " << db.make_table("characters") << " c ON u.account_id = c.account_id "
 			<< "SET "
 			<< "	u.banned = 1, "
 			<< "	u.ban_expire = :expire, "
 			<< "	u.ban_reason = :reason "
 			<< "WHERE c.name = :name ",
-			soci::use(targetName, "name"),
+			soci::use(target_name, "name"),
 			soci::use(expire, "expire"),
 			soci::use(reason, "reason"));
 
 		st.execute();
 
 		if (st.get_affected_rows() > 0) {
-			string_t banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
-			ChannelServer::getInstance().getPlayerDataProvider().send(Packets::Player::showMessage(banMessage, Packets::Player::NoticeTypes::Notice));
-			ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {
-				log << "GM " << player->getName()
-					<< " banned a player with reason " << reason
-					<< ", player: " << targetName;
+			string ban_message = target_name + " has been banned" + chat_handler_functions::get_ban_string(reason);
+			channel_server::get_instance().get_player_data_provider().send(packets::player::show_message(ban_message, packets::player::notice_types::notice));
+			channel_server::get_instance().log(log_type::gm_command, [&](out_stream &log) {
+				log << "GM " << player->get_name()
+					<< " banned a player with reason " << static_cast<int32_t>(reason)
+					<< ", player: " << target_name;
 			});
 		}
 		else {
-			ChatHandlerFunctions::showError(player, "Invalid player: " + targetName);
+			chat_handler_functions::show_error(player, "Invalid player: " + target_name);
 		}
 
-		return ChatResult::HandledDisplay;
+		return chat_result::handled_display;
 	}
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto ManagementFunctions::tempBan(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	match_t matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (\d+) (\d+))", matches) == MatchResult::AnyMatches) {
-		string_t targetName = matches[1];
-		if (auto target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(targetName)) {
+auto management_functions::temp_ban(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	match matches;
+	if (chat_handler_functions::run_regex_pattern(args, R"((\w+) (\d+) (\d+))", matches) == match_result::any_matches) {
+		string target_name = matches[1];
+		if (auto target = channel_server::get_instance().get_player_data_provider().get_player(target_name)) {
 			target->disconnect();
 		}
-		string_t reasonString = matches[2];
-		string_t length = matches[3];
-		int8_t reason = reasonString.empty() ? 1 : atoi(reasonString.c_str());
+		string reason_string = matches[2];
+		string length = matches[3];
+		int8_t reason = reason_string.empty() ? 1 : atoi(reason_string.c_str());
 
 		// Ban account
-		auto &db = Database::getCharDb();
-		auto &sql = db.getSession();
+		auto &db = database::get_char_db();
+		auto &sql = db.get_session();
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << db.makeTable("accounts") << " u "
-			<< "INNER JOIN " << db.makeTable("characters") << " c ON u.account_id = c.account_id "
+			<< "UPDATE " << db.make_table("accounts") << " u "
+			<< "INNER JOIN " << db.make_table("characters") << " c ON u.account_id = c.account_id "
 			<< "SET "
 			<< "	u.banned = 1, "
 			<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL :expire DAY), "
 			<< "	u.ban_reason = :reason "
 			<< "WHERE c.name = :name ",
-			soci::use(targetName, "name"),
+			soci::use(target_name, "name"),
 			soci::use(length, "expire"),
 			soci::use(reason, "reason"));
 
 		st.execute();
 
 		if (st.get_affected_rows() > 0) {
-			string_t banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
-			ChannelServer::getInstance().getPlayerDataProvider().send(Packets::Player::showMessage(banMessage, Packets::Player::NoticeTypes::Notice));
+			string ban_message = target_name + " has been banned" + chat_handler_functions::get_ban_string(reason);
+			channel_server::get_instance().get_player_data_provider().send(packets::player::show_message(ban_message, packets::player::notice_types::notice));
 
-			ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {
-				log << "GM " << player->getName()
-					<< " temporary banned a player with reason " << reason
+			channel_server::get_instance().log(log_type::gm_command, [&](out_stream &log) {
+				log << "GM " << player->get_name()
+					<< " temporary banned a player with reason " << static_cast<int32_t>(reason)
 					<< " for " << length
-					<< " days, player: " << targetName;
+					<< " days, player: " << target_name;
 			});
 		}
 		else {
-			ChatHandlerFunctions::showError(player, "Invalid player: " + targetName);
+			chat_handler_functions::show_error(player, "Invalid player: " + target_name);
 		}
 
-		return ChatResult::HandledDisplay;
+		return chat_result::handled_display;
 	}
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto ManagementFunctions::ipBan(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	match_t matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) ?(\d+)?)", matches) == MatchResult::AnyMatches) {
-		string_t targetName = matches[1];
-		if (auto target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(targetName)) {
-			string_t targetIp = target->getIp().get().toString();
+auto management_functions::ip_ban(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	match matches;
+	if (chat_handler_functions::run_regex_pattern(args, R"((\w+) ?(\d+)?)", matches) == match_result::any_matches) {
+		string target_name = matches[1];
+		if (auto target = channel_server::get_instance().get_player_data_provider().get_player(target_name)) {
+			string target_ip = target->get_ip().get().to_string();
 			target->disconnect();
 
-			string_t reasonString = matches[2];
-			int8_t reason = reasonString.empty() ? 1 : atoi(reasonString.c_str());
+			string reason_string = matches[2];
+			int8_t reason = reason_string.empty() ? 1 : atoi(reason_string.c_str());
 
 			// IP ban
-			auto &db = Database::getCharDb();
-			auto &sql = db.getSession();
-			soci::statement st = (sql.prepare << "INSERT INTO " << db.makeTable("ip_bans") << " (ip) VALUES (:ip)", soci::use(targetIp, "ip"));
+			auto &db = database::get_char_db();
+			auto &sql = db.get_session();
+			soci::statement st = (sql.prepare << "INSERT INTO " << db.make_table("ip_bans") << " (ip) VALUES (:ip)",
+				soci::use(target_ip, "ip"));
 
 			st.execute();
 
 			if (st.get_affected_rows() > 0) {
-				string_t banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
+				string ban_message = target_name + " has been banned" + chat_handler_functions::get_ban_string(reason);
 
-				ChannelServer::getInstance().getPlayerDataProvider().send(Packets::Player::showMessage(banMessage, Packets::Player::NoticeTypes::Notice));
-				ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {
-					log << "GM " << player->getName()
-						<< " IP banned a player with reason " << reason
-						<< ", player: " << targetName;
+				channel_server::get_instance().get_player_data_provider().send(packets::player::show_message(ban_message, packets::player::notice_types::notice));
+				channel_server::get_instance().log(log_type::gm_command, [&](out_stream &log) {
+					log << "GM " << player->get_name()
+						<< " IP banned a player with reason " << static_cast<int32_t>(reason)
+						<< ", player: " << target_name;
 				});
 			}
 			else {
-				ChatHandlerFunctions::showError(player, "Unknown error, couldn't ban " + targetIp);
+				chat_handler_functions::show_error(player, "Unknown error, couldn't ban " + target_ip);
 			}
 		}
 		else {
 			// TODO FIXME add raw IP banning
-			ChatHandlerFunctions::showError(player, "Invalid player: " + targetName);
+			chat_handler_functions::show_error(player, "Invalid player: " + target_name);
 		}
-		return ChatResult::HandledDisplay;
+		return chat_result::handled_display;
 	}
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto ManagementFunctions::unban(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
+auto management_functions::unban(ref_ptr<player> player, const game_chat &args) -> chat_result {
 	if (!args.empty()) {
 		// Unban account
-		auto &db = Database::getCharDb();
-		auto &sql = db.getSession();
+		auto &db = database::get_char_db();
+		auto &sql = db.get_session();
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << db.makeTable("accounts") << " u "
-			<< "INNER JOIN " << db.makeTable("characters") << " c ON u.account_id = c.account_id "
+			<< "UPDATE " << db.make_table("accounts") << " u "
+			<< "INNER JOIN " << db.make_table("characters") << " c ON u.account_id = c.account_id "
 			<< "SET "
 			<< "	u.banned = 0, "
 			<< "	u.ban_reason = NULL, "
@@ -705,35 +711,35 @@ auto ManagementFunctions::unban(ref_ptr_t<Player> player, const chat_t &args) ->
 		st.execute();
 
 		if (st.get_affected_rows() > 0) {
-			string_t banMessage = args + " has been unbanned";
-			ChatHandlerFunctions::showInfo(player, banMessage);
-			ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {
-				log << "GM " << player->getName()
+			string banMessage = args + " has been unbanned";
+			chat_handler_functions::show_info(player, banMessage);
+			channel_server::get_instance().log(log_type::gm_command, [&](out_stream &log) {
+				log << "GM " << player->get_name()
 					<< " unbanned a player: " << args;
 			});
 		}
 		else {
-			ChatHandlerFunctions::showError(player, "Invalid player: " + args);
+			chat_handler_functions::show_error(player, "Invalid player: " + args);
 		}
-		return ChatResult::HandledDisplay;
+		return chat_result::handled_display;
 	}
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto ManagementFunctions::rehash(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	ChannelServer::getInstance().sendWorld(Packets::Interserver::rehashConfig());
-	ChatHandlerFunctions::showInfo(player, "Sent a signal to force rehashing world configurations");
-	return ChatResult::HandledDisplay;
+auto management_functions::rehash(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	channel_server::get_instance().send_world(packets::interserver::rehash_config());
+	chat_handler_functions::show_info(player, "Sent a signal to force rehashing world configurations");
+	return chat_result::handled_display;
 }
 
-auto ManagementFunctions::rates(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	match_t matches;
+auto management_functions::rates(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	match matches;
 	if (!args.empty()) {
-		if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) ?(\w+)? ?(\-?\d+)?)", matches) == MatchResult::NoMatches) {
-			return ChatResult::ShowSyntax;
+		if (chat_handler_functions::run_regex_pattern(args, R"((\w+) ?(\w+)? ?(\-?\d+)?)", matches) == match_result::no_matches) {
+			return chat_result::show_syntax;
 		}
-		string_t type = matches[1];
-		string_t classification = matches[2];
+		string type = matches[1];
+		string classification = matches[2];
 		if (!classification.empty()) {
 			if (classification != "mobexp" &&
 				classification != "questexp" &&
@@ -741,78 +747,78 @@ auto ManagementFunctions::rates(ref_ptr_t<Player> player, const chat_t &args) ->
 				classification != "dropmeso" &&
 				classification != "globaldrop" &&
 				classification != "globaldropmeso") {
-				return ChatResult::ShowSyntax;
+				return chat_result::show_syntax;
 			}
 		}
-		string_t value = matches[3];
+		string value = matches[3];
 		if (type == "view") {
-			auto display = [player](const string_t &type, int32_t rate) {
-				ChatHandlerFunctions::showInfo(player, type + " rate: " + StringUtilities::lexical_cast<string_t>(rate) + "x");
+			auto display = [player](const string &type, int32_t rate) {
+				chat_handler_functions::show_info(player, type + " rate: " + utilities::str::lexical_cast<string>(rate) + "x");
 			};
 
-			ChatHandlerFunctions::showInfo(player, "Current Rates");
-			auto &config = ChannelServer::getInstance().getConfig();
-			if (classification.empty() || classification == "mobexp") display("Mob EXP", config.rates.mobExpRate);
-			if (classification.empty() || classification == "questexp") display("Quest EXP", config.rates.questExpRate);
-			if (classification.empty() || classification == "drop") display("Drop", config.rates.dropRate);
-			if (classification.empty() || classification == "dropmeso") display("Drop meso", config.rates.dropMeso);
+			chat_handler_functions::show_info(player, "Current Rates");
+			auto &config = channel_server::get_instance().get_config();
+			if (classification.empty() || classification == "mobexp") display("Mob EXP", config.rates.mob_exp_rate);
+			if (classification.empty() || classification == "questexp") display("Quest EXP", config.rates.quest_exp_rate);
+			if (classification.empty() || classification == "drop") display("Drop", config.rates.drop_rate);
+			if (classification.empty() || classification == "dropmeso") display("Drop meso", config.rates.drop_meso);
 			if (classification.empty() || classification == "globaldrop") {
-				display("Global drop", config.rates.isGlobalDropConsistentWithRegularDropRate() ?
-					config.rates.dropRate :
-					config.rates.globalDropRate);
+				display("Global drop", config.rates.is_global_drop_consistent_with_regular_drop_rate() ?
+					config.rates.drop_rate :
+					config.rates.global_drop_rate);
 			}
 			if (classification.empty() || classification == "globaldropmeso") {
-				display("Global drop meso", config.rates.isGlobalDropMesoConsistentWithRegularDropMesoRate() ?
-					config.rates.dropMeso :
-					config.rates.globalDropMeso);
+				display("Global drop meso", config.rates.is_global_drop_meso_consistent_with_regular_drop_meso_rate() ?
+					config.rates.drop_meso :
+					config.rates.global_drop_meso);
 			}
 		}
 		else if (type == "reset") {
 			if (classification.empty()) {
-				ChatHandlerFunctions::showInfo(player, "Sent request to reset all rates");
-				ChannelServer::getInstance().sendWorld(Packets::Interserver::Config::resetRates(RatesConfig::Types::all));
+				chat_handler_functions::show_info(player, "Sent request to reset all rates");
+				channel_server::get_instance().send_world(packets::interserver::config::reset_rates(rates_config::types::all));
 			}
 			else {
-				int32_t rateType = 0;
-				if (classification == "mobexp") rateType = RatesConfig::Types::mobExpRate;
-				else if (classification == "drop") rateType = RatesConfig::Types::dropRate;
-				else if (classification == "dropmeso") rateType = RatesConfig::Types::dropMeso;
-				else if (classification == "questexp") rateType = RatesConfig::Types::questExpRate;
-				else if (classification == "globaldrop") rateType = RatesConfig::Types::globalDropRate;
-				else if (classification == "globaldropmeso") rateType = RatesConfig::Types::globalDropMeso;
-				ChatHandlerFunctions::showInfo(player, "Sent request to reset specified rate");
-				ChannelServer::getInstance().sendWorld(Packets::Interserver::Config::resetRates(rateType));
+				int32_t rate_type = 0;
+				if (classification == "mobexp") rate_type = rates_config::types::mob_exp_rate;
+				else if (classification == "drop") rate_type = rates_config::types::drop_rate;
+				else if (classification == "dropmeso") rate_type = rates_config::types::drop_meso;
+				else if (classification == "questexp") rate_type = rates_config::types::quest_exp_rate;
+				else if (classification == "globaldrop") rate_type = rates_config::types::global_drop_rate;
+				else if (classification == "globaldropmeso") rate_type = rates_config::types::global_drop_meso;
+				chat_handler_functions::show_info(player, "Sent request to reset specified rate");
+				channel_server::get_instance().send_world(packets::interserver::config::reset_rates(rate_type));
 			}
 		}
 		else if (type == "set") {
 			if (classification.empty()) {
-				return ChatResult::ShowSyntax;
+				return chat_result::show_syntax;
 			}
 
-			int32_t rateType = 0;
-			if (classification == "mobexp") rateType = RatesConfig::Types::mobExpRate;
-			else if (classification == "drop") rateType = RatesConfig::Types::dropRate;
-			else if (classification == "dropmeso") rateType = RatesConfig::Types::dropMeso;
-			else if (classification == "questexp") rateType = RatesConfig::Types::questExpRate;
-			else if (classification == "globaldrop") rateType = RatesConfig::Types::globalDropRate;
-			else if (classification == "globaldropmeso") rateType = RatesConfig::Types::globalDropMeso;
-			int32_t newAmount = value.empty() ?
-				((rateType & RatesConfig::Types::global) != 0 ?
-					RatesConfig::consistentRateBetweenGlobalAndRegular :
+			int32_t rate_type = 0;
+			if (classification == "mobexp") rate_type = rates_config::types::mob_exp_rate;
+			else if (classification == "drop") rate_type = rates_config::types::drop_rate;
+			else if (classification == "dropmeso") rate_type = rates_config::types::drop_meso;
+			else if (classification == "questexp") rate_type = rates_config::types::quest_exp_rate;
+			else if (classification == "globaldrop") rate_type = rates_config::types::global_drop_rate;
+			else if (classification == "globaldropmeso") rate_type = rates_config::types::global_drop_meso;
+			int32_t new_amount = value.empty() ?
+				((rate_type & rates_config::types::global) != 0 ?
+					rates_config::consistent_rate_between_global_and_regular :
 					1) :
 				atoi(value.c_str());
 
-			ChannelServer::getInstance().modifyRate(rateType, newAmount);
-			ChatHandlerFunctions::showInfo(player, "Sent request to modify rate");
+			channel_server::get_instance().modify_rate(rate_type, new_amount);
+			chat_handler_functions::show_info(player, "Sent request to modify rate");
 		}
 		else {
-			return ChatResult::ShowSyntax;
+			return chat_result::show_syntax;
 		}
 	}
 	else {
-		return ChatResult::ShowSyntax;
+		return chat_result::show_syntax;
 	}
-	return ChatResult::HandledDisplay;
+	return chat_result::handled_display;
 }
 
 }

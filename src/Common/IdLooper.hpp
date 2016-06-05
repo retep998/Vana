@@ -20,12 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <limits>
 #include <type_traits>
 
-namespace Vana {
+namespace vana {
 	// Keep track and returns a number between min and max, restarts when number reaches max
 	template <typename TIdentifier>
-	class IdLooper {
+	class id_looper {
 	public:
-		explicit IdLooper(TIdentifier minimum = 1, TIdentifier maximum = std::numeric_limits<TIdentifier>::max()) :
+		explicit id_looper(TIdentifier minimum = 1, TIdentifier maximum = std::numeric_limits<TIdentifier>::max()) :
 			m_current{minimum},
 			m_minimum{minimum},
 			m_maximum{maximum}
@@ -33,7 +33,7 @@ namespace Vana {
 			if (maximum <= minimum) {
 				throw std::domain_error{"maximum must be greater than minimum"};
 			}
-			if (minimum == typeMin() && maximum == typeMax()) {
+			if (minimum == type_min() && maximum == type_max()) {
 				throw std::domain_error{"range is not representible in the unsigned version of the TIdentifier type"};
 			}
 		}
@@ -50,23 +50,23 @@ namespace Vana {
 		}
 
 		using unsigned_type = typename std::make_unsigned_t<TIdentifier>;
-		auto range() const -> unsigned_type { return rangeHelper<TIdentifier>(); }
+		auto range() const -> unsigned_type { return range_helper<TIdentifier>(); }
 	private:
-		static auto typeMax() -> TIdentifier { return std::numeric_limits<TIdentifier>::max(); }
-		static auto typeMin() -> TIdentifier { return std::numeric_limits<TIdentifier>::min(); }
+		static auto type_max() -> TIdentifier { return std::numeric_limits<TIdentifier>::max(); }
+		static auto type_min() -> TIdentifier { return std::numeric_limits<TIdentifier>::min(); }
 		static auto abs(TIdentifier val) -> typename unsigned_type {
 			if (val < 0) return static_cast<unsigned_type>(-val);
 			return static_cast<unsigned_type>(val);
 		}
 		template <typename THelper>
-		auto rangeHelper() const -> typename std::enable_if_t<std::is_unsigned<THelper>::value, unsigned_type> {
+		auto range_helper() const -> typename std::enable_if_t<std::is_unsigned<THelper>::value, unsigned_type> {
 			// Type is already unsigned, the only unrepresentible value is [0, maxInt]
 			// Which is taken care of by the constructor
 			return (m_maximum - m_minimum) + 1;
 		}
 		template <typename THelper>
-		auto rangeHelper() const -> typename std::enable_if_t<std::is_signed<THelper>::value, unsigned_type> {
-			if (((m_maximum <= 0) == (m_minimum < 0)) || m_maximum == typeMax() && m_minimum == 0) {
+		auto range_helper() const -> typename std::enable_if_t<std::is_signed<THelper>::value, unsigned_type> {
+			if (((m_maximum <= 0) == (m_minimum < 0)) || m_maximum == type_max() && m_minimum == 0) {
 				// In the case where both are <= 0 or both are > 0, this is simple logic because the range is fully representible as a positive signed type
 				// The only values that are not representible at this point are [0, maxInt] and [minInt, 0]
 				// Which are taken care of by the cast here

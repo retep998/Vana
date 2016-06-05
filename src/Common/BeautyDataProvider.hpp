@@ -21,30 +21,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ValidLookData.hpp"
 #include <vector>
 
-namespace Vana {
-	class BeautyDataProvider {
+namespace vana {
+	class beauty_data_provider {
 	public:
-		auto loadData() -> void;
+		auto load_data() -> void;
 
-		auto getRandomSkin() const -> skin_id_t;
-		auto getRandomHair(gender_id_t genderId) const -> hair_id_t;
-		auto getRandomFace(gender_id_t genderId) const -> face_id_t;
+		auto get_random_skin() const -> game_skin_id;
+		auto get_random_hair(game_gender_id gender_id) const -> game_hair_id;
+		auto get_random_face(game_gender_id gender_id) const -> game_face_id;
 
-		auto getSkins() const -> const vector_t<skin_id_t> &;
-		auto getHair(gender_id_t genderId) const -> const vector_t<hair_id_t> &;
-		auto getFaces(gender_id_t genderId) const -> const vector_t<face_id_t> &;
+		auto get_skins() const -> const vector<game_skin_id> &;
+		auto get_hair(game_gender_id gender_id) const -> const vector<game_hair_id> &;
+		auto get_faces(game_gender_id gender_id) const -> const vector<game_face_id> &;
 
-		auto isValidSkin(skin_id_t skin) const -> bool;
-		auto isValidHair(gender_id_t genderId, hair_id_t hair) const -> bool;
-		auto isValidFace(gender_id_t genderId, face_id_t face) const -> bool;
+		auto is_valid_skin(game_skin_id skin) const -> bool;
+		auto is_valid_hair(game_gender_id gender_id, game_hair_id hair) const -> bool;
+		auto is_valid_face(game_gender_id gender_id, game_face_id face) const -> bool;
 	private:
-		auto loadSkins() -> void;
-		auto loadHair() -> void;
-		auto loadFaces() -> void;
-		auto getGender(gender_id_t genderId) const -> const ValidLookData &;
+		auto load_skins() -> void;
+		auto load_hair() -> void;
+		auto load_faces() -> void;
+		auto get_gender(game_gender_id gender_id) const -> const valid_look_data &;
 
-		ValidLookData m_male;
-		ValidLookData m_female;
-		vector_t<skin_id_t> m_skins;
+		valid_look_data m_male;
+		valid_look_data m_female;
+		vector<game_skin_id> m_skins;
 	};
 }

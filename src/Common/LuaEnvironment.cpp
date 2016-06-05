@@ -21,289 +21,290 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
-namespace Vana {
+namespace vana {
 
-ObjectPool<int32_t, LuaEnvironment *> LuaEnvironment::s_environments = ObjectPool<int32_t, LuaEnvironment *>{1, 1000000};
+object_pool<int32_t, lua_environment *> lua_environment::s_environments =
+	object_pool<int32_t, lua_environment *>{1, 1000000};
 
-auto LuaEnvironment::getEnvironment(lua_State *luaVm) -> LuaEnvironment & {
-	lua_getglobal(luaVm, "system_environment_id");
-	int32_t id = lua_tointeger(luaVm, -1);
-	lua_pop(luaVm, 1);
+auto lua_environment::get_environment(lua_State *lua_vm) -> lua_environment & {
+	lua_getglobal(lua_vm, "system_environment_id");
+	int32_t id = lua_tointeger(lua_vm, -1);
+	lua_pop(lua_vm, 1);
 	auto kvp = s_environments.find(id);
 	return *kvp->second;
 }
 
-LuaEnvironment::LuaEnvironment(const string_t &filename)
+lua_environment::lua_environment(const string &filename)
 {
-	loadFile(filename);
+	load_file(filename);
 
-	m_environmentIdentifier = s_environments.store(this);
-	set<int32_t>("system_environment_id", m_environmentIdentifier);
+	m_environment_id = s_environments.store(this);
+	set<int32_t>("system_environment_id", m_environment_id);
 }
 
-LuaEnvironment::LuaEnvironment(const string_t &filename, bool useThread)
+lua_environment::lua_environment(const string &filename, bool use_thread)
 {
-	loadFile(filename);
+	load_file(filename);
 
-	m_environmentIdentifier = s_environments.store(this);
-	if (useThread) {
-		m_luaThread = lua_newthread(m_luaVm);
+	m_environment_id = s_environments.store(this);
+	if (use_thread) {
+		m_lua_thread = lua_newthread(m_lua_vm);
 	}
-	set<int32_t>("system_environment_id", m_environmentIdentifier);
+	set<int32_t>("system_environment_id", m_environment_id);
 }
 
-LuaEnvironment::~LuaEnvironment() {
-	s_environments.release(m_environmentIdentifier);
-	lua_close(m_luaVm);
-	m_luaVm = nullptr;
+lua_environment::~lua_environment() {
+	s_environments.release(m_environment_id);
+	lua_close(m_lua_vm);
+	m_lua_vm = nullptr;
 }
 
-auto LuaEnvironment::loadFile(const string_t &filename) -> void {
-	if (m_luaVm != nullptr) {
-		throw std::runtime_error{"LuaVM was still specified"};
+auto lua_environment::load_file(const string &filename) -> void {
+	if (m_lua_vm != nullptr) {
+		throw std::runtime_error{"lua_vm was still specified"};
 	}
-	if (!FileUtilities::fileExists(filename)) {
-		handleFileNotFound(filename);
+	if (!utilities::file::exists(filename)) {
+		handle_file_not_found(filename);
 	}
 
 	m_file = filename;
-	m_luaVm = luaL_newstate();
+	m_lua_vm = luaL_newstate();
 
-	requireStandardLib("base", luaopen_base);
-	requireStandardLib("string", luaopen_string);
-	requireStandardLib("math", luaopen_math);
-	requireStandardLib("table", luaopen_table);
+	require_standard_lib("base", luaopen_base);
+	require_standard_lib("string", luaopen_string);
+	require_standard_lib("math", luaopen_math);
+	require_standard_lib("table", luaopen_table);
 	set<int32_t>("system_lua_version_major", 5);
 	set<int32_t>("system_lua_version_minor", 2);
-	set<string_t>("system_lua_version", "5.2");
+	set<string>("system_lua_version", "5.2");
 }
 
-auto LuaEnvironment::run() -> Result {
-	if (m_luaThread == nullptr) {
-		if (luaL_dofile(m_luaVm, m_file.c_str())) {
-			handleError(m_file, get<string_t>(m_luaVm, -1));
+auto lua_environment::run() -> result {
+	if (m_lua_thread == nullptr) {
+		if (luaL_dofile(m_lua_vm, m_file.c_str())) {
+			handle_error(m_file, get<string>(m_lua_vm, -1));
 			pop();
-			return Result::Failure;
+			return result::failure;
 		}
 	}
 	else {
-		if (luaL_loadfile(m_luaThread, m_file.c_str())) {
-			handleError(m_file, get<string_t>(m_luaThread, -1));
+		if (luaL_loadfile(m_lua_thread, m_file.c_str())) {
+			handle_error(m_file, get<string>(m_lua_thread, -1));
 			pop();
-			return Result::Failure;
+			return result::failure;
 		}
 		return resume(0);
 	}
-	return Result::Successful;
+	return result::successful;
 }
 
-auto LuaEnvironment::resume(lua_return_t pushedArgCount) -> Result {
-	int ret = lua_resume(m_luaThread, m_luaVm, pushedArgCount);
+auto lua_environment::resume(lua::lua_return pushed_arg_count) -> result {
+	int ret = lua_resume(m_lua_thread, m_lua_vm, pushed_arg_count);
 	if (ret == 0) {
-		handleThreadCompletion();
+		handle_thread_completion();
 	}
 	else if (ret != LUA_YIELD) {
 		// Error, a working script returns either 0 or LUA_YIELD
-		string_t error = lua_tostring(m_luaThread, -1);
-		handleError(m_file, error);
-		return Result::Failure;
+		string error = lua_tostring(m_lua_thread, -1);
+		handle_error(m_file, error);
+		return result::failure;
 	}
-	return Result::Successful;
+	return result::successful;
 }
 
-auto LuaEnvironment::handleError(const string_t &filename, const string_t &error) -> void {
-	printError(error);
+auto lua_environment::handle_error(const string &filename, const string &error) -> void {
+	print_error(error);
 }
 
-auto LuaEnvironment::handleFileNotFound(const string_t &filename) -> void {
+auto lua_environment::handle_file_not_found(const string &filename) -> void {
 	// Intentionally blank
 }
 
-auto LuaEnvironment::handleThreadCompletion() -> void {
+auto lua_environment::handle_thread_completion() -> void {
 	// Intentionally blank
 }
 
-auto LuaEnvironment::handleKeyNotFound(const string_t &filename, const string_t &key) -> void {
+auto lua_environment::handle_key_not_found(const string &filename, const string &key) -> void {
 	throw std::runtime_error{"Key '" + key + "' does not exist and is required in file '" + filename + "'"};
 }
 
-auto LuaEnvironment::printError(const string_t &error) const -> void {
+auto lua_environment::print_error(const string &error) const -> void {
 	std::cerr << error << std::endl;
 }
 
-auto LuaEnvironment::expose(const string_t &name, lua_function_t func) -> void {
-	lua_register(m_luaVm, name.c_str(), func);
+auto lua_environment::expose(const string &name, lua::lua_function func) -> void {
+	lua_register(m_lua_vm, name.c_str(), func);
 }
 
-auto LuaEnvironment::requireStandardLib(const string_t &localName, lua_function_t func) -> void {
-	luaL_requiref(m_luaVm, localName.c_str(), func, 1);
+auto lua_environment::require_standard_lib(const string &local_name, lua::lua_function func) -> void {
+	luaL_requiref(m_lua_vm, local_name.c_str(), func, 1);
 }
 
-auto LuaEnvironment::yield(lua_return_t numberOfReturnResultsPassedToResume) -> lua_return_t {
-	return lua_yield(m_luaThread, numberOfReturnResultsPassedToResume);
+auto lua_environment::yield(lua::lua_return quantity_return_results_passed_to_resume) -> lua::lua_return {
+	return lua_yield(m_lua_thread, quantity_return_results_passed_to_resume);
 }
 
-auto LuaEnvironment::pushNil() -> LuaEnvironment & {
-	return pushNil(m_luaVm);
+auto lua_environment::push_nil() -> lua_environment & {
+	return push_nil(m_lua_vm);
 }
 
-auto LuaEnvironment::pushNil(lua_State *luaVm) -> LuaEnvironment & {
-	lua_pushnil(luaVm);
+auto lua_environment::push_nil(lua_State *lua_vm) -> lua_environment & {
+	lua_pushnil(lua_vm);
 	return *this;
 }
 
-auto LuaEnvironment::getScriptName() -> string_t {
-	vector_t<string_t> parts = StringUtilities::split(m_file, "/");
-	return FileUtilities::removeExtension(parts[parts.size() - 1]);
+auto lua_environment::get_script_name() -> string {
+	vector<string> parts = utilities::str::split(m_file, "/");
+	return utilities::file::remove_extension(parts[parts.size() - 1]);
 }
 
-auto LuaEnvironment::getScriptPath() -> vector_t<string_t> {
-	vector_t<string_t> parts = StringUtilities::split(m_file, "/");
+auto lua_environment::get_script_path() -> vector<string> {
+	vector<string> parts = utilities::str::split(m_file, "/");
 	if (parts.size() == 1) {
-		vector_t<string_t> ret;
+		vector<string> ret;
 		return ret;
 	}
-	vector_t<string_t> ret{parts.begin(), parts.end() - 1};
+	vector<string> ret{parts.begin(), parts.end() - 1};
 	return ret;
 }
 
-auto LuaEnvironment::exists(const string_t &key) -> bool {
-	return exists(m_luaVm, key);
+auto lua_environment::exists(const string &key) -> bool {
+	return exists(m_lua_vm, key);
 }
 
-auto LuaEnvironment::exists(lua_State *luaVm, const string_t &key) -> bool {
-	lua_getglobal(luaVm, key.c_str());
-	bool ret = !lua_isnil(luaVm, -1);
-	lua_pop(luaVm, 1);
+auto lua_environment::exists(lua_State *lua_vm, const string &key) -> bool {
+	lua_getglobal(lua_vm, key.c_str());
+	bool ret = !lua_isnil(lua_vm, -1);
+	lua_pop(lua_vm, 1);
 	return ret;
 }
 
-auto LuaEnvironment::keyMustExist(const string_t &key) -> void {
+auto lua_environment::key_must_exist(const string &key) -> void {
 	if (!exists(key)) {
-		handleKeyNotFound(m_file, key);
+		handle_key_not_found(m_file, key);
 	}
 }
 
-auto LuaEnvironment::error(const string_t &text) -> void {
-	handleError(m_file, text);
+auto lua_environment::error(const string &text) -> void {
+	handle_error(m_file, text);
 }
 
-auto LuaEnvironment::is(const string_t &key, LuaType type) -> bool {
-	return is(m_luaVm, key, type);
+auto lua_environment::is(const string &key, lua::lua_type type) -> bool {
+	return is(m_lua_vm, key, type);
 }
 
-auto LuaEnvironment::isAny(const string_t &key, init_list_t<LuaType> types) -> bool {
-	return std::any_of(std::begin(types), std::end(types), [&](LuaType type) -> bool {
+auto lua_environment::is_any_of(const string &key, init_list<lua::lua_type> types) -> bool {
+	return std::any_of(std::begin(types), std::end(types), [&](lua::lua_type type) -> bool {
 		return is(key, type);
 	});
 }
 
-auto LuaEnvironment::is(lua_State *luaVm, const string_t &key, LuaType type) -> bool {
-	lua_getglobal(luaVm, key.c_str());
-	bool ret = is(luaVm, -1, type);
-	lua_pop(luaVm, 1);
+auto lua_environment::is(lua_State *lua_vm, const string &key, lua::lua_type type) -> bool {
+	lua_getglobal(lua_vm, key.c_str());
+	bool ret = is(lua_vm, -1, type);
+	lua_pop(lua_vm, 1);
 	return ret;
 }
 
-auto LuaEnvironment::isAny(lua_State *luaVm, const string_t &key, init_list_t<LuaType> types) -> bool {
-	return std::any_of(std::begin(types), std::end(types), [&](LuaType type) -> bool {
-		return is(luaVm, key, type);
+auto lua_environment::is_any_of(lua_State *lua_vm, const string &key, init_list<lua::lua_type> types) -> bool {
+	return std::any_of(std::begin(types), std::end(types), [&](lua::lua_type type) -> bool {
+		return is(lua_vm, key, type);
 	});
 }
 
-auto LuaEnvironment::pop(int count) -> void {
-	pop(m_luaVm, count);
+auto lua_environment::pop(int count) -> void {
+	pop(m_lua_vm, count);
 }
 
-auto LuaEnvironment::pop(lua_State *luaVm, int count) -> void {
-	lua_pop(luaVm, count);
+auto lua_environment::pop(lua_State *lua_vm, int count) -> void {
+	lua_pop(lua_vm, count);
 }
 
-auto LuaEnvironment::count() -> int {
-	return count(m_luaVm);
+auto lua_environment::count() -> int {
+	return count(m_lua_vm);
 }
 
-auto LuaEnvironment::count(lua_State *luaVm) -> int {
-	return lua_gettop(luaVm);
+auto lua_environment::count(lua_State *lua_vm) -> int {
+	return lua_gettop(lua_vm);
 }
 
-auto LuaEnvironment::validateValue(LuaType expectedType, const LuaVariant &v, const string_t &key, const string_t &prefix, bool nilIsValid) -> LuaType {
-	LuaType type = v.getType();
-	if (nilIsValid && type == LuaType::Nil) return type;
-	if (type != expectedType) {
-		string_t representation;
+auto lua_environment::validate_value(lua::lua_type expected_type, const lua_variant &v, const string &key, const string &prefix, bool nil_is_valid) -> lua::lua_type {
+	lua::lua_type type = v.get_type();
+	if (nil_is_valid && type == lua::lua_type::nil) return type;
+	if (type != expected_type) {
+		string representation;
 		switch (type) {
-			case LuaType::Bool: representation = "bool"; break;
-			case LuaType::Number: representation = "number"; break;
-			case LuaType::String: representation = "string"; break;
-			case LuaType::Table: representation = "table"; break;
-			default: throw NotImplementedException{"LuaType"};
+			case lua::lua_type::boolean: representation = "bool"; break;
+			case lua::lua_type::number: representation = "number"; break;
+			case lua::lua_type::string: representation = "string"; break;
+			case lua::lua_type::table: representation = "table"; break;
+			default: throw not_implemented_exception{"LuaType"};
 		}
 		error("Key '" + key + "' on object " + prefix + " must have a " + representation + " value");
 	}
 	return type;
 }
 
-auto LuaEnvironment::validateKey(LuaType expectedType, const LuaVariant &v, const string_t &prefix) -> void {
-	LuaType type = v.getType();
-	if (type != expectedType) {
-		string_t representation;
+auto lua_environment::validate_key(lua::lua_type expected_type, const lua_variant &v, const string &prefix) -> void {
+	lua::lua_type type = v.get_type();
+	if (type != expected_type) {
+		string representation;
 		switch (type) {
-			case LuaType::Bool: representation = "bool"; break;
-			case LuaType::Number: representation = "number"; break;
-			case LuaType::String: representation = "string"; break;
-			case LuaType::Table: representation = "table"; break;
-			default: throw NotImplementedException{"LuaType"};
+			case lua::lua_type::boolean: representation = "bool"; break;
+			case lua::lua_type::number: representation = "number"; break;
+			case lua::lua_type::string: representation = "string"; break;
+			case lua::lua_type::table: representation = "table"; break;
+			default: throw not_implemented_exception{"LuaType"};
 		}
 		error("Object " + prefix + " keys must be " + representation + "s");
 	}
 }
 
-auto LuaEnvironment::validateObject(LuaType expectedType, const LuaVariant &v, const string_t &prefix) -> void {
-	LuaType type = v.getType();
-	if (type != expectedType) {
-		string_t representation;
+auto lua_environment::validate_object(lua::lua_type expected_type, const lua_variant &v, const string &prefix) -> void {
+	lua::lua_type type = v.get_type();
+	if (type != expected_type) {
+		string representation;
 		switch (type) {
-			case LuaType::Bool: representation = "bool"; break;
-			case LuaType::Number: representation = "number"; break;
-			case LuaType::String: representation = "string"; break;
-			case LuaType::Table: representation = "table"; break;
-			default: throw NotImplementedException{"LuaType"};
+			case lua::lua_type::boolean: representation = "bool"; break;
+			case lua::lua_type::number: representation = "number"; break;
+			case lua::lua_type::string: representation = "string"; break;
+			case lua::lua_type::table: representation = "table"; break;
+			default: throw not_implemented_exception{"LuaType"};
 		}
 		error("Object " + prefix + " must be a " + representation + " object");
 	}
 }
 
-auto LuaEnvironment::required(bool present, const string_t &key, const string_t &prefix) -> void {
+auto lua_environment::required(bool present, const string &key, const string &prefix) -> void {
 	if (!present) error("Missing required key '" + key + "' on object " + prefix);
 }
 
-auto LuaEnvironment::is(int index, LuaType type) -> bool {
-	return is(m_luaVm, index, type);
+auto lua_environment::is(int index, lua::lua_type type) -> bool {
+	return is(m_lua_vm, index, type);
 }
 
-auto LuaEnvironment::is(lua_State *luaVm, int index, LuaType type) -> bool {
-	return lua_type(luaVm, index) == static_cast<int>(type);
+auto lua_environment::is(lua_State *lua_vm, int index, lua::lua_type type) -> bool {
+	return lua_type(lua_vm, index) == static_cast<int>(type);
 }
 
-auto LuaEnvironment::isAny(int index, init_list_t<LuaType> types) -> bool {
-	return std::any_of(std::begin(types), std::end(types), [&](LuaType type) -> bool {
+auto lua_environment::is_any_of(int index, init_list<lua::lua_type> types) -> bool {
+	return std::any_of(std::begin(types), std::end(types), [&](lua::lua_type type) -> bool {
 		return is(index, type);
 	});
 }
 
-auto LuaEnvironment::isAny(lua_State *luaVm, int index, init_list_t<LuaType> types) -> bool {
-	return std::any_of(std::begin(types), std::end(types), [&](LuaType type) -> bool {
-		return is(luaVm, index, type);
+auto lua_environment::is_any_of(lua_State *lua_vm, int index, init_list<lua::lua_type> types) -> bool {
+	return std::any_of(std::begin(types), std::end(types), [&](lua::lua_type type) -> bool {
+		return is(lua_vm, index, type);
 	});
 }
 
-auto LuaEnvironment::typeOf(int index) -> LuaType {
-	return static_cast<LuaType>(lua_type(m_luaVm, index));
+auto lua_environment::type_of(int index) -> lua::lua_type {
+	return static_cast<lua::lua_type>(lua_type(m_lua_vm, index));
 }
 
-auto LuaEnvironment::typeOf(lua_State *luaVm, int index) -> LuaType {
-	return static_cast<LuaType>(lua_type(luaVm, index));
+auto lua_environment::type_of(lua_State *lua_vm, int index) -> lua::lua_type {
+	return static_cast<lua::lua_type>(lua_type(lua_vm, index));
 }
 
 }

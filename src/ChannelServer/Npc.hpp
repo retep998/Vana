@@ -24,60 +24,60 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-	namespace ChannelServer {
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class player;
 
-		class Npc {
-			NONCOPYABLE(Npc);
-			NO_DEFAULT_CONSTRUCTOR(Npc);
+		class npc {
+			NONCOPYABLE(npc);
+			NO_DEFAULT_CONSTRUCTOR(npc);
 		public:
-			Npc(npc_id_t npcId, ref_ptr_t<Player> player, quest_id_t questId = 0, bool isStart = false);
-			Npc(npc_id_t npcId, ref_ptr_t<Player> player, const Point &pos, quest_id_t questId = 0, bool isStart = false);
-			Npc(npc_id_t npcId, ref_ptr_t<Player> player, const string_t &script);
+			npc(game_npc_id npc_id, ref_ptr<player> player, game_quest_id quest_id = 0, bool is_start = false);
+			npc(game_npc_id npc_id, ref_ptr<player> player, const point &pos, game_quest_id quest_id = 0, bool is_start = false);
+			npc(game_npc_id npc_id, ref_ptr<player> player, const string &script);
 
-			static auto hasScript(npc_id_t npcId, quest_id_t questId, bool start) -> bool;
+			static auto has_script(game_npc_id npc_id, game_quest_id quest_id, bool start) -> bool;
 
 			auto run() -> void;
 
-			auto sendSimple() -> void;
-			auto sendYesNo() -> void;
-			auto sendDialog(bool back, bool next, bool save = true) -> void;
-			auto sendAcceptDecline() -> void;
-			auto sendAcceptDeclineNoExit() -> void;
-			auto sendGetText(int16_t min, int16_t max, const string_t &def = "") -> void;
-			auto sendGetNumber(int32_t def, int32_t min, int32_t max) -> void;
-			auto sendStyle(vector_t<int32_t> styles) -> void;
-			auto sendQuiz(int8_t type, int32_t objectId, int32_t correct, int32_t questions, int32_t time) -> void;
-			auto sendQuestion(const string_t &question, const string_t &clue, int32_t minLength, int32_t maxLength, int32_t time) -> void;
-			auto addText(const string_t &text) -> void { m_text += text; }
+			auto send_simple() -> void;
+			auto send_yes_no() -> void;
+			auto send_dialog(bool back, bool next, bool save = true) -> void;
+			auto send_accept_decline() -> void;
+			auto send_accept_decline_no_exit() -> void;
+			auto send_get_text(int16_t min, int16_t max, const string &def = "") -> void;
+			auto send_get_number(int32_t def, int32_t min, int32_t max) -> void;
+			auto send_style(vector<int32_t> styles) -> void;
+			auto send_quiz(int8_t type, int32_t object_id, int32_t correct, int32_t questions, int32_t time) -> void;
+			auto send_question(const string &question, const string &clue, int32_t min_length, int32_t max_length, int32_t time) -> void;
+			auto add_text(const string &text) -> void { m_text += text; }
 			auto end() -> void { m_cend = true; }
 
-			auto proceedBack() -> void;
-			auto proceedNext() -> void;
-			auto proceedSelection(uint8_t selected) -> void;
-			auto proceedNumber(int32_t number) -> void;
-			auto proceedText(const string_t &text) -> void;
+			auto proceed_back() -> void;
+			auto proceed_next() -> void;
+			auto proceed_selection(uint8_t selected) -> void;
+			auto proceed_number(int32_t number) -> void;
+			auto proceed_text(const string &text) -> void;
 
-			auto getPlayer() const -> ref_ptr_t<Player> { return m_player; }
-			auto getSentDialog() const -> uint8_t { return m_sentDialog; }
-			auto getNpcId() const -> npc_id_t { return m_npcId; }
-			auto getNumber() const -> int32_t { return m_getNum; }
-			auto getSelected() const -> int32_t { return m_selected; }
-			auto getText() -> string_t & { return m_getText; }
+			auto get_player() const -> ref_ptr<player> { return m_player; }
+			auto get_sent_dialog() const -> uint8_t { return m_sent_dialog; }
+			auto get_npc_id() const -> game_npc_id { return m_npc_id; }
+			auto get_number() const -> int32_t { return m_get_num; }
+			auto get_selected() const -> int32_t { return m_selected; }
+			auto get_text() -> string & { return m_get_text; }
 
-			auto isEnd() const -> bool { return m_cend; }
-			auto getPos() const -> Point { return m_pos; }
+			auto is_end() const -> bool { return m_cend; }
+			auto get_pos() const -> point { return m_pos; }
 
-			auto setEndScript(int32_t npcId, const string_t &fullscript) -> void;
+			auto set_end_script(int32_t npc_id, const string &fullscript) -> void;
 
-			auto checkEnd() -> bool;
-			auto showShop() -> void;
+			auto check_end() -> bool;
+			auto show_shop() -> void;
 		private:
-			struct NpcChatState {
-				NONCOPYABLE(NpcChatState);
+			struct npc_chat_state {
+				NONCOPYABLE(npc_chat_state);
 			public:
-				NpcChatState(const string_t &text, bool back, bool next) :
+				npc_chat_state(const string &text, bool back, bool next) :
 					text(text),
 					back(back),
 					next(next)
@@ -86,27 +86,27 @@ namespace Vana {
 
 				bool back = false;
 				bool next = false;
-				string_t text;
+				string text;
 			};
 
-			auto sendDialog(ref_ptr_t<NpcChatState> npcState) -> void;
-			auto getScript(quest_id_t questId, bool start) -> string_t;
-			auto initScript(const string_t &filename) -> void;
+			auto send_dialog(ref_ptr<npc_chat_state> npc_state) -> void;
+			auto get_script(game_quest_id quest_id, bool start) -> string;
+			auto init_script(const string &filename) -> void;
 
 			bool m_cend = false;
-			uint8_t m_sentDialog = 0; // Used to check if the user respond with the same type of the dialog sent
+			uint8_t m_sent_dialog = 0; // Used to check if the user respond with the same type of the dialog sent
 			uint8_t m_selected = 0;
-			int32_t m_nextNpc = 0;
-			npc_id_t m_npcId = 0;
-			int32_t m_getNum = 0;
+			int32_t m_next_npc = 0;
+			game_npc_id m_npc_id = 0;
+			int32_t m_get_num = 0;
 			uint32_t m_state = 0;
-			ref_ptr_t<Player> m_player = nullptr;
-			string_t m_text;
-			string_t m_getText;
-			string_t m_script;
-			Point m_pos;
-			owned_ptr_t<LuaNpc> m_luaNpc;
-			vector_t<ref_ptr_t<NpcChatState>> m_previousStates;
+			ref_ptr<player> m_player = nullptr;
+			string m_text;
+			string m_get_text;
+			string m_script;
+			point m_pos;
+			owned_ptr<lua_npc> m_lua_npc;
+			vector<ref_ptr<npc_chat_state>> m_previous_states;
 		};
 	}
 }

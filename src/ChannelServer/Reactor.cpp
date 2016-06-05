@@ -21,37 +21,37 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Player.hpp"
 #include "ChannelServer/ReactorPacket.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-Reactor::Reactor(map_id_t mapId, reactor_id_t reactorId, const Point &pos, bool facesLeft) :
-	m_reactorId{reactorId},
-	m_mapId{mapId},
+reactor::reactor(game_map_id map_id, game_reactor_id reactor_id, const point &pos, bool faces_left) :
+	m_reactor_id{reactor_id},
+	m_map_id{map_id},
 	m_pos{pos},
-	m_facesLeft{facesLeft}
+	m_faces_left{faces_left}
 {
-	Maps::getMap(mapId)->addReactor(this);
+	maps::get_map(map_id)->add_reactor(this);
 }
 
-auto Reactor::setState(int8_t state, bool sendPacket) -> void {
+auto reactor::set_state(int8_t state, bool send_packet) -> void {
 	m_state = state;
-	if (sendPacket) {
-		getMap()->send(Packets::triggerReactor(this));
+	if (send_packet) {
+		get_map()->send(packets::trigger_reactor(this));
 	}
 }
 
-auto Reactor::restore() -> void {
+auto reactor::restore() -> void {
 	revive();
-	setState(0, false);
-	getMap()->send(Packets::spawnReactor(this));
+	set_state(0, false);
+	get_map()->send(packets::spawn_reactor(this));
 }
 
-auto Reactor::drop(ref_ptr_t<Player> player) -> void {
-	DropHandler::doDrops(player->getId(), m_mapId, 0, m_reactorId, m_pos, false, false);
+auto reactor::drop(ref_ptr<player> player) -> void {
+	drop_handler::do_drops(player->get_id(), m_map_id, 0, m_reactor_id, m_pos, false, false);
 }
 
-auto Reactor::getMap() const -> Map * {
-	return Maps::getMap(m_mapId);
+auto reactor::get_map() const -> map * {
+	return maps::get_map(m_map_id);
 }
 
 }

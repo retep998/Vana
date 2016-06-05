@@ -25,42 +25,42 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/StoragePacket.hpp"
 #include <vector>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-LuaNpc::LuaNpc(const string_t &filename, player_id_t playerId) :
-	LuaScriptable{filename, playerId, true}
+lua_npc::lua_npc(const string &filename, game_player_id player_id) :
+	lua_scriptable{filename, player_id, true}
 {
-	setNpcEnvironmentVariables();
+	set_npc_environment_variables();
 
 	// Miscellaneous
-	expose("getDistanceToPlayer", &LuaExports::getDistanceNpc);
-	expose("getNpcId", &LuaExports::getNpcId);
-	expose("runNpc", &LuaExports::runNpcNpc);
-	expose("showStorage", &LuaExports::showStorage);
+	expose("getDistanceToPlayer", &lua_exports::get_distance_npc);
+	expose("getNpcId", &lua_exports::get_npc_id);
+	expose("runNpc", &lua_exports::run_npc_npc);
+	expose("showStorage", &lua_exports::show_storage);
 
 	// NPC interaction
-	expose("addText", &LuaExports::addText);
-	expose("askAcceptDecline", &LuaExports::askAcceptDecline);
-	expose("askAcceptDeclineNoExit", &LuaExports::askAcceptDeclineNoExit);
-	expose("askChoice", &LuaExports::askChoice);
-	expose("askNumber", &LuaExports::askNumber);
-	expose("askQuestion", &LuaExports::askQuestion);
-	expose("askQuiz", &LuaExports::askQuiz);
-	expose("askStyle", &LuaExports::askStyle);
-	expose("askText", &LuaExports::askText);
-	expose("askYesNo", &LuaExports::askYesNo);
-	expose("sendBackNext", &LuaExports::sendBackNext);
-	expose("sendBackOk", &LuaExports::sendBackOk);
-	expose("sendNext", &LuaExports::sendNext);
-	expose("sendOk", &LuaExports::sendOk);
+	expose("addText", &lua_exports::add_text);
+	expose("askAcceptDecline", &lua_exports::ask_accept_decline);
+	expose("askAcceptDeclineNoExit", &lua_exports::ask_accept_decline_no_exit);
+	expose("askChoice", &lua_exports::ask_choice);
+	expose("askNumber", &lua_exports::ask_number);
+	expose("askQuestion", &lua_exports::ask_question);
+	expose("askQuiz", &lua_exports::ask_quiz);
+	expose("askStyle", &lua_exports::ask_style);
+	expose("askText", &lua_exports::ask_text);
+	expose("askYesNo", &lua_exports::ask_yes_no);
+	expose("sendBackNext", &lua_exports::send_back_next);
+	expose("sendBackOk", &lua_exports::send_back_ok);
+	expose("sendNext", &lua_exports::send_next);
+	expose("sendOk", &lua_exports::send_ok);
 
 	// Quest
-	expose("addQuest", &LuaExports::addQuest);
-	expose("endQuest", &LuaExports::endQuest);
+	expose("addQuest", &lua_exports::add_quest);
+	expose("endQuest", &lua_exports::end_quest);
 }
 
-auto LuaNpc::setNpcEnvironmentVariables() -> void {
+auto lua_npc::set_npc_environment_variables() -> void {
 	set<int32_t>("answer_yes", 1);
 	set<int32_t>("answer_no", 0);
 
@@ -72,205 +72,205 @@ auto LuaNpc::setNpcEnvironmentVariables() -> void {
 	set<int32_t>("quiz_item", 2);
 }
 
-auto LuaNpc::handleThreadCompletion() -> void {
-	ChannelServer::getInstance().getPlayerDataProvider().getPlayer(m_playerId)->getNpc()->end();
+auto lua_npc::handle_thread_completion() -> void {
+	channel_server::get_instance().get_player_data_provider().get_player(m_player_id)->get_npc()->end();
 }
 
-auto LuaNpc::proceedNext() -> Result {
+auto lua_npc::proceed_next() -> result {
 	return resume(0);
 }
 
-auto LuaNpc::proceedSelection(uint8_t selected) -> Result {
-	pushThread<uint8_t>(selected);
+auto lua_npc::proceed_selection(uint8_t selected) -> result {
+	push_thread<uint8_t>(selected);
 	return resume(1);
 }
 
-auto LuaNpc::proceedNumber(int32_t number) -> Result {
-	pushThread<int32_t>(number);
+auto lua_npc::proceed_number(int32_t number) -> result {
+	push_thread<int32_t>(number);
 	return resume(1);
 }
 
-auto LuaNpc::proceedText(const string_t &text) -> Result {
-	pushThread<string_t>(text);
+auto lua_npc::proceed_text(const string &text) -> result {
+	push_thread<string>(text);
 	return resume(1);
 }
 
-auto LuaNpc::handleError(const string_t &filename, const string_t &error) -> void {
-	printError(error);
-	ChannelServer::getInstance().getPlayerDataProvider().getPlayer(m_playerId)->getNpc()->end();
+auto lua_npc::handle_error(const string &filename, const string &error) -> void {
+	print_error(error);
+	channel_server::get_instance().get_player_data_provider().get_player(m_player_id)->get_npc()->end();
 }
 
-auto LuaExports::getNpc(lua_State *luaVm, LuaEnvironment &env) -> Npc * {
-	return getPlayer(luaVm, env)->getNpc();
+auto lua_exports::get_npc(lua_State *lua_vm, lua_environment &env) -> npc * {
+	return get_player(lua_vm, env)->get_npc();
 }
 
 // Miscellaneous
-auto LuaExports::getDistanceNpc(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	env.push<int32_t>(luaVm, getPlayer(luaVm, env)->getPos() - getNpc(luaVm, env)->getPos());
+auto lua_exports::get_distance_npc(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	env.push<int32_t>(lua_vm, get_player(lua_vm, env)->get_pos() - get_npc(lua_vm, env)->get_pos());
 	return 1;
 }
 
-auto LuaExports::getNpcId(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	env.push<npc_id_t>(luaVm, getNpc(luaVm, env)->getNpcId());
+auto lua_exports::get_npc_id(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	env.push<game_npc_id>(lua_vm, get_npc(lua_vm, env)->get_npc_id());
 	return 1;
 }
 
-auto LuaExports::runNpcNpc(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	npc_id_t npcId = env.get<npc_id_t>(luaVm, 1);
-	string_t script;
-	auto &channel = ChannelServer::getInstance();
-	if (env.is(luaVm, 2, LuaType::String)) {
+auto lua_exports::run_npc_npc(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	game_npc_id npc_id = env.get<game_npc_id>(lua_vm, 1);
+	string script;
+	auto &channel = channel_server::get_instance();
+	if (env.is(lua_vm, 2, lua::lua_type::string)) {
 		// We already have our script name
-		string_t specified = env.get<string_t>(luaVm, 2);
-		script = channel.getScriptDataProvider().buildScriptPath(ScriptTypes::Npc, specified);
+		string specified = env.get<string>(lua_vm, 2);
+		script = channel.get_script_data_provider().build_script_path(script_types::npc, specified);
 	}
 	else {
-		script = channel.getScriptDataProvider().getScript(&channel, npcId, ScriptTypes::Npc);
+		script = channel.get_script_data_provider().get_script(&channel, npc_id, script_types::npc);
 	}
-	getNpc(luaVm, env)->setEndScript(npcId, script);
+	get_npc(lua_vm, env)->set_end_script(npc_id, script);
 	return 0;
 }
 
-auto LuaExports::showStorage(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	auto player = getPlayer(luaVm, env);
-	player->send(Packets::Storage::showStorage(player, getNpc(luaVm, env)->getNpcId()));
+auto lua_exports::show_storage(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	auto player = get_player(lua_vm, env);
+	player->send(packets::storage::show_storage(player, get_npc(lua_vm, env)->get_npc_id()));
 	return 0;
 }
 
 // NPC interaction
-auto LuaExports::addText(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	getNpc(luaVm, env)->addText(env.get<string_t>(luaVm, 1));
+auto lua_exports::add_text(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	get_npc(lua_vm, env)->add_text(env.get<string>(lua_vm, 1));
 	return 0;
 }
 
-auto LuaExports::askAcceptDecline(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	getNpc(luaVm, env)->sendAcceptDecline();
+auto lua_exports::ask_accept_decline(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	get_npc(lua_vm, env)->send_accept_decline();
 	return env.yield(1);
 }
 
-auto LuaExports::askAcceptDeclineNoExit(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	getNpc(luaVm, env)->sendAcceptDeclineNoExit();
+auto lua_exports::ask_accept_decline_no_exit(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	get_npc(lua_vm, env)->send_accept_decline_no_exit();
 	return env.yield(1);
 }
 
-auto LuaExports::askChoice(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	getNpc(luaVm, env)->sendSimple();
+auto lua_exports::ask_choice(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	get_npc(lua_vm, env)->send_simple();
 	return env.yield(1);
 }
 
-auto LuaExports::askNumber(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	int32_t def = env.get<int32_t>(luaVm, 1);
-	int32_t min = env.get<int32_t>(luaVm, 2);
-	int32_t max = env.get<int32_t>(luaVm, 3);
-	getNpc(luaVm, env)->sendGetNumber(def, min, max);
+auto lua_exports::ask_number(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	int32_t def = env.get<int32_t>(lua_vm, 1);
+	int32_t min = env.get<int32_t>(lua_vm, 2);
+	int32_t max = env.get<int32_t>(lua_vm, 3);
+	get_npc(lua_vm, env)->send_get_number(def, min, max);
 	return env.yield(1);
 }
 
-auto LuaExports::askQuestion(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	string_t question = env.get<string_t>(luaVm, 1);
-	string_t clue = env.get<string_t>(luaVm, 2);
-	int32_t minLength = env.get<int32_t>(luaVm, 3);
-	int32_t maxLength = env.get<int32_t>(luaVm, 4);
-	int32_t time = env.get<int32_t>(luaVm, 5);
+auto lua_exports::ask_question(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	string question = env.get<string>(lua_vm, 1);
+	string clue = env.get<string>(lua_vm, 2);
+	int32_t min_length = env.get<int32_t>(lua_vm, 3);
+	int32_t max_length = env.get<int32_t>(lua_vm, 4);
+	int32_t time = env.get<int32_t>(lua_vm, 5);
 
-	getNpc(luaVm, env)->sendQuestion(question, clue, minLength, maxLength, time);
+	get_npc(lua_vm, env)->send_question(question, clue, min_length, max_length, time);
 	return env.yield(1);
 }
 
-auto LuaExports::askQuiz(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	int8_t type = env.get<int32_t>(luaVm, 1);
-	int32_t objectId = env.get<int32_t>(luaVm, 2);
-	int32_t correct = env.get<int32_t>(luaVm, 3);
-	int32_t questions = env.get<int32_t>(luaVm, 4);
-	int32_t time = env.get<int32_t>(luaVm, 5);
+auto lua_exports::ask_quiz(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	int8_t type = env.get<int32_t>(lua_vm, 1);
+	int32_t object_id = env.get<int32_t>(lua_vm, 2);
+	int32_t correct = env.get<int32_t>(lua_vm, 3);
+	int32_t questions = env.get<int32_t>(lua_vm, 4);
+	int32_t time = env.get<int32_t>(lua_vm, 5);
 
-	getNpc(luaVm, env)->sendQuiz(type, objectId, correct, questions, time);
+	get_npc(lua_vm, env)->send_quiz(type, object_id, correct, questions, time);
 	return env.yield(1);
 }
 
-auto LuaExports::askStyle(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	vector_t<int32_t> styles = env.get<vector_t<int32_t>>(luaVm, 1);
+auto lua_exports::ask_style(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	vector<int32_t> styles = env.get<vector<int32_t>>(lua_vm, 1);
 
 	if (styles.size() > 0) {
-		getNpc(luaVm, env)->sendStyle(styles);
+		get_npc(lua_vm, env)->send_style(styles);
 	}
 
 	return env.yield(1);
 }
 
-auto LuaExports::askText(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
+auto lua_exports::ask_text(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
 	int16_t min = 0;
 	int16_t max = 0;
-	string_t def = "";
-	if (env.is(luaVm, 1, LuaType::Number) && env.is(luaVm, 2, LuaType::Number)) {
-		min = env.get<int32_t>(luaVm, 1);
-		max = env.get<int32_t>(luaVm, 2);
-		if (env.is(luaVm, 3, LuaType::String)) {
-			def = env.get<string_t>(luaVm, 3);
+	string def = "";
+	if (env.is(lua_vm, 1, lua::lua_type::number) && env.is(lua_vm, 2, lua::lua_type::number)) {
+		min = env.get<int32_t>(lua_vm, 1);
+		max = env.get<int32_t>(lua_vm, 2);
+		if (env.is(lua_vm, 3, lua::lua_type::string)) {
+			def = env.get<string>(lua_vm, 3);
 		}
 	}
-	else if (env.is(luaVm, 1, LuaType::String)) {
-		def = env.get<string_t>(luaVm, 1);
+	else if (env.is(lua_vm, 1, lua::lua_type::string)) {
+		def = env.get<string>(lua_vm, 1);
 	}
-	getNpc(luaVm, env)->sendGetText(min, max, def);
+	get_npc(lua_vm, env)->send_get_text(min, max, def);
 	return env.yield(1);
 }
 
-auto LuaExports::askYesNo(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	getNpc(luaVm, env)->sendYesNo();
+auto lua_exports::ask_yes_no(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	get_npc(lua_vm, env)->send_yes_no();
 	return env.yield(1);
 }
 
-auto LuaExports::sendBackNext(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	getNpc(luaVm, env)->sendDialog(true, true);
+auto lua_exports::send_back_next(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	get_npc(lua_vm, env)->send_dialog(true, true);
 	return env.yield(0);
 }
 
-auto LuaExports::sendBackOk(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	getNpc(luaVm, env)->sendDialog(true, false);
+auto lua_exports::send_back_ok(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	get_npc(lua_vm, env)->send_dialog(true, false);
 	return env.yield(0);
 }
 
-auto LuaExports::sendNext(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	getNpc(luaVm, env)->sendDialog(false, true);
+auto lua_exports::send_next(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	get_npc(lua_vm, env)->send_dialog(false, true);
 	return env.yield(0);
 }
 
-auto LuaExports::sendOk(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	getNpc(luaVm, env)->sendDialog(false, false);
+auto lua_exports::send_ok(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	get_npc(lua_vm, env)->send_dialog(false, false);
 	return env.yield(0);
 }
 
 // Quest
-auto LuaExports::addQuest(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	quest_id_t questId = env.get<quest_id_t>(luaVm, 1);
-	getPlayer(luaVm, env)->getQuests()->addQuest(questId, getNpc(luaVm, env)->getNpcId());
+auto lua_exports::add_quest(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	game_quest_id quest_id = env.get<game_quest_id>(lua_vm, 1);
+	get_player(lua_vm, env)->get_quests()->add_quest(quest_id, get_npc(lua_vm, env)->get_npc_id());
 	return 0;
 }
 
-auto LuaExports::endQuest(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	quest_id_t questId = env.get<quest_id_t>(luaVm, 1);
-	getPlayer(luaVm, env)->getQuests()->finishQuest(questId, getNpc(luaVm, env)->getNpcId());
+auto lua_exports::end_quest(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	game_quest_id quest_id = env.get<game_quest_id>(lua_vm, 1);
+	get_player(lua_vm, env)->get_quests()->finish_quest(quest_id, get_npc(lua_vm, env)->get_npc_id());
 	return 0;
 }
 

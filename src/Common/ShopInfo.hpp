@@ -20,10 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/ShopItemInfo.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct ShopInfo {
-		int8_t rechargeTier = 0;
-		npc_id_t npc = 0;
-		vector_t<ShopItemInfo> items;
+namespace vana {
+	struct shop_info {
+		int8_t recharge_tier = 0;
+		game_npc_id npc = 0;
+		vector<shop_item_info> items;
 	};
 }

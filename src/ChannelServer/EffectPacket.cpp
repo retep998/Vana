@@ -20,81 +20,81 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Player.hpp"
 #include "ChannelServer/SmsgHeader.hpp"
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
+namespace vana {
+namespace channel_server {
+namespace packets {
 
-PACKET_IMPL(playMusic, const string_t &music) {
-	PacketBuilder builder;
+PACKET_IMPL(play_music, const string &music) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MAP_EFFECT)
+		.add<packet_header>(SMSG_MAP_EFFECT)
 		.add<int8_t>(0x06)
-		.add<string_t>(music);
+		.add<string>(music);
 	return builder;
 }
 
-PACKET_IMPL(sendEvent, const string_t &id) {
-	PacketBuilder builder;
+PACKET_IMPL(send_event, const string &id) {
+	packet_builder builder;
 	// Look in Map.wz/Effect.img to find valid strings
 	builder
-		.add<header_t>(SMSG_MAP_EFFECT)
+		.add<packet_header>(SMSG_MAP_EFFECT)
 		.add<int8_t>(0x03)
-		.add<string_t>(id);
+		.add<string>(id);
 	return builder;
 }
 
-PACKET_IMPL(sendEffect, const string_t &effect) {
-	PacketBuilder builder;
+PACKET_IMPL(send_effect, const string &effect) {
+	packet_builder builder;
 	// Look in Map.wz/Obj/Effect.img/quest/ for valid strings
 	builder
-		.add<header_t>(SMSG_MAP_EFFECT)
+		.add<packet_header>(SMSG_MAP_EFFECT)
 		.add<int8_t>(0x02)
-		.add<string_t>(effect);
+		.add<string>(effect);
 	return builder;
 }
 
-PACKET_IMPL(playPortalSoundEffect) {
-	PacketBuilder builder;
+PACKET_IMPL(play_portal_sound_effect) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_THEATRICS)
+		.add<packet_header>(SMSG_THEATRICS)
 		.add<int8_t>(0x07);
 	return builder;
 }
 
-PACKET_IMPL(sendFieldSound, const string_t &sound) {
-	PacketBuilder builder;
+PACKET_IMPL(send_field_sound, const string &sound) {
+	packet_builder builder;
 	// Look in Sound.wz/Field.img to find valid strings
 	builder
-		.add<header_t>(SMSG_MAP_EFFECT)
+		.add<packet_header>(SMSG_MAP_EFFECT)
 		.add<int8_t>(0x04)
-		.add<string_t>(sound);
+		.add<string>(sound);
 	return builder;
 }
 
-PACKET_IMPL(sendMinigameSound, const string_t &sound) {
-	PacketBuilder builder;
+PACKET_IMPL(send_minigame_sound, const string &sound) {
+	packet_builder builder;
 	// Look in Sound.wz/MiniGame.img to find valid strings
 	builder
-		.add<header_t>(SMSG_SOUND)
-		.add<string_t>(sound);
+		.add<packet_header>(SMSG_SOUND)
+		.add<string>(sound);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(sendMobItemBuffEffect, player_id_t playerId, item_id_t itemId) {
-	SplitPacketBuilder builder;
-	PacketBuilder buffer;
+SPLIT_PACKET_IMPL(send_mob_item_buff_effect, game_player_id player_id, game_item_id item_id) {
+	split_packet_builder builder;
+	packet_builder buffer;
 	buffer
 		.add<int8_t>(0x0B)
-		.add<item_id_t>(itemId);
+		.add<game_item_id>(item_id);
 
 	builder.player
-		.add<header_t>(SMSG_THEATRICS)
-		.addBuffer(buffer);
+		.add<packet_header>(SMSG_THEATRICS)
+		.add_buffer(buffer);
 
 	builder.map
-		.add<header_t>(SMSG_SKILL_SHOW)
-		.add<player_id_t>(playerId)
-		.addBuffer(buffer);
+		.add<packet_header>(SMSG_SKILL_SHOW)
+		.add<game_player_id>(player_id)
+		.add_buffer(buffer);
 	return builder;
 }
 

@@ -23,29 +23,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	struct InterServerConfig {
-		InterServerConfig() :
-			loginIp{0}
+namespace vana {
+	struct inter_server_config {
+		inter_server_config() :
+			login_ip{0}
 		{
 		}
 
-		bool clientEncryption = true;
-		PingConfig clientPing;
-		PingConfig serverPing;
-		port_t loginPort = 0;
-		Ip loginIp;
+		bool client_encryption = true;
+		ping_config client_ping;
+		ping_config server_ping;
+		connection_port login_port = 0;
+		ip login_ip;
 	};
 
 	template <>
-	struct LuaSerialize<InterServerConfig> {
-		auto read(LuaEnvironment &config, const string_t &prefix) -> InterServerConfig {
-			InterServerConfig ret;
-			ret.clientEncryption = config.get<bool>("use_client_encryption");
-			ret.clientPing = config.get<PingConfig>("client_ping");
-			ret.serverPing = config.get<PingConfig>("inter_ping");
-			ret.loginIp = Ip{Ip::stringToIpv4(config.get<string_t>("login_ip"))};
-			ret.loginPort = config.get<port_t>("login_inter_port");
+	struct lua_serialize<inter_server_config> {
+		auto read(lua_environment &config, const string &prefix) -> inter_server_config {
+			inter_server_config ret;
+			ret.client_encryption = config.get<bool>("use_client_encryption");
+			ret.client_ping = config.get<ping_config>("client_ping");
+			ret.server_ping = config.get<ping_config>("inter_ping");
+			ret.login_ip = ip{ip::string_to_ipv4(config.get<string>("login_ip"))};
+			ret.login_port = config.get<connection_port>("login_inter_port");
 			return ret;
 		}
 	};

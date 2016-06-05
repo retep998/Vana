@@ -25,29 +25,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <unordered_map>
 
-namespace Vana {
-	class SkillDataProvider {
+namespace vana {
+	class skill_data_provider {
 	public:
-		auto loadData() -> void;
+		auto load_data() -> void;
 
-		auto isValidSkill(skill_id_t skillId) const -> bool;
-		auto getMaxLevel(skill_id_t skillId) const -> uint8_t;
-		auto getSkill(skill_id_t skill, skill_level_t level) const -> const SkillLevelInfo * const;
-		auto getMobSkill(mob_skill_id_t skill, mob_skill_level_t level) const -> const MobSkillLevelInfo * const;
-		auto getBanishData(mob_id_t mobId) const -> const BanishFieldInfo * const;
-		auto getMorphData(morph_id_t morph) const -> const MorphInfo * const;
+		auto is_valid_skill(game_skill_id skill_id) const -> bool;
+		auto get_max_level(game_skill_id skill_id) const -> uint8_t;
+		auto get_skill(game_skill_id skill, game_skill_level level) const -> const skill_level_info * const;
+		auto get_mob_skill(game_mob_skill_id skill, game_mob_skill_level level) const -> const mob_skill_level_info * const;
+		auto get_banish_data(game_mob_id mob_id) const -> const banish_field_info * const;
+		auto get_morph_data(game_morph_id morph) const -> const morph_info * const;
 	private:
-		auto loadPlayerSkills() -> void;
-		auto loadPlayerSkillLevels() -> void;
-		auto loadMobSkills() -> void;
-		auto loadMobSummons() -> void;
-		auto loadBanishData() -> void;
-		auto loadMorphs() -> void;
+		auto load_player_skills() -> void;
+		auto load_player_skill_levels() -> void;
+		auto load_mob_skills() -> void;
+		auto load_mob_summons() -> void;
+		auto load_banish_data() -> void;
+		auto load_morphs() -> void;
 
-		hash_map_t<mob_skill_id_t, hash_map_t<mob_skill_level_t, MobSkillLevelInfo>> m_mobSkills;
-		hash_map_t<skill_id_t, hash_map_t<skill_level_t, SkillLevelInfo>> m_skillLevels;
-		hash_map_t<skill_id_t, skill_level_t> m_skillMaxLevels;
-		hash_map_t<skill_id_t, BanishFieldInfo> m_banishInfo;
-		hash_map_t<morph_id_t, MorphInfo> m_morphInfo;
+		hash_map<game_mob_skill_id, hash_map<game_mob_skill_level, mob_skill_level_info>> m_mob_skills;
+		hash_map<game_skill_id, hash_map<game_skill_level, skill_level_info>> m_skill_levels;
+		hash_map<game_skill_id, game_skill_level> m_skill_max_levels;
+		hash_map<game_skill_id, banish_field_info> m_banish_info;
+		hash_map<game_morph_id, morph_info> m_morph_info;
 	};
 }

@@ -21,15 +21,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <chrono>
 #include <ctime>
 
-namespace Vana {
-	class StopWatch {
-		NONCOPYABLE(StopWatch);
+namespace vana {
+	class stop_watch {
+		NONCOPYABLE(stop_watch);
 	public:
-		StopWatch() : m_start{effective_clock_t::now()} { }
-		auto restart() -> void { m_start = effective_clock_t::now(); }
+		stop_watch() : m_start{effective_clock::now()} { }
+		auto restart() -> void { m_start = effective_clock::now(); }
 		template <typename TDuration>
-		auto elapsed() const -> typename TDuration::rep { return duration_cast<TDuration>(effective_clock_t::now() - m_start).count(); }
+		auto elapsed() const -> typename TDuration::rep { return duration_cast<TDuration>(effective_clock::now() - m_start).count(); }
 	private:
-		time_point_t m_start;
+		time_point m_start;
 	};
 }

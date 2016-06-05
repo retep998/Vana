@@ -20,19 +20,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Timer.hpp"
 #include <chrono>
 
-namespace Vana {
-namespace Timer {
+namespace vana {
+namespace timer {
 
-auto Container::isTimerRunning(const Id &id) const -> bool {
+auto container::is_timer_running(const id &id) const -> bool {
 	return m_timers.find(id) != std::end(m_timers);
 }
 
-auto Container::registerTimer(ref_ptr_t<Timer> timer, const Id &id, time_point_t runAt) -> void {
+auto container::register_timer(ref_ptr<timer> timer, const id &id, time_point run_at) -> void {
 	m_timers[id] = timer;
-	TimerThread::getInstance().registerTimer(timer, runAt);
+	timer_thread::get_instance().register_timer(timer, run_at);
 }
 
-auto Container::removeTimer(const Id &id) -> void {
+auto container::remove_timer(const id &id) -> void {
 	auto iter = m_timers.find(id);
 	if (iter != std::end(m_timers)) {
 		m_timers.erase(iter);

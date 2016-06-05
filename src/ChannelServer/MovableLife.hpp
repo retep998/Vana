@@ -20,42 +20,42 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/MapPosition.hpp"
 #include "Common/Point.hpp"
 
-namespace Vana {
-	namespace ChannelServer {
+namespace vana {
+	namespace channel_server {
 		// A base class for player, mobs that can move
-		class MovableLife {
-			NONCOPYABLE(MovableLife);
-			NO_DEFAULT_CONSTRUCTOR(MovableLife);
+		class movable_life {
+			NONCOPYABLE(movable_life);
+			NO_DEFAULT_CONSTRUCTOR(movable_life);
 		public:
-			MovableLife(foothold_id_t foothold, const Point &pos, int8_t stance) :
+			movable_life(game_foothold_id foothold, const point &pos, int8_t stance) :
 				m_stance{stance},
 				m_foothold{foothold},
 				m_pos{pos}
 			{
 			}
 
-			virtual ~MovableLife() = default;
+			virtual ~movable_life() = default;
 
-			auto isFacingRight() const -> bool { return m_stance % 2 == 0; }
-			auto isFacingLeft() const -> bool { return m_stance % 2 == 1; }
-			auto getStance() const -> int8_t { return m_stance; }
-			auto getFoothold() const -> foothold_id_t { return m_foothold; }
-			virtual auto getPos() const -> Point { return m_pos; }
-			auto getMapPosition() const -> MapPosition { return MapPosition{getPos(), m_foothold}; }
+			auto is_facing_right() const -> bool { return m_stance % 2 == 0; }
+			auto is_facing_left() const -> bool { return m_stance % 2 == 1; }
+			auto get_stance() const -> int8_t { return m_stance; }
+			auto get_foothold() const -> game_foothold_id { return m_foothold; }
+			virtual auto get_pos() const -> point { return m_pos; }
+			auto get_map_position() const -> map_position { return map_position{get_pos(), m_foothold}; }
 
-			auto setPos(const Point &val) -> void { m_pos = val; }
-			auto resetMovement(foothold_id_t foothold, const Point &pos, int8_t stance) -> void {
+			auto set_pos(const point &val) -> void { m_pos = val; }
+			auto reset_movement(game_foothold_id foothold, const point &pos, int8_t stance) -> void {
 				m_stance = stance;
 				m_foothold = foothold;
 				m_pos = pos;
 			}
 		protected:
-			auto setStance(int8_t val) -> void { m_stance = val; }
-			auto setFoothold(foothold_id_t val) -> void { m_foothold = val; }
+			auto set_stance(int8_t val) -> void { m_stance = val; }
+			auto set_foothold(game_foothold_id val) -> void { m_foothold = val; }
 
 			int8_t m_stance = 0;
-			foothold_id_t m_foothold = 0;
-			Point m_pos;
+			game_foothold_id m_foothold = 0;
+			point m_pos;
 		};
 	}
 }

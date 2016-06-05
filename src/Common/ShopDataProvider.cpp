@@ -27,124 +27,124 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-namespace Vana {
+namespace vana {
 
-auto ShopDataProvider::loadData() -> void {
-	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Shops... ";
+auto shop_data_provider::load_data() -> void {
+	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Shops... ";
 
-	loadShops();
-	loadUserShops();
-	loadRechargeTiers();
+	load_shops();
+	load_user_shops();
+	load_recharge_tiers();
 
 	std::cout << "DONE" << std::endl;
 }
 
-auto ShopDataProvider::loadShops() -> void {
+auto shop_data_provider::load_shops() -> void {
 	m_shops.clear();
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("shop_data"));
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("shop_data"));
 
 	for (const auto &row : rs) {
-		ShopInfo shop;
-		shop_id_t shopId = row.get<shop_id_t>("shopid");
-		shop.npc = row.get<npc_id_t>("npcid");
-		shop.rechargeTier = row.get<int8_t>("recharge_tier");
-		m_shops[shopId] = shop;
+		shop_info shop;
+		game_shop_id shop_id = row.get<game_shop_id>("shopid");
+		shop.npc = row.get<game_npc_id>("npcid");
+		shop.recharge_tier = row.get<int8_t>("recharge_tier");
+		m_shops[shop_id] = shop;
 	}
 
-	rs = (sql.prepare << "SELECT * FROM " << db.makeTable("shop_items") << " ORDER BY shopid, sort DESC");
+	rs = (sql.prepare << "SELECT * FROM " << db.make_table("shop_items") << " ORDER BY shopid, sort DESC");
 
 	for (const auto &row : rs) {
-		ShopItemInfo item;
-		shop_id_t shopId = row.get<shop_id_t>("shopid");
-		item.itemId = row.get<item_id_t>("itemid");
-		item.quantity = row.get<slot_qty_t>("quantity");
-		item.price = row.get<mesos_t>("price");
+		shop_item_info item;
+		game_shop_id shop_id = row.get<game_shop_id>("shopid");
+		item.item_id = row.get<game_item_id>("itemid");
+		item.quantity = row.get<game_slot_qty>("quantity");
+		item.price = row.get<game_mesos>("price");
 
-		m_shops[shopId].items.push_back(item);
+		m_shops[shop_id].items.push_back(item);
 	}
 }
 
-auto ShopDataProvider::loadUserShops() -> void {
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("user_shop_data"));
+auto shop_data_provider::load_user_shops() -> void {
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("user_shop_data"));
 
 	for (const auto &row : rs) {
-		ShopInfo shop;
-		shop_id_t shopId = row.get<shop_id_t>("shopid");
-		shop.npc = row.get<npc_id_t>("npcid");
-		shop.rechargeTier = row.get<int8_t>("recharge_tier");
-		if (m_shops.find(shopId) != std::end(m_shops)) {
-			m_shops.erase(shopId);
+		shop_info shop;
+		game_shop_id shop_id = row.get<game_shop_id>("shopid");
+		shop.npc = row.get<game_npc_id>("npcid");
+		shop.recharge_tier = row.get<int8_t>("recharge_tier");
+		if (m_shops.find(shop_id) != std::end(m_shops)) {
+			m_shops.erase(shop_id);
 		}
 
-		m_shops[shopId] = shop;
+		m_shops[shop_id] = shop;
 	}
 
-	rs = (sql.prepare << "SELECT * FROM " << db.makeTable("user_shop_items") << " ORDER BY shopid, sort DESC");
+	rs = (sql.prepare << "SELECT * FROM " << db.make_table("user_shop_items") << " ORDER BY shopid, sort DESC");
 
 	for (const auto &row : rs) {
-		ShopItemInfo item;
-		shop_id_t shopId = row.get<shop_id_t>("shopid");
-		item.itemId = row.get<item_id_t>("itemid");
-		item.quantity = row.get<slot_qty_t>("quantity");
-		item.price = row.get<mesos_t>("price");
+		shop_item_info item;
+		game_shop_id shop_id = row.get<game_shop_id>("shopid");
+		item.item_id = row.get<game_item_id>("itemid");
+		item.quantity = row.get<game_slot_qty>("quantity");
+		item.price = row.get<game_mesos>("price");
 
-		m_shops[shopId].items.push_back(item);
+		m_shops[shop_id].items.push_back(item);
 	}
 }
 
-auto ShopDataProvider::loadRechargeTiers() -> void {
-	m_rechargeCosts.clear();
+auto shop_data_provider::load_recharge_tiers() -> void {
+	m_recharge_costs.clear();
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("shop_recharge_data"));
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("shop_recharge_data"));
 
 	for (const auto &row : rs) {
-		int8_t rechargeTier = row.get<int8_t>("tierid");
-		item_id_t itemId = row.get<item_id_t>("itemid");
+		int8_t recharge_tier = row.get<int8_t>("tierid");
+		game_item_id item_id = row.get<game_item_id>("itemid");
 		double price = row.get<double>("price");
 
-		m_rechargeCosts[rechargeTier][itemId] = price;
+		m_recharge_costs[recharge_tier][item_id] = price;
 	}
 }
 
-auto ShopDataProvider::isShop(shop_id_t id) const -> bool {
+auto shop_data_provider::is_shop(game_shop_id id) const -> bool {
 	return ext::is_element(m_shops, id);
 }
 
-auto ShopDataProvider::getShop(shop_id_t id) const -> ShopData {
+auto shop_data_provider::get_shop(game_shop_id id) const -> shop_data {
 	const auto &info = m_shops.find(id)->second;
 
-	ShopData ret;
+	shop_data ret;
 	ret.npc = info.npc;
 	for (const auto &item : info.items) {
 		ret.items.push_back(&item);
 	}
 
-	if (info.rechargeTier > 0) {
-		ret.rechargeables = m_rechargeCosts.find(info.rechargeTier)->second;
+	if (info.recharge_tier > 0) {
+		ret.rechargeables = m_recharge_costs.find(info.recharge_tier)->second;
 	}
 
 	return ret;
 }
 
-auto ShopDataProvider::getShopItem(shop_id_t shopId, uint16_t shopIndex) const -> const ShopItemInfo * const {
+auto shop_data_provider::get_shop_item(game_shop_id shop_id, uint16_t shop_index) const -> const shop_item_info * const {
 	return ext::find_value_ptr(
-		ext::find_value_ptr(m_shops, shopId)->items, shopIndex);
+		ext::find_value_ptr(m_shops, shop_id)->items, shop_index);
 }
 
-auto ShopDataProvider::getRechargeCost(shop_id_t shopId, item_id_t itemId, slot_qty_t amount) const -> mesos_t {
+auto shop_data_provider::get_recharge_cost(game_shop_id shop_id, game_item_id item_id, game_slot_qty amount) const -> game_mesos {
 	auto price = ext::find_value_ptr(
-		ext::find_value_ptr(m_rechargeCosts,
-			ext::find_value_ptr(m_shops, shopId)->rechargeTier), itemId);
+		ext::find_value_ptr(m_recharge_costs,
+			ext::find_value_ptr(m_shops, shop_id)->recharge_tier), item_id);
 
 	if (price != nullptr) {
-		return -1 * static_cast<mesos_t>(*price * amount);
+		return -1 * static_cast<game_mesos>(*price * amount);
 	}
 
 	return 1;

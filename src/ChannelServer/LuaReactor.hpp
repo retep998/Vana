@@ -20,37 +20,37 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/LuaScriptable.hpp"
 #include <string>
 
-namespace Vana {
-	namespace ChannelServer {
-		class Reactor;
+namespace vana {
+	namespace channel_server {
+		class reactor;
 
-		class LuaReactor : LuaScriptable {
-			NONCOPYABLE(LuaReactor);
-			NO_DEFAULT_CONSTRUCTOR(LuaReactor);
+		class lua_reactor : lua_scriptable {
+			NONCOPYABLE(lua_reactor);
+			NO_DEFAULT_CONSTRUCTOR(lua_reactor);
 		public:
-			LuaReactor(const string_t &filename, player_id_t playerId, reactor_id_t reactorId, map_id_t mapId);
+			lua_reactor(const string &filename, game_player_id player_id, game_reactor_id reactor_id, game_map_id map_id);
 		private:
-			reactor_id_t m_reactorId = -1;
-			map_id_t m_mapId = -1;
+			game_reactor_id m_reactor_id = -1;
+			game_map_id m_map_id = -1;
 		};
 
-		namespace LuaExports {
-			auto getReactor(lua_State *luaVm, LuaEnvironment &env) -> Reactor *;
+		namespace lua_exports {
+			auto get_reactor(lua_State *lua_vm, lua_environment &env) -> reactor *;
 
 			// Reactor exports
 
 			// Reactor
-			auto getState(lua_State *luaVm) -> lua_return_t;
-			auto reset(lua_State *luaVm) -> lua_return_t;
-			auto setStateReactor(lua_State *luaVm) -> lua_return_t;
+			auto get_state(lua_State *lua_vm) -> lua::lua_return;
+			auto reset(lua_State *lua_vm) -> lua::lua_return;
+			auto set_state_reactor(lua_State *lua_vm) -> lua::lua_return;
 
 			// Miscellaneous
-			auto dropItemReactor(lua_State *luaVm) -> lua_return_t;
-			auto getDistanceReactor(lua_State *luaVm) -> lua_return_t;
+			auto drop_item_reactor(lua_State *lua_vm) -> lua::lua_return;
+			auto get_distance_reactor(lua_State *lua_vm) -> lua::lua_return;
 
 			// Mob
-			auto spawnMobReactor(lua_State *luaVm) -> lua_return_t;
-			auto spawnZakum(lua_State *luaVm) -> lua_return_t;
+			auto spawn_mob_reactor(lua_State *lua_vm) -> lua::lua_return;
+			auto spawn_zakum(lua_State *lua_vm) -> lua::lua_return;
 		}
 	}
 }

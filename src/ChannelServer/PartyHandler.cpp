@@ -25,49 +25,49 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/PlayerDataProvider.hpp"
 #include "ChannelServer/SyncPacket.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto PartyHandler::handleRequest(ref_ptr_t<Player> player, PacketReader &reader) -> void {
+auto party_handler::handle_request(ref_ptr<player> player, packet_reader &reader) -> void {
 	int8_t type = reader.get<int8_t>();
 	switch (type) {
-		case PartyActions::Create:
-		case PartyActions::Leave:
-			ChannelServer::getInstance().sendWorld(Packets::Interserver::Party::sync(type, player->getId()));
+		case party_actions::create:
+		case party_actions::leave:
+			channel_server::get_instance().send_world(packets::interserver::party::sync(type, player->get_id()));
 			break;
-		case PartyActions::Join: {
-			party_id_t partyId = reader.get<party_id_t>();
-			if (Party *party = ChannelServer::getInstance().getPlayerDataProvider().getParty(partyId)) {
-				if (party->getMembersCount() == Parties::MaxMembers) {
-					player->send(Packets::Party::error(Packets::Party::Errors::PartyFull));
+		case party_actions::join: {
+			game_party_id party_id = reader.get<game_party_id>();
+			if (party *party = channel_server::get_instance().get_player_data_provider().get_party(party_id)) {
+				if (party->get_members_count() == parties::max_members) {
+					player->send(packets::party::error(packets::party::errors::party_full));
 				}
 				else {
-					ChannelServer::getInstance().sendWorld(Packets::Interserver::Party::sync(type, player->getId(), partyId));
+					channel_server::get_instance().send_world(packets::interserver::party::sync(type, player->get_id(), party_id));
 				}
 			}
 			break;
 		}
-		case PartyActions::Expel:
-		case PartyActions::SetLeader: {
-			ChannelServer::getInstance().sendWorld(Packets::Interserver::Party::sync(type, player->getId(), reader.get<int32_t>()));
+		case party_actions::expel:
+		case party_actions::set_leader: {
+			channel_server::get_instance().send_world(packets::interserver::party::sync(type, player->get_id(), reader.get<int32_t>()));
 			break;
 		}
-		case PartyActions::Invite: {
-			string_t invName = reader.get<string_t>();
-			if (player->getParty() == nullptr) {
+		case party_actions::invite: {
+			string inv_name = reader.get<string>();
+			if (player->get_party() == nullptr) {
 				// ??
 				return;
 			}
-			if (auto invitee = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(invName)) {
-				if (invitee->getParty() != nullptr) {
-					player->send(Packets::Party::error(Packets::Party::Errors::PlayerHasParty));
+			if (auto invitee = channel_server::get_instance().get_player_data_provider().get_player(inv_name)) {
+				if (invitee->get_party() != nullptr) {
+					player->send(packets::party::error(packets::party::errors::player_has_party));
 				}
 				else {
-					invitee->send(Packets::Party::invitePlayer(player->getParty(), player->getName()));
+					invitee->send(packets::party::invite_player(player->get_party(), player->get_name()));
 				}
 			}
 			else {
-				player->send(Packets::Party::error(Packets::Party::Errors::DifferingChannel));
+				player->send(packets::party::error(packets::party::errors::differing_channel));
 			}
 			break;
 		}

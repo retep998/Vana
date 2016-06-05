@@ -17,16 +17,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-namespace Vana {
-	class PacketReader;
+namespace vana {
+	class packet_reader;
 
-	namespace LoginServer {
-		class LoginServerAcceptedSession;
+	namespace login_server {
+		class login_server_accepted_session;
 
-		namespace LoginServerAcceptHandler {
-			auto registerChannel(ref_ptr_t<LoginServerAcceptedSession> session, PacketReader &reader) -> void;
-			auto updateChannelPop(ref_ptr_t<LoginServerAcceptedSession> session, PacketReader &reader) -> void;
-			auto removeChannel(ref_ptr_t<LoginServerAcceptedSession> session, PacketReader &reader) -> void;
+		namespace login_server_accept_handler {
+			auto register_channel(ref_ptr<login_server_accepted_session> session, packet_reader &reader) -> void;
+			auto update_channel_pop(ref_ptr<login_server_accepted_session> session, packet_reader &reader) -> void;
+			auto remove_channel(ref_ptr<login_server_accepted_session> session, packet_reader &reader) -> void;
 		}
 	}
 }

@@ -20,16 +20,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	struct PetInfo {
-		bool noRevive = false;
-		bool noStoringInCashShop = false;
-		bool autoReact = false;
-		int8_t evolveLevel = 0;
+namespace vana {
+	struct pet_info {
+		bool no_revive = false;
+		bool no_storing_in_cash_shop = false;
+		bool auto_react = false;
+		int8_t evolve_level = 0;
 		int32_t hunger = 0;
 		int32_t life = 0;
-		int32_t limitedLife = 0;
-		item_id_t evolveItem = 0;
-		string_t name;
+		int32_t limited_life = 0;
+		game_item_id evolve_item = 0;
+		string name;
 	};
 }

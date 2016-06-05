@@ -27,19 +27,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/PlayerModFunctions.hpp"
 #include "ChannelServer/PlayerPacket.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-case_insensitive_hash_map_t<ChatCommand, chat_t> ChatHandlerFunctions::sCommandList;
+case_insensitive_hash_map<chat_command, game_chat> chat_handler_functions::g_command_list;
 
-const case_insensitive_hash_map_t<MapPair, chat_t> ChatHandlerFunctions::sMapAssociations = {
+const case_insensitive_hash_map<map_pair, game_chat> chat_handler_functions::g_map_associations = {
 	// These first maps are here purely for documentation purposes - they are computed by other means
-	{"town", {Vana::Maps::NoMap, "Special"}},
-	{"return", {Vana::Maps::NoMap, "Special"}},
-	{"here", {Vana::Maps::NoMap, "Special"}},
-	{"back", {Vana::Maps::NoMap, "Special"}},
+	{"town", {vana::maps::no_map, "Special"}},
+	{"return", {vana::maps::no_map, "Special"}},
+	{"here", {vana::maps::no_map, "Special"}},
+	{"back", {vana::maps::no_map, "Special"}},
 	// Actual maps
-	{"gm", {Vana::Maps::GmMap, "Special"}},
+	{"gm", {vana::maps::gm_map, "Special"}},
 	{"fm", {910000000, "Special"}},
 	{"happyville", {209000000, "Special"}},
 	// Job-Related
@@ -211,9 +211,9 @@ const case_insensitive_hash_map_t<MapPair, chat_t> ChatHandlerFunctions::sMapAss
 	{"beansignup", {270050000, "Misc Boss"}},
 };
 
-auto ChatHandlerFunctions::initialize() -> void {
+auto chat_handler_functions::initialize() -> void {
 	// Set up commands and appropriate GM levels
-	ChatCommand command;
+	chat_command command;
 
 	// Notes:
 	// Don't add syntax to things that have no parameters
@@ -222,7 +222,7 @@ auto ChatHandlerFunctions::initialize() -> void {
 	#pragma region GM Level 3
 	command.level = 3;
 
-	command.command = &ManagementFunctions::ban;
+	command.command = &management_functions::ban;
 	command.syntax = "<$player name> [#reason]";
 	command.notes.push_back("Permanently bans a player by name");
 	command.notes.push_back("Reason codes:");
@@ -239,68 +239,68 @@ auto ChatHandlerFunctions::initialize() -> void {
 	command.notes.push_back("11 - Impersonating GM");
 	command.notes.push_back("12 - Using illegal programs or violating the game policy");
 	command.notes.push_back("13 - Cursing, scamming, or illegal trading via megaphones");
-	sCommandList["ban"] = command.addToMap();
+	g_command_list["ban"] = command.add_to_map();
 
-	command.command = &ManagementFunctions::ipBan;
+	command.command = &management_functions::ip_ban;
 	command.syntax = "<$player name> [#reason]";
 	command.notes.push_back("Permanently bans a player's IP based on their name. Does not ban the account for various reasons");
 	command.notes.push_back("Use !help ban to see the applicable reason codes");
-	sCommandList["ipban"] = command.addToMap();
+	g_command_list["ipban"] = command.add_to_map();
 
-	command.command = &ManagementFunctions::tempBan;
+	command.command = &management_functions::temp_ban;
 	command.syntax = "<$player name> <#reason> <#length in days>";
 	command.notes.push_back("Temporarily bans a player by name");
 	command.notes.push_back("Use !help ban to see the applicable reason codes");
-	sCommandList["tempban"] = command.addToMap();
+	g_command_list["tempban"] = command.add_to_map();
 
-	command.command = &ManagementFunctions::unban;
+	command.command = &management_functions::unban;
 	command.syntax = "<$player name>";
 	command.notes.push_back("Removes a ban from the database");
-	sCommandList["unban"] = command.addToMap();
+	g_command_list["unban"] = command.add_to_map();
 
-	command.command = &ManagementFunctions::header;
+	command.command = &management_functions::header;
 	command.syntax = "[$message]";
 	command.notes.push_back("Changes the scrolling message at the top of the screen");
-	sCommandList["header"] = command.addToMap();
+	g_command_list["header"] = command.add_to_map();
 
-	command.command = &ManagementFunctions::shutdown;
+	command.command = &management_functions::shutdown;
 	command.notes.push_back("Stops the current ChannelServer");
-	sCommandList["shutdown"] = command.addToMap();
+	g_command_list["shutdown"] = command.add_to_map();
 
-	command.command = &MapFunctions::timer;
+	command.command = &map_functions::timer;
 	command.syntax = "<#time in seconds>";
 	command.notes.push_back("Displays a timer at the top of the map");
-	sCommandList["timer"] = command.addToMap();
+	g_command_list["timer"] = command.add_to_map();
 
-	command.command = &MapFunctions::instruction;
+	command.command = &map_functions::instruction;
 	command.syntax = "<$bubble text>";
 	command.notes.push_back("Displays a bubble. With shiny text. Somewhat useless for managing players");
-	sCommandList["instruction"] = command.addToMap();
+	g_command_list["instruction"] = command.add_to_map();
 
-	command.command = &ManagementFunctions::addNpc;
+	command.command = &management_functions::add_npc;
 	command.syntax = "<#npc ID>";
 	command.notes.push_back("Permanently adds an NPC to a map");
-	sCommandList["addnpc"] = command.addToMap();
+	g_command_list["addnpc"] = command.add_to_map();
 
-	command.command = &ManagementFunctions::calculateRanks;
+	command.command = &management_functions::calculate_ranks;
 	command.notes.push_back("Forces ranking recalculation");
-	sCommandList["dorankings"] = command.addToMap();
+	g_command_list["dorankings"] = command.add_to_map();
 
-	command.command = &MessageFunctions::globalMessage;
+	command.command = &message_functions::global_message;
 	command.syntax = "<${notice | box | red | blue}> <$message>";
 	command.notes.push_back("Displays a message to every channel on every world");
-	sCommandList["globalmessage"] = command.addToMap();
+	g_command_list["globalmessage"] = command.add_to_map();
 	#pragma endregion
 
 	#pragma region GM Level 2
 	command.level = 2;
 
-	command.command = &ManagementFunctions::kick;
+	command.command = &management_functions::kick;
 	command.syntax = "<$player name>";
 	command.notes.push_back("Forcibly disconnects a player, cannot be used on players that outrank you in GM level");
-	sCommandList["kick"] = command.addToMap();
+	g_command_list["kick"] = command.add_to_map();
 
-	command.command = &ManagementFunctions::warp;
+	command.command = &management_functions::warp;
 	command.syntax = "<${map | player | self | current | channel}> <${map | player | self | current}> <{$map string | #map ID | $player name}> [{$map string | #map ID | $player name}]";
 	command.notes.push_back("Warps the source argument to the destination argument");
 	command.notes.push_back("This is a complicated command, but here are some examples with explanations:");
@@ -315,32 +315,32 @@ auto ChatHandlerFunctions::initialize() -> void {
 	command.notes.push_back("#4 warps all players on the user's map to player James");
 	command.notes.push_back("#5 warps all players on the channel to Henesys");
 	command.notes.push_back("Not all combinations of arguments work (e.g. self self)");
-	sCommandList["warp"] = command.addToMap();
+	g_command_list["warp"] = command.add_to_map();
 
-	command.command = &MapFunctions::killAllMobs;
+	command.command = &map_functions::kill_all_mobs;
 	command.notes.push_back("Kills all mobs on the current map");
-	sCommandList["killall"] = command.addToMap();
+	g_command_list["killall"] = command.add_to_map();
 
-	command.command = &MapFunctions::clearDrops;
+	command.command = &map_functions::clear_drops;
 	command.notes.push_back("Clears all drops from the current map");
-	sCommandList["cleardrops"] = command.addToMap();
+	g_command_list["cleardrops"] = command.add_to_map();
 
-	command.command = &MessageFunctions::worldMessage;
+	command.command = &message_functions::world_message;
 	command.syntax = "<${notice | box | red | blue}> <$message>";
 	command.notes.push_back("Displays a message to every channel on the current world");
-	sCommandList["worldmessage"] = command.addToMap();
+	g_command_list["worldmessage"] = command.add_to_map();
 	#pragma endregion
 
 	#pragma region GM Level 1
 	command.level = 1;
 
-	command.command = &ManagementFunctions::kill;
+	command.command = &management_functions::kill;
 	command.syntax = "<${players | gm | all | me} | $player name>";
 	command.notes.push_back("If you are GM level 1, you can only kill yourself with this");
 	command.notes.push_back("If you are above GM level 1, you may kill GMs, players, everyone on a map, yourself, or the specified player");
-	sCommandList["kill"] = command.addToMap();
+	g_command_list["kill"] = command.add_to_map();
 
-	command.command = &InfoFunctions::lookup;
+	command.command = &info_functions::lookup;
 	command.syntax = "<${item | equip | use | setup | etc | cash | skill | map | mob | npc | quest | continent | id | scriptbyname | scriptbyid | whatdrops | whatmaps | music | drops}> <$search | #id>";
 	command.notes.push_back("Uses the database to give you the string values for an ID or the IDs for a given string value");
 	command.notes.push_back("Use !help map to see valid string values for continent lookup");
@@ -349,24 +349,24 @@ auto ChatHandlerFunctions::initialize() -> void {
 	command.notes.push_back("A whatmaps search is special; you must specify a type (portal, mob, reactor, npc) when you do a whatmaps search");
 	command.notes.push_back("A whatmaps portal search requires a script name");
 	command.notes.push_back("The other whatmaps searches require IDs");
-	sCommandList["lookup"] = command.addToMap();
+	g_command_list["lookup"] = command.add_to_map();
 
-	command.command = &InfoFunctions::variable;
+	command.command = &info_functions::variable;
 	command.syntax = "<$variable name>";
 	command.notes.push_back("Displays the value for a given player variable (or an error if the value is blank/doesn't exist)");
-	sCommandList["variable"] = command.addToMap();
+	g_command_list["variable"] = command.add_to_map();
 
-	command.command = &InfoFunctions::questData;
+	command.command = &info_functions::quest_data;
 	command.syntax = "<#quest ID> <$data>";
 	command.notes.push_back("Sets the quest data for the specified quest to the specified data.");
-	sCommandList["questdata"] = command.addToMap();
+	g_command_list["questdata"] = command.add_to_map();
 
-	command.command = &InfoFunctions::questKills;
+	command.command = &info_functions::quest_kills;
 	command.syntax = "<#mob ID> <#count>";
 	command.notes.push_back("Mocks killing a specified number of the specified mob.");
-	sCommandList["questkills"] = command.addToMap();
+	g_command_list["questkills"] = command.add_to_map();
 
-	command.command = &ManagementFunctions::map;
+	command.command = &management_functions::user_warp;
 	command.syntax = "<{$map string | #map ID}> [{$portal name | $position string | $foothold string}]";
 	command.notes.push_back("Warps you to a desired map");
 	command.notes.push_back("Position strings have the following format: {xPosition, yPosition}");
@@ -376,16 +376,16 @@ auto ChatHandlerFunctions::initialize() -> void {
 	command.notes.push_back("-------------------");
 	command.notes.push_back("Available Maps");
 	command.notes.push_back("-------------------");
-	ord_map_t<string_t, ord_set_t<string_t>> byCategory;
-	for (const auto &kvp : sMapAssociations) {
-		auto existing = byCategory.find(kvp.second.category);
-		if (existing == std::end(byCategory)) {
-			existing = byCategory.emplace(kvp.second.category, ord_set_t<string_t>{}).first;
+	ord_map<string, ord_set<string>> by_category;
+	for (const auto &kvp : g_map_associations) {
+		auto existing = by_category.find(kvp.second.category);
+		if (existing == std::end(by_category)) {
+			existing = by_category.emplace(kvp.second.category, ord_set<string>{}).first;
 		}
 		existing->second.insert(kvp.first);
 	}
-	for (const auto &kvp : byCategory) {
-		chat_stream_t category;
+	for (const auto &kvp : by_category) {
+		game_chat_stream category;
 		category << " >>> " << kvp.first + ": ";
 		bool separate = false;
 		for (const auto &map : kvp.second) {
@@ -397,15 +397,15 @@ auto ChatHandlerFunctions::initialize() -> void {
 		}
 		command.notes.push_back(category.str());
 	}
-	sCommandList["map"] = command.addToMap();
+	g_command_list["map"] = command.add_to_map();
 
-	command.command = &ManagementFunctions::follow;
+	command.command = &management_functions::follow;
 	command.syntax = "[$player name]";
 	command.notes.push_back("Follows a player through his/her channel changes and map changes");
 	command.notes.push_back("You can stop following by using !follow with no arguments");
-	sCommandList["follow"] = command.addToMap();
+	g_command_list["follow"] = command.add_to_map();
 
-	command.command = &PlayerModFunctions::job;
+	command.command = &player_mod_functions::job;
 	command.syntax = "<{$job string | #job ID}>";
 	command.notes.push_back("Sets your job");
 	command.notes.push_back("Valid job strings:");
@@ -421,226 +421,226 @@ auto ChatHandlerFunctions::initialize() -> void {
 	command.notes.push_back("wind1 | wind2 | wind3 | wind4");
 	command.notes.push_back("night1 | night2 | night3 | night4");
 	command.notes.push_back("thunder1 | thunder2 | thunder3 | thunder4");
-	sCommandList["job"] = command.addToMap();
+	g_command_list["job"] = command.add_to_map();
 
-	command.command = &PlayerModFunctions::level;
+	command.command = &player_mod_functions::level;
 	command.syntax = "<#level>";
 	command.notes.push_back("Sets your player's level to the specified amount");
-	sCommandList["level"] = command.addToMap();
+	g_command_list["level"] = command.add_to_map();
 
-	command.command = &PlayerModFunctions::hp;
+	command.command = &player_mod_functions::hp;
 	command.syntax = "<#hp>";
 	command.notes.push_back("Sets your player's HP to the specified amount");
-	sCommandList["hp"] = command.addToMap();
+	g_command_list["hp"] = command.add_to_map();
 
-	command.command = &PlayerModFunctions::mp;
+	command.command = &player_mod_functions::mp;
 	command.syntax = "<#mp>";
 	command.notes.push_back("Sets your player's MP to the specified amount");
-	sCommandList["mp"] = command.addToMap();
+	g_command_list["mp"] = command.add_to_map();
 
-	command.command = &PlayerModFunctions::ap;
+	command.command = &player_mod_functions::ap;
 	command.syntax = "<#ap>";
 	command.notes.push_back("Sets your player's AP to the specified amount");
-	sCommandList["ap"] = command.addToMap();
+	g_command_list["ap"] = command.add_to_map();
 
-	command.command = &PlayerModFunctions::sp;
+	command.command = &player_mod_functions::sp;
 	command.syntax = "<#sp>";
 	command.notes.push_back("Sets your player's SP to the specified amount");
-	sCommandList["sp"] = command.addToMap();
+	g_command_list["sp"] = command.add_to_map();
 
-	command.command = &PlayerModFunctions::addSp;
+	command.command = &player_mod_functions::add_sp;
 	command.syntax = "<#skill ID> [#skill points]";
 	command.notes.push_back("Adds SP to the desired skill");
-	sCommandList["addsp"] = command.addToMap();
+	g_command_list["addsp"] = command.add_to_map();
 
-	command.command = &PlayerModFunctions::maxSp;
+	command.command = &player_mod_functions::max_sp;
 	command.syntax = "<#skill ID> [#skill points]";
 	command.notes.push_back("Sets the skill's max SP to the desired level");
-	sCommandList["maxsp"] = command.addToMap();
+	g_command_list["maxsp"] = command.add_to_map();
 
-	command.command = &PlayerModFunctions::modInt;
+	command.command = &player_mod_functions::mod_int;
 	command.syntax = "<#int>";
 	command.notes.push_back("Sets your player's INT to the specified amount");
-	sCommandList["int"] = command.addToMap();
+	g_command_list["int"] = command.add_to_map();
 
-	command.command = &PlayerModFunctions::modLuk;
+	command.command = &player_mod_functions::mod_luk;
 	command.syntax = "<#luk>";
 	command.notes.push_back("Sets your player's LUK to the specified amount");
-	sCommandList["luk"] = command.addToMap();
+	g_command_list["luk"] = command.add_to_map();
 
-	command.command = &PlayerModFunctions::modDex;
+	command.command = &player_mod_functions::mod_dex;
 	command.syntax = "<#dex>";
 	command.notes.push_back("Sets your player's DEX to the specified amount");
-	sCommandList["dex"] = command.addToMap();
+	g_command_list["dex"] = command.add_to_map();
 
-	command.command = &PlayerModFunctions::modStr;
+	command.command = &player_mod_functions::mod_str;
 	command.syntax = "<#str>";
 	command.notes.push_back("Sets your player's STR to the specified amount");
-	sCommandList["str"] = command.addToMap();
+	g_command_list["str"] = command.add_to_map();
 
-	command.command = &PlayerModFunctions::fame;
+	command.command = &player_mod_functions::fame;
 	command.syntax = "<#fame>";
 	command.notes.push_back("Sets your player's fame to the specified amount");
-	sCommandList["fame"] = command.addToMap();
+	g_command_list["fame"] = command.add_to_map();
 
-	command.command = &PlayerModFunctions::maxStats;
+	command.command = &player_mod_functions::max_stats;
 	command.notes.push_back("Sets all your core stats to their maximum values");
-	sCommandList["maxstats"] = command.addToMap();
+	g_command_list["maxstats"] = command.add_to_map();
 
-	command.command = &ManagementFunctions::npc;
+	command.command = &management_functions::run_npc;
 	command.syntax = "<#npc ID>";
 	command.notes.push_back("Runs the NPC script of the NPC you specify");
-	sCommandList["npc"] = command.addToMap();
+	g_command_list["npc"] = command.add_to_map();
 
-	command.command = &ManagementFunctions::item;
+	command.command = &management_functions::item;
 	command.syntax = "<#item ID> [#amount]";
 	command.notes.push_back("Gives you an item");
-	sCommandList["item"] = command.addToMap();
+	g_command_list["item"] = command.add_to_map();
 
-	command.command = &MapFunctions::summon;
+	command.command = &map_functions::summon;
 	command.syntax = "<#mob ID> [#amount]";
 	command.notes.push_back("Spawns monsters");
-	sCommandList["summon"] = command;
-	sCommandList["spawn"] = command.addToMap();
+	g_command_list["summon"] = command;
+	g_command_list["spawn"] = command.add_to_map();
 
-	command.command = &MessageFunctions::channelMessage;
+	command.command = &message_functions::channel_message;
 	command.syntax = "<${notice | box | red | blue}> <$message>";
 	command.notes.push_back("Displays a message to every player on the current channel");
-	sCommandList["notice"] = command.addToMap();
+	g_command_list["notice"] = command.add_to_map();
 
-	command.command = &MessageFunctions::gmChatMode;
+	command.command = &message_functions::gm_chat_mode;
 	command.notes.push_back("Toggles whether your all chat is displayed only to other GMs or functions like normal");
-	sCommandList["gmchat"] = command.addToMap();
+	g_command_list["gmchat"] = command.add_to_map();
 
-	command.command = &ManagementFunctions::shop;
+	command.command = &management_functions::shop;
 	command.syntax = "<{${gear, scrolls, nx, face, ring, chair, mega, pet} | #shop ID}>";
 	command.notes.push_back("Shows you the desired shop");
-	sCommandList["shop"] = command.addToMap();
+	g_command_list["shop"] = command.add_to_map();
 
-	command.command = &InfoFunctions::pos;
+	command.command = &info_functions::pos;
 	command.notes.push_back("Displays your current position and foothold on the map. The format is {X, Y} [Foothold]");
-	sCommandList["pos"] = command.addToMap();
+	g_command_list["pos"] = command.add_to_map();
 
-	command.command = &MapFunctions::mapDimensions;
+	command.command = &map_functions::map_dimensions;
 	command.syntax = "[{$map string | #map ID}]";
 	command.notes.push_back("Displays the left top and right bottom dimensions of the map");
-	sCommandList["dimensions"] = command.addToMap();
+	g_command_list["dimensions"] = command.add_to_map();
 
-	command.command = &MapFunctions::zakum;
+	command.command = &map_functions::zakum;
 	command.notes.push_back("Spawns Zakum");
-	sCommandList["zakum"] = command.addToMap();
+	g_command_list["zakum"] = command.add_to_map();
 
-	command.command = &MapFunctions::horntail;
+	command.command = &map_functions::horntail;
 	command.notes.push_back("Spawns Horntail");
-	sCommandList["horntail"] = command.addToMap();
+	g_command_list["horntail"] = command.add_to_map();
 
-	command.command = &PlayerModFunctions::heal;
+	command.command = &player_mod_functions::heal;
 	command.notes.push_back("Sets your HP and MP to 100%");
-	sCommandList["heal"] = command.addToMap();
+	g_command_list["heal"] = command.add_to_map();
 
-	command.command = &PlayerModFunctions::modMesos;
+	command.command = &player_mod_functions::mod_mesos;
 	command.syntax = "<#meso amount>";
 	command.notes.push_back("Sets your mesos to the specified amount");
-	sCommandList["mesos"] = command.addToMap();
+	g_command_list["mesos"] = command.add_to_map();
 
-	command.command = &PlayerModFunctions::disconnect;
+	command.command = &player_mod_functions::disconnect;
 	command.notes.push_back("Disconnects yourself");
-	sCommandList["dc"] = command.addToMap();
+	g_command_list["dc"] = command.add_to_map();
 
-	command.command = &MapFunctions::music;
+	command.command = &map_functions::music;
 	command.syntax = "[$music name]";
 	command.notes.push_back("Sets the music for a given map");
 	command.notes.push_back("Using \"default\" will reset the map to default music");
-	sCommandList["music"] = command.addToMap();
+	g_command_list["music"] = command.add_to_map();
 
-	command.command = &ManagementFunctions::storage;
+	command.command = &management_functions::storage;
 	command.notes.push_back("Shows your storage");
-	sCommandList["storage"] = command.addToMap();
+	g_command_list["storage"] = command.add_to_map();
 
-	command.command = &MapFunctions::eventInstruction;
+	command.command = &map_functions::event_instruction;
 	command.notes.push_back("Shows event instructions for Ola Ola, etc");
-	sCommandList["eventinstruct"] = command.addToMap();
+	g_command_list["eventinstruct"] = command.add_to_map();
 
-	command.command = &ManagementFunctions::relog;
+	command.command = &management_functions::relog;
 	command.notes.push_back("Logs you back in to the current channel");
-	sCommandList["relog"] = command.addToMap();
+	g_command_list["relog"] = command.add_to_map();
 
-	command.command = &PlayerModFunctions::save;
+	command.command = &player_mod_functions::save;
 	command.notes.push_back("Saves your stats");
-	sCommandList["save"] = command.addToMap();
+	g_command_list["save"] = command.add_to_map();
 
-	command.command = &ManagementFunctions::killNpc;
+	command.command = &management_functions::kill_npc;
 	command.notes.push_back("Used when scripts leave an NPC hanging. This command will clear the NPC and allow you to use other NPCs");
-	sCommandList["killnpc"] = command.addToMap();
+	g_command_list["killnpc"] = command.add_to_map();
 
-	command.command = &MapFunctions::listMobs;
+	command.command = &map_functions::list_mobs;
 	command.syntax = "[{$map string | #map ID}]";
 	command.notes.push_back("Lists all the mobs on the map");
-	sCommandList["listmobs"] = command.addToMap();
+	g_command_list["listmobs"] = command.add_to_map();
 
-	command.command = &MapFunctions::listPortals;
+	command.command = &map_functions::list_portals;
 	command.syntax = "[{$map string | #map ID}] [{$portal filter|tp|sp}]";
 	command.notes.push_back("Lists all the non-spawn/non-Mystic Door portals on the map unless the filter argument is specified - otherwise, it will give all portals matching the specified portal label");
-	sCommandList["listportals"] = command.addToMap();
+	g_command_list["listportals"] = command.add_to_map();
 
-	command.command = &MapFunctions::listPlayers;
+	command.command = &map_functions::list_players;
 	command.syntax = "[{$map string | #map ID}]";
 	command.notes.push_back("Lists all players on the map");
-	sCommandList["listplayers"] = command.addToMap();
+	g_command_list["listplayers"] = command.add_to_map();
 
-	command.command = &MapFunctions::listReactors;
+	command.command = &map_functions::list_reactors;
 	command.syntax = "[{$map string | #map ID}]";
 	command.notes.push_back("Lists all the reactors on the map");
-	sCommandList["listreactors"] = command.addToMap();
+	g_command_list["listreactors"] = command.add_to_map();
 
-	command.command = &MapFunctions::listNpcs;
+	command.command = &map_functions::list_npcs;
 	command.syntax = "[{$map string | #map ID}]";
 	command.notes.push_back("Lists all the NPCs and potentially their scripts on the map");
-	sCommandList["listnpcs"] = command.addToMap();
+	g_command_list["listnpcs"] = command.add_to_map();
 
-	command.command = &MapFunctions::getMobHp;
+	command.command = &map_functions::get_mob_hp;
 	command.syntax = "<#map mob ID>";
 	command.notes.push_back("Gets the HP of a specific mob based on the map mob ID that you can get from !listmobs");
-	sCommandList["getmobhp"] = command.addToMap();
+	g_command_list["getmobhp"] = command.add_to_map();
 
-	command.command = &MapFunctions::killMob;
+	command.command = &map_functions::kill_mob;
 	command.syntax = "<#map mob ID>";
 	command.notes.push_back("Kills a specific mob based on the map mob ID that you can get from !listmobs");
-	sCommandList["killmob"] = command.addToMap();
+	g_command_list["killmob"] = command.add_to_map();
 
-	command.command = &ManagementFunctions::reload;
+	command.command = &management_functions::reload;
 	command.syntax = "<${all | items | drops | mobs | beauty | shops | scripts | reactors | pets | quests | skills}>";
 	command.notes.push_back("Reloads data from the database");
-	sCommandList["reload"] = command.addToMap();
+	g_command_list["reload"] = command.add_to_map();
 
-	command.command = &ManagementFunctions::changeChannel;
+	command.command = &management_functions::change_channel;
 	command.syntax = "<#channel>";
 	command.notes.push_back("Allows you to change channels on any map");
-	sCommandList["cc"] = command.addToMap();
+	g_command_list["cc"] = command.add_to_map();
 
-	command.command = &InfoFunctions::online;
+	command.command = &info_functions::online;
 	command.notes.push_back("Allows you to see up to 100 players on the current channel");
-	sCommandList["online"] = command.addToMap();
+	g_command_list["online"] = command.add_to_map();
 
-	command.command = &ManagementFunctions::lag;
+	command.command = &management_functions::lag;
 	command.syntax = "<$player>";
 	command.notes.push_back("Allows you to view the lag of any player");
-	sCommandList["lag"] = command.addToMap();
+	g_command_list["lag"] = command.add_to_map();
 
-	command.command = &ManagementFunctions::rehash;
+	command.command = &management_functions::rehash;
 	command.notes.push_back("Rehashes world configurations after modification");
-	sCommandList["rehash"] = command.addToMap();
+	g_command_list["rehash"] = command.add_to_map();
 
-	command.command = &ManagementFunctions::rates;
+	command.command = &management_functions::rates;
 	command.syntax = "<${view | reset | set}> <${mobexp | dropmeso | questexp | drop | globaldrop | globaldropmeso}> [#new rate]";
 	command.notes.push_back("Allows the viewing or setting of rates on the current world");
-	sCommandList["rates"] = command.addToMap();
+	g_command_list["rates"] = command.add_to_map();
 	#pragma endregion
 
 	#pragma region GM Level 0
 	command.level = 0;
 
-	command.command = &InfoFunctions::help;
+	command.command = &info_functions::help;
 	command.syntax = "[$command]";
 	command.notes.push_back("I wonder what it does?");
 	command.notes.push_back("Syntax for help display:");
@@ -650,196 +650,196 @@ auto ChatHandlerFunctions::initialize() -> void {
 	command.notes.push_back("{${hi | bye} | #time in seconds} = specific choices, in this case, strings of hi or bye or the time in seconds");
 	command.notes.push_back("<#time in seconds> = required parameter");
 	command.notes.push_back("[#time in seconds] = optional parameter");
-	sCommandList["help"] = command.addToMap();
+	g_command_list["help"] = command.add_to_map();
 
-	command.command = &InfoFunctions::gmLevel;
+	command.command = &info_functions::gm_level;
 	command.notes.push_back("Displays your current GM level");
-	sCommandList["gmlevel"] = command.addToMap();
+	g_command_list["gmlevel"] = command.add_to_map();
 	#pragma endregion
 
-	CustomFunctions::initialize(sCommandList);
+	custom_functions::initialize(g_command_list);
 }
 
-auto ChatHandlerFunctions::getMap(const chat_t &query, ref_ptr_t<Player> player) -> int32_t {
-	map_id_t mapId = -1;
+auto chat_handler_functions::get_map(const game_chat &query, ref_ptr<player> player) -> int32_t {
+	game_map_id map_id = -1;
 	// Special
-	chat_t lowercaseQuery = StringUtilities::toLower(query);
-	if (lowercaseQuery == "here") mapId = player->getMapId();
-	else if (lowercaseQuery == "back") mapId = player->getLastMapId();
-	else if (lowercaseQuery == "town") mapId = player->getMap()->getReturnMap();
-	else if (lowercaseQuery == "return") {
-		mapId = player->getMap()->getForcedReturn();
-		if (mapId == Vana::Maps::NoMap) mapId = player->getMap()->getReturnMap();
+	game_chat lowercase_query = utilities::str::to_lower(query);
+	if (lowercase_query == "here") map_id = player->get_map_id();
+	else if (lowercase_query == "back") map_id = player->get_last_map_id();
+	else if (lowercase_query == "town") map_id = player->get_map()->get_return_map();
+	else if (lowercase_query == "return") {
+		map_id = player->get_map()->get_forced_return();
+		if (map_id == vana::maps::no_map) map_id = player->get_map()->get_return_map();
 	}
 	else {
-		auto kvp = sMapAssociations.find(lowercaseQuery);
-		if (kvp != std::end(sMapAssociations)) mapId = kvp->second.mapId;
+		auto kvp = g_map_associations.find(lowercase_query);
+		if (kvp != std::end(g_map_associations)) map_id = kvp->second.map_id;
 		else {
 			char *endptr;
-			mapId = strtol(lowercaseQuery.c_str(), &endptr, 0);
-			if (strlen(endptr) != 0) mapId = -1;
+			map_id = strtol(lowercase_query.c_str(), &endptr, 0);
+			if (strlen(endptr) != 0) map_id = -1;
 		}
 	}
-	return mapId;
+	return map_id;
 }
 
-auto ChatHandlerFunctions::getJob(const chat_t &query) -> job_id_t {
-	job_id_t job = -1;
-	if (query == "beginner") job = Jobs::JobIds::Beginner;
-	else if (query == "warrior") job = Jobs::JobIds::Swordsman;
-	else if (query == "fighter") job = Jobs::JobIds::Fighter;
-	else if (query == "sader") job = Jobs::JobIds::Crusader;
-	else if (query == "hero") job = Jobs::JobIds::Hero;
-	else if (query == "page") job = Jobs::JobIds::Page;
-	else if (query == "wk") job = Jobs::JobIds::WhiteKnight;
-	else if (query == "paladin") job = Jobs::JobIds::Paladin;
-	else if (query == "spearman") job = Jobs::JobIds::Spearman;
-	else if (query == "dk") job  = Jobs::JobIds::DragonKnight;
-	else if (query == "drk") job = Jobs::JobIds::DarkKnight;
-	else if (query == "magician") job = Jobs::JobIds::Magician;
-	else if (query == "fpwiz") job = Jobs::JobIds::FpWizard;
-	else if (query == "fpmage") job = Jobs::JobIds::FpMage;
-	else if (query == "fparch") job = Jobs::JobIds::FpArchMage;
-	else if (query == "ilwiz") job = Jobs::JobIds::IlWizard;
-	else if (query == "ilmage") job = Jobs::JobIds::IlMage;
-	else if (query == "ilarch") job = Jobs::JobIds::IlArchMage;
-	else if (query == "cleric") job = Jobs::JobIds::Cleric;
-	else if (query == "priest") job = Jobs::JobIds::Priest;
-	else if (query == "bishop") job = Jobs::JobIds::Bishop;
-	else if (query == "bowman") job = Jobs::JobIds::Archer;
-	else if (query == "hunter") job = Jobs::JobIds::Hunter;
-	else if (query == "ranger") job = Jobs::JobIds::Ranger;
-	else if (query == "bm") job = Jobs::JobIds::Bowmaster;
-	else if (query == "xbowman") job = Jobs::JobIds::Crossbowman;
-	else if (query == "sniper") job = Jobs::JobIds::Sniper;
-	else if (query == "marksman") job = Jobs::JobIds::Marksman;
-	else if (query == "thief") job = Jobs::JobIds::Rogue;
-	else if (query == "sin") job = Jobs::JobIds::Assassin;
-	else if (query == "hermit") job = Jobs::JobIds::Hermit;
-	else if (query == "nl") job = Jobs::JobIds::NightLord;
-	else if (query == "dit") job = Jobs::JobIds::Bandit;
-	else if (query == "cb") job = Jobs::JobIds::ChiefBandit;
-	else if (query == "shadower") job = Jobs::JobIds::Shadower;
-	else if (query == "pirate") job = Jobs::JobIds::Pirate;
-	else if (query == "brawler") job = Jobs::JobIds::Brawler;
-	else if (query == "marauder") job = Jobs::JobIds::Marauder;
-	else if (query == "buccaneer") job = Jobs::JobIds::Buccaneer;
-	else if (query == "gunslinger") job = Jobs::JobIds::Gunslinger;
-	else if (query == "outlaw") job = Jobs::JobIds::Outlaw;
-	else if (query == "corsair") job = Jobs::JobIds::Corsair;
-	else if (query == "gm") job = Jobs::JobIds::Gm;
-	else if (query == "sgm") job = Jobs::JobIds::SuperGm;
-	else if (query == "noblesse") job = Jobs::JobIds::Noblesse;
-	else if (query == "dawn1") job = Jobs::JobIds::DawnWarrior1;
-	else if (query == "dawn2") job = Jobs::JobIds::DawnWarrior2;
-	else if (query == "dawn3") job = Jobs::JobIds::DawnWarrior3;
-	else if (query == "dawn4") job = Jobs::JobIds::DawnWarrior4;
-	else if (query == "blaze1") job = Jobs::JobIds::BlazeWizard1;
-	else if (query == "blaze2") job = Jobs::JobIds::BlazeWizard2;
-	else if (query == "blaze3") job = Jobs::JobIds::BlazeWizard3;
-	else if (query == "blaze4") job = Jobs::JobIds::BlazeWizard4;
-	else if (query == "wind1") job = Jobs::JobIds::WindArcher1;
-	else if (query == "wind2") job = Jobs::JobIds::WindArcher2;
-	else if (query == "wind3") job = Jobs::JobIds::WindArcher3;
-	else if (query == "wind4") job = Jobs::JobIds::WindArcher4;
-	else if (query == "night1") job = Jobs::JobIds::NightWalker1;
-	else if (query == "night2") job = Jobs::JobIds::NightWalker2;
-	else if (query == "night3") job = Jobs::JobIds::NightWalker3;
-	else if (query == "night4") job = Jobs::JobIds::NightWalker4;
-	else if (query == "thunder1") job = Jobs::JobIds::ThunderBreaker1;
-	else if (query == "thunder2") job = Jobs::JobIds::ThunderBreaker2;
-	else if (query == "thunder3") job = Jobs::JobIds::ThunderBreaker3;
-	else if (query == "thunder4") job = Jobs::JobIds::ThunderBreaker4;
+auto chat_handler_functions::get_job(const game_chat &query) -> game_job_id {
+	game_job_id job = -1;
+	if (query == "beginner") job = jobs::job_ids::beginner;
+	else if (query == "warrior") job = jobs::job_ids::swordsman;
+	else if (query == "fighter") job = jobs::job_ids::fighter;
+	else if (query == "sader") job = jobs::job_ids::crusader;
+	else if (query == "hero") job = jobs::job_ids::hero;
+	else if (query == "page") job = jobs::job_ids::page;
+	else if (query == "wk") job = jobs::job_ids::white_knight;
+	else if (query == "paladin") job = jobs::job_ids::paladin;
+	else if (query == "spearman") job = jobs::job_ids::spearman;
+	else if (query == "dk") job  = jobs::job_ids::dragon_knight;
+	else if (query == "drk") job = jobs::job_ids::dark_knight;
+	else if (query == "magician") job = jobs::job_ids::magician;
+	else if (query == "fpwiz") job = jobs::job_ids::fp_wizard;
+	else if (query == "fpmage") job = jobs::job_ids::fp_mage;
+	else if (query == "fparch") job = jobs::job_ids::fp_arch_mage;
+	else if (query == "ilwiz") job = jobs::job_ids::il_wizard;
+	else if (query == "ilmage") job = jobs::job_ids::il_mage;
+	else if (query == "ilarch") job = jobs::job_ids::il_arch_mage;
+	else if (query == "cleric") job = jobs::job_ids::cleric;
+	else if (query == "priest") job = jobs::job_ids::priest;
+	else if (query == "bishop") job = jobs::job_ids::bishop;
+	else if (query == "bowman") job = jobs::job_ids::archer;
+	else if (query == "hunter") job = jobs::job_ids::hunter;
+	else if (query == "ranger") job = jobs::job_ids::ranger;
+	else if (query == "bm") job = jobs::job_ids::bowmaster;
+	else if (query == "xbowman") job = jobs::job_ids::crossbowman;
+	else if (query == "sniper") job = jobs::job_ids::sniper;
+	else if (query == "marksman") job = jobs::job_ids::marksman;
+	else if (query == "thief") job = jobs::job_ids::rogue;
+	else if (query == "sin") job = jobs::job_ids::assassin;
+	else if (query == "hermit") job = jobs::job_ids::hermit;
+	else if (query == "nl") job = jobs::job_ids::night_lord;
+	else if (query == "dit") job = jobs::job_ids::bandit;
+	else if (query == "cb") job = jobs::job_ids::chief_bandit;
+	else if (query == "shadower") job = jobs::job_ids::shadower;
+	else if (query == "pirate") job = jobs::job_ids::pirate;
+	else if (query == "brawler") job = jobs::job_ids::brawler;
+	else if (query == "marauder") job = jobs::job_ids::marauder;
+	else if (query == "buccaneer") job = jobs::job_ids::buccaneer;
+	else if (query == "gunslinger") job = jobs::job_ids::gunslinger;
+	else if (query == "outlaw") job = jobs::job_ids::outlaw;
+	else if (query == "corsair") job = jobs::job_ids::corsair;
+	else if (query == "gm") job = jobs::job_ids::gm;
+	else if (query == "sgm") job = jobs::job_ids::super_gm;
+	else if (query == "noblesse") job = jobs::job_ids::noblesse;
+	else if (query == "dawn1") job = jobs::job_ids::dawn_warrior1;
+	else if (query == "dawn2") job = jobs::job_ids::dawn_warrior2;
+	else if (query == "dawn3") job = jobs::job_ids::dawn_warrior3;
+	else if (query == "dawn4") job = jobs::job_ids::dawn_warrior4;
+	else if (query == "blaze1") job = jobs::job_ids::blaze_wizard1;
+	else if (query == "blaze2") job = jobs::job_ids::blaze_wizard2;
+	else if (query == "blaze3") job = jobs::job_ids::blaze_wizard3;
+	else if (query == "blaze4") job = jobs::job_ids::blaze_wizard4;
+	else if (query == "wind1") job = jobs::job_ids::wind_archer1;
+	else if (query == "wind2") job = jobs::job_ids::wind_archer2;
+	else if (query == "wind3") job = jobs::job_ids::wind_archer3;
+	else if (query == "wind4") job = jobs::job_ids::wind_archer4;
+	else if (query == "night1") job = jobs::job_ids::night_walker1;
+	else if (query == "night2") job = jobs::job_ids::night_walker2;
+	else if (query == "night3") job = jobs::job_ids::night_walker3;
+	else if (query == "night4") job = jobs::job_ids::night_walker4;
+	else if (query == "thunder1") job = jobs::job_ids::thunder_breaker1;
+	else if (query == "thunder2") job = jobs::job_ids::thunder_breaker2;
+	else if (query == "thunder3") job = jobs::job_ids::thunder_breaker3;
+	else if (query == "thunder4") job = jobs::job_ids::thunder_breaker4;
 	else {
 		char *endptr;
-		job = static_cast<job_id_t>(strtol(query.c_str(), &endptr, 0));
+		job = static_cast<game_job_id>(strtol(query.c_str(), &endptr, 0));
 		if (strlen(endptr) != 0) job = -1;
 	}
 	return job;
 }
 
-auto ChatHandlerFunctions::getBanString(int8_t reason) -> chat_t {
-	chat_t banMessage = ".";
+auto chat_handler_functions::get_ban_string(int8_t reason) -> game_chat {
+	game_chat ban_message = ".";
 	switch (reason) {
-		case 0x01: banMessage = " for hacking."; break;
-		case 0x02: banMessage = " for using macro/auto-keyboard."; break;
-		case 0x03: banMessage = " for illicit promotion or advertising."; break;
-		case 0x04: banMessage = " for harassment."; break;
-		case 0x05: banMessage = " for using profane language."; break;
-		case 0x06: banMessage = " for scamming."; break;
-		case 0x07: banMessage = " for misconduct."; break;
-		case 0x08: banMessage = " for illegal cash transaction."; break;
-		case 0x09: banMessage = " for illegal charging/funding."; break;
-		case 0x0A: banMessage = " for temporary request."; break;
-		case 0x0B: banMessage = " for impersonating GM."; break;
-		case 0x0C: banMessage = " for using illegal programs or violating the game policy."; break;
-		case 0x0D: banMessage = " for one of cursing, scamming, or illegal trading via Megaphones."; break;
+		case 0x01: ban_message = " for hacking."; break;
+		case 0x02: ban_message = " for using macro/auto-keyboard."; break;
+		case 0x03: ban_message = " for illicit promotion or advertising."; break;
+		case 0x04: ban_message = " for harassment."; break;
+		case 0x05: ban_message = " for using profane language."; break;
+		case 0x06: ban_message = " for scamming."; break;
+		case 0x07: ban_message = " for misconduct."; break;
+		case 0x08: ban_message = " for illegal cash transaction."; break;
+		case 0x09: ban_message = " for illegal charging/funding."; break;
+		case 0x0A: ban_message = " for temporary request."; break;
+		case 0x0B: ban_message = " for impersonating GM."; break;
+		case 0x0C: ban_message = " for using illegal programs or violating the game policy."; break;
+		case 0x0D: ban_message = " for one of cursing, scamming, or illegal trading via Megaphones."; break;
 	}
-	return banMessage;
+	return ban_message;
 }
 
-auto ChatHandlerFunctions::getMessageType(const chat_t &query) -> int8_t {
+auto chat_handler_functions::get_message_type(const game_chat &query) -> int8_t {
 	int8_t ret = -1;
-	if (query == "notice") ret = Packets::Player::NoticeTypes::Notice;
-	else if (query == "box") ret = Packets::Player::NoticeTypes::Box;
-	else if (query == "red") ret = Packets::Player::NoticeTypes::Red;
-	else if (query == "blue") ret = Packets::Player::NoticeTypes::Blue;
+	if (query == "notice") ret = packets::player::notice_types::notice;
+	else if (query == "box") ret = packets::player::notice_types::box;
+	else if (query == "red") ret = packets::player::notice_types::red;
+	else if (query == "blue") ret = packets::player::notice_types::blue;
 	return ret;
 }
 
-auto ChatHandlerFunctions::runRegexPattern(const chat_t &args, const chat_t &pattern, match_t &matches) -> MatchResult {
+auto chat_handler_functions::run_regex_pattern(const game_chat &args, const game_chat &pattern, match &matches) -> match_result {
 	std::regex re;
 	re = pattern; // Why, C++, why?
-	return std::regex_match(args, matches, re) ? MatchResult::AnyMatches : MatchResult::NoMatches;
+	return std::regex_match(args, matches, re) ? match_result::any_matches : match_result::no_matches;
 }
 
-auto ChatHandlerFunctions::showSyntax(ref_ptr_t<Player> player, const chat_t &command, bool fromHelp) -> void {
-	auto kvp = sCommandList.find(command);
-	if (kvp != std::end(sCommandList)) {
+auto chat_handler_functions::show_syntax(ref_ptr<player> player_value, const game_chat &command, bool from_help) -> void {
+	auto kvp = g_command_list.find(command);
+	if (kvp != std::end(g_command_list)) {
 		auto &cmd = kvp->second;
 
-		using overload_t = void (*)(ref_ptr_t<Player>, const chat_t &);
-		auto displayStyle = fromHelp ?
-			static_cast<overload_t>(showInfo) :
-			static_cast<overload_t>(showError);
+		using overload_t = void (*)(ref_ptr<player>, const game_chat &);
+		auto display_style = from_help ?
+			static_cast<overload_t>(show_info) :
+			static_cast<overload_t>(show_error);
 
-		displayStyle(player, "Usage: !" + command + " " + cmd.syntax);
+		display_style(player_value, "Usage: !" + command + " " + cmd.syntax);
 
-		if (fromHelp) {
-			displayStyle(player, "Notes: " + cmd.notes[0]);
+		if (from_help) {
+			display_style(player_value, "Notes: " + cmd.notes[0]);
 			for (size_t i = 1; i < cmd.notes.size(); i++) {
-				displayStyle(player, cmd.notes[i]);
+				display_style(player_value, cmd.notes[i]);
 			}
 		}
 	}
 }
 
-auto ChatHandlerFunctions::showError(ref_ptr_t<Player> player, const chat_t &message) -> void {
-	player->send(Packets::Player::showMessage(message, Packets::Player::NoticeTypes::Red));
+auto chat_handler_functions::show_error(ref_ptr<player> player, const game_chat &message) -> void {
+	player->send(packets::player::show_message(message, packets::player::notice_types::red));
 }
 
-auto ChatHandlerFunctions::showInfo(ref_ptr_t<Player> player, const chat_t &message) -> void {
-	player->send(Packets::Player::showMessage(message, Packets::Player::NoticeTypes::Blue));
+auto chat_handler_functions::show_info(ref_ptr<player> player, const game_chat &message) -> void {
+	player->send(packets::player::show_message(message, packets::player::notice_types::blue));
 }
 
-auto ChatHandlerFunctions::showError(ref_ptr_t<Player> player, function_t<void(chat_stream_t &)> produceMessage) -> void {
-	chat_stream_t error;
-	produceMessage(error);
-	showError(player, error.str());
+auto chat_handler_functions::show_error(ref_ptr<player> player, function<void(game_chat_stream &)> produce_message) -> void {
+	game_chat_stream error;
+	produce_message(error);
+	show_error(player, error.str());
 }
 
-auto ChatHandlerFunctions::showInfo(ref_ptr_t<Player> player, function_t<void(chat_stream_t &)> produceMessage) -> void {
-	chat_stream_t info;
-	produceMessage(info);
-	showInfo(player, info.str());
+auto chat_handler_functions::show_info(ref_ptr<player> player, function<void(game_chat_stream &)> produce_message) -> void {
+	game_chat_stream info;
+	produce_message(info);
+	show_info(player, info.str());
 }
 
-auto ChatHandlerFunctions::showError(ref_ptr_t<Player> player, const char *message) -> void {
-	showError(player, chat_t{message});
+auto chat_handler_functions::show_error(ref_ptr<player> player, const char *message) -> void {
+	show_error(player, game_chat{message});
 }
 
-auto ChatHandlerFunctions::showInfo(ref_ptr_t<Player> player, const char *message) -> void {
-	showInfo(player, chat_t{message});
+auto chat_handler_functions::show_info(ref_ptr<player> player, const char *message) -> void {
+	show_info(player, game_chat{message});
 }
 
 }

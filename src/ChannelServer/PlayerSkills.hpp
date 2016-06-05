@@ -20,89 +20,89 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <unordered_map>
 
-namespace Vana {
-	class PacketBuilder;
-	enum class MysticDoorResult;
-	struct SkillLevelInfo;
+namespace vana {
+	class packet_builder;
+	enum class mystic_door_result;
+	struct skill_level_info;
 
-	namespace ChannelServer {
-		class MysticDoor;
-		class Party;
-		class Player;
+	namespace channel_server {
+		class mystic_door;
+		class party;
+		class player;
 
-		struct PlayerSkillInfo {
-			skill_level_t level = 0;
-			skill_level_t maxSkillLevel = 0;
-			skill_level_t playerMaxSkillLevel = 0;
+		struct player_skill_info {
+			game_skill_level level = 0;
+			game_skill_level max_skill_level = 0;
+			game_skill_level player_max_skill_level = 0;
 		};
 
-		class PlayerSkills {
-			NONCOPYABLE(PlayerSkills);
-			NO_DEFAULT_CONSTRUCTOR(PlayerSkills);
+		class player_skills {
+			NONCOPYABLE(player_skills);
+			NO_DEFAULT_CONSTRUCTOR(player_skills);
 		public:
-			PlayerSkills(Player *player);
+			player_skills(player *player);
 
 			auto load() -> void;
-			auto save(bool saveCooldowns = false) -> void;
-			auto connectPacket(PacketBuilder &builder) const -> void;
-			auto connectPacketForBlessing(PacketBuilder &builder) const -> void;
+			auto save(bool save_cooldowns = false) -> void;
+			auto connect_packet(packet_builder &builder) const -> void;
+			auto connect_packet_for_blessing(packet_builder &builder) const -> void;
 
-			auto addSkillLevel(skill_id_t skillId, skill_level_t amount, bool sendPacket = true) -> bool;
-			auto getSkillLevel(skill_id_t skillId) const -> skill_level_t;
-			auto getMaxSkillLevel(skill_id_t skillId) const -> skill_level_t;
-			auto setMaxSkillLevel(skill_id_t skillId, skill_level_t maxLevel, bool sendPacket = true) -> void;
-			auto getSkillInfo(skill_id_t skillId) const -> const SkillLevelInfo * const;
+			auto add_skill_level(game_skill_id skill_id, game_skill_level amount, bool send_packet = true) -> bool;
+			auto get_skill_level(game_skill_id skill_id) const -> game_skill_level;
+			auto get_max_skill_level(game_skill_id skill_id) const -> game_skill_level;
+			auto set_max_skill_level(game_skill_id skill_id, game_skill_level max_level, bool send_packet = true) -> void;
+			auto get_skill_info(game_skill_id skill_id) const -> const skill_level_info * const;
 
-			auto hasElementalAmp() const -> bool;
-			auto hasEnergyCharge() const -> bool;
-			auto hasHpIncrease() const -> bool;
-			auto hasMpIncrease() const -> bool;
-			auto hasVenomousWeapon() const -> bool;
-			auto hasAchilles() const -> bool;
-			auto hasDarkSightInterruptionSkill() const -> bool;
-			auto hasNoDamageSkill() const -> bool;
-			auto hasFollowTheLead() const -> bool;
-			auto hasLegendarySpirit() const -> bool;
-			auto hasMaker() const -> bool;
-			auto hasBlessingOfTheFairy() const -> bool;
-			auto getElementalAmp() const -> skill_id_t;
-			auto getEnergyCharge() const -> skill_id_t;
-			auto getAdvancedCombo() const -> skill_id_t;
-			auto getAlchemist() const -> skill_id_t;
-			auto getHpIncrease() const -> skill_id_t;
-			auto getMpIncrease() const -> skill_id_t;
-			auto getMastery() const -> skill_id_t;
-			auto getMpEater() const -> skill_id_t;
-			auto getVenomousWeapon() const -> skill_id_t;
-			auto getAchilles() const -> skill_id_t;
-			auto getDarkSightInterruptionSkill() const -> skill_id_t;
-			auto getNoDamageSkill() const -> skill_id_t;
-			auto getFollowTheLead() const -> skill_id_t;
-			auto getLegendarySpirit() const -> skill_id_t;
-			auto getMaker() const -> skill_id_t;
-			auto getBlessingOfTheFairy() const -> skill_id_t;
-			auto getRechargeableBonus() const -> slot_qty_t;
+			auto has_elemental_amp() const -> bool;
+			auto has_energy_charge() const -> bool;
+			auto has_hp_increase() const -> bool;
+			auto has_mp_increase() const -> bool;
+			auto has_venomous_weapon() const -> bool;
+			auto has_achilles() const -> bool;
+			auto has_dark_sight_interruption_skill() const -> bool;
+			auto has_no_damage_skill() const -> bool;
+			auto has_follow_the_lead() const -> bool;
+			auto has_legendary_spirit() const -> bool;
+			auto has_maker() const -> bool;
+			auto has_blessing_of_the_fairy() const -> bool;
+			auto get_elemental_amp() const -> game_skill_id;
+			auto get_energy_charge() const -> game_skill_id;
+			auto get_advanced_combo() const -> game_skill_id;
+			auto get_alchemist() const -> game_skill_id;
+			auto get_hp_increase() const -> game_skill_id;
+			auto get_mp_increase() const -> game_skill_id;
+			auto get_mastery() const -> game_skill_id;
+			auto get_mp_eater() const -> game_skill_id;
+			auto get_venomous_weapon() const -> game_skill_id;
+			auto get_achilles() const -> game_skill_id;
+			auto get_dark_sight_interruption_skill() const -> game_skill_id;
+			auto get_no_damage_skill() const -> game_skill_id;
+			auto get_follow_the_lead() const -> game_skill_id;
+			auto get_legendary_spirit() const -> game_skill_id;
+			auto get_maker() const -> game_skill_id;
+			auto get_blessing_of_the_fairy() const -> game_skill_id;
+			auto get_rechargeable_bonus() const -> game_slot_qty;
 
-			auto addCooldown(skill_id_t skillId, seconds_t time) -> void;
-			auto removeCooldown(skill_id_t skillId) -> void;
-			auto removeAllCooldowns() -> void;
+			auto add_cooldown(game_skill_id skill_id, seconds time) -> void;
+			auto remove_cooldown(game_skill_id skill_id) -> void;
+			auto remove_all_cooldowns() -> void;
 
-			auto openMysticDoor(const Point &pos, seconds_t doorTime) -> MysticDoorResult;
-			auto closeMysticDoor(bool fromTimer) -> void;
-			auto getMysticDoor() const -> ref_ptr_t<MysticDoor>;
-			auto onJoinParty(Party *party, ref_ptr_t<Player> player) -> void;
-			auto onLeaveParty(Party *party, ref_ptr_t<Player> player, bool kicked) -> void;
-			auto onPartyDisband(Party *party) -> void;
-			auto onMapChange() const -> void;
-			auto onDisconnect() -> void;
+			auto open_mystic_door(const point &pos, seconds door_time) -> mystic_door_result;
+			auto close_mystic_door(bool from_timer) -> void;
+			auto get_mystic_door() const -> ref_ptr<mystic_door>;
+			auto on_join_party(party *party, ref_ptr<player> player) -> void;
+			auto on_leave_party(party *party, ref_ptr<player> player, bool kicked) -> void;
+			auto on_party_disband(party *party) -> void;
+			auto on_map_change() const -> void;
+			auto on_disconnect() -> void;
 		private:
-			auto hasSkill(skill_id_t skillId) const -> bool;
+			auto has_skill(game_skill_id skill_id) const -> bool;
 
-			Player *m_player = nullptr;
-			hash_map_t<skill_id_t, PlayerSkillInfo> m_skills;
-			hash_map_t<skill_id_t, seconds_t> m_cooldowns;
-			ref_ptr_t<MysticDoor> m_mysticDoor;
-			string_t m_blessingPlayer;
+			player *m_player = nullptr;
+			hash_map<game_skill_id, player_skill_info> m_skills;
+			hash_map<game_skill_id, seconds> m_cooldowns;
+			ref_ptr<mystic_door> m_mystic_door;
+			string m_blessing_player;
 		};
 	}
 }

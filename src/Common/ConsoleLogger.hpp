@@ -20,12 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Logger.hpp"
 #include <string>
 
-namespace Vana {
+namespace vana {
 	// Default logger/console
-	class ConsoleLogger : public Logger {
+	class console_logger : public base_logger {
 	public:
-		ConsoleLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize = 10);
+		console_logger(const string &filename, const string &format, const string &time_format, server_type type, size_t buffer_size = 10);
 
-		auto log(LogType type, const opt_string_t &identifier, const string_t &message) -> void override;
+		auto log(log_type type, const opt_string &identifier, const string &message) -> void override;
 	};
 }

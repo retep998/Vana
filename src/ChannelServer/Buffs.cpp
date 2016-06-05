@@ -27,170 +27,170 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Player.hpp"
 #include "ChannelServer/SummonHandler.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto Buffs::addBuff(ref_ptr_t<Player> player, skill_id_t skillId, skill_level_t level, int16_t addedInfo, map_object_t mapMobId) -> Result {
-	auto source = BuffSource::fromSkill(skillId, level);
-	auto &buffProvider = ChannelServer::getInstance().getBuffDataProvider();
-	if (!buffProvider.isBuff(source)) {
-		return Result::Failure;
+auto buffs::add_buff(ref_ptr<player> player, game_skill_id skill_id, game_skill_level level, int16_t added_info, game_map_object map_mob_id) -> result {
+	auto source = buff_source::from_skill(skill_id, level);
+	auto &buff_provider = channel_server::get_instance().get_buff_data_provider();
+	if (!buff_provider.is_buff(source)) {
+		return result::failure;
 	}
 
-	auto skill = source.getSkillData(ChannelServer::getInstance().getSkillDataProvider());
-	seconds_t time = skill->buffTime;
-	switch (skillId) {
-		case Vana::Skills::DragonKnight::DragonRoar:
-			time = seconds_t{skill->y};
+	auto skill = source.get_skill_data(channel_server::get_instance().get_skill_data_provider());
+	seconds time = skill->buff_time;
+	switch (skill_id) {
+		case vana::skills::dragon_knight::dragon_roar:
+			time = seconds{skill->y};
 			break;
-		case Vana::Skills::SuperGm::Hide:
-			time = Vana::Buffs::MaxBuffTime;
+		case vana::skills::super_gm::hide:
+			time = vana::buffs::max_buff_time;
 			break;
 	}
 
-	auto buffs = preprocessBuff(player, source, time);
-	if (!buffs.anyBuffs()) return Result::Failure;
+	auto buffs = preprocess_buff(player, source, time);
+	if (!buffs.any_buffs()) return result::failure;
 
-	auto &basics = buffProvider.getBuffsByEffect();
-	for (const auto &buffInfo : buffs.getBuffInfo()) {
-		if (buffInfo == basics.homingBeacon) {
-			if (mapMobId == player->getActiveBuffs()->getHomingBeaconMob()) return Result::Failure;
-			player->getActiveBuffs()->resetHomingBeaconMob(mapMobId);
+	auto &basics = buff_provider.get_buffs_by_effect();
+	for (const auto &buff_info : buffs.get_buff_info()) {
+		if (buff_info == basics.homing_beacon) {
+			if (map_mob_id == player->get_active_buffs()->get_homing_beacon_mob()) return result::failure;
+			player->get_active_buffs()->reset_homing_beacon_mob(map_mob_id);
 			break;
 		}
 	}
 
-	return player->getActiveBuffs()->addBuff(source, buffs, time);
+	return player->get_active_buffs()->add_buff(source, buffs, time);
 }
 
-auto Buffs::addBuff(ref_ptr_t<Player> player, item_id_t itemId, const seconds_t &time) -> Result {
-	auto source = BuffSource::fromItem(itemId);
-	if (!ChannelServer::getInstance().getBuffDataProvider().isBuff(source)) {
-		return Result::Failure;
+auto buffs::add_buff(ref_ptr<player> player, game_item_id item_id, const seconds &time) -> result {
+	auto source = buff_source::from_item(item_id);
+	if (!channel_server::get_instance().get_buff_data_provider().is_buff(source)) {
+		return result::failure;
 	}
 
-	auto buffs = preprocessBuff(player, source, time);
-	if (!buffs.anyBuffs()) return Result::Failure;
+	auto buffs = preprocess_buff(player, source, time);
+	if (!buffs.any_buffs()) return result::failure;
 
-	return player->getActiveBuffs()->addBuff(source, buffs, time);
+	return player->get_active_buffs()->add_buff(source, buffs, time);
 }
 
-auto Buffs::addBuff(ref_ptr_t<Player> player, mob_skill_id_t skillId, mob_skill_level_t level, milliseconds_t delay) -> Result {
-	auto source = BuffSource::fromMobSkill(skillId, level);
-	if (!ChannelServer::getInstance().getBuffDataProvider().isDebuff(source)) {
-		return Result::Failure;
+auto buffs::add_buff(ref_ptr<player> player, game_mob_skill_id skill_id, game_mob_skill_level level, milliseconds delay) -> result {
+	auto source = buff_source::from_mob_skill(skill_id, level);
+	if (!channel_server::get_instance().get_buff_data_provider().is_debuff(source)) {
+		return result::failure;
 	}
 
-	if (player->getStats()->isDead() || player->getActiveBuffs()->hasHolyShield() || player->hasGmBenefits()) {
-		return Result::Failure;
+	if (player->get_stats()->is_dead() || player->get_active_buffs()->has_holy_shield() || player->has_gm_benefits()) {
+		return result::failure;
 	}
 
-	auto skill = source.getMobSkillData(ChannelServer::getInstance().getSkillDataProvider());
-	seconds_t time{skill->time};
+	auto skill = source.get_mob_skill_data(channel_server::get_instance().get_skill_data_provider());
+	seconds time{skill->time};
 
-	auto buffs = preprocessBuff(player, source, time);
-	if (!buffs.anyBuffs()) return Result::Failure;
+	auto buffs = preprocess_buff(player, source, time);
+	if (!buffs.any_buffs()) return result::failure;
 
-	return player->getActiveBuffs()->addBuff(source, buffs.withDelay(delay), time);
+	return player->get_active_buffs()->add_buff(source, buffs.with_delay(delay), time);
 }
 
-auto Buffs::endBuff(ref_ptr_t<Player> player, const BuffSource &source, bool fromTimer) -> void {
-	player->getActiveBuffs()->removeBuff(source, preprocessBuff(player, source, seconds_t{0}), fromTimer);
+auto buffs::end_buff(ref_ptr<player> player, const buff_source &source, bool from_timer) -> void {
+	player->get_active_buffs()->remove_buff(source, preprocess_buff(player, source, seconds{0}), from_timer);
 }
 
-auto Buffs::buffMayApply(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, const BuffInfo &buff) -> bool {
-	switch (source.getType()) {
-		case BuffSourceType::Skill: {
-			skill_id_t skillId = source.getSkillId();
-			skill_level_t skillLevel = source.getSkillLevel();
-			if (GameLogicUtilities::isDarkSight(skillId)) {
+auto buffs::buff_may_apply(ref_ptr<player> player, const buff_source &source, const seconds &time, const buff_info &buff) -> bool {
+	switch (source.get_type()) {
+		case buff_source_type::skill: {
+			game_skill_id skill_id = source.get_skill_id();
+			game_skill_level skill_level = source.get_skill_level();
+			if (game_logic_utilities::is_dark_sight(skill_id)) {
 				return
-					buff.getValue() != BuffSkillValue::Speed ||
-					skillLevel != ChannelServer::getInstance().getSkillDataProvider().getMaxLevel(skillId);
+					buff.get_value() != buff_skill_value::speed ||
+					skill_level != channel_server::get_instance().get_skill_data_provider().get_max_level(skill_id);
 			}
 			return true;
 		}
-		case BuffSourceType::MobSkill: {
-			mob_skill_id_t skillId = source.getMobSkillId();
-			return player->getActiveBuffs()->getBuffSource(buff).is_initialized() ?
+		case buff_source_type::mob_skill: {
+			game_mob_skill_id skill_id = source.get_mob_skill_id();
+			return player->get_active_buffs()->get_buff_source(buff).is_initialized() ?
 				false :
 				true;
 		}
-		case BuffSourceType::Item: {
-			item_id_t itemId = source.getItemId();
+		case buff_source_type::item: {
+			game_item_id item_id = source.get_item_id();
 			return true;
 		}
 	}
-	throw NotImplementedException{"BuffSourceType"};
+	throw not_implemented_exception{"buff_source_type"};
 }
 
-auto Buffs::preprocessBuff(ref_ptr_t<Player> player, skill_id_t skillId, skill_level_t level, const seconds_t &time) -> Buff {
-	auto source = BuffSource::fromSkill(skillId, level);
-	return preprocessBuff(player, source, time);
+auto buffs::preprocess_buff(ref_ptr<player> player, game_skill_id skill_id, game_skill_level level, const seconds &time) -> buff {
+	auto source = buff_source::from_skill(skill_id, level);
+	return preprocess_buff(player, source, time);
 }
 
-auto Buffs::preprocessBuff(ref_ptr_t<Player> player, item_id_t itemId, const seconds_t &time) -> Buff {
-	auto source = BuffSource::fromItem(itemId);
-	return preprocessBuff(player, source, time);
+auto buffs::preprocess_buff(ref_ptr<player> player, game_item_id item_id, const seconds &time) -> buff {
+	auto source = buff_source::from_item(item_id);
+	return preprocess_buff(player, source, time);
 }
 
-auto Buffs::preprocessBuff(ref_ptr_t<Player> player, mob_skill_id_t skillId, mob_skill_level_t level, const seconds_t &time) -> Buff {
-	auto source = BuffSource::fromMobSkill(skillId, level);
-	return preprocessBuff(player, source, time);
+auto buffs::preprocess_buff(ref_ptr<player> player, game_mob_skill_id skill_id, game_mob_skill_level level, const seconds &time) -> buff {
+	auto source = buff_source::from_mob_skill(skill_id, level);
+	return preprocess_buff(player, source, time);
 }
 
-auto Buffs::preprocessBuff(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time) -> Buff {
-	auto &buffProvider = ChannelServer::getInstance().getBuffDataProvider();
+auto buffs::preprocess_buff(ref_ptr<player> player, const buff_source &source, const seconds &time) -> buff {
+	auto &buff_provider = channel_server::get_instance().get_buff_data_provider();
 
-	if (source.getType() == BuffSourceType::Item) {
-		item_id_t itemId = source.getItemId();
-		switch (itemId) {
-			case Items::BeholderHexWdef:
-			case Items::BeholderHexMdef:
-			case Items::BeholderHexAcc:
-			case Items::BeholderHexAvo:
-			case Items::BeholderHexWatk: {
-				BuffInfo data = SummonHandler::makeBuff(player, itemId);
-				Buff parsed{data};
-				return preprocessBuff(player, source, time, parsed);
+	if (source.get_type() == buff_source_type::item) {
+		game_item_id item_id = source.get_item_id();
+		switch (item_id) {
+			case items::beholder_hex_wdef:
+			case items::beholder_hex_mdef:
+			case items::beholder_hex_acc:
+			case items::beholder_hex_avo:
+			case items::beholder_hex_watk: {
+				buff_info data = summon_handler::make_buff(player, item_id);
+				buff parsed{data};
+				return preprocess_buff(player, source, time, parsed);
 			}
 		}
 	}
-	auto &skillsInfo = buffProvider.getInfo(source);
-	return preprocessBuff(player, source, time, skillsInfo);
+	auto &skills_info = buff_provider.get_info(source);
+	return preprocess_buff(player, source, time, skills_info);
 }
 
-auto Buffs::preprocessBuff(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, const Buff &buff) -> Buff {
-	vector_t<BuffInfo> applicableBuffs;
-	vector_t<BuffInfo> existingBuffs;
-	if (buff.isSelectionBuff()) {
-		int16_t chance = Randomizer::percentage<int16_t>();
-		for (const auto &buffInfo : buff.getBuffInfo()) {
-			if (chance < buffInfo.getChance()) {
-				existingBuffs.push_back(buffInfo);
+auto buffs::preprocess_buff(ref_ptr<player> player, const buff_source &source, const seconds &time, const buff &buff_value) -> buff {
+	vector<buff_info> applicable_buffs;
+	vector<buff_info> existing_buffs;
+	if (buff_value.is_selection_buff()) {
+		int16_t chance = randomizer::percentage<int16_t>();
+		for (const auto &buff_info : buff_value.get_buff_info()) {
+			if (chance < buff_info.get_chance()) {
+				existing_buffs.push_back(buff_info);
 				break;
 			}
-			else chance -= buffInfo.getChance();
+			else chance -= buff_info.get_chance();
 		}
 	}
 	else {
-		existingBuffs = buff.getBuffInfo();
+		existing_buffs = buff_value.get_buff_info();
 	}
 
-	for (auto &info : existingBuffs) {
-		if (!buffMayApply(player, source, time, info)) continue;
-		applicableBuffs.push_back(info);
+	for (auto &info : existing_buffs) {
+		if (!buff_may_apply(player, source, time, info)) continue;
+		applicable_buffs.push_back(info);
 	}
 
-	return buff.withBuffs(applicableBuffs);
+	return buff_value.with_buffs(applicable_buffs);
 }
 
-auto Buffs::preprocessBuff(const Buff &buff, const vector_t<uint8_t> &bitPositionsToInclude) -> Buff {
-	vector_t<BuffInfo> applicable;
-	for (const auto &info : buff.getBuffInfo()) {
+auto buffs::preprocess_buff(const buff &buff_value, const vector<uint8_t> &bit_positions_to_include) -> buff {
+	vector<buff_info> applicable;
+	for (const auto &info : buff_value.get_buff_info()) {
 		bool found = false;
-		for (const auto &bitPosition : bitPositionsToInclude) {
-			if (bitPosition == info) {
+		for (const auto &bit_position : bit_positions_to_include) {
+			if (bit_position == info) {
 				found = true;
 				break;
 			}
@@ -199,207 +199,207 @@ auto Buffs::preprocessBuff(const Buff &buff, const vector_t<uint8_t> &bitPositio
 			applicable.push_back(info);
 		}
 	}
-	return buff.withBuffs(applicable);
+	return buff_value.with_buffs(applicable);
 }
 
-auto Buffs::convertToPacketTypes(const Buff &buff) -> BuffPacketValues {
-	BuffPacketValues ret;
-	for (const auto &buffInfo : buff.getBuffInfo()) {
-		ret.player.types[buffInfo.getBuffByte()] |= buffInfo.getBuffType();
-		if (buffInfo.isMovementAffecting()) ret.player.anyMovementBuffs = true;
-		if (buffInfo.hasMapInfo()) {
+auto buffs::convert_to_packet_types(const buff &buff) -> buff_packet_values {
+	buff_packet_values ret;
+	for (const auto &buff_info : buff.get_buff_info()) {
+		ret.player.types[buff_info.get_buff_byte()] |= buff_info.get_buff_type();
+		if (buff_info.is_movement_affecting()) ret.player.any_movement_buffs = true;
+		if (buff_info.has_map_info()) {
 			if (!ret.map.is_initialized()) {
-				ret.map = BuffPacketStructure{};
+				ret.map = buff_packet_structure{};
 			}
-			ret.map.get().types[buffInfo.getBuffByte()] |= buffInfo.getBuffType();
+			ret.map.get().types[buff_info.get_buff_byte()] |= buff_info.get_buff_type();
 		}
 	}
 	return ret;
 }
 
-auto Buffs::convertToPacket(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, const Buff &buff) -> BuffPacketValues {
-	BuffPacketValues ret;
-	bool anyMap = false;
-	for (const auto &buffInfo : buff.getBuffInfo()) {
-		ret.player.types[buffInfo.getBuffByte()] |= buffInfo.getBuffType();
-		if (buffInfo.isMovementAffecting()) ret.player.anyMovementBuffs = true;
-		if (buffInfo.hasMapInfo()) {
-			auto mapValue = buffInfo.getMapInfo();
-			if (!anyMap) {
-				ret.map = BuffPacketStructure{};
-				anyMap = true;
+auto buffs::convert_to_packet(ref_ptr<player> player, const buff_source &source, const seconds &time, const buff &buff) -> buff_packet_values {
+	buff_packet_values ret;
+	bool any_map = false;
+	for (const auto &buff_info : buff.get_buff_info()) {
+		ret.player.types[buff_info.get_buff_byte()] |= buff_info.get_buff_type();
+		if (buff_info.is_movement_affecting()) ret.player.any_movement_buffs = true;
+		if (buff_info.has_map_info()) {
+			auto map_value = buff_info.get_map_info();
+			if (!any_map) {
+				ret.map = buff_packet_structure{};
+				any_map = true;
 			}
 
 			auto &map = ret.map.get();
-			map.types[buffInfo.getBuffByte()] |= buffInfo.getBuffType();
-			map.values.push_back(getValue(player, source, time, buffInfo.getBitPosition(), mapValue));
+			map.types[buff_info.get_buff_byte()] |= buff_info.get_buff_type();
+			map.values.push_back(get_value(player, source, time, buff_info.get_bit_position(), map_value));
 		}
 
-		ret.player.values.push_back(getValue(player, source, time, buffInfo));
+		ret.player.values.push_back(get_value(player, source, time, buff_info));
 	}
-	ret.delay = buff.getDelay();
+	ret.delay = buff.get_delay();
 	return ret;
 }
 
-auto Buffs::getValue(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, const BuffInfo &buff) -> BuffPacketValue {
-	if (buff.getValue() == BuffSkillValue::Predefined) {
-		return BuffPacketValue::fromValue(2, buff.getPredefinedValue());
+auto buffs::get_value(ref_ptr<player> player, const buff_source &source, const seconds &time, const buff_info &buff) -> buff_packet_value {
+	if (buff.get_value() == buff_skill_value::predefined) {
+		return buff_packet_value::from_value(2, buff.get_predefined_value());
 	}
-	return getValue(player, source, time, buff.getBitPosition(), buff.getValue(), 2);
+	return get_value(player, source, time, buff.get_bit_position(), buff.get_value(), 2);
 }
 
-auto Buffs::getValue(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, uint8_t bitPosition, const BuffMapInfo &buff) -> BuffPacketValue {
-	if (buff.getValue() == BuffSkillValue::Predefined) {
-		return BuffPacketValue::fromValue(buff.getSize(), buff.getPredefinedValue());
+auto buffs::get_value(ref_ptr<player> player, const buff_source &source, const seconds &time, uint8_t bit_position, const buff_map_info &buff) -> buff_packet_value {
+	if (buff.get_value() == buff_skill_value::predefined) {
+		return buff_packet_value::from_value(buff.get_size(), buff.get_predefined_value());
 	}
-	return getValue(player, source, time, bitPosition, buff.getValue(), buff.getSize());
+	return get_value(player, source, time, bit_position, buff.get_value(), buff.get_size());
 }
 
-auto Buffs::getValue(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, uint8_t bitPosition, BuffSkillValue value, uint8_t buffValueSize) -> BuffPacketValue {
-	switch (source.getType()) {
-		case BuffSourceType::Item: {
-			throw NotImplementedException{"Item BuffSkillValue type"};
+auto buffs::get_value(ref_ptr<player> player, const buff_source &source, const seconds &time, uint8_t bit_position, buff_skill_value value, uint8_t buff_value_size) -> buff_packet_value {
+	switch (source.get_type()) {
+		case buff_source_type::item: {
+			throw not_implemented_exception{"item buff_skill_value type"};
 		}
-		case BuffSourceType::MobSkill: {
-			mob_skill_id_t skillId = source.getMobSkillId();
-			mob_skill_level_t skillLevel = source.getMobSkillLevel();
-			auto skill = source.getMobSkillData(ChannelServer::getInstance().getSkillDataProvider());
+		case buff_source_type::mob_skill: {
+			game_mob_skill_id skill_id = source.get_mob_skill_id();
+			game_mob_skill_level skill_level = source.get_mob_skill_level();
+			auto skill = source.get_mob_skill_data(channel_server::get_instance().get_skill_data_provider());
 			switch (value) {
-				case BuffSkillValue::X: return BuffPacketValue::fromValue(buffValueSize, skill->x);
-				case BuffSkillValue::Y: return BuffPacketValue::fromValue(buffValueSize, skill->y);
-				case BuffSkillValue::Prop: return BuffPacketValue::fromValue(buffValueSize, skill->prop);
-				case BuffSkillValue::Level: return BuffPacketValue::fromValue(buffValueSize, skillLevel);
-				case BuffSkillValue::SkillId: return BuffPacketValue::fromValue(buffValueSize, skillId);
-				case BuffSkillValue::BitpackedSkillAndLevel32: return BuffPacketValue::fromValue(buffValueSize, (static_cast<int32_t>(skillLevel) << 16) | skillId);
-				case BuffSkillValue::SpecialProcessing: {
-					switch (skillId) {
+				case buff_skill_value::x: return buff_packet_value::from_value(buff_value_size, skill->x);
+				case buff_skill_value::y: return buff_packet_value::from_value(buff_value_size, skill->y);
+				case buff_skill_value::prop: return buff_packet_value::from_value(buff_value_size, skill->prop);
+				case buff_skill_value::level: return buff_packet_value::from_value(buff_value_size, skill_level);
+				case buff_skill_value::skill_id: return buff_packet_value::from_value(buff_value_size, skill_id);
+				case buff_skill_value::bitpacked_skill_and_level_32: return buff_packet_value::from_value(buff_value_size, (static_cast<int32_t>(skill_level) << 16) | skill_id);
+				case buff_skill_value::special_processing: {
+					switch (skill_id) {
 						// This unusual skill has two "values"
-						case MobSkills::Poison: {
-							PacketBuilder builder;
+						case mob_skills::poison: {
+							packet_builder builder;
 							builder.add<int16_t>(static_cast<int16_t>(skill->x));
-							builder.add<int16_t>(skillId);
-							builder.add<int16_t>(skillLevel);
-							return BuffPacketValue::fromPacket(builder);
+							builder.add<int16_t>(skill_id);
+							builder.add<int16_t>(skill_level);
+							return buff_packet_value::from_packet(builder);
 						}
 					}
-					throw NotImplementedException{"SpecialProcessing mob skill"};
+					throw not_implemented_exception{"special_processing mob skill"};
 				}
 			}
-			throw NotImplementedException{"Mob BuffSkillValue type"};
+			throw not_implemented_exception{"mob buff_skill_value type"};
 		}
-		case BuffSourceType::Skill: {
-			skill_id_t skillId = source.getSkillId();
-			skill_level_t skillLevel = source.getSkillLevel();
-			auto skill = source.getSkillData(ChannelServer::getInstance().getSkillDataProvider());
+		case buff_source_type::skill: {
+			game_skill_id skill_id = source.get_skill_id();
+			game_skill_level skill_level = source.get_skill_level();
+			auto skill = source.get_skill_data(channel_server::get_instance().get_skill_data_provider());
 
 			switch (value) {
-				case BuffSkillValue::X: return BuffPacketValue::fromValue(buffValueSize, skill->x);
-				case BuffSkillValue::Y: return BuffPacketValue::fromValue(buffValueSize, skill->y);
-				case BuffSkillValue::Speed: return BuffPacketValue::fromValue(buffValueSize, skill->speed);
-				case BuffSkillValue::Jump: return BuffPacketValue::fromValue(buffValueSize, skill->jump);
-				case BuffSkillValue::Watk: return BuffPacketValue::fromValue(buffValueSize, skill->wAtk);
-				case BuffSkillValue::Wdef: return BuffPacketValue::fromValue(buffValueSize, skill->wDef);
-				case BuffSkillValue::Matk: return BuffPacketValue::fromValue(buffValueSize, skill->mAtk);
-				case BuffSkillValue::Mdef: return BuffPacketValue::fromValue(buffValueSize, skill->mDef);
-				case BuffSkillValue::Accuracy: return BuffPacketValue::fromValue(buffValueSize, skill->acc);
-				case BuffSkillValue::Avoid: return BuffPacketValue::fromValue(buffValueSize, skill->avo);
-				case BuffSkillValue::Prop: return BuffPacketValue::fromValue(buffValueSize, skill->prop);
-				case BuffSkillValue::Morph: return BuffPacketValue::fromValue(buffValueSize, skill->morph);
-				case BuffSkillValue::Level: return BuffPacketValue::fromValue(buffValueSize, skillLevel);
-				case BuffSkillValue::SkillId: return BuffPacketValue::fromValue(buffValueSize, skillId);
-				case BuffSkillValue::MobCount: return BuffPacketValue::fromValue(buffValueSize, skill->mobCount);
-				case BuffSkillValue::Range: return BuffPacketValue::fromValue(buffValueSize, skill->range);
-				case BuffSkillValue::Damage: return BuffPacketValue::fromValue(buffValueSize, skill->damage);
-				case BuffSkillValue::BitpackedXy16: return BuffPacketValue::fromValue(buffValueSize, (skill->x << 8) | skill->y);
+				case buff_skill_value::x: return buff_packet_value::from_value(buff_value_size, skill->x);
+				case buff_skill_value::y: return buff_packet_value::from_value(buff_value_size, skill->y);
+				case buff_skill_value::speed: return buff_packet_value::from_value(buff_value_size, skill->speed);
+				case buff_skill_value::jump: return buff_packet_value::from_value(buff_value_size, skill->jump);
+				case buff_skill_value::watk: return buff_packet_value::from_value(buff_value_size, skill->w_atk);
+				case buff_skill_value::wdef: return buff_packet_value::from_value(buff_value_size, skill->w_def);
+				case buff_skill_value::matk: return buff_packet_value::from_value(buff_value_size, skill->m_atk);
+				case buff_skill_value::mdef: return buff_packet_value::from_value(buff_value_size, skill->m_def);
+				case buff_skill_value::accuracy: return buff_packet_value::from_value(buff_value_size, skill->acc);
+				case buff_skill_value::avoid: return buff_packet_value::from_value(buff_value_size, skill->avo);
+				case buff_skill_value::prop: return buff_packet_value::from_value(buff_value_size, skill->prop);
+				case buff_skill_value::morph: return buff_packet_value::from_value(buff_value_size, skill->morph);
+				case buff_skill_value::level: return buff_packet_value::from_value(buff_value_size, skill_level);
+				case buff_skill_value::skill_id: return buff_packet_value::from_value(buff_value_size, skill_id);
+				case buff_skill_value::mob_count: return buff_packet_value::from_value(buff_value_size, skill->mob_count);
+				case buff_skill_value::range: return buff_packet_value::from_value(buff_value_size, skill->range);
+				case buff_skill_value::damage: return buff_packet_value::from_value(buff_value_size, skill->damage);
+				case buff_skill_value::bitpacked_xy_16: return buff_packet_value::from_value(buff_value_size, (skill->x << 8) | skill->y);
 
-				case BuffSkillValue::SpecialProcessing:
-					switch (skillId) {
-						case Vana::Skills::Crusader::ComboAttack:
-						case Vana::Skills::DawnWarrior::ComboAttack:
-							return BuffPacketValue::fromValue(
-								buffValueSize,
-								player->getActiveBuffs()->getCombo() + 1
+				case buff_skill_value::special_processing:
+					switch (skill_id) {
+						case vana::skills::crusader::combo_attack:
+						case vana::skills::dawn_warrior::combo_attack:
+							return buff_packet_value::from_value(
+								buff_value_size,
+								player->get_active_buffs()->get_combo() + 1
 							);
-						case Vana::Skills::NightLord::ShadowStars:
-							return BuffPacketValue::fromValue(
-								buffValueSize,
-								(player->getInventory()->doShadowStars() % 10000) + 1
+						case vana::skills::night_lord::shadow_stars:
+							return buff_packet_value::from_value(
+								buff_value_size,
+								(player->get_inventory()->do_shadow_stars() % 10000) + 1
 							);
-						case Vana::Skills::SuperGm::Hide:
+						case vana::skills::super_gm::hide:
 							// TODO FIXME BUFFS
-							return BuffPacketValue::fromValue(buffValueSize, 1);
+							return buff_packet_value::from_value(buff_value_size, 1);
 					}
 
-					throw NotImplementedException{"SpecialProcessing skill"};
+					throw not_implemented_exception{"special_processing skill"};
 
-				case BuffSkillValue::SpecialPacket: {
-					auto &basics = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
+				case buff_skill_value::special_packet: {
+					auto &basics = channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect();
 
-					PacketBuilder builder;
-					if (bitPosition == basics.energyCharge) {
-						builder.add<int32_t>(player->getActiveBuffs()->getEnergyChargeLevel());
+					packet_builder builder;
+					if (bit_position == basics.energy_charge) {
+						builder.add<int32_t>(player->get_active_buffs()->get_energy_charge_level());
 					}
-					else if (bitPosition == basics.dashSpeed) {
+					else if (bit_position == basics.dash_speed) {
 						builder.add<int32_t>(skill->x);
 					}
-					else if (bitPosition == basics.dashJump) {
+					else if (bit_position == basics.dash_jump) {
 						builder.add<int32_t>(skill->y);
 					}
-					else if (bitPosition == basics.mount) {
-						builder.add<item_id_t>(player->getActiveBuffs()->getMountItemId());
+					else if (bit_position == basics.mount) {
+						builder.add<game_item_id>(player->get_active_buffs()->get_mount_item_id());
 					}
-					else if (bitPosition == basics.speedInfusion) {
+					else if (bit_position == basics.speed_infusion) {
 						builder.add<int32_t>(skill->x);
 					}
-					else if (bitPosition == basics.homingBeacon) {
+					else if (bit_position == basics.homing_beacon) {
 						builder.unk<int32_t>(1);
 					}
-					else throw NotImplementedException{"SpecialPacket skill"};
+					else throw not_implemented_exception{"special_packet skill"};
 
 					builder.add<int32_t>(
-						bitPosition == basics.energyCharge ?
+						bit_position == basics.energy_charge ?
 							0 :
-							skillId);
+							skill_id);
 					builder.unk<int32_t>();
 					builder.unk<int8_t>();
 
-					if (bitPosition == basics.energyCharge) {
+					if (bit_position == basics.energy_charge) {
 						builder.add<int16_t>(static_cast<int16_t>(time.count()));
 					}
-					else if (bitPosition == basics.dashSpeed) {
+					else if (bit_position == basics.dash_speed) {
 						builder.add<int16_t>(static_cast<int16_t>(time.count()));
 					}
-					else if (bitPosition == basics.dashJump) {
+					else if (bit_position == basics.dash_jump) {
 						builder.add<int16_t>(static_cast<int16_t>(time.count()));
 					}
-					else if (bitPosition == basics.mount) {
+					else if (bit_position == basics.mount) {
 						// Intentionally blank
 					}
-					else if (bitPosition == basics.speedInfusion) {
+					else if (bit_position == basics.speed_infusion) {
 						builder.unk<int32_t>();
 						builder.unk<int8_t>();
 						builder.add<int16_t>(static_cast<int16_t>(time.count()));
 					}
-					else if (bitPosition == basics.homingBeacon) {
-						builder.add<map_object_t>(player->getActiveBuffs()->getHomingBeaconMob());
+					else if (bit_position == basics.homing_beacon) {
+						builder.add<game_map_object>(player->get_active_buffs()->get_homing_beacon_mob());
 					}
 
-					return BuffPacketValue::fromSpecialPacket(builder);
+					return buff_packet_value::from_special_packet(builder);
 				}
 
-				case BuffSkillValue::GenderSpecificMorph:
-					return BuffPacketValue::fromValue(
-						buffValueSize,
+				case buff_skill_value::gender_specific_morph:
+					return buff_packet_value::from_value(
+						buff_value_size,
 						skill->morph +
-						(player->getGender() == Gender::Male ? 0 : 100)
+						(player->get_gender() == gender::male ? 0 : 100)
 					);
 			}
 
-			throw NotImplementedException{"Skill BuffSkillValue type"};
+			throw not_implemented_exception{"skill buff_skill_value type"};
 		}
 	}
 
-	throw NotImplementedException{"BuffSourceType"};
+	throw not_implemented_exception{"buff_source_type"};
 }
 
 }

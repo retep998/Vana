@@ -26,107 +26,107 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-namespace Vana {
+namespace vana {
 
-auto BeautyDataProvider::loadData() -> void {
-	loadSkins();
+auto beauty_data_provider::load_data() -> void {
+	load_skins();
 
 	m_male.clear();
 	m_female.clear();
 
-	loadHair();
-	loadFaces();
+	load_hair();
+	load_faces();
 }
 
-auto BeautyDataProvider::loadSkins() -> void {
-	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Skins... ";
+auto beauty_data_provider::load_skins() -> void {
+	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Skins... ";
 	m_skins.clear();
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("character_skin_data") << " ORDER BY skinid ASC");
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("character_skin_data") << " ORDER BY skinid ASC");
 
 	for (const auto &row : rs) {
-		m_skins.push_back(row.get<skin_id_t>("skinid"));
+		m_skins.push_back(row.get<game_skin_id>("skinid"));
 	}
 
 	std::cout << "DONE" << std::endl;
 }
 
-auto BeautyDataProvider::loadHair() -> void {
-	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Hair... ";
+auto beauty_data_provider::load_hair() -> void {
+	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Hair... ";
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("character_hair_data") << " ORDER BY hairid ASC");
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("character_hair_data") << " ORDER BY hairid ASC");
 
 	for (const auto &row : rs) {
-		gender_id_t genderId = GameLogicUtilities::getGenderId(row.get<string_t>("gender"));
-		hair_id_t hair = row.get<hair_id_t>("hairid");
-		auto &gender = genderId == Gender::Female ? m_female : m_male;
+		game_gender_id gender_id = game_logic_utilities::get_gender_id(row.get<string>("gender"));
+		game_hair_id hair = row.get<game_hair_id>("hairid");
+		auto &gender = gender_id == gender::female ? m_female : m_male;
 		gender.hair.push_back(hair);
 	}
 
 	std::cout << "DONE" << std::endl;
 }
 
-auto BeautyDataProvider::loadFaces() -> void {
-	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Faces... ";
+auto beauty_data_provider::load_faces() -> void {
+	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Faces... ";
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("character_face_data") << " ORDER BY faceid ASC");
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("character_face_data") << " ORDER BY faceid ASC");
 
 	for (const auto &row : rs) {
-		gender_id_t genderId = GameLogicUtilities::getGenderId(row.get<string_t>("gender"));
-		face_id_t face = row.get<face_id_t>("faceid");
-		auto &gender = genderId == Gender::Female ? m_female : m_male;
+		game_gender_id gender_id = game_logic_utilities::get_gender_id(row.get<string>("gender"));
+		game_face_id face = row.get<game_face_id>("faceid");
+		auto &gender = gender_id == gender::female ? m_female : m_male;
 		gender.faces.push_back(face);
 	}
 
 	std::cout << "DONE" << std::endl;
 }
 
-auto BeautyDataProvider::getRandomSkin() const -> skin_id_t {
-	return *Randomizer::select(m_skins);
+auto beauty_data_provider::get_random_skin() const -> game_skin_id {
+	return *randomizer::select(m_skins);
 }
 
-auto BeautyDataProvider::getRandomHair(gender_id_t genderId) const -> hair_id_t {
-	return *Randomizer::select(getGender(genderId).hair);
+auto beauty_data_provider::get_random_hair(game_gender_id gender_id) const -> game_hair_id {
+	return *randomizer::select(get_gender(gender_id).hair);
 }
 
-auto BeautyDataProvider::getRandomFace(gender_id_t genderId) const -> face_id_t {
-	return *Randomizer::select(getGender(genderId).faces);
+auto beauty_data_provider::get_random_face(game_gender_id gender_id) const -> game_face_id {
+	return *randomizer::select(get_gender(gender_id).faces);
 }
 
-auto BeautyDataProvider::getSkins() const -> const vector_t<skin_id_t> & {
+auto beauty_data_provider::get_skins() const -> const vector<game_skin_id> & {
 	return m_skins;
 }
 
-auto BeautyDataProvider::getHair(gender_id_t genderId) const -> const vector_t<hair_id_t> & {
-	return getGender(genderId).hair;
+auto beauty_data_provider::get_hair(game_gender_id gender_id) const -> const vector<game_hair_id> & {
+	return get_gender(gender_id).hair;
 }
 
-auto BeautyDataProvider::getFaces(gender_id_t genderId) const -> const vector_t<face_id_t> & {
-	return getGender(genderId).faces;
+auto beauty_data_provider::get_faces(game_gender_id gender_id) const -> const vector<game_face_id> & {
+	return get_gender(gender_id).faces;
 }
 
-auto BeautyDataProvider::isValidHair(gender_id_t genderId, hair_id_t hair) const -> bool {
-	const auto &gender = getGender(genderId);
-	return ext::any_of(gender.hair, [hair](int32_t testHair) { return testHair == hair; });
+auto beauty_data_provider::is_valid_hair(game_gender_id gender_id, game_hair_id hair) const -> bool {
+	const auto &gender = get_gender(gender_id);
+	return ext::any_of(gender.hair, [hair](int32_t test_hair) { return test_hair == hair; });
 }
 
-auto BeautyDataProvider::isValidFace(gender_id_t genderId, face_id_t face) const -> bool {
-	const auto &gender = getGender(genderId);
-	return ext::any_of(gender.faces, [face](int32_t testFace) { return testFace == face; });
+auto beauty_data_provider::is_valid_face(game_gender_id gender_id, game_face_id face) const -> bool {
+	const auto &gender = get_gender(gender_id);
+	return ext::any_of(gender.faces, [face](int32_t test_face) { return test_face == face; });
 }
 
-auto BeautyDataProvider::isValidSkin(skin_id_t skin) const -> bool {
-	return ext::any_of(m_skins, [skin](skin_id_t testSkin) { return testSkin == skin; });
+auto beauty_data_provider::is_valid_skin(game_skin_id skin) const -> bool {
+	return ext::any_of(m_skins, [skin](game_skin_id test_skin) { return test_skin == skin; });
 }
 
-auto BeautyDataProvider::getGender(gender_id_t genderId) const -> const ValidLookData & {
-	return genderId == Gender::Female ? m_female : m_male;
+auto beauty_data_provider::get_gender(game_gender_id gender_id) const -> const valid_look_data & {
+	return gender_id == gender::female ? m_female : m_male;
 }
 
 }

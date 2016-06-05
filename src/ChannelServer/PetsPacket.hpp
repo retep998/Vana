@@ -22,29 +22,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	class Item;
-	class PacketBuilder;
+namespace vana {
+	class item;
+	class packet_builder;
 
-	namespace ChannelServer {
-		class Pet;
-		class Player;
+	namespace channel_server {
+		class pet;
+		class player;
 
-		namespace Packets {
-			namespace Pets {
-				SPLIT_PACKET(petSummoned, player_id_t playerId, Pet *pet, bool kick = false, int8_t index = -1);
-				SPLIT_PACKET(showChat, player_id_t playerId, Pet *pet, const string_t &message, int8_t act);
-				SPLIT_PACKET(showMovement, player_id_t playerId, Pet *pet, unsigned char *buf, int32_t bufLen);
-				PACKET(showAnimation, player_id_t playerId, Pet *pet, int8_t animation);
-				PACKET(updatePet, Pet *pet, Item *petItem);
-				SPLIT_PACKET(levelUp, player_id_t playerId, Pet *pet);
-				SPLIT_PACKET(changeName, player_id_t playerId, Pet *pet);
+		namespace packets {
+			namespace pets {
+				SPLIT_PACKET(pet_summoned, game_player_id player_id, pet *pet, bool kick = false, int8_t index = -1);
+				SPLIT_PACKET(show_chat, game_player_id player_id, pet *pet, const string &message, int8_t act);
+				SPLIT_PACKET(show_movement, game_player_id player_id, pet *pet, unsigned char *buf, int32_t buf_len);
+				PACKET(show_animation, game_player_id player_id, pet *pet, int8_t animation);
+				PACKET(update_pet, pet *pet, item *pet_item);
+				SPLIT_PACKET(level_up, game_player_id player_id, pet *pet);
+				SPLIT_PACKET(change_name, game_player_id player_id, pet *pet);
 				// TODO FIXME packet
 				// This doesn't appear to be used anywhere, not sure if that's by mistake or not
-				//auto showPet(ref_ptr_t<Player> player, Pet *pet) -> void;
-				PACKET(updateSummonedPets, ref_ptr_t<Player> player);
-				PACKET(blankUpdate);
-				PACKET(addInfo, Pet *pet, Item *petItem);
+				//auto show_pet(ref_ptr<player> player, pet *pet) -> void;
+				PACKET(update_summoned_pets, ref_ptr<player> player);
+				PACKET(blank_update);
+				PACKET(add_info, pet *pet, item *pet_item);
 			}
 		}
 	}

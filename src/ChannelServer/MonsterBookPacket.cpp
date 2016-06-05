@@ -21,43 +21,43 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Player.hpp"
 #include "ChannelServer/SmsgHeader.hpp"
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
-namespace MonsterBook {
+namespace vana {
+namespace channel_server {
+namespace packets {
+namespace monster_book {
 
-PACKET_IMPL(addCard, item_id_t cardId, uint8_t level, bool full) {
-	PacketBuilder builder;
+PACKET_IMPL(add_card, game_item_id card_id, uint8_t level, bool full) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MONSTER_BOOK_ADD)
+		.add<packet_header>(SMSG_MONSTER_BOOK_ADD)
 		.add<bool>(!full)
-		.add<item_id_t>(cardId)
+		.add<game_item_id>(card_id)
 		.add<int32_t>(level);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(addCardEffect, player_id_t playerId) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(add_card_effect, game_player_id player_id) {
+	split_packet_builder builder;
 	builder.player
-		.add<header_t>(SMSG_THEATRICS)
+		.add<packet_header>(SMSG_THEATRICS)
 		.add<int8_t>(0x0D);
 
 	// GMS doesnt send the animation for others.
 	// If you want to enable displaying it, just uncomment
 	/*
 	builder.map
-		.add<header_t>(SMSG_SKILL_SHOW)
-		.add<player_id_t>(playerId)
+		.add<packet_header>(SMSG_SKILL_SHOW)
+		.add<game_player_id>(player_id)
 		.add<int8_t>(0x0D);
 	*/
 	return builder;
 }
 
-PACKET_IMPL(changeCover, item_id_t cardId) {
-	PacketBuilder builder;
+PACKET_IMPL(change_cover, game_item_id card_id) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MONSTER_BOOK_COVER)
-		.add<item_id_t>(cardId);
+		.add<packet_header>(SMSG_MONSTER_BOOK_COVER)
+		.add<game_item_id>(card_id);
 	return builder;
 }
 

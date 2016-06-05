@@ -20,144 +20,144 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/hash_combine.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
+namespace vana {
 	// Thin wrapper around time_t so we could write a SOCI extension for it
 	// time_t on its own is defined as __int64_t on MSVC which was conflicting with the SOCI extension for int64_t
-	class UnixTime {
+	class unix_time {
 	public:
-		UnixTime() { m_time = time(nullptr); }
-		UnixTime(time_t t) { m_time = t; }
-		UnixTime(const UnixTime &t) { m_time = t.m_time; }
+		unix_time() { m_time = time(nullptr); }
+		unix_time(time_t t) { m_time = t; }
+		unix_time(const unix_time &t) { m_time = t.m_time; }
 		operator time_t() const { return m_time; }
-		auto operator =(const time_t &t) -> UnixTime & { m_time = t; return *this; }
-		auto operator =(const UnixTime &right) -> UnixTime & { m_time = right.m_time; return *this; }
-		auto operator +=(const time_t &t) -> UnixTime & { m_time += t; return *this; }
-		auto operator +=(const UnixTime &right) -> UnixTime & { m_time += right.m_time; return *this; }
-		auto operator -=(const time_t &t) -> UnixTime & { m_time -= t; return *this; }
-		auto operator -=(const UnixTime &right) -> UnixTime & { m_time -= right.m_time; return *this; }
-		auto operator +(const time_t &t) const -> UnixTime { return UnixTime{m_time + t}; }
-		auto operator +(const UnixTime &right) const -> UnixTime { return UnixTime{m_time + right.m_time}; }
-		auto operator -(const time_t &t) const -> UnixTime { return UnixTime{m_time - t}; }
-		auto operator -(const UnixTime &right) const -> UnixTime { return UnixTime{m_time - right.m_time}; }
+		auto operator =(const time_t &t) -> unix_time & { m_time = t; return *this; }
+		auto operator =(const unix_time &right) -> unix_time & { m_time = right.m_time; return *this; }
+		auto operator +=(const time_t &t) -> unix_time & { m_time += t; return *this; }
+		auto operator +=(const unix_time &right) -> unix_time & { m_time += right.m_time; return *this; }
+		auto operator -=(const time_t &t) -> unix_time & { m_time -= t; return *this; }
+		auto operator -=(const unix_time &right) -> unix_time & { m_time -= right.m_time; return *this; }
+		auto operator +(const time_t &t) const -> unix_time { return unix_time{m_time + t}; }
+		auto operator +(const unix_time &right) const -> unix_time { return unix_time{m_time + right.m_time}; }
+		auto operator -(const time_t &t) const -> unix_time { return unix_time{m_time - t}; }
+		auto operator -(const unix_time &right) const -> unix_time { return unix_time{m_time - right.m_time}; }
 	private:
 		time_t m_time;
 
-		friend auto operator ==(const UnixTime &a, const UnixTime &b) -> bool;
-		friend auto operator !=(const UnixTime &a, const UnixTime &b) -> bool;
-		friend auto operator <(const UnixTime &a, const UnixTime &b) -> bool;
-		friend auto operator <=(const UnixTime &a, const UnixTime &b) -> bool;
-		friend auto operator >(const UnixTime &a, const UnixTime &b) -> bool;
-		friend auto operator >=(const UnixTime &a, const UnixTime &b) -> bool;
-		friend auto operator ==(time_t a, const UnixTime &b) -> bool;
-		friend auto operator !=(time_t a, const UnixTime &b) -> bool;
-		friend auto operator <(time_t a, const UnixTime &b) -> bool;
-		friend auto operator <=(time_t a, const UnixTime &b) -> bool;
-		friend auto operator >(time_t a, const UnixTime &b) -> bool;
-		friend auto operator >=(time_t a, const UnixTime &b) -> bool;
-		friend auto operator ==(const UnixTime &a, time_t b) -> bool;
-		friend auto operator !=(const UnixTime &a, time_t b) -> bool;
-		friend auto operator <(const UnixTime &a, time_t b) -> bool;
-		friend auto operator <=(const UnixTime &a, time_t b) -> bool;
-		friend auto operator >(const UnixTime &a, time_t b) -> bool;
-		friend auto operator >=(const UnixTime &a, time_t b) -> bool;
+		friend auto operator ==(const unix_time &a, const unix_time &b) -> bool;
+		friend auto operator !=(const unix_time &a, const unix_time &b) -> bool;
+		friend auto operator <(const unix_time &a, const unix_time &b) -> bool;
+		friend auto operator <=(const unix_time &a, const unix_time &b) -> bool;
+		friend auto operator >(const unix_time &a, const unix_time &b) -> bool;
+		friend auto operator >=(const unix_time &a, const unix_time &b) -> bool;
+		friend auto operator ==(time_t a, const unix_time &b) -> bool;
+		friend auto operator !=(time_t a, const unix_time &b) -> bool;
+		friend auto operator <(time_t a, const unix_time &b) -> bool;
+		friend auto operator <=(time_t a, const unix_time &b) -> bool;
+		friend auto operator >(time_t a, const unix_time &b) -> bool;
+		friend auto operator >=(time_t a, const unix_time &b) -> bool;
+		friend auto operator ==(const unix_time &a, time_t b) -> bool;
+		friend auto operator !=(const unix_time &a, time_t b) -> bool;
+		friend auto operator <(const unix_time &a, time_t b) -> bool;
+		friend auto operator <=(const unix_time &a, time_t b) -> bool;
+		friend auto operator >(const unix_time &a, time_t b) -> bool;
+		friend auto operator >=(const unix_time &a, time_t b) -> bool;
 	};
 
 	inline
-	auto operator ==(const UnixTime &a, const UnixTime &b) -> bool {
+	auto operator ==(const unix_time &a, const unix_time &b) -> bool {
 		return a.m_time == b.m_time;
 	}
 
 	inline
-	auto operator !=(const UnixTime &a, const UnixTime &b) -> bool {
+	auto operator !=(const unix_time &a, const unix_time &b) -> bool {
 		return !(a == b);
 	}
 
 	inline
-	auto operator >(const UnixTime &a, const UnixTime &b) -> bool {
+	auto operator >(const unix_time &a, const unix_time &b) -> bool {
 		return a.m_time > b.m_time;
 	}
 
 	inline
-	auto operator >=(const UnixTime &a, const UnixTime &b) -> bool {
+	auto operator >=(const unix_time &a, const unix_time &b) -> bool {
 		return a.m_time >= b.m_time;
 	}
 
 	inline
-	auto operator <(const UnixTime &a, const UnixTime &b) -> bool {
+	auto operator <(const unix_time &a, const unix_time &b) -> bool {
 		return a.m_time < b.m_time;
 	}
 
 	inline
-	auto operator <=(const UnixTime &a, const UnixTime &b) -> bool {
+	auto operator <=(const unix_time &a, const unix_time &b) -> bool {
 		return a.m_time <= b.m_time;
 	}
 
 	inline
-	auto operator ==(time_t a, const UnixTime &b) -> bool {
+	auto operator ==(time_t a, const unix_time &b) -> bool {
 		return a == b.m_time;
 	}
 
 	inline
-	auto operator !=(time_t a, const UnixTime &b) -> bool {
+	auto operator !=(time_t a, const unix_time &b) -> bool {
 		return !(a == b);
 	}
 
 	inline
-	auto operator >(time_t a, const UnixTime &b) -> bool {
+	auto operator >(time_t a, const unix_time &b) -> bool {
 		return a > b.m_time;
 	}
 
 	inline
-	auto operator >=(time_t a, const UnixTime &b) -> bool {
+	auto operator >=(time_t a, const unix_time &b) -> bool {
 		return a >= b.m_time;
 	}
 
 	inline
-	auto operator <(time_t a, const UnixTime &b) -> bool {
+	auto operator <(time_t a, const unix_time &b) -> bool {
 		return a < b.m_time;
 	}
 
 	inline
-	auto operator <=(time_t a, const UnixTime &b) -> bool {
+	auto operator <=(time_t a, const unix_time &b) -> bool {
 		return a <= b.m_time;
 	}
 
 	inline
-	auto operator ==(const UnixTime &a, time_t b) -> bool {
+	auto operator ==(const unix_time &a, time_t b) -> bool {
 		return a.m_time == b;
 	}
 
 	inline
-	auto operator !=(const UnixTime &a, time_t b) -> bool {
+	auto operator !=(const unix_time &a, time_t b) -> bool {
 		return !(a == b);
 	}
 
 	inline
-	auto operator >(const UnixTime &a, time_t b) -> bool {
+	auto operator >(const unix_time &a, time_t b) -> bool {
 		return a.m_time > b;
 	}
 
 	inline
-	auto operator >=(const UnixTime &a, time_t b) -> bool {
+	auto operator >=(const unix_time &a, time_t b) -> bool {
 		return a.m_time >= b;
 	}
 
 	inline
-	auto operator <(const UnixTime &a, time_t b) -> bool {
+	auto operator <(const unix_time &a, time_t b) -> bool {
 		return a.m_time < b;
 	}
 
 	inline
-	auto operator <=(const UnixTime &a, time_t b) -> bool {
+	auto operator <=(const unix_time &a, time_t b) -> bool {
 		return a.m_time <= b;
 	}
 }
 
 namespace std {
 	template <>
-	struct hash<Vana::UnixTime> {
-		auto operator()(const Vana::UnixTime &v) const -> size_t {
-			return Vana::MiscUtilities::hash_combinator(static_cast<time_t>(v));
+	struct hash<vana::unix_time> {
+		auto operator()(const vana::unix_time &v) const -> size_t {
+			return vana::utilities::misc::hash_combinator(static_cast<time_t>(v));
 		}
 	};
 }

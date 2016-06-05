@@ -25,104 +25,104 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Session.hpp"
 #include "Common/ThreadPool.hpp"
 
-namespace Vana {
+namespace vana {
 
-ConnectionManager::ConnectionManager(AbstractServer *server) :
+connection_manager::connection_manager(abstract_server *server) :
 	m_server{server}
 {
-	m_work = make_owned_ptr<asio::io_service::work>(m_ioService);
+	m_work = make_owned_ptr<asio::io_service::work>(m_io_service);
 }
 
-ConnectionManager::~ConnectionManager() {
+connection_manager::~connection_manager() {
 	// m_work.reset() needs to be a pre-wait hook and in the destructor for the cases where the thread is never leased (e.g. DB unavailable)
 	// Doing this a second time doesn't harm an already-reset m_work pointer, so we're in the clear
 	m_work.reset();
 	m_thread.reset();
 }
 
-auto ConnectionManager::listen(const ConnectionListenerConfig &config, HandlerCreator handlerCreator) -> void {
+auto connection_manager::listen(const connection_listener_config &config, handler_creator handler_creator) -> void {
 	asio::ip::tcp::endpoint endpoint{
-		config.ipType == Ip::Type::Ipv4 ?
+		config.ip_type == ip::type::ipv4 ?
 			asio::ip::tcp::v4() :
 			asio::ip::tcp::v6(),
 		config.port
 	};
 
-	auto listener = make_ref_ptr<ConnectionListener>(config, handlerCreator, m_ioService, endpoint, *this);
+	auto listener = make_ref_ptr<connection_listener>(config, handler_creator, m_io_service, endpoint, *this);
 	m_servers.push_back(listener);
-	listener->beginAccept();
+	listener->begin_accept();
 }
 
-auto ConnectionManager::connect(const Ip &destination, port_t port, const PingConfig &ping, ServerType sourceType, HandlerCreator handlerCreator) -> pair_t<Result, ref_ptr_t<Session>> {
-	asio::ip::address endAddress;
-	if (destination.getType() == Ip::Type::Ipv4) {
-		endAddress = asio::ip::address_v4{destination.asIpv4()};
+auto connection_manager::connect(const ip &destination, connection_port port, const ping_config &ping, server_type source_type, handler_creator handler_creator) -> pair<result, ref_ptr<session>> {
+	asio::ip::address end_address;
+	if (destination.get_type() == ip::type::ipv4) {
+		end_address = asio::ip::address_v4{destination.as_ipv4()};
 	}
 	else {
-		throw NotImplementedException{"IPv6 unsupported"};
+		throw not_implemented_exception{"IPv6 unsupported"};
 	}
-	asio::ip::tcp::endpoint endpoint{endAddress, port};
+	asio::ip::tcp::endpoint endpoint{end_address, port};
 	asio::error_code error;
 
-	auto handler = handlerCreator();
-	auto newSession = make_ref_ptr<Session>(
-		m_ioService,
+	auto handler = handler_creator();
+	auto new_session = make_ref_ptr<session>(
+		m_io_service,
 		*this,
 		handler);
 
-	newSession->getSocket().connect(endpoint, error);
+	new_session->get_socket().connect(endpoint, error);
 
 	if (!error) {
 		// Now let's process the connect packet
 		try {
-			auto result = newSession->syncRead(10); // May require maintenance if the IV packet ever dips below 10 bytes
+			auto result = new_session->sync_read(10); // May require maintenance if the IV packet ever dips below 10 bytes
 			if (result.first) {
 				std::cerr << "SESSION SYNCREAD ERROR: " << result.first.message() << std::endl;
-				ExitCodes::exit(ExitCodes::ServerConnectionError);
-				newSession->disconnect();
+				exit(exit_code::server_connection_error);
+				new_session->disconnect();
 			}
 			else {
-				PacketReader &reader = result.second;
+				packet_reader &reader = result.second;
 
-				header_t header = reader.get<header_t>(); // Gives us the packet length
-				version_t version = reader.get<version_t>();
-				string_t subversion = reader.get<string_t>();
-				iv_t sendIv = reader.get<iv_t>();
-				iv_t recvIv = reader.get<iv_t>();
-				game_locale_t locale = reader.get<game_locale_t>();
+				packet_header header = reader.get<packet_header>(); // Gives us the packet length
+				game_version version = reader.get<game_version>();
+				string subversion = reader.get<string>();
+				crypto_iv send_iv = reader.get<crypto_iv>();
+				crypto_iv recv_iv = reader.get<crypto_iv>();
+				game_locale locale = reader.get<game_locale>();
 
-				if (version != MapleVersion::Version || locale != MapleVersion::Locale || subversion != MapleVersion::LoginSubversion) {
+				if (version != maple_version::version || locale != maple_version::locale || subversion != maple_version::login_subversion) {
 					std::cerr << "ERROR: The server you are connecting to lacks the same MapleStory version." << std::endl;
 					std::cerr << "Expected locale/version (subversion): " << static_cast<int16_t>(locale) << "/" << version << " (" << subversion << ")" << std::endl;
-					std::cerr << "Local locale/version (subversion): " << static_cast<int16_t>(MapleVersion::Locale) << "/" << MapleVersion::Version << " (" << MapleVersion::LoginSubversion << ")" << std::endl;
-					newSession->disconnect();
-					ExitCodes::exit(ExitCodes::ServerVersionMismatch);
+					std::cerr << "Local locale/version (subversion): " << static_cast<int16_t>(maple_version::locale) << "/" << maple_version::version << " (" << maple_version::login_subversion << ")" << std::endl;
+					new_session->disconnect();
+					exit(exit_code::server_version_mismatch);
 				}
 				else {
-					newSession->setType(MiscUtilities::getConnectionType(sourceType));
-					newSession->start(ping, make_ref_ptr<EncryptedPacketTransformer>(recvIv, sendIv));
+					new_session->set_type(utilities::misc::get_connection_type(source_type));
+					new_session->start(ping, make_ref_ptr<encrypted_packet_transformer>(recv_iv, send_iv));
 
-					m_sessions.insert(newSession);
+					m_sessions.insert(new_session);
 
-					return std::make_pair(Result::Successful, newSession);
+					return std::make_pair(result::successful, new_session);
 				}
 			}
 		}
-		catch (PacketContentException) {
+		catch (packet_content_exception) {
 			std::cerr << "ERROR: Malformed IV packet" << std::endl;
-			newSession->disconnect();
-			ExitCodes::exit(ExitCodes::ServerMalformedIvPacket);
+			new_session->disconnect();
+			exit(exit_code::server_malformed_iv_packet);
 		}
 	}
 	else {
 		std::cerr << "CONNECTMANAGER CONNECT ERROR: " << error.message() << std::endl;
-		ExitCodes::exit(ExitCodes::ServerConnectionError);
+		exit(exit_code::server_connection_error);
 	}
 
-	return std::make_pair(Result::Failure, ref_ptr_t<Session>{nullptr});
+	return std::make_pair(result::failure, ref_ptr<session>{nullptr});
 }
 
-auto ConnectionManager::stop() -> void {
+auto connection_manager::stop() -> void {
 	for (auto &server : m_servers) {
 		server->stop();
 	}
@@ -134,21 +134,21 @@ auto ConnectionManager::stop() -> void {
 	}
 }
 
-auto ConnectionManager::stop(ref_ptr_t<Session> session) -> void {
+auto connection_manager::stop(ref_ptr<session> session) -> void {
 	m_sessions.erase(session);
 }
 
-auto ConnectionManager::start(ref_ptr_t<Session> session) -> void {
+auto connection_manager::start(ref_ptr<session> session) -> void {
 	m_sessions.insert(session);
 }
 
-auto ConnectionManager::getServer() -> AbstractServer * {
+auto connection_manager::get_server() -> abstract_server * {
 	return m_server;
 }
 
-auto ConnectionManager::run() -> void {
-	m_thread = ThreadPool::lease(
-		[this] { m_ioService.run(); },
+auto connection_manager::run() -> void {
+	m_thread = thread_pool::lease(
+		[this] { m_io_service.run(); },
 		[this] { m_work.reset(); });
 }
 

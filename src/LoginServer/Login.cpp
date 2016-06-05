@@ -33,224 +33,224 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServer/User.hpp"
 #include <iostream>
 
-namespace Vana {
-namespace LoginServer {
+namespace vana {
+namespace login_server {
 
-auto Login::loginUser(ref_ptr_t<User> user, PacketReader &reader) -> void {
-	string_t username = reader.get<string_t>();
-	string_t password = reader.get<string_t>();
+auto login::login_user(ref_ptr<user> user_value, packet_reader &reader) -> void {
+	string username = reader.get<string>();
+	string password = reader.get<string>();
 
-	if (!ext::in_range_inclusive<size_t>(username.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
+	if (!ext::in_range_inclusive<size_t>(username.size(), characters::min_name_size, characters::max_name_size)) {
 		// Hacking
 		return;
 	}
-	if (!ext::in_range_inclusive<size_t>(password.size(), Characters::MinPasswordSize, Characters::MaxPasswordSize)) {
+	if (!ext::in_range_inclusive<size_t>(password.size(), characters::min_password_size, characters::max_password_size)) {
 		// Hacking
 		return;
 	}
 
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
 	soci::row row;
 
 	sql.once
 		<< "SELECT u.* "
-		<< "FROM " << db.makeTable("accounts") << " u "
+		<< "FROM " << db.make_table("accounts") << " u "
 		<< "WHERE u.username = :user",
 		soci::use(username, "user"),
 		soci::into(row);
 
 	bool valid = true;
-	account_id_t accountId = 0;
-	auto userIp = user->getIp();
-	string_t ip = userIp.is_initialized() ?
-		userIp.get().toString() :
+	game_account_id account_id = 0;
+	auto user_ip = user_value->get_ip();
+	string ip = user_ip.is_initialized() ?
+		user_ip.get().to_string() :
 		"disconnected";
 
 	if (!sql.got_data()) {
-		user->send(Packets::loginError(Packets::Errors::InvalidUsername));
+		user_value->send(packets::login_error(packets::errors::invalid_username));
 		valid = false;
 	}
 	else {
-		opt_int32_t ipBanned;
+		opt_int32_t ip_banned;
 
 		sql.once
 			<< "SELECT i.ip_ban_id "
-			<< "FROM " << db.makeTable("ip_bans") << " i "
+			<< "FROM " << db.make_table("ip_bans") << " i "
 			<< "WHERE i.ip = :ip",
 			soci::use(ip, "ip"),
-			soci::into(ipBanned);
+			soci::into(ip_banned);
 
-		if (sql.got_data() && ipBanned.is_initialized()) {
-			std::tm banTime;
-			banTime.tm_year = 7100;
-			banTime.tm_mon = 0;
-			banTime.tm_mday = 1;
-			auto time = FileTime{UnixTime{mktime(&banTime)}};
-			user->send(Packets::loginBan(0, time));
+		if (sql.got_data() && ip_banned.is_initialized()) {
+			std::tm ban_time;
+			ban_time.tm_year = 7100;
+			ban_time.tm_mon = 0;
+			ban_time.tm_mday = 1;
+			auto time = file_time{unix_time{mktime(&ban_time)}};
+			user_value->send(packets::login_ban(0, time));
 			valid = false;
 		}
 		else {
-			accountId = row.get<account_id_t>("account_id");
-			string_t dbPassword = row.get<string_t>("password");
-			opt_string_t salt = row.get<opt_string_t>("salt");
-			auto &login = LoginServer::getInstance();
-			const auto &saltingPolicy = login.getCharacterAccountSaltingPolicy();
+			account_id = row.get<game_account_id>("account_id");
+			string db_password = row.get<string>("password");
+			opt_string salt = row.get<opt_string>("salt");
+			auto &login = login_server::get_instance();
+			const auto &salting_policy = login.get_character_account_salting_policy();
 
 			if (!salt.is_initialized()) {
 				// We have an unsalted password
-				if (dbPassword != password) {
-					user->send(Packets::loginError(Packets::Errors::InvalidPassword));
+				if (db_password != password) {
+					user_value->send(packets::login_error(packets::errors::invalid_password));
 					valid = false;
 				}
 				else {
 					// We have a valid password, so let's hash the password
-					salt = HashUtilities::generateSalt(login.getCharacterAccountSaltSize());
-					string_t hashedPassword =
-						HashUtilities::hashPassword(password, salt.get(), saltingPolicy);
+					salt = hash_utilities::generate_salt(login.get_character_account_salt_size());
+					string hashed_password =
+						hash_utilities::hash_password(password, salt.get(), salting_policy);
 
 					sql.once
-						<< "UPDATE " << db.makeTable("accounts") << " u "
+						<< "UPDATE " << db.make_table("accounts") << " u "
 						<< "SET u.password = :password, u.salt = :salt "
 						<< "WHERE u.account_id = :account",
-						soci::use(hashedPassword, "password"),
+						soci::use(hashed_password, "password"),
 						soci::use(salt.get(), "salt"),
-						soci::use(accountId, "account");
+						soci::use(account_id, "account");
 				}
 			}
-			else if (dbPassword != HashUtilities::hashPassword(password, salt.get(), saltingPolicy)) {
-				user->send(Packets::loginError(Packets::Errors::InvalidPassword));
+			else if (db_password != hash_utilities::hash_password(password, salt.get(), salting_policy)) {
+				user_value->send(packets::login_error(packets::errors::invalid_password));
 				valid = false;
 			}
 			else if (row.get<int32_t>("online") > 0) {
-				user->send(Packets::loginError(Packets::Errors::AlreadyLoggedIn));
+				user_value->send(packets::login_error(packets::errors::already_logged_in));
 				valid = false;
 			}
 			else if (row.get<bool>("banned") && (!row.get<bool>("admin") || row.get<int32_t>("gm_level") == 0)) {
-				auto time = FileTime{row.get<UnixTime>("ban_expire")};
-				user->send(Packets::loginBan(row.get<int8_t>("ban_reason"), time));
+				auto time = file_time{row.get<unix_time>("ban_expire")};
+				user_value->send(packets::login_ban(row.get<int8_t>("ban_reason"), time));
 				valid = false;
 			}
 		}
 	}
 	if (!valid) {
-		int32_t threshold = LoginServer::getInstance().getInvalidLoginThreshold();
-		if (threshold != 0 && user->addInvalidLogin() >= threshold) {
+		int32_t threshold = login_server::get_instance().get_invalid_login_threshold();
+		if (threshold != 0 && user_value->add_invalid_login() >= threshold) {
 			 // Too many invalid logins
-			user->disconnect();
+			user_value->disconnect();
 		}
 	}
 	else {
-		LoginServer::getInstance().log(LogType::Login, [&](out_stream_t &log) {
+		login_server::get_instance().log(log_type::login, [&](out_stream &log) {
 			log << username << " from IP " << ip;
 		});
 
-		user->setAccountId(accountId);
-		if (LoginServer::getInstance().getPinEnabled()) {
+		user_value->set_account_id(account_id);
+		if (login_server::get_instance().get_pin_enabled()) {
 			opt_int32_t pin = row.get<opt_int32_t>("pin");
 			if (pin.is_initialized()) {
-				user->setPin(pin.get());
+				user_value->set_pin(pin.get());
 			}
 
-			auto userPin = user->getPin();
-			user->setStatus(userPin.is_initialized() ?
-				PlayerStatus::AskPin :
-				PlayerStatus::SetPin);
+			auto user_pin = user_value->get_pin();
+			user_value->set_status(user_pin.is_initialized() ?
+				player_status::ask_pin :
+				player_status::set_pin);
 		}
 		else {
-			user->setStatus(PlayerStatus::LoggedIn);
+			user_value->set_status(player_status::logged_in);
 		}
 
-		optional_t<gender_id_t> gender = row.get<optional_t<gender_id_t>>("gender");
+		optional<game_gender_id> gender = row.get<optional<game_gender_id>>("gender");
 		if (!gender.is_initialized()) {
-			user->setStatus(PlayerStatus::SetGender);
+			user_value->set_status(player_status::set_gender);
 		}
 		else {
-			user->setGender(gender.get());
+			user_value->set_gender(gender.get());
 		}
 
-		optional_t<UnixTime> quietBan = row.get<optional_t<UnixTime>>("quiet_ban_expire");
-		if (quietBan.is_initialized()) {
-			time_t banTime = quietBan.get();
-			if (time(nullptr) > banTime) {
+		optional<unix_time> quiet_ban = row.get<optional<unix_time>>("quiet_ban_expire");
+		if (quiet_ban.is_initialized()) {
+			time_t ban_time = quiet_ban.get();
+			if (time(nullptr) > ban_time) {
 				sql.once
-					<< "UPDATE " << db.makeTable("accounts") << " u "
+					<< "UPDATE " << db.make_table("accounts") << " u "
 					<< "SET u.quiet_ban_expire = NULL, u.quiet_ban_reason = NULL "
 					<< "WHERE u.account_id = :account",
-					soci::use(accountId, "account");
+					soci::use(account_id, "account");
 			}
 			else {
-				user->setQuietBanTime(FileTime{UnixTime{banTime}});
-				user->setQuietBanReason(row.get<int8_t>("quiet_ban_reason"));
+				user_value->set_quiet_ban_time(file_time{unix_time{ban_time}});
+				user_value->set_quiet_ban_reason(row.get<int8_t>("quiet_ban_reason"));
 			}
 		}
 
-		user->setCreationTime(FileTime{row.get<UnixTime>("creation_date")});
-		user->setCharDeletePassword(row.get<opt_int32_t>("char_delete_password"));
-		user->setAdmin(row.get<bool>("admin"));
-		user->setGmLevel(row.get<int32_t>("gm_level"));
+		user_value->set_creation_time(file_time{row.get<unix_time>("creation_date")});
+		user_value->set_char_delete_password(row.get<opt_int32_t>("char_delete_password"));
+		user_value->set_admin(row.get<bool>("admin"));
+		user_value->set_gm_level(row.get<int32_t>("gm_level"));
 
-		user->send(Packets::loginConnect(user, username));
+		user_value->send(packets::login_connect(user_value, username));
 	}
 }
 
-auto Login::setGender(ref_ptr_t<User> user, PacketReader &reader) -> void {
-	if (user->getStatus() != PlayerStatus::SetGender) {
+auto login::set_gender(ref_ptr<user> user_value, packet_reader &reader) -> void {
+	if (user_value->get_status() != player_status::set_gender) {
 		// Hacking
 		return;
 	}
 	if (reader.get<int8_t>() == 1) {
 		// get<bool> candidate?
-		gender_id_t gender = reader.get<gender_id_t>();
-		if (gender != Gender::Male && gender != Gender::Female) {
+		game_gender_id gender = reader.get<game_gender_id>();
+		if (gender != gender::male && gender != gender::female) {
 			// Hacking
 			return;
 		}
 
-		user->setStatus(PlayerStatus::NotLoggedIn);
+		user_value->set_status(player_status::not_logged_in);
 
-		auto &db = Database::getCharDb();
-		auto &sql = db.getSession();
+		auto &db = database::get_char_db();
+		auto &sql = db.get_session();
 		sql.once
-			<< "UPDATE " << db.makeTable("accounts") << " u "
+			<< "UPDATE " << db.make_table("accounts") << " u "
 			<< "SET u.gender = :gender "
 			<< "WHERE u.account_id = :account",
 			soci::use(gender, "gender"),
-			soci::use(user->getAccountId(), "account");
+			soci::use(user_value->get_account_id(), "account");
 
-		user->setGender(gender);
+		user_value->set_gender(gender);
 
-		if (LoginServer::getInstance().getPinEnabled()) {
-			user->setStatus(PlayerStatus::SetPin);
+		if (login_server::get_instance().get_pin_enabled()) {
+			user_value->set_status(player_status::set_pin);
 		}
 		else {
-			user->setStatus(PlayerStatus::LoggedIn);
+			user_value->set_status(player_status::logged_in);
 		}
-		user->send(Packets::genderDone(gender));
+		user_value->send(packets::gender_done(gender));
 	}
 }
 
-auto Login::handleLogin(ref_ptr_t<User> user, PacketReader &reader) -> void {
-	auto status = user->getStatus();
-	if (status == PlayerStatus::SetPin) {
-		user->send(Packets::loginProcess(PlayerStatus::SetPin));
+auto login::handle_login(ref_ptr<user> user_value, packet_reader &reader) -> void {
+	auto status = user_value->get_status();
+	if (status == player_status::set_pin) {
+		user_value->send(packets::login_process(player_status::set_pin));
 	}
-	else if (status == PlayerStatus::AskPin) {
-		user->send(Packets::loginProcess(PlayerStatus::CheckPin));
-		user->setStatus(PlayerStatus::CheckPin);
+	else if (status == player_status::ask_pin) {
+		user_value->send(packets::login_process(player_status::check_pin));
+		user_value->set_status(player_status::check_pin);
 	}
-	else if (status == PlayerStatus::CheckPin) {
-		checkPin(user, reader);
+	else if (status == player_status::check_pin) {
+		check_pin(user_value, reader);
 	}
-	else if (status == PlayerStatus::LoggedIn) {
-		user->send(Packets::loginProcess(PlayerStatus::LoggedIn));
+	else if (status == player_status::logged_in) {
+		user_value->send(packets::login_process(player_status::logged_in));
 		// The player successfully logged in, so let set the login column
-		user->setOnline(true);
+		user_value->set_online(true);
 	}
 }
 
-auto Login::checkPin(ref_ptr_t<User> user, PacketReader &reader) -> void {
-	if (!LoginServer::getInstance().getPinEnabled()) {
+auto login::check_pin(ref_ptr<user> user_value, packet_reader &reader) -> void {
+	if (!login_server::get_instance().get_pin_enabled()) {
 		// Hacking
 		return;
 	}
@@ -259,66 +259,66 @@ auto Login::checkPin(ref_ptr_t<User> user, PacketReader &reader) -> void {
 	reader.unk<uint32_t>();
 
 	if (act == 0x00) {
-		user->setStatus(PlayerStatus::AskPin);
+		user_value->set_status(player_status::ask_pin);
 	}
 	else if (act == 0x01) {
-		int32_t pin = StringUtilities::lexical_cast<int32_t>(reader.get<string_t>());
-		opt_int32_t current = user->getPin();
+		int32_t pin = utilities::str::lexical_cast<int32_t>(reader.get<string>());
+		opt_int32_t current = user_value->get_pin();
 		if (!current.is_initialized()) {
 			// Hacking
 			return;
 		}
 		if (pin == current.get()) {
-			user->setStatus(PlayerStatus::LoggedIn);
-			handleLogin(user, reader);
+			user_value->set_status(player_status::logged_in);
+			handle_login(user_value, reader);
 		}
 		else {
-			user->send(Packets::loginProcess(Packets::Errors::InvalidPin));
+			user_value->send(packets::login_process(packets::errors::invalid_pin));
 		}
 	}
 	else if (act == 0x02) {
-		int32_t pin = StringUtilities::lexical_cast<int32_t>(reader.get<string_t>());
-		auto current = user->getPin();
+		int32_t pin = utilities::str::lexical_cast<int32_t>(reader.get<string>());
+		auto current = user_value->get_pin();
 		if (!current.is_initialized()) {
 			// Hacking
 			return;
 		}
 		if (pin == current.get()) {
-			user->setStatus(PlayerStatus::SetPin);
-			handleLogin(user, reader);
+			user_value->set_status(player_status::set_pin);
+			handle_login(user_value, reader);
 		}
 		else {
-			user->send(Packets::loginProcess(Packets::Errors::InvalidPin));
+			user_value->send(packets::login_process(packets::errors::invalid_pin));
 		}
 	}
 }
 
-auto Login::registerPin(ref_ptr_t<User> user, PacketReader &reader) -> void {
-	if (!LoginServer::getInstance().getPinEnabled() || user->getStatus() != PlayerStatus::SetPin) {
+auto login::register_pin(ref_ptr<user> user_value, packet_reader &reader) -> void {
+	if (!login_server::get_instance().get_pin_enabled() || user_value->get_status() != player_status::set_pin) {
 		// Hacking
 		return;
 	}
 	if (reader.get<int8_t>() == 0x00) {
-		auto pin = user->getPin();
+		auto pin = user_value->get_pin();
 		if (pin.is_initialized()) {
-			user->setStatus(PlayerStatus::AskPin);
+			user_value->set_status(player_status::ask_pin);
 		}
 		return;
 	}
-	int32_t pin = StringUtilities::lexical_cast<int32_t>(reader.get<string_t>());
-	user->setStatus(PlayerStatus::NotLoggedIn);
+	int32_t pin = utilities::str::lexical_cast<int32_t>(reader.get<string>());
+	user_value->set_status(player_status::not_logged_in);
 
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
 
 	sql.once
-		<< "UPDATE " << db.makeTable("accounts") << " u "
+		<< "UPDATE " << db.make_table("accounts") << " u "
 		<< "SET u.pin = :pin "
 		<< "WHERE u.account_id = :account",
 		soci::use(pin, "pin"),
-		soci::use(user->getAccountId(), "account");
+		soci::use(user_value->get_account_id(), "account");
 
-	user->send(Packets::pinAssigned());
+	user_value->send(packets::pin_assigned());
 }
 
 }

@@ -21,16 +21,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <memory>
 
-namespace Vana {
-	class TimerContainerHolder {
+namespace vana {
+	class timer_container_holder {
 	public:
-		TimerContainerHolder() {
-			m_timers = make_ref_ptr<Timer::Container>();
+		timer_container_holder() {
+			m_timers = make_ref_ptr<timer::container>();
 		}
 	protected:
-		auto clearTimers() -> void { m_timers.reset(); }
-		auto getTimers() const -> ref_ptr_t<Timer::Container> { return m_timers; }
+		auto clear_timers() -> void { m_timers.reset(); }
+		auto get_timers() const -> ref_ptr<timer::container> { return m_timers; }
 	private:
-		ref_ptr_t<Timer::Container> m_timers;
+		ref_ptr<timer::container> m_timers;
 	};
 }

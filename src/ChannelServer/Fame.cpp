@@ -23,112 +23,112 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Player.hpp"
 #include "ChannelServer/PlayerDataProvider.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto Fame::handleFame(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	player_id_t targetId = reader.get<player_id_t>();
+auto fame::handle_fame(ref_ptr<player> player, packet_reader &reader) -> void {
+	game_player_id target_id = reader.get<game_player_id>();
 	uint8_t type = reader.get<uint8_t>();
-	if (targetId > 0) {
-		if (player->getId() == targetId) {
+	if (target_id > 0) {
+		if (player->get_id() == target_id) {
 			// Hacking
 			return;
 		}
-		int32_t checkResult = canFame(player, targetId);
-		if (checkResult != 0) {
-			player->send(Packets::Fame::sendError(checkResult));
+		int32_t check_result = can_fame(player, target_id);
+		if (check_result != 0) {
+			player->send(packets::fame::send_error(check_result));
 		}
 		else {
-			auto famee = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(targetId);
-			fame_t newFame = famee->getStats()->getFame() + (type == 1 ? 1 : -1);
-			famee->getStats()->setFame(newFame);
-			addFameLog(player->getId(), targetId);
-			player->send(Packets::Fame::sendFame(famee->getName(), type, newFame));
-			famee->send(Packets::Fame::receiveFame(player->getName(), type));
+			auto famee = channel_server::get_instance().get_player_data_provider().get_player(target_id);
+			game_fame new_fame = famee->get_stats()->get_fame() + (type == 1 ? 1 : -1);
+			famee->get_stats()->set_fame(new_fame);
+			add_fame_log(player->get_id(), target_id);
+			player->send(packets::fame::send_fame(famee->get_name(), type, new_fame));
+			famee->send(packets::fame::receive_fame(player->get_name(), type));
 		}
 	}
 	else {
-		player->send(Packets::Fame::sendError(Packets::Fame::Errors::IncorrectUser));
+		player->send(packets::fame::send_error(packets::fame::errors::incorrect_user));
 	}
 }
 
-auto Fame::canFame(ref_ptr_t<Player> player, player_id_t to) -> int32_t {
-	player_id_t from = player->getId();
-	if (player->getStats()->getLevel() < 15) {
-		return Packets::Fame::Errors::LevelUnder15;
+auto fame::can_fame(ref_ptr<player> player, game_player_id to) -> int32_t {
+	game_player_id from = player->get_id();
+	if (player->get_stats()->get_level() < 15) {
+		return packets::fame::errors::level_under15;
 	}
-	if (getLastFameLog(from) == SearchResult::Found) {
-		return Packets::Fame::Errors::AlreadyFamedToday;
+	if (get_last_fame_log(from) == search_result::found) {
+		return packets::fame::errors::already_famed_today;
 	}
-	if (getLastFameSpLog(from, to) == SearchResult::Found) {
-		return Packets::Fame::Errors::FamedThisMonth;
+	if (get_last_fame_sp_log(from, to) == search_result::found) {
+		return packets::fame::errors::famed_this_month;
 	}
 	return 0;
 }
 
-auto Fame::addFameLog(player_id_t from, player_id_t to) -> void {
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
+auto fame::add_fame_log(game_player_id from, game_player_id to) -> void {
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
 	sql.once
-		<< "INSERT INTO " << db.makeTable("fame_log") << " (from_character_id, to_character_id, fame_time) "
+		<< "INSERT INTO " << db.make_table("fame_log") << " (from_character_id, to_character_id, fame_time) "
 		<< "VALUES (:from, :to, NOW())",
 		soci::use(from, "from"),
 		soci::use(to, "to");
 }
 
-auto Fame::getLastFameLog(player_id_t from) -> SearchResult {
-	int32_t fameTime = static_cast<int32_t>(ChannelServer::getInstance().getConfig().fameTime.count());
-	if (fameTime == 0) {
-		return SearchResult::Found;
+auto fame::get_last_fame_log(game_player_id from) -> search_result {
+	int32_t fame_time = static_cast<int32_t>(channel_server::get_instance().get_config().fame_time.count());
+	if (fame_time == 0) {
+		return search_result::found;
 	}
-	if (fameTime == -1) {
-		return SearchResult::NotFound;
+	if (fame_time == -1) {
+		return search_result::not_found;
 	}
 
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
-	optional_t<UnixTime> time;
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
+	optional<unix_time> time;
 
 	sql.once
 		<< "SELECT fame_time "
-		<< "FROM " << db.makeTable("fame_log") << " "
-		<< "WHERE from_character_id = :from AND UNIX_TIMESTAMP(fame_time) > UNIX_TIMESTAMP() - :fameTime "
+		<< "FROM " << db.make_table("fame_log") << " "
+		<< "WHERE from_character_id = :from AND UNIX_TIMESTAMP(fame_time) > UNIX_TIMESTAMP() - :fame_time "
 		<< "ORDER BY fame_time DESC",
 		soci::use(from, "from"),
-		soci::use(fameTime, "fameTime"),
+		soci::use(fame_time, "fame_time"),
 		soci::into(time);
 
 	return time.is_initialized() ?
-		SearchResult::Found :
-		SearchResult::NotFound;
+		search_result::found :
+		search_result::not_found;
 }
 
-auto Fame::getLastFameSpLog(player_id_t from, player_id_t to) -> SearchResult {
-	int32_t fameResetTime = static_cast<int32_t>(ChannelServer::getInstance().getConfig().fameResetTime.count());
-	if (fameResetTime == 0) {
-		return SearchResult::Found;
+auto fame::get_last_fame_sp_log(game_player_id from, game_player_id to) -> search_result {
+	int32_t fame_reset_time = static_cast<int32_t>(channel_server::get_instance().get_config().fame_reset_time.count());
+	if (fame_reset_time == 0) {
+		return search_result::found;
 	}
-	if (fameResetTime == -1) {
-		return SearchResult::NotFound;
+	if (fame_reset_time == -1) {
+		return search_result::not_found;
 	}
 
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
-	optional_t<UnixTime> time;
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
+	optional<unix_time> time;
 
 	sql.once
 		<< "SELECT fame_time "
-		<< "FROM " << db.makeTable("fame_log") << " "
-		<< "WHERE from_character_id = :from AND to_character_id = :to AND UNIX_TIMESTAMP(fame_time) > UNIX_TIMESTAMP() - :fameResetTime "
+		<< "FROM " << db.make_table("fame_log") << " "
+		<< "WHERE from_character_id = :from AND to_character_id = :to AND UNIX_TIMESTAMP(fame_time) > UNIX_TIMESTAMP() - :fame_reset_time "
 		<< "ORDER BY fame_time DESC",
 		soci::use(from, "from"),
 		soci::use(to, "to"),
-		soci::use(fameResetTime, "fameResetTime"),
+		soci::use(fame_reset_time, "fame_reset_time"),
 		soci::into(time);
 
 	return time.is_initialized() ?
-		SearchResult::Found :
-		SearchResult::NotFound;
+		search_result::found :
+		search_result::not_found;
 }
 
 }

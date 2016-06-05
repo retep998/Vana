@@ -20,56 +20,56 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/LuaScriptable.hpp"
 #include <string>
 
-namespace Vana {
-	namespace ChannelServer {
-		class Npc;
+namespace vana {
+	namespace channel_server {
+		class npc;
 
-		class LuaNpc : public LuaScriptable {
-			NONCOPYABLE(LuaNpc);
-			NO_DEFAULT_CONSTRUCTOR(LuaNpc);
+		class lua_npc : public lua_scriptable {
+			NONCOPYABLE(lua_npc);
+			NO_DEFAULT_CONSTRUCTOR(lua_npc);
 		public:
-			LuaNpc(const string_t &filename, player_id_t playerId);
+			lua_npc(const string &filename, game_player_id player_id);
 
-			auto proceedNext() -> Result;
-			auto proceedSelection(uint8_t selected) -> Result;
-			auto proceedNumber(int32_t number) -> Result;
-			auto proceedText(const string_t &text) -> Result;
+			auto proceed_next() -> result;
+			auto proceed_selection(uint8_t selected) -> result;
+			auto proceed_number(int32_t number) -> result;
+			auto proceed_text(const string &text) -> result;
 		protected:
-			auto handleError(const string_t &filename, const string_t &error) -> void override;
-			auto handleThreadCompletion() -> void override;
-			auto setNpcEnvironmentVariables() -> void;
+			auto handle_error(const string &filename, const string &error) -> void override;
+			auto handle_thread_completion() -> void override;
+			auto set_npc_environment_variables() -> void;
 		};
 
-		namespace LuaExports {
-			auto getNpc(lua_State *luaVm, LuaEnvironment &env) -> Npc *;
+		namespace lua_exports {
+			auto get_npc(lua_State *lua_vm, lua_environment &env) -> npc *;
 
 			// NPC exports
 
 			// Miscellaneous
-			auto getDistanceNpc(lua_State *luaVm) -> lua_return_t;
-			auto getNpcId(lua_State *luaVm) -> lua_return_t;
-			auto runNpcNpc(lua_State *luaVm) -> lua_return_t;
-			auto showStorage(lua_State *luaVm) -> lua_return_t;
+			auto get_distance_npc(lua_State *lua_vm) -> lua::lua_return;
+			auto get_npc_id(lua_State *lua_vm) -> lua::lua_return;
+			auto run_npc_npc(lua_State *lua_vm) -> lua::lua_return;
+			auto show_storage(lua_State *lua_vm) -> lua::lua_return;
 
 			// NPC interaction
-			auto addText(lua_State *luaVm) -> lua_return_t;
-			auto askAcceptDecline(lua_State *luaVm) -> lua_return_t;
-			auto askAcceptDeclineNoExit(lua_State *luaVm) -> lua_return_t;
-			auto askChoice(lua_State *luaVm) -> lua_return_t;
-			auto askNumber(lua_State *luaVm) -> lua_return_t;
-			auto askQuestion(lua_State *luaVm) -> lua_return_t;
-			auto askQuiz(lua_State *luaVm) -> lua_return_t;
-			auto askStyle(lua_State *luaVm) -> lua_return_t;
-			auto askText(lua_State *luaVm) -> lua_return_t;
-			auto askYesNo(lua_State *luaVm) -> lua_return_t;
-			auto sendBackNext(lua_State *luaVm) -> lua_return_t;
-			auto sendBackOk(lua_State *luaVm) -> lua_return_t;
-			auto sendNext(lua_State *luaVm) -> lua_return_t;
-			auto sendOk(lua_State *luaVm) -> lua_return_t;
+			auto add_text(lua_State *lua_vm) -> lua::lua_return;
+			auto ask_accept_decline(lua_State *lua_vm) -> lua::lua_return;
+			auto ask_accept_decline_no_exit(lua_State *lua_vm) -> lua::lua_return;
+			auto ask_choice(lua_State *lua_vm) -> lua::lua_return;
+			auto ask_number(lua_State *lua_vm) -> lua::lua_return;
+			auto ask_question(lua_State *lua_vm) -> lua::lua_return;
+			auto ask_quiz(lua_State *lua_vm) -> lua::lua_return;
+			auto ask_style(lua_State *lua_vm) -> lua::lua_return;
+			auto ask_text(lua_State *lua_vm) -> lua::lua_return;
+			auto ask_yes_no(lua_State *lua_vm) -> lua::lua_return;
+			auto send_back_next(lua_State *lua_vm) -> lua::lua_return;
+			auto send_back_ok(lua_State *lua_vm) -> lua::lua_return;
+			auto send_next(lua_State *lua_vm) -> lua::lua_return;
+			auto send_ok(lua_State *lua_vm) -> lua::lua_return;
 
 			// Quest
-			auto addQuest(lua_State *luaVm) -> lua_return_t;
-			auto endQuest(lua_State *luaVm) -> lua_return_t;
+			auto add_quest(lua_State *lua_vm) -> lua::lua_return;
+			auto end_quest(lua_State *lua_vm) -> lua::lua_return;
 		}
 	}
 }

@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct NpcInfo {
-		bool isMapleTv = false;
-		bool isGuildRank = false;
-		mesos_t storageCost = 0;
+namespace vana {
+	struct npc_info {
+		bool is_maple_tv = false;
+		bool is_guild_rank = false;
+		game_mesos storage_cost = 0;
 	};
 }

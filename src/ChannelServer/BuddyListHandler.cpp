@@ -21,39 +21,39 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Player.hpp"
 #include <string>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-namespace BuddyOpcodes {
-	enum Opcodes : int8_t {
-		Add = 0x01,
-		AcceptInvite = 0x02,
-		Remove = 0x03
+namespace buddy_opcodes {
+	enum opcodes : int8_t {
+		add = 0x01,
+		accept_invite = 0x02,
+		remove = 0x03
 	};
 }
 
-auto BuddyListHandler::handleBuddyList(ref_ptr_t<Player> player, PacketReader &reader) -> void {
+auto buddy_list_handler::handle_buddy_list(ref_ptr<player> player, packet_reader &reader) -> void {
 	int8_t type = reader.get<int8_t>();
 	switch (type) {
-		case BuddyOpcodes::Add: {
-			string_t name = reader.get<string_t>();
-			string_t group = reader.get<string_t>();
+		case buddy_opcodes::add: {
+			string name = reader.get<string>();
+			string group = reader.get<string>();
 
-			uint8_t error = player->getBuddyList()->addBuddy(name, group);
+			uint8_t error = player->get_buddy_list()->add_buddy(name, group);
 
 			if (error) {
-				player->send(Packets::Buddy::error(error));
+				player->send(packets::buddy::error(error));
 			}
 			break;
 		}
-		case BuddyOpcodes::AcceptInvite: {
-			player_id_t charId = reader.get<player_id_t>();
-			player->getBuddyList()->removePendingBuddy(charId, true);
+		case buddy_opcodes::accept_invite: {
+			game_player_id char_id = reader.get<game_player_id>();
+			player->get_buddy_list()->remove_pending_buddy(char_id, true);
 			break;
 		}
-		case BuddyOpcodes::Remove: {
-			player_id_t charId = reader.get<player_id_t>();
-			player->getBuddyList()->removeBuddy(charId);
+		case buddy_opcodes::remove: {
+			game_player_id char_id = reader.get<game_player_id>();
+			player->get_buddy_list()->remove_buddy(char_id);
 			break;
 		}
 	}

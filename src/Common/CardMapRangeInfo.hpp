@@ -19,9 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct CardMapRangeInfo {
-		map_id_t startMap = 0;
-		map_id_t endMap = 0;
+namespace vana {
+	struct card_map_range_info {
+		game_map_id start_map = 0;
+		game_map_id end_map = 0;
 	};
 }

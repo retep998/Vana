@@ -20,15 +20,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/PacketBuilder.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	namespace ChannelServer {
+namespace vana {
+	namespace channel_server {
 		class Player;
-		struct MapleTvMessage;
+		struct maple_tv_message;
 
-		namespace Packets {
-			namespace MapleTv {
-				PACKET(showMessage, const MapleTvMessage &message, seconds_t timeLeft);
-				PACKET(endDisplay);
+		namespace packets {
+			namespace maple_tv {
+				PACKET(show_message, const maple_tv_message &message, seconds time_left);
+				PACKET(end_display);
 			}
 		}
 	}

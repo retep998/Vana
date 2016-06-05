@@ -21,19 +21,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 
 #define ENUM(type, make) \
-	make(type, None, 0) \
-	make(type, Skill, 1) \
-	make(type, Item, 2) \
-	make(type, Face, 3) \
-	make(type, Menu, 4) \
-	make(type, BasicAction, 5) \
-	make(type, BasicFace, 6) \
-	make(type, Effect, 7)
+	make(type, none, 0) \
+	make(type, skill, 1) \
+	make(type, item, 2) \
+	make(type, face, 3) \
+	make(type, menu, 4) \
+	make(type, basic_action, 5) \
+	make(type, basic_face, 6) \
+	make(type, effect, 7)
 
-namespace Vana {
-	ENUM_CLASS(KeyMapType, int8_t, ENUM)
+namespace vana {
+	ENUM_CLASS(key_map_type, int8_t, ENUM)
 }
 
-ENUM_CLASS_CAST(Vana::KeyMapType, int8_t, ENUM)
+ENUM_CLASS_CAST(vana::key_map_type, int8_t, ENUM)
 
 #undef ENUM

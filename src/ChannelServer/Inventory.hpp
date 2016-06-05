@@ -20,19 +20,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/ItemConstants.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class Item;
-	class PacketReader;
+namespace vana {
+	class item;
+	class packet_reader;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		namespace Inventory {
-			auto addItem(ref_ptr_t<Player> player, Item *item, bool fromDrop = false) -> slot_qty_t;
-			auto addNewItem(ref_ptr_t<Player> player, item_id_t itemId, slot_qty_t amount, Items::StatVariance variancePolicy = Items::StatVariance::None) -> void;
-			auto takeItem(ref_ptr_t<Player> player, item_id_t itemId, slot_qty_t howMany) -> void;
-			auto useItem(ref_ptr_t<Player> player, item_id_t itemId) -> void;
-			auto takeItemSlot(ref_ptr_t<Player> player, inventory_t inv, inventory_slot_t slot, slot_qty_t amount, bool takeStar = false, bool overrideGmBenefits = false) -> void;
+		namespace inventory {
+			auto add_item(ref_ptr<player> player, item *item_value, bool from_drop = false) -> game_slot_qty;
+			auto add_new_item(ref_ptr<player> player, game_item_id item_id, game_slot_qty amount, items::stat_variance variance_policy = items::stat_variance::none) -> void;
+			auto take_item(ref_ptr<player> player, game_item_id item_id, game_slot_qty how_many) -> void;
+			auto use_item(ref_ptr<player> player, game_item_id item_id) -> void;
+			auto take_item_slot(ref_ptr<player> player, game_inventory inv, game_inventory_slot slot, game_slot_qty amount, bool take_star = false, bool override_gm_benefits = false) -> void;
 		}
 	}
 }

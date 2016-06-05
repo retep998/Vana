@@ -25,117 +25,117 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-namespace Vana {
-	struct PortalInfo;
+namespace vana {
+	struct portal_info;
 
-	namespace ChannelServer {
-		class LuaInstance;
-		class Map;
-		class Party;
-		class Player;
-		class Reactor;
+	namespace channel_server {
+		class lua_instance;
+		class map;
+		class party;
+		class player;
+		class reactor;
 
-		namespace Timer {
-			struct Id;
+		namespace timer {
+			struct id;
 		}
 
-		class Instance : public TimerContainerHolder {
-			NONCOPYABLE(Instance);
-			NO_DEFAULT_CONSTRUCTOR(Instance);
+		class instance : public timer_container_holder {
+			NONCOPYABLE(instance);
+			NO_DEFAULT_CONSTRUCTOR(instance);
 		public:
-			Instance(const string_t &name, map_id_t map, player_id_t playerId, const duration_t &time, const duration_t &persistent, bool showTimer);
-			~Instance();
+			instance(const string &name, game_map_id map, game_player_id player_id, const duration &time, const duration &persistent, bool show_timer);
+			~instance();
 
-			auto getName() const -> string_t { return m_name; }
-			auto getStart() const -> const time_point_t & { return m_start; }
-			auto getMarkedForDelete() const -> bool { return m_markedForDeletion; }
-			auto markForDelete() -> void;
-			auto getVariables() const -> Variables * { return m_variables.get(); }
+			auto get_name() const -> string { return m_name; }
+			auto get_start() const -> const time_point & { return m_start; }
+			auto get_marked_for_delete() const -> bool { return m_marked_for_deletion; }
+			auto mark_for_delete() -> void;
+			auto get_variables() const -> variables * { return m_variables.get(); }
 
 			// Players
-			auto getAllPlayerIds() -> vector_t<player_id_t>;
-			auto addPlayer(ref_ptr_t<Player> player) -> void;
-			auto removePlayer(ref_ptr_t<Player> player) -> void;
-			auto removePlayer(player_id_t id) -> void;
-			auto removeAllPlayers() -> void;
-			auto moveAllPlayers(map_id_t mapId, bool respectInstances, const PortalInfo * const portal = nullptr) -> void;
-			auto instanceHasPlayers() const -> bool;
-			auto getPlayerNum() const -> size_t { return m_players.size(); }
+			auto get_all_player_ids() -> vector<game_player_id>;
+			auto add_player(ref_ptr<player> player) -> void;
+			auto remove_player(ref_ptr<player> player) -> void;
+			auto remove_player(game_player_id id) -> void;
+			auto remove_all_players() -> void;
+			auto move_all_players(game_map_id map_id, bool respect_instances, const portal_info * const portal = nullptr) -> void;
+			auto instance_has_players() const -> bool;
+			auto get_player_num() const -> size_t { return m_players.size(); }
 
 			// Maps
-			auto addMap(Map *map) -> void;
-			auto addMap(map_id_t mapId) -> void;
-			auto isInstanceMap(map_id_t mapId) const -> bool;
-			auto setResetAtEnd(bool reset) -> void { m_resetOnDestroy = reset; }
-			auto respawnMobs(map_id_t mapId) -> void;
-			auto respawnReactors(map_id_t mapId) -> void;
+			auto add_map(map *map) -> void;
+			auto add_map(game_map_id map_id) -> void;
+			auto is_instance_map(game_map_id map_id) const -> bool;
+			auto set_reset_at_end(bool reset) -> void { m_reset_on_destroy = reset; }
+			auto respawn_mobs(game_map_id map_id) -> void;
+			auto respawn_reactors(game_map_id map_id) -> void;
 
 			// Parties
-			auto addParty(Party *party) -> void;
+			auto add_party(party *party) -> void;
 
 			// Instance time
-			auto setPersistence(const duration_t &persistence) -> void;
-			auto getPersistence() const -> duration_t;
-			auto showTimer() const -> bool;
-			auto showTimer(bool show, bool doIt = false) -> void;
+			auto set_persistence(const duration &persistence) -> void;
+			auto get_persistence() const -> duration;
+			auto show_timer() const -> bool;
+			auto show_timer(bool show, bool do_it = false) -> void;
 
 			// Timers
-			auto removeAllTimers() -> void;
-			auto removeTimer(const string_t &name) -> void;
-			auto addFutureTimer(const string_t &name, seconds_t time, seconds_t persistence) -> bool;
-			auto addSecondOfHourTimer(const string_t &name, int16_t secondOfHour, seconds_t persistence) -> bool;
-			auto isTimerPersistent(const string_t &name) -> bool;
-			auto getInstanceSecondsRemaining() -> seconds_t;
-			auto getTimerSecondsRemaining(const string_t &name) -> seconds_t;
+			auto remove_all_timers() -> void;
+			auto remove_timer(const string &name) -> void;
+			auto add_future_timer(const string &name, seconds time, seconds persistence) -> bool;
+			auto add_second_of_hour_timer(const string &name, int16_t second_of_hour, seconds persistence) -> bool;
+			auto is_timer_persistent(const string &name) -> bool;
+			auto get_instance_seconds_remaining() -> seconds;
+			auto get_timer_seconds_remaining(const string &name) -> seconds;
 
 			// Lua interaction
-			auto beginInstance() -> Result;
-			auto playerDeath(player_id_t playerId) -> Result;
-			auto partyDisband(party_id_t partyId) -> Result;
-			auto timerEnd(const string_t &name, bool fromTimer) -> Result;
-			auto playerDisconnect(player_id_t playerId, bool isPartyLeader) -> Result;
-			auto removePartyMember(party_id_t partyId, player_id_t playerId) -> Result;
-			auto mobDeath(mob_id_t mobId, map_object_t mapMobId, map_id_t mapId) -> Result;
-			auto mobSpawn(mob_id_t mobId, map_object_t mapMobId, map_id_t mapId) -> Result;
-			auto playerChangeMap(player_id_t playerId, map_id_t newMapId, map_id_t oldMapId, bool isPartyLeader) -> Result;
-			auto friendlyMobHit(mob_id_t mobId, map_object_t mapMobId, map_id_t mapId, int32_t mobHp, int32_t mobMaxHp) -> Result;
+			auto begin_instance() -> result;
+			auto player_death(game_player_id player_id) -> result;
+			auto party_disband(game_party_id party_id) -> result;
+			auto timer_end(const string &name, bool from_timer) -> result;
+			auto player_disconnect(game_player_id player_id, bool is_party_leader) -> result;
+			auto remove_party_member(game_party_id party_id, game_player_id player_id) -> result;
+			auto mob_death(game_mob_id mob_id, game_map_object map_mob_id, game_map_id map_id) -> result;
+			auto mob_spawn(game_mob_id mob_id, game_map_object map_mob_id, game_map_id map_id) -> result;
+			auto player_change_map(game_player_id player_id, game_map_id new_map_id, game_map_id old_map_id, bool is_party_leader) -> result;
+			auto friendly_mob_hit(game_mob_id mob_id, game_map_object map_mob_id, game_map_id map_id, int32_t mob_hp, int32_t mob_max_hp) -> result;
 		private:
-			struct TimerAction {
-				bool isPersistent = false;
-				uint32_t counterId = 0;
+			struct timer_action {
+				bool is_persistent = false;
+				uint32_t counter_id = 0;
 			};
 
 			template <typename ... TArgs>
-			auto callInstanceFunction(const string_t &func, TArgs ... args) -> Result;
-			auto setInstanceTimer(const duration_t &time, bool firstRun = false) -> void;
-			auto timerComplete(const string_t &name, bool fromTimer = false) -> void;
-			auto removeTimer(const string_t &name, bool performEvent) -> void;
-			auto getLuaInstance() -> LuaInstance * { return m_luaInstance.get(); }
-			auto getCounterId() -> uint32_t;
-			auto instanceEnd(bool calledByLua, bool fromTimer = false) -> void;
+			auto call_instance_function(const string &func, TArgs ... args) -> result;
+			auto set_instance_timer(const duration &time, bool first_run = false) -> void;
+			auto timer_complete(const string &name, bool from_timer = false) -> void;
+			auto remove_timer(const string &name, bool perform_event) -> void;
+			auto get_lua_instance() -> lua_instance * { return m_lua_instance.get(); }
+			auto get_counter_id() -> uint32_t;
+			auto instance_end(bool called_by_lua, bool from_timer = false) -> void;
 
-			bool m_showTimer = false;
-			bool m_resetOnDestroy = true;
-			bool m_markedForDeletion = false;
-			uint32_t m_timerCounter = 1;
-			time_point_t m_start;
-			duration_t m_persistent;
-			string_t m_name;
-			owned_ptr_t<Variables> m_variables;
-			owned_ptr_t<LuaInstance> m_luaInstance; // Lua instance for interacting with scripts
-			vector_t<Map *> m_maps;
-			vector_t<Party *> m_parties;
-			hash_map_t<string_t, TimerAction> m_timerActions; // Timers indexed by name
-			hash_map_t<player_id_t, ref_ptr_t<Player>> m_players;
+			bool m_show_timer = false;
+			bool m_reset_on_destroy = true;
+			bool m_marked_for_deletion = false;
+			uint32_t m_timer_counter = 1;
+			time_point m_start;
+			duration m_persistent;
+			string m_name;
+			owned_ptr<variables> m_variables;
+			owned_ptr<lua_instance> m_lua_instance; // Lua instance for interacting with scripts
+			vector<map *> m_maps;
+			vector<party *> m_parties;
+			hash_map<string, timer_action> m_timer_actions; // Timers indexed by name
+			hash_map<game_player_id, ref_ptr<player>> m_players;
 		};
 
 		template <typename ... TArgs>
-		auto Instance::callInstanceFunction(const string_t &func, TArgs ... args) -> Result {
-			auto luaInst = getLuaInstance();
-			if (!luaInst->exists(func)) {
-				return Result::Failure;
+		auto instance::call_instance_function(const string &func, TArgs ... args) -> result {
+			auto lua_inst = get_lua_instance();
+			if (!lua_inst->exists(func)) {
+				return result::failure;
 			}
-			return luaInst->call(func, args...);
+			return lua_inst->call(func, args...);
 		}
 	}
 }

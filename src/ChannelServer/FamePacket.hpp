@@ -20,24 +20,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/PacketBuilder.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	namespace ChannelServer {
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class player;
 
-		namespace Packets {
-			namespace Fame {
-				namespace Errors {
-					enum Errors : int8_t {
-						IncorrectUser = 0x01,
-						LevelUnder15 = 0x02,
-						AlreadyFamedToday = 0x03,
-						FamedThisMonth = 0x04
+		namespace packets {
+			namespace fame {
+				namespace errors {
+					enum errors : int8_t {
+						incorrect_user = 0x01,
+						level_under15 = 0x02,
+						already_famed_today = 0x03,
+						famed_this_month = 0x04
 					};
 				}
 
-				PACKET(sendFame, const string_t &name, uint8_t type, int32_t newFame);
-				PACKET(receiveFame, const string_t &name, uint8_t type);
-				PACKET(sendError, int32_t reason);
+				PACKET(send_fame, const string &name, uint8_t type, int32_t new_fame);
+				PACKET(receive_fame, const string &name, uint8_t type);
+				PACKET(send_error, int32_t reason);
 			}
 		}
 	}

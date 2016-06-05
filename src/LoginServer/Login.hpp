@@ -17,19 +17,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-namespace Vana {
-	class PacketReader;
+namespace vana {
+	class packet_reader;
 
-	namespace LoginServer {
-		class User;
+	namespace login_server {
+		class user;
 
-		namespace Login {
-			auto loginUser(ref_ptr_t<User> user, PacketReader &reader) -> void;
-			auto setGender(ref_ptr_t<User> user, PacketReader &reader) -> void;
-			auto handleLogin(ref_ptr_t<User> user, PacketReader &reader) -> void;
-			auto registerPin(ref_ptr_t<User> user, PacketReader &reader) -> void;
-			auto loginBack(ref_ptr_t<User> user) -> void;
-			auto checkPin(ref_ptr_t<User> user, PacketReader &reader) -> void;
+		namespace login {
+			auto login_user(ref_ptr<user> user_value, packet_reader &reader) -> void;
+			auto set_gender(ref_ptr<user> user_value, packet_reader &reader) -> void;
+			auto handle_login(ref_ptr<user> user_value, packet_reader &reader) -> void;
+			auto register_pin(ref_ptr<user> user_value, packet_reader &reader) -> void;
+			auto login_back(ref_ptr<user> user_value) -> void;
+			auto check_pin(ref_ptr<user> user_value, packet_reader &reader) -> void;
 		}
 	}
 }

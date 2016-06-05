@@ -18,93 +18,93 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "KeyMaps.hpp"
 #include "Common/Database.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto KeyMaps::defaultMap() -> void {
-	add(KeyMapKey::One, KeyMap{KeyMapAction::AllChat});
-	add(KeyMapKey::Two, KeyMap{KeyMapAction::PartyChat});
-	add(KeyMapKey::Three, KeyMap{KeyMapAction::BuddyChat});
-	add(KeyMapKey::Four, KeyMap{KeyMapAction::GuildChat});
-	add(KeyMapKey::Five, KeyMap{KeyMapAction::AllianceChat});
-	add(KeyMapKey::Six, KeyMap{KeyMapAction::SpouseChat});
-	add(KeyMapKey::Q, KeyMap{KeyMapAction::QuestMenu});
-	add(KeyMapKey::W, KeyMap{KeyMapAction::WorldMap});
-	add(KeyMapKey::E, KeyMap{KeyMapAction::EquipmentMenu});
-	add(KeyMapKey::R, KeyMap{KeyMapAction::BuddyList});
-	add(KeyMapKey::I, KeyMap{KeyMapAction::ItemMenu});
-	add(KeyMapKey::O, KeyMap{KeyMapAction::PartySearch});
-	add(KeyMapKey::P, KeyMap{KeyMapAction::PartyList});
-	add(KeyMapKey::BracketLeft, KeyMap{KeyMapAction::Shortcut});
-	add(KeyMapKey::BracketRight, KeyMap{KeyMapAction::QuickSlot});
-	add(KeyMapKey::Ctrl, KeyMap{KeyMapAction::Attack});
-	add(KeyMapKey::S, KeyMap{KeyMapAction::AbilityMenu});
-	add(KeyMapKey::F, KeyMap{KeyMapAction::FamilyList});
-	add(KeyMapKey::G, KeyMap{KeyMapAction::GuildList});
-	add(KeyMapKey::H, KeyMap{KeyMapAction::WhisperChat});
-	add(KeyMapKey::K, KeyMap{KeyMapAction::SkillMenu});
-	add(KeyMapKey::L, KeyMap{KeyMapAction::Helper});
-	add(KeyMapKey::Quote, KeyMap{KeyMapAction::ExpandChat});
-	add(KeyMapKey::Backtick, KeyMap{KeyMapAction::CashShop});
-	add(KeyMapKey::Backslash, KeyMap{KeyMapAction::SetKey});
-	add(KeyMapKey::Z, KeyMap{KeyMapAction::PickUp});
-	add(KeyMapKey::X, KeyMap{KeyMapAction::Sit});
-	add(KeyMapKey::C, KeyMap{KeyMapAction::Messenger});
-	add(KeyMapKey::B, KeyMap{KeyMapAction::MonsterBook});
-	add(KeyMapKey::M, KeyMap{KeyMapAction::Minimap});
-	add(KeyMapKey::Alt, KeyMap{KeyMapAction::Jump});
-	add(KeyMapKey::Space, KeyMap{KeyMapAction::NpcChat});
-	add(KeyMapKey::F1, KeyMap{KeyMapAction::Cockeyed});
-	add(KeyMapKey::F2, KeyMap{KeyMapAction::Happy});
-	add(KeyMapKey::F3, KeyMap{KeyMapAction::Sarcastic});
-	add(KeyMapKey::F4, KeyMap{KeyMapAction::Crying});
-	add(KeyMapKey::F5, KeyMap{KeyMapAction::Outraged});
-	add(KeyMapKey::F6, KeyMap{KeyMapAction::Shocked});
-	add(KeyMapKey::F7, KeyMap{KeyMapAction::Annoyed});
+auto key_maps::default_map() -> void {
+	add(key_map_key::one, key_map{key_map_action::all_chat});
+	add(key_map_key::two, key_map{key_map_action::party_chat});
+	add(key_map_key::three, key_map{key_map_action::buddy_chat});
+	add(key_map_key::four, key_map{key_map_action::guild_chat});
+	add(key_map_key::five, key_map{key_map_action::alliance_chat});
+	add(key_map_key::six, key_map{key_map_action::spouse_chat});
+	add(key_map_key::q, key_map{key_map_action::quest_menu});
+	add(key_map_key::w, key_map{key_map_action::world_map});
+	add(key_map_key::e, key_map{key_map_action::equipment_menu});
+	add(key_map_key::r, key_map{key_map_action::buddy_list});
+	add(key_map_key::i, key_map{key_map_action::item_menu});
+	add(key_map_key::o, key_map{key_map_action::party_search});
+	add(key_map_key::p, key_map{key_map_action::party_list});
+	add(key_map_key::bracket_left, key_map{key_map_action::shortcut});
+	add(key_map_key::bracket_right, key_map{key_map_action::quick_slot});
+	add(key_map_key::ctrl, key_map{key_map_action::attack});
+	add(key_map_key::s, key_map{key_map_action::ability_menu});
+	add(key_map_key::f, key_map{key_map_action::family_list});
+	add(key_map_key::g, key_map{key_map_action::guild_list});
+	add(key_map_key::h, key_map{key_map_action::whisper_chat});
+	add(key_map_key::k, key_map{key_map_action::skill_menu});
+	add(key_map_key::l, key_map{key_map_action::helper});
+	add(key_map_key::quote, key_map{key_map_action::expand_chat});
+	add(key_map_key::backtick, key_map{key_map_action::cash_shop});
+	add(key_map_key::backslash, key_map{key_map_action::set_key});
+	add(key_map_key::z, key_map{key_map_action::pick_up});
+	add(key_map_key::x, key_map{key_map_action::sit});
+	add(key_map_key::c, key_map{key_map_action::messenger});
+	add(key_map_key::b, key_map{key_map_action::monster_book});
+	add(key_map_key::m, key_map{key_map_action::minimap});
+	add(key_map_key::alt, key_map{key_map_action::jump});
+	add(key_map_key::space, key_map{key_map_action::npc_chat});
+	add(key_map_key::f1, key_map{key_map_action::cockeyed});
+	add(key_map_key::f2, key_map{key_map_action::happy});
+	add(key_map_key::f3, key_map{key_map_action::sarcastic});
+	add(key_map_key::f4, key_map{key_map_action::crying});
+	add(key_map_key::f5, key_map{key_map_action::outraged});
+	add(key_map_key::f6, key_map{key_map_action::shocked});
+	add(key_map_key::f7, key_map{key_map_action::annoyed});
 }
 
-auto KeyMaps::load(player_id_t charId) -> void {
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
+auto key_maps::load(game_player_id char_id) -> void {
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT k.* "
-		<< "FROM " << db.makeTable("keymap") << " k "
+		<< "FROM " << db.make_table("keymap") << " k "
 		<< "WHERE k.character_id = :char",
-		soci::use(charId, "char"));
+		soci::use(char_id, "char"));
 
 	for (const auto &row : rs) {
-		add(row.get<int32_t>("pos"), KeyMap{static_cast<KeyMapType>(row.get<int8_t>("type")), row.get<int32_t>("action")});
+		add(row.get<int32_t>("pos"), key_map{static_cast<key_map_type>(row.get<int8_t>("type")), row.get<int32_t>("action")});
 	}
-	if (getMax() == -1) {
+	if (get_max() == -1) {
 		// No keymaps, set default map
-		defaultMap();
-		save(charId);
+		default_map();
+		save(char_id);
 	}
 }
 
-auto KeyMaps::save(player_id_t charId) -> void {
+auto key_maps::save(game_player_id char_id) -> void {
 	size_t i = 0;
 	int8_t type = 0;
 	int32_t action = 0;
 
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
 
 	sql.once
-		<< "DELETE FROM " << db.makeTable("keymap") << " "
+		<< "DELETE FROM " << db.make_table("keymap") << " "
 		<< "WHERE character_id = :char",
-		soci::use(charId, "char");
+		soci::use(char_id, "char");
 
 	soci::statement st = (sql.prepare
-		<< "INSERT INTO " << db.makeTable("keymap") << " "
+		<< "INSERT INTO " << db.make_table("keymap") << " "
 		<< "VALUES (:char, :key, :type, :action)",
-		soci::use(charId, "char"),
+		soci::use(char_id, "char"),
 		soci::use(i, "key"),
 		soci::use(type, "type"),
 		soci::use(action, "action"));
 
-	for (i = 0; i < KeyMaps::KeyCount; i++) {
-		KeyMap *keymap = getKeyMap(i);
+	for (i = 0; i < key_maps::key_count; i++) {
+		key_map *keymap = get_key_map(i);
 		if (keymap != nullptr) {
 			type = static_cast<int8_t>(keymap->type);
 			action = keymap->action;

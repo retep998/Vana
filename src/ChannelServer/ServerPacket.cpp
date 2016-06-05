@@ -21,20 +21,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/PlayerDataProvider.hpp"
 #include "ChannelServer/SmsgHeader.hpp"
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
+namespace vana {
+namespace channel_server {
+namespace packets {
 
-PACKET_IMPL(showScrollingHeader, const string_t &msg) {
-	PacketBuilder builder;
+PACKET_IMPL(show_scrolling_header, const string &msg) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MESSAGE)
+		.add<packet_header>(SMSG_MESSAGE)
 		.add<int8_t>(4)
 		.add<bool>(!msg.empty())
-		.add<string_t>(msg);
+		.add<string>(msg);
 
 	if (!msg.empty()) {
-		builder.add<string_t>(msg);
+		builder.add<string>(msg);
 	}
 	return builder;
 }

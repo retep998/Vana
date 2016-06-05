@@ -20,21 +20,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <cstring>
 
-namespace Vana {
-	class BlockCipherIv {
+namespace vana {
+	class block_cipher_iv {
 	public:
-		BlockCipherIv();
-		explicit BlockCipherIv(iv_t iv);
+		block_cipher_iv();
+		explicit block_cipher_iv(crypto_iv iv);
 
-		auto getBytes() -> unsigned char const * const { return m_iv; }
-		auto getIv() const -> iv_t { return *reinterpret_cast<const iv_t *>(m_iv); }
+		auto get_bytes() -> unsigned char const * const { return m_iv; }
+		auto get_iv() const -> crypto_iv { return *reinterpret_cast<const crypto_iv *>(m_iv); }
 		auto shuffle() -> void;
 	private:
-		friend class Decoder;
-		auto updateIv(iv_t iv) -> void;
+		friend class decoder;
+		auto update_iv(crypto_iv iv) -> void;
 
 		inline
-		auto setIv(unsigned char *dest, unsigned char *source) -> void {
+		auto set_iv(unsigned char *dest, unsigned char *source) -> void {
 			// The 16 byte IV is the 4 byte IV repeated 4 times
 			for (uint8_t i = 0; i < 4; ++i) {
 				memcpy(dest + i * 4, source, 4);

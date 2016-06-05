@@ -20,32 +20,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/MapleVersion.hpp"
 #include "Common/Session.hpp"
 
-namespace Vana {
-namespace Packets {
+namespace vana {
+namespace packets {
 
 PACKET_IMPL(ping) {
-	PacketBuilder builder;
-	builder.add<header_t>(SMSG_PING);
+	packet_builder builder;
+	builder.add<packet_header>(SMSG_PING);
 	return builder;
 }
 
 PACKET_IMPL(pong) {
-	PacketBuilder builder;
-	builder.add<header_t>(CMSG_PONG);
+	packet_builder builder;
+	builder.add<packet_header>(CMSG_PONG);
 	return builder;
 }
 
-PACKET_IMPL(connect, const string_t &subversion, iv_t recvIv, iv_t sendIv) {
-	PacketBuilder builder;
+PACKET_IMPL(connect, const string &subversion, crypto_iv recv, crypto_iv send) {
+	packet_builder builder;
 	builder
-		.defer<header_t>()
-		.add<version_t>(MapleVersion::Version)
-		.add<string_t>(subversion)
-		.add<iv_t>(recvIv)
-		.add<iv_t>(sendIv)
-		.add<game_locale_t>(MapleVersion::Locale);
+		.defer<packet_header>()
+		.add<game_version>(maple_version::version)
+		.add<string>(subversion)
+		.add<crypto_iv>(recv)
+		.add<crypto_iv>(send)
+		.add<game_locale>(maple_version::locale);
 
-	builder.set<header_t>(static_cast<header_t>(builder.getSize() - sizeof(header_t)), 0);
+	builder.set<packet_header>(
+		static_cast<packet_header>(builder.get_size() - sizeof(packet_header)),
+		0);
 	return builder;
 }
 

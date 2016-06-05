@@ -23,91 +23,91 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-	class Item;
+namespace vana {
+	class item;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		struct InventoryPacketOperation {
-			InventoryPacketOperation() = delete;
-			InventoryPacketOperation(int8_t operationType, Item *item, int16_t currentSlot, int16_t oldSlot = 0) :
-				operationType{operationType},
+		struct inventory_packet_operation {
+			inventory_packet_operation() = delete;
+			inventory_packet_operation(int8_t operation_type, item *item, int16_t current_slot, int16_t old_slot = 0) :
+				operation_type{operation_type},
 				item{item},
-				currentSlot{currentSlot},
-				oldSlot{oldSlot}
+				current_slot{current_slot},
+				old_slot{old_slot}
 			{
 			}
 
-			int8_t operationType = 0;
-			Item *item = nullptr;
-			inventory_slot_t oldSlot = 0;
-			inventory_slot_t currentSlot = 0;
+			int8_t operation_type = 0;
+			item *item = nullptr;
+			game_inventory_slot old_slot = 0;
+			game_inventory_slot current_slot = 0;
 		};
 
-		namespace Packets {
-			namespace Inventory {
-				namespace RockModes {
-					enum Modes : int8_t {
-						Delete = 0x02,
-						Add = 0x03
+		namespace packets {
+			namespace inventory {
+				namespace rock_modes {
+					enum modes : int8_t {
+						remove = 0x02,
+						add = 0x03
 					};
 				}
-				namespace RockErrors {
-					enum Errors : int8_t {
-						Unk = 0x02, // Causes error 38 with current data
-						Unk2 = 0x03, // Causes error 38 with current data
-						CannotGo2 = 0x05, // This is unused
-						DifficultToLocate = 0x06,
-						DifficultToLocate2 = 0x07, // This is unused
-						CannotGo = 0x08,
-						AlreadyThere = 0x09,
-						CannotSaveMap = 0x0A,
-						NoobsCannotLeaveMapleIsland = 0x0B, // "Users below level 7 are not allowed to go out from Maple Island."
+				namespace rock_errors {
+					enum errors : int8_t {
+						unk = 0x02, // Causes error 38 with current data
+						unk2 = 0x03, // Causes error 38 with current data
+						cannot_go2 = 0x05, // This is unused
+						difficult_to_locate = 0x06,
+						difficult_to_locate2 = 0x07, // This is unused
+						cannot_go = 0x08,
+						already_there = 0x09,
+						cannot_save_map = 0x0A,
+						noobs_cannot_leave_maple_island = 0x0B, // "Users below level 7 are not allowed to go out from Maple Island."
 					};
 				}
-				namespace RockTypes {
-					enum Types : int8_t {
-						Regular = 0x00,
-						Vip = 0x01,
+				namespace rock_types {
+					enum types : int8_t {
+						regular = 0x00,
+						vip = 0x01,
 					};
 				}
-				namespace OperationTypes {
-					enum Types : int8_t {
-						AddItem = 0x00,
-						ModifyQuantity = 0x01,
-						ModifySlot = 0x02,
-						RemoveItem = 0x03,
+				namespace operation_types {
+					enum types : int8_t {
+						add_item = 0x00,
+						modify_quantity = 0x01,
+						modify_slot = 0x02,
+						remove_item = 0x03,
 					};
 				}
 
-				SPLIT_PACKET(updatePlayer, ref_ptr_t<Player> player);
-				SPLIT_PACKET(sitChair, player_id_t playerId, item_id_t chairId);
-				SPLIT_PACKET(stopChair, player_id_t playerId, bool seatTaken);
-				SPLIT_PACKET(useScroll, player_id_t playerId, int8_t succeed, bool destroy, bool legendarySpirit);
-				SPLIT_PACKET(sendChalkboardUpdate, player_id_t playerId, const string_t &msg);
-				SPLIT_PACKET(useSkillbook, player_id_t playerId, skill_id_t skillId, int32_t newMaxLevel, bool use, bool succeed);
-				SPLIT_PACKET(useItemEffect, player_id_t playerId, item_id_t itemId);
-				SPLIT_PACKET(sendRewardItemAnimation, player_id_t playerId, item_id_t itemId, const string_t &effect);
-				PACKET(inventoryOperation, bool unk, const vector_t<InventoryPacketOperation> &operations);
-				PACKET(sitMapChair, seat_id_t chairId);
-				PACKET(showMegaphone, const string_t &msg);
-				PACKET(showSuperMegaphone, const string_t &msg, bool whisper = false);
-				PACKET(showMessenger, const string_t &playerName, const string_t &msg1, const string_t &msg2, const string_t &msg3, const string_t &msg4, unsigned char *displayInfo, int32_t displayInfoSize, item_id_t itemId);
-				PACKET(showItemMegaphone, const string_t &msg, bool whisper = false, Item *item = nullptr);
-				PACKET(showTripleMegaphone, int8_t lines, const string_t &line1, const string_t &line2, const string_t &line3, bool whisper);
-				PACKET(updateSlots, inventory_t inventory, inventory_slot_count_t slots);
-				PACKET(sendRockUpdate, int8_t mode, int8_t type, const vector_t<map_id_t> &maps);
-				PACKET(sendRockError, int8_t code, int8_t type);
-				PACKET(useCharm, uint8_t charmsLeft, uint8_t daysLeft = 99);
-				PACKET(sendMesobagSucceed, mesos_t mesos);
-				PACKET(sendMesobagFailed);
-				PACKET(sendHammerSlots, int32_t slots);
-				PACKET(sendHulkSmash, inventory_slot_t slot, Item *hammered);
-				PACKET(sendHammerUpdate);
-				PACKET(playCashSong, item_id_t itemId, const string_t &playerName);
-				PACKET(blankUpdate);
-				PACKET(sendItemExpired, const vector_t<item_id_t> &items);
+				SPLIT_PACKET(update_player, ref_ptr<player> player);
+				SPLIT_PACKET(sit_chair, game_player_id player_id, game_item_id chair_id);
+				SPLIT_PACKET(stop_chair, game_player_id player_id, bool seat_taken);
+				SPLIT_PACKET(use_scroll, game_player_id player_id, int8_t succeed, bool destroy, bool legendary_spirit);
+				SPLIT_PACKET(send_chalkboard_update, game_player_id player_id, const string &msg);
+				SPLIT_PACKET(use_skillbook, game_player_id player_id, game_skill_id skill_id, int32_t new_max_level, bool use, bool succeed);
+				SPLIT_PACKET(use_item_effect, game_player_id player_id, game_item_id item_id);
+				SPLIT_PACKET(send_reward_item_animation, game_player_id player_id, game_item_id item_id, const string &effect);
+				PACKET(inventory_operation, bool unk, const vector<inventory_packet_operation> &operations);
+				PACKET(sit_map_chair, game_seat_id chair_id);
+				PACKET(show_megaphone, const string &msg);
+				PACKET(show_super_megaphone, const string &msg, bool whisper = false);
+				PACKET(show_messenger, const string &player_name, const string &msg1, const string &msg2, const string &msg3, const string &msg4, unsigned char *display_info, int32_t display_info_size, game_item_id item_id);
+				PACKET(show_item_megaphone, const string &msg, bool whisper = false, item *item = nullptr);
+				PACKET(show_triple_megaphone, int8_t lines, const string &line1, const string &line2, const string &line3, bool whisper);
+				PACKET(update_slots, game_inventory inventory, game_inventory_slot_count slots);
+				PACKET(send_rock_update, int8_t mode, int8_t type, const vector<game_map_id> &maps);
+				PACKET(send_rock_error, int8_t code, int8_t type);
+				PACKET(use_charm, uint8_t charms_left, uint8_t days_left = 99);
+				PACKET(send_mesobag_succeed, game_mesos mesos);
+				PACKET(send_mesobag_failed);
+				PACKET(send_hammer_slots, int32_t slots);
+				PACKET(send_hulk_smash, game_inventory_slot slot, item *hammered);
+				PACKET(send_hammer_update);
+				PACKET(play_cash_song, game_item_id item_id, const string &player_name);
+				PACKET(blank_update);
+				PACKET(send_item_expired, const vector<game_item_id> &items);
 			}
 		}
 	}

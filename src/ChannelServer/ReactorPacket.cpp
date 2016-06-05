@@ -22,40 +22,40 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Reactor.hpp"
 #include "ChannelServer/SmsgHeader.hpp"
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
+namespace vana {
+namespace channel_server {
+namespace packets {
 
-PACKET_IMPL(spawnReactor, Reactor *reactor) {
-	PacketBuilder builder;
+PACKET_IMPL(spawn_reactor, reactor *reactor) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_REACTOR_SPAWN)
-		.add<map_object_t>(reactor->getId())
-		.add<reactor_id_t>(reactor->getReactorId())
-		.add<int8_t>(reactor->getState())
-		.add<Point>(reactor->getPos())
-		.add<bool>(reactor->facesLeft());
+		.add<packet_header>(SMSG_REACTOR_SPAWN)
+		.add<game_map_object>(reactor->get_id())
+		.add<game_reactor_id>(reactor->get_reactor_id())
+		.add<int8_t>(reactor->get_state())
+		.add<point>(reactor->get_pos())
+		.add<bool>(reactor->faces_left());
 	return builder;
 }
 
-PACKET_IMPL(triggerReactor, Reactor *reactor) {
-	PacketBuilder builder;
+PACKET_IMPL(trigger_reactor, reactor *reactor) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_REACTOR_TRIGGER)
-		.add<map_object_t>(reactor->getId())
-		.add<int8_t>(reactor->getState())
-		.add<Point>(reactor->getPos())
+		.add<packet_header>(SMSG_REACTOR_TRIGGER)
+		.add<game_map_object>(reactor->get_id())
+		.add<int8_t>(reactor->get_state())
+		.add<point>(reactor->get_pos())
 		.unk<int32_t>();
 	return builder;
 }
 
-PACKET_IMPL(destroyReactor, Reactor *reactor) {
-	PacketBuilder builder;
+PACKET_IMPL(destroy_reactor, reactor *reactor) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_REACTOR_DESPAWN)
-		.add<map_object_t>(reactor->getId())
-		.add<int8_t>(reactor->getState())
-		.add<Point>(reactor->getPos());
+		.add<packet_header>(SMSG_REACTOR_DESPAWN)
+		.add<game_map_object>(reactor->get_id())
+		.add<int8_t>(reactor->get_state())
+		.add<point>(reactor->get_pos());
 	return builder;
 }
 

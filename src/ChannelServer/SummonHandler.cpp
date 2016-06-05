@@ -34,58 +34,58 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Summon.hpp"
 #include "ChannelServer/SummonsPacket.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-IdPool<summon_id_t> SummonHandler::summonIds;
+id_pool<game_summon_id> summon_handler::g_summon_ids;
 
-auto SummonHandler::useSummon(ref_ptr_t<Player> player, skill_id_t skillId, skill_level_t level) -> void {
+auto summon_handler::use_summon(ref_ptr<player> player, game_skill_id skill_id, game_skill_level level) -> void {
 	// Determine if any summons need to be removed and do it
-	switch (skillId) {
-		case Vana::Skills::Ranger::Puppet:
-		case Vana::Skills::Sniper::Puppet:
-		case Vana::Skills::WindArcher::Puppet:
-			player->getSummons()->forEach([player, skillId](Summon *summon) {
-				if (summon->getSkillId() == skillId) {
-					removeSummon(player, summon->getId(), false, SummonMessages::None);
+	switch (skill_id) {
+		case vana::skills::ranger::puppet:
+		case vana::skills::sniper::puppet:
+		case vana::skills::wind_archer::puppet:
+			player->get_summons()->for_each([player, skill_id](summon *summon) {
+				if (summon->get_skill_id() == skill_id) {
+					remove_summon(player, summon->get_id(), false, summon_messages::none);
 				}
 			});
 			break;
-		case Vana::Skills::Ranger::SilverHawk:
-		case Vana::Skills::Bowmaster::Phoenix:
-		case Vana::Skills::Sniper::GoldenEagle:
-		case Vana::Skills::Marksman::Frostprey:
-			player->getSummons()->forEach([player, skillId](Summon *summon) {
-				if (!GameLogicUtilities::isPuppet(summon->getSkillId())) {
-					removeSummon(player, summon->getId(), false, SummonMessages::None);
+		case vana::skills::ranger::silver_hawk:
+		case vana::skills::bowmaster::phoenix:
+		case vana::skills::sniper::golden_eagle:
+		case vana::skills::marksman::frostprey:
+			player->get_summons()->for_each([player, skill_id](summon *summon) {
+				if (!game_logic_utilities::is_puppet(summon->get_skill_id())) {
+					remove_summon(player, summon->get_id(), false, summon_messages::none);
 				}
 			});
 			break;
-		case Vana::Skills::Outlaw::Gaviota:
-		case Vana::Skills::Outlaw::Octopus:
-		case Vana::Skills::Corsair::WrathOfTheOctopi: {
-			int8_t maxCount = -1;
-			int8_t currentCount = 0;
-			switch (skillId) {
-				case Vana::Skills::Outlaw::Octopus: maxCount = 2; break;
-				case Vana::Skills::Corsair::WrathOfTheOctopi: maxCount = 3; break;
-				case Vana::Skills::Outlaw::Gaviota: maxCount = 4; break;
+		case vana::skills::outlaw::gaviota:
+		case vana::skills::outlaw::octopus:
+		case vana::skills::corsair::wrath_of_the_octopi: {
+			int8_t max_count = -1;
+			int8_t current_count = 0;
+			switch (skill_id) {
+				case vana::skills::outlaw::octopus: max_count = 2; break;
+				case vana::skills::corsair::wrath_of_the_octopi: max_count = 3; break;
+				case vana::skills::outlaw::gaviota: max_count = 4; break;
 			}
 
-			player->getSummons()->forEach([player, skillId, &currentCount](Summon *summon) {
-				if (summon->getSkillId() == skillId) {
-					currentCount++;
+			player->get_summons()->for_each([player, skill_id, &current_count](summon *summon) {
+				if (summon->get_skill_id() == skill_id) {
+					current_count++;
 				}
 			});
 
-			if (currentCount == maxCount) {
+			if (current_count == max_count) {
 				// We have to remove one
 				bool removed = false;
-				player->getSummons()->forEach([player, skillId, &removed](Summon *summon) {
-					if (summon->getSkillId() != skillId || removed) {
+				player->get_summons()->for_each([player, skill_id, &removed](summon *summon) {
+					if (summon->get_skill_id() != skill_id || removed) {
 						return;
 					}
-					removeSummon(player, summon->getId(), false, SummonMessages::None);
+					remove_summon(player, summon->get_id(), false, summon_messages::none);
 					removed = true;
 				});
 			}
@@ -93,161 +93,161 @@ auto SummonHandler::useSummon(ref_ptr_t<Player> player, skill_id_t skillId, skil
 		}
 		default:
 			// By default, you can only have one summon out
-			player->getSummons()->forEach([player, skillId](Summon *summon) {
-				removeSummon(player, summon->getId(), false, SummonMessages::None);
+			player->get_summons()->for_each([player, skill_id](summon *summon) {
+				remove_summon(player, summon->get_id(), false, summon_messages::none);
 			});
 	}
 
-	Point playerPosition = player->getPos();
-	Point summonPosition;
-	foothold_id_t foothold = player->getFoothold();
-	bool puppet = GameLogicUtilities::isPuppet(skillId);
+	point player_position = player->get_pos();
+	point summon_position;
+	game_foothold_id foothold = player->get_foothold();
+	bool puppet = game_logic_utilities::is_puppet(skill_id);
 	if (puppet) {
 		// TODO FIXME formula
 		// TODO FIXME skill
 		// This is not kosher
-		playerPosition.x += 200 * (player->isFacingRight() ? 1 : -1);
-		player->getMap()->findFloor(playerPosition, summonPosition, -5);
-		foothold = player->getMap()->getFootholdAtPosition(summonPosition);
+		player_position.x += 200 * (player->is_facing_right() ? 1 : -1);
+		player->get_map()->find_floor(player_position, summon_position, -5);
+		foothold = player->get_map()->get_foothold_at_position(summon_position);
 	}
 	else {
-		summonPosition = playerPosition;
+		summon_position = player_position;
 	}
-	Summon *summon = new Summon(summonIds.lease(), skillId, level, player->isFacingLeft() && !puppet, summonPosition);
-	if (summon->getMovementType() == Summon::Static) {
-		summon->resetMovement(foothold, summon->getPos(), summon->getStance());
+	summon *value = new summon{g_summon_ids.lease(), skill_id, level, player->is_facing_left() && !puppet, summon_position};
+	if (value->get_movement_type() == summon::fixed) {
+		value->reset_movement(foothold, value->get_pos(), value->get_stance());
 	}
 
-	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
-	player->getSummons()->addSummon(summon, skill->buffTime);
-	player->sendMap(Packets::showSummon(player->getId(), summon, false));
+	auto skill = channel_server::get_instance().get_skill_data_provider().get_skill(skill_id, level);
+	player->get_summons()->add_summon(value, skill->buff_time);
+	player->send_map(packets::show_summon(player->get_id(), value, false));
 }
 
-auto SummonHandler::removeSummon(ref_ptr_t<Player> player, summon_id_t summonId, bool packetOnly, int8_t showMessage, bool fromTimer) -> void {
-	Summon *summon = player->getSummons()->getSummon(summonId);
+auto summon_handler::remove_summon(ref_ptr<player> player, game_summon_id summon_id, bool packet_only, int8_t show_message, bool from_timer) -> void {
+	summon *summon = player->get_summons()->get_summon(summon_id);
 	if (summon != nullptr) {
-		player->sendMap(Packets::removeSummon(player->getId(), summon, showMessage));
-		if (!packetOnly) {
-			player->getSummons()->removeSummon(summonId, fromTimer);
+		player->send_map(packets::remove_summon(player->get_id(), summon, show_message));
+		if (!packet_only) {
+			player->get_summons()->remove_summon(summon_id, from_timer);
 		}
 	}
 }
 
-auto SummonHandler::showSummon(ref_ptr_t<Player> player) -> void {
-	player->getSummons()->forEach([player](Summon *summon) {
-		summon->setPos(player->getPos());
-		player->sendMap(Packets::showSummon(player->getId(), summon));
+auto summon_handler::show_summon(ref_ptr<player> player) -> void {
+	player->get_summons()->for_each([player](summon *summon) {
+		summon->set_pos(player->get_pos());
+		player->send_map(packets::show_summon(player->get_id(), summon));
 	});
 }
 
-auto SummonHandler::showSummons(ref_ptr_t<Player> fromPlayer, ref_ptr_t<Player> toPlayer) -> void {
-	fromPlayer->getSummons()->forEach([fromPlayer, toPlayer](Summon *summon) {
-		toPlayer->send(Packets::showSummon(fromPlayer->getId(), summon));
+auto summon_handler::show_summons(ref_ptr<player> from_player, ref_ptr<player> to_player) -> void {
+	from_player->get_summons()->for_each([from_player, to_player](summon *summon) {
+		to_player->send(packets::show_summon(from_player->get_id(), summon));
 	});
 }
 
-auto SummonHandler::moveSummon(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	summon_id_t summonId = reader.get<summon_id_t>();
+auto summon_handler::move_summon(ref_ptr<player> player, packet_reader &reader) -> void {
+	game_summon_id summon_id = reader.get<game_summon_id>();
 
 	// I am not certain what this is, but in the Odin source they seemed to think it was original position. However, it caused AIDS.
 	reader.unk<uint32_t>();
 
-	Summon *summon = player->getSummons()->getSummon(summonId);
-	if (summon == nullptr || summon->getMovementType() == Summon::Static) {
+	summon *summon = player->get_summons()->get_summon(summon_id);
+	if (summon == nullptr || summon->get_movement_type() == summon::fixed) {
 		// Up to no good, lag, or something else
 		return;
 	}
 
-	MovementHandler::parseMovement(summon, reader);
+	movement_handler::parse_movement(summon, reader);
 	reader.reset(10);
-	player->sendMap(Packets::moveSummon(player->getId(), summon, summon->getPos(), reader.getBuffer(), (reader.getBufferLength() - 9)));
+	player->send_map(packets::move_summon(player->get_id(), summon, summon->get_pos(), reader.get_buffer(), (reader.get_buffer_length() - 9)));
 }
 
-auto SummonHandler::damageSummon(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	summon_id_t summonId = reader.get<summon_id_t>();
+auto summon_handler::damage_summon(ref_ptr<player> player, packet_reader &reader) -> void {
+	game_summon_id summon_id = reader.get<game_summon_id>();
 	int8_t unk = reader.get<int8_t>();
-	damage_t damage = reader.get<damage_t>();
-	map_object_t mobId = reader.get<map_object_t>();
+	game_damage damage = reader.get<game_damage>();
+	game_map_object mob_id = reader.get<game_map_object>();
 
-	if (Summon *summon = player->getSummons()->getSummon(summonId)) {
-		if (!GameLogicUtilities::isPuppet(summon->getSkillId())) {
+	if (summon *summon = player->get_summons()->get_summon(summon_id)) {
+		if (!game_logic_utilities::is_puppet(summon->get_skill_id())) {
 			// Hacking
 			return;
 		}
 
-		summon->doDamage(damage);
-		if (summon->getHp() <= 0) {
-			removeSummon(player, summonId, false, SummonMessages::None, true);
+		summon->do_damage(damage);
+		if (summon->get_hp() <= 0) {
+			remove_summon(player, summon_id, false, summon_messages::none, true);
 		}
 	}
 }
 
-auto SummonHandler::makeBuff(ref_ptr_t<Player> player, item_id_t itemId) -> BuffInfo {
-	const auto &buffData = ChannelServer::getInstance().getBuffDataProvider().getBuffsByEffect();
-	switch (itemId) {
-		case Items::BeholderHexWatk: return buffData.physicalAttack;
-		case Items::BeholderHexWdef: return buffData.physicalDefense;
-		case Items::BeholderHexMdef: return buffData.magicDefense;
-		case Items::BeholderHexAcc: return buffData.accuracy;
-		case Items::BeholderHexAvo: return buffData.avoid;
+auto summon_handler::make_buff(ref_ptr<player> player, game_item_id item_id) -> buff_info {
+	const auto &buff_data = channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect();
+	switch (item_id) {
+		case items::beholder_hex_watk: return buff_data.physical_attack;
+		case items::beholder_hex_wdef: return buff_data.physical_defense;
+		case items::beholder_hex_mdef: return buff_data.magic_defense;
+		case items::beholder_hex_acc: return buff_data.accuracy;
+		case items::beholder_hex_avo: return buff_data.avoid;
 	}
 	// Hacking?
 	throw std::invalid_argument{"invalid_argument"};
 }
 
-auto SummonHandler::makeActiveBuff(ref_ptr_t<Player> player, const BuffInfo &data, item_id_t itemId, const SkillLevelInfo *skillInfo) -> BuffPacketValues {
-	BuffPacketValues buff;
-	buff.player.types[data.getBuffByte()] = static_cast<uint8_t>(data.getBuffType());
-	switch (itemId) {
-		case Items::BeholderHexWdef: buff.player.values.push_back(BuffPacketValue::fromValue(2, skillInfo->wDef)); break;
-		case Items::BeholderHexMdef: buff.player.values.push_back(BuffPacketValue::fromValue(2, skillInfo->mDef)); break;
-		case Items::BeholderHexAcc: buff.player.values.push_back(BuffPacketValue::fromValue(2, skillInfo->acc)); break;
-		case Items::BeholderHexAvo: buff.player.values.push_back(BuffPacketValue::fromValue(2, skillInfo->avo)); break;
-		case Items::BeholderHexWatk: buff.player.values.push_back(BuffPacketValue::fromValue(2, skillInfo->wAtk)); break;
+auto summon_handler::make_active_buff(ref_ptr<player> player, const buff_info &data, game_item_id item_id, const skill_level_info *skill_info) -> buff_packet_values {
+	buff_packet_values buff;
+	buff.player.types[data.get_buff_byte()] = static_cast<uint8_t>(data.get_buff_type());
+	switch (item_id) {
+		case items::beholder_hex_wdef: buff.player.values.push_back(buff_packet_value::from_value(2, skill_info->w_def)); break;
+		case items::beholder_hex_mdef: buff.player.values.push_back(buff_packet_value::from_value(2, skill_info->m_def)); break;
+		case items::beholder_hex_acc: buff.player.values.push_back(buff_packet_value::from_value(2, skill_info->acc)); break;
+		case items::beholder_hex_avo: buff.player.values.push_back(buff_packet_value::from_value(2, skill_info->avo)); break;
+		case items::beholder_hex_watk: buff.player.values.push_back(buff_packet_value::from_value(2, skill_info->w_atk)); break;
 	}
 	return buff;
 }
 
-auto SummonHandler::summonSkill(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	summon_id_t summonId = reader.get<summon_id_t>();
-	Summon *summon = player->getSummons()->getSummon(summonId);
+auto summon_handler::summon_skill(ref_ptr<player> player, packet_reader &reader) -> void {
+	game_summon_id summon_id = reader.get<game_summon_id>();
+	summon *summon = player->get_summons()->get_summon(summon_id);
 	if (summon == nullptr) {
 		return;
 	}
 
-	skill_id_t skillId = reader.get<skill_id_t>();
+	game_skill_id skill_id = reader.get<game_skill_id>();
 	uint8_t display = reader.get<uint8_t>();
-	skill_level_t level = player->getSkills()->getSkillLevel(skillId);
-	auto skillInfo = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
-	if (skillInfo == nullptr) {
+	game_skill_level level = player->get_skills()->get_skill_level(skill_id);
+	auto skill_info = channel_server::get_instance().get_skill_data_provider().get_skill(skill_id, level);
+	if (skill_info == nullptr) {
 		// Hacking
 		return;
 	}
-	switch (skillId) {
-		case Vana::Skills::DarkKnight::HexOfBeholder: {
-			int8_t buffId = reader.get<int8_t>();
-			if (buffId < 0 || buffId > ((level - 1) / 5)) {
+	switch (skill_id) {
+		case vana::skills::dark_knight::hex_of_beholder: {
+			int8_t buff_id = reader.get<int8_t>();
+			if (buff_id < 0 || buff_id > ((level - 1) / 5)) {
 				// Hacking
 				return;
 			}
 
-			item_id_t itemId = Items::BeholderHexWdef + buffId;
-			seconds_t duration = skillInfo->buffTime;
-			if (Buffs::addBuff(player, itemId, duration) == Result::Failure) {
+			game_item_id item_id = items::beholder_hex_wdef + buff_id;
+			seconds duration = skill_info->buff_time;
+			if (buffs::add_buff(player, item_id, duration) == result::failure) {
 				return;
 			}
 			break;
 		}
-		case Vana::Skills::DarkKnight::AuraOfBeholder:
-			player->getStats()->modifyHp(skillInfo->hpProp);
+		case vana::skills::dark_knight::aura_of_beholder:
+			player->get_stats()->modify_hp(skill_info->hp_prop);
 			break;
 		default:
 			// Hacking
 			return;
 	}
 
-	player->sendMap(Packets::summonSkill(player->getId(), skillId, display, level), true);
-	player->sendMap(Packets::summonSkillEffect(player->getId(), Vana::Skills::DarkKnight::Beholder, display, level));
+	player->send_map(packets::summon_skill(player->get_id(), skill_id, display, level), true);
+	player->send_map(packets::summon_skill_effect(player->get_id(), vana::skills::dark_knight::beholder, display, level));
 }
 
 }

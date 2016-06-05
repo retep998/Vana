@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ThreadPool.hpp"
 
-namespace Vana {
+namespace vana {
 
-ThreadPool::_impl ThreadPool::s_pool{};
+thread_pool::_impl thread_pool::s_pool{};
 
 }

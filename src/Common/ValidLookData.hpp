@@ -20,14 +20,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <vector>
 
-namespace Vana {
-	struct ValidLookData {
+namespace vana {
+	struct valid_look_data {
 		auto clear() -> void {
 			hair.clear();
 			faces.clear();
 		}
 
-		vector_t<hair_id_t> hair;
-		vector_t<face_id_t> faces;
+		vector<game_hair_id> hair;
+		vector<game_face_id> faces;
 	};
 }

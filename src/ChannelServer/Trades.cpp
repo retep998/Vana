@@ -24,68 +24,68 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/TradeHandler.hpp"
 #include <functional>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-seconds_t Trades::TradeTimeout = seconds_t{180};
+seconds trades::trade_timeout = seconds{180};
 
-Trades::Trades() :
-	m_tradeIds{1, 100000}
+trades::trades() :
+	m_trade_ids{1, 100000}
 {
 }
 
-auto Trades::newTrade(ref_ptr_t<Player> start, ref_ptr_t<Player> recv) -> trade_id_t {
-	trade_id_t id = m_tradeIds.lease();
-	m_trades[id] = make_ref_ptr<ActiveTrade>(start, recv, id);
-	startTimeout(id, start);
+auto trades::new_trade(ref_ptr<player> start, ref_ptr<player> recv) -> game_trade_id {
+	game_trade_id id = m_trade_ids.lease();
+	m_trades[id] = make_ref_ptr<active_trade>(start, recv, id);
+	start_timeout(id, start);
 	return id;
 }
 
-auto Trades::removeTrade(trade_id_t id) -> void {
-	if (getTimerSecondsRemaining(id).count() > 0) {
-		stopTimeout(id);
+auto trades::remove_trade(game_trade_id id) -> void {
+	if (get_timer_seconds_remaining(id).count() > 0) {
+		stop_timeout(id);
 	}
-	auto p = m_trades[id]->getSender();
+	auto p = m_trades[id]->get_sender();
 	if (p != nullptr) {
-		p->setTrading(false);
-		p->setTradeId(0);
+		p->set_trading(false);
+		p->set_trade_id(0);
 	}
-	p = m_trades[id]->getReceiver();
+	p = m_trades[id]->get_receiver();
 	if (p != nullptr) {
-		p->setTrading(false);
-		p->setTradeId(0);
+		p->set_trading(false);
+		p->set_trade_id(0);
 	}
 	m_trades.erase(id);
-	m_tradeIds.release(id);
+	m_trade_ids.release(id);
 }
 
-auto Trades::getTrade(trade_id_t id) -> ActiveTrade * {
+auto trades::get_trade(game_trade_id id) -> active_trade * {
 	return m_trades.find(id) != std::end(m_trades) ? m_trades[id].get() : nullptr;
 }
 
-auto Trades::getTimerSecondsRemaining(trade_id_t id) -> seconds_t {
-	Vana::Timer::Id timerId{TimerType::TradeTimer, id};
-	return getTimers()->getRemainingTime<seconds_t>(timerId);
+auto trades::get_timer_seconds_remaining(game_trade_id id) -> seconds {
+	vana::timer::id timer_id{timer_type::trade_timer, id};
+	return get_timers()->get_remaining_time<seconds>(timer_id);
 }
 
-auto Trades::timeout(ref_ptr_t<Player> sender) -> void {
-	TradeHandler::cancelTrade(sender);
+auto trades::timeout(ref_ptr<player> sender) -> void {
+	trade_handler::cancel_trade(sender);
 }
 
-auto Trades::stopTimeout(trade_id_t id) -> void {
-	Vana::Timer::Id timerId{TimerType::TradeTimer, id};
-	getTimers()->removeTimer(timerId);
+auto trades::stop_timeout(game_trade_id id) -> void {
+	vana::timer::id timer_id{timer_type::trade_timer, id};
+	get_timers()->remove_timer(timer_id);
 }
 
-auto Trades::startTimeout(trade_id_t id, ref_ptr_t<Player> sender) -> void {
-	Vana::Timer::Id timerId{TimerType::TradeTimer, id};
-	Vana::Timer::Timer::create(
-		[this, sender](const time_point_t &now) {
+auto trades::start_timeout(game_trade_id id, ref_ptr<player> sender) -> void {
+	vana::timer::id timer_id{timer_type::trade_timer, id};
+	vana::timer::timer::create(
+		[this, sender](const time_point &now) {
 			this->timeout(sender);
 		},
-		timerId,
+		timer_id,
 		nullptr,
-		TradeTimeout);
+		trade_timeout);
 }
 
 }

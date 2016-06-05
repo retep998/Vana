@@ -26,209 +26,209 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/SmsgHeader.hpp"
 #include <string>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-Npc::Npc(npc_id_t npcId, ref_ptr_t<Player> player, quest_id_t questId, bool isStart) :
+npc::npc(game_npc_id npc_id, ref_ptr<player> player, game_quest_id quest_id, bool is_start) :
 	m_player{player},
-	m_npcId{npcId}
+	m_npc_id{npc_id}
 {
-	initScript(getScript(questId, isStart));
+	init_script(get_script(quest_id, is_start));
 }
 
-Npc::Npc(npc_id_t npcId, ref_ptr_t<Player> player, const Point &pos, quest_id_t questId, bool isStart) :
+npc::npc(game_npc_id npc_id, ref_ptr<player> player, const point &pos, game_quest_id quest_id, bool is_start) :
 	m_pos{pos},
 	m_player{player},
-	m_npcId{npcId}
+	m_npc_id{npc_id}
 {
-	initScript(getScript(questId, isStart));
+	init_script(get_script(quest_id, is_start));
 }
 
-Npc::Npc(npc_id_t npcId, ref_ptr_t<Player> player, const string_t &script) :
+npc::npc(game_npc_id npc_id, ref_ptr<player> player, const string &script) :
 	m_player{player},
-	m_npcId{npcId}
+	m_npc_id{npc_id}
 {
-	initScript(script);
+	init_script(script);
 }
 
-auto Npc::hasScript(int32_t npcId, quest_id_t questId, bool start) -> bool {
-	string_t script = "";
-	auto &channel = ChannelServer::getInstance();
-	if (questId == 0) {
-		script = channel.getScriptDataProvider().getScript(&channel, npcId, ScriptTypes::Npc);
+auto npc::has_script(int32_t npc_id, game_quest_id quest_id, bool start) -> bool {
+	string script = "";
+	auto &channel = channel_server::get_instance();
+	if (quest_id == 0) {
+		script = channel.get_script_data_provider().get_script(&channel, npc_id, script_types::npc);
 	}
 	else {
-		script = channel.getScriptDataProvider().getQuestScript(&channel, questId, start ? 0 : 1);
+		script = channel.get_script_data_provider().get_quest_script(&channel, quest_id, start ? 0 : 1);
 	}
-	return FileUtilities::fileExists(script);
+	return utilities::file::exists(script);
 }
 
-auto Npc::getScript(quest_id_t questId, bool start) -> string_t {
-	auto &channel = ChannelServer::getInstance();
-	if (questId == 0) {
-		return channel.getScriptDataProvider().getScript(&channel, m_npcId, ScriptTypes::Npc);
+auto npc::get_script(game_quest_id quest_id, bool start) -> string {
+	auto &channel = channel_server::get_instance();
+	if (quest_id == 0) {
+		return channel.get_script_data_provider().get_script(&channel, m_npc_id, script_types::npc);
 	}
-	return channel.getScriptDataProvider().getQuestScript(&channel, questId, start ? 0 : 1);
+	return channel.get_script_data_provider().get_quest_script(&channel, quest_id, start ? 0 : 1);
 }
 
-auto Npc::initScript(const string_t &filename) -> void {
-	if (FileUtilities::fileExists(filename)) {
-		m_luaNpc = make_owned_ptr<LuaNpc>(filename, m_player->getId());
-		m_player->setNpc(this);
+auto npc::init_script(const string &filename) -> void {
+	if (utilities::file::exists(filename)) {
+		m_lua_npc = make_owned_ptr<lua_npc>(filename, m_player->get_id());
+		m_player->set_npc(this);
 	}
 	else {
 		end();
 	}
 }
 
-auto Npc::setEndScript(npc_id_t npcId, const string_t &fullscript) -> void {
-	m_nextNpc = npcId;
+auto npc::set_end_script(game_npc_id npc_id, const string &fullscript) -> void {
+	m_next_npc = npc_id;
 	m_script = fullscript;
 }
 
-auto Npc::checkEnd() -> bool {
-	if (isEnd()) {
-		if (m_nextNpc != 0) {
-			Npc *npc = new Npc{m_nextNpc, m_player, m_script};
-			npc->run();
+auto npc::check_end() -> bool {
+	if (is_end()) {
+		if (m_next_npc != 0) {
+			npc *next_npc = new npc{m_next_npc, m_player, m_script};
+			next_npc->run();
 		}
-		m_player->setNpc(nullptr);
+		m_player->set_npc(nullptr);
 		return true;
 	}
 
 	return false;
 }
 
-auto Npc::run() -> void {
-	if (checkEnd()) {
+auto npc::run() -> void {
+	if (check_end()) {
 		return;
 	}
-	m_luaNpc->run();
-	checkEnd();
+	m_lua_npc->run();
+	check_end();
 }
 
-auto Npc::sendSimple() -> void {
-	m_sentDialog = Packets::Npc::Dialogs::Simple;
-	m_player->send(Packets::Npc::npcChat(m_sentDialog, m_npcId, m_text));
+auto npc::send_simple() -> void {
+	m_sent_dialog = packets::npc::dialogs::simple;
+	m_player->send(packets::npc::npc_chat(m_sent_dialog, m_npc_id, m_text));
 	m_text = "";
 }
 
-auto Npc::sendYesNo() -> void {
-	m_sentDialog = Packets::Npc::Dialogs::YesNo;
-	m_player->send(Packets::Npc::npcChat(m_sentDialog, m_npcId, m_text));
+auto npc::send_yes_no() -> void {
+	m_sent_dialog = packets::npc::dialogs::yes_no;
+	m_player->send(packets::npc::npc_chat(m_sent_dialog, m_npc_id, m_text));
 	m_text = "";
 }
 
-auto Npc::sendDialog(bool back, bool next, bool save) -> void {
+auto npc::send_dialog(bool back, bool next, bool save) -> void {
 	if (save) {
 		// Store the current NPC state, for future "back" button use
-		m_previousStates.push_back(make_ref_ptr<NpcChatState>(m_text, back, next));
+		m_previous_states.push_back(make_ref_ptr<npc_chat_state>(m_text, back, next));
 	}
 
-	m_sentDialog = Packets::Npc::Dialogs::Normal;
-	m_player->send(Packets::Npc::npcChat(m_sentDialog, m_npcId, m_text)
+	m_sent_dialog = packets::npc::dialogs::normal;
+	m_player->send(packets::npc::npc_chat(m_sent_dialog, m_npc_id, m_text)
 		.add<bool>(back)
 		.add<bool>(next));
 	m_text = "";
 }
 
-auto Npc::sendDialog(ref_ptr_t<NpcChatState> npcState) -> void {
-	m_text = npcState->text;
-	sendDialog(npcState->back, npcState->next, false);
+auto npc::send_dialog(ref_ptr<npc_chat_state> npc_state) -> void {
+	m_text = npc_state->text;
+	send_dialog(npc_state->back, npc_state->next, false);
 }
 
-auto Npc::sendAcceptDecline() -> void {
-	m_sentDialog = Packets::Npc::Dialogs::AcceptDecline;
-	m_player->send(Packets::Npc::npcChat(m_sentDialog, m_npcId, m_text));
+auto npc::send_accept_decline() -> void {
+	m_sent_dialog = packets::npc::dialogs::accept_decline;
+	m_player->send(packets::npc::npc_chat(m_sent_dialog, m_npc_id, m_text));
 	m_text = "";
 }
 
-auto Npc::sendAcceptDeclineNoExit() -> void {
-	m_sentDialog = Packets::Npc::Dialogs::AcceptDeclineNoExit;
-	m_player->send(Packets::Npc::npcChat(m_sentDialog, m_npcId, m_text));
+auto npc::send_accept_decline_no_exit() -> void {
+	m_sent_dialog = packets::npc::dialogs::accept_decline_no_exit;
+	m_player->send(packets::npc::npc_chat(m_sent_dialog, m_npc_id, m_text));
 	m_text = "";
 }
 
-auto Npc::sendQuiz(int8_t type, int32_t objectId, int32_t correct, int32_t questions, int32_t time) -> void {
-	m_sentDialog = Packets::Npc::Dialogs::Quiz;
-	m_player->send(Packets::Npc::npcChat(m_sentDialog, m_npcId, "", false)
+auto npc::send_quiz(int8_t type, int32_t object_id, int32_t correct, int32_t questions, int32_t time) -> void {
+	m_sent_dialog = packets::npc::dialogs::quiz;
+	m_player->send(packets::npc::npc_chat(m_sent_dialog, m_npc_id, "", false)
 		.add<int8_t>(0)
 		.add<int32_t>(type)
-		.add<int32_t>(objectId)
+		.add<int32_t>(object_id)
 		.add<int32_t>(correct)
 		.add<int32_t>(questions)
 		.add<int32_t>(time));
 }
 
-auto Npc::sendQuestion(const string_t &question, const string_t &clue, int32_t minLength, int32_t maxLength, int32_t time) -> void {
-	m_sentDialog = Packets::Npc::Dialogs::Question;
-	m_player->send(Packets::Npc::npcChat(m_sentDialog, m_npcId, "", false)
+auto npc::send_question(const string &question, const string &clue, int32_t min_length, int32_t max_length, int32_t time) -> void {
+	m_sent_dialog = packets::npc::dialogs::question;
+	m_player->send(packets::npc::npc_chat(m_sent_dialog, m_npc_id, "", false)
 		.add<int8_t>(0x00) // If it's 0x01, it does something else
-		.add<string_t>(m_text)
-		.add<string_t>(question) // Another question thing
-		.add<string_t>(clue)
-		.add<int32_t>(minLength)
-		.add<int32_t>(maxLength)
+		.add<string>(m_text)
+		.add<string>(question) // Another question thing
+		.add<string>(clue)
+		.add<int32_t>(min_length)
+		.add<int32_t>(max_length)
 		.add<int32_t>(time));
 }
 
-auto Npc::sendGetText(int16_t min, int16_t max, const string_t &def) -> void {
-	m_sentDialog = Packets::Npc::Dialogs::GetText;
-	m_player->send(Packets::Npc::npcChat(m_sentDialog, m_npcId, m_text)
-		.add<string_t>(def)
+auto npc::send_get_text(int16_t min, int16_t max, const string &def) -> void {
+	m_sent_dialog = packets::npc::dialogs::get_text;
+	m_player->send(packets::npc::npc_chat(m_sent_dialog, m_npc_id, m_text)
+		.add<string>(def)
 		.add<int16_t>(min)
 		.add<int16_t>(max));
 	m_text = "";
 }
 
-auto Npc::sendGetNumber(int32_t def, int32_t min, int32_t max) -> void {
-	m_sentDialog = Packets::Npc::Dialogs::GetNumber;
-	m_player->send(Packets::Npc::npcChat(m_sentDialog, m_npcId, m_text)
+auto npc::send_get_number(int32_t def, int32_t min, int32_t max) -> void {
+	m_sent_dialog = packets::npc::dialogs::get_number;
+	m_player->send(packets::npc::npc_chat(m_sent_dialog, m_npc_id, m_text)
 		.add<int32_t>(def)
 		.add<int32_t>(min)
 		.add<int32_t>(max));
 	m_text = "";
 }
 
-auto Npc::sendStyle(vector_t<int32_t> styles) -> void {
-	m_sentDialog = Packets::Npc::Dialogs::Style;
-	m_player->send(Packets::Npc::npcChat(m_sentDialog, m_npcId, m_text)
+auto npc::send_style(vector<int32_t> styles) -> void {
+	m_sent_dialog = packets::npc::dialogs::style;
+	m_player->send(packets::npc::npc_chat(m_sent_dialog, m_npc_id, m_text)
 		.add<uint8_t>(static_cast<uint8_t>(styles.size()))
-		.add<vector_t<int32_t>>(styles, styles.size()));
+		.add<vector<int32_t>>(styles, styles.size()));
 	m_text = "";
 }
 
-auto Npc::proceedBack() -> void {
+auto npc::proceed_back() -> void {
 	if (m_state == 0) {
 		// Hacking
 		return;
 	}
 
 	m_state--;
-	sendDialog(m_previousStates[m_state]);
+	send_dialog(m_previous_states[m_state]);
 }
 
-auto Npc::proceedNext() -> void {
+auto npc::proceed_next() -> void {
 	m_state++;
-	if (m_state < m_previousStates.size()) {
+	if (m_state < m_previous_states.size()) {
 		// Usage of "next" button after the "back" button
-		sendDialog(m_previousStates[m_state]);
+		send_dialog(m_previous_states[m_state]);
 	}
 	else {
-		m_luaNpc->proceedNext();
+		m_lua_npc->proceed_next();
 	}
 }
 
-auto Npc::proceedSelection(uint8_t selected) -> void {
-	m_luaNpc->proceedSelection(selected);
+auto npc::proceed_selection(uint8_t selected) -> void {
+	m_lua_npc->proceed_selection(selected);
 }
 
-auto Npc::proceedNumber(int32_t number) -> void {
-	m_luaNpc->proceedNumber(number);
+auto npc::proceed_number(int32_t number) -> void {
+	m_lua_npc->proceed_number(number);
 }
 
-auto Npc::proceedText(const string_t &text) -> void {
-	m_luaNpc->proceedText(text);
+auto npc::proceed_text(const string &text) -> void {
+	m_lua_npc->proceed_text(text);
 }
 
 }

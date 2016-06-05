@@ -24,27 +24,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <unordered_map>
 
-namespace Vana {
-	class PacketBuilder;
+namespace vana {
+	class packet_builder;
 
-	namespace WorldServer {
-		class Channel;
-		class WorldServerAcceptedSession;
+	namespace world_server {
+		class channel;
+		class world_server_accepted_session;
 
-		class Channels {
+		class channels {
 		public:
-			auto registerChannel(ref_ptr_t<WorldServerAcceptedSession> session, channel_id_t channelId, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void;
-			auto removeChannel(channel_id_t channelId) -> void;
-			auto getChannel(channel_id_t num) -> Channel *;
-			auto increasePopulation(channel_id_t channelId) -> void;
-			auto decreasePopulation(channel_id_t channelId) -> void;
-			auto getFirstAvailableChannelId() -> channel_id_t;
+			auto register_channel(ref_ptr<world_server_accepted_session> session, game_channel_id channel_id, const ip &channel_ip, const ip_matrix &ext_ip, connection_port port) -> void;
+			auto remove_channel(game_channel_id channel_id) -> void;
+			auto get_channel(game_channel_id num) -> channel *;
+			auto increase_population(game_channel_id channel_id) -> void;
+			auto decrease_population(game_channel_id channel_id) -> void;
+			auto get_first_available_channel_id() -> game_channel_id;
 			auto disconnect() -> void;
-			auto send(channel_id_t channelId, const PacketBuilder &builder) -> void;
-			auto send(const vector_t<channel_id_t> &channels, const PacketBuilder &builder) -> void;
-			auto send(const PacketBuilder &builder) -> void;
+			auto send(game_channel_id channel_id, const packet_builder &builder) -> void;
+			auto send(const vector<game_channel_id> &channels, const packet_builder &builder) -> void;
+			auto send(const packet_builder &builder) -> void;
 		private:
-			hash_map_t<channel_id_t, ref_ptr_t<Channel>> m_channels;
+			hash_map<game_channel_id, ref_ptr<channel>> m_channels;
 		};
 	}
 }

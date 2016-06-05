@@ -21,12 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <map>
 #include <vector>
 
-namespace Vana {
-	struct ShopItemInfo;
+namespace vana {
+	struct shop_item_info;
 
-	struct ShopData {
-		npc_id_t npc;
-		vector_t<const ShopItemInfo *> items;
-		ord_map_t<item_id_t, double> rechargeables;
+	struct shop_data {
+		game_npc_id npc;
+		vector<const shop_item_info *> items;
+		ord_map<game_item_id, double> rechargeables;
 	};
 }

@@ -24,158 +24,158 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Skills.hpp"
 #include "ChannelServer/SmsgHeader.hpp"
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
-namespace Skills {
+namespace vana {
+namespace channel_server {
+namespace packets {
+namespace skills {
 
-PACKET_IMPL(addSkill, skill_id_t skillId, const PlayerSkillInfo &skillInfo) {
-	PacketBuilder builder;
+PACKET_IMPL(add_skill, game_skill_id skill_id, const player_skill_info &skill_info) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_SKILL_ADD)
+		.add<packet_header>(SMSG_SKILL_ADD)
 		.add<int8_t>(1)
 		.add<int16_t>(1)
-		.add<skill_id_t>(skillId)
-		.add<int32_t>(skillInfo.level)
-		.add<int32_t>(skillInfo.playerMaxSkillLevel)
+		.add<game_skill_id>(skill_id)
+		.add<int32_t>(skill_info.level)
+		.add<int32_t>(skill_info.player_max_skill_level)
 		.add<int8_t>(1);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(showSkill, player_id_t playerId, skill_id_t skillId, skill_level_t level, uint8_t direction, bool party, bool self) {
-	SplitPacketBuilder builder;
-	PacketBuilder buffer;
+SPLIT_PACKET_IMPL(show_skill, game_player_id player_id, game_skill_id skill_id, game_skill_level level, uint8_t direction, bool party, bool self) {
+	split_packet_builder builder;
+	packet_builder buffer;
 	buffer
 		.add<int8_t>(party ? 2 : 1)
-		.add<skill_id_t>(skillId)
-		.add<skill_level_t>(level);
+		.add<game_skill_id>(skill_id)
+		.add<game_skill_level>(level);
 
-	switch (skillId) {
-		case Vana::Skills::Hero::MonsterMagnet:
-		case Vana::Skills::Paladin::MonsterMagnet:
-		case Vana::Skills::DarkKnight::MonsterMagnet:
+	switch (skill_id) {
+		case vana::skills::hero::monster_magnet:
+		case vana::skills::paladin::monster_magnet:
+		case vana::skills::dark_knight::monster_magnet:
 			buffer.add<uint8_t>(direction);
 			break;
 	}
 
 	if (self) {
 		if (party) {
-			builder.player.add<header_t>(SMSG_THEATRICS);
+			builder.player.add<packet_header>(SMSG_THEATRICS);
 		}
 		else {
 			builder.player
-				.add<header_t>(SMSG_SKILL_SHOW)
-				.add<player_id_t>(playerId);
+				.add<packet_header>(SMSG_SKILL_SHOW)
+				.add<game_player_id>(player_id);
 		}
-		builder.player.addBuffer(buffer);
+		builder.player.add_buffer(buffer);
 	}
 	else {
 		builder.map
-			.add<header_t>(SMSG_SKILL_SHOW)
-			.add<player_id_t>(playerId)
-			.addBuffer(buffer);
+			.add<packet_header>(SMSG_SKILL_SHOW)
+			.add<game_player_id>(player_id)
+			.add_buffer(buffer);
 	}
 	return builder;
 }
 
-PACKET_IMPL(healHp, health_t hp) {
-	PacketBuilder builder;
+PACKET_IMPL(heal_hp, game_health hp) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_THEATRICS)
+		.add<packet_header>(SMSG_THEATRICS)
 		.add<int8_t>(0x0A)
-		.add<health_t>(hp);
+		.add<game_health>(hp);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(showSkillEffect, player_id_t playerId, skill_id_t skillId) {
-	SplitPacketBuilder builder;
-	PacketBuilder buffer;
-	switch (skillId) {
-		case Vana::Skills::FpWizard::MpEater:
-		case Vana::Skills::IlWizard::MpEater:
-		case Vana::Skills::Cleric::MpEater:
+SPLIT_PACKET_IMPL(show_skill_effect, game_player_id player_id, game_skill_id skill_id) {
+	split_packet_builder builder;
+	packet_builder buffer;
+	switch (skill_id) {
+		case vana::skills::fp_wizard::mp_eater:
+		case vana::skills::il_wizard::mp_eater:
+		case vana::skills::cleric::mp_eater:
 			buffer
 				.add<int8_t>(1)
-				.add<skill_id_t>(skillId)
+				.add<game_skill_id>(skill_id)
 				.add<int8_t>(1);
 			break;
-		case Vana::Skills::ChiefBandit::MesoGuard:
-		case Vana::Skills::DragonKnight::DragonBlood:
+		case vana::skills::chief_bandit::meso_guard:
+		case vana::skills::dragon_knight::dragon_blood:
 			buffer
 				.add<int8_t>(5)
-				.add<skill_id_t>(skillId);
+				.add<game_skill_id>(skill_id);
 			break;
 		default:
 			return builder;
 	}
 
 	builder.player
-		.add<header_t>(SMSG_THEATRICS)
-		.addBuffer(buffer);
+		.add<packet_header>(SMSG_THEATRICS)
+		.add_buffer(buffer);
 
 	builder.map
-		.add<header_t>(SMSG_SKILL_SHOW)
-		.add<player_id_t>(playerId)
-		.addBuffer(buffer);
+		.add<packet_header>(SMSG_SKILL_SHOW)
+		.add<game_player_id>(player_id)
+		.add_buffer(buffer);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(showChargeOrStationarySkill, player_id_t playerId, const ChargeOrStationarySkillData &info) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(show_charge_or_stationary_skill, game_player_id player_id, const charge_or_stationary_skill_data &info) {
+	split_packet_builder builder;
 	builder.map
-		.add<header_t>(SMSG_CHARGE_OR_STATIONARY_SKILL)
-		.add<player_id_t>(playerId)
-		.add<skill_id_t>(info.skillId)
-		.add<skill_level_t>(info.level)
+		.add<packet_header>(SMSG_CHARGE_OR_STATIONARY_SKILL)
+		.add<game_player_id>(player_id)
+		.add<game_skill_id>(info.skill_id)
+		.add<game_skill_level>(info.level)
 		.add<int8_t>(info.direction)
-		.add<int8_t>(info.weaponSpeed);
+		.add<int8_t>(info.weapon_speed);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(endChargeOrStationarySkill, player_id_t playerId, const ChargeOrStationarySkillData &info) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(end_charge_or_stationary_skill, game_player_id player_id, const charge_or_stationary_skill_data &info) {
+	split_packet_builder builder;
 	builder.map
-		.add<header_t>(SMSG_CHARGE_OR_STATIONARY_SKILL_END)
-		.add<player_id_t>(playerId)
-		.add<skill_id_t>(info.skillId);
+		.add<packet_header>(SMSG_CHARGE_OR_STATIONARY_SKILL_END)
+		.add<game_player_id>(player_id)
+		.add<game_skill_id>(info.skill_id);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(showMagnetSuccess, map_object_t mapMobId, uint8_t success) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(show_magnet_success, game_map_object map_mob_id, uint8_t success) {
+	split_packet_builder builder;
 	builder.map
-		.add<header_t>(SMSG_MOB_DRAGGED)
-		.add<map_object_t>(mapMobId)
+		.add<packet_header>(SMSG_MOB_DRAGGED)
+		.add<game_map_object>(map_mob_id)
 		.add<uint8_t>(success);
 	return builder;
 }
 
-PACKET_IMPL(sendCooldown, skill_id_t skillId, seconds_t time) {
-	PacketBuilder builder;
+PACKET_IMPL(send_cooldown, game_skill_id skill_id, seconds time) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_SKILL_COOLDOWN)
-		.add<skill_id_t>(skillId)
+		.add<packet_header>(SMSG_SKILL_COOLDOWN)
+		.add<game_skill_id>(skill_id)
 		.add<int16_t>(static_cast<int16_t>(time.count()));
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(showBerserk, player_id_t playerId, skill_level_t level, bool on) {
-	SplitPacketBuilder builder;
-	PacketBuilder buffer;
+SPLIT_PACKET_IMPL(show_berserk, game_player_id player_id, game_skill_level level, bool on) {
+	split_packet_builder builder;
+	packet_builder buffer;
 	buffer
 		.add<int8_t>(1)
-		.add<skill_id_t>(Vana::Skills::DarkKnight::Berserk)
-		.add<skill_level_t>(level)
+		.add<game_skill_id>(vana::skills::dark_knight::berserk)
+		.add<game_skill_level>(level)
 		.add<bool>(on);
 
 	builder.player
-		.add<header_t>(SMSG_THEATRICS)
-		.addBuffer(buffer);
+		.add<packet_header>(SMSG_THEATRICS)
+		.add_buffer(buffer);
 
 	builder.map
-		.add<header_t>(SMSG_SKILL_SHOW)
-		.add<player_id_t>(playerId)
-		.addBuffer(buffer);
+		.add<packet_header>(SMSG_SKILL_SHOW)
+		.add<game_player_id>(player_id)
+		.add_buffer(buffer);
 	return builder;
 }
 

@@ -19,19 +19,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class PacketReader;
+namespace vana {
+	class packet_reader;
 
-	namespace ChannelServer {
-		class Player;
-		struct TradeInfo;
+	namespace channel_server {
+		class player;
+		struct trade_info;
 
-		namespace TradeHandler {
-			auto tradeHandler(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto removeTrade(trade_id_t id) -> void;
-			auto cancelTrade(ref_ptr_t<Player> player) -> void;
+		namespace trade_handler {
+			auto trade_handler(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto remove_trade(game_trade_id id) -> void;
+			auto cancel_trade(ref_ptr<player> player) -> void;
 
-			auto getTaxLevel(mesos_t mesos) -> int32_t;
+			auto get_tax_level(game_mesos mesos) -> int32_t;
 		}
 	}
 }

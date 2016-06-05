@@ -19,22 +19,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	namespace ChannelServer {
-		struct StatusInfo {
+namespace vana {
+	namespace channel_server {
+		struct status_info {
 			// TODO FIXME it appears that a review of reflection/skill ID are needed - some had 0, some had -1 for both
-			StatusInfo() = default;
-			StatusInfo(int32_t status, int32_t val, int32_t skillId, seconds_t time);
-			StatusInfo(int32_t status, int32_t val, int16_t mobSkill, int16_t level, seconds_t time);
-			StatusInfo(int32_t status, int32_t val, int16_t mobSkill, int16_t level, int32_t reflect, seconds_t time);
+			status_info() = default;
+			status_info(int32_t status, int32_t val, int32_t skill_id, seconds time);
+			status_info(int32_t status, int32_t val, int16_t mob_skill, int16_t level, seconds time);
+			status_info(int32_t status, int32_t val, int16_t mob_skill, int16_t level, int32_t reflect, seconds time);
 
-			int16_t mobSkill = 0;
+			int16_t mob_skill = 0;
 			int16_t level = 0;
 			int32_t status = 0;
-			int32_t skillId = 0;
+			int32_t skill_id = 0;
 			int32_t reflection = -1;
 			int32_t val = 0;
-			seconds_t time;
+			seconds time;
 		};
 	}
 }

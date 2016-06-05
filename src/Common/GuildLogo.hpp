@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct GuildLogo {
+namespace vana {
+	struct guild_logo {
 		int8_t color = 0;
-		int8_t backgroundColor = 0;
+		int8_t background_color = 0;
 		int16_t logo = 0;
 		int16_t background = 0;
 	};

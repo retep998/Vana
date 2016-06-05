@@ -19,29 +19,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/InterHeader.hpp"
 #include "Common/InterHelper.hpp"
 
-namespace Vana {
-namespace LoginServer {
-namespace Packets {
-namespace Interserver {
-namespace Player {
+namespace vana {
+namespace login_server {
+namespace packets {
+namespace interserver {
+namespace player {
 
-PACKET_IMPL(characterCreated, player_id_t playerId) {
-	PacketBuilder builder;
+PACKET_IMPL(character_created, game_player_id player_id) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_SYNC)
-		.add<sync_t>(Sync::SyncTypes::Player)
-		.add<sync_t>(Sync::Player::CharacterCreated)
-		.add<player_id_t>(playerId);
+		.add<packet_header>(IMSG_SYNC)
+		.add<protocol_sync>(sync::sync_types::player)
+		.add<protocol_sync>(sync::player::character_created)
+		.add<game_player_id>(player_id);
 	return builder;
 }
 
-PACKET_IMPL(characterDeleted, player_id_t playerId) {
-	PacketBuilder builder;
+PACKET_IMPL(character_deleted, game_player_id player_id) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_SYNC)
-		.add<sync_t>(Sync::SyncTypes::Player)
-		.add<sync_t>(Sync::Player::CharacterDeleted)
-		.add<player_id_t>(playerId);
+		.add<packet_header>(IMSG_SYNC)
+		.add<protocol_sync>(sync::sync_types::player)
+		.add<protocol_sync>(sync::player::character_deleted)
+		.add<game_player_id>(player_id);
 	return builder;
 }
 

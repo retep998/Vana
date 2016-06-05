@@ -23,58 +23,58 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 #include <string>
 
-namespace Vana {
-	class ClientIp;
+namespace vana {
+	class client_ip;
 
-	namespace LoginServer {
-		class User;
-		class World;
-		struct Character;
+	namespace login_server {
+		class user;
+		class world;
+		struct character;
 
-		namespace Packets {
-			namespace CheckNameErrors {
-				enum Errors : uint8_t {
-					None = 0x00,
-					Taken = 0x01,
-					Invalid = 0x04,
-					UnknownReason = 0xFF
+		namespace packets {
+			namespace check_name_errors {
+				enum errors : uint8_t {
+					none = 0x00,
+					taken = 0x01,
+					invalid = 0x04,
+					unknown_reason = 0xFF,
 				};
 			}
-			namespace Errors {
-				enum Errors : uint8_t {
-					InvalidPin = 0x02,
-					InvalidPassword = 0x04,
-					InvalidUsername = 0x05,
-					AlreadyLoggedIn = 0x07
+			namespace errors {
+				enum errors : uint8_t {
+					invalid_pin = 0x02,
+					invalid_password = 0x04,
+					invalid_username = 0x05,
+					already_logged_in = 0x07,
 				};
 			}
-			namespace WorldMessages {
-				enum Messages : uint8_t {
-					Normal = 0x00,
-					HeavyLoad = 0x01,
-					MaxLoad = 0x02
+			namespace world_messages {
+				enum messages : uint8_t {
+					normal = 0x00,
+					heavy_load = 0x01,
+					max_load = 0x02,
 				};
 			}
 
-			PACKET(loginError, int16_t errorId);
-			PACKET(loginBan, int8_t reason, FileTime expire);
-			PACKET(loginProcess, int8_t id);
-			PACKET(loginConnect, ref_ptr_t<User> user, const string_t &username);
-			PACKET(pinAssigned);
-			PACKET(genderDone, gender_id_t gender);
-			PACKET(showWorld, World *world);
-			PACKET(worldEnd);
-			PACKET(showChannels, int8_t status);
-			PACKET(channelSelect);
-			PACKET(channelOffline);
-			PACKET(showAllCharactersInfo, world_id_t worldCount, uint32_t unk);
-			PACKET(showViewAllCharacters, world_id_t worldId, const vector_t<Character> &chars);
-			PACKET(showCharacters, const vector_t<Character> &chars, int32_t maxChars);
-			PACKET(showCharacter, const Character &charc);
-			PACKET(checkName, const string_t &name, uint8_t message);
-			PACKET(deleteCharacter, player_id_t id, uint8_t result);
-			PACKET(connectIp, const optional_t<ClientIp> &ip, optional_t<port_t> port, player_id_t charId);
-			PACKET(relogResponse);
+			PACKET(login_error, int16_t error_id);
+			PACKET(login_ban, int8_t reason, file_time expire);
+			PACKET(login_process, int8_t id);
+			PACKET(login_connect, ref_ptr<user> user_value, const string &username);
+			PACKET(pin_assigned);
+			PACKET(gender_done, game_gender_id gender);
+			PACKET(show_world, world *world_value);
+			PACKET(world_end);
+			PACKET(show_channels, int8_t status);
+			PACKET(channel_select);
+			PACKET(channel_offline);
+			PACKET(show_all_characters_info, game_world_id world_count, uint32_t unk);
+			PACKET(show_view_all_characters, game_world_id world_id, const vector<character> &chars);
+			PACKET(show_characters, const vector<character> &chars, int32_t max_chars);
+			PACKET(show_character, const character &charc);
+			PACKET(check_name, const string &name, uint8_t message);
+			PACKET(delete_character, game_player_id id, uint8_t result);
+			PACKET(connect_ip, const optional<client_ip> &ip_value, optional<connection_port> port, game_player_id char_id);
+			PACKET(relog_response);
 		}
 	}
 }

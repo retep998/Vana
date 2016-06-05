@@ -19,19 +19,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Variables.hpp"
 
-namespace Vana {
-	namespace ChannelServer {
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class player;
 
-		class PlayerVariables : public Variables {
-			NONCOPYABLE(PlayerVariables);
-			NO_DEFAULT_CONSTRUCTOR(PlayerVariables);
+		class player_variables : public variables {
+			NONCOPYABLE(player_variables);
+			NO_DEFAULT_CONSTRUCTOR(player_variables);
 		public:
-			PlayerVariables(Player *player);
+			player_variables(player *player);
 			auto save() -> void;
 			auto load() -> void;
 		private:
-			Player *m_player = nullptr;
+			player *m_player = nullptr;
 		};
 	}
 }

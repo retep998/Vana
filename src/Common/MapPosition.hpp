@@ -21,18 +21,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <cmath>
 #include <ostream>
 
-namespace Vana {
-	struct MapPosition {
-		MapPosition(Point pt, foothold_id_t foothold) : pt{pt}, foothold{foothold} { }
-		MapPosition() = default;
+namespace vana {
+	struct map_position {
+		map_position(point pt, game_foothold_id foothold) : pt{pt}, foothold{foothold} { }
+		map_position() = default;
 
-		Point pt;
-		foothold_id_t foothold = 0;
-		friend auto operator <<(std::ostream &out, const MapPosition &pos) -> std::ostream &;
+		point pt;
+		game_foothold_id foothold = 0;
+		friend auto operator <<(std::ostream &out, const map_position &pos) -> std::ostream &;
 	};
 
 	inline
-	auto operator <<(std::ostream &out, const MapPosition &pos) -> std::ostream & {
+	auto operator <<(std::ostream &out, const map_position &pos) -> std::ostream & {
 		return out << pos.pt << " [" << pos.foothold << "]";
 	}
 }

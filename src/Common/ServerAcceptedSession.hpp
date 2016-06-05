@@ -27,29 +27,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-	class AbstractServer;
-	class PacketReader;
-	class ServerAcceptedSession;
+namespace vana {
+	class abstract_server;
+	class packet_reader;
+	class server_accepted_session;
 
-	class ServerAcceptedSession : public PacketHandler {
+	class server_accepted_session : public packet_handler {
 	public:
-		ServerAcceptedSession(AbstractServer &server);
+		server_accepted_session(abstract_server &server);
 
-		auto getType() const -> ServerType;
-		auto isAuthenticated() const -> bool;
-		auto getExternalIps() const -> const IpMatrix &;
-		auto matchSubnet(const Ip &test) const -> Ip;
-		auto setExternalIpInformation(const Ip &defaultIp, const IpMatrix &matrix) -> void;
+		auto get_type() const -> server_type;
+		auto is_authenticated() const -> bool;
+		auto get_external_ips() const -> const ip_matrix &;
+		auto match_subnet(const ip &test) const -> ip;
+		auto set_external_ip_information(const ip &default_ip, const ip_matrix &matrix) -> void;
 	protected:
-		virtual auto handle(PacketReader &reader) -> Result override;
-		virtual auto authenticated(ServerType type) -> void;
-		virtual auto onDisconnect() -> void override;
-		virtual auto onConnect() -> void override;
+		virtual auto handle(packet_reader &reader) -> result override;
+		virtual auto authenticated(server_type type) -> void;
+		virtual auto on_disconnect() -> void override;
+		virtual auto on_connect() -> void override;
 	private:
-		bool m_isAuthenticated = false;
-		ServerType m_type = ServerType::None;
-		AbstractServer &m_server;
-		ExternalIpResolver m_resolver;
+		bool m_is_authenticated = false;
+		server_type m_type = server_type::none;
+		abstract_server &m_server;
+		external_ip_resolver m_resolver;
 	};
 }

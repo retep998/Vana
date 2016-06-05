@@ -22,31 +22,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-namespace Vana {
-	struct AttackData {
-		bool isMesoExplosion = false;
-		bool isShadowMeso = false;
-		bool isChargeSkill = false;
-		bool isPiercingArrow = false;
-		bool isHeal = false;
+namespace vana {
+	struct attack_data {
+		bool is_meso_explosion = false;
+		bool is_shadow_meso = false;
+		bool is_charge_skill = false;
+		bool is_piercing_arrow = false;
+		bool is_heal = false;
 		int8_t targets = 0;
 		int8_t hits = 0;
 		uint8_t display = 0;
-		uint8_t weaponSpeed = 0;
+		uint8_t weapon_speed = 0;
 		uint8_t animation = 0;
-		uint8_t weaponClass = 0;
-		skill_level_t skillLevel = 0;
+		uint8_t weapon_class = 0;
+		game_skill_level skill_level = 0;
 		uint8_t portals = 0;
-		inventory_slot_t starPos = -1;
-		inventory_slot_t cashStarPos = -1;
-		skill_id_t skillId = 0;
-		summon_id_t summonId = 0;
-		charge_time_t charge = 0;
-		item_id_t starId = 0;
-		tick_count_t ticks = 0;
-		int64_t totalDamage = 0;
-		Point projectilePos;
-		Point playerPos;
-		hash_map_t<map_object_t, vector_t<damage_t>> damages;
+		game_inventory_slot star_pos = -1;
+		game_inventory_slot cash_star_pos = -1;
+		game_skill_id skill_id = 0;
+		game_summon_id summon_id = 0;
+		game_charge_time charge = 0;
+		game_item_id star_id = 0;
+		game_tick_count ticks = 0;
+		int64_t total_damage = 0;
+		point projectile_pos;
+		point player_pos;
+		hash_map<game_map_object, vector<game_damage>> damages;
 	};
 }

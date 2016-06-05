@@ -23,20 +23,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <botan/lookup.h>
 
-namespace Vana {
-	class EncryptedPacketTransformer final : public PacketTransformer {
+namespace vana {
+	class encrypted_packet_transformer final : public packet_transformer {
 	public:
-		EncryptedPacketTransformer(iv_t recvIv, iv_t sendIv);
-		auto testPacket(unsigned char *header) -> ValidityResult override;
-		auto getPacketLength(unsigned char *header) -> uint16_t override;
-		auto setPacketHeader(unsigned char *header, uint16_t realPacketSize) -> void override;
-		auto encryptPacket(unsigned char *packetData, int32_t realPacketSize, uint16_t headerSize) -> void override;
-		auto decryptPacket(unsigned char *packetData, int32_t realPacketSize, uint16_t headerSize) -> void override;
+		encrypted_packet_transformer(crypto_iv recv_iv, crypto_iv send_iv);
+		auto test_packet(unsigned char *header) -> validity_result override;
+		auto get_packet_length(unsigned char *header) -> uint16_t override;
+		auto set_packet_header(unsigned char *header, uint16_t real_packet_size) -> void override;
+		auto encrypt_packet(unsigned char *packet_data, int32_t real_packet_size, uint16_t header_size) -> void override;
+		auto decrypt_packet(unsigned char *packet_data, int32_t real_packet_size, uint16_t header_size) -> void override;
 	private:
-		auto getVersionAndSize(unsigned char *header, uint16_t &version, uint16_t &size) -> void;
+		auto get_version_and_size(unsigned char *header, uint16_t &version, uint16_t &size) -> void;
 
-		BlockCipherIv m_recv;
-		BlockCipherIv m_send;
-		Botan::OctetString m_botanKey;
+		block_cipher_iv m_recv;
+		block_cipher_iv m_send;
+		Botan::OctetString m_botan_key;
 	};
 }

@@ -17,28 +17,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Point.hpp"
 
-namespace Vana {
+namespace vana {
 
-Point::Point(coord_t x, coord_t y) :
+point::point(game_coord x, game_coord y) :
 	x{x},
 	y{y}
 {
 }
 
-auto Point::isOrigin() const -> bool {
+auto point::is_origin() const -> bool {
 	return x == 0 && y == 0;
 }
 
-auto Point::move(coord_t x, coord_t y) const -> Point {
-	return Point{this->x + x, this->y + y};
+auto point::move(game_coord x, game_coord y) const -> point {
+	return point{this->x + x, this->y + y};
 }
 
-auto Point::moveX(coord_t x) const -> Point {
-	return Point{this->x + x, this->y};
+auto point::move_x(game_coord x) const -> point {
+	return point{this->x + x, this->y};
 }
 
-auto Point::moveY(coord_t y) const -> Point {
-	return Point{this->x, this->y + y};
+auto point::move_y(game_coord y) const -> point {
+	return point{this->x, this->y + y};
 }
 
 }

@@ -19,15 +19,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	enum class ValidItemType {
-		Face = 1,
-		Hair = 2,
-		HairColor = 3,
-		Skin = 4,
-		Top = 5,
-		Bottom = 6,
-		Shoes = 7,
-		Weapon = 8
+namespace vana {
+	enum class valid_item_type {
+		face = 1,
+		hair = 2,
+		hair_color = 3,
+		skin = 4,
+		top = 5,
+		bottom = 6,
+		shoes = 7,
+		weapon = 8
 	};
 }

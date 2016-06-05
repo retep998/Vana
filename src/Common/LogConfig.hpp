@@ -21,70 +21,70 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	struct LogConfig {
+namespace vana {
+	struct log_config {
 		bool log = false;
 		int32_t destination = 0;
-		uint32_t bufferSize = 20;
-		string_t format;
-		string_t timeFormat;
-		string_t file;
+		uint32_t buffer_size = 20;
+		string format;
+		string time_format;
+		string file;
 	};
 
 	template <>
-	struct LuaSerialize<LogConfig> {
-		auto read(LuaEnvironment &config, const string_t &prefix) -> LogConfig {
-			LogConfig ret;
+	struct lua_serialize<log_config> {
+		auto read(lua_environment &config, const string &prefix) -> log_config {
+			log_config ret;
 
-			LuaVariant obj = config.get<LuaVariant>(prefix);
-			config.validateObject(LuaType::Table, obj, prefix);
+			lua_variant obj = config.get<lua_variant>(prefix);
+			config.validate_object(lua::lua_type::table, obj, prefix);
 
-			auto map = obj.as<hash_map_t<LuaVariant, LuaVariant>>();
-			bool hasLog = false;
-			bool hasDestination = false;
-			bool hasFormat = false;
+			auto map = obj.as<hash_map<lua_variant, lua_variant>>();
+			bool has_log = false;
+			bool has_destination = false;
+			bool has_format = false;
 			for (const auto &kvp : map) {
-				config.validateKey(LuaType::String, kvp.first, prefix);
+				config.validate_key(lua::lua_type::string, kvp.first, prefix);
 
-				string_t key = kvp.first.as<string_t>();
+				string key = kvp.first.as<string>();
 				if (key == "log") {
-					hasLog = true;
-					config.validateValue(LuaType::Bool, kvp.second, key, prefix);
+					has_log = true;
+					config.validate_value(lua::lua_type::boolean, kvp.second, key, prefix);
 					ret.log = kvp.second.as<bool>();
 					if (!ret.log) break;
 				}
 				else if (key == "destination") {
-					hasDestination = true;
-					config.validateValue(LuaType::Number, kvp.second, key, prefix);
+					has_destination = true;
+					config.validate_value(lua::lua_type::number, kvp.second, key, prefix);
 					ret.destination = kvp.second.as<int32_t>();
 				}
 				else if (key == "format") {
-					hasFormat = true;
-					config.validateValue(LuaType::String, kvp.second, key, prefix);
-					ret.format = kvp.second.as<string_t>();
+					has_format = true;
+					config.validate_value(lua::lua_type::string, kvp.second, key, prefix);
+					ret.format = kvp.second.as<string>();
 				}
 				else if (key == "buffer_size") {
-					if (config.validateValue(LuaType::Number, kvp.second, key, prefix, true) == LuaType::Nil) continue;
-					ret.bufferSize = kvp.second.as<uint32_t>();
+					if (config.validate_value(lua::lua_type::number, kvp.second, key, prefix, true) == lua::lua_type::nil) continue;
+					ret.buffer_size = kvp.second.as<uint32_t>();
 				}
 				else if (key == "file") {
-					if (config.validateValue(LuaType::String, kvp.second, key, prefix, true) == LuaType::Nil) continue;
-					ret.file = kvp.second.as<string_t>();
+					if (config.validate_value(lua::lua_type::string, kvp.second, key, prefix, true) == lua::lua_type::nil) continue;
+					ret.file = kvp.second.as<string>();
 				}
 				else if (key == "time_format") {
-					if (config.validateValue(LuaType::String, kvp.second, key, prefix, true) == LuaType::Nil) continue;
-					ret.timeFormat = kvp.second.as<string_t>();
+					if (config.validate_value(lua::lua_type::string, kvp.second, key, prefix, true) == lua::lua_type::nil) continue;
+					ret.time_format = kvp.second.as<string>();
 				}
 			}
 
-			config.required(hasLog, "log", prefix);
+			config.required(has_log, "log", prefix);
 			if (ret.log) {
-				config.required(hasDestination, "destination", prefix);
-				config.required(hasFormat, "format", prefix);
+				config.required(has_destination, "destination", prefix);
+				config.required(has_format, "format", prefix);
 			}
 
-			if (ret.timeFormat.empty()) {
-				ret.timeFormat = config.get<string_t>("log_time_format");
+			if (ret.time_format.empty()) {
+				ret.time_format = config.get<string>("log_time_format");
 			}
 
 			return ret;

@@ -30,22 +30,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/SmsgHeader.hpp"
 #include "ChannelServer/SyncPacket.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto SyncHandler::handle(PacketReader &reader) -> void {
-	sync_t type = reader.get<sync_t>();
+auto sync_handler::handle(packet_reader &reader) -> void {
+	protocol_sync type = reader.get<protocol_sync>();
 	switch (type) {
-		case Sync::SyncTypes::Config: handleConfigSync(reader); break;
-		default: ChannelServer::getInstance().getPlayerDataProvider().handleSync(type, reader); break;
+		case sync::sync_types::config: handle_config_sync(reader); break;
+		default: channel_server::get_instance().get_player_data_provider().handle_sync(type, reader); break;
 	}
 }
 
-auto SyncHandler::handleConfigSync(PacketReader &reader) -> void {
-	switch (reader.get<sync_t>()) {
-		case Sync::Config::RateSet: ChannelServer::getInstance().setRates(reader.get<RatesConfig>()); break;
-		case Sync::Config::ScrollingHeader: ChannelServer::getInstance().setScrollingHeader(reader.get<string_t>()); break;
-		default: throw NotImplementedException{"ConfigSync type"};
+auto sync_handler::handle_config_sync(packet_reader &reader) -> void {
+	switch (reader.get<protocol_sync>()) {
+		case sync::config::rate_set: channel_server::get_instance().set_rates(reader.get<rates_config>()); break;
+		case sync::config::scrolling_header: channel_server::get_instance().set_scrolling_header(reader.get<string>()); break;
+		default: throw not_implemented_exception{"config_sync type"};
 	}
 }
 

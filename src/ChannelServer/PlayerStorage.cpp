@@ -27,145 +27,145 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/StoragePacket.hpp"
 #include <algorithm>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-PlayerStorage::PlayerStorage(Player *player) :
+player_storage::player_storage(player *player) :
 	m_player{player}
 {
 	load();
 }
 
-PlayerStorage::~PlayerStorage() {
-	/* TODO FIXME just convert the damn Item * to ref_ptr_t or owned_ptr_t */
-	std::for_each(std::begin(m_items), std::end(m_items), [](Item *item) { delete item; });
+player_storage::~player_storage() {
+	/* TODO FIXME just convert the damn Item * to ref_ptr or owned_ptr */
+	std::for_each(std::begin(m_items), std::end(m_items), [](item *item) { delete item; });
 }
 
-auto PlayerStorage::takeItem(storage_slot_t slot) -> void {
+auto player_storage::take_item(game_storage_slot slot) -> void {
 	auto iter = std::begin(m_items) + slot;
 	delete *iter;
 	m_items.erase(iter);
 }
 
-auto PlayerStorage::setSlots(storage_slot_t slots) -> void {
-	m_slots = ext::constrain_range(slots, Inventories::MinSlotsStorage, Inventories::MaxSlotsStorage);
+auto player_storage::set_slots(game_storage_slot slots) -> void {
+	m_slots = ext::constrain_range(slots, inventories::min_slots_storage, inventories::max_slots_storage);
 }
 
-auto PlayerStorage::addItem(Item *item) -> void {
-	inventory_t inv = GameLogicUtilities::getInventory(item->getId());
-	storage_slot_t i;
+auto player_storage::add_item(item *item) -> void {
+	game_inventory inv = game_logic_utilities::get_inventory(item->get_id());
+	game_storage_slot i;
 	for (i = 0; i < m_items.size(); ++i) {
-		if (GameLogicUtilities::getInventory(m_items[i]->getId()) > inv) {
+		if (game_logic_utilities::get_inventory(m_items[i]->get_id()) > inv) {
 			break;
 		}
 	}
 	m_items.insert(std::begin(m_items) + i, item);
 }
 
-auto PlayerStorage::getNumItems(inventory_t inv) -> storage_slot_t {
-	storage_slot_t itemNum = 0;
-	for (storage_slot_t i = 0; i < m_items.size(); ++i) {
-		if (GameLogicUtilities::getInventory(m_items[i]->getId()) == inv) {
-			itemNum++;
+auto player_storage::get_num_items(game_inventory inv) -> game_storage_slot {
+	game_storage_slot item_num = 0;
+	for (game_storage_slot i = 0; i < m_items.size(); ++i) {
+		if (game_logic_utilities::get_inventory(m_items[i]->get_id()) == inv) {
+			item_num++;
 		}
 	}
-	return itemNum;
+	return item_num;
 }
 
-auto PlayerStorage::changeMesos(mesos_t mesos) -> void {
+auto player_storage::change_mesos(game_mesos mesos) -> void {
 	m_mesos -= mesos;
-	m_player->send(Packets::Storage::changeMesos(getSlots(), m_mesos));
+	m_player->send(packets::storage::change_mesos(get_slots(), m_mesos));
 }
 
-auto PlayerStorage::load() -> void {
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
+auto player_storage::load() -> void {
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
 	soci::row row;
-	account_id_t accountId = m_player->getAccountId();
-	world_id_t worldId = m_player->getWorldId();
+	game_account_id account_id = m_player->get_account_id();
+	game_world_id world_id = m_player->get_world_id();
 
 	sql.once
 		<< "SELECT s.slots, s.mesos, s.char_slots "
-		<< "FROM " << db.makeTable("storage") << " s "
+		<< "FROM " << db.make_table("storage") << " s "
 		<< "WHERE s.account_id = :account AND s.world_id = :world "
 		<< "LIMIT 1",
-		soci::use(accountId, "account"),
-		soci::use(worldId, "world"),
+		soci::use(account_id, "account"),
+		soci::use(world_id, "world"),
 		soci::into(row);
 
 	if (sql.got_data()) {
-		m_slots = row.get<storage_slot_t>("slots");
-		m_mesos = row.get<mesos_t>("mesos");
-		m_charSlots = row.get<int32_t>("char_slots");
+		m_slots = row.get<game_storage_slot>("slots");
+		m_mesos = row.get<game_mesos>("mesos");
+		m_char_slots = row.get<int32_t>("char_slots");
 	}
 	else {
-		auto &config = ChannelServer::getInstance().getConfig();
-		m_slots = config.defaultStorageSlots;
+		auto &config = channel_server::get_instance().get_config();
+		m_slots = config.default_storage_slots;
 		m_mesos = 0;
-		m_charSlots = config.defaultChars;
+		m_char_slots = config.default_chars;
 		sql.once
-			<< "INSERT INTO " << db.makeTable("storage") << " (account_id, world_id, slots, mesos, char_slots) "
+			<< "INSERT INTO " << db.make_table("storage") << " (account_id, world_id, slots, mesos, char_slots) "
 			<< "VALUES (:account, :world, :slots, :mesos, :chars)",
-			soci::use(accountId, "account"),
-			soci::use(worldId, "world"),
+			soci::use(account_id, "account"),
+			soci::use(world_id, "world"),
 			soci::use(m_slots, "slots"),
 			soci::use(m_mesos, "mesos"),
-			soci::use(m_charSlots, "chars");
+			soci::use(m_char_slots, "chars");
 	}
 
 	m_items.reserve(m_slots);
 
-	string_t location = "storage";
+	string location = "storage";
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT i.* "
-		<< "FROM " << db.makeTable("items") << " i "
+		<< "FROM " << db.make_table("items") << " i "
 		<< "WHERE i.location = :location AND i.account_id = :account AND i.world_id = :world "
 		<< "ORDER BY i.slot ASC",
 		soci::use(location, "location"),
-		soci::use(accountId, "account"),
-		soci::use(worldId, "world"));
+		soci::use(account_id, "account"),
+		soci::use(world_id, "world"));
 
 	for (const auto &row : rs) {
-		Item *item = new Item{row};
-		addItem(item);
+		item *value = new item{row};
+		add_item(value);
 	}
 }
 
-auto PlayerStorage::save() -> void {
+auto player_storage::save() -> void {
 	using namespace soci;
-	world_id_t worldId = m_player->getWorldId();
-	account_id_t accountId = m_player->getAccountId();
-	player_id_t playerId = m_player->getId();
+	game_world_id world_id = m_player->get_world_id();
+	game_account_id account_id = m_player->get_account_id();
+	game_player_id player_id = m_player->get_id();
 
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
 	sql.once
-		<< "UPDATE " << db.makeTable("storage") << " "
+		<< "UPDATE " << db.make_table("storage") << " "
 		<< "SET slots = :slots, mesos = :mesos, char_slots = :chars "
 		<< "WHERE account_id = :account AND world_id = :world",
-		use(accountId, "account"),
-		use(worldId, "world"),
+		use(account_id, "account"),
+		use(world_id, "world"),
 		use(m_slots, "slots"),
 		use(m_mesos, "mesos"),
-		use(m_charSlots, "chars");
+		use(m_char_slots, "chars");
 
 	sql.once
-		<< "DELETE FROM " << db.makeTable("items") << " "
+		<< "DELETE FROM " << db.make_table("items") << " "
 		<< "WHERE location = :location AND account_id = :account AND world_id = :world",
-		use(Item::Storage, "location"),
-		use(accountId, "account"),
-		use(worldId, "world");
+		use(item::storage, "location"),
+		use(account_id, "account"),
+		use(world_id, "world");
 
-	storage_slot_t max = getNumItems();
+	game_storage_slot max = get_num_items();
 
 	if (max > 0) {
-		vector_t<ItemDbRecord> v;
-		for (storage_slot_t i = 0; i < max; ++i) {
-			ItemDbRecord rec{i, playerId, accountId, worldId, Item::Storage, getItem(i)};
+		vector<item_db_record> v;
+		for (game_storage_slot i = 0; i < max; ++i) {
+			item_db_record rec{i, player_id, account_id, world_id, item::storage, get_item(i)};
 			v.push_back(rec);
 		}
-		Item::databaseInsert(db, v);
+		item::database_insert(db, v);
 	}
 }
 

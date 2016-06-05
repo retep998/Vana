@@ -20,25 +20,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	struct ItemInfo {
-		bool timeLimited = false;
-		bool noSale = false;
-		bool karmaScissors = false;
-		bool expireOnLogout = false;
-		bool blockPickup = false;
-		bool noTrade = false;
+namespace vana {
+	struct item_info {
+		bool time_limited = false;
+		bool no_sale = false;
+		bool karma_scissors = false;
+		bool expire_on_logout = false;
+		bool block_pickup = false;
+		bool no_trade = false;
 		bool quest = false;
 		bool cash = false;
-		player_level_t minLevel = 0;
-		player_level_t maxLevel = 0;
-		skill_level_t makerLevel = 0;
-		slot_qty_t maxSlot = 0;
-		mesos_t price = 0;
-		int32_t maxObtainable = 0;
-		experience_t exp = 0;
-		npc_id_t npc = 0;
-		mesos_t mesos = 0;
-		string_t name;
+		game_player_level min_level = 0;
+		game_player_level max_level = 0;
+		game_skill_level maker_level = 0;
+		game_slot_qty max_slot = 0;
+		game_mesos price = 0;
+		int32_t max_obtainable = 0;
+		game_experience exp = 0;
+		game_npc_id npc = 0;
+		game_mesos mesos = 0;
+		string name;
 	};
 }

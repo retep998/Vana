@@ -21,20 +21,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <vector>
 
-namespace Vana {
-	struct MobSkillLevelInfo {
-		int8_t summonEffect = 0;
+namespace vana {
+	struct mob_skill_level_info {
+		int8_t summon_effect = 0;
 		uint8_t mp = 0;
 		uint8_t hp = 0;
 		uint8_t count = 0;
-		mob_skill_level_t level = 0;
+		game_mob_skill_level level = 0;
 		int16_t cooldown = 0;
 		int16_t prop = 0;
 		int16_t limit = 0;
 		int32_t x = 0;
 		int32_t y = 0;
-		seconds_t time = seconds_t{0};
-		Rect dimensions;
-		vector_t<mob_id_t> summons;
+		seconds time = seconds{0};
+		rect dimensions;
+		vector<game_mob_id> summons;
 	};
 }

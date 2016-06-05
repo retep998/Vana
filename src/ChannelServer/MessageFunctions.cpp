@@ -23,75 +23,75 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/PlayerDataProvider.hpp"
 #include "ChannelServer/PlayerPacket.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto MessageFunctions::worldMessage(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	match_t matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (.+))", matches) == MatchResult::AnyMatches) {
-		string_t rawType = matches[1];
-		int8_t type = ChatHandlerFunctions::getMessageType(rawType);
+auto message_functions::world_message(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	match matches;
+	if (chat_handler_functions::run_regex_pattern(args, R"((\w+) (.+))", matches) == match_result::any_matches) {
+		string raw_type = matches[1];
+		int8_t type = chat_handler_functions::get_message_type(raw_type);
 		if (type != -1) {
-			string_t message = matches[2];
-			ChannelServer::getInstance().sendWorld(
-				Vana::Packets::prepend(Packets::Player::showMessage(message, type), [](PacketBuilder &builder) {
-					builder.add<header_t>(IMSG_TO_ALL_CHANNELS);
-					builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
+			string message = matches[2];
+			channel_server::get_instance().send_world(
+				vana::packets::prepend(packets::player::show_message(message, type), [](packet_builder &builder) {
+					builder.add<packet_header>(IMSG_TO_ALL_CHANNELS);
+					builder.add<packet_header>(IMSG_TO_ALL_PLAYERS);
 				}));
 		}
 		else {
-			ChatHandlerFunctions::showError(player, "Invalid message type: " + rawType);
+			chat_handler_functions::show_error(player, "Invalid message type: " + raw_type);
 		}
-		return ChatResult::HandledDisplay;
+		return chat_result::handled_display;
 	}
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto MessageFunctions::globalMessage(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	match_t matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (.+))", matches) == MatchResult::AnyMatches) {
-		string_t rawType = matches[1];
-		int8_t type = ChatHandlerFunctions::getMessageType(rawType);
+auto message_functions::global_message(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	match matches;
+	if (chat_handler_functions::run_regex_pattern(args, R"((\w+) (.+))", matches) == match_result::any_matches) {
+		string raw_type = matches[1];
+		int8_t type = chat_handler_functions::get_message_type(raw_type);
 		if (type != -1) {
-			string_t message = matches[2];
-			ChannelServer::getInstance().sendWorld(
-				Vana::Packets::prepend(Packets::Player::showMessage(message, type), [](PacketBuilder &builder) {
-					builder.add<header_t>(IMSG_TO_LOGIN);
-					builder.add<header_t>(IMSG_TO_ALL_WORLDS);
-					builder.add<header_t>(IMSG_TO_ALL_CHANNELS);
-					builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
+			string message = matches[2];
+			channel_server::get_instance().send_world(
+				vana::packets::prepend(packets::player::show_message(message, type), [](packet_builder &builder) {
+					builder.add<packet_header>(IMSG_TO_LOGIN);
+					builder.add<packet_header>(IMSG_TO_ALL_WORLDS);
+					builder.add<packet_header>(IMSG_TO_ALL_CHANNELS);
+					builder.add<packet_header>(IMSG_TO_ALL_PLAYERS);
 				}));
 		}
 		else {
-			ChatHandlerFunctions::showError(player, "Invalid message type: " + rawType);
+			chat_handler_functions::show_error(player, "Invalid message type: " + raw_type);
 		}
-		return ChatResult::HandledDisplay;
+		return chat_result::handled_display;
 	}
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto MessageFunctions::channelMessage(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	match_t matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (.+))", matches) == MatchResult::AnyMatches) {
-		string_t rawType = matches[1];
-		int8_t type = ChatHandlerFunctions::getMessageType(rawType);
+auto message_functions::channel_message(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	match matches;
+	if (chat_handler_functions::run_regex_pattern(args, R"((\w+) (.+))", matches) == match_result::any_matches) {
+		string raw_type = matches[1];
+		int8_t type = chat_handler_functions::get_message_type(raw_type);
 		if (type != -1) {
-			string_t message = matches[2];
-			ChannelServer::getInstance().getPlayerDataProvider().send(Packets::Player::showMessage(message, type));
+			string message = matches[2];
+			channel_server::get_instance().get_player_data_provider().send(packets::player::show_message(message, type));
 		}
 		else {
-			ChatHandlerFunctions::showError(player, "Invalid message type: " + rawType);
+			chat_handler_functions::show_error(player, "Invalid message type: " + raw_type);
 		}
-		return ChatResult::HandledDisplay;
+		return chat_result::handled_display;
 	}
 
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto MessageFunctions::gmChatMode(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	player->setGmChat(!player->isGmChat());
-	ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) { message << "GM chat mode " << (player->isGmChat() ? "enabled" : "disabled"); });
-	return ChatResult::HandledDisplay;
+auto message_functions::gm_chat_mode(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	player->set_gm_chat(!player->is_gm_chat());
+	chat_handler_functions::show_info(player, [&](out_stream &message) { message << "GM chat mode " << (player->is_gm_chat() ? "enabled" : "disabled"); });
+	return chat_result::handled_display;
 }
 
 }

@@ -21,27 +21,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/BuffSkillValue.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class Buff {
+namespace vana {
+	class buff {
 	public:
-		Buff();
-		Buff(const init_list_t<BuffInfo> &buffInfo);
-		Buff(const vector_t<BuffInfo> &buffInfo);
+		buff();
+		buff(const init_list<buff_info> &buff_info);
+		buff(const vector<buff_info> &buff_info);
 
-		auto getDelay() const -> milliseconds_t;
-		auto getBuffInfo() const -> const vector_t<BuffInfo> &;
-		auto isSelectionBuff() const -> bool;
-		auto anyBuffs() const -> bool;
-		auto anyActs() const -> bool;
-		auto withBuffs(const vector_t<BuffInfo> &buffInfo) const -> Buff;
-		auto withDelay(milliseconds_t value) const -> Buff;
+		auto get_delay() const -> milliseconds;
+		auto get_buff_info() const -> const vector<buff_info> &;
+		auto is_selection_buff() const -> bool;
+		auto any_buffs() const -> bool;
+		auto any_acts() const -> bool;
+		auto with_buffs(const vector<buff_info> &buff_info) const -> buff;
+		auto with_delay(milliseconds value) const -> buff;
 	private:
-		auto parseBuffsForData() -> void;
+		auto parse_buffs_for_data() -> void;
 		auto sort() -> void;
 
-		bool m_isSelectionBuff = false;
-		bool m_anyActs = false;
-		milliseconds_t m_delay = milliseconds_t{0};
-		vector_t<BuffInfo> m_buffInfo;
+		bool m_is_selection_buff = false;
+		bool m_any_acts = false;
+		milliseconds m_delay = milliseconds{0};
+		vector<buff_info> m_buff_info;
 	};
 }

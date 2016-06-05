@@ -22,48 +22,48 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <type_traits>
 
-namespace Vana {
-	namespace EnumUtilities {
-		template <typename TEnum, typename TUnderlying = typename std::underlying_type<TEnum>::type>
+namespace vana {
+	namespace enum_utilities {
+		template <typename t_enum, typename t_underlying = typename std::underlying_type<t_enum>::type>
 		inline
-		auto tryCastFromUnderlying(TUnderlying value, TEnum &out) -> Result {
-			return EnumCaster<TEnum, TUnderlying>::tryCastFromUnderlying(value, out);
+		auto try_cast_from_underlying(t_underlying value, t_enum &out) -> result {
+			return enum_caster<t_enum, t_underlying>::try_cast_from_underlying(value, out);
 		}
 
-		template <typename TEnum, typename TUnderlying = typename std::underlying_type<TEnum>::type>
+		template <typename t_enum, typename t_underlying = typename std::underlying_type<t_enum>::type>
 		inline
-		auto castFromUnderlying(TUnderlying value) -> TEnum {
-			return EnumCaster<TEnum, TUnderlying>::castFromUnderlying(value);
+		auto cast_from_underlying(t_underlying value) -> t_enum {
+			return enum_caster<t_enum, t_underlying>::cast_from_underlying(value);
 		}
 
-		template <typename TEnum, typename TUnderlying = typename std::underlying_type<TEnum>::type>
+		template <typename t_enum, typename t_underlying = typename std::underlying_type<t_enum>::type>
 		inline
-		auto tryCastToUnderlying(TEnum value, TUnderlying &out) -> Result {
-			return EnumCaster<TEnum, TUnderlying>::tryCastToUnderlying(value, out);
+		auto try_cast_to_underlying(t_enum value, t_underlying &out) -> result {
+			return enum_caster<t_enum, t_underlying>::try_cast_to_underlying(value, out);
 		}
 
-		template <typename TEnum, typename TUnderlying = typename std::underlying_type<TEnum>::type>
+		template <typename t_enum, typename t_underlying = typename std::underlying_type<t_enum>::type>
 		inline
-		auto castToUnderlying(TEnum value) -> TUnderlying {
-			return EnumCaster<TEnum, TUnderlying>::castToUnderlying(value);
+		auto cast_to_underlying(t_enum value) -> t_underlying {
+			return enum_caster<t_enum, t_underlying>::cast_to_underlying(value);
 		}
 
-		template <typename TEnum>
+		template <typename t_enum>
 		inline
-		auto toString(TEnum value) -> std::string {
-			return EnumStringifier<TEnum>{}.toString(value);
+		auto to_string(t_enum value) -> std::string {
+			return enum_stringifier<t_enum>{}.to_string(value);
 		}
 
-		template <typename TEnum>
+		template <typename t_enum>
 		inline
-		auto tryGetFromString(const std::string &value, TEnum &out) -> Result {
-			return EnumStringifier<TEnum>{}.tryGetFromString(value, out);
+		auto try_get_from_string(const std::string &value, t_enum &out) -> result {
+			return enum_stringifier<t_enum>{}.try_get_from_string(value, out);
 		}
 
-		template <typename TEnum>
+		template <typename t_enum>
 		inline
-		auto getFromString(const std::string &value) -> TEnum {
-			return EnumStringifier<TEnum>{}.getFromString(value);
+		auto get_from_string(const std::string &value) -> t_enum {
+			return enum_stringifier<t_enum>{}.get_from_string(value);
 		}
 	}
 }

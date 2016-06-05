@@ -26,184 +26,184 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 #include <string>
 
-namespace Vana {
+namespace vana {
 
-auto MobDataProvider::loadData() -> void {
-	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Mobs... ";
+auto mob_data_provider::load_data() -> void {
+	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Mobs... ";
 
-	loadAttacks();
-	loadSkills();
-	loadMobs();
-	loadSummons();
+	load_attacks();
+	load_skills();
+	load_mobs();
+	load_summons();
 
 	std::cout << "DONE" << std::endl;
 }
 
-auto MobDataProvider::loadAttacks() -> void {
+auto mob_data_provider::load_attacks() -> void {
 	m_attacks.clear();
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("mob_attacks"));
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("mob_attacks"));
 
 	for (const auto &row : rs) {
-		MobAttackInfo mobAttack;
+		mob_attack_info mob_attack;
 
-		mob_id_t mobId = row.get<mob_id_t>("mobid");
-		mobAttack.id = row.get<int8_t>("attackid");
-		mobAttack.mpConsume = row.get<uint8_t>("mp_cost");
-		mobAttack.mpBurn = row.get<uint16_t>("mp_burn");
-		mobAttack.disease = row.get<mob_skill_id_t>("mob_skillid");
-		mobAttack.level = row.get<mob_skill_level_t>("mob_skill_level");
+		game_mob_id mob_id = row.get<game_mob_id>("mobid");
+		mob_attack.id = row.get<int8_t>("attackid");
+		mob_attack.mp_consume = row.get<uint8_t>("mp_cost");
+		mob_attack.mp_burn = row.get<uint16_t>("mp_burn");
+		mob_attack.disease = row.get<game_mob_skill_id>("mob_skillid");
+		mob_attack.level = row.get<game_mob_skill_level>("mob_skill_level");
 
-		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&mobAttack](const string_t &cmp) {
-			if (cmp == "deadly") mobAttack.deadlyAttack = true;
+		utilities::str::run_flags(row.get<opt_string>("flags"), [&mob_attack](const string &cmp) {
+			if (cmp == "deadly") mob_attack.deadly_attack = true;
 		});
-		StringUtilities::runEnum(row.get<string_t>("attack_type"), [&mobAttack](const string_t &cmp) {
-			if (cmp == "normal") mobAttack.attackType = MobAttackType::Normal;
-			else if (cmp == "projectile") mobAttack.attackType = MobAttackType::Projectile;
-			else if (cmp == "single_target") mobAttack.attackType = MobAttackType::SingleTarget;
-			else if (cmp == "area_effect") mobAttack.attackType = MobAttackType::AreaEffect;
-			else if (cmp == "area_effect_plus") mobAttack.attackType = MobAttackType::AreaEffectPlus;
+		utilities::str::run_enum(row.get<string>("attack_type"), [&mob_attack](const string &cmp) {
+			if (cmp == "normal") mob_attack.attack_type = mob_attack_type::normal;
+			else if (cmp == "projectile") mob_attack.attack_type = mob_attack_type::projectile;
+			else if (cmp == "single_target") mob_attack.attack_type = mob_attack_type::single_target;
+			else if (cmp == "area_effect") mob_attack.attack_type = mob_attack_type::area_effect;
+			else if (cmp == "area_effect_plus") mob_attack.attack_type = mob_attack_type::area_effect_plus;
 		});
 
-		m_attacks[mobId].push_back(mobAttack);
+		m_attacks[mob_id].push_back(mob_attack);
 	}
 }
 
-auto MobDataProvider::loadSkills() -> void {
+auto mob_data_provider::load_skills() -> void {
 	m_skills.clear();
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("mob_skills"));
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("mob_skills"));
 
 	for (const auto &row : rs) {
-		MobSkillInfo mobSkill;
-		mob_id_t mobId = row.get<mob_id_t>("mobid");
-		mobSkill.skillId = row.get<mob_skill_id_t>("skillid");
-		mobSkill.level = row.get<mob_skill_level_t>("skill_level");
-		mobSkill.effectAfter = milliseconds_t{row.get<int16_t>("effect_delay")};
+		mob_skill_info mob_skill;
+		game_mob_id mob_id = row.get<game_mob_id>("mobid");
+		mob_skill.skill_id = row.get<game_mob_skill_id>("skillid");
+		mob_skill.level = row.get<game_mob_skill_level>("skill_level");
+		mob_skill.effect_after = milliseconds{row.get<int16_t>("effect_delay")};
 
-		m_skills[mobId].push_back(mobSkill);
+		m_skills[mob_id].push_back(mob_skill);
 	}
 }
 
-auto MobDataProvider::loadMobs() -> void {
-	m_mobInfo.clear();
+auto mob_data_provider::load_mobs() -> void {
+	m_mob_info.clear();
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("mob_data"));
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("mob_data"));
 
 	for (const auto &row : rs) {
-		auto mob = make_ref_ptr<MobInfo>();
+		auto mob = make_ref_ptr<mob_info>();
 
-		mob_id_t mobId = row.get<mob_id_t>("mobid");
+		game_mob_id mob_id = row.get<game_mob_id>("mobid");
 		mob->level = row.get<uint16_t>("mob_level");
 		mob->hp = row.get<uint32_t>("hp");
 		mob->mp = row.get<uint32_t>("mp");
-		mob->hpRecovery = row.get<uint32_t>("hp_recovery");
-		mob->mpRecovery = row.get<uint32_t>("mp_recovery");
-		mob->selfDestruction = row.get<int32_t>("explode_hp");
-		mob->exp = row.get<experience_t>("experience");
-		mob->link = row.get<mob_id_t>("link");
-		mob->buff = row.get<item_id_t>("death_buff");
-		mob->removeAfter = row.get<int32_t>("death_after");
-		mob->hpColor = row.get<int8_t>("hp_bar_color");
-		mob->hpBackgroundColor = row.get<int8_t>("hp_bar_bg_color");
-		mob->carnivalPoints = row.get<int8_t>("carnival_points");
+		mob->hp_recovery = row.get<uint32_t>("hp_recovery");
+		mob->mp_recovery = row.get<uint32_t>("mp_recovery");
+		mob->self_destruction = row.get<int32_t>("explode_hp");
+		mob->exp = row.get<game_experience>("experience");
+		mob->link = row.get<game_mob_id>("link");
+		mob->buff = row.get<game_item_id>("death_buff");
+		mob->remove_after = row.get<int32_t>("death_after");
+		mob->hp_color = row.get<int8_t>("hp_bar_color");
+		mob->hp_background_color = row.get<int8_t>("hp_bar_bg_color");
+		mob->carnival_points = row.get<int8_t>("carnival_points");
 		mob->avo = row.get<int16_t>("avoidability");
 		mob->acc = row.get<int16_t>("accuracy");
 		mob->speed = row.get<int16_t>("speed");
-		mob->chaseSpeed = row.get<int16_t>("chase_speed");
-		mob->wAtk = row.get<int16_t>("physical_attack");
-		mob->wDef = row.get<int16_t>("physical_defense");
-		mob->mAtk = row.get<int16_t>("magical_attack");
-		mob->mDef = row.get<int16_t>("magical_defense");
+		mob->chase_speed = row.get<int16_t>("chase_speed");
+		mob->w_atk = row.get<int16_t>("physical_attack");
+		mob->w_def = row.get<int16_t>("physical_defense");
+		mob->m_atk = row.get<int16_t>("magical_attack");
+		mob->m_def = row.get<int16_t>("magical_defense");
 		mob->traction = row.get<double>("traction");
-		mob->damagedBySkill = row.get<skill_id_t>("damaged_by_skill_only");
-		mob->damagedByMob = row.get<mob_id_t>("damaged_by_mob_only");
+		mob->damaged_by_skill = row.get<game_skill_id>("damaged_by_skill_only");
+		mob->damaged_by_mob = row.get<game_mob_id>("damaged_by_mob_only");
 		mob->knockback = row.get<int32_t>("knockback");
-		mob->summonType = row.get<int16_t>("summon_type");
-		mob->fixedDamage = row.get<damage_t>("fixed_damage");
+		mob->summon_type = row.get<int16_t>("summon_type");
+		mob->fixed_damage = row.get<game_damage>("fixed_damage");
 
-		auto getElement = [&row](const string_t &modifier) -> MobElementalAttribute {
-			MobElementalAttribute ret;
-			StringUtilities::runEnum(row.get<string_t>(modifier), [&ret](const string_t &cmp) {
-				if (cmp == "normal") ret = MobElementalAttribute::Normal;
-				else if (cmp == "immune") ret = MobElementalAttribute::Immune;
-				else if (cmp == "strong") ret = MobElementalAttribute::Strong;
-				else if (cmp == "weak") ret = MobElementalAttribute::Weak;
+		auto get_element = [&row](const string &modifier) -> mob_elemental_attribute {
+			mob_elemental_attribute ret;
+			utilities::str::run_enum(row.get<string>(modifier), [&ret](const string &cmp) {
+				if (cmp == "normal") ret = mob_elemental_attribute::normal;
+				else if (cmp == "immune") ret = mob_elemental_attribute::immune;
+				else if (cmp == "strong") ret = mob_elemental_attribute::strong;
+				else if (cmp == "weak") ret = mob_elemental_attribute::weak;
 			});
 			return ret;
 		};
 
-		mob->iceAttr = getElement("ice_modifier");
-		mob->fireAttr = getElement("fire_modifier");
-		mob->poisonAttr = getElement("poison_modifier");
-		mob->lightningAttr = getElement("lightning_modifier");
-		mob->holyAttr = getElement("holy_modifier");
-		mob->nonElemAttr = getElement("nonelemental_modifier");
+		mob->ice_attr = get_element("ice_modifier");
+		mob->fire_attr = get_element("fire_modifier");
+		mob->poison_attr = get_element("poison_modifier");
+		mob->lightning_attr = get_element("lightning_modifier");
+		mob->holy_attr = get_element("holy_modifier");
+		mob->non_elem_attr = get_element("nonelemental_modifier");
 
-		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&mob](const string_t &cmp) {
+		utilities::str::run_flags(row.get<opt_string>("flags"), [&mob](const string &cmp) {
 			if (cmp == "boss") mob->boss = true;
 			else if (cmp == "undead") mob->undead = true;
 			else if (cmp == "flying") mob->flying = true;
 			else if (cmp == "friendly") mob->friendly = true;
-			else if (cmp == "public_reward") mob->publicReward = true;
-			else if (cmp == "explosive_reward") mob->explosiveReward = true;
+			else if (cmp == "public_reward") mob->public_reward = true;
+			else if (cmp == "explosive_reward") mob->explosive_reward = true;
 			else if (cmp == "invincible") mob->invincible = true;
-			else if (cmp == "auto_aggro") mob->autoAggro = true;
-			else if (cmp == "damaged_by_normal_attacks_only") mob->onlyNormalAttacks = true;
-			else if (cmp == "no_remove_on_death") mob->keepCorpse = true;
-			else if (cmp == "cannot_damage_player") mob->canDoBumpDamage = false;
+			else if (cmp == "auto_aggro") mob->auto_aggro = true;
+			else if (cmp == "damaged_by_normal_attacks_only") mob->only_normal_attacks = true;
+			else if (cmp == "no_remove_on_death") mob->keep_corpse = true;
+			else if (cmp == "cannot_damage_player") mob->can_do_bump_damage = false;
 			else if (cmp == "player_cannot_damage") mob->damageable = false;
 		});
 
-		mob->canFreeze = (!mob->boss && mob->iceAttr != MobElementalAttribute::Immune && mob->iceAttr != MobElementalAttribute::Strong);
-		mob->canPoison = (!mob->boss && mob->poisonAttr != MobElementalAttribute::Immune && mob->poisonAttr != MobElementalAttribute::Strong);
+		mob->can_freeze = (!mob->boss && mob->ice_attr != mob_elemental_attribute::immune && mob->ice_attr != mob_elemental_attribute::strong);
+		mob->can_poison = (!mob->boss && mob->poison_attr != mob_elemental_attribute::immune && mob->poison_attr != mob_elemental_attribute::strong);
 
 		// Skill count relies on skills being loaded first
-		auto kvp = m_skills.find(mobId);
-		mob->skillCount = kvp != m_skills.end() ? static_cast<uint8_t>(kvp->second.size()) : 0; 
-		m_mobInfo[mobId] = mob;
+		auto kvp = m_skills.find(mob_id);
+		mob->skill_count = kvp != m_skills.end() ? static_cast<uint8_t>(kvp->second.size()) : 0; 
+		m_mob_info[mob_id] = mob;
 	}
 }
 
-auto MobDataProvider::loadSummons() -> void {
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("mob_summons"));
+auto mob_data_provider::load_summons() -> void {
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("mob_summons"));
 
 	for (const auto &row : rs) {
-		mob_id_t mobId = row.get<mob_id_t>("mobid");
-		mob_id_t summonId = row.get<mob_id_t>("summonid");
+		game_mob_id mob_id = row.get<game_mob_id>("mobid");
+		game_mob_id summon_id = row.get<game_mob_id>("summonid");
 
-		m_mobInfo[mobId]->summon.push_back(summonId);
+		m_mob_info[mob_id]->summon.push_back(summon_id);
 	}
 }
 
-auto MobDataProvider::mobExists(mob_id_t mobId) const -> bool {
-	return ext::is_element(m_mobInfo, mobId);
+auto mob_data_provider::mob_exists(game_mob_id mob_id) const -> bool {
+	return ext::is_element(m_mob_info, mob_id);
 }
 
-auto MobDataProvider::getMobInfo(mob_id_t mobId) const -> ref_ptr_t<MobInfo> {
-	return m_mobInfo.find(mobId)->second;
+auto mob_data_provider::get_mob_info(game_mob_id mob_id) const -> ref_ptr<mob_info> {
+	return m_mob_info.find(mob_id)->second;
 }
 
-auto MobDataProvider::getMobAttack(mob_id_t mobId, uint8_t index) const -> const MobAttackInfo * const {
+auto mob_data_provider::get_mob_attack(game_mob_id mob_id, uint8_t index) const -> const mob_attack_info * const {
 	return ext::find_value_ptr(
-		ext::find_value_ptr(m_attacks, mobId), index);
+		ext::find_value_ptr(m_attacks, mob_id), index);
 }
 
-auto MobDataProvider::getMobSkill(mob_id_t mobId, uint8_t index) const -> const MobSkillInfo * const {
+auto mob_data_provider::get_mob_skill(game_mob_id mob_id, uint8_t index) const -> const mob_skill_info * const {
 	return ext::find_value_ptr(
-		ext::find_value_ptr(m_skills, mobId), index);
+		ext::find_value_ptr(m_skills, mob_id), index);
 }
 
-auto MobDataProvider::getSkills(mob_id_t mobId) const -> const vector_t<MobSkillInfo> & {
-	return m_skills.find(mobId)->second;
+auto mob_data_provider::get_skills(game_mob_id mob_id) const -> const vector<mob_skill_info> & {
+	return m_skills.find(mob_id)->second;
 }
 
 }

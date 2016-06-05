@@ -32,211 +32,211 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/PetsPacket.hpp"
 #include "ChannelServer/Player.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto PetHandler::handleMovement(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	pet_id_t petId = reader.get<pet_id_t>();
-	Pet *pet = player->getPets()->getPet(petId);
+auto pet_handler::handle_movement(ref_ptr<player> player, packet_reader &reader) -> void {
+	game_pet_id pet_id = reader.get<game_pet_id>();
+	pet *pet = player->get_pets()->get_pet(pet_id);
 	if (pet == nullptr) {
 		// Hacking
 		return;
 	}
 
 	reader.unk<uint32_t>(); // Not ticks at all, not sure what this is
-	MovementHandler::parseMovement(pet, reader);
+	movement_handler::parse_movement(pet, reader);
 	reader.reset(10);
-	player->sendMap(Packets::Pets::showMovement(player->getId(), pet, reader.getBuffer(), reader.getBufferLength() - 9));
+	player->send_map(packets::pets::show_movement(player->get_id(), pet, reader.get_buffer(), reader.get_buffer_length() - 9));
 }
 
-auto PetHandler::handleChat(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	pet_id_t petId = reader.get<pet_id_t>();
-	if (player->getPets()->getPet(petId) == nullptr) {
+auto pet_handler::handle_chat(ref_ptr<player> player, packet_reader &reader) -> void {
+	game_pet_id pet_id = reader.get<game_pet_id>();
+	if (player->get_pets()->get_pet(pet_id) == nullptr) {
 		// Hacking
 		return;
 	}
 	reader.unk<uint8_t>();
 	int8_t act = reader.get<int8_t>();
-	string_t message = reader.get<string_t>();
-	player->sendMap(Packets::Pets::showChat(player->getId(), player->getPets()->getPet(petId), message, act));
+	string message = reader.get<string>();
+	player->send_map(packets::pets::show_chat(player->get_id(), player->get_pets()->get_pet(pet_id), message, act));
 }
 
-auto PetHandler::handleSummon(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	reader.skip<tick_count_t>();
-	inventory_slot_t slot = reader.get<inventory_slot_t>();
-	bool master = reader.get<int8_t>() == 1; // Might possibly fit under getBool criteria
-	bool multipet = player->getSkills()->hasFollowTheLead();
-	Pet *pet = player->getPets()->getPet(player->getInventory()->getItem(Inventories::CashInventory, slot)->getPetId());
+auto pet_handler::handle_summon(ref_ptr<player> player, packet_reader &reader) -> void {
+	reader.skip<game_tick_count>();
+	game_inventory_slot slot = reader.get<game_inventory_slot>();
+	bool master = reader.get<int8_t>() == 1; // Might possibly fit under get_bool criteria
+	bool multipet = player->get_skills()->has_follow_the_lead();
+	pet *pet_value = player->get_pets()->get_pet(player->get_inventory()->get_item(inventories::cash, slot)->get_pet_id());
 
-	if (pet == nullptr) {
+	if (pet_value == nullptr) {
 		// Hacking
 		return;
 	}
 
-	if (pet->isSummoned()) {
+	if (pet_value->is_summoned()) {
 		// Removing a pet
-		int8_t index = pet->getIndex().get();
-		player->getPets()->setSummoned(index, 0);
+		int8_t index = pet_value->get_index().get();
+		player->get_pets()->set_summoned(index, 0);
 		if (index == 0) {
-			Vana::Timer::Id id{TimerType::PetTimer, index};
-			player->getTimerContainer()->removeTimer(id);
+			vana::timer::id id{timer_type::pet_timer, index};
+			player->get_timer_container()->remove_timer(id);
 		}
 		if (multipet) {
-			for (int8_t i = index; i < Inventories::MaxPetCount; ++i) {
+			for (int8_t i = index; i < inventories::max_pet_count; ++i) {
 				// Shift around pets if using multipet
-				if (Pet *move = player->getPets()->getSummoned(i)) {
+				if (pet *move = player->get_pets()->get_summoned(i)) {
 					move->summon(i - 1);
-					int8_t moveIndex = move->getIndex().get();
-					player->getPets()->setSummoned(moveIndex, move->getId());
-					player->getPets()->setSummoned(i, 0);
-					if (moveIndex == 0) {
-						move->startTimer();
+					int8_t move_index = move->get_index().get();
+					player->get_pets()->set_summoned(move_index, move->get_id());
+					player->get_pets()->set_summoned(i, 0);
+					if (move_index == 0) {
+						move->start_timer();
 					}
 				}
 			}
 		}
 
-		pet->desummon();
-		player->sendMap(Packets::Pets::petSummoned(player->getId(), pet, false, index));
+		pet_value->desummon();
+		player->send_map(packets::pets::pet_summoned(player->get_id(), pet_value, false, index));
 	}
 	else {
 		// Summoning a Pet
-		pet->setPos(player->getPos());
+		pet_value->set_pos(player->get_pos());
 		if (!multipet || master) {
-			pet->summon(0);
+			pet_value->summon(0);
 			if (multipet) {
-				for (int8_t i = Inventories::MaxPetCount - 1; i > 0; --i) {
-					if (player->getPets()->getSummoned(i - 1) && !player->getPets()->getSummoned(i)) {
-						Pet *move = player->getPets()->getSummoned(i - 1);
-						player->getPets()->setSummoned(i, move->getId());
-						player->getPets()->setSummoned(i - 1, 0);
+				for (int8_t i = inventories::max_pet_count - 1; i > 0; --i) {
+					if (player->get_pets()->get_summoned(i - 1) && !player->get_pets()->get_summoned(i)) {
+						pet *move = player->get_pets()->get_summoned(i - 1);
+						player->get_pets()->set_summoned(i, move->get_id());
+						player->get_pets()->set_summoned(i - 1, 0);
 						move->summon(i);
 					}
 				}
-				player->sendMap(Packets::Pets::petSummoned(player->getId(), pet));
+				player->send_map(packets::pets::pet_summoned(player->get_id(), pet_value));
 			}
-			else if (Pet *kicked = player->getPets()->getSummoned(0)) {
-				Vana::Timer::Id id{TimerType::PetTimer, kicked->getIndex().get()};
-				player->getTimerContainer()->removeTimer(id);
+			else if (pet *kicked = player->get_pets()->get_summoned(0)) {
+				vana::timer::id id{timer_type::pet_timer, kicked->get_index().get()};
+				player->get_timer_container()->remove_timer(id);
 				kicked->desummon();
-				player->sendMap(Packets::Pets::petSummoned(player->getId(), pet, true));
+				player->send_map(packets::pets::pet_summoned(player->get_id(), pet_value, true));
 			}
 			else {
-				player->sendMap(Packets::Pets::petSummoned(player->getId(), pet));
+				player->send_map(packets::pets::pet_summoned(player->get_id(), pet_value));
 			}
-			player->getPets()->setSummoned(0, pet->getId());
-			pet->startTimer();
+			player->get_pets()->set_summoned(0, pet_value->get_id());
+			pet_value->start_timer();
 		}
 		else {
-			for (int8_t i = 0; i < Inventories::MaxPetCount; ++i) {
-				if (!player->getPets()->getSummoned(i)) {
-					player->getPets()->setSummoned(i, pet->getId());
-					pet->summon(i);
-					player->sendMap(Packets::Pets::petSummoned(player->getId(), pet));
-					pet->startTimer();
+			for (int8_t i = 0; i < inventories::max_pet_count; ++i) {
+				if (!player->get_pets()->get_summoned(i)) {
+					player->get_pets()->set_summoned(i, pet_value->get_id());
+					pet_value->summon(i);
+					player->send_map(packets::pets::pet_summoned(player->get_id(), pet_value));
+					pet_value->start_timer();
 					break;
 				}
 			}
 		}
 	}
-	player->send(Packets::Pets::blankUpdate());
+	player->send(packets::pets::blank_update());
 }
 
-auto PetHandler::handleFeed(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	reader.skip<tick_count_t>();
-	inventory_slot_t slot = reader.get<inventory_slot_t>();
-	item_id_t itemId = reader.get<item_id_t>();
-	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
-	Pet *pet = player->getPets()->getSummoned(0);
-	if (pet != nullptr && item != nullptr && item->getId() == itemId) {
-		Inventory::takeItem(player, itemId, 1);
+auto pet_handler::handle_feed(ref_ptr<player> player, packet_reader &reader) -> void {
+	reader.skip<game_tick_count>();
+	game_inventory_slot slot = reader.get<game_inventory_slot>();
+	game_item_id item_id = reader.get<game_item_id>();
+	item *item = player->get_inventory()->get_item(inventories::use, slot);
+	pet *pet = player->get_pets()->get_summoned(0);
+	if (pet != nullptr && item != nullptr && item->get_id() == item_id) {
+		inventory::take_item(player, item_id, 1);
 
-		bool success = (pet->getFullness() < Stats::MaxFullness);
+		bool success = (pet->get_fullness() < stats::max_fullness);
 		if (success) {
-			player->send(Packets::Pets::showAnimation(player->getId(), pet, 1));
+			player->send(packets::pets::show_animation(player->get_id(), pet, 1));
 
-			pet->modifyFullness(Stats::PetFeedFullness, false);
-			if (Randomizer::percentage() < 60) {
+			pet->modify_fullness(stats::pet_feed_fullness, false);
+			if (randomizer::percentage() < 60) {
 				// 60% chance for feed to add closeness
-				pet->addCloseness(1);
+				pet->add_closeness(1);
 			}
 		}
 	}
 	else {
-		player->send(Packets::Inventory::blankUpdate());
+		player->send(packets::inventory::blank_update());
 	}
 }
 
-auto PetHandler::handleCommand(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	pet_id_t petId = reader.get<pet_id_t>();
-	Pet *pet = player->getPets()->getPet(petId);
+auto pet_handler::handle_command(ref_ptr<player> player, packet_reader &reader) -> void {
+	game_pet_id pet_id = reader.get<game_pet_id>();
+	pet *pet = player->get_pets()->get_pet(pet_id);
 	if (pet == nullptr) {
 		// Hacking
 		return;
 	}
 	reader.unk<uint8_t>();
 	int8_t act = reader.get<int8_t>();
-	auto action = ChannelServer::getInstance().getItemDataProvider().getInteraction(pet->getItemId(), act);
+	auto action = channel_server::get_instance().get_item_data_provider().get_interaction(pet->get_item_id(), act);
 	if (action == nullptr) {
 		// Hacking or no action info available
 		return;
 	}
 
-	if (Randomizer::percentage<uint32_t>() < action->prob) {
-		pet->addCloseness(action->increase);
+	if (randomizer::percentage<uint32_t>() < action->prob) {
+		pet->add_closeness(action->increase);
 	}
 
-	player->send(Packets::Pets::showAnimation(player->getId(), pet, act));
+	player->send(packets::pets::show_animation(player->get_id(), pet, act));
 }
 
-auto PetHandler::handleConsumePotion(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	pet_id_t petId = reader.get<pet_id_t>();
-	Pet *pet = player->getPets()->getPet(petId);
-	if (pet == nullptr || !pet->isSummoned() || player->getStats()->isDead()) {
+auto pet_handler::handle_consume_potion(ref_ptr<player> player, packet_reader &reader) -> void {
+	game_pet_id pet_id = reader.get<game_pet_id>();
+	pet *pet = player->get_pets()->get_pet(pet_id);
+	if (pet == nullptr || !pet->is_summoned() || player->get_stats()->is_dead()) {
 		// Hacking
 		return;
 	}
 	reader.unk<uint8_t>(); // It MIGHT be some flag for Meso/Power/Magic Guard...?
-	reader.skip<tick_count_t>();
-	inventory_slot_t slot = reader.get<inventory_slot_t>();
-	item_id_t itemId = reader.get<item_id_t>();
-	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
-	auto info = ChannelServer::getInstance().getItemDataProvider().getConsumeInfo(itemId);
-	if (item == nullptr || item->getId() != itemId) {
+	reader.skip<game_tick_count>();
+	game_inventory_slot slot = reader.get<game_inventory_slot>();
+	game_item_id item_id = reader.get<game_item_id>();
+	item *item = player->get_inventory()->get_item(inventories::use, slot);
+	auto info = channel_server::get_instance().get_item_data_provider().get_consume_info(item_id);
+	if (item == nullptr || item->get_id() != item_id) {
 		// Hacking
 		return;
 	}
 
 	// Check if the MP potion is an MP potion set
-	if ((info->mp != 0 || info->mpr != 0) && player->getInventory()->getAutoMpPot() != itemId) {
+	if ((info->mp != 0 || info->mp_rate != 0) && player->get_inventory()->get_auto_mp_pot() != item_id) {
 		// Hacking
 		return;
 	}
 
 	// Check if the HP potion is an HP potion set
-	if ((info->hp != 0 || info->hpr != 0) && player->getInventory()->getAutoHpPot() != itemId) {
+	if ((info->hp != 0 || info->hp_rate != 0) && player->get_inventory()->get_auto_hp_pot() != item_id) {
 		// Hacking
 		return;
 	}
 
-	Inventory::useItem(player, itemId);
-	Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
+	inventory::use_item(player, item_id);
+	inventory::take_item_slot(player, inventories::use, slot, 1);
 }
 
-auto PetHandler::changeName(ref_ptr_t<Player> player, const string_t &name) -> void {
-	if (Pet *pet = player->getPets()->getSummoned(0)) {
-		pet->setName(name);
+auto pet_handler::change_name(ref_ptr<player> player, const string &name) -> void {
+	if (pet *pet = player->get_pets()->get_summoned(0)) {
+		pet->set_name(name);
 	}
 }
 
-auto PetHandler::showPets(ref_ptr_t<Player> player) -> void {
-	for (int8_t i = 0; i < Inventories::MaxPetCount; ++i) {
-		if (Pet *pet = player->getPets()->getSummoned(i)) {
-			pet->setPos(player->getPos());
-			player->send(Packets::Pets::petSummoned(player->getId(), pet));
+auto pet_handler::show_pets(ref_ptr<player> player) -> void {
+	for (int8_t i = 0; i < inventories::max_pet_count; ++i) {
+		if (pet *pet = player->get_pets()->get_summoned(i)) {
+			pet->set_pos(player->get_pos());
+			player->send(packets::pets::pet_summoned(player->get_id(), pet));
 		}
 	}
-	player->send(Packets::Pets::updateSummonedPets(player));
+	player->send(packets::pets::update_summoned_pets(player));
 }
 
 }

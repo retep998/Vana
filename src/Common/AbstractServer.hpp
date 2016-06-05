@@ -29,48 +29,48 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-	class Session;
-	struct LogConfig;
+namespace vana {
+	class session;
+	struct log_config;
 
-	class AbstractServer {
+	class abstract_server {
 	public:
-		virtual ~AbstractServer() = default;
+		virtual ~abstract_server() = default;
 
-		auto initialize() -> Result;
+		auto initialize() -> result;
 		virtual auto shutdown() -> void;
 
-		auto log(LogType type, const string_t &message) -> void;
-		auto log(LogType type, function_t<void(out_stream_t &)> produceMessage) -> void;
-		auto log(LogType type, const char *message) -> void;
-		auto getServerType() const -> ServerType;
-		auto getInterPassword() const -> string_t;
-		auto getInterserverSaltingPolicy() const -> const SaltConfig &;
+		auto log(log_type type, const string &message) -> void;
+		auto log(log_type type, function<void(out_stream &)> produce_message) -> void;
+		auto log(log_type type, const char *message) -> void;
+		auto get_server_type() const -> server_type;
+		auto get_inter_password() const -> string;
+		auto get_interserver_salting_policy() const -> const salt_config &;
 	protected:
-		AbstractServer(ServerType type);
-		virtual auto loadConfig() -> Result;
-		virtual auto initComplete() -> void;
-		virtual auto loadData() -> Result = 0;
-		virtual auto makeLogIdentifier() const -> opt_string_t = 0;
-		virtual auto getLogPrefix() const -> string_t = 0;
+		abstract_server(server_type type);
+		virtual auto load_config() -> result;
+		virtual auto init_complete() -> void;
+		virtual auto load_data() -> result = 0;
+		virtual auto make_log_identifier() const -> opt_string = 0;
+		virtual auto get_log_prefix() const -> string = 0;
 
-		auto getInterServerConfig() const -> const InterServerConfig &;
-		auto sendAuth(ref_ptr_t<Session> session) const -> void;
-		auto displayLaunchTime() const -> void;
-		auto buildLogIdentifier(function_t<void(out_stream_t &)> produceId) const -> opt_string_t;
-		auto getConnectionManager() -> ConnectionManager & { return m_connectionManager; }
+		auto get_inter_server_config() const -> const inter_server_config &;
+		auto send_auth(ref_ptr<session> session) const -> void;
+		auto display_launch_time() const -> void;
+		auto build_log_identifier(function<void(out_stream &)> produce_id) const -> opt_string;
+		auto get_connection_manager() -> connection_manager & { return m_connection_manager; }
 	private:
-		auto loadLogConfig() -> void;
-		auto createLogger(const LogConfig &conf) -> void;
+		auto load_log_config() -> void;
+		auto create_logger(const log_config &conf) -> void;
 
-		ServerType m_serverType = ServerType::None;
-		time_point_t m_startTime;
-		string_t m_interPassword;
-		string_t m_salt;
-		owned_ptr_t<Logger> m_logger;
-		InterServerConfig m_interServerConfig;
-		SaltConfig m_saltingPolicy;
-		IpMatrix m_externalIps;
-		ConnectionManager m_connectionManager;
+		server_type m_server_type = server_type::none;
+		time_point m_start_time;
+		string m_inter_password;
+		string m_salt;
+		owned_ptr<base_logger> m_logger;
+		inter_server_config m_inter_server_config;
+		salt_config m_salting_policy;
+		ip_matrix m_external_ips;
+		connection_manager m_connection_manager;
 	};
 }

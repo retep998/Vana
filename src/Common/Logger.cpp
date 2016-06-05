@@ -23,38 +23,38 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sstream>
 #include <stdexcept>
 
-namespace Vana {
+namespace vana {
 
-Logger::Logger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize) :
+base_logger::base_logger(const string &filename, const string &format, const string &time_format, server_type type, size_t buffer_size) :
 	m_format{format},
-	m_timeFormat{timeFormat},
-	m_serverType{serverType}
+	m_time_format{time_format},
+	m_server_type{type}
 {
 }
 
-auto Logger::formatLog(const string_t &format, LogType type, Logger *logger, const opt_string_t &id, const string_t &message) -> string_t {
-	return formatLog(format, type, logger, time(nullptr), id, message);
+auto base_logger::format_log(const string &format, log_type type, base_logger *logger, const opt_string &id, const string &message) -> string {
+	return format_log(format, type, logger, time(nullptr), id, message);
 }
 
-auto Logger::formatLog(const string_t &format, LogType type, Logger *logger, time_t time, const opt_string_t &id, const string_t &message) -> string_t {
-	string_t ret = format;
-	ReplacementArgs args{type, logger, time, id, message};
-	static LogReplacements replacements;
+auto base_logger::format_log(const string &format, log_type type, base_logger *logger, time_t time, const opt_string &id, const string &message) -> string {
+	string ret = format;
+	replacement_args args{type, logger, time, id, message};
+	static log_replacements replacements;
 
-	for (const auto &kvp : replacements.m_replacementMap) {
+	for (const auto &kvp : replacements.m_replacements) {
 		size_t x = ret.find(kvp.first);
-		if (x != string_t::npos) {
-			out_stream_t strm;
+		if (x != string::npos) {
+			out_stream strm;
 			kvp.second(strm, args);
-			const string_t &y = strm.str();
+			const string &y = strm.str();
 			ret.replace(x, kvp.first.size(), y.c_str(), y.size());
 		}
 	}
 	return ret;
 }
 
-Logger::ReplacementArgs::ReplacementArgs(LogType logType, Logger *logger, time_t time, const opt_string_t &id, const string_t &msg) :
-	logType{logType},
+base_logger::replacement_args::replacement_args(log_type type, base_logger *logger, time_t time, const opt_string &id, const string &msg) :
+	type{type},
 	logger{logger},
 	time{time},
 	id{id},
@@ -62,140 +62,143 @@ Logger::ReplacementArgs::ReplacementArgs(LogType logType, Logger *logger, time_t
 {
 }
 
-Logger::LogReplacements::LogReplacements() {
-	add("%yy", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << TimeUtilities::getYear(true, args.time);
+base_logger::log_replacements::log_replacements() {
+	add("%yy", [](out_stream &stream, const replacement_args &args) {
+		stream << utilities::time::get_year(true, args.time);
 	});
-	add("%YY", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << TimeUtilities::getYear(false, args.time);
+	add("%YY", [](out_stream &stream, const replacement_args &args) {
+		stream << utilities::time::get_year(false, args.time);
 	});
-	add("%mm", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << TimeUtilities::getMonth(args.time);
+	add("%mm", [](out_stream &stream, const replacement_args &args) {
+		stream << utilities::time::get_month(args.time);
 	});
-	add("%MM", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << std::setw(2) << std::setfill('0') << TimeUtilities::getMonth(args.time);
+	add("%MM", [](out_stream &stream, const replacement_args &args) {
+		stream << std::setw(2) << std::setfill('0') << utilities::time::get_month(args.time);
 	});
-	add("%oo", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << TimeUtilities::getMonthString(true, args.time);
+	add("%oo", [](out_stream &stream, const replacement_args &args) {
+		stream << utilities::time::get_month_string(true, args.time);
 	});
-	add("%OO", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << TimeUtilities::getMonthString(false, args.time);
+	add("%OO", [](out_stream &stream, const replacement_args &args) {
+		stream << utilities::time::get_month_string(false, args.time);
 	});
-	add("%dd", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << TimeUtilities::getDate(args.time);
+	add("%dd", [](out_stream &stream, const replacement_args &args) {
+		stream << utilities::time::get_date(args.time);
 	});
-	add("%DD", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << std::setw(2) << std::setfill('0') << TimeUtilities::getDate(args.time);
+	add("%DD", [](out_stream &stream, const replacement_args &args) {
+		stream << std::setw(2) << std::setfill('0') << utilities::time::get_date(args.time);
 	});
-	add("%aa", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << TimeUtilities::getDayString(true, args.time);
+	add("%aa", [](out_stream &stream, const replacement_args &args) {
+		stream << utilities::time::get_day_string(true, args.time);
 	});
-	add("%AA", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << TimeUtilities::getDayString(false, args.time);
+	add("%AA", [](out_stream &stream, const replacement_args &args) {
+		stream << utilities::time::get_day_string(false, args.time);
 	});
-	add("%hh", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << TimeUtilities::getHour(true, args.time);
+	add("%hh", [](out_stream &stream, const replacement_args &args) {
+		stream << utilities::time::get_hour(true, args.time);
 	});
-	add("%HH", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << std::setw(2) << std::setfill('0') << TimeUtilities::getHour(true, args.time);
+	add("%HH", [](out_stream &stream, const replacement_args &args) {
+		stream << std::setw(2) << std::setfill('0') << utilities::time::get_hour(true, args.time);
 	});
-	add("%mi", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << TimeUtilities::getHour(false, args.time);
+	add("%mi", [](out_stream &stream, const replacement_args &args) {
+		stream << utilities::time::get_hour(false, args.time);
 	});
-	add("%MI", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << std::setw(2) << std::setfill('0') << TimeUtilities::getHour(false, args.time);
+	add("%MI", [](out_stream &stream, const replacement_args &args) {
+		stream << std::setw(2) << std::setfill('0') << utilities::time::get_hour(false, args.time);
 	});
-	add("%ii", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << TimeUtilities::getMinute(args.time);
+	add("%ii", [](out_stream &stream, const replacement_args &args) {
+		stream << utilities::time::get_minute(args.time);
 	});
-	add("%II", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << std::setw(2) << std::setfill('0') << TimeUtilities::getMinute(args.time);
+	add("%II", [](out_stream &stream, const replacement_args &args) {
+		stream << std::setw(2) << std::setfill('0') << utilities::time::get_minute(args.time);
 	});
-	add("%ss", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << TimeUtilities::getSecond(args.time);
+	add("%ss", [](out_stream &stream, const replacement_args &args) {
+		stream << utilities::time::get_second(args.time);
 	});
-	add("%SS", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << std::setw(2) << std::setfill('0') << TimeUtilities::getSecond(args.time);
+	add("%SS", [](out_stream &stream, const replacement_args &args) {
+		stream << std::setw(2) << std::setfill('0') << utilities::time::get_second(args.time);
 	});
-	add("%ww", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << !(TimeUtilities::getHour(false, args.time) < 12) ? "pm" : "am";
+	add("%ww", [](out_stream &stream, const replacement_args &args) {
+		stream << !(utilities::time::get_hour(false, args.time) < 12) ? "pm" : "am";
 	});
-	add("%WW", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << !(TimeUtilities::getHour(false, args.time) < 12) ? "PM" : "AM";
+	add("%WW", [](out_stream &stream, const replacement_args &args) {
+		stream << !(utilities::time::get_hour(false, args.time) < 12) ? "PM" : "AM";
 	});
-	add("%qq", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << !(TimeUtilities::getHour(false, args.time) < 12) ? "p" : "a";
+	add("%qq", [](out_stream &stream, const replacement_args &args) {
+		stream << !(utilities::time::get_hour(false, args.time) < 12) ? "p" : "a";
 	});
-	add("%QQ", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << !(TimeUtilities::getHour(false, args.time) < 12) ? "P" : "A";
+	add("%QQ", [](out_stream &stream, const replacement_args &args) {
+		stream << !(utilities::time::get_hour(false, args.time) < 12) ? "P" : "A";
 	});
-	add("%zz", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << TimeUtilities::getTimeZone();
+	add("%zz", [](out_stream &stream, const replacement_args &args) {
+		stream << utilities::time::get_time_zone();
 	});
-	add("%id", [](out_stream_t &stream, const ReplacementArgs &args) {
+	add("%id", [](out_stream &stream, const replacement_args &args) {
 		if (args.id.is_initialized()) {
 			stream << args.id.get();
 		}
 	});
-	add("%t", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << Logger::formatLog(args.logger->getTimeFormat(), args.logType, args.logger, args.time, args.id, args.msg);
+	add("%t", [](out_stream &stream, const replacement_args &args) {
+		stream << base_logger::format_log(args.logger->get_time_format(), args.type, args.logger, args.time, args.id, args.msg);
 	});
-	add("%e", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << getLevelString(args.logType);
+	add("%e", [](out_stream &stream, const replacement_args &args) {
+		stream << get_level_string(args.type);
 	});
-	add("%orig", [](out_stream_t &stream, const ReplacementArgs &args) {
-		stream << getServerTypeString(args.logger->getServerType());
+	add("%orig", [](out_stream &stream, const replacement_args &args) {
+		stream << get_server_type_string(args.logger->get_server_type());
 	});
-	add("%msg", [](out_stream_t &stream, const ReplacementArgs &args) {
+	add("%msg", [](out_stream &stream, const replacement_args &args) {
 		stream << args.msg;
 	});
 }
 
-auto Logger::LogReplacements::add(const string_t &key, func_t func) -> void {
-	m_replacementMap.emplace(key, func);
+auto base_logger::log_replacements::add(const string &key, func func) -> void {
+	m_replacements.emplace(key, func);
 }
 
-auto Logger::LogReplacements::getLevelString(LogType type) -> string_t {
+auto base_logger::log_replacements::get_level_string(log_type type) -> string {
 	switch (type) {
-		case LogType::Info: return "INFO";
-		case LogType::Warning: return "WARNING";
-		case LogType::Debug: return "DEBUG";
-		case LogType::Error: return "ERROR";
-		case LogType::DebugError: return "DEBUG ERROR";
-		case LogType::CriticalError: return "CRITICAL ERROR";
-		case LogType::Hacking: return "HACKING";
-		case LogType::ServerConnect: return "SERVER CONNECT";
-		case LogType::ServerDisconnect: return "SERVER DISCONNECT";
-		case LogType::ServerAuthFailure: return "SERVER AUTH FAILURE";
-		case LogType::Login: return "LOGIN";
-		case LogType::LoginAuthFailure: return "USER AUTH FAILURE";
-		case LogType::Logout: return "LOGOUT";
-		case LogType::ClientError: return "CLIENT ERROR";
-		case LogType::GmCommand: return "GM COMMAND";
-		case LogType::AdminCommand: return "ADMIN COMMAND";
-		case LogType::BossKill: return "BOSS KILL";
-		case LogType::Trade: return "TRADE";
-		case LogType::ShopTransaction: return "SHOP";
-		case LogType::StorageTransaction: return "STORAGE";
-		case LogType::InstanceBegin: return "INSTANCE";
-		case LogType::Drop: return "DROP";
-		case LogType::Chat: return "CHAT";
-		case LogType::Whisper: return "WHISPER";
-		case LogType::MalformedPacket: return "MALFORMED PACKET";
-		case LogType::ScriptLog: return "SCRIPT";
+		case log_type::info: return "INFO";
+		case log_type::warning: return "WARNING";
+		case log_type::debug: return "DEBUG";
+		case log_type::error: return "ERROR";
+		case log_type::debug_error: return "DEBUG ERROR";
+		case log_type::critical_error: return "CRITICAL ERROR";
+		case log_type::hacking: return "HACKING";
+		case log_type::server_connect: return "SERVER CONNECT";
+		case log_type::server_disconnect: return "SERVER DISCONNECT";
+		case log_type::server_auth_failure: return "SERVER AUTH FAILURE";
+		case log_type::login: return "LOGIN";
+		case log_type::login_auth_failure: return "USER AUTH FAILURE";
+		case log_type::logout: return "LOGOUT";
+		case log_type::client_error: return "CLIENT ERROR";
+		case log_type::gm_command: return "GM COMMAND";
+		case log_type::admin_command: return "ADMIN COMMAND";
+		case log_type::boss_kill: return "BOSS KILL";
+		case log_type::trade: return "TRADE";
+		case log_type::shop_transaction: return "SHOP";
+		case log_type::storage_transaction: return "STORAGE";
+		case log_type::instance_begin: return "INSTANCE";
+		case log_type::drop: return "DROP";
+		case log_type::chat: return "CHAT";
+		case log_type::whisper: return "WHISPER";
+		case log_type::malformed_packet: return "MALFORMED PACKET";
+		case log_type::script_log: return "SCRIPT";
+		case log_type::ban: return "BAN";
+		case log_type::unban: return "UNBAN";
 	}
-	throw NotImplementedException{"LogType"};
+
+	throw not_implemented_exception{"LogType"};
 }
 
-auto Logger::LogReplacements::getServerTypeString(ServerType type) -> string_t {
+auto base_logger::log_replacements::get_server_type_string(server_type type) -> string {
 	switch (type) {
-		case ServerType::Cash: return "Cash";
-		case ServerType::Channel: return "Channel";
-		case ServerType::Login: return "Login";
-		case ServerType::Mts: return "MTS";
-		case ServerType::World: return "World";
+		case server_type::cash: return "Cash";
+		case server_type::channel: return "Channel";
+		case server_type::login: return "Login";
+		case server_type::mts: return "MTS";
+		case server_type::world: return "World";
 	}
-	throw NotImplementedException{"ServerType"};
+	throw not_implemented_exception{"ServerType"};
 }
 
 }

@@ -21,270 +21,270 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <algorithm>
 #include <cmath>
 
-namespace Vana {
+namespace vana {
 
-Rect::Rect(const Point &leftTop, const Point &rightBottom) :
-	m_leftTop{leftTop},
-	m_rightBottom{rightBottom}
+rect::rect(const point &left_top, const point &right_bottom) :
+	m_left_top{left_top},
+	m_right_bottom{right_bottom}
 {
 }
 
-Rect::Rect(const Point &leftTop, coord_t width, coord_t height) :
-	m_leftTop{leftTop},
-	m_rightBottom{leftTop.x + width, leftTop.y + height}
+rect::rect(const point &left_top, game_coord width, game_coord height) :
+	m_left_top{left_top},
+	m_right_bottom{left_top.x + width, left_top.y + height}
 {
 }
 
-Rect::Rect(coord_t leftTopX, coord_t leftTopY, coord_t width, coord_t height) :
-	m_leftTop{leftTopX, leftTopY},
-	m_rightBottom{leftTopX + width, leftTopY + height}
+rect::rect(game_coord left_top_x, game_coord left_top_y, game_coord width, game_coord height) :
+	m_left_top{left_top_x, left_top_y},
+	m_right_bottom{left_top_x + width, left_top_y + height}
 {
 }
 
-auto Rect::left() const -> Line {
-	return Line{m_leftTop, leftBottom()};
+auto rect::left() const -> line {
+	return line{m_left_top, left_bottom()};
 }
 
-auto Rect::right() const -> Line {
-	return Line{rightTop(), m_rightBottom};
+auto rect::right() const -> line {
+	return line{right_top(), m_right_bottom};
 }
 
-auto Rect::top() const -> Line {
-	return Line{m_leftTop, rightTop()};
+auto rect::top() const -> line {
+	return line{m_left_top, right_top()};
 }
 
-auto Rect::bottom() const -> Line {
-	return Line{leftBottom(), m_rightBottom};
+auto rect::bottom() const -> line {
+	return line{left_bottom(), m_right_bottom};
 }
 
-auto Rect::diagonalLeftTopRightBottom() const -> Line {
-	return Line{m_leftTop, m_rightBottom};
+auto rect::diagonal_left_top_right_bottom() const -> line {
+	return line{m_left_top, m_right_bottom};
 }
 
-auto Rect::diagonalLeftBottomRightTop() const -> Line {
-	return Line{leftBottom(), rightTop()};
+auto rect::diagonal_left_bottom_right_top() const -> line {
+	return line{left_bottom(), right_top()};
 }
 
-auto Rect::leftTop() const -> Point {
-	return m_leftTop;
+auto rect::left_top() const -> point {
+	return m_left_top;
 }
 
-auto Rect::rightBottom() const -> Point {
-	return m_rightBottom;
+auto rect::right_bottom() const -> point {
+	return m_right_bottom;
 }
 
-auto Rect::rightTop() const -> Point {
-	return Point{m_rightBottom.x, m_leftTop.y};
+auto rect::right_top() const -> point {
+	return point{m_right_bottom.x, m_left_top.y};
 }
 
-auto Rect::leftBottom() const -> Point {
-	return Point{m_leftTop.x, m_rightBottom.y};
+auto rect::left_bottom() const -> point {
+	return point{m_left_top.x, m_right_bottom.y};
 }
 
-auto Rect::center() const -> Point {
-	return Point{
-		(m_leftTop.x + m_rightBottom.x) / 2,
-		(m_leftTop.y + m_rightBottom.y) / 2
+auto rect::center() const -> point {
+	return point{
+		(m_left_top.x + m_right_bottom.x) / 2,
+		(m_left_top.y + m_right_bottom.y) / 2
 	};;
 }
 
-auto Rect::area() const -> int32_t {
+auto rect::area() const -> int32_t {
 	return height() * width();
 }
 
-auto Rect::perimeter() const -> int32_t {
+auto rect::perimeter() const -> int32_t {
 	return height() * 2 + width() * 2;
 }
 
-auto Rect::hypotenuse() const -> int32_t {
-	return std::abs(m_leftTop - m_rightBottom);
+auto rect::hypotenuse() const -> int32_t {
+	return std::abs(m_left_top - m_right_bottom);
 }
 
-auto Rect::height() const -> int32_t {
-	return std::abs(static_cast<int32_t>(m_leftTop.y) - static_cast<int32_t>(m_rightBottom.y));
+auto rect::height() const -> int32_t {
+	return std::abs(static_cast<int32_t>(m_left_top.y) - static_cast<int32_t>(m_right_bottom.y));
 }
 
-auto Rect::width() const -> int32_t {
-	return std::abs(static_cast<int32_t>(m_rightBottom.x) - static_cast<int32_t>(m_leftTop.x));
+auto rect::width() const -> int32_t {
+	return std::abs(static_cast<int32_t>(m_right_bottom.x) - static_cast<int32_t>(m_left_top.x));
 }
 
-auto Rect::contains(const Point &pos) const -> bool {
+auto rect::contains(const point &pos) const -> bool {
 	return
-		m_leftTop.y <= pos.y && pos.y <= m_rightBottom.y &&
-		m_leftTop.x <= pos.x && pos.x <= m_rightBottom.x;
+		m_left_top.y <= pos.y && pos.y <= m_right_bottom.y &&
+		m_left_top.x <= pos.x && pos.x <= m_right_bottom.x;
 }
 
-auto Rect::containsFullLine(const Line &line) const -> bool {
+auto rect::contains_full_line(const line &line) const -> bool {
 	return contains(line.pt1) && contains(line.pt2);
 }
 
-auto Rect::containsAnyPartOfLine(const Line &line) const -> bool {
-	return containsFullLine(line) || intersects(line);
+auto rect::contains_any_part_of_line(const line &line) const -> bool {
+	return contains_full_line(line) || intersects(line);
 }
 
-auto Rect::intersects(const Line &line) const -> bool {
+auto rect::intersects(const line &line) const -> bool {
 	// Uses Cohen-Sutherland clipping to determine whether or not intersection takes place
-	const int32_t bitsInside = 0x00;
-	const int32_t bitsLeft = 0x01;
-	const int32_t bitsRight = 0x02;
-	const int32_t bitsBottom = 0x04;
-	const int32_t bitsTop = 0x08;
+	const int32_t bits_inside = 0x00;
+	const int32_t bits_left = 0x01;
+	const int32_t bits_right = 0x02;
+	const int32_t bits_bottom = 0x04;
+	const int32_t bits_top = 0x08;
 
-	auto compute = [&](coord_t x, coord_t y) -> int32_t {
-		int32_t result = bitsInside;
-		if (x < m_leftTop.x) result |= bitsLeft;
-		else if (x > m_rightBottom.x) result |= bitsRight;
+	auto compute = [&](game_coord x, game_coord y) -> int32_t {
+		int32_t result = bits_inside;
+		if (x < m_left_top.x) result |= bits_left;
+		else if (x > m_right_bottom.x) result |= bits_right;
 
-		if (y < m_leftTop.y) result |= bitsTop;
-		else if (y > m_rightBottom.y) result |= bitsBottom;
+		if (y < m_left_top.y) result |= bits_top;
+		else if (y > m_right_bottom.y) result |= bits_bottom;
 		return result;
 	};
 
-	coord_t x1 = line.pt1.x;
-	coord_t x2 = line.pt2.x;
-	coord_t y1 = line.pt1.y;
-	coord_t y2 = line.pt2.y;
-	int32_t testResultPt1 = compute(x1, y1);
-	int32_t testResultPt2 = compute(x2, y2);
-	bool hasAny = false;
+	game_coord x1 = line.pt1.x;
+	game_coord x2 = line.pt2.x;
+	game_coord y1 = line.pt1.y;
+	game_coord y2 = line.pt2.y;
+	int32_t test_result_pt1 = compute(x1, y1);
+	int32_t test_result_pt2 = compute(x2, y2);
+	bool has_any = false;
 
 	do {
-		if (testResultPt1 == 0 && testResultPt2 == 0) {
+		if (test_result_pt1 == 0 && test_result_pt2 == 0) {
 			// Both are contained within the area(s), they do not intersect
-			hasAny = true;
+			has_any = true;
 			break;
 		}
-		if ((testResultPt1 & testResultPt2) != 0) {
+		if ((test_result_pt1 & test_result_pt2) != 0) {
 			// Both are outside of the area on sides incompatible with intersection, they do not intersect
 			break;
 		}
 
-		coord_t x;
-		coord_t y;
-		int32_t outsideResult = testResultPt1 != 0 ?
-			testResultPt1 :
-			testResultPt2;
+		game_coord x;
+		game_coord y;
+		int32_t outside_result = test_result_pt1 != 0 ?
+			test_result_pt1 :
+			test_result_pt2;
 
-		if ((outsideResult & bitsBottom) != 0) {
-			x = x1 + (x2 - x1) * (m_rightBottom.y - y1) / (y2 - y1);
-			y = m_rightBottom.y;
+		if ((outside_result & bits_bottom) != 0) {
+			x = x1 + (x2 - x1) * (m_right_bottom.y - y1) / (y2 - y1);
+			y = m_right_bottom.y;
 		}
-		else if ((outsideResult & bitsTop) != 0) {
-			x = x1 + (x2 - x1) * (m_leftTop.y - y1) / (y2 - y1);
-			y = m_leftTop.y;
+		else if ((outside_result & bits_top) != 0) {
+			x = x1 + (x2 - x1) * (m_left_top.y - y1) / (y2 - y1);
+			y = m_left_top.y;
 		}
-		else if ((outsideResult & bitsRight) != 0) {
-			x = m_rightBottom.x;
-			y = y1 + (y2 - y1) * (m_rightBottom.x - x1) / (x1 - x2);
+		else if ((outside_result & bits_right) != 0) {
+			x = m_right_bottom.x;
+			y = y1 + (y2 - y1) * (m_right_bottom.x - x1) / (x1 - x2);
 		}
-		else if ((outsideResult & bitsLeft) != 0) {
-			x = m_leftTop.x;
-			y = y1 + (y2 - y1) * (m_leftTop.x - x1) / (x1 - x2);
+		else if ((outside_result & bits_left) != 0) {
+			x = m_left_top.x;
+			y = y1 + (y2 - y1) * (m_left_top.x - x1) / (x1 - x2);
 		}
 		else {
-			throw CodePathInvalidException{"If there are no bits set, that case should be taken care of earlier"};
+			throw codepath_invalid_exception{"If there are no bits set, that case should be taken care of earlier"};
 		}
 
-		if (outsideResult == testResultPt1) {
+		if (outside_result == test_result_pt1) {
 			x1 = x;
 			y1 = y;
-			testResultPt1 = compute(x, y);
+			test_result_pt1 = compute(x, y);
 		}
 		else {
 			x2 = x;
 			y2 = y;
-			testResultPt2 = compute(x, y);
+			test_result_pt2 = compute(x, y);
 		}
 	} while (true);
 
-	return hasAny;
+	return has_any;
 }
 
-auto Rect::move(coord_t xMod, coord_t yMod) const -> Rect {
-	Rect ret{m_leftTop, m_rightBottom};
-	ret.m_leftTop.x += xMod;
-	ret.m_leftTop.y += yMod;
-	ret.m_rightBottom.x += xMod;
-	ret.m_rightBottom.y += yMod;
+auto rect::move(game_coord offset_x, game_coord offset_y) const -> rect {
+	rect ret{m_left_top, m_right_bottom};
+	ret.m_left_top.x += offset_x;
+	ret.m_left_top.y += offset_y;
+	ret.m_right_bottom.x += offset_x;
+	ret.m_right_bottom.y += offset_y;
 	return ret;
 }
 
-auto Rect::move(const Point &pos) const -> Rect {
+auto rect::move(const point &pos) const -> rect {
 	return move(pos.x, pos.y);
 }
 
-auto Rect::resize(coord_t mod) const -> Rect {
-	Rect ret{m_leftTop, m_rightBottom};
-	ret.m_leftTop.x -= mod;
-	ret.m_leftTop.y -= mod;
-	ret.m_rightBottom.x += mod;
-	ret.m_rightBottom.y += mod;
+auto rect::resize(game_coord mod) const -> rect {
+	rect ret{m_left_top, m_right_bottom};
+	ret.m_left_top.x -= mod;
+	ret.m_left_top.y -= mod;
+	ret.m_right_bottom.x += mod;
+	ret.m_right_bottom.y += mod;
 	return ret;
 }
 
-auto Rect::deform(coord_t leftTopMod, coord_t rightBottomMod) const -> Rect {
-	Rect ret{m_leftTop, m_rightBottom};
-	ret.m_leftTop.x += leftTopMod;
-	ret.m_leftTop.y -= leftTopMod;
-	ret.m_rightBottom.x += rightBottomMod;
-	ret.m_rightBottom.y -= rightBottomMod;
+auto rect::deform(game_coord left_top_mod, game_coord right_bottom_mod) const -> rect {
+	rect ret{m_left_top, m_right_bottom};
+	ret.m_left_top.x += left_top_mod;
+	ret.m_left_top.y -= left_top_mod;
+	ret.m_right_bottom.x += right_bottom_mod;
+	ret.m_right_bottom.y -= right_bottom_mod;
 	return ret;
 }
 
-auto Rect::swap(bool swapHorizontal, bool swapVertical) const -> Rect {
-	Rect ret{m_leftTop, m_rightBottom};
-	if (swapHorizontal) {
-		ret.m_leftTop.x = m_rightBottom.x;
-		ret.m_rightBottom.x = m_leftTop.x;
+auto rect::swap(bool swap_horizontal, bool swap_vertical) const -> rect {
+	rect ret{m_left_top, m_right_bottom};
+	if (swap_horizontal) {
+		ret.m_left_top.x = m_right_bottom.x;
+		ret.m_right_bottom.x = m_left_top.x;
 	}
-	if (swapVertical) {
-		ret.m_leftTop.y = m_rightBottom.y;
-		ret.m_rightBottom.y = m_leftTop.y;
+	if (swap_vertical) {
+		ret.m_left_top.y = m_right_bottom.y;
+		ret.m_right_bottom.y = m_left_top.y;
 	}
 	return ret;
 }
 
-auto Rect::normalize() const -> Rect {
-	return swap(m_leftTop.x > m_rightBottom.x, m_leftTop.y > m_rightBottom.y);
+auto rect::normalize() const -> rect {
+	return swap(m_left_top.x > m_right_bottom.x, m_left_top.y > m_right_bottom.y);
 }
 
-auto Rect::intersection(const Rect &other) const -> Rect {
-	Rect ret = normalize();
-	Rect test = other.normalize();
-	ret.m_rightBottom.y = std::min(ret.m_rightBottom.y, test.m_rightBottom.y);
-	ret.m_rightBottom.x = std::min(ret.m_rightBottom.x, test.m_rightBottom.x);
-	ret.m_leftTop.y = std::max(ret.m_leftTop.y, test.m_leftTop.y);
-	ret.m_leftTop.x = std::max(ret.m_leftTop.x, test.m_leftTop.x);
+auto rect::intersection(const rect &other) const -> rect {
+	rect ret = normalize();
+	rect test = other.normalize();
+	ret.m_right_bottom.y = std::min(ret.m_right_bottom.y, test.m_right_bottom.y);
+	ret.m_right_bottom.x = std::min(ret.m_right_bottom.x, test.m_right_bottom.x);
+	ret.m_left_top.y = std::max(ret.m_left_top.y, test.m_left_top.y);
+	ret.m_left_top.x = std::max(ret.m_left_top.x, test.m_left_top.x);
 	return ret;
 }
 
-auto Rect::combine(const Rect &other) const -> Rect {
-	Rect ret = normalize();
-	Rect test = other.normalize();
-	ret.m_rightBottom.y = std::max(ret.m_rightBottom.y, test.m_rightBottom.y);
-	ret.m_rightBottom.x = std::max(ret.m_rightBottom.x, test.m_rightBottom.x);
-	ret.m_leftTop.y = std::min(ret.m_leftTop.y, test.m_leftTop.y);
-	ret.m_leftTop.x = std::min(ret.m_leftTop.x, test.m_leftTop.x);
+auto rect::combine(const rect &other) const -> rect {
+	rect ret = normalize();
+	rect test = other.normalize();
+	ret.m_right_bottom.y = std::max(ret.m_right_bottom.y, test.m_right_bottom.y);
+	ret.m_right_bottom.x = std::max(ret.m_right_bottom.x, test.m_right_bottom.x);
+	ret.m_left_top.y = std::min(ret.m_left_top.y, test.m_left_top.y);
+	ret.m_left_top.x = std::min(ret.m_left_top.x, test.m_left_top.x);
 	return ret;
 }
 
-auto Rect::findOverlap(const Rect &other) const -> SearchResult {
+auto rect::find_overlap(const rect &other) const -> search_result {
 	// Can't overlap when there's nothing to overlap
 	if (other.height() == 0 && other.width() == 0) {
-		return SearchResult::NotFound;
+		return search_result::not_found;
 	}
 	if (height() == 0 && width() == 0) {
-		return SearchResult::NotFound;
+		return search_result::not_found;
 	}
 
-	Rect normalized = normalize();
-	Rect test = other.normalize();
-	bool noOverlap = normalized.m_leftTop.x > test.m_rightBottom.x &&
-		test.m_leftTop.x > normalized.m_rightBottom.x &&
-		normalized.m_leftTop.y < test.m_rightBottom.y &&
-		test.m_leftTop.y < normalized.m_rightBottom.y;
+	rect normalized = normalize();
+	rect test = other.normalize();
+	bool noOverlap = normalized.m_left_top.x > test.m_right_bottom.x &&
+		test.m_left_top.x > normalized.m_right_bottom.x &&
+		normalized.m_left_top.y < test.m_right_bottom.y &&
+		test.m_left_top.y < normalized.m_right_bottom.y;
 
-	return noOverlap ? SearchResult::NotFound : SearchResult::Found;
+	return noOverlap ? search_result::not_found : search_result::found;
 }
 
 }

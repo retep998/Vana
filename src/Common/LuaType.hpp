@@ -23,20 +23,22 @@ extern "C" {
 	#include <lauxlib.h>
 }
 
-namespace Vana {
-	enum class LuaType : int {
-		None = LUA_TNONE,
-		Nil = LUA_TNIL,
-		Bool = LUA_TBOOLEAN,
-		LightUserData = LUA_TLIGHTUSERDATA,
-		Number = LUA_TNUMBER,
-		String = LUA_TSTRING,
-		Table = LUA_TTABLE,
-		Function = LUA_TFUNCTION,
-		UserData = LUA_TUSERDATA,
-		Thread = LUA_TTHREAD,
-	};
+namespace vana {
+	namespace lua {
+		enum class lua_type : int {
+			none = LUA_TNONE,
+			nil = LUA_TNIL,
+			boolean = LUA_TBOOLEAN,
+			light_userdata = LUA_TLIGHTUSERDATA,
+			number = LUA_TNUMBER,
+			string = LUA_TSTRING,
+			table = LUA_TTABLE,
+			function = LUA_TFUNCTION,
+			userdata = LUA_TUSERDATA,
+			thread = LUA_TTHREAD,
+		};
 
-	using lua_return_t = int;
-	using lua_function_t = lua_return_t (*)(lua_State *);
+		using lua_return = int;
+		using lua_function = lua_return (*)(lua_State *);
+	}
 }

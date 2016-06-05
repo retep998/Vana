@@ -19,19 +19,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class PacketReader;
-	struct MobSkillLevelInfo;
+namespace vana {
+	class packet_reader;
+	struct mob_skill_level_info;
 
-	namespace ChannelServer {
-		class Mob;
-		class Player;
-		namespace MobHandler {
-			auto handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill_id_t skillId, skill_level_t level, item_id_t weapon, int8_t hits, damage_t damage = 0) -> int32_t;
-			auto handleBomb(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto monsterControl(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto friendlyDamaged(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleTurncoats(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+	namespace channel_server {
+		class mob;
+		class player;
+		namespace mob_handler {
+			auto handle_mob_status(game_player_id player_id, ref_ptr<mob> mob, game_skill_id skill_id, game_skill_level level, game_item_id weapon, int8_t hits, game_damage damage = 0) -> int32_t;
+			auto handle_bomb(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto monster_control(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto friendly_damaged(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_turncoats(ref_ptr<player> player, packet_reader &reader) -> void;
 		}
 	}
 }

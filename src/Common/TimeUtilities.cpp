@@ -19,38 +19,40 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <sstream>
 
-namespace Vana {
+namespace vana {
+namespace utilities {
+namespace time {
 
-auto TimeUtilities::getDate(time_t ctime) -> int32_t {
-	std::tm *timeInfo = localtime(&ctime);
-	int32_t result = timeInfo->tm_mday;
+auto get_date(time_t ctime) -> int32_t {
+	std::tm *time_info = localtime(&ctime);
+	int32_t result = time_info->tm_mday;
 	return result;
 }
 
-auto TimeUtilities::getMonth(time_t ctime) -> int32_t {
-	std::tm *timeInfo = localtime(&ctime);
-	int32_t result = timeInfo->tm_mon + 1;
+auto get_month(time_t ctime) -> int32_t {
+	std::tm *time_info = localtime(&ctime);
+	int32_t result = time_info->tm_mon + 1;
 	return result;
 }
 
-auto TimeUtilities::getYear(bool twoYear, time_t ctime) -> int32_t {
-	std::tm *timeInfo = localtime(&ctime);
-	int32_t result = timeInfo->tm_year + 1900;
-	if (twoYear) {
+auto get_year(bool two_digit, time_t ctime) -> int32_t {
+	std::tm *time_info = localtime(&ctime);
+	int32_t result = time_info->tm_year + 1900;
+	if (two_digit) {
 		return result % 100;
 	}
 	return result;
 }
 
-auto TimeUtilities::getDay(time_t ctime) -> int32_t {
-	std::tm *timeInfo = localtime(&ctime);
-	int32_t result = timeInfo->tm_wday + 1;
+auto get_day(time_t ctime) -> int32_t {
+	std::tm *time_info = localtime(&ctime);
+	int32_t result = time_info->tm_wday + 1;
 	return result;
 }
 
-auto TimeUtilities::getDayString(bool shortened, time_t ctime) -> string_t {
-	string_t result = "fail";
-	switch (getDay(ctime)) {
+auto get_day_string(bool shortened, time_t ctime) -> string {
+	string result = "fail";
+	switch (get_day(ctime)) {
 		case 1: result = (shortened ? "Sun" : "Sunday"); break;
 		case 2: result = (shortened ? "Mon" : "Monday"); break;
 		case 3: result = (shortened ? "Tue" : "Tuesday"); break;
@@ -58,13 +60,14 @@ auto TimeUtilities::getDayString(bool shortened, time_t ctime) -> string_t {
 		case 5: result = (shortened ? "Thu" : "Thursday"); break;
 		case 6: result = (shortened ? "Fri" : "Friday"); break;
 		case 7: result = (shortened ? "Sat" : "Saturday"); break;
+		default: throw not_implemented_exception{"day"};
 	}
 	return result;
 }
 
-auto TimeUtilities::getMonthString(bool shortened, time_t ctime) -> string_t {
-	string_t result = "fail";
-	switch (getMonth(ctime)) {
+auto get_month_string(bool shortened, time_t ctime) -> string {
+	string result = "fail";
+	switch (get_month(ctime)) {
 		case 1: result = (shortened ? "Jan" : "January"); break;
 		case 2: result = (shortened ? "Feb" : "February"); break;
 		case 3: result = (shortened ? "Mar" : "March"); break;
@@ -77,51 +80,52 @@ auto TimeUtilities::getMonthString(bool shortened, time_t ctime) -> string_t {
 		case 10: result = (shortened ? "Oct" : "October"); break;
 		case 11: result = (shortened ? "Nov" : "November"); break;
 		case 12: result = (shortened ? "Dec" : "December"); break;
+		default: throw not_implemented_exception{"month"};
 	}
 	return result;
 }
 
-auto TimeUtilities::getHour(bool nonMilitary, time_t ctime) -> int32_t {
-	std::tm *timeInfo = localtime(&ctime);
-	int32_t result = timeInfo->tm_hour;
-	if (nonMilitary && result > 12) {
+auto get_hour(bool non_military, time_t ctime) -> int32_t {
+	std::tm *time_info = localtime(&ctime);
+	int32_t result = time_info->tm_hour;
+	if (non_military && result > 12) {
 		result -= 12;
 	}
 	return result;
 }
 
-auto TimeUtilities::getMinute(time_t ctime) -> int32_t {
-	std::tm *timeInfo = localtime(&ctime);
-	int32_t result = timeInfo->tm_min;
+auto get_minute(time_t ctime) -> int32_t {
+	std::tm *time_info = localtime(&ctime);
+	int32_t result = time_info->tm_min;
 	return result;
 }
 
-auto TimeUtilities::getSecond(time_t ctime) -> int32_t {
-	std::tm *timeInfo = localtime(&ctime);
-	int32_t result = timeInfo->tm_sec;
+auto get_second(time_t ctime) -> int32_t {
+	std::tm *time_info = localtime(&ctime);
+	int32_t result = time_info->tm_sec;
 	return result;
 }
 
-auto TimeUtilities::getWeek(time_t ctime) -> int32_t {
-	std::tm *timeInfo = localtime(&ctime);
-	int32_t result = ((timeInfo->tm_yday + 1) + (timeInfo->tm_wday + (timeInfo->tm_yday % 7))) / 7; // Determine which day the year started on and start counting from the first full week
+auto get_week(time_t ctime) -> int32_t {
+	std::tm *time_info = localtime(&ctime);
+	int32_t result = ((time_info->tm_yday + 1) + (time_info->tm_wday + (time_info->tm_yday % 7))) / 7; // Determine which day the year started on and start counting from the first full week
 	return result;
 }
 
-auto TimeUtilities::isDst(time_t ctime) -> bool {
-	std::tm *timeInfo = localtime(&ctime);
-	return (timeInfo->tm_isdst > 0);
+auto is_dst(time_t ctime) -> bool {
+	std::tm *time_info = localtime(&ctime);
+	return (time_info->tm_isdst > 0);
 }
 
-auto TimeUtilities::getTimeZone() -> string_t {
-	int32_t offset = getTimeZoneOffset() / 60 / 60 * 100; // Offset in hours
+auto get_time_zone() -> string {
+	int32_t offset = get_time_zone_offset() / 60 / 60 * 100; // Offset in hours
 	bool negative = false;
 	if (offset < 0) {
 		negative = true;
 		offset *= -1;
 	}
 
-	out_stream_t t;
+	out_stream t;
 	if (negative) {
 		t << "-";
 	}
@@ -132,37 +136,39 @@ auto TimeUtilities::getTimeZone() -> string_t {
 	return t.str();
 }
 
-auto TimeUtilities::getTimeZoneOffset() -> int32_t {
-	time_t ctime = time(nullptr);
+auto get_time_zone_offset() -> int32_t {
+	time_t ctime = std::time(nullptr);
 
 	std::tm *ts = localtime(&ctime);
-	int32_t localTime = ts->tm_hour * 100 + ts->tm_min;
+	int32_t local_time = ts->tm_hour * 100 + ts->tm_min;
 
 	ts = gmtime(&ctime);
-	int32_t greenwichTime = ts->tm_hour * 100 + ts->tm_min;
+	int32_t greenwich_time = ts->tm_hour * 100 + ts->tm_min;
 
-	return ((localTime - greenwichTime) * 60 * 60 / 100); // Number of seconds as an offset
+	return ((local_time - greenwich_time) * 60 * 60 / 100); // Number of seconds as an offset
 }
 
-auto TimeUtilities::simpleTimestamp() -> string_t {
+auto simple_timestamp() -> string {
 	char buffer[50];
-	time_t ctime = time(nullptr);
-	std::tm *timeInfo = std::localtime(&ctime);
-	std::strftime(buffer, 50, "[%Y-%m-%d %H:%M:%S] ", timeInfo);
-	string_t timestamp{buffer};
+	time_t ctime = std::time(nullptr);
+	std::tm *time_info = std::localtime(&ctime);
+	std::strftime(buffer, 50, "[%Y-%m-%d %H:%M:%S] ", time_info);
+	string timestamp{buffer};
 	return timestamp;
 }
 
-auto TimeUtilities::addDaysToTime(int16_t days) -> time_t {
-	time_t now = time(nullptr);
+auto add_days_to_time(int16_t days) -> time_t {
+	time_t now = std::time(nullptr);
 	struct tm* tm = localtime(&now);
 	tm->tm_mday += days;
 	return mktime(tm);
 }
 
-auto TimeUtilities::addDaysToTicks(int64_t ticks, int16_t days) -> int64_t {
+auto add_days_to_ticks(int64_t ticks, int16_t days) -> int64_t {
 	// For expiration time increases
 	return ticks + (days * 24 * 60 * 60);
 }
 
+}
+}
 }

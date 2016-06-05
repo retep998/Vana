@@ -20,47 +20,47 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Pet.hpp"
 #include "ChannelServer/Player.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-PlayerPets::PlayerPets(Player *player) :
+player_pets::player_pets(player *player) :
 	m_player{player}
 {
 }
 
-auto PlayerPets::addPet(Pet *pet) -> void {
-	m_pets[pet->getId()] = pet;
+auto player_pets::add_pet(pet *pet) -> void {
+	m_pets[pet->get_id()] = pet;
 
-	if (pet->isSummoned()) {
-		setSummoned(pet->getIndex().get(), pet->getId());
+	if (pet->is_summoned()) {
+		set_summoned(pet->get_index().get(), pet->get_id());
 	}
 }
 
-auto PlayerPets::getPet(pet_id_t petId) -> Pet * {
-	return m_pets.find(petId) != std::end(m_pets) ? m_pets[petId] : nullptr;
+auto player_pets::get_pet(game_pet_id pet_id) -> pet * {
+	return m_pets.find(pet_id) != std::end(m_pets) ? m_pets[pet_id] : nullptr;
 }
 
-auto PlayerPets::setSummoned(int8_t index, pet_id_t petId) -> void {
-	m_summoned[index] = petId;
+auto player_pets::set_summoned(int8_t index, game_pet_id pet_id) -> void {
+	m_summoned[index] = pet_id;
 }
 
-auto PlayerPets::getSummoned(int8_t index) -> Pet * {
+auto player_pets::get_summoned(int8_t index) -> pet * {
 	return m_summoned[index] > 0 ? m_pets[m_summoned[index]] : nullptr;
 }
 
-auto PlayerPets::save() -> void {
+auto player_pets::save() -> void {
 	if (m_pets.size() > 0) {
-		auto &db = Database::getCharDb();
-		auto &sql = db.getSession();
+		auto &db = database::get_char_db();
+		auto &sql = db.get_session();
 		opt_int8_t index = 0;
-		string_t name = "";
+		string name = "";
 		int8_t level = 0;
 		int16_t closeness = 0;
 		int8_t fullness = 0;
-		pet_id_t petId = 0;
+		game_pet_id pet_id = 0;
 
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << db.makeTable("pets") << " "
+			<< "UPDATE " << db.make_table("pets") << " "
 			<< "SET "
 			<< "	`index` = :index, "
 			<< "	name = :name, "
@@ -68,7 +68,7 @@ auto PlayerPets::save() -> void {
 			<< "	closeness = :closeness, "
 			<< "	fullness = :fullness "
 			<< "WHERE pet_id = :pet",
-			soci::use(petId, "pet"),
+			soci::use(pet_id, "pet"),
 			soci::use(index, "index"),
 			soci::use(name, "name"),
 			soci::use(level, "level"),
@@ -76,47 +76,47 @@ auto PlayerPets::save() -> void {
 			soci::use(fullness, "fullness"));
 
 		for (const auto &kvp : m_pets) {
-			Pet *p = kvp.second;
-			index = p->getIndex();
-			name = p->getName();
-			level = p->getLevel();
-			closeness = p->getCloseness();
-			fullness = p->getFullness();
-			petId = p->getId();
+			pet *p = kvp.second;
+			index = p->get_index();
+			name = p->get_name();
+			level = p->get_level();
+			closeness = p->get_closeness();
+			fullness = p->get_fullness();
+			pet_id = p->get_id();
 			st.execute(true);
 		}
 	}
 }
 
-auto PlayerPets::petInfoPacket(PacketBuilder &builder) -> void {
-	Item *it;
-	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
-		if (Pet *pet = getSummoned(i)) {
+auto player_pets::pet_info_packet(packet_builder &builder) -> void {
+	item *it;
+	for (int8_t i = 0; i < inventories::max_pet_count; i++) {
+		if (pet *pet = get_summoned(i)) {
 			builder.add<int8_t>(1);
-			builder.add<item_id_t>(pet->getItemId());
-			builder.add<string_t>(pet->getName());
-			builder.add<int8_t>(pet->getLevel());
-			builder.add<int16_t>(pet->getCloseness());
-			builder.add<int8_t>(pet->getFullness());
+			builder.add<game_item_id>(pet->get_item_id());
+			builder.add<string>(pet->get_name());
+			builder.add<int8_t>(pet->get_level());
+			builder.add<int16_t>(pet->get_closeness());
+			builder.add<int8_t>(pet->get_fullness());
 			builder.unk<int16_t>();
 			int16_t slot = 0;
 			switch (i) {
-				case 0: slot = EquipSlots::PetEquip1;
-				case 1: slot = EquipSlots::PetEquip2;
-				case 2: slot = EquipSlots::PetEquip3;
+				case 0: slot = equip_slots::pet_equip1;
+				case 1: slot = equip_slots::pet_equip2;
+				case 2: slot = equip_slots::pet_equip3;
 			}
 
-			it = m_player->getInventory()->getItem(Inventories::EquipInventory, slot);
-			builder.add<item_id_t>(it != nullptr ? it->getId() : 0);
+			it = m_player->get_inventory()->get_item(inventories::equip, slot);
+			builder.add<game_item_id>(it != nullptr ? it->get_id() : 0);
 		}
 	}
 	builder.add<int8_t>(0); // End of pets / start of taming mob
 }
 
-auto PlayerPets::connectPacket(PacketBuilder &builder) -> void {
-	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
-		if (Pet *pet = getSummoned(i)) {
-			builder.add<int64_t>(pet->getId()); //pet->getCashId() != 0 ? pet->getCashId() : pet->getId());
+auto player_pets::connect_packet(packet_builder &builder) -> void {
+	for (int8_t i = 0; i < inventories::max_pet_count; i++) {
+		if (pet *pet = get_summoned(i)) {
+			builder.add<int64_t>(pet->get_id()); //pet->get_cash_id() != 0 ? pet->get_cash_id() : pet->get_id());
 		}
 		else {
 			builder.add<int64_t>(0);

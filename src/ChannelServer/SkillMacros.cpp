@@ -19,36 +19,37 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Database.hpp"
 #include "Common/MiscUtilities.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto SkillMacros::load(player_id_t charId) -> void {
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT s.* FROM " << db.makeTable("skill_macros") << " s WHERE s.character_id = :char", soci::use(charId, "char"));
+auto skill_macros::load(game_player_id char_id) -> void {
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT s.* FROM " << db.make_table("skill_macros") << " s WHERE s.character_id = :char",
+		soci::use(char_id, "char"));
 
 	for (const auto &row : rs) {
-		add(row.get<int8_t>("pos"), new SkillMacro(row.get<string_t>("name"), row.get<bool>("shout"), row.get<skill_id_t>("skill_1"), row.get<skill_id_t>("skill_2"), row.get<skill_id_t>("skill_3")));
+		add(row.get<int8_t>("pos"), new skill_macro(row.get<string>("name"), row.get<bool>("shout"), row.get<game_skill_id>("skill_1"), row.get<game_skill_id>("skill_2"), row.get<game_skill_id>("skill_3")));
 	}
 }
 
-auto SkillMacros::save(player_id_t charId) -> void {
-	static init_list_t<skill_id_t> nulls = {0};
-	MiscUtilities::NullableMode nullMode = MiscUtilities::NullableMode::NullIfFound;
+auto skill_macros::save(game_player_id char_id) -> void {
+	static init_list<game_skill_id> nulls = {0};
+	utilities::misc::nullable_mode null_mode = utilities::misc::nullable_mode::null_if_found;
 
 	int8_t i = 0;
-	string_t name = "";
+	string name = "";
 	bool shout = false;
-	optional_t<skill_id_t> skill1 = 0;
-	optional_t<skill_id_t> skill2 = 0;
-	optional_t<skill_id_t> skill3 = 0;
+	optional<game_skill_id> skill1 = 0;
+	optional<game_skill_id> skill2 = 0;
+	optional<game_skill_id> skill3 = 0;
 
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
 	soci::statement st = (sql.prepare
-		<< "REPLACE INTO " << db.makeTable("skill_macros") << " "
+		<< "REPLACE INTO " << db.make_table("skill_macros") << " "
 		<< "VALUES (:char, :key, :name, :shout, :skill1, :skill2, :skill3)",
-		soci::use(charId, "char"),
+		soci::use(char_id, "char"),
 		soci::use(i, "key"),
 		soci::use(name, "name"),
 		soci::use(shout, "shout"),
@@ -56,14 +57,14 @@ auto SkillMacros::save(player_id_t charId) -> void {
 		soci::use(skill2, "skill2"),
 		soci::use(skill3, "skill3"));
 
-	for (i = 0; i <= getMax(); i++) {
-		SkillMacro *macro = getSkillMacro(i);
+	for (i = 0; i <= get_max(); i++) {
+		skill_macro *macro = get_skill_macro(i);
 		if (macro != nullptr) {
 			name = macro->name;
 			shout = macro->shout;
-			skill1 = MiscUtilities::getOptional(macro->skill1, nullMode, nulls);
-			skill2 = MiscUtilities::getOptional(macro->skill2, nullMode, nulls);
-			skill3 = MiscUtilities::getOptional(macro->skill3, nullMode, nulls);
+			skill1 = utilities::misc::get_optional(macro->skill1, null_mode, nulls);
+			skill2 = utilities::misc::get_optional(macro->skill2, null_mode, nulls);
+			skill3 = utilities::misc::get_optional(macro->skill3, null_mode, nulls);
 			st.execute(true);
 		}
 	}

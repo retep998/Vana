@@ -21,39 +21,40 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/tokenizer.hpp"
 #include <fstream>
 
-namespace Vana {
+namespace vana {
+namespace mysql_query_parser {
 
-auto MySqlQueryParser::parseQueries(const string_t &filename) -> vector_t<string_t> {
-	if (!FileUtilities::fileExists(filename)) {
+auto parse_queries(const string &filename) -> vector<string> {
+	if (!utilities::file::exists(filename)) {
 		throw std::runtime_error{"Query file doesn't exist: " + filename};
 	}
 
-	vector_t<string_t> queries;
+	vector<string> queries;
 	std::ifstream filestream;
 
 	filestream.open(filename.c_str());
 
-	auto &db = Database::getCharDb();
-	string_t content;
+	auto &db = database::get_char_db();
+	string content;
 	// Read whole file
 	{
-		out_stream_t contentStream;
+		out_stream content_stream;
 		while (!filestream.eof()) {
-			string_t line;
+			string line;
 			std::getline(filestream, line);
-			contentStream << line << std::endl;
+			content_stream << line << std::endl;
 		}
 
-		content = StringUtilities::replace(contentStream.str(), "%%PREFIX%%", db.getTablePrefix());
+		content = utilities::str::replace(content_stream.str(), "%%PREFIX%%", db.get_table_prefix());
 	}
 
 	// Parse each SQL statement
 	{
-		MiscUtilities::tokenizer tokens{content, ";"};
+		utilities::misc::tokenizer tokens{content, ";"};
 
 		for (const auto &token : tokens) {
-			string_t q = token;
-			q = StringUtilities::trim(q);
+			string q = token;
+			q = utilities::str::trim(q);
 			if (!q.empty()) {
 				queries.push_back(q);
 			}
@@ -63,4 +64,5 @@ auto MySqlQueryParser::parseQueries(const string_t &filename) -> vector_t<string
 	return queries;
 }
 
+}
 }

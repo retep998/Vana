@@ -19,29 +19,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/StringUtilities.hpp"
 #include <algorithm>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto Instances::addInstance(Instance *instance) -> void {
-	m_instances[instance->getName()] = instance;
+auto instances::add_instance(instance *inst) -> void {
+	m_instances[inst->get_name()] = inst;
 }
 
-auto Instances::removeInstance(Instance *instance) -> void {
-	m_instances.erase(instance->getName());
+auto instances::remove_instance(instance *inst) -> void {
+	m_instances.erase(inst->get_name());
 }
 
-auto Instances::getInstance(const string_t &name) -> Instance * {
-	return isInstance(name) ? m_instances[name] : nullptr;
+auto instances::get_instance(const string &name) -> instance * {
+	return is_instance(name) ? m_instances[name] : nullptr;
 }
 
-auto Instances::isInstance(const string_t &name) -> bool {
+auto instances::is_instance(const string &name) -> bool {
 	auto kvp = m_instances.find(name);
 	bool exists = kvp != std::end(m_instances);
-	if (exists && kvp->second->getMarkedForDelete()) {
+	if (exists && kvp->second->get_marked_for_delete()) {
 		exists = false;
-		Instance *instance = kvp->second;
+		instance *inst = kvp->second;
 		m_instances.erase(name);
-		delete instance;
+		delete inst;
 	}
 	return exists;
 }

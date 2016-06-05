@@ -19,18 +19,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class PacketReader;
-	struct Point;
+namespace vana {
+	class packet_reader;
+	struct point;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		namespace DropHandler {
-			auto doDrops(player_id_t playerId, map_id_t mapId, int32_t droppingLevel, int32_t droppingId, const Point &origin, bool explosive, bool ffa, int32_t taunt = 100, bool isSteal = false) -> void;
-			auto dropMesos(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto petLoot(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto lootItem(ref_ptr_t<Player> player, PacketReader &reader, pet_id_t petId = 0) -> void;
+		namespace drop_handler {
+			auto do_drops(game_player_id player_id, game_map_id map_id, int32_t dropping_level, int32_t dropping_id, const point &origin, bool explosive, bool ffa, int32_t taunt = 100, bool is_steal = false) -> void;
+			auto drop_mesos(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto pet_loot(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto loot_item(ref_ptr<player> player, packet_reader &reader, game_pet_id pet_id = 0) -> void;
 		}
 	}
 }

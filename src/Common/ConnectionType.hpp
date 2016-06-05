@@ -19,15 +19,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	enum class ConnectionType {
-		None,
-		Unknown,
-		Login,
-		World,
-		Channel,
-		Cash,
-		Mts,
-		EndUser,
+namespace vana {
+	enum class connection_type {
+		none,
+		unknown,
+		login,
+		world,
+		channel,
+		cash,
+		mts,
+		end_user,
 	};
 }

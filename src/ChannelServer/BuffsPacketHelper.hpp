@@ -22,14 +22,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <array>
 
-namespace Vana {
-	namespace ChannelServer {
-		struct BuffPacketStructure;
+namespace vana {
+	namespace channel_server {
+		struct buff_packet_structure;
 
-		namespace Packets {
-			namespace Helpers {
-				PACKET(addBuffBytes, const buff_array_t &bytes);
-				PACKET(addBuffMapValues, const BuffPacketStructure &buff);
+		namespace packets {
+			namespace helpers {
+				PACKET(add_buff_bytes, const buff_array &bytes);
+				PACKET(add_buff_map_values, const buff_packet_structure &buff);
 			}
 		}
 	}

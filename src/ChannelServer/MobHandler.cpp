@@ -38,337 +38,337 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/StatusInfo.hpp"
 #include <functional>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto MobHandler::handleBomb(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	map_object_t mobId = reader.get<map_object_t>();
-	auto mob = player->getMap()->getMob(mobId);
-	if (player->getStats()->isDead() || mob == nullptr) {
+auto mob_handler::handle_bomb(ref_ptr<player> player, packet_reader &reader) -> void {
+	game_map_object mob_id = reader.get<game_map_object>();
+	auto mob = player->get_map()->get_mob(mob_id);
+	if (player->get_stats()->is_dead() || mob == nullptr) {
 		return;
 	}
-	if (mob->getSelfDestructHp() == 0) {
+	if (mob->get_self_destruct_hp() == 0) {
 		// Hacking, I think
 		return;
 	}
 	mob->explode();
 }
 
-auto MobHandler::friendlyDamaged(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	map_object_t mobFrom = reader.get<map_object_t>();
-	player_id_t playerId = reader.get<player_id_t>();
-	map_object_t mobTo = reader.get<map_object_t>();
+auto mob_handler::friendly_damaged(ref_ptr<player> player, packet_reader &reader) -> void {
+	game_map_object mob_from = reader.get<game_map_object>();
+	game_player_id player_id = reader.get<game_player_id>();
+	game_map_object mob_to = reader.get<game_map_object>();
 
-	Map *map = player->getMap();
-	auto dealer = map->getMob(mobFrom);
-	auto taker = map->getMob(mobTo);
-	if (dealer != nullptr && taker != nullptr && taker->isFriendly()) {
-		damage_t damage = dealer->getLevel() * Randomizer::rand<int32_t>(100) / 10;
+	map *map = player->get_map();
+	auto dealer = map->get_mob(mob_from);
+	auto taker = map->get_mob(mob_to);
+	if (dealer != nullptr && taker != nullptr && taker->is_friendly()) {
+		game_damage damage = dealer->get_level() * randomizer::rand<int32_t>(100) / 10;
 		// Temp for now until I figure out something more effective
 		// TODO FIXME: Formula
-		mob_id_t mobId = taker->getMobId();
-		map_object_t mapMobId = taker->getMapMobId();
-		int32_t mobHp = std::max(0, taker->getHp() - damage);
-		int32_t maxHp = taker->getMaxHp();
+		game_mob_id mob_id = taker->get_mob_id();
+		game_map_object map_mob_id = taker->get_map_mob_id();
+		int32_t mob_hp = std::max(0, taker->get_hp() - damage);
+		int32_t max_hp = taker->get_max_hp();
 
-		taker->applyDamage(playerId, damage);
-		if (Instance *instance = map->getInstance()) {
-			instance->friendlyMobHit(mobId, mapMobId, map->getId(), mobHp, maxHp);
+		taker->apply_damage(player_id, damage);
+		if (instance *inst = map->get_instance()) {
+			inst->friendly_mob_hit(mob_id, map_mob_id, map->get_id(), mob_hp, max_hp);
 		}
 	}
 }
 
-auto MobHandler::handleTurncoats(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	map_object_t mobFrom = reader.get<map_object_t>();
-	player_id_t playerId = reader.get<player_id_t>();
-	map_object_t mobTo = reader.get<map_object_t>();
+auto mob_handler::handle_turncoats(ref_ptr<player> player, packet_reader &reader) -> void {
+	game_map_object mob_from = reader.get<game_map_object>();
+	game_player_id player_id = reader.get<game_player_id>();
+	game_map_object mob_to = reader.get<game_map_object>();
 	reader.skip<uint8_t>(); // Same as player damage, -1 = bump, integer = skill ID
-	damage_t damage = reader.get<damage_t>();
+	game_damage damage = reader.get<game_damage>();
 	reader.skip<uint8_t>(); // Facing direction
 	reader.unk<uint32_t>(); // Some type of pos, damage display, I think
 
-	Map *map = player->getMap();
-	auto damager = map->getMob(mobFrom);
-	auto taker = map->getMob(mobTo);
+	map *map = player->get_map();
+	auto damager = map->get_mob(mob_from);
+	auto taker = map->get_mob(mob_to);
 	if (damager != nullptr && taker != nullptr) {
-		taker->applyDamage(playerId, damage);
+		taker->apply_damage(player_id, damage);
 	}
 }
 
-auto MobHandler::monsterControl(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	map_object_t mobId = reader.get<map_object_t>();
+auto mob_handler::monster_control(ref_ptr<player> player, packet_reader &reader) -> void {
+	game_map_object mob_id = reader.get<game_map_object>();
 
-	Map *map = player->getMap();
-	auto mob = map->getMob(mobId);
-	if (mob == nullptr || mob->getControlStatus() == MobControlStatus::None) {
+	map *map = player->get_map();
+	auto mob = map->get_mob(mob_id);
+	if (mob == nullptr || mob->get_control_status() == mob_control_status::none) {
 		return;
 	}
 
-	int16_t moveId = reader.get<int16_t>();
-	if (mob->getController() != player && !mob->getSkillFeasibility()) {
-		map->switchController(mob, player);
+	int16_t move_id = reader.get<int16_t>();
+	if (mob->get_controller() != player && !mob->get_skill_feasibility()) {
+		map->switch_controller(mob, player);
 	}
 
 	int8_t nibbles = reader.get<int8_t>();
-	int8_t rawActivity = reader.get<int8_t>();
-	mob_skill_id_t useSkillId = reader.get<mob_skill_id_t>();
-	mob_skill_level_t useSkillLevel = reader.get<mob_skill_level_t>();
+	int8_t raw_activity = reader.get<int8_t>();
+	game_mob_skill_id use_skill_id = reader.get<game_mob_skill_id>();
+	game_mob_skill_level use_skill_level = reader.get<game_mob_skill_level>();
 	int16_t option = reader.get<int16_t>();
 	reader.unk<uint8_t>();
 	reader.unk<uint32_t>(); // 4 bytes of always 1 or always 0?
 	reader.unk<uint32_t>(); // Pos?
 
 	// TODO FIXME mob.get() - perhaps movement parsing should be on the MovableLife class itself?
-	MovementHandler::parseMovement(mob.get(), reader);
+	movement_handler::parse_movement(mob.get(), reader);
 
-	int8_t parsedActivity = rawActivity;
-	if (parsedActivity >= 0) {
-		parsedActivity = static_cast<int8_t>(static_cast<uint8_t>(parsedActivity) >> 1);
+	int8_t parsed_activity = raw_activity;
+	if (parsed_activity >= 0) {
+		parsed_activity = static_cast<int8_t>(static_cast<uint8_t>(parsed_activity) >> 1);
 	}
-	bool isAttack = ext::in_range_inclusive<int8_t>(parsedActivity, 12, 20);
-	bool isSkill = ext::in_range_inclusive<int8_t>(parsedActivity, 21, 25);
-	mob_skill_id_t attackId = isAttack ? parsedActivity - 12 : -1;
-	bool nextMovementCouldBeSkill = (nibbles & 0x0F) != 0;
+	bool is_attack = ext::in_range_inclusive<int8_t>(parsed_activity, 12, 20);
+	bool is_skill = ext::in_range_inclusive<int8_t>(parsed_activity, 21, 25);
+	game_mob_skill_id attack_id = is_attack ? parsed_activity - 12 : -1;
+	bool next_movement_could_be_skill = (nibbles & 0x0F) != 0;
 	bool unk = (nibbles & 0xF0) != 0;
 
-	mob_skill_id_t nextCastSkill = 0;
-	mob_skill_level_t nextCastSkillLevel = 0;
+	game_mob_skill_id next_cast_skill = 0;
+	game_mob_skill_level next_cast_skill_level = 0;
 
-	if (isAttack || isSkill) {
-		if (isAttack) {
-			auto attack = ChannelServer::getInstance().getMobDataProvider().getMobAttack(mob->getMobIdOrLink(), attackId);
+	if (is_attack || is_skill) {
+		if (is_attack) {
+			auto attack = channel_server::get_instance().get_mob_data_provider().get_mob_attack(mob->get_mob_id_or_link(), attack_id);
 			if (attack == nullptr) {
 				// Hacking
 				return;
 			}
-			mob->consumeMp(attack->mpConsume);
+			mob->consume_mp(attack->mp_consume);
 		}
 		else {
-			if (useSkillId != mob->getAnticipatedSkill() || useSkillLevel != mob->getAnticipatedSkillLevel()) {
+			if (use_skill_id != mob->get_anticipated_skill() || use_skill_level != mob->get_anticipated_skill_level()) {
 				// Hacking?
-				mob->resetAnticipatedSkill();
+				mob->reset_anticipated_skill();
 				return;
 			}
-			if (mob->useAnticipatedSkill() == Result::Failure) {
+			if (mob->use_anticipated_skill() == result::failure) {
 				return;
 			}
 		}
 	}
 
-	mob->setSkillFeasibility(nextMovementCouldBeSkill);
-	if (nextMovementCouldBeSkill) {
-		mob->chooseRandomSkill(player, nextCastSkill, nextCastSkillLevel);
+	mob->set_skill_feasibility(next_movement_could_be_skill);
+	if (next_movement_could_be_skill) {
+		mob->choose_random_skill(player, next_cast_skill, next_cast_skill_level);
 	}
 
-	player->send(Packets::Mobs::moveMobResponse(mobId, moveId, nextMovementCouldBeSkill, mob->getMp(), nextCastSkill, nextCastSkillLevel));
+	player->send(packets::mobs::move_mob_response(mob_id, move_id, next_movement_could_be_skill, mob->get_mp(), next_cast_skill, next_cast_skill_level));
 	reader.reset(19);
-	player->sendMap(Packets::Mobs::moveMob(mobId, nextMovementCouldBeSkill, rawActivity, useSkillId, useSkillLevel, option, reader.getBuffer(), reader.getBufferLength()), true);
+	player->send_map(packets::mobs::move_mob(mob_id, next_movement_could_be_skill, raw_activity, use_skill_id, use_skill_level, option, reader.get_buffer(), reader.get_buffer_length()), true);
 }
 
-auto MobHandler::handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill_id_t skillId, skill_level_t level, item_id_t weapon, int8_t hits, damage_t damage) -> int32_t {
-	auto player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId);
-	vector_t<StatusInfo> statuses;
+auto mob_handler::handle_mob_status(game_player_id player_id, ref_ptr<mob> mob, game_skill_id skill_id, game_skill_level level, game_item_id weapon, int8_t hits, game_damage damage) -> int32_t {
+	auto player = channel_server::get_instance().get_player_data_provider().get_player(player_id);
+	vector<status_info> statuses;
 	int16_t y = 0;
-	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
-	bool success = (skillId == 0 ? false : (Randomizer::percentage<uint16_t>() < skill->prop));
-	if (mob->canFreeze()) {
+	auto skill = channel_server::get_instance().get_skill_data_provider().get_skill(skill_id, level);
+	bool success = (skill_id == 0 ? false : (randomizer::percentage<uint16_t>() < skill->prop));
+	if (mob->can_freeze()) {
 		// Freezing stuff
-		switch (skillId) {
-			case Vana::Skills::IlWizard::ColdBeam:
-			case Vana::Skills::IlMage::IceStrike:
-			case Vana::Skills::IlMage::ElementComposition:
-			case Vana::Skills::Sniper::Blizzard:
-			case Vana::Skills::IlArchMage::Blizzard:
-				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->buffTime);
+		switch (skill_id) {
+			case vana::skills::il_wizard::cold_beam:
+			case vana::skills::il_mage::ice_strike:
+			case vana::skills::il_mage::element_composition:
+			case vana::skills::sniper::blizzard:
+			case vana::skills::il_arch_mage::blizzard:
+				statuses.emplace_back(status_effects::mob::freeze, status_effects::mob::freeze, skill_id, skill->buff_time);
 				break;
-			case Vana::Skills::Outlaw::IceSplitter:
-				if (auto elementalBoost = player->getSkills()->getSkillInfo(Vana::Skills::Corsair::ElementalBoost)) {
-					y = elementalBoost->y;
+			case vana::skills::outlaw::ice_splitter:
+				if (auto elemental_boost = player->get_skills()->get_skill_info(vana::skills::corsair::elemental_boost)) {
+					y = elemental_boost->y;
 				}
-				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, seconds_t{skill->buffTime.count() + y});
+				statuses.emplace_back(status_effects::mob::freeze, status_effects::mob::freeze, skill_id, seconds{skill->buff_time.count() + y});
 				break;
-			case Vana::Skills::FpArchMage::Elquines:
-			case Vana::Skills::Marksman::Frostprey:
-				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, seconds_t{skill->x});
+			case vana::skills::fp_arch_mage::elquines:
+			case vana::skills::marksman::frostprey:
+				statuses.emplace_back(status_effects::mob::freeze, status_effects::mob::freeze, skill_id, seconds{skill->x});
 				break;
 		}
-		if ((GameLogicUtilities::isSword(weapon) || GameLogicUtilities::isMace(weapon)) && player->getActiveBuffs()->hasIceCharge()) {
+		if ((game_logic_utilities::is_sword(weapon) || game_logic_utilities::is_mace(weapon)) && player->get_active_buffs()->has_ice_charge()) {
 			// Ice charges
-			auto source = player->getActiveBuffs()->getChargeSource();
-			auto &buffSource = source.get();
-			if (buffSource.getType() != BuffSourceType::Skill) throw NotImplementedException{"Charge BuffSourceType"};
-			auto skill = player->getActiveBuffs()->getBuffSkillInfo(buffSource);
-			statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, buffSource.getSkillId(), seconds_t{skill->y});
+			auto source = player->get_active_buffs()->get_charge_source();
+			auto &buff_source = source.get();
+			if (buff_source.get_type() != buff_source_type::skill) throw not_implemented_exception{"charge buff_source_type"};
+			auto skill = player->get_active_buffs()->get_buff_skill_info(buff_source);
+			statuses.emplace_back(status_effects::mob::freeze, status_effects::mob::freeze, buff_source.get_skill_id(), seconds{skill->y});
 		}
 	}
-	if (mob->canPoison() && mob->getHp() > 1) {
+	if (mob->can_poison() && mob->get_hp() > 1) {
 		// Poisoning stuff
-		switch (skillId) {
-			case Vana::Skills::All::RegularAttack: // Venomous Star/Stab
-			case Vana::Skills::Rogue::LuckySeven:
-			case Vana::Skills::Hermit::Avenger:
-			case Vana::Skills::NightLord::TripleThrow:
-			case Vana::Skills::Rogue::DoubleStab:
-			case Vana::Skills::Rogue::Disorder:
-			case Vana::Skills::Bandit::SavageBlow:
-			case Vana::Skills::ChiefBandit::Assaulter:
-			case Vana::Skills::Shadower::Assassinate:
-			case Vana::Skills::Shadower::BoomerangStep:
-			case Vana::Skills::NightWalker::Disorder:
-				if (player->getSkills()->hasVenomousWeapon() && mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount) {
+		switch (skill_id) {
+			case vana::skills::all::regular_attack: // Venomous Star/Stab
+			case vana::skills::rogue::lucky_seven:
+			case vana::skills::hermit::avenger:
+			case vana::skills::night_lord::triple_throw:
+			case vana::skills::rogue::double_stab:
+			case vana::skills::rogue::disorder:
+			case vana::skills::bandit::savage_blow:
+			case vana::skills::chief_bandit::assaulter:
+			case vana::skills::shadower::assassinate:
+			case vana::skills::shadower::boomerang_step:
+			case vana::skills::night_walker::disorder:
+				if (player->get_skills()->has_venomous_weapon() && mob->get_venom_count() < status_effects::mob::max_venom_count) {
 					// MAX = (18.5 * [STR + LUK] + DEX * 2) / 100 * Venom matk
 					// MIN = (8.0 * [STR + LUK] + DEX * 2) / 100 * Venom matk
-					skill_id_t vSkill = player->getSkills()->getVenomousWeapon();
-					auto venom = player->getSkills()->getSkillInfo(vSkill);
+					game_skill_id v_skill = player->get_skills()->get_venomous_weapon();
+					auto venom = player->get_skills()->get_skill_info(v_skill);
 
-					int32_t part1 = player->getStats()->getStr(true) + player->getStats()->getLuk(true);
-					int32_t part2 = player->getStats()->getDex(true) * 2;
-					int16_t vAtk = venom->mAtk;
-					damage_t minDamage = ((80 * part1 / 10 + part2) / 100) * vAtk;
-					damage_t maxDamage = ((185 * part1 / 10 + part2) / 100) * vAtk;
+					int32_t part1 = player->get_stats()->get_str(true) + player->get_stats()->get_luk(true);
+					int32_t part2 = player->get_stats()->get_dex(true) * 2;
+					int16_t v_atk = venom->m_atk;
+					game_damage min_damage = ((80 * part1 / 10 + part2) / 100) * v_atk;
+					game_damage max_damage = ((185 * part1 / 10 + part2) / 100) * v_atk;
 
-					damage = Randomizer::rand<damage_t>(maxDamage, minDamage);
+					damage = randomizer::rand<game_damage>(max_damage, min_damage);
 
-					for (int8_t counter = 0; ((counter < hits) && (mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount)); ++counter) {
-						success = (Randomizer::percentage<uint16_t>() < venom->prop);
+					for (int8_t counter = 0; ((counter < hits) && (mob->get_venom_count() < status_effects::mob::max_venom_count)); ++counter) {
+						success = (randomizer::percentage<uint16_t>() < venom->prop);
 						if (success) {
-							statuses.emplace_back(StatusEffects::Mob::VenomousWeapon, damage, vSkill, venom->buffTime);
-							mob->addStatus(player->getId(), statuses);
+							statuses.emplace_back(status_effects::mob::venomous_weapon, damage, v_skill, venom->buff_time);
+							mob->add_status(player->get_id(), statuses);
 							statuses.clear();
 						}
 					}
 				}
 				break;
-			case Vana::Skills::FpMage::PoisonMist:
+			case vana::skills::fp_mage::poison_mist:
 				if (damage != 0) {
 					// The attack itself doesn't poison them
 					break;
 				}
-			case Vana::Skills::FpWizard::PoisonBreath:
-			case Vana::Skills::FpMage::ElementComposition:
-			case Vana::Skills::BlazeWizard::FlameGear:
-			case Vana::Skills::NightWalker::PoisonBomb:
+			case vana::skills::fp_wizard::poison_breath:
+			case vana::skills::fp_mage::element_composition:
+			case vana::skills::blaze_wizard::flame_gear:
+			case vana::skills::night_walker::poison_bomb:
 				if (success) {
-					statuses.emplace_back(StatusEffects::Mob::Poison, mob->getMaxHp() / (70 - level), skillId, skill->buffTime);
+					statuses.emplace_back(status_effects::mob::poison, mob->get_max_hp() / (70 - level), skill_id, skill->buff_time);
 				}
 				break;
 		}
 	}
-	if (!mob->isBoss()) {
+	if (!mob->is_boss()) {
 		// Seal, Stun, etc
-		switch (skillId) {
-			case Vana::Skills::Corsair::Hypnotize:
-				statuses.emplace_back(StatusEffects::Mob::Hypnotize, 1, skillId, skill->buffTime);
+		switch (skill_id) {
+			case vana::skills::corsair::hypnotize:
+				statuses.emplace_back(status_effects::mob::hypnotize, 1, skill_id, skill->buff_time);
 				break;
-			case Vana::Skills::Brawler::BackspinBlow:
-			case Vana::Skills::Brawler::DoubleUppercut:
-			case Vana::Skills::Buccaneer::Demolition:
-			case Vana::Skills::Buccaneer::Snatch:
-				statuses.emplace_back(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillId, skill->buffTime);
+			case vana::skills::brawler::backspin_blow:
+			case vana::skills::brawler::double_uppercut:
+			case vana::skills::buccaneer::demolition:
+			case vana::skills::buccaneer::snatch:
+				statuses.emplace_back(status_effects::mob::stun, status_effects::mob::stun, skill_id, skill->buff_time);
 				break;
-			case Vana::Skills::Hunter::ArrowBomb:
-			case Vana::Skills::Crusader::SwordComa:
-			case Vana::Skills::DawnWarrior::Coma:
-			case Vana::Skills::Crusader::AxeComa:
-			case Vana::Skills::Crusader::Shout:
-			case Vana::Skills::WhiteKnight::ChargeBlow:
-			case Vana::Skills::ChiefBandit::Assaulter:
-			case Vana::Skills::Shadower::BoomerangStep:
-			case Vana::Skills::Gunslinger::BlankShot:
-			case Vana::Skills::NightLord::NinjaStorm:
+			case vana::skills::hunter::arrow_bomb:
+			case vana::skills::crusader::sword_coma:
+			case vana::skills::dawn_warrior::coma:
+			case vana::skills::crusader::axe_coma:
+			case vana::skills::crusader::shout:
+			case vana::skills::white_knight::charge_blow:
+			case vana::skills::chief_bandit::assaulter:
+			case vana::skills::shadower::boomerang_step:
+			case vana::skills::gunslinger::blank_shot:
+			case vana::skills::night_lord::ninja_storm:
 				if (success) {
-					statuses.emplace_back(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillId, skill->buffTime);
+					statuses.emplace_back(status_effects::mob::stun, status_effects::mob::stun, skill_id, skill->buff_time);
 				}
 				break;
-			case Vana::Skills::Ranger::SilverHawk:
-			case Vana::Skills::Sniper::GoldenEagle:
+			case vana::skills::ranger::silver_hawk:
+			case vana::skills::sniper::golden_eagle:
 				if (success) {
-					statuses.emplace_back(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillId, seconds_t{skill->x});
+					statuses.emplace_back(status_effects::mob::stun, status_effects::mob::stun, skill_id, seconds{skill->x});
 				}
 				break;
-			case Vana::Skills::FpMage::Seal:
-			case Vana::Skills::IlMage::Seal:
-			case Vana::Skills::BlazeWizard::Seal:
+			case vana::skills::fp_mage::seal:
+			case vana::skills::il_mage::seal:
+			case vana::skills::blaze_wizard::seal:
 				if (success) {
-					statuses.emplace_back(StatusEffects::Mob::Seal, StatusEffects::Mob::Seal, skillId, skill->buffTime);
+					statuses.emplace_back(status_effects::mob::seal, status_effects::mob::seal, skill_id, skill->buff_time);
 				}
 				break;
-			case Vana::Skills::Priest::Doom:
+			case vana::skills::priest::doom:
 				if (success) {
-					statuses.emplace_back(StatusEffects::Mob::Doom, StatusEffects::Mob::Doom, skillId, skill->buffTime);
+					statuses.emplace_back(status_effects::mob::doom, status_effects::mob::doom, skill_id, skill->buff_time);
 				}
 				break;
-			case Vana::Skills::Hermit::ShadowWeb:
-			case Vana::Skills::NightWalker::ShadowWeb:
+			case vana::skills::hermit::shadow_web:
+			case vana::skills::night_walker::shadow_web:
 				if (success) {
-					statuses.emplace_back(StatusEffects::Mob::ShadowWeb, level, skillId, skill->buffTime);
+					statuses.emplace_back(status_effects::mob::shadow_web, level, skill_id, skill->buff_time);
 				}
 				break;
-			case Vana::Skills::FpArchMage::Paralyze:
-				if (mob->canPoison()) {
-					statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->buffTime);
+			case vana::skills::fp_arch_mage::paralyze:
+				if (mob->can_poison()) {
+					statuses.emplace_back(status_effects::mob::freeze, status_effects::mob::freeze, skill_id, skill->buff_time);
 				}
 				break;
-			case Vana::Skills::IlArchMage::IceDemon:
-			case Vana::Skills::FpArchMage::FireDemon:
-				statuses.emplace_back(StatusEffects::Mob::Poison, mob->getMaxHp() / (70 - level), skillId, skill->buffTime);
-				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, seconds_t{skill->x});
+			case vana::skills::il_arch_mage::ice_demon:
+			case vana::skills::fp_arch_mage::fire_demon:
+				statuses.emplace_back(status_effects::mob::poison, mob->get_max_hp() / (70 - level), skill_id, skill->buff_time);
+				statuses.emplace_back(status_effects::mob::freeze, status_effects::mob::freeze, skill_id, seconds{skill->x});
 				break;
-			case Vana::Skills::Shadower::Taunt:
-			case Vana::Skills::NightLord::Taunt:
+			case vana::skills::shadower::taunt:
+			case vana::skills::night_lord::taunt:
 				// I know, these status effect types make no sense, that's just how it works
-				statuses.emplace_back(StatusEffects::Mob::MagicAttackUp, 100 - skill->x, skillId, skill->buffTime);
-				statuses.emplace_back(StatusEffects::Mob::MagicDefenseUp, 100 - skill->x, skillId, skill->buffTime);
+				statuses.emplace_back(status_effects::mob::magic_attack_up, 100 - skill->x, skill_id, skill->buff_time);
+				statuses.emplace_back(status_effects::mob::magic_defense_up, 100 - skill->x, skill_id, skill->buff_time);
 				break;
-			case Vana::Skills::Outlaw::Flamethrower:
-				if (auto elementalBoost = player->getSkills()->getSkillInfo(Vana::Skills::Corsair::ElementalBoost)) {
-					y = elementalBoost->x;
+			case vana::skills::outlaw::flamethrower:
+				if (auto elemental_boost = player->get_skills()->get_skill_info(vana::skills::corsair::elemental_boost)) {
+					y = elemental_boost->x;
 				}
-				statuses.emplace_back(StatusEffects::Mob::Poison, damage * (5 + y) / 100, skillId, skill->buffTime);
+				statuses.emplace_back(status_effects::mob::poison, damage * (5 + y) / 100, skill_id, skill->buff_time);
 				break;
 		}
 	}
-	switch (skillId) {
-		case Vana::Skills::Shadower::NinjaAmbush:
-		case Vana::Skills::NightLord::NinjaAmbush:
-			damage = 2 * (player->getStats()->getStr(true) + player->getStats()->getLuk(true)) * skill->damage / 100;
-			statuses.emplace_back(StatusEffects::Mob::NinjaAmbush, damage, skillId, skill->buffTime);
+	switch (skill_id) {
+		case vana::skills::shadower::ninja_ambush:
+		case vana::skills::night_lord::ninja_ambush:
+			damage = 2 * (player->get_stats()->get_str(true) + player->get_stats()->get_luk(true)) * skill->damage / 100;
+			statuses.emplace_back(status_effects::mob::ninja_ambush, damage, skill_id, skill->buff_time);
 			break;
-		case Vana::Skills::Rogue::Disorder:
-		case Vana::Skills::NightWalker::Disorder:
-		case Vana::Skills::Page::Threaten:
-			statuses.emplace_back(StatusEffects::Mob::Watk, skill->x, skillId, skill->buffTime);
-			statuses.emplace_back(StatusEffects::Mob::Wdef, skill->y, skillId, skill->buffTime);
+		case vana::skills::rogue::disorder:
+		case vana::skills::night_walker::disorder:
+		case vana::skills::page::threaten:
+			statuses.emplace_back(status_effects::mob::watk, skill->x, skill_id, skill->buff_time);
+			statuses.emplace_back(status_effects::mob::wdef, skill->y, skill_id, skill->buff_time);
 			break;
-		case Vana::Skills::FpWizard::Slow:
-		case Vana::Skills::IlWizard::Slow:
-		case Vana::Skills::BlazeWizard::Slow:
-			statuses.emplace_back(StatusEffects::Mob::Speed, skill->x, skillId, skill->buffTime);
+		case vana::skills::fp_wizard::slow:
+		case vana::skills::il_wizard::slow:
+		case vana::skills::blaze_wizard::slow:
+			statuses.emplace_back(status_effects::mob::speed, skill->x, skill_id, skill->buff_time);
 			break;
 	}
-	if (GameLogicUtilities::isBow(weapon)) {
-		auto hamstring = player->getActiveBuffs()->getHamstringSource();
+	if (game_logic_utilities::is_bow(weapon)) {
+		auto hamstring = player->get_active_buffs()->get_hamstring_source();
 		if (hamstring.is_initialized()) {
-			auto info = player->getActiveBuffs()->getBuffSkillInfo(hamstring.get());
+			auto info = player->get_active_buffs()->get_buff_skill_info(hamstring.get());
 			// Only triggers if player has the buff
-			if (skillId != Vana::Skills::Bowmaster::Phoenix && skillId != Vana::Skills::Ranger::SilverHawk) {
-				statuses.emplace_back(StatusEffects::Mob::Speed, info->x, Vana::Skills::Bowmaster::Hamstring, seconds_t{info->y});
+			if (skill_id != vana::skills::bowmaster::phoenix && skill_id != vana::skills::ranger::silver_hawk) {
+				statuses.emplace_back(status_effects::mob::speed, info->x, vana::skills::bowmaster::hamstring, seconds{info->y});
 			}
 		}
 	}
-	else if (GameLogicUtilities::isCrossbow(weapon)) {
-		auto blind = player->getActiveBuffs()->getBlindSource();
+	else if (game_logic_utilities::is_crossbow(weapon)) {
+		auto blind = player->get_active_buffs()->get_blind_source();
 		if (blind.is_initialized()) {
-			auto info = player->getActiveBuffs()->getBuffSkillInfo(blind.get());
+			auto info = player->get_active_buffs()->get_buff_skill_info(blind.get());
 			// Only triggers if player has the buff
-			if (skillId != Vana::Skills::Marksman::Frostprey && skillId != Vana::Skills::Sniper::GoldenEagle) {
-				statuses.emplace_back(StatusEffects::Mob::Acc, -(info->x), Vana::Skills::Marksman::Blind, seconds_t{info->y});
+			if (skill_id != vana::skills::marksman::frostprey && skill_id != vana::skills::sniper::golden_eagle) {
+				statuses.emplace_back(status_effects::mob::acc, -(info->x), vana::skills::marksman::blind, seconds{info->y});
 			}
 		}
 	}
 
 	if (statuses.size() > 0) {
-		mob->addStatus(playerId, statuses);
+		mob->add_status(player_id, statuses);
 	}
 	return statuses.size();
 }

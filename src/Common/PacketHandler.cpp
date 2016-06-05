@@ -17,56 +17,56 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PacketHandler.hpp"
 
-namespace Vana {
+namespace vana {
 
-auto PacketHandler::getIp() const -> optional_t<Ip> {
+auto packet_handler::get_ip() const -> optional<ip> {
 	if (m_disconnected) {
 		return {};
 	}
-	return m_session->getIp();
+	return m_session->get_ip();
 }
 
-auto PacketHandler::disconnect() -> void {
+auto packet_handler::disconnect() -> void {
 	if (m_disconnected) {
 		return;
 	}
 	m_session->disconnect();
 }
 
-auto PacketHandler::send(const PacketBuilder &builder) -> void {
+auto packet_handler::send(const packet_builder &builder) -> void {
 	if (m_disconnected) {
 		return;
 	}
 	m_session->send(builder);
 }
 
-auto PacketHandler::getLatency() const -> milliseconds_t {
+auto packet_handler::get_latency() const -> milliseconds {
 	if (m_disconnected) {
-		return milliseconds_t{0};
+		return milliseconds{0};
 	}
-	return m_session->getLatency();
+	return m_session->get_latency();
 }
 
-auto PacketHandler::handle(PacketReader &reader) -> Result {
-	return Result::Successful;
+auto packet_handler::handle(packet_reader &reader) -> result {
+	return result::successful;
 }
 
-auto PacketHandler::onConnectBase(ref_ptr_t<Session> session) -> void {
+auto packet_handler::on_connect_base(ref_ptr<session> session) -> void {
 	m_session = session;
-	onConnect();
+	on_connect();
 }
 
-auto PacketHandler::onDisconnectBase() -> void {
+auto packet_handler::on_disconnect_base() -> void {
 	m_session.reset();
 	m_disconnected = true;
-	onDisconnect();
+	on_disconnect();
 }
 
-auto PacketHandler::onConnect() -> void {
+auto packet_handler::on_connect() -> void {
 	// Intentionally blank
 }
 
-auto PacketHandler::onDisconnect() -> void {
+auto packet_handler::on_disconnect() -> void {
 	// Intentionally blank
 }
 

@@ -38,166 +38,166 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-namespace Vana {
+namespace vana {
 
-AbstractServer::AbstractServer(ServerType type) :
-	m_serverType{type},
-	m_connectionManager{this}
+abstract_server::abstract_server(server_type type) :
+	m_server_type{type},
+	m_connection_manager{this}
 {
 }
 
-auto AbstractServer::initialize() -> Result {
-	m_startTime = TimeUtilities::getNow();
+auto abstract_server::initialize() -> result {
+	m_start_time = utilities::time::get_now();
 
-	loadLogConfig();
+	load_log_config();
 
-	auto config = ConfigFile::getConnectionPropertiesConfig();
+	auto config = config_file::get_connection_properties_config();
 	config->run();
 
-	m_interPassword = config->get<string_t>("inter_password");
-	m_salt = config->get<string_t>("inter_salt");
+	m_inter_password = config->get<string>("inter_password");
+	m_salt = config->get<string>("inter_salt");
 
-	if (m_interPassword == "changeme") {
-		log(LogType::CriticalError, "inter_password is not changed.");
-		ExitCodes::exit(ExitCodes::ConfigError);
-		return Result::Failure;
+	if (m_inter_password == "changeme") {
+		log(log_type::critical_error, "inter_password is not changed.");
+		exit(exit_code::config_error);
+		return result::failure;
 	}
 	if (m_salt == "changeme") {
-		log(LogType::CriticalError, "inter_salt is not changed.");
-		ExitCodes::exit(ExitCodes::ConfigError);
-		return Result::Failure;
+		log(log_type::critical_error, "inter_salt is not changed.");
+		exit(exit_code::config_error);
+		return result::failure;
 	}
 
-	auto rawIpMap = config->get<vector_t<hash_map_t<string_t, string_t>>>("external_ip");
-	for (const auto &pair : rawIpMap) {
-		auto ipValue = pair.find("ip");
-		auto maskValue = pair.find("mask");
-		if (ipValue == std::end(pair) || maskValue == std::end(pair)) {
-			log(LogType::CriticalError, "External IP configuration is malformed!");
-			ExitCodes::exit(ExitCodes::ConfigError);
-			return Result::Failure;
+	auto raw_ip_map = config->get<vector<hash_map<string, string>>>("external_ip");
+	for (const auto &pair : raw_ip_map) {
+		auto ip_value = pair.find("ip");
+		auto mask_value = pair.find("mask");
+		if (ip_value == std::end(pair) || mask_value == std::end(pair)) {
+			log(log_type::critical_error, "External IP configuration is malformed!");
+			exit(exit_code::config_error);
+			return result::failure;
 		}
 
-		auto ip = Ip::stringToIpv4(ipValue->second);
-		auto mask = Ip::stringToIpv4(maskValue->second);
-		m_externalIps.push_back(ExternalIp{ip, mask});
+		auto ip = ip::string_to_ipv4(ip_value->second);
+		auto mask = ip::string_to_ipv4(mask_value->second);
+		m_external_ips.push_back(external_ip{ip, mask});
 	}
 
-	m_interServerConfig = config->get<InterServerConfig>("");
+	m_inter_server_config = config->get<inter_server_config>("");
 
-	auto salting = ConfigFile::getSaltingConfig();
+	auto salting = config_file::get_salting_config();
 	salting->run();
 
-	auto saltingConf = salting->get<SaltingConfig>("");
-	m_saltingPolicy = saltingConf.interserver;
+	auto salting_conf = salting->get<salting_config>("");
+	m_salting_policy = salting_conf.interserver;
 
-	if (loadConfig() == Result::Failure) {
-		return Result::Failure;
+	if (load_config() == result::failure) {
+		return result::failure;
 	}
 
-	if (loadData() == Result::Failure) {
-		return Result::Failure;
+	if (load_data() == result::failure) {
+		return result::failure;
 	}
-	initComplete();
+	init_complete();
 
-	m_connectionManager.run();
+	m_connection_manager.run();
 
-	return Result::Successful;
+	return result::successful;
 }
 
-auto AbstractServer::loadLogConfig() -> void {
-	auto conf = ConfigFile::getLoggerConfig();
+auto abstract_server::load_log_config() -> void {
+	auto conf = config_file::get_logger_config();
 	conf->run();
 
-	string_t prefix = getLogPrefix();
-	LogConfig log;
-	log = conf->get<LogConfig>(prefix);
+	string prefix = get_log_prefix();
+	log_config log;
+	log = conf->get<log_config>(prefix);
 	if (log.log) {
-		createLogger(log);
+		create_logger(log);
 	}
 }
 
-auto AbstractServer::shutdown() -> void {
-	m_connectionManager.stop();
-	ThreadPool::wait();
+auto abstract_server::shutdown() -> void {
+	m_connection_manager.stop();
+	thread_pool::wait();
 }
 
-auto AbstractServer::getServerType() const -> ServerType {
-	return m_serverType;
+auto abstract_server::get_server_type() const -> server_type {
+	return m_server_type;
 }
 
-auto AbstractServer::getInterPassword() const -> string_t {
-	return HashUtilities::hashPassword(m_interPassword, m_salt, m_saltingPolicy);
+auto abstract_server::get_inter_password() const -> string {
+	return hash_utilities::hash_password(m_inter_password, m_salt, m_salting_policy);
 }
 
-auto AbstractServer::getInterserverSaltingPolicy() const -> const SaltConfig & {
-	return m_saltingPolicy;
+auto abstract_server::get_interserver_salting_policy() const -> const salt_config & {
+	return m_salting_policy;
 }
 
-auto AbstractServer::getInterServerConfig() const -> const InterServerConfig & {
-	return m_interServerConfig;
+auto abstract_server::get_inter_server_config() const -> const inter_server_config & {
+	return m_inter_server_config;
 }
 
-auto AbstractServer::loadConfig() -> Result {
+auto abstract_server::load_config() -> result {
 	// Intentionally left blank
-	return Result::Successful;
+	return result::successful;
 }
 
-auto AbstractServer::initComplete() -> void {
+auto abstract_server::init_complete() -> void {
 	// Intentionally left blank
 }
 
-auto AbstractServer::sendAuth(ref_ptr_t<Session> session) const -> void {
+auto abstract_server::send_auth(ref_ptr<session> session) const -> void {
 	session->send(
-		Packets::sendPassword(
-			MiscUtilities::getServerType(session->getType()),
-			getInterPassword(),
-			m_externalIps));
+		packets::send_password(
+			utilities::misc::get_server_type(session->get_type()),
+			get_inter_password(),
+			m_external_ips));
 }
 
-auto AbstractServer::createLogger(const LogConfig &conf) -> void {
-	const string_t &timeFormat = conf.timeFormat;
-	const string_t &format = conf.format;
-	const string_t &file = conf.file;
-	ServerType serverType = getServerType();
-	size_t bufferSize = conf.bufferSize;
+auto abstract_server::create_logger(const log_config &conf) -> void {
+	const string &time_format = conf.time_format;
+	const string &format = conf.format;
+	const string &file = conf.file;
+	server_type server_type = get_server_type();
+	size_t buffer_size = conf.buffer_size;
 
 	switch (conf.destination) {
-		case LogDestinations::Console: m_logger = make_owned_ptr<ConsoleLogger>(file, format, timeFormat, serverType, bufferSize); break;
-		case LogDestinations::File: m_logger = make_owned_ptr<FileLogger>(file, format, timeFormat, serverType, bufferSize); break;
-		case LogDestinations::Sql: m_logger = make_owned_ptr<SqlLogger>(file, format, timeFormat, serverType, bufferSize); break;
-		case LogDestinations::FileSql: m_logger = make_owned_ptr<DuoLogger<FileLogger, SqlLogger>>(file, format, timeFormat, serverType, bufferSize); break;
-		case LogDestinations::FileConsole: m_logger = make_owned_ptr<DuoLogger<FileLogger, ConsoleLogger>>(file, format, timeFormat, serverType, bufferSize); break;
-		case LogDestinations::SqlConsole: m_logger = make_owned_ptr<DuoLogger<SqlLogger, ConsoleLogger>>(file, format, timeFormat, serverType, bufferSize); break;
-		case LogDestinations::FileSqlConsole: m_logger = make_owned_ptr<TriLogger<FileLogger, SqlLogger, ConsoleLogger>>(file, format, timeFormat, serverType, bufferSize); break;
+		case log_destinations::console: m_logger = make_owned_ptr<console_logger>(file, format, time_format, server_type, buffer_size); break;
+		case log_destinations::file: m_logger = make_owned_ptr<file_logger>(file, format, time_format, server_type, buffer_size); break;
+		case log_destinations::sql: m_logger = make_owned_ptr<sql_logger>(file, format, time_format, server_type, buffer_size); break;
+		case log_destinations::file_sql: m_logger = make_owned_ptr<duo_logger<file_logger, sql_logger>>(file, format, time_format, server_type, buffer_size); break;
+		case log_destinations::file_console: m_logger = make_owned_ptr<duo_logger<file_logger, console_logger>>(file, format, time_format, server_type, buffer_size); break;
+		case log_destinations::sql_console: m_logger = make_owned_ptr<duo_logger<sql_logger, console_logger>>(file, format, time_format, server_type, buffer_size); break;
+		case log_destinations::file_sql_console: m_logger = make_owned_ptr<tri_logger<file_logger, sql_logger, console_logger>>(file, format, time_format, server_type, buffer_size); break;
 	}
 }
 
-auto AbstractServer::log(LogType type, const string_t &message) -> void {
-	if (Logger *logger = m_logger.get()) {
-		logger->log(type, makeLogIdentifier(), message);
+auto abstract_server::log(log_type type, const string &message) -> void {
+	if (auto logger = m_logger.get()) {
+		logger->log(type, make_log_identifier(), message);
 	}
 }
 
-auto AbstractServer::log(LogType type, function_t<void(out_stream_t &)> produceMessage) -> void {
-	out_stream_t message;
-	produceMessage(message);
+auto abstract_server::log(log_type type, function<void(out_stream &)> produce_message) -> void {
+	out_stream message;
+	produce_message(message);
 	log(type, message.str());
 }
 
-auto AbstractServer::log(LogType type, const char *message) -> void {
-	log(type, string_t{message});
+auto abstract_server::log(log_type type, const char *message) -> void {
+	log(type, string{message});
 }
 
-auto AbstractServer::buildLogIdentifier(function_t<void(out_stream_t &)> produceId) const -> opt_string_t {
-	out_stream_t message;
-	produceId(message);
+auto abstract_server::build_log_identifier(function<void(out_stream &)> produce_id) const -> opt_string {
+	out_stream message;
+	produce_id(message);
 	return message.str();
 }
 
-auto AbstractServer::displayLaunchTime() const -> void {
-	auto loadingTime = TimeUtilities::getDistance<milliseconds_t>(TimeUtilities::getNow(), m_startTime);
-	std::cout << "Started in " << std::setprecision(3) << loadingTime / 1000.f << " seconds!" << std::endl << std::endl;
+auto abstract_server::display_launch_time() const -> void {
+	auto loading_time = utilities::time::get_distance<milliseconds>(utilities::time::get_now(), m_start_time);
+	std::cout << "Started in " << std::setprecision(3) << loading_time / 1000.f << " seconds!" << std::endl << std::endl;
 }
 
 }

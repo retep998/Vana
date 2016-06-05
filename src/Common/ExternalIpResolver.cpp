@@ -21,20 +21,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/PacketReader.hpp"
 #include <stdexcept>
 
-namespace Vana {
+namespace vana {
 
-ExternalIpResolver::ExternalIpResolver(const Ip &defaultIp, const IpMatrix &externalIps) :
-	m_defaultIp{defaultIp},
-	m_externalIps{externalIps}
+external_ip_resolver::external_ip_resolver(const ip &default_ip, const ip_matrix &external_ips) :
+	m_default_ip{default_ip},
+	m_external_ips{external_ips}
 {
 }
 
-auto ExternalIpResolver::matchIpToSubnet(const Ip &test) const -> Ip {
-	if (test.getType() != m_defaultIp.getType()) throw std::invalid_argument{"IP type must match the external IP type"};
+auto external_ip_resolver::match_ip_to_subnet(const ip &test) const -> ip {
+	if (test.get_type() != m_default_ip.get_type()) throw std::invalid_argument{"IP type must match the external IP type"};
 
-	Ip ret = m_defaultIp;
-	for (const auto &ipArray : m_externalIps) {
-		if (ipArray.tryMatchIpToSubnet(test, ret)) {
+	ip ret = m_default_ip;
+	for (const auto &ip_array : m_external_ips) {
+		if (ip_array.try_match_ip_to_subnet(test, ret)) {
 			break;
 		}
 	}

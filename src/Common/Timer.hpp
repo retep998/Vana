@@ -24,36 +24,36 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 #include <memory>
 
-namespace Vana {
-	namespace Timer {
-		using timer_func_t = function_t<void(const time_point_t &)>;
+namespace vana {
+	namespace timer {
+		using timer_func = function<void(const time_point &)>;
 
-		enum class RunResult {
-			Reset,
-			Complete
+		enum class run_result {
+			reset,
+			complete,
 		};
 
-		class Container;
-		class Thread;
+		class container;
+		class thread;
 
-		class Timer {
-			NONCOPYABLE(Timer);
-			NO_DEFAULT_CONSTRUCTOR(Timer);
+		class timer {
+			NONCOPYABLE(timer);
+			NO_DEFAULT_CONSTRUCTOR(timer);
 		public:
-			Timer(const timer_func_t func, const Id &id, ref_ptr_t<Container> container, const duration_t &differenceFromNow, const duration_t &repeat);
-			static auto create(const timer_func_t func, const Id &id, ref_ptr_t<Container> container, const duration_t &differenceFromNow, const duration_t &repeat = seconds_t{0}) -> void;
+			timer(const timer_func func, const id &id, ref_ptr<container> container, const duration &difference_from_now, const duration &repeat);
+			static auto create(const timer_func func, const id &id, ref_ptr<container> container, const duration &difference_from_now, const duration &repeat = seconds{0}) -> void;
 
-			auto getTimeLeft() const -> duration_t;
-			auto run(const time_point_t &now) const -> RunResult;
-			auto reset(const time_point_t &now) -> time_point_t;
-			auto removeFromContainer() const -> void;
+			auto get_time_left() const -> duration;
+			auto run(const time_point &now) const -> run_result;
+			auto reset(const time_point &now) -> time_point;
+			auto remove_from_container() const -> void;
 		private:
-			Id m_id;
-			view_ptr_t<Container> m_container;
-			time_point_t m_runAt;
+			id m_id;
+			view_ptr<container> m_container;
+			time_point m_run_at;
 			bool m_repeat;
-			duration_t m_repeatTime;
-			timer_func_t m_function;
+			duration m_repeat_time;
+			timer_func m_function;
 		};
 	}
 }

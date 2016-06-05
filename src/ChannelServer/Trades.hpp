@@ -23,27 +23,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <memory>
 #include <unordered_map>
 
-namespace Vana {
-	namespace ChannelServer {
-		class ActiveTrade;
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class active_trade;
+		class player;
 
-		class Trades : public TimerContainerHolder {
+		class trades : public timer_container_holder {
 		public:
-			Trades();
-			auto newTrade(ref_ptr_t<Player> start, ref_ptr_t<Player> recv) -> trade_id_t;
-			auto removeTrade(trade_id_t id) -> void;
-			auto stopTimeout(trade_id_t id) -> void;
-			auto getTrade(trade_id_t id) -> ActiveTrade *;
+			trades();
+			auto new_trade(ref_ptr<player> start, ref_ptr<player> recv) -> game_trade_id;
+			auto remove_trade(game_trade_id id) -> void;
+			auto stop_timeout(game_trade_id id) -> void;
+			auto get_trade(game_trade_id id) -> active_trade *;
 		private:
-			static seconds_t TradeTimeout;
+			static seconds trade_timeout;
 
-			auto getTimerSecondsRemaining(trade_id_t id) -> seconds_t;
-			auto timeout(ref_ptr_t<Player> sender) -> void;
-			auto startTimeout(trade_id_t id, ref_ptr_t<Player> sender) -> void;
+			auto get_timer_seconds_remaining(game_trade_id id) -> seconds;
+			auto timeout(ref_ptr<player> sender) -> void;
+			auto start_timeout(game_trade_id id, ref_ptr<player> sender) -> void;
 
-			IdPool<trade_id_t> m_tradeIds;
-			hash_map_t<trade_id_t, ref_ptr_t<ActiveTrade>> m_trades;
+			id_pool<game_trade_id> m_trade_ids;
+			hash_map<game_trade_id, ref_ptr<active_trade>> m_trades;
 		};
 	}
 }

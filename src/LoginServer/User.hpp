@@ -22,61 +22,61 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include "LoginServer/PlayerStatus.hpp"
 
-namespace Vana {
-	class PacketReader;
+namespace vana {
+	class packet_reader;
 
-	namespace LoginServer {
-		class User final : public PacketHandler, public enable_shared<User> {
-			NONCOPYABLE(User);
+	namespace login_server {
+		class user final : public packet_handler, public enable_shared<user> {
+			NONCOPYABLE(user);
 		public:
-			User() = default;
+			user() = default;
 
-			auto setGender(gender_id_t gender) -> void { m_gender = gender; }
-			auto setWorldId(world_id_t worldId) -> void { m_worldId = worldId; }
-			auto setAdmin(bool value) -> void { m_admin = value; }
-			auto setChannel(channel_id_t channel) -> void {	m_channel = channel; }
-			auto setAccountId(account_id_t id) -> void { m_accountId = id; }
-			auto setStatus(PlayerStatus::PlayerStatus status) -> void { m_status = status; }
-			auto setPin(int32_t pin) -> void { m_pin = pin; }
-			auto setCharDeletePassword(opt_int32_t charDeletePassword) -> void { m_charDeletePassword = charDeletePassword; }
-			auto setQuietBanReason(int8_t reason) -> void { m_quietBanReason = reason; }
-			auto setQuietBanTime(FileTime banTime) -> void { m_quietBanTime = banTime; }
-			auto setCreationTime(FileTime creationTime) -> void { m_userCreation = creationTime; }
-			auto setGmLevel(int32_t gmLevel) -> void { m_gmLevel = gmLevel; }
+			auto set_gender(game_gender_id gender) -> void { m_gender = gender; }
+			auto set_world_id(game_world_id world_id) -> void { m_world_id = world_id; }
+			auto set_admin(bool value) -> void { m_admin = value; }
+			auto set_channel(game_channel_id chan_id) -> void {	m_channel = chan_id; }
+			auto set_account_id(game_account_id id) -> void { m_account_id = id; }
+			auto set_status(player_status::player_status status) -> void { m_status = status; }
+			auto set_pin(int32_t pin) -> void { m_pin = pin; }
+			auto set_char_delete_password(opt_int32_t char_delete_password) -> void { m_char_delete_password = char_delete_password; }
+			auto set_quiet_ban_reason(int8_t reason) -> void { m_quiet_ban_reason = reason; }
+			auto set_quiet_ban_time(file_time ban_time) -> void { m_quiet_ban_time = ban_time; }
+			auto set_creation_time(file_time creation_time) -> void { m_user_creation = creation_time; }
+			auto set_gm_level(int32_t gm_level) -> void { m_gm_level = gm_level; }
 
-			auto getGender() const -> optional_t<gender_id_t> { return m_gender; }
-			auto getWorldId() const -> optional_t<world_id_t> { return m_worldId; }
-			auto isAdmin() const -> bool { return m_admin; }
-			auto getChannel() const -> channel_id_t { return m_channel; }
-			auto getAccountId() const -> account_id_t { return m_accountId; }
-			auto getGmLevel() const -> int32_t { return m_gmLevel; }
-			auto getStatus() const -> PlayerStatus::PlayerStatus { return m_status; }
-			auto getPin() const -> opt_int32_t { return m_pin; }
-			auto getCharDeletePassword() const -> opt_int32_t { return m_charDeletePassword; }
-			auto getQuietBanReason() const -> int8_t { return m_quietBanReason; }
-			auto getQuietBanTime() const -> FileTime { return m_quietBanTime; }
-			auto getCreationTime() const -> FileTime { return m_userCreation; }
+			auto get_gender() const -> optional<game_gender_id> { return m_gender; }
+			auto get_world_id() const -> optional<game_world_id> { return m_world_id; }
+			auto is_admin() const -> bool { return m_admin; }
+			auto get_channel() const -> game_channel_id { return m_channel; }
+			auto get_account_id() const -> game_account_id { return m_account_id; }
+			auto get_gm_level() const -> int32_t { return m_gm_level; }
+			auto get_status() const -> player_status::player_status { return m_status; }
+			auto get_pin() const -> opt_int32_t { return m_pin; }
+			auto get_char_delete_password() const -> opt_int32_t { return m_char_delete_password; }
+			auto get_quiet_ban_reason() const -> int8_t { return m_quiet_ban_reason; }
+			auto get_quiet_ban_time() const -> file_time { return m_quiet_ban_time; }
+			auto get_creation_time() const -> file_time { return m_user_creation; }
 
-			auto addInvalidLogin() -> int32_t { return ++m_invalidLogins; }
-			auto setOnline(bool online) -> void;
+			auto add_invalid_login() -> int32_t { return ++m_invalid_logins; }
+			auto set_online(bool online) -> void;
 		protected:
-			auto handle(PacketReader &reader) -> Result override;
-			auto onDisconnect() -> void override;
+			auto handle(packet_reader &reader) -> result override;
+			auto on_disconnect() -> void override;
 		private:
 			bool m_admin = false;
-			bool m_checkedPin = false;
-			int8_t m_quietBanReason = 0;
-			channel_id_t m_channel = 0;
-			account_id_t m_accountId = 0;
-			int32_t m_invalidLogins = 0;
-			int32_t m_gmLevel = 0;
-			optional_t<gender_id_t> m_gender;
-			optional_t<world_id_t> m_worldId;
+			bool m_checked_pin = false;
+			int8_t m_quiet_ban_reason = 0;
+			game_channel_id m_channel = 0;
+			game_account_id m_account_id = 0;
+			int32_t m_invalid_logins = 0;
+			int32_t m_gm_level = 0;
+			optional<game_gender_id> m_gender;
+			optional<game_world_id> m_world_id;
 			opt_int32_t m_pin;
-			opt_int32_t m_charDeletePassword;
-			FileTime m_quietBanTime = 0;
-			FileTime m_userCreation = 0;
-			PlayerStatus::PlayerStatus m_status = PlayerStatus::NotLoggedIn;
+			opt_int32_t m_char_delete_password;
+			file_time m_quiet_ban_time = 0;
+			file_time m_user_creation = 0;
+			player_status::player_status m_status = player_status::not_logged_in;
 		};
 	}
 }

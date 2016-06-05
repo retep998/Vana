@@ -9,24 +9,26 @@
 
 #include <functional>
 
-namespace Vana {
-	namespace MiscUtilities {
-		template <typename TValue>
-		inline
-		size_t hash_combine(size_t seed, const TValue &value) {
-			std::hash<TValue> hasher;
-			return seed ^ (hasher(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2));
-		}
+namespace vana {
+	namespace utilities {
+		namespace misc {
+			template <typename TValue>
+			inline
+			size_t hash_combine(size_t seed, const TValue &value) {
+				std::hash<TValue> hasher;
+				return seed ^ (hasher(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2));
+			}
 
-		inline
-		size_t hash_combinator() {
-			return 0;
-		}
+			inline
+			size_t hash_combinator() {
+				return 0;
+			}
 
-		template <typename THead, typename ... TTail>
-		inline
-		size_t hash_combinator(const THead &value, const TTail & ... rest) {
-			return hash_combine(hash_combinator(rest...), value);
+			template <typename THead, typename ... TTail>
+			inline
+			size_t hash_combinator(const THead &value, const TTail & ... rest) {
+				return hash_combine(hash_combinator(rest...), value);
+			}
 		}
 	}
 }

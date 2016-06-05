@@ -25,49 +25,49 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-	struct SaltConfig {
-		PasswordTransformationConfig policy = {SaltPolicy::Prepend, vector_t<LuaVariant>{}};
-		vector_t<SaltTransformationConfig> modifyPolicies;
+namespace vana {
+	struct salt_config {
+		password_transformation_config policy = {salt_policy::prepend, vector<lua_variant>{}};
+		vector<salt_transformation_config> modify_policies;
 	};
 
 	template <>
-	struct LuaSerialize<SaltConfig> {
-		auto read(LuaEnvironment &config, const string_t &prefix) -> SaltConfig {
-			SaltConfig ret;
+	struct lua_serialize<salt_config> {
+		auto read(lua_environment &config, const string &prefix) -> salt_config {
+			salt_config ret;
 
-			LuaVariant obj = config.get<LuaVariant>(prefix);
-			config.validateObject(LuaType::Table, obj, prefix);
+			lua_variant obj = config.get<lua_variant>(prefix);
+			config.validate_object(lua::lua_type::table, obj, prefix);
 
-			auto map = obj.as<hash_map_t<LuaVariant, LuaVariant>>();
-			bool hasSaltPolicy = false;
-			bool hasSaltModifyPolicy = false;
-			LuaVariant saltPolicy;
-			LuaVariant saltModifyPolicy;
+			auto map = obj.as<hash_map<lua_variant, lua_variant>>();
+			bool has_salt_policy = false;
+			bool has_salt_modify_policy = false;
+			lua_variant salt_policy;
+			lua_variant salt_modify_policy;
 			for (const auto &kvp : map) {
-				config.validateKey(LuaType::String, kvp.first, prefix);
+				config.validate_key(lua::lua_type::string, kvp.first, prefix);
 
-				string_t key = kvp.first.as<string_t>();
+				string key = kvp.first.as<string>();
 				if (key == "salt") {
-					hasSaltPolicy = true;
-					config.validateValue(LuaType::Table, kvp.second, key, prefix);
-					saltPolicy = kvp.second;
+					has_salt_policy = true;
+					config.validate_value(lua::lua_type::table, kvp.second, key, prefix);
+					salt_policy = kvp.second;
 				}
 				else if (key == "salt_modify") {
-					hasSaltModifyPolicy = true;
-					config.validateValue(LuaType::Table, kvp.second, key, prefix);
-					saltModifyPolicy = kvp.second;
+					has_salt_modify_policy = true;
+					config.validate_value(lua::lua_type::table, kvp.second, key, prefix);
+					salt_modify_policy = kvp.second;
 				}
 			}
 
-			config.required(hasSaltPolicy, "salt", prefix);
-			config.required(hasSaltModifyPolicy, "salt_modify", prefix);
+			config.required(has_salt_policy, "salt", prefix);
+			config.required(has_salt_modify_policy, "salt_modify", prefix);
 
-			ret.policy = saltPolicy.into<PasswordTransformationConfig>(config, prefix + ".salt");
+			ret.policy = salt_policy.into<password_transformation_config>(config, prefix + ".salt");
 		
-			auto modifiers = saltModifyPolicy.as<vector_t<LuaVariant>>();
+			auto modifiers = salt_modify_policy.as<vector<lua_variant>>();
 			for (const auto &modifier : modifiers) {
-				ret.modifyPolicies.push_back(modifier.into<SaltTransformationConfig>(config, prefix + ".salt_modify"));
+				ret.modify_policies.push_back(modifier.into<salt_transformation_config>(config, prefix + ".salt_modify"));
 			}
 			return ret;
 		}

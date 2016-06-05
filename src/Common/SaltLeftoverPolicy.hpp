@@ -19,12 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	enum class SaltLeftoverPolicy {
-		Append,
-		Prepend,
-		Discard,
-		Rollover,
+namespace vana {
+	enum class salt_leftover_policy {
+		append,
+		prepend,
+		discard,
+		rollover,
 		// If more constants are added, please add them to ConfigFile.cpp as well
 	};
 }

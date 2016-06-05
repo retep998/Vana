@@ -35,139 +35,141 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/PlayerPacket.hpp"
 #include "ChannelServer/PlayerPacketHelper.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-PlayerInventory::PlayerInventory(Player *player, const array_t<inventory_slot_count_t, Inventories::InventoryCount> &maxSlots, mesos_t mesos) :
-	m_maxSlots{maxSlots},
+player_inventory::player_inventory(player *player, const array<game_inventory_slot_count, inventories::count> &max_slots, game_mesos mesos) :
+	m_max_slots{max_slots},
 	m_mesos{mesos},
 	m_player{player}
 {
-	array_t<item_id_t, 2> init = {0};
+	array<game_item_id, 2> init = {0};
 
-	for (size_t i = 0; i < Inventories::EquippedSlots; ++i) {
+	for (size_t i = 0; i < inventories::equipped_slots; ++i) {
 		m_equipped[i] = init;
 	}
 
 	load();
 }
 
-PlayerInventory::~PlayerInventory() {
+player_inventory::~player_inventory() {
 	/* TODO FIXME just convert the damn Item * to ref_ptr_t or owned_ptr_t */
 	for (const auto &inv : m_items) {
-		std::for_each(std::begin(inv), std::end(inv), [](pair_t<const inventory_slot_t, Item *> p) { delete p.second; });
+		std::for_each(std::begin(inv), std::end(inv), [](pair<const game_inventory_slot, item *> p) { delete p.second; });
 	}
 }
 
-auto PlayerInventory::load() -> void {
+auto player_inventory::load() -> void {
 	using namespace soci;
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
-	player_id_t charId = m_player->getId();
-	string_t location = "inventory";
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
+	game_player_id char_id = m_player->get_id();
+	string location = "inventory";
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT i.*, p.index, p.name AS pet_name, p.level, p.closeness, p.fullness "
-		<< "FROM " << db.makeTable("items") << " i "
-		<< "LEFT OUTER JOIN " << db.makeTable("pets") << " p ON i.pet_id = p.pet_id "
+		<< "FROM " << db.make_table("items") << " i "
+		<< "LEFT OUTER JOIN " << db.make_table("pets") << " p ON i.pet_id = p.pet_id "
 		<< "WHERE i.location = :location AND i.character_id = :char",
-		soci::use(m_player->getId(), "char"),
+		soci::use(m_player->get_id(), "char"),
 		soci::use(location, "location"));
 
 	for (const auto &row : rs) {
-		Item *item = new Item(row);
-		addItem(row.get<inventory_t>("inv"), row.get<inventory_slot_t>("slot"), item, true);
+		item *item_record = new item(row);
+		add_item(row.get<game_inventory>("inv"), row.get<game_inventory_slot>("slot"), item_record, true);
 
-		if (item->getPetId() != 0) {
-			Pet *pet = new Pet{m_player, item, row};
-			m_player->getPets()->addPet(pet);
+		if (item_record->get_pet_id() != 0) {
+			pet *pet_value = new pet{m_player, item_record, row};
+			m_player->get_pets()->add_pet(pet_value);
 		}
 	}
 
-	rs = (sql.prepare << "SELECT t.map_index, t.map_id FROM " << db.makeTable("teleport_rock_locations") << " t WHERE t.character_id = :char", soci::use(m_player->getId(), "char"));
+	rs = (sql.prepare << "SELECT t.map_index, t.map_id FROM " << db.make_table("teleport_rock_locations") << " t WHERE t.character_id = :char",
+		soci::use(m_player->get_id(), "char"));
 
 	for (const auto &row : rs) {
 		int8_t index = row.get<int8_t>("map_index");
-		map_id_t mapId = row.get<map_id_t>("map_id");
+		game_map_id map_id = row.get<game_map_id>("map_id");
 
-		if (index >= Inventories::TeleportRockMax) {
-			m_vipLocations.push_back(mapId);
+		if (index >= inventories::teleport_rock_max) {
+			m_vip_locations.push_back(map_id);
 		}
 		else {
-			m_rockLocations.push_back(mapId);
+			m_rock_locations.push_back(map_id);
 		}
-
 	}
 }
 
-auto PlayerInventory::save() -> void {
+auto player_inventory::save() -> void {
 	using namespace soci;
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
-	player_id_t charId = m_player->getId();
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
+	game_player_id char_id = m_player->get_id();
 
-	sql.once << "DELETE FROM " << db.makeTable("teleport_rock_locations") << " WHERE character_id = :char", use(charId, "char");
-	if (m_rockLocations.size() > 0 || m_vipLocations.size() > 0) {
-		map_id_t mapId = 0;
-		size_t rockIndex = 0;
+	sql.once << "DELETE FROM " << db.make_table("teleport_rock_locations") << " WHERE character_id = :char",
+		use(char_id, "char");
+
+	if (m_rock_locations.size() > 0 || m_vip_locations.size() > 0) {
+		game_map_id map_id = 0;
+		size_t rock_index = 0;
 
 		statement st = (sql.prepare
-			<< "INSERT INTO " << db.makeTable("teleport_rock_locations") << " "
+			<< "INSERT INTO " << db.make_table("teleport_rock_locations") << " "
 			<< "VALUES (:char, :i, :map)",
-			use(charId, "char"),
-			use(mapId, "map"),
-			use(rockIndex, "i"));
+			use(char_id, "char"),
+			use(map_id, "map"),
+			use(rock_index, "i"));
 
-		for (rockIndex = 0; rockIndex < m_rockLocations.size(); ++rockIndex) {
-			mapId = m_rockLocations[rockIndex];
+		for (rock_index = 0; rock_index < m_rock_locations.size(); ++rock_index) {
+			map_id = m_rock_locations[rock_index];
 			st.execute(true);
 		}
 
-		rockIndex = Inventories::TeleportRockMax;
-		for (size_t i = 0; i < m_vipLocations.size(); ++i) {
-			mapId = m_vipLocations[i];
+		rock_index = inventories::teleport_rock_max;
+		for (size_t i = 0; i < m_vip_locations.size(); ++i) {
+			map_id = m_vip_locations[i];
 			st.execute(true);
-			++rockIndex;
+			++rock_index;
 		}
 	}
 
 	sql.once
-		<< "DELETE FROM " << db.makeTable("items") << " "
+		<< "DELETE FROM " << db.make_table("items") << " "
 		<< "WHERE location = :inv AND character_id = :char",
-		use(charId, "char"),
-		use(Item::Inventory, "inv");
+		use(char_id, "char"),
+		use(item::inventory, "inv");
 
-	vector_t<ItemDbRecord> v;
-	for (inventory_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; ++i) {
-		const auto &itemsInv = m_items[i - 1];
-		for (const auto &kvp : itemsInv) {
-			ItemDbRecord rec(kvp.first, charId, m_player->getAccountId(), m_player->getWorldId(), Item::Inventory, kvp.second);
+	vector<item_db_record> v;
+	for (game_inventory i = inventories::equip; i <= inventories::count; ++i) {
+		const auto &items_inv = m_items[i - 1];
+		for (const auto &kvp : items_inv) {
+			item_db_record rec(kvp.first, char_id, m_player->get_account_id(), m_player->get_world_id(), item::inventory, kvp.second);
 			v.push_back(rec);
 		}
 	}
 
-	Item::databaseInsert(db, v);
+	item::database_insert(db, v);
 }
 
-auto PlayerInventory::addMaxSlots(inventory_t inventory, inventory_slot_count_t rows) -> void {
+auto player_inventory::add_max_slots(game_inventory inventory, game_inventory_slot_count rows) -> void {
 	inventory -= 1;
 
-	inventory_slot_count_t &inv = m_maxSlots[inventory];
+	game_inventory_slot_count &inv = m_max_slots[inventory];
 	inv += (rows * 4);
 
-	inv = ext::constrain_range(inv, Inventories::MinSlotsPerInventory, Inventories::MaxSlotsPerInventory);
-	m_player->send(Packets::Inventory::updateSlots(inventory + 1, inv));
+	inv = ext::constrain_range(inv, inventories::min_slots_per_inventory, inventories::max_slots_per_inventory);
+	m_player->send(packets::inventory::update_slots(inventory + 1, inv));
 }
 
-auto PlayerInventory::setMesos(mesos_t mesos, bool sendPacket) -> void {
+auto player_inventory::set_mesos(game_mesos mesos, bool send_packet) -> void {
 	if (mesos < 0) {
 		mesos = 0;
 	}
 	m_mesos = mesos;
-	m_player->send(Packets::Player::updateStat(Stats::Mesos, m_mesos, sendPacket));
+	m_player->send(packets::player::update_stat(stats::mesos, m_mesos, send_packet));
 }
 
-auto PlayerInventory::modifyMesos(mesos_t mod, bool sendPacket) -> bool {
+auto player_inventory::modify_mesos(game_mesos mod, bool send_packet) -> bool {
 	if (mod < 0) {
 		if (-mod > m_mesos) {
 			return false;
@@ -175,33 +177,33 @@ auto PlayerInventory::modifyMesos(mesos_t mod, bool sendPacket) -> bool {
 		m_mesos += mod;
 	}
 	else {
-		mesos_t mesoTest = m_mesos + mod;
-		if (mesoTest < 0) {
+		game_mesos meso_test = m_mesos + mod;
+		if (meso_test < 0) {
 			return false;
 		}
-		m_mesos = mesoTest;
+		m_mesos = meso_test;
 	}
-	m_player->send(Packets::Player::updateStat(Stats::Mesos, m_mesos, sendPacket));
+	m_player->send(packets::player::update_stat(stats::mesos, m_mesos, send_packet));
 	return true;
 }
 
-auto PlayerInventory::addItem(inventory_t inv, inventory_slot_t slot, Item *item, bool isLoading) -> void {
+auto player_inventory::add_item(game_inventory inv, game_inventory_slot slot, item *item, bool is_loading) -> void {
 	m_items[inv - 1][slot] = item;
-	item_id_t itemId = item->getId();
-	if (m_itemAmounts.find(itemId) != std::end(m_itemAmounts)) {
-		m_itemAmounts[itemId] += item->getAmount();
+	game_item_id item_id = item->get_id();
+	if (m_item_amounts.find(item_id) != std::end(m_item_amounts)) {
+		m_item_amounts[item_id] += item->get_amount();
 	}
 	else {
-		m_itemAmounts[itemId] = item->getAmount();
+		m_item_amounts[item_id] = item->get_amount();
 	}
 	if (slot < 0) {
-		addEquipped(slot, itemId);
-		m_player->getStats()->setEquip(slot, item, isLoading);
+		add_equipped(slot, item_id);
+		m_player->get_stats()->set_equip(slot, item, is_loading);
 	}
 }
 
-auto PlayerInventory::getItem(inventory_t inv, inventory_slot_t slot) -> Item * {
-	if (!GameLogicUtilities::isValidInventory(inv)) {
+auto player_inventory::get_item(game_inventory inv, game_inventory_slot slot) -> item * {
+	if (!game_logic_utilities::is_valid_inventory(inv)) {
 		return nullptr;
 	}
 	inv -= 1;
@@ -211,81 +213,81 @@ auto PlayerInventory::getItem(inventory_t inv, inventory_slot_t slot) -> Item * 
 	return nullptr;
 }
 
-auto PlayerInventory::deleteItem(inventory_t inv, inventory_slot_t slot, bool updateAmount) -> void {
+auto player_inventory::delete_item(game_inventory inv, game_inventory_slot slot, bool update_amount) -> void {
 	inv -= 1;
 	if (m_items[inv].find(slot) != std::end(m_items[inv])) {
-		if (updateAmount) {
-			Item *x = m_items[inv][slot];
-			m_itemAmounts[x->getId()] -= x->getAmount();
+		if (update_amount) {
+			item *x = m_items[inv][slot];
+			m_item_amounts[x->get_id()] -= x->get_amount();
 		}
 		if (slot < 0) {
-			addEquipped(slot, 0);
-			m_player->getStats()->setEquip(slot, nullptr);
+			add_equipped(slot, 0);
+			m_player->get_stats()->set_equip(slot, nullptr);
 		}
 		delete m_items[inv][slot];
 		m_items[inv].erase(slot);
 	}
 }
 
-auto PlayerInventory::setItem(inventory_t inv, inventory_slot_t slot, Item *item) -> void {
+auto player_inventory::set_item(game_inventory inv, game_inventory_slot slot, item *item) -> void {
 	inv -= 1;
 	if (item == nullptr) {
 		m_items[inv].erase(slot);
 		if (slot < 0) {
-			addEquipped(slot, 0);
-			m_player->getStats()->setEquip(slot, nullptr);
-			m_player->getMap()->checkPlayerEquip(ref_ptr_t<Player>{m_player});
+			add_equipped(slot, 0);
+			m_player->get_stats()->set_equip(slot, nullptr);
+			m_player->get_map()->check_player_equip(ref_ptr<player>{m_player});
 		}
 	}
 	else {
 		m_items[inv][slot] = item;
 		if (slot < 0) {
-			addEquipped(slot, item->getId());
-			m_player->getStats()->setEquip(slot, item);
-			m_player->getMap()->checkPlayerEquip(ref_ptr_t<Player>{m_player});
+			add_equipped(slot, item->get_id());
+			m_player->get_stats()->set_equip(slot, item);
+			m_player->get_map()->check_player_equip(ref_ptr<player>{m_player});
 		}
 	}
 }
 
-auto PlayerInventory::destroyEquippedItem(item_id_t itemId) -> void {
-	inventory_t inv = Inventories::EquipInventory;
+auto player_inventory::destroy_equipped_item(game_item_id item_id) -> void {
+	game_inventory inv = inventories::equip;
 	const auto &equips = m_items[inv - 1];
 	for (const auto &kvp : equips) {
-		if (kvp.first < 0 && kvp.second->getId() == itemId) {
-			vector_t<InventoryPacketOperation> ops;
-			ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, kvp.second, kvp.first);
-			m_player->send(Packets::Inventory::inventoryOperation(true, ops));
+		if (kvp.first < 0 && kvp.second->get_id() == item_id) {
+			vector<inventory_packet_operation> ops;
+			ops.emplace_back(packets::inventory::operation_types::modify_slot, kvp.second, kvp.first);
+			m_player->send(packets::inventory::inventory_operation(true, ops));
 
-			deleteItem(inv, kvp.first, false);
+			delete_item(inv, kvp.first, false);
 			break;
 		}
 	}
 }
 
-auto PlayerInventory::getItemAmountBySlot(inventory_t inv, inventory_slot_t slot) -> slot_qty_t {
+auto player_inventory::get_item_amount_by_slot(game_inventory inv, game_inventory_slot slot) -> game_slot_qty {
 	inv -= 1;
-	return (m_items[inv].find(slot) != std::end(m_items[inv]) ? m_items[inv][slot]->getAmount() : 0);
+	return (m_items[inv].find(slot) != std::end(m_items[inv]) ? m_items[inv][slot]->get_amount() : 0);
 }
 
-auto PlayerInventory::addEquipped(inventory_slot_t slot, item_id_t itemId) -> void {
-	if (std::abs(slot) == EquipSlots::Mount) {
-		m_player->getMounts()->setCurrentMount(itemId);
+auto player_inventory::add_equipped(game_inventory_slot slot, game_item_id item_id) -> void {
+	if (std::abs(slot) == equip_slots::mount) {
+		m_player->get_mounts()->set_current_mount(item_id);
 	}
 
-	int8_t cash = GameLogicUtilities::isCashSlot(slot) ? 1 : 0;
-	m_equipped[GameLogicUtilities::stripCashSlot(slot)][cash] = itemId;
+	int8_t cash = game_logic_utilities::is_cash_slot(slot) ? 1 : 0;
+	m_equipped[game_logic_utilities::strip_cash_slot(slot)][cash] = item_id;
 }
 
-auto PlayerInventory::getEquippedId(inventory_slot_t slot, bool cash) -> item_id_t {
+auto player_inventory::get_equipped_id(game_inventory_slot slot, bool cash) -> game_item_id {
 	return m_equipped[slot][(cash ? 1 : 0)];
 }
 
-auto PlayerInventory::addEquippedPacket(PacketBuilder &builder) -> void {
-	for (int8_t i = 0; i < Inventories::EquippedSlots; ++i) {
+auto player_inventory::add_equipped_packet(packet_builder &builder) -> void {
+	for (int8_t i = 0; i < inventories::equipped_slots; ++i) {
 		// Shown items
 		if (m_equipped[i][0] > 0 || m_equipped[i][1] > 0) {
 			builder.add<int8_t>(i);
-			if (m_equipped[i][1] <= 0 || (i == EquipSlots::Weapon && m_equipped[i][0] > 0)) {
+			if (m_equipped[i][1] <= 0 || (i == equip_slots::weapon && m_equipped[i][0] > 0)) {
 				// Normal weapons always here
 				builder.add<int32_t>(m_equipped[i][0]);
 			}
@@ -295,26 +297,26 @@ auto PlayerInventory::addEquippedPacket(PacketBuilder &builder) -> void {
 		}
 	}
 	builder.add<int8_t>(-1);
-	for (int8_t i = 0; i < Inventories::EquippedSlots; ++i) {
+	for (int8_t i = 0; i < inventories::equipped_slots; ++i) {
 		// Covered items
-		if (m_equipped[i][1] > 0 && m_equipped[i][0] > 0 && i != EquipSlots::Weapon) {
+		if (m_equipped[i][1] > 0 && m_equipped[i][0] > 0 && i != equip_slots::weapon) {
 			builder.add<int8_t>(i);
 			builder.add<int32_t>(m_equipped[i][0]);
 		}
 	}
 	builder.add<int8_t>(-1);
-	builder.add<int32_t>(m_equipped[EquipSlots::Weapon][1]); // Cash weapon
+	builder.add<int32_t>(m_equipped[equip_slots::weapon][1]); // Cash weapon
 }
 
-auto PlayerInventory::getItemAmount(item_id_t itemId) -> slot_qty_t {
-	return m_itemAmounts.find(itemId) != std::end(m_itemAmounts) ? m_itemAmounts[itemId] : 0;
+auto player_inventory::get_item_amount(game_item_id item_id) -> game_slot_qty {
+	return m_item_amounts.find(item_id) != std::end(m_item_amounts) ? m_item_amounts[item_id] : 0;
 }
 
-auto PlayerInventory::isEquippedItem(item_id_t itemId) -> bool {
-	const auto &equips = m_items[Inventories::EquipInventory - 1];
+auto player_inventory::is_equipped_item(game_item_id item_id) -> bool {
+	const auto &equips = m_items[inventories::equip - 1];
 	bool has = false;
 	for (const auto &kvp : equips) {
-		if (kvp.first < 0 && kvp.second->getId() == itemId) {
+		if (kvp.first < 0 && kvp.second->get_id() == item_id) {
 			has = true;
 			break;
 		}
@@ -322,229 +324,230 @@ auto PlayerInventory::isEquippedItem(item_id_t itemId) -> bool {
 	return has;
 }
 
-auto PlayerInventory::hasOpenSlotsFor(item_id_t itemId, slot_qty_t amount, bool canStack) -> bool {
-	slot_qty_t required = 0;
-	inventory_t inv = GameLogicUtilities::getInventory(itemId);
-	if (!GameLogicUtilities::isStackable(itemId)) {
+auto player_inventory::has_open_slots_for(game_item_id item_id, game_slot_qty amount, bool can_stack) -> bool {
+	game_slot_qty required = 0;
+	game_inventory inv = game_logic_utilities::get_inventory(item_id);
+	if (!game_logic_utilities::is_stackable(item_id)) {
 		required = amount; // These aren't stackable
 	}
 	else {
-		auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(itemId);
-		slot_qty_t maxSlot = itemInfo->maxSlot;
-		slot_qty_t existing = getItemAmount(itemId) % maxSlot;
+		auto item_info = channel_server::get_instance().get_item_data_provider().get_item_info(item_id);
+		game_slot_qty max_slot = item_info->max_slot;
+		game_slot_qty existing = get_item_amount(item_id) % max_slot;
 		// Bug in global:
 		// It doesn't matter if you already have a slot with a partial stack or not, non-shops require at least 1 empty slot
-		if (canStack && existing > 0) {
+		if (can_stack && existing > 0) {
 			// If not, calculate how many slots necessary
 			existing += amount;
-			if (existing > maxSlot) {
+			if (existing > max_slot) {
 				// Only have to bother with required slots if it would put us over the limit of a slot
-				required = static_cast<slot_qty_t>(existing / maxSlot);
-				if ((existing % maxSlot) > 0) {
+				required = static_cast<game_slot_qty>(existing / max_slot);
+				if ((existing % max_slot) > 0) {
 					++required;
 				}
 			}
 		}
 		else {
 			// If it is, treat it as though no items exist at all
-			required = static_cast<slot_qty_t>(amount / maxSlot);
-			if ((amount % maxSlot) > 0) {
+			required = static_cast<game_slot_qty>(amount / max_slot);
+			if ((amount % max_slot) > 0) {
 				++required;
 			}
 		}
 	}
-	return getOpenSlotsNum(inv) >= required;
+	return get_open_slots_num(inv) >= required;
 }
 
-auto PlayerInventory::getOpenSlotsNum(inventory_t inv) -> inventory_slot_count_t {
-	inventory_slot_count_t openSlots = 0;
-	for (inventory_slot_count_t i = 1; i <= getMaxSlots(inv); ++i) {
-		if (getItem(inv, i) == nullptr) {
-			++openSlots;
+auto player_inventory::get_open_slots_num(game_inventory inv) -> game_inventory_slot_count {
+	game_inventory_slot_count open_slots = 0;
+	for (game_inventory_slot_count i = 1; i <= get_max_slots(inv); ++i) {
+		if (get_item(inv, i) == nullptr) {
+			++open_slots;
 		}
 	}
-	return openSlots;
+	return open_slots;
 }
 
-auto PlayerInventory::doShadowStars() -> item_id_t {
-	for (inventory_slot_t s = 1; s <= getMaxSlots(Inventories::UseInventory); ++s) {
-		Item *item = getItem(Inventories::UseInventory, s);
+auto player_inventory::do_shadow_stars() -> game_item_id {
+	for (game_inventory_slot s = 1; s <= get_max_slots(inventories::use); ++s) {
+		item *item = get_item(inventories::use, s);
 		if (item == nullptr) {
 			continue;
 		}
-		if (GameLogicUtilities::isStar(item->getId()) && item->getAmount() >= Items::ShadowStarsCost) {
-			Inventory::takeItemSlot(ref_ptr_t<Player>{m_player}, Inventories::UseInventory, s, Items::ShadowStarsCost);
-			return item->getId();
+		if (game_logic_utilities::is_star(item->get_id()) && item->get_amount() >= items::shadow_stars_cost) {
+			inventory::take_item_slot(ref_ptr<player>{m_player}, inventories::use, s, items::shadow_stars_cost);
+			return item->get_id();
 		}
 	}
 	return 0;
 }
 
-auto PlayerInventory::addRockMap(map_id_t mapId, int8_t type) -> void {
-	const int8_t mode = Packets::Inventory::RockModes::Add;
-	if (type == Packets::Inventory::RockTypes::Regular) {
-		if (m_rockLocations.size() < Inventories::TeleportRockMax) {
-			m_rockLocations.push_back(mapId);
+auto player_inventory::add_rock_map(game_map_id map_id, int8_t type) -> void {
+	const int8_t mode = packets::inventory::rock_modes::add;
+	if (type == packets::inventory::rock_types::regular) {
+		if (m_rock_locations.size() < inventories::teleport_rock_max) {
+			m_rock_locations.push_back(map_id);
 		}
-		m_player->send(Packets::Inventory::sendRockUpdate(mode, type, m_rockLocations));
+		m_player->send(packets::inventory::send_rock_update(mode, type, m_rock_locations));
 	}
-	else if (type == Packets::Inventory::RockTypes::Vip) {
-		if (m_vipLocations.size() < Inventories::VipRockMax) {
-			m_vipLocations.push_back(mapId);
+	else if (type == packets::inventory::rock_types::vip) {
+		if (m_vip_locations.size() < inventories::vip_rock_max) {
+			m_vip_locations.push_back(map_id);
+			// TODO FIXME packet
 			// Want packet
 		}
-		m_player->send(Packets::Inventory::sendRockUpdate(mode, type, m_vipLocations));
+		m_player->send(packets::inventory::send_rock_update(mode, type, m_vip_locations));
 	}
 }
 
-auto PlayerInventory::delRockMap(map_id_t mapId, int8_t type) -> void {
-	const int8_t mode = Packets::Inventory::RockModes::Delete;
-	if (type == Packets::Inventory::RockTypes::Regular) {
-		for (size_t k = 0; k < m_rockLocations.size(); ++k) {
-			if (m_rockLocations[k] == mapId) {
-				m_rockLocations.erase(std::begin(m_rockLocations) + k);
-				m_player->send(Packets::Inventory::sendRockUpdate(mode, type, m_rockLocations));
+auto player_inventory::del_rock_map(game_map_id map_id, int8_t type) -> void {
+	const int8_t mode = packets::inventory::rock_modes::remove;
+	if (type == packets::inventory::rock_types::regular) {
+		for (size_t k = 0; k < m_rock_locations.size(); ++k) {
+			if (m_rock_locations[k] == map_id) {
+				m_rock_locations.erase(std::begin(m_rock_locations) + k);
+				m_player->send(packets::inventory::send_rock_update(mode, type, m_rock_locations));
 				break;
 			}
 		}
 	}
-	else if (type == Packets::Inventory::RockTypes::Vip) {
-		for (size_t k = 0; k < m_vipLocations.size(); ++k) {
-			if (m_vipLocations[k] == mapId) {
-				m_vipLocations.erase(std::begin(m_vipLocations) + k);
-				m_player->send(Packets::Inventory::sendRockUpdate(mode, type, m_vipLocations));
+	else if (type == packets::inventory::rock_types::vip) {
+		for (size_t k = 0; k < m_vip_locations.size(); ++k) {
+			if (m_vip_locations[k] == map_id) {
+				m_vip_locations.erase(std::begin(m_vip_locations) + k);
+				m_player->send(packets::inventory::send_rock_update(mode, type, m_vip_locations));
 				break;
 			}
 		}
 	}
 }
 
-auto PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) -> void {
-	bool equippedSlot2 = (slot2 < 0);
-	if (inventory == Inventories::EquipInventory && equippedSlot2) {
+auto player_inventory::swap_items(int8_t inventory, int16_t slot1, int16_t slot2) -> void {
+	bool equipped_slot2 = (slot2 < 0);
+	if (inventory == inventories::equip && equipped_slot2) {
 		// Handle these specially
-		Item *item1 = getItem(inventory, slot1);
+		item *item1 = get_item(inventory, slot1);
 		if (item1 == nullptr) {
 			// Hacking
 			return;
 		}
 
-		item_id_t itemId1 = item1->getId();
-		inventory_slot_t strippedSlot1 = GameLogicUtilities::stripCashSlot(slot1);
-		inventory_slot_t strippedSlot2 = GameLogicUtilities::stripCashSlot(slot2);
-		if (!ChannelServer::getInstance().getEquipDataProvider().isValidSlot(itemId1, strippedSlot2)) {
+		game_item_id item_id1 = item1->get_id();
+		game_inventory_slot stripped_slot1 = game_logic_utilities::strip_cash_slot(slot1);
+		game_inventory_slot stripped_slot2 = game_logic_utilities::strip_cash_slot(slot2);
+		if (!channel_server::get_instance().get_equip_data_provider().is_valid_slot(item_id1, stripped_slot2)) {
 			// Hacking
 			return;
 		}
 
-		auto bindTradeBlockOnEquip = [this, slot1, equippedSlot2, item1, itemId1](vector_t<InventoryPacketOperation> &ops) -> bool {
+		auto bind_trade_block_on_equip = [this, slot1, equipped_slot2, item1, item_id1](vector<inventory_packet_operation> &ops) -> bool {
 			// We don't care about any case other than equipping because we're checking for gear binds which only happen on first equip
-			if (slot1 >= 0 && equippedSlot2) {
-				auto &equipInfo = ChannelServer::getInstance().getEquipDataProvider().getEquipInfo(itemId1);
-				if (equipInfo.tradeBlockOnEquip && !item1->hasTradeBlock()) {
-					item1->setTradeBlock(true);
-					ops.emplace_back(Packets::Inventory::OperationTypes::RemoveItem, item1, slot1);
-					ops.emplace_back(Packets::Inventory::OperationTypes::AddItem, item1, slot1);
+			if (slot1 >= 0 && equipped_slot2) {
+				auto &equip_info = channel_server::get_instance().get_equip_data_provider().get_equip_info(item_id1);
+				if (equip_info.trade_block_on_equip && !item1->has_trade_block()) {
+					item1->set_trade_block(true);
+					ops.emplace_back(packets::inventory::operation_types::remove_item, item1, slot1);
+					ops.emplace_back(packets::inventory::operation_types::add_item, item1, slot1);
 					return true;
 				}
 			}
 			return false;
 		};
 
-		Item *remove = nullptr;
-		inventory_slot_t oldSlot = 0;
-		bool weapon = (strippedSlot2 == EquipSlots::Weapon);
-		bool shield = (strippedSlot2 == EquipSlots::Shield);
-		bool top = (strippedSlot2 == EquipSlots::Top);
-		bool bottom = (strippedSlot2 == EquipSlots::Bottom);
+		item *remove = nullptr;
+		game_inventory_slot old_slot = 0;
+		bool weapon = (stripped_slot2 == equip_slots::weapon);
+		bool shield = (stripped_slot2 == equip_slots::shield);
+		bool top = (stripped_slot2 == equip_slots::top);
+		bool bottom = (stripped_slot2 == equip_slots::bottom);
 
-		if (weapon && GameLogicUtilities::is2hWeapon(itemId1) && getEquippedId(EquipSlots::Shield) != 0) {
-			oldSlot = -EquipSlots::Shield;
+		if (weapon && game_logic_utilities::is2h_weapon(item_id1) && get_equipped_id(equip_slots::shield) != 0) {
+			old_slot = -equip_slots::shield;
 		}
-		else if (shield && GameLogicUtilities::is2hWeapon(getEquippedId(EquipSlots::Weapon))) {
-			oldSlot = -EquipSlots::Weapon;
+		else if (shield && game_logic_utilities::is2h_weapon(get_equipped_id(equip_slots::weapon))) {
+			old_slot = -equip_slots::weapon;
 		}
-		else if (top && GameLogicUtilities::isOverall(itemId1) && getEquippedId(EquipSlots::Bottom) != 0) {
-			oldSlot = -EquipSlots::Bottom;
+		else if (top && game_logic_utilities::is_overall(item_id1) && get_equipped_id(equip_slots::bottom) != 0) {
+			old_slot = -equip_slots::bottom;
 		}
-		else if (bottom && GameLogicUtilities::isOverall(getEquippedId(EquipSlots::Top))) {
-			oldSlot = -EquipSlots::Top;
+		else if (bottom && game_logic_utilities::is_overall(get_equipped_id(equip_slots::top))) {
+			old_slot = -equip_slots::top;
 		}
-		if (oldSlot != 0) {
-			remove = getItem(inventory, oldSlot);
-			bool onlySwap = true;
-			if ((getEquippedId(EquipSlots::Shield) != 0) && (getEquippedId(EquipSlots::Weapon) != 0)) {
-				onlySwap = false;
+		if (old_slot != 0) {
+			remove = get_item(inventory, old_slot);
+			bool only_swap = true;
+			if ((get_equipped_id(equip_slots::shield) != 0) && (get_equipped_id(equip_slots::weapon) != 0)) {
+				only_swap = false;
 			}
-			else if ((getEquippedId(EquipSlots::Top) != 0) && (getEquippedId(EquipSlots::Bottom) != 0)) {
-				onlySwap = false;
+			else if ((get_equipped_id(equip_slots::top) != 0) && (get_equipped_id(equip_slots::bottom) != 0)) {
+				only_swap = false;
 			}
-			if (onlySwap) {
-				int16_t swapSlot = 0;
+			if (only_swap) {
+				int16_t swap_slot = 0;
 				if (weapon) {
-					swapSlot = -EquipSlots::Shield;
-					m_player->getActiveBuffs()->swapWeapon();
+					swap_slot = -equip_slots::shield;
+					m_player->get_active_buffs()->swap_weapon();
 				}
 				else if (shield) {
-					swapSlot = -EquipSlots::Weapon;
-					m_player->getActiveBuffs()->swapWeapon();
+					swap_slot = -equip_slots::weapon;
+					m_player->get_active_buffs()->swap_weapon();
 				}
 				else if (top) {
-					swapSlot = -EquipSlots::Bottom;
+					swap_slot = -equip_slots::bottom;
 				}
 				else if (bottom) {
-					swapSlot = -EquipSlots::Top;
+					swap_slot = -equip_slots::top;
 				}
 
-				setItem(inventory, swapSlot, nullptr);
-				setItem(inventory, slot1, remove);
-				setItem(inventory, slot2, item1);
+				set_item(inventory, swap_slot, nullptr);
+				set_item(inventory, slot1, remove);
+				set_item(inventory, slot2, item1);
 
-				vector_t<InventoryPacketOperation> ops;
-				bindTradeBlockOnEquip(ops);
-				ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, item1, slot1, slot2);
-				ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, remove, swapSlot, slot1);
-				m_player->send(Packets::Inventory::inventoryOperation(true, ops));
-				m_player->sendMap(Packets::Inventory::updatePlayer(ref_ptr_t<Player>{m_player}));
+				vector<inventory_packet_operation> ops;
+				bind_trade_block_on_equip(ops);
+				ops.emplace_back(packets::inventory::operation_types::modify_slot, item1, slot1, slot2);
+				ops.emplace_back(packets::inventory::operation_types::modify_slot, remove, swap_slot, slot1);
+				m_player->send(packets::inventory::inventory_operation(true, ops));
+				m_player->send_map(packets::inventory::update_player(ref_ptr<player>{m_player}));
 				return;
 			}
 			else {
-				if (getOpenSlotsNum(inventory) == 0) {
-					m_player->send(Packets::Inventory::blankUpdate());
+				if (get_open_slots_num(inventory) == 0) {
+					m_player->send(packets::inventory::blank_update());
 					return;
 				}
-				inventory_slot_t freeSlot = 0;
-				for (inventory_slot_t s = 1; s <= getMaxSlots(inventory); s++) {
-					Item *oldItem = getItem(inventory, s);
-					if (oldItem == nullptr) {
-						freeSlot = s;
+				game_inventory_slot free_slot = 0;
+				for (game_inventory_slot s = 1; s <= get_max_slots(inventory); s++) {
+					item *old_item = get_item(inventory, s);
+					if (old_item == nullptr) {
+						free_slot = s;
 						break;
 					}
 				}
 
-				setItem(inventory, freeSlot, remove);
-				setItem(inventory, oldSlot, nullptr);
+				set_item(inventory, free_slot, remove);
+				set_item(inventory, old_slot, nullptr);
 
-				vector_t<InventoryPacketOperation> ops;
-				ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, item1, oldSlot, freeSlot);
-				m_player->send(Packets::Inventory::inventoryOperation(true, ops));
+				vector<inventory_packet_operation> ops;
+				ops.emplace_back(packets::inventory::operation_types::modify_slot, item1, old_slot, free_slot);
+				m_player->send(packets::inventory::inventory_operation(true, ops));
 			}
 		}
 
 		// Nothing special happening, just a simple equip swap
-		Item *item2 = getItem(inventory, slot2);
-		setItem(inventory, slot1, item2);
-		setItem(inventory, slot2, item1);
+		item *item2 = get_item(inventory, slot2);
+		set_item(inventory, slot1, item2);
+		set_item(inventory, slot2, item1);
 
-		vector_t<InventoryPacketOperation> ops;
-		bindTradeBlockOnEquip(ops);
-		ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, item1, slot1, slot2);
-		m_player->send(Packets::Inventory::inventoryOperation(true, ops));
+		vector<inventory_packet_operation> ops;
+		bind_trade_block_on_equip(ops);
+		ops.emplace_back(packets::inventory::operation_types::modify_slot, item1, slot1, slot2);
+		m_player->send(packets::inventory::inventory_operation(true, ops));
 	}
 	else {
 		// The only interesting things that can happen here are stack modifications and slot swapping
-		Item *item1 = getItem(inventory, slot1);
-		Item *item2 = getItem(inventory, slot2);
+		item *item1 = get_item(inventory, slot1);
+		item *item2 = get_item(inventory, slot2);
 
 		if (item1 == nullptr) {
 			// If item2 is nullptr, it's moving item1 into slot2
@@ -552,144 +555,144 @@ auto PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) 
 			return;
 		}
 
-		item_id_t itemId1 = item1->getId();
-		item_id_t itemId2 = item2 == nullptr ? 0 : item2->getId();
-		if (item2 != nullptr && itemId1 == itemId2 && GameLogicUtilities::isStackable(itemId1)) {
-			auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(itemId1);
-			slot_qty_t maxSlot = itemInfo->maxSlot;
+		game_item_id item_id1 = item1->get_id();
+		game_item_id item_id2 = item2 == nullptr ? 0 : item2->get_id();
+		if (item2 != nullptr && item_id1 == item_id2 && game_logic_utilities::is_stackable(item_id1)) {
+			auto item_info = channel_server::get_instance().get_item_data_provider().get_item_info(item_id1);
+			game_slot_qty max_slot = item_info->max_slot;
 
-			if (item1->getAmount() + item2->getAmount() <= maxSlot) {
-				item2->incAmount(item1->getAmount());
-				deleteItem(inventory, slot1, false);
+			if (item1->get_amount() + item2->get_amount() <= max_slot) {
+				item2->inc_amount(item1->get_amount());
+				delete_item(inventory, slot1, false);
 
-				vector_t<InventoryPacketOperation> ops;
-				ops.emplace_back(Packets::Inventory::OperationTypes::ModifyQuantity, item2, slot2);
-				ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, item1, slot1);
-				m_player->send(Packets::Inventory::inventoryOperation(true, ops));
+				vector<inventory_packet_operation> ops;
+				ops.emplace_back(packets::inventory::operation_types::modify_quantity, item2, slot2);
+				ops.emplace_back(packets::inventory::operation_types::modify_slot, item1, slot1);
+				m_player->send(packets::inventory::inventory_operation(true, ops));
 			}
 			else {
-				item1->decAmount(maxSlot - item2->getAmount());
-				item2->setAmount(maxSlot);
+				item1->dec_amount(max_slot - item2->get_amount());
+				item2->set_amount(max_slot);
 
-				vector_t<InventoryPacketOperation> ops;
-				ops.emplace_back(Packets::Inventory::OperationTypes::ModifyQuantity, item1, slot1);
-				ops.emplace_back(Packets::Inventory::OperationTypes::ModifyQuantity, item2, slot2);
-				m_player->send(Packets::Inventory::inventoryOperation(true, ops));
+				vector<inventory_packet_operation> ops;
+				ops.emplace_back(packets::inventory::operation_types::modify_quantity, item1, slot1);
+				ops.emplace_back(packets::inventory::operation_types::modify_quantity, item2, slot2);
+				m_player->send(packets::inventory::inventory_operation(true, ops));
 			}
 		}
 		else {
 			// The item is not stackable, not the same item, or a blank slot swap is occurring, either way it's a plain swap
-			setItem(inventory, slot1, item2);
-			setItem(inventory, slot2, item1);
-			if (item1->getPetId() > 0) {
-				m_player->getPets()->getPet(item1->getPetId())->setInventorySlot(static_cast<int8_t>(slot2));
+			set_item(inventory, slot1, item2);
+			set_item(inventory, slot2, item1);
+			if (item1->get_pet_id() > 0) {
+				m_player->get_pets()->get_pet(item1->get_pet_id())->set_inventory_slot(static_cast<int8_t>(slot2));
 			}
-			if (item2 != nullptr && item2->getPetId() > 0) {
-				m_player->getPets()->getPet(item2->getPetId())->setInventorySlot(static_cast<int8_t>(slot1));
+			if (item2 != nullptr && item2->get_pet_id() > 0) {
+				m_player->get_pets()->get_pet(item2->get_pet_id())->set_inventory_slot(static_cast<int8_t>(slot1));
 			}
 
-			vector_t<InventoryPacketOperation> ops;
-			ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, item1, slot1, slot2);
-			m_player->send(Packets::Inventory::inventoryOperation(true, ops));
+			vector<inventory_packet_operation> ops;
+			ops.emplace_back(packets::inventory::operation_types::modify_slot, item1, slot1, slot2);
+			m_player->send(packets::inventory::inventory_operation(true, ops));
 		}
 	}
 }
 
-auto PlayerInventory::ensureRockDestination(map_id_t mapId) -> bool {
-	for (const auto &location : m_rockLocations) {
-		if (location == mapId) {
+auto player_inventory::ensure_rock_destination(game_map_id map_id) -> bool {
+	for (const auto &location : m_rock_locations) {
+		if (location == map_id) {
 			return true;
 		}
 	}
-	for (const auto &location : m_vipLocations) {
-		if (location == mapId) {
+	for (const auto &location : m_vip_locations) {
+		if (location == map_id) {
 			return true;
 		}
 	}
 	return false;
 }
 
-auto PlayerInventory::addWishListItem(item_id_t itemId) -> void {
-	m_wishlist.push_back(itemId);
+auto player_inventory::add_wish_list_item(game_item_id item_id) -> void {
+	m_wishlist.push_back(item_id);
 }
 
-auto PlayerInventory::connectPacket(PacketBuilder &builder) -> void {
+auto player_inventory::connect_packet(packet_builder &builder) -> void {
 	builder.add<int32_t>(m_mesos);
 
-	for (inventory_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; ++i) {
-		builder.add<inventory_slot_count_t>(getMaxSlots(i));
+	for (game_inventory i = inventories::equip; i <= inventories::count; ++i) {
+		builder.add<game_inventory_slot_count>(get_max_slots(i));
 	}
 
 	// Go through equips
-	const auto &equips = m_items[Inventories::EquipInventory - 1];
+	const auto &equips = m_items[inventories::equip - 1];
 	for (const auto &kvp : equips) {
 		if (kvp.first < 0 && kvp.first > -100) {
-			builder.addBuffer(Packets::Helpers::addItemInfo(kvp.first, kvp.second));
+			builder.add_buffer(packets::helpers::add_item_info(kvp.first, kvp.second));
 		}
 	}
 	builder.add<int8_t>(0);
 	for (const auto &kvp : equips) {
 		if (kvp.first < -100) {
-			builder.addBuffer(Packets::Helpers::addItemInfo(kvp.first, kvp.second));
+			builder.add_buffer(packets::helpers::add_item_info(kvp.first, kvp.second));
 		}
 	}
 	builder.add<int8_t>(0);
 	for (const auto &kvp : equips) {
 		if (kvp.first > 0) {
-			builder.addBuffer(Packets::Helpers::addItemInfo(kvp.first, kvp.second));
+			builder.add_buffer(packets::helpers::add_item_info(kvp.first, kvp.second));
 		}
 	}
 	builder.add<int8_t>(0);
 
 	// Equips done, do rest of user's items starting with Use
-	for (inventory_t i = Inventories::UseInventory; i <= Inventories::InventoryCount; ++i) {
-		for (inventory_slot_count_t s = 1; s <= getMaxSlots(i); ++s) {
-			Item *item = getItem(i, s);
+	for (game_inventory i = inventories::use; i <= inventories::count; ++i) {
+		for (game_inventory_slot_count s = 1; s <= get_max_slots(i); ++s) {
+			item *item = get_item(i, s);
 			if (item == nullptr) {
 				continue;
 			}
-			if (item->getPetId() == 0) {
-				builder.addBuffer(Packets::Helpers::addItemInfo(s, item));
+			if (item->get_pet_id() == 0) {
+				builder.add_buffer(packets::helpers::add_item_info(s, item));
 			}
 			else {
-				Pet *pet = m_player->getPets()->getPet(item->getPetId());
+				pet *pet = m_player->get_pets()->get_pet(item->get_pet_id());
 				builder.add<int8_t>(static_cast<int8_t>(s));
-				builder.addBuffer(Packets::Pets::addInfo(pet, item));
+				builder.add_buffer(packets::pets::add_info(pet, item));
 			}
 		}
 		builder.add<int8_t>(0);
 	}
 }
 
-auto PlayerInventory::rockPacket(PacketBuilder &builder) -> void {
-	builder.addBuffer(Packets::Helpers::fillRockPacket(m_rockLocations, Inventories::TeleportRockMax));
-	builder.addBuffer(Packets::Helpers::fillRockPacket(m_vipLocations, Inventories::VipRockMax));
+auto player_inventory::rock_packet(packet_builder &builder) -> void {
+	builder.add_buffer(packets::helpers::fill_rock_packet(m_rock_locations, inventories::teleport_rock_max));
+	builder.add_buffer(packets::helpers::fill_rock_packet(m_vip_locations, inventories::vip_rock_max));
 }
 
-auto PlayerInventory::wishlistInfoPacket(PacketBuilder &builder) -> void {
+auto player_inventory::wishlist_info_packet(packet_builder &builder) -> void {
 	builder.add<uint8_t>(static_cast<uint8_t>(m_wishlist.size()));
 	for (const auto &item : m_wishlist) {
 		builder.add<int32_t>(item);
 	}
 }
 
-auto PlayerInventory::checkExpiredItems() -> void {
-	vector_t<item_id_t> expiredItemIds;
-	FileTime serverTime{};
+auto player_inventory::check_expired_items() -> void {
+	vector<game_item_id> expired_item_ids;
+	file_time server_time{};
 
-	for (inventory_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; ++i) {
-		for (inventory_slot_count_t s = 1; s <= getMaxSlots(i); ++s) {
-			if (Item *item = getItem(i, s)) {
-				if (item->getExpirationTime() != Items::NoExpiration && item->getExpirationTime() <= serverTime) {
-					expiredItemIds.push_back(item->getId());
-					Inventory::takeItemSlot(ref_ptr_t<Player>{m_player}, i, s, item->getAmount());
+	for (game_inventory i = inventories::equip; i <= inventories::count; ++i) {
+		for (game_inventory_slot_count s = 1; s <= get_max_slots(i); ++s) {
+			if (item *item = get_item(i, s)) {
+				if (item->get_expiration_time() != items::no_expiration && item->get_expiration_time() <= server_time) {
+					expired_item_ids.push_back(item->get_id());
+					inventory::take_item_slot(ref_ptr<player>{m_player}, i, s, item->get_amount());
 				}
 			}
 		}
 	}
 
-	if (expiredItemIds.size() > 0) {
-		m_player->send(Packets::Inventory::sendItemExpired(expiredItemIds));
+	if (expired_item_ids.size() > 0) {
+		m_player->send(packets::inventory::send_item_expired(expired_item_ids));
 	}
 }
 

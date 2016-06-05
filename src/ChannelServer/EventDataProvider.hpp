@@ -23,20 +23,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <memory>
 #include <string>
 
-namespace Vana {
-	namespace ChannelServer {
-		class EventDataProvider : public TimerContainerHolder {
+namespace vana {
+	namespace channel_server {
+		class event_data_provider : public timer_container_holder {
 		public:
-			EventDataProvider();
-			auto loadData() -> void;
-			auto clearInstances() -> void;
-			auto getVariables() const -> Variables * { return m_variables.get(); }
+			event_data_provider();
+			auto load_data() -> void;
+			auto clear_instances() -> void;
+			auto get_variables() const -> variables * { return m_variables.get(); }
 		private:
-			auto loadEvents() -> void;
-			auto loadInstances() -> void;
-			auto startInstance(const string_t &name, const duration_t &time, const duration_t &repeat = seconds_t{0}) -> void;
+			auto load_events() -> void;
+			auto load_instances() -> void;
+			auto start_instance(const string &name, const duration &time, const duration &repeat = seconds{0}) -> void;
 
-			owned_ptr_t<Variables> m_variables;
+			owned_ptr<variables> m_variables;
 		};
 	}
 }

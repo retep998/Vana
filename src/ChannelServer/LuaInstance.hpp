@@ -22,17 +22,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/LuaScriptable.hpp"
 #include <string>
 
-namespace Vana {
-	namespace ChannelServer {
-		class LuaInstance : public LuaScriptable {
-			NONCOPYABLE(LuaInstance);
-			NO_DEFAULT_CONSTRUCTOR(LuaInstance);
+namespace vana {
+	namespace channel_server {
+		class lua_instance : public lua_scriptable {
+			NONCOPYABLE(lua_instance);
+			NO_DEFAULT_CONSTRUCTOR(lua_instance);
 		public:
-			LuaInstance(const string_t &name, player_id_t playerId);
+			lua_instance(const string &name, game_player_id player_id);
 		};
 
-		namespace LuaExports {
-			auto createInstanceInstance(lua_State *luaVm) -> lua_return_t;
+		namespace lua_exports {
+			auto create_instance_instance(lua_State *lua_vm) -> lua::lua_return;
 		}
 	}
 }

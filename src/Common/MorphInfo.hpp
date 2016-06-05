@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct MorphInfo {
+namespace vana {
+	struct morph_info {
 		bool superman = false;
 		uint8_t speed = 0;
 		uint8_t jump = 0;

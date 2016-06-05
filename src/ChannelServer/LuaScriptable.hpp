@@ -21,295 +21,295 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	namespace ChannelServer {
-		class Instance;
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class instance;
+		class player;
 
-		namespace VariableType {
-			enum Type : int32_t {
-				Bool,
-				String,
-				Number,
-				Integer,
+		namespace variable_type {
+			enum type : int32_t {
+				boolean,
+				string,
+				number,
+				integer,
 			};
 		}
 
-		class LuaScriptable : public LuaEnvironment {
-			NONCOPYABLE(LuaScriptable);
-			NO_DEFAULT_CONSTRUCTOR(LuaScriptable);
+		class lua_scriptable : public lua_environment {
+			NONCOPYABLE(lua_scriptable);
+			NO_DEFAULT_CONSTRUCTOR(lua_scriptable);
 		protected:
-			LuaScriptable(const string_t &filename, player_id_t playerId);
-			LuaScriptable(const string_t &filename, player_id_t playerId, bool useThread);
+			lua_scriptable(const string &filename, game_player_id player_id);
+			lua_scriptable(const string &filename, game_player_id player_id, bool use_thread);
 
-			auto handleError(const string_t &filename, const string_t &error) -> void override;
-			player_id_t m_playerId = -1;
+			auto handle_error(const string &filename, const string &error) -> void override;
+			game_player_id m_player_id = -1;
 		private:
 			auto initialize() -> void;
-			auto setEnvironmentVariables() -> void;
+			auto set_environment_variables() -> void;
 			// TODO FIXME msvc
 			// Remove this when MSVC supports static init
-			static string_t sApiVersion/* = "1.0.0"*/;
+			static string s_api_version/* = "1.0.0"*/;
 		};
 
-		namespace LuaExports {
-			auto getEnvironment(lua_State *luaVm) -> LuaEnvironment &;
-			auto getPlayer(lua_State *luaVm, LuaEnvironment &env) -> ref_ptr_t<Player>;
-			auto getPlayerDeduced(int parameter, lua_State *luaVm, LuaEnvironment &env) -> ref_ptr_t<Player>;
-			auto getInstance(lua_State *luaVm, LuaEnvironment &env) -> Instance *;
-			auto obtainSetVariablePair(lua_State *luaVm, LuaEnvironment &env) -> pair_t<string_t, string_t>;
-			auto pushGetVariableData(lua_State *luaVm, LuaEnvironment &env, const string_t &value, VariableType::Type returnType) -> lua_return_t;
-			auto isBossChannel(lua_State *luaVm, const vector_t<channel_id_t> &channels) -> lua_return_t;
+		namespace lua_exports {
+			auto get_environment(lua_State *lua_vm) -> lua_environment &;
+			auto get_player(lua_State *lua_vm, lua_environment &env) -> ref_ptr<player>;
+			auto get_player_deduced(int parameter, lua_State *lua_vm, lua_environment &env) -> ref_ptr<player>;
+			auto get_instance(lua_State *lua_vm, lua_environment &env) -> instance *;
+			auto obtain_set_variable_pair(lua_State *lua_vm, lua_environment &env) -> pair<string, string>;
+			auto push_get_variable_data(lua_State *lua_vm, lua_environment &env, const string &value, variable_type::type return_type) -> lua::lua_return;
+			auto is_boss_channel(lua_State *lua_vm, const vector<game_channel_id> &channels) -> lua::lua_return;
 
 			// Global exports
 
 			// Miscellaneous
-			auto consoleOutput(lua_State *luaVm) -> lua_return_t;
-			auto getRandomNumber(lua_State *luaVm) -> lua_return_t;
-			auto log(lua_State *luaVm) -> lua_return_t;
-			auto selectDiscrete(lua_State *luaVm) -> lua_return_t;
-			auto showGlobalMessage(lua_State *luaVm) -> lua_return_t;
-			auto showWorldMessage(lua_State *luaVm) -> lua_return_t;
-			auto testExport(lua_State *luaVm) -> lua_return_t;
+			auto console_output(lua_State *lua_vm) -> lua::lua_return;
+			auto get_random_number(lua_State *lua_vm) -> lua::lua_return;
+			auto log(lua_State *lua_vm) -> lua::lua_return;
+			auto select_discrete(lua_State *lua_vm) -> lua::lua_return;
+			auto show_global_message(lua_State *lua_vm) -> lua::lua_return;
+			auto show_world_message(lua_State *lua_vm) -> lua::lua_return;
+			auto test_export(lua_State *lua_vm) -> lua::lua_return;
 
 			// Channel
-			auto deleteChannelVariable(lua_State *luaVm) -> lua_return_t;
-			auto getChannel(lua_State *luaVm) -> lua_return_t;
-			auto getChannelVariable(lua_State *luaVm) -> lua_return_t;
-			auto getWorld(lua_State *luaVm) -> lua_return_t;
-			auto setChannelVariable(lua_State *luaVm) -> lua_return_t;
-			auto showChannelMessage(lua_State *luaVm) -> lua_return_t;
+			auto delete_channel_variable(lua_State *lua_vm) -> lua::lua_return;
+			auto get_channel(lua_State *lua_vm) -> lua::lua_return;
+			auto get_channel_variable(lua_State *lua_vm) -> lua::lua_return;
+			auto get_world(lua_State *lua_vm) -> lua::lua_return;
+			auto set_channel_variable(lua_State *lua_vm) -> lua::lua_return;
+			auto show_channel_message(lua_State *lua_vm) -> lua::lua_return;
 
 			// Bosses
-			auto getHorntailChannels(lua_State *luaVm) -> lua_return_t;
-			auto getMaxHorntailBattles(lua_State *luaVm) -> lua_return_t;
-			auto getMaxPapulatusBattles(lua_State *luaVm) -> lua_return_t;
-			auto getMaxPianusBattles(lua_State *luaVm) -> lua_return_t;
-			auto getMaxPinkBeanBattles(lua_State *luaVm) -> lua_return_t;
-			auto getMaxZakumBattles(lua_State *luaVm) -> lua_return_t;
-			auto getPapulatusChannels(lua_State *luaVm) -> lua_return_t;
-			auto getPianusChannels(lua_State *luaVm) -> lua_return_t;
-			auto getPinkBeanChannels(lua_State *luaVm) -> lua_return_t;
-			auto getZakumChannels(lua_State *luaVm) -> lua_return_t;
-			auto isHorntailChannel(lua_State *luaVm) -> lua_return_t;
-			auto isPapulatusChannel(lua_State *luaVm) -> lua_return_t;
-			auto isPianusChannel(lua_State *luaVm) -> lua_return_t;
-			auto isPinkBeanChannel(lua_State *luaVm) -> lua_return_t;
-			auto isZakumChannel(lua_State *luaVm) -> lua_return_t;
+			auto get_horntail_channels(lua_State *lua_vm) -> lua::lua_return;
+			auto get_max_horntail_battles(lua_State *lua_vm) -> lua::lua_return;
+			auto get_max_papulatus_battles(lua_State *lua_vm) -> lua::lua_return;
+			auto get_max_pianus_battles(lua_State *lua_vm) -> lua::lua_return;
+			auto get_max_pink_bean_battles(lua_State *lua_vm) -> lua::lua_return;
+			auto get_max_zakum_battles(lua_State *lua_vm) -> lua::lua_return;
+			auto get_papulatus_channels(lua_State *lua_vm) -> lua::lua_return;
+			auto get_pianus_channels(lua_State *lua_vm) -> lua::lua_return;
+			auto get_pink_bean_channels(lua_State *lua_vm) -> lua::lua_return;
+			auto get_zakum_channels(lua_State *lua_vm) -> lua::lua_return;
+			auto is_horntail_channel(lua_State *lua_vm) -> lua::lua_return;
+			auto is_papulatus_channel(lua_State *lua_vm) -> lua::lua_return;
+			auto is_pianus_channel(lua_State *lua_vm) -> lua::lua_return;
+			auto is_pink_bean_channel(lua_State *lua_vm) -> lua::lua_return;
+			auto is_zakum_channel(lua_State *lua_vm) -> lua::lua_return;
 
 			// NPC
-			auto isBusy(lua_State *luaVm) -> lua_return_t;
-			auto removeNpc(lua_State *luaVm) -> lua_return_t;
-			auto runNpc(lua_State *luaVm) -> lua_return_t;
-			auto showShop(lua_State *luaVm) -> lua_return_t;
-			auto spawnNpc(lua_State *luaVm) -> lua_return_t;
+			auto is_busy(lua_State *lua_vm) -> lua::lua_return;
+			auto remove_npc(lua_State *lua_vm) -> lua::lua_return;
+			auto run_npc(lua_State *lua_vm) -> lua::lua_return;
+			auto show_shop(lua_State *lua_vm) -> lua::lua_return;
+			auto spawn_npc(lua_State *lua_vm) -> lua::lua_return;
 
 			// Beauty
-			auto getAllFaces(lua_State *luaVm) -> lua_return_t;
-			auto getAllHairs(lua_State *luaVm) -> lua_return_t;
-			auto getAllSkins(lua_State *luaVm) -> lua_return_t;
-			auto getRandomFace(lua_State *luaVm) -> lua_return_t;
-			auto getRandomHair(lua_State *luaVm) -> lua_return_t;
-			auto getRandomSkin(lua_State *luaVm) -> lua_return_t;
-			auto isValidFace(lua_State *luaVm) -> lua_return_t;
-			auto isValidHair(lua_State *luaVm) -> lua_return_t;
-			auto isValidSkin(lua_State *luaVm) -> lua_return_t;
+			auto get_all_faces(lua_State *lua_vm) -> lua::lua_return;
+			auto get_all_hairs(lua_State *lua_vm) -> lua::lua_return;
+			auto get_all_skins(lua_State *lua_vm) -> lua::lua_return;
+			auto get_random_face(lua_State *lua_vm) -> lua::lua_return;
+			auto get_random_hair(lua_State *lua_vm) -> lua::lua_return;
+			auto get_random_skin(lua_State *lua_vm) -> lua::lua_return;
+			auto is_valid_face(lua_State *lua_vm) -> lua::lua_return;
+			auto is_valid_hair(lua_State *lua_vm) -> lua::lua_return;
+			auto is_valid_skin(lua_State *lua_vm) -> lua::lua_return;
 
 			// Buddy
-			auto addBuddySlots(lua_State *luaVm) -> lua_return_t;
-			auto getBuddySlots(lua_State *luaVm) -> lua_return_t;
+			auto add_buddy_slots(lua_State *lua_vm) -> lua::lua_return;
+			auto get_buddy_slots(lua_State *lua_vm) -> lua::lua_return;
 
 			// Skill
-			auto addSkillLevel(lua_State *luaVm) -> lua_return_t;
-			auto getSkillLevel(lua_State *luaVm) -> lua_return_t;
-			auto getMaxSkillLevel(lua_State *luaVm) -> lua_return_t;
-			auto setMaxSkillLevel(lua_State *luaVm) -> lua_return_t;
+			auto add_skill_level(lua_State *lua_vm) -> lua::lua_return;
+			auto get_skill_level(lua_State *lua_vm) -> lua::lua_return;
+			auto get_max_skill_level(lua_State *lua_vm) -> lua::lua_return;
+			auto set_max_skill_level(lua_State *lua_vm) -> lua::lua_return;
 
 			// Quest
-			auto getQuestData(lua_State *luaVm) -> lua_return_t;
-			auto isQuestActive(lua_State *luaVm) -> lua_return_t;
-			auto isQuestInactive(lua_State *luaVm) -> lua_return_t;
-			auto isQuestCompleted(lua_State *luaVm) -> lua_return_t;
-			auto setQuestData(lua_State *luaVm) -> lua_return_t;
+			auto get_quest_data(lua_State *lua_vm) -> lua::lua_return;
+			auto is_quest_active(lua_State *lua_vm) -> lua::lua_return;
+			auto is_quest_inactive(lua_State *lua_vm) -> lua::lua_return;
+			auto is_quest_completed(lua_State *lua_vm) -> lua::lua_return;
+			auto set_quest_data(lua_State *lua_vm) -> lua::lua_return;
 
 			// Inventory
-			auto addSlots(lua_State *luaVm) -> lua_return_t;
-			auto addStorageSlots(lua_State *luaVm) -> lua_return_t;
-			auto destroyEquippedItem(lua_State *luaVm) -> lua_return_t;
-			auto getEquippedItemInSlot(lua_State *luaVm) -> lua_return_t;
-			auto getItemAmount(lua_State *luaVm) -> lua_return_t;
-			auto getMaxStackSize(lua_State *luaVm) -> lua_return_t;
-			auto getMesos(lua_State *luaVm) -> lua_return_t;
-			auto getOpenSlots(lua_State *luaVm) -> lua_return_t;
-			auto giveItem(lua_State *luaVm) -> lua_return_t;
-			auto giveItemGachapon(lua_State *luaVm) -> lua_return_t;
-			auto giveMesos(lua_State *luaVm) -> lua_return_t;
-			auto hasOpenSlotsFor(lua_State *luaVm) -> lua_return_t;
-			auto isEquippedItem(lua_State *luaVm) -> lua_return_t;
-			auto isValidItem(lua_State *luaVm) -> lua_return_t;
-			auto useItem(lua_State *luaVm) -> lua_return_t;
+			auto add_slots(lua_State *lua_vm) -> lua::lua_return;
+			auto add_storage_slots(lua_State *lua_vm) -> lua::lua_return;
+			auto destroy_equipped_item(lua_State *lua_vm) -> lua::lua_return;
+			auto get_equipped_item_in_slot(lua_State *lua_vm) -> lua::lua_return;
+			auto get_item_amount(lua_State *lua_vm) -> lua::lua_return;
+			auto get_max_stack_size(lua_State *lua_vm) -> lua::lua_return;
+			auto get_mesos(lua_State *lua_vm) -> lua::lua_return;
+			auto get_open_slots(lua_State *lua_vm) -> lua::lua_return;
+			auto give_item(lua_State *lua_vm) -> lua::lua_return;
+			auto give_item_gachapon(lua_State *lua_vm) -> lua::lua_return;
+			auto give_mesos(lua_State *lua_vm) -> lua::lua_return;
+			auto has_open_slots_for(lua_State *lua_vm) -> lua::lua_return;
+			auto is_equipped_item(lua_State *lua_vm) -> lua::lua_return;
+			auto is_valid_item(lua_State *lua_vm) -> lua::lua_return;
+			auto use_item(lua_State *lua_vm) -> lua::lua_return;
 
 			// Player
-			auto deletePlayerVariable(lua_State *luaVm) -> lua_return_t;
-			auto endMorph(lua_State *luaVm) -> lua_return_t;
-			auto getAp(lua_State *luaVm) -> lua_return_t;
-			auto getDex(lua_State *luaVm) -> lua_return_t;
-			auto getExp(lua_State *luaVm) -> lua_return_t;
-			auto getFace(lua_State *luaVm) -> lua_return_t;
-			auto getFame(lua_State *luaVm) -> lua_return_t;
-			auto getFh(lua_State *luaVm) -> lua_return_t;
-			auto getGender(lua_State *luaVm) -> lua_return_t;
-			auto getGmLevel(lua_State *luaVm) -> lua_return_t;
-			auto getHair(lua_State *luaVm) -> lua_return_t;
-			auto getHp(lua_State *luaVm) -> lua_return_t;
-			auto getHpMpAp(lua_State *luaVm) -> lua_return_t;
-			auto getId(lua_State *luaVm) -> lua_return_t;
-			auto getInt(lua_State *luaVm) -> lua_return_t;
-			auto getJob(lua_State *luaVm) -> lua_return_t;
-			auto getLevel(lua_State *luaVm) -> lua_return_t;
-			auto getLuk(lua_State *luaVm) -> lua_return_t;
-			auto getMap(lua_State *luaVm) -> lua_return_t;
-			auto getMaxHp(lua_State *luaVm) -> lua_return_t;
-			auto getMaxMp(lua_State *luaVm) -> lua_return_t;
-			auto getMp(lua_State *luaVm) -> lua_return_t;
-			auto getName(lua_State *luaVm) -> lua_return_t;
-			auto getPlayerVariable(lua_State *luaVm) -> lua_return_t;
-			auto getPosX(lua_State *luaVm) -> lua_return_t;
-			auto getPosY(lua_State *luaVm) -> lua_return_t;
-			auto getRealMaxHp(lua_State *luaVm) -> lua_return_t;
-			auto getRealMaxMp(lua_State *luaVm) -> lua_return_t;
-			auto getSkin(lua_State *luaVm) -> lua_return_t;
-			auto getSp(lua_State *luaVm) -> lua_return_t;
-			auto getStr(lua_State *luaVm) -> lua_return_t;
-			auto giveAp(lua_State *luaVm) -> lua_return_t;
-			auto giveExp(lua_State *luaVm) -> lua_return_t;
-			auto giveFame(lua_State *luaVm) -> lua_return_t;
-			auto giveSp(lua_State *luaVm) -> lua_return_t;
-			auto isActiveItem(lua_State *luaVm) -> lua_return_t;
-			auto isActiveSkill(lua_State *luaVm) -> lua_return_t;
-			auto isGm(lua_State *luaVm) -> lua_return_t;
-			auto isOnline(lua_State *luaVm) -> lua_return_t;
-			auto revertPlayer(lua_State *luaVm) -> lua_return_t;
-			auto setAp(lua_State *luaVm) -> lua_return_t;
-			auto setDex(lua_State *luaVm) -> lua_return_t;
-			auto setExp(lua_State *luaVm) -> lua_return_t;
-			auto setHp(lua_State *luaVm) -> lua_return_t;
-			auto setInt(lua_State *luaVm) -> lua_return_t;
-			auto setJob(lua_State *luaVm) -> lua_return_t;
-			auto setLevel(lua_State *luaVm) -> lua_return_t;
-			auto setLuk(lua_State *luaVm) -> lua_return_t;
-			auto setMap(lua_State *luaVm) -> lua_return_t;
-			auto setMaxHp(lua_State *luaVm) -> lua_return_t;
-			auto setMaxMp(lua_State *luaVm) -> lua_return_t;
-			auto setMp(lua_State *luaVm) -> lua_return_t;
-			auto setPlayer(lua_State *luaVm) -> lua_return_t;
-			auto setPlayerVariable(lua_State *luaVm) -> lua_return_t;
-			auto setSp(lua_State *luaVm) -> lua_return_t;
-			auto setStr(lua_State *luaVm) -> lua_return_t;
-			auto setStyle(lua_State *luaVm) -> lua_return_t;
-			auto showInstructionBubble(lua_State *luaVm) -> lua_return_t;
-			auto showMessage(lua_State *luaVm) -> lua_return_t;
+			auto delete_player_variable(lua_State *lua_vm) -> lua::lua_return;
+			auto end_morph(lua_State *lua_vm) -> lua::lua_return;
+			auto get_ap(lua_State *lua_vm) -> lua::lua_return;
+			auto get_dex(lua_State *lua_vm) -> lua::lua_return;
+			auto get_exp(lua_State *lua_vm) -> lua::lua_return;
+			auto get_face(lua_State *lua_vm) -> lua::lua_return;
+			auto get_fame(lua_State *lua_vm) -> lua::lua_return;
+			auto get_fh(lua_State *lua_vm) -> lua::lua_return;
+			auto get_gender(lua_State *lua_vm) -> lua::lua_return;
+			auto get_gm_level(lua_State *lua_vm) -> lua::lua_return;
+			auto get_hair(lua_State *lua_vm) -> lua::lua_return;
+			auto get_hp(lua_State *lua_vm) -> lua::lua_return;
+			auto get_hp_mp_ap(lua_State *lua_vm) -> lua::lua_return;
+			auto get_id(lua_State *lua_vm) -> lua::lua_return;
+			auto get_int(lua_State *lua_vm) -> lua::lua_return;
+			auto get_job(lua_State *lua_vm) -> lua::lua_return;
+			auto get_level(lua_State *lua_vm) -> lua::lua_return;
+			auto get_luk(lua_State *lua_vm) -> lua::lua_return;
+			auto get_map(lua_State *lua_vm) -> lua::lua_return;
+			auto get_max_hp(lua_State *lua_vm) -> lua::lua_return;
+			auto get_max_mp(lua_State *lua_vm) -> lua::lua_return;
+			auto get_mp(lua_State *lua_vm) -> lua::lua_return;
+			auto get_name(lua_State *lua_vm) -> lua::lua_return;
+			auto get_player_variable(lua_State *lua_vm) -> lua::lua_return;
+			auto get_pos_x(lua_State *lua_vm) -> lua::lua_return;
+			auto get_pos_y(lua_State *lua_vm) -> lua::lua_return;
+			auto get_real_max_hp(lua_State *lua_vm) -> lua::lua_return;
+			auto get_real_max_mp(lua_State *lua_vm) -> lua::lua_return;
+			auto get_skin(lua_State *lua_vm) -> lua::lua_return;
+			auto get_sp(lua_State *lua_vm) -> lua::lua_return;
+			auto get_str(lua_State *lua_vm) -> lua::lua_return;
+			auto give_ap(lua_State *lua_vm) -> lua::lua_return;
+			auto give_exp(lua_State *lua_vm) -> lua::lua_return;
+			auto give_fame(lua_State *lua_vm) -> lua::lua_return;
+			auto give_sp(lua_State *lua_vm) -> lua::lua_return;
+			auto is_active_item(lua_State *lua_vm) -> lua::lua_return;
+			auto is_active_skill(lua_State *lua_vm) -> lua::lua_return;
+			auto is_gm(lua_State *lua_vm) -> lua::lua_return;
+			auto is_online(lua_State *lua_vm) -> lua::lua_return;
+			auto revert_player(lua_State *lua_vm) -> lua::lua_return;
+			auto set_ap(lua_State *lua_vm) -> lua::lua_return;
+			auto set_dex(lua_State *lua_vm) -> lua::lua_return;
+			auto set_exp(lua_State *lua_vm) -> lua::lua_return;
+			auto set_hp(lua_State *lua_vm) -> lua::lua_return;
+			auto set_int(lua_State *lua_vm) -> lua::lua_return;
+			auto set_job(lua_State *lua_vm) -> lua::lua_return;
+			auto set_level(lua_State *lua_vm) -> lua::lua_return;
+			auto set_luk(lua_State *lua_vm) -> lua::lua_return;
+			auto set_map(lua_State *lua_vm) -> lua::lua_return;
+			auto set_max_hp(lua_State *lua_vm) -> lua::lua_return;
+			auto set_max_mp(lua_State *lua_vm) -> lua::lua_return;
+			auto set_mp(lua_State *lua_vm) -> lua::lua_return;
+			auto set_player(lua_State *lua_vm) -> lua::lua_return;
+			auto set_player_variable(lua_State *lua_vm) -> lua::lua_return;
+			auto set_sp(lua_State *lua_vm) -> lua::lua_return;
+			auto set_str(lua_State *lua_vm) -> lua::lua_return;
+			auto set_style(lua_State *lua_vm) -> lua::lua_return;
+			auto show_instruction_bubble(lua_State *lua_vm) -> lua::lua_return;
+			auto show_message(lua_State *lua_vm) -> lua::lua_return;
 
 			// Effects
-			auto playFieldSound(lua_State *luaVm) -> lua_return_t;
-			auto playMinigameSound(lua_State *luaVm) -> lua_return_t;
-			auto setMusic(lua_State *luaVm) -> lua_return_t;
-			auto showMapEffect(lua_State *luaVm) -> lua_return_t;
-			auto showMapEvent(lua_State *luaVm) -> lua_return_t;
+			auto play_field_sound(lua_State *lua_vm) -> lua::lua_return;
+			auto play_minigame_sound(lua_State *lua_vm) -> lua::lua_return;
+			auto set_music(lua_State *lua_vm) -> lua::lua_return;
+			auto show_map_effect(lua_State *lua_vm) -> lua::lua_return;
+			auto show_map_event(lua_State *lua_vm) -> lua::lua_return;
 
 			// Map
-			auto clearDrops(lua_State *luaVm) -> lua_return_t;
-			auto clearMobs(lua_State *luaVm) -> lua_return_t;
-			auto countMobs(lua_State *luaVm) -> lua_return_t;
-			auto setPortalState(lua_State *luaVm) -> lua_return_t;
-			auto getAllMapPlayerIds(lua_State *luaVm) -> lua_return_t;
-			auto getNumPlayers(lua_State *luaVm) -> lua_return_t;
-			auto getReactorState(lua_State *luaVm) -> lua_return_t;
-			auto killMobs(lua_State *luaVm) -> lua_return_t;
-			auto setBoatDocked(lua_State *luaVm) -> lua_return_t;
-			auto setMapSpawn(lua_State *luaVm) -> lua_return_t;
-			auto setReactorState(lua_State *luaVm) -> lua_return_t;
-			auto showMapMessage(lua_State *luaVm) -> lua_return_t;
-			auto showMapTimer(lua_State *luaVm) -> lua_return_t;
-			auto spawnMob(lua_State *luaVm) -> lua_return_t;
-			auto spawnMobPos(lua_State *luaVm) -> lua_return_t;
+			auto clear_drops(lua_State *lua_vm) -> lua::lua_return;
+			auto clear_mobs(lua_State *lua_vm) -> lua::lua_return;
+			auto count_mobs(lua_State *lua_vm) -> lua::lua_return;
+			auto set_portal_state(lua_State *lua_vm) -> lua::lua_return;
+			auto get_all_map_player_ids(lua_State *lua_vm) -> lua::lua_return;
+			auto get_num_players(lua_State *lua_vm) -> lua::lua_return;
+			auto get_reactor_state(lua_State *lua_vm) -> lua::lua_return;
+			auto kill_mobs(lua_State *lua_vm) -> lua::lua_return;
+			auto set_boat_docked(lua_State *lua_vm) -> lua::lua_return;
+			auto set_map_spawn(lua_State *lua_vm) -> lua::lua_return;
+			auto set_reactor_state(lua_State *lua_vm) -> lua::lua_return;
+			auto show_map_message(lua_State *lua_vm) -> lua::lua_return;
+			auto show_map_timer(lua_State *lua_vm) -> lua::lua_return;
+			auto spawn_mob(lua_State *lua_vm) -> lua::lua_return;
+			auto spawn_mob_pos(lua_State *lua_vm) -> lua::lua_return;
 
 			// Mob
-			auto getMobFh(lua_State *luaVm) -> lua_return_t;
-			auto getMobHp(lua_State *luaVm) -> lua_return_t;
-			auto getMobMaxHp(lua_State *luaVm) -> lua_return_t;
-			auto getMobMaxMp(lua_State *luaVm) -> lua_return_t;
-			auto getMobMp(lua_State *luaVm) -> lua_return_t;
-			auto getMobPosX(lua_State *luaVm) -> lua_return_t;
-			auto getMobPosY(lua_State *luaVm) -> lua_return_t;
-			auto getRealMobId(lua_State *luaVm) -> lua_return_t;
-			auto killMob(lua_State *luaVm) -> lua_return_t;
-			auto mobDropItem(lua_State *luaVm) -> lua_return_t;
+			auto get_mob_fh(lua_State *lua_vm) -> lua::lua_return;
+			auto get_mob_hp(lua_State *lua_vm) -> lua::lua_return;
+			auto get_mob_max_hp(lua_State *lua_vm) -> lua::lua_return;
+			auto get_mob_max_mp(lua_State *lua_vm) -> lua::lua_return;
+			auto get_mob_mp(lua_State *lua_vm) -> lua::lua_return;
+			auto get_mob_pos_x(lua_State *lua_vm) -> lua::lua_return;
+			auto get_mob_pos_y(lua_State *lua_vm) -> lua::lua_return;
+			auto get_real_mob_id(lua_State *lua_vm) -> lua::lua_return;
+			auto kill_mob(lua_State *lua_vm) -> lua::lua_return;
+			auto mob_drop_item(lua_State *lua_vm) -> lua::lua_return;
 
 			// Time
-			auto getDate(lua_State *luaVm) -> lua_return_t;
-			auto getDay(lua_State *luaVm) -> lua_return_t;
-			auto getHour(lua_State *luaVm) -> lua_return_t;
-			auto getMinute(lua_State *luaVm) -> lua_return_t;
-			auto getMonth(lua_State *luaVm) -> lua_return_t;
-			auto getNearestMinute(lua_State *luaVm) -> lua_return_t;
-			auto getSecond(lua_State *luaVm) -> lua_return_t;
-			auto getTime(lua_State *luaVm) -> lua_return_t;
-			auto getTimeZoneOffset(lua_State *luaVm) -> lua_return_t;
-			auto getWeek(lua_State *luaVm) -> lua_return_t;
-			auto getYear(lua_State *luaVm) -> lua_return_t;
-			auto isDst(lua_State *luaVm) -> lua_return_t;
+			auto get_date(lua_State *lua_vm) -> lua::lua_return;
+			auto get_day(lua_State *lua_vm) -> lua::lua_return;
+			auto get_hour(lua_State *lua_vm) -> lua::lua_return;
+			auto get_minute(lua_State *lua_vm) -> lua::lua_return;
+			auto get_month(lua_State *lua_vm) -> lua::lua_return;
+			auto get_nearest_minute(lua_State *lua_vm) -> lua::lua_return;
+			auto get_second(lua_State *lua_vm) -> lua::lua_return;
+			auto get_time(lua_State *lua_vm) -> lua::lua_return;
+			auto get_time_zone_offset(lua_State *lua_vm) -> lua::lua_return;
+			auto get_week(lua_State *lua_vm) -> lua::lua_return;
+			auto get_year(lua_State *lua_vm) -> lua::lua_return;
+			auto is_dst(lua_State *lua_vm) -> lua::lua_return;
 
 			// Rates
-			auto getDropMeso(lua_State *luaVm) -> lua_return_t;
-			auto getDropRate(lua_State *luaVm) -> lua_return_t;
-			auto getExpRate(lua_State *luaVm) -> lua_return_t;
-			auto getGlobalDropMeso(lua_State *luaVm) -> lua_return_t;
-			auto getGlobalDropRate(lua_State *luaVm) -> lua_return_t;
-			auto getQuestExpRate(lua_State *luaVm) -> lua_return_t;
+			auto get_drop_meso(lua_State *lua_vm) -> lua::lua_return;
+			auto get_drop_rate(lua_State *lua_vm) -> lua::lua_return;
+			auto get_exp_rate(lua_State *lua_vm) -> lua::lua_return;
+			auto get_global_drop_meso(lua_State *lua_vm) -> lua::lua_return;
+			auto get_global_drop_rate(lua_State *lua_vm) -> lua::lua_return;
+			auto get_quest_exp_rate(lua_State *lua_vm) -> lua::lua_return;
 
 			// Party
-			auto checkPartyFootholds(lua_State *luaVm) -> lua_return_t;
-			auto getAllPartyPlayerIds(lua_State *luaVm) -> lua_return_t;
-			auto getPartyCount(lua_State *luaVm) -> lua_return_t;
-			auto getPartyId(lua_State *luaVm) -> lua_return_t;
-			auto getPartyMapCount(lua_State *luaVm) -> lua_return_t;
-			auto isPartyInLevelRange(lua_State *luaVm) -> lua_return_t;
-			auto isPartyLeader(lua_State *luaVm) -> lua_return_t;
-			auto verifyPartyFootholds(lua_State *luaVm) -> lua_return_t;
-			auto warpParty(lua_State *luaVm) -> lua_return_t;
+			auto check_party_footholds(lua_State *lua_vm) -> lua::lua_return;
+			auto get_all_party_player_ids(lua_State *lua_vm) -> lua::lua_return;
+			auto get_party_count(lua_State *lua_vm) -> lua::lua_return;
+			auto get_party_id(lua_State *lua_vm) -> lua::lua_return;
+			auto get_party_map_count(lua_State *lua_vm) -> lua::lua_return;
+			auto is_party_in_level_range(lua_State *lua_vm) -> lua::lua_return;
+			auto is_party_leader(lua_State *lua_vm) -> lua::lua_return;
+			auto verify_party_footholds(lua_State *lua_vm) -> lua::lua_return;
+			auto warp_party(lua_State *lua_vm) -> lua::lua_return;
 
 			// Instance
-			auto addInstanceMap(lua_State *luaVm) -> lua_return_t;
-			auto addInstanceParty(lua_State *luaVm) -> lua_return_t;
-			auto addInstancePlayer(lua_State *luaVm) -> lua_return_t;
-			auto checkInstanceTimer(lua_State *luaVm) -> lua_return_t;
-			auto createInstance(lua_State *luaVm) -> lua_return_t;
-			auto deleteInstanceVariable(lua_State *luaVm) -> lua_return_t;
-			auto getAllInstancePlayerIds(lua_State *luaVm) -> lua_return_t;
-			auto getInstancePlayerCount(lua_State *luaVm) -> lua_return_t;
-			auto getInstancePlayerId(lua_State *luaVm) -> lua_return_t;
-			auto getInstanceVariable(lua_State *luaVm) -> lua_return_t;
-			auto isInstance(lua_State *luaVm) -> lua_return_t;
-			auto isInstanceMap(lua_State *luaVm) -> lua_return_t;
-			auto isInstancePersistent(lua_State *luaVm) -> lua_return_t;
-			auto markForDelete(lua_State *luaVm) -> lua_return_t;
-			auto moveAllPlayers(lua_State *luaVm) -> lua_return_t;
-			auto passPlayersBetweenInstances(lua_State *luaVm) -> lua_return_t;
-			auto removeAllInstancePlayers(lua_State *luaVm) -> lua_return_t;
-			auto removeInstancePlayer(lua_State *luaVm) -> lua_return_t;
-			auto respawnInstanceMobs(lua_State *luaVm) -> lua_return_t;
-			auto respawnInstanceReactors(lua_State *luaVm) -> lua_return_t;
-			auto revertInstance(lua_State *luaVm) -> lua_return_t;
-			auto setInstance(lua_State *luaVm) -> lua_return_t;
-			auto setInstancePersistence(lua_State *luaVm) -> lua_return_t;
-			auto setInstanceReset(lua_State *luaVm) -> lua_return_t;
-			auto setInstanceVariable(lua_State *luaVm) -> lua_return_t;
-			auto showInstanceTime(lua_State *luaVm) -> lua_return_t;
-			auto startInstanceFutureTimer(lua_State *luaVm) -> lua_return_t;
-			auto startInstanceSecondOfHourTimer(lua_State *luaVm) -> lua_return_t;
-			auto stopAllInstanceTimers(lua_State *luaVm) -> lua_return_t;
-			auto stopInstanceTimer(lua_State *luaVm) -> lua_return_t;
+			auto add_instance_map(lua_State *lua_vm) -> lua::lua_return;
+			auto add_instance_party(lua_State *lua_vm) -> lua::lua_return;
+			auto add_instance_player(lua_State *lua_vm) -> lua::lua_return;
+			auto check_instance_timer(lua_State *lua_vm) -> lua::lua_return;
+			auto create_instance(lua_State *lua_vm) -> lua::lua_return;
+			auto delete_instance_variable(lua_State *lua_vm) -> lua::lua_return;
+			auto get_all_instance_player_ids(lua_State *lua_vm) -> lua::lua_return;
+			auto get_instance_player_count(lua_State *lua_vm) -> lua::lua_return;
+			auto get_instance_player_id(lua_State *lua_vm) -> lua::lua_return;
+			auto get_instance_variable(lua_State *lua_vm) -> lua::lua_return;
+			auto is_instance(lua_State *lua_vm) -> lua::lua_return;
+			auto is_instance_map(lua_State *lua_vm) -> lua::lua_return;
+			auto is_instance_persistent(lua_State *lua_vm) -> lua::lua_return;
+			auto mark_for_delete(lua_State *lua_vm) -> lua::lua_return;
+			auto move_all_players(lua_State *lua_vm) -> lua::lua_return;
+			auto pass_players_between_instances(lua_State *lua_vm) -> lua::lua_return;
+			auto remove_all_instance_players(lua_State *lua_vm) -> lua::lua_return;
+			auto remove_instance_player(lua_State *lua_vm) -> lua::lua_return;
+			auto respawn_instance_mobs(lua_State *lua_vm) -> lua::lua_return;
+			auto respawn_instance_reactors(lua_State *lua_vm) -> lua::lua_return;
+			auto revert_instance(lua_State *lua_vm) -> lua::lua_return;
+			auto set_instance(lua_State *lua_vm) -> lua::lua_return;
+			auto set_instance_persistence(lua_State *lua_vm) -> lua::lua_return;
+			auto set_instance_reset(lua_State *lua_vm) -> lua::lua_return;
+			auto set_instance_variable(lua_State *lua_vm) -> lua::lua_return;
+			auto show_instance_time(lua_State *lua_vm) -> lua::lua_return;
+			auto start_instance_future_timer(lua_State *lua_vm) -> lua::lua_return;
+			auto start_instance_second_of_hour_timer(lua_State *lua_vm) -> lua::lua_return;
+			auto stop_all_instance_timers(lua_State *lua_vm) -> lua::lua_return;
+			auto stop_instance_timer(lua_State *lua_vm) -> lua::lua_return;
 		}
 	}
 }

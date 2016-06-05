@@ -21,9 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <asio.hpp>
 #include <stdexcept>
 
-namespace Vana {
+namespace vana {
 
-ClientIp::ClientIp(const Ip &ip) :
+client_ip::client_ip(const ip &ip) :
 	m_ip{ip}
 {
 }

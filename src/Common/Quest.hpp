@@ -28,24 +28,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-namespace Vana {
-	class Quest {
+namespace vana {
+	class quest {
 	public:
-		auto getNextQuest() const -> quest_id_t;
-		auto getQuestId() const -> quest_id_t;
-		auto forEachRequest(bool start, function_t<IterationResult (const QuestRequestInfo &)> func) const -> CompletionResult;
-		auto forEachReward(bool start, job_id_t job, function_t<IterationResult (const QuestRewardInfo &)> func) const -> CompletionResult;
+		auto get_next_quest() const -> game_quest_id;
+		auto get_quest_id() const -> game_quest_id;
+		auto for_each_request(bool start, function<iteration_result (const quest_request_info &)> func) const -> completion_result;
+		auto for_each_reward(bool start, game_job_id job, function<iteration_result (const quest_reward_info &)> func) const -> completion_result;
 	private:
-		friend class QuestDataProvider;
+		friend class quest_data_provider;
 
-		auto setNextQuest(quest_id_t questId) -> void;
-		auto setQuestId(quest_id_t questId) -> void;
-		auto addReward(bool start, const QuestRewardInfo &info, job_id_t job = -1) -> void;
-		auto addRequest(bool start, const QuestRequestInfo &info) -> void;
+		auto set_next_quest(game_quest_id quest_id) -> void;
+		auto set_quest_id(game_quest_id quest_id) -> void;
+		auto add_reward(bool start, const quest_reward_info &info, game_job_id job = -1) -> void;
+		auto add_request(bool start, const quest_request_info &info) -> void;
 
-		QuestStateData m_beginState;
-		QuestStateData m_endState;
-		quest_id_t m_nextQuest = 0;
-		quest_id_t m_id = 0;
+		quest_state_data m_begin_state;
+		quest_state_data m_end_state;
+		game_quest_id m_next_quest = 0;
+		game_quest_id m_id = 0;
 	};
 }

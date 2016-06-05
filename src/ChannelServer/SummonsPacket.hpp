@@ -21,20 +21,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/SplitPacketBuilder.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct Point;
+namespace vana {
+	struct point;
 
-	namespace ChannelServer {
-		class Player;
-		class Summon;
+	namespace channel_server {
+		class player;
+		class summon;
 
-		namespace Packets {
-			SPLIT_PACKET(showSummon, player_id_t playerId, Summon *summon, bool isMapEntry = true);
-			SPLIT_PACKET(moveSummon, player_id_t playerId, Summon *summon, const Point &startPos, unsigned char *buf, int32_t bufLen);
-			SPLIT_PACKET(removeSummon, player_id_t playerId, Summon *summon, int8_t message);
-			SPLIT_PACKET(damageSummon, player_id_t playerId, summon_id_t summonId, int8_t unk, damage_t damage, map_object_t mobId);
-			PACKET(summonSkill, player_id_t playerId, skill_id_t skillId, uint8_t display, skill_level_t level);
-			SPLIT_PACKET(summonSkillEffect, player_id_t playerId, skill_id_t skillId, uint8_t display, skill_level_t level);
+		namespace packets {
+			SPLIT_PACKET(show_summon, game_player_id player_id, summon *summon, bool is_map_entry = true);
+			SPLIT_PACKET(move_summon, game_player_id player_id, summon *summon, const point &start_pos, unsigned char *buf, int32_t buf_len);
+			SPLIT_PACKET(remove_summon, game_player_id player_id, summon *summon, int8_t message);
+			SPLIT_PACKET(damage_summon, game_player_id player_id, game_summon_id summon_id, int8_t unk, game_damage damage, game_map_object mob_id);
+			PACKET(summon_skill, game_player_id player_id, game_skill_id skill_id, uint8_t display, game_skill_level level);
+			SPLIT_PACKET(summon_skill_effect, game_player_id player_id, game_skill_id skill_id, uint8_t display, game_skill_level level);
 		}
 	}
 }

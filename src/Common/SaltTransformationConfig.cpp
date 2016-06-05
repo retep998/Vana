@@ -23,257 +23,257 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
+namespace vana {
 
-SaltTransformationConfig::SaltTransformationConfig(SaltModifyPolicy policy, vector_t<LuaVariant> args) :
+salt_transformation_config::salt_transformation_config(salt_modify_policy policy, vector<lua_variant> args) :
 	m_policy{policy},
 	m_args{args}
 {
 }
 
-auto SaltTransformationConfig::validateArgs(SaltModifyPolicy policy, const vector_t<LuaVariant> &args) -> ValidityResult {
+auto salt_transformation_config::validate_args(salt_modify_policy policy, const vector<lua_variant> &args) -> validity_result {
 	switch (policy) {
-		case SaltModifyPolicy::XorByteCipher: {
-			if (args.size() != 1) return ValidityResult::Invalid;
+		case salt_modify_policy::xor_byte_cipher: {
+			if (args.size() != 1) return validity_result::invalid;
 			const auto &arg = args[0];
-			if (!arg.isAny({ LuaType::Number, LuaType::String })) return ValidityResult::Invalid;
-			if (arg.is(LuaType::String)) {
-				const auto &str = arg.as<string_t>();
-				if (str.size() != 1) return ValidityResult::Invalid;
+			if (!arg.is_any_of({ lua::lua_type::number, lua::lua_type::string })) return validity_result::invalid;
+			if (arg.is(lua::lua_type::string)) {
+				const auto &str = arg.as<string>();
+				if (str.size() != 1) return validity_result::invalid;
 			}
 			break;
 		}
-		case SaltModifyPolicy::XorCipher: {
-			if (args.size() != 1) return ValidityResult::Invalid;
+		case salt_modify_policy::xor_cipher: {
+			if (args.size() != 1) return validity_result::invalid;
 			const auto &arg = args[0];
-			if (!arg.isAny({ LuaType::Table, LuaType::String })) return ValidityResult::Invalid;
-			if (arg.is(LuaType::Table)) {
-				auto props = arg.as<hash_map_t<LuaVariant, LuaVariant>>();
+			if (!arg.is_any_of({ lua::lua_type::table, lua::lua_type::string })) return validity_result::invalid;
+			if (arg.is(lua::lua_type::table)) {
+				auto props = arg.as<hash_map<lua_variant, lua_variant>>();
 				for (const auto &kvp : props) {
-					if (!kvp.first.is(LuaType::Number)) {
-						return ValidityResult::Invalid;
+					if (!kvp.first.is(lua::lua_type::number)) {
+						return validity_result::invalid;
 					}
-					if (!kvp.second.is(LuaType::Number)) {
-						return ValidityResult::Invalid;
+					if (!kvp.second.is(lua::lua_type::number)) {
+						return validity_result::invalid;
 					}
 				}
 			}
 			break;
 		}
-		case SaltModifyPolicy::BitRotateCipher:
-		case SaltModifyPolicy::OverallBitRotateCipher:
-		case SaltModifyPolicy::ByteRotateCipher: {
-			if (args.size() != 1) return ValidityResult::Invalid;
+		case salt_modify_policy::bit_rotate_cipher:
+		case salt_modify_policy::overall_bit_rotate_cipher:
+		case salt_modify_policy::byte_rotate_cipher: {
+			if (args.size() != 1) return validity_result::invalid;
 			const auto &arg = args[0];
-			if (!arg.is(LuaType::Number)) return ValidityResult::Invalid;
+			if (!arg.is(lua::lua_type::number)) return validity_result::invalid;
 			break;
 		}
-		case SaltModifyPolicy::BitReverseCipher:
-		case SaltModifyPolicy::ReverseCipher: {
+		case salt_modify_policy::bit_reverse_cipher:
+		case salt_modify_policy::reverse_cipher: {
 			// Intentionally blank
 			break;
 		}
-		case SaltModifyPolicy::OverwriteCipher: {
-			if (args.size() != 1) return ValidityResult::Invalid;
+		case salt_modify_policy::overwrite_cipher: {
+			if (args.size() != 1) return validity_result::invalid;
 			const auto &arg = args[0];
-			if (!arg.is(LuaType::Table)) return ValidityResult::Invalid;
-			auto &map = arg.as<hash_map_t<LuaVariant, LuaVariant>>();
+			if (!arg.is(lua::lua_type::table)) return validity_result::invalid;
+			auto &map = arg.as<hash_map<lua_variant, lua_variant>>();
 			for (const auto &kvp : map) {
-				if (!kvp.first.is(LuaType::Number)) {
-					return ValidityResult::Invalid;
+				if (!kvp.first.is(lua::lua_type::number)) {
+					return validity_result::invalid;
 				}
-				if (!kvp.second.isAny({ LuaType::Number, LuaType::String })) {
-					return ValidityResult::Invalid;
+				if (!kvp.second.is_any_of({ lua::lua_type::number, lua::lua_type::string })) {
+					return validity_result::invalid;
 				}
-				if (kvp.second.is(LuaType::String)) {
-					if (kvp.second.as<string_t>().size() != 1) {
-						return ValidityResult::Invalid;
-					}
-				}
-			}
-			break;
-		}
-		case SaltModifyPolicy::AddCipher:
-		case SaltModifyPolicy::SubtractCipher:
-		case SaltModifyPolicy::MultiplyCipher:
-		case SaltModifyPolicy::DivideCipher: {
-			if (args.size() != 1) return ValidityResult::Invalid;
-			const auto &arg = args[0];
-			if (!arg.is(LuaType::Number)) return ValidityResult::Invalid;
-			break;
-		}
-		case SaltModifyPolicy::Append: {
-			if (args.size() != 1) return ValidityResult::Invalid;
-			const auto &arg = args[0];
-			if (!arg.isAny({ LuaType::String, LuaType::Table })) return ValidityResult::Invalid;
-			if (arg.is(LuaType::Table)) {
-				auto props = arg.as<hash_map_t<LuaVariant, LuaVariant>>();
-				for (const auto &kvp : props) {
-					if (!kvp.first.is(LuaType::Number)) {
-						return ValidityResult::Invalid;
-					}
-					if (!kvp.second.is(LuaType::Number)) {
-						return ValidityResult::Invalid;
+				if (kvp.second.is(lua::lua_type::string)) {
+					if (kvp.second.as<string>().size() != 1) {
+						return validity_result::invalid;
 					}
 				}
 			}
 			break;
 		}
-		case SaltModifyPolicy::Prepend: {
-			if (args.size() != 1) return ValidityResult::Invalid;
+		case salt_modify_policy::add_cipher:
+		case salt_modify_policy::subtract_cipher:
+		case salt_modify_policy::multiply_cipher:
+		case salt_modify_policy::divide_cipher: {
+			if (args.size() != 1) return validity_result::invalid;
 			const auto &arg = args[0];
-			if (!arg.isAny({ LuaType::String, LuaType::Table })) return ValidityResult::Invalid;
-			if (arg.is(LuaType::Table)) {
-				auto props = arg.as<hash_map_t<LuaVariant, LuaVariant>>();
+			if (!arg.is(lua::lua_type::number)) return validity_result::invalid;
+			break;
+		}
+		case salt_modify_policy::append: {
+			if (args.size() != 1) return validity_result::invalid;
+			const auto &arg = args[0];
+			if (!arg.is_any_of({ lua::lua_type::string, lua::lua_type::table })) return validity_result::invalid;
+			if (arg.is(lua::lua_type::table)) {
+				auto props = arg.as<hash_map<lua_variant, lua_variant>>();
 				for (const auto &kvp : props) {
-					if (!kvp.first.is(LuaType::Number)) {
-						return ValidityResult::Invalid;
+					if (!kvp.first.is(lua::lua_type::number)) {
+						return validity_result::invalid;
 					}
-					if (!kvp.second.is(LuaType::Number)) {
-						return ValidityResult::Invalid;
+					if (!kvp.second.is(lua::lua_type::number)) {
+						return validity_result::invalid;
 					}
 				}
 			}
 			break;
 		}
-		case SaltModifyPolicy::Intersperse: {
-			if (args.size() <= 2 || args.size() >= 5) return ValidityResult::Invalid;
+		case salt_modify_policy::prepend: {
+			if (args.size() != 1) return validity_result::invalid;
 			const auto &arg = args[0];
-			if (!arg.isAny({ LuaType::String, LuaType::Table })) return ValidityResult::Invalid;
-			if (arg.is(LuaType::Table)) {
-				auto props = arg.as<hash_map_t<LuaVariant, LuaVariant>>();
+			if (!arg.is_any_of({ lua::lua_type::string, lua::lua_type::table })) return validity_result::invalid;
+			if (arg.is(lua::lua_type::table)) {
+				auto props = arg.as<hash_map<lua_variant, lua_variant>>();
 				for (const auto &kvp : props) {
-					if (!kvp.first.is(LuaType::Number)) {
-						return ValidityResult::Invalid;
+					if (!kvp.first.is(lua::lua_type::number)) {
+						return validity_result::invalid;
 					}
-					if (!kvp.second.is(LuaType::Number)) {
-						return ValidityResult::Invalid;
+					if (!kvp.second.is(lua::lua_type::number)) {
+						return validity_result::invalid;
+					}
+				}
+			}
+			break;
+		}
+		case salt_modify_policy::intersperse: {
+			if (args.size() <= 2 || args.size() >= 5) return validity_result::invalid;
+			const auto &arg = args[0];
+			if (!arg.is_any_of({ lua::lua_type::string, lua::lua_type::table })) return validity_result::invalid;
+			if (arg.is(lua::lua_type::table)) {
+				auto props = arg.as<hash_map<lua_variant, lua_variant>>();
+				for (const auto &kvp : props) {
+					if (!kvp.first.is(lua::lua_type::number)) {
+						return validity_result::invalid;
+					}
+					if (!kvp.second.is(lua::lua_type::number)) {
+						return validity_result::invalid;
 					}
 				}
 			}
 
-			if (!args[1].is(LuaType::Number)) return ValidityResult::Invalid;
-			if (!args[2].is(LuaType::Number)) return ValidityResult::Invalid;
+			if (!args[1].is(lua::lua_type::number)) return validity_result::invalid;
+			if (!args[2].is(lua::lua_type::number)) return validity_result::invalid;
 			if (args.size() == 4) {
-				if (!args[3].is(LuaType::Number)) return ValidityResult::Invalid;
+				if (!args[3].is(lua::lua_type::number)) return validity_result::invalid;
 			}
 			break;
 		}
-		default: throw NotImplementedException{"SaltModifyPolicy"};
+		default: throw not_implemented_exception{"salt_modify_policy"};
 	}
-	return ValidityResult::Valid;
+	return validity_result::valid;
 }
 
-auto SaltTransformationConfig::apply(string_t input) const -> string_t {
-	string_t ret;
+auto salt_transformation_config::apply(string input) const -> string {
+	string ret;
 	switch (m_policy) {
-		case SaltModifyPolicy::XorCipher: {
+		case salt_modify_policy::xor_cipher: {
 			const auto &arg = m_args[0];
-			string_t intersperse;
-			if (arg.is(LuaType::String)) {
-				intersperse = m_args[0].as<string_t>();
+			string intersperse;
+			if (arg.is(lua::lua_type::string)) {
+				intersperse = m_args[0].as<string>();
 			}
 			else {
-				const auto &bytes = arg.as<vector_t<uint8_t>>();
-				intersperse = string_t{std::begin(bytes), std::end(bytes)};
+				const auto &bytes = arg.as<vector<uint8_t>>();
+				intersperse = string{std::begin(bytes), std::end(bytes)};
 			}
 
-			size_t minSize = std::min(intersperse.size(), input.size());
+			size_t min_size = std::min(intersperse.size(), input.size());
 			ret = input;
-			for (size_t i = 0; i < minSize; i++) {
+			for (size_t i = 0; i < min_size; i++) {
 				ret[i] = ret[i] ^ intersperse[i];
 			}
 			break;
 		}
-		case SaltModifyPolicy::BitRotateCipher: {
+		case salt_modify_policy::bit_rotate_cipher: {
 			int32_t value = m_args[0].as<int32_t>();
 			ret = input;
 			for (size_t i = 0; i < ret.size(); i++) {
-				ret[i] = BitUtilities::rotateRight<uint8_t>(ret[i], value);
+				ret[i] = utilities::bit::rotate_right<uint8_t>(ret[i], value);
 			}
 			break;
 		}
-		case SaltModifyPolicy::OverallBitRotateCipher: {
+		case salt_modify_policy::overall_bit_rotate_cipher: {
 			int32_t value = m_args[0].as<int32_t>();
 			ret = input;
 			if (ret.size() == 1) {
-				ret[0] = BitUtilities::rotateRight<uint8_t>(ret[0], value);
+				ret[0] = utilities::bit::rotate_right<uint8_t>(ret[0], value);
 			}
 			else {
 				bool bit = true;
-				bool tempBit = false;
+				bool temp_bit = false;
 				size_t end = ret.size() - 1;
 				size_t first = end;
-				uint8_t bitValue = 0x01;
-				uint8_t bitMatch = 0x80;
+				uint8_t bit_value = 0x01;
+				uint8_t bit_match = 0x80;
 
 				for (int32_t shift = 0; shift < value; shift++) {
 					uint8_t saved = ret[first];
 					for (size_t idx = end; /* Intentionally blank */; idx--) {
-						tempBit = (ret[idx] & bitMatch) == bitMatch;
+						temp_bit = (ret[idx] & bit_match) == bit_match;
 						ret[idx] <<= 1;
-						ret[idx] |= static_cast<uint8_t>(bit ? bitValue : 0);
-						bit = tempBit;
+						ret[idx] |= static_cast<uint8_t>(bit ? bit_value : 0);
+						bit = temp_bit;
 						if (idx == 0) break;
 					}
 
-					tempBit = (saved & bitMatch) == bitMatch;
+					temp_bit = (saved & bit_match) == bit_match;
 					saved <<= 1;
-					saved |= static_cast<uint8_t>(bit ? bitValue : 0);
+					saved |= static_cast<uint8_t>(bit ? bit_value : 0);
 					ret[first] = saved;
-					bit = tempBit;
+					bit = temp_bit;
 				}
 			}
 			break;
 		}
-		case SaltModifyPolicy::ByteRotateCipher: {
+		case salt_modify_policy::byte_rotate_cipher: {
 			size_t amount = m_args[0].as<uint32_t>();
 			ret = input;
-			auto newTop = std::begin(ret);
-			std::advance(newTop, amount);
-			std::rotate(std::begin(ret), newTop, std::end(ret));
+			auto new_top = std::begin(ret);
+			std::advance(new_top, amount);
+			std::rotate(std::begin(ret), new_top, std::end(ret));
 			break;
 		}
-		case SaltModifyPolicy::BitReverseCipher: {
+		case salt_modify_policy::bit_reverse_cipher: {
 			ret = input;
 			for (size_t i = 0; i < ret.size(); i++) {
-				ret[i] = BitUtilities::reverse<uint8_t>(ret[i]);
+				ret[i] = utilities::bit::reverse<uint8_t>(ret[i]);
 			}
 			break;
 		}
-		case SaltModifyPolicy::ReverseCipher: {
+		case salt_modify_policy::reverse_cipher: {
 			ret = input;
 			std::reverse(std::begin(ret), std::end(ret));
 			break;
 		}
-		case SaltModifyPolicy::OverwriteCipher: {
-			const auto &arg = m_args[0].as<hash_map_t<uint32_t, LuaVariant>>();
+		case salt_modify_policy::overwrite_cipher: {
+			const auto &arg = m_args[0].as<hash_map<uint32_t, lua_variant>>();
 			ret = input;
 			for (const auto &replace : arg) {
 				uint8_t value;
-				if (replace.second.is(LuaType::Number)) {
+				if (replace.second.is(lua::lua_type::number)) {
 					value = replace.second.as<uint8_t>();
 				}
 				else {
-					value = replace.second.as<string_t>()[0];
+					value = replace.second.as<string>()[0];
 				}
 				ret[replace.first] = value;
 			}
 			break;
 		}
-		case SaltModifyPolicy::XorByteCipher:
-		case SaltModifyPolicy::AddCipher:
-		case SaltModifyPolicy::SubtractCipher:
-		case SaltModifyPolicy::MultiplyCipher:
-		case SaltModifyPolicy::DivideCipher: {
+		case salt_modify_policy::xor_byte_cipher:
+		case salt_modify_policy::add_cipher:
+		case salt_modify_policy::subtract_cipher:
+		case salt_modify_policy::multiply_cipher:
+		case salt_modify_policy::divide_cipher: {
 			uint8_t value = 0;
-			if (m_policy == SaltModifyPolicy::XorByteCipher) {
+			if (m_policy == salt_modify_policy::xor_byte_cipher) {
 				const auto &arg = m_args[0];
-				if (arg.is(LuaType::Number)) {
+				if (arg.is(lua::lua_type::number)) {
 					value = m_args[0].as<uint8_t>();
 				}
 				else {
-					value = m_args[0].as<string_t>()[0];
+					value = m_args[0].as<string>()[0];
 				}
 			}
 			else {
@@ -282,84 +282,84 @@ auto SaltTransformationConfig::apply(string_t input) const -> string_t {
 			ret = input;
 			for (size_t i = 0; i < ret.size(); i++) {
 				switch (m_policy) {
-					case SaltModifyPolicy::XorByteCipher: ret[i] ^= value; break;
-					case SaltModifyPolicy::AddCipher: ret[i] += value; break;
-					case SaltModifyPolicy::SubtractCipher: ret[i] -= value; break;
-					case SaltModifyPolicy::MultiplyCipher: ret[i] *= value; break;
-					case SaltModifyPolicy::DivideCipher: ret[i] /= value; break;
-					default: throw NotImplementedException{"SaltModifyPolicy"};
+					case salt_modify_policy::xor_byte_cipher: ret[i] ^= value; break;
+					case salt_modify_policy::add_cipher: ret[i] += value; break;
+					case salt_modify_policy::subtract_cipher: ret[i] -= value; break;
+					case salt_modify_policy::multiply_cipher: ret[i] *= value; break;
+					case salt_modify_policy::divide_cipher: ret[i] /= value; break;
+					default: throw not_implemented_exception{"salt_modify_policy"};
 				}
 			}
 			break;
 		}
-		case SaltModifyPolicy::Append: {
+		case salt_modify_policy::append: {
 			const auto &arg = m_args[0];
-			if (arg.is(LuaType::String)) {
-				ret = input + arg.as<string_t>();
+			if (arg.is(lua::lua_type::string)) {
+				ret = input + arg.as<string>();
 			}
 			else {
-				const auto &bytes = arg.as<vector_t<uint8_t>>();
-				ret = input + string_t{std::begin(bytes), std::end(bytes)};
+				const auto &bytes = arg.as<vector<uint8_t>>();
+				ret = input + string{std::begin(bytes), std::end(bytes)};
 			}
 			break;
 		}
-		case SaltModifyPolicy::Prepend: {
+		case salt_modify_policy::prepend: {
 			const auto &arg = m_args[0];
-			if (arg.is(LuaType::String)) {
-				ret = arg.as<string_t>() + input;
+			if (arg.is(lua::lua_type::string)) {
+				ret = arg.as<string>() + input;
 			}
 			else {
-				const auto &bytes = arg.as<vector_t<uint8_t>>();
-				ret = string_t{std::begin(bytes), std::end(bytes)} + input;
+				const auto &bytes = arg.as<vector<uint8_t>>();
+				ret = string{std::begin(bytes), std::end(bytes)} + input;
 			}
 			break;
 		}
-		case SaltModifyPolicy::Intersperse: {
+		case salt_modify_policy::intersperse: {
 			const auto &arg = m_args[0];
-			string_t intersperse;
-			if (arg.is(LuaType::String)) {
-				intersperse = m_args[0].as<string_t>();
+			string intersperse;
+			if (arg.is(lua::lua_type::string)) {
+				intersperse = m_args[0].as<string>();
 			}
 			else {
-				const auto &bytes = arg.as<vector_t<uint8_t>>();
-				intersperse = string_t{std::begin(bytes), std::end(bytes)};
+				const auto &bytes = arg.as<vector<uint8_t>>();
+				intersperse = string{std::begin(bytes), std::end(bytes)};
 			}
-			size_t numberOfChars = m_args[1].as<uint32_t>();
-			size_t offsetChars = m_args[2].as<uint32_t>();
-			SaltLeftoverPolicy policy = SaltLeftoverPolicy::Discard;
+			size_t number_of_chars = m_args[1].as<uint32_t>();
+			size_t offset_chars = m_args[2].as<uint32_t>();
+			salt_leftover_policy policy = salt_leftover_policy::discard;
 			if (m_args.size() == 4) {
-				policy = static_cast<SaltLeftoverPolicy>(m_args[3].as<int32_t>());
+				policy = static_cast<salt_leftover_policy>(m_args[3].as<int32_t>());
 			}
 
 			ret = "";
-			string_t apply = input;
-			bool startProcessing = false;
-			size_t interspersedPos = 0;
+			string apply = input;
+			bool start_processing = false;
+			size_t interspersed_pos = 0;
 			do {
 				size_t i = 0;
 				for (/* Intentionally blank */; i < apply.size(); i++) {
-					if (interspersedPos == intersperse.size()) {
+					if (interspersed_pos == intersperse.size()) {
 						// No more salt to apply
 						break;
 					}
 
-					if (i == offsetChars) {
-						startProcessing = true;
+					if (i == offset_chars) {
+						start_processing = true;
 					}
-					else if (startProcessing) {
-						if (i % numberOfChars == 0) {
-							ret += intersperse[interspersedPos++];
+					else if (start_processing) {
+						if (i % number_of_chars == 0) {
+							ret += intersperse[interspersed_pos++];
 						}
 					}
 					ret += apply[i];
 				}
 
-				if (policy == SaltLeftoverPolicy::Rollover) {
-					if (interspersedPos < intersperse.size()) {
-						intersperse = intersperse.substr(interspersedPos);
+				if (policy == salt_leftover_policy::rollover) {
+					if (interspersed_pos < intersperse.size()) {
+						intersperse = intersperse.substr(interspersed_pos);
 						apply = ret;
 						ret = "";
-						interspersedPos = 0;
+						interspersed_pos = 0;
 						continue;
 					}
 				}
@@ -372,17 +372,17 @@ auto SaltTransformationConfig::apply(string_t input) const -> string_t {
 			}
 			while (true);
 
-			if (interspersedPos < intersperse.size()) {
-				if (policy == SaltLeftoverPolicy::Append) {
-					ret = ret + intersperse.substr(interspersedPos);
+			if (interspersed_pos < intersperse.size()) {
+				if (policy == salt_leftover_policy::append) {
+					ret = ret + intersperse.substr(interspersed_pos);
 				}
-				else if (policy == SaltLeftoverPolicy::Prepend) {
-					ret = intersperse.substr(interspersedPos) + ret;
+				else if (policy == salt_leftover_policy::prepend) {
+					ret = intersperse.substr(interspersed_pos) + ret;
 				}
 			}
 			break;
 		}
-		default: throw NotImplementedException{"SaltModifyPolicy"};
+		default: throw not_implemented_exception{"salt_modify_policy"};
 	}
 	return ret;
 }

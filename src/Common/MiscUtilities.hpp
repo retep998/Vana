@@ -24,75 +24,77 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-	namespace MiscUtilities {
-		enum class NullableMode {
-			NullIfFound = 1,
-			ForceNotNull = 2,
-			ForceNull = 3
-		};
+namespace vana {
+	namespace utilities {
+		namespace misc {
+			enum class nullable_mode {
+				null_if_found = 1,
+				force_not_null = 2,
+				force_null = 3
+			};
 
-		inline
-		auto getConnectionType(ServerType type) -> ConnectionType {
-			switch (type) {
-				case ServerType::Login: return ConnectionType::Login;
-				case ServerType::World: return ConnectionType::World;
-				case ServerType::Channel: return ConnectionType::Channel;
-				case ServerType::Cash: return ConnectionType::Cash;
-				case ServerType::Mts: return ConnectionType::Mts;
-				default: throw NotImplementedException{"ServerType"};
+			inline
+			auto get_connection_type(server_type type) -> connection_type {
+				switch (type) {
+					case server_type::login: return connection_type::login;
+					case server_type::world: return connection_type::world;
+					case server_type::channel: return connection_type::channel;
+					case server_type::cash: return connection_type::cash;
+					case server_type::mts: return connection_type::mts;
+					default: throw not_implemented_exception{"server_type"};
+				}
 			}
-		}
 
-		inline
-		auto getServerType(ConnectionType type) -> ServerType {
-			switch (type) {
-				case ConnectionType::Login: return ServerType::Login;
-				case ConnectionType::World: return ServerType::World;
-				case ConnectionType::Channel: return ServerType::Channel;
-				case ConnectionType::Cash: return ServerType::Cash;
-				case ConnectionType::Mts: return ServerType::Mts;
-				default: throw NotImplementedException{"ConnectionType"};
+			inline
+			auto get_server_type(connection_type type) -> server_type {
+				switch (type) {
+					case connection_type::login: return server_type::login;
+					case connection_type::world: return server_type::world;
+					case connection_type::channel: return server_type::channel;
+					case connection_type::cash: return server_type::cash;
+					case connection_type::mts: return server_type::mts;
+					default: throw not_implemented_exception{"connection_type"};
+				}
 			}
-		}
 
-		template <typename TElement>
-		auto convertLinearScale(
-			const TElement &pValue,
-			const TElement &pValueDomainMin,
-			const TElement &pValueDomainMax,
-			const TElement &pNewDomainMin,
-			const TElement &pNewDomainMax) -> TElement
-		{
-			if (pValueDomainMin >= pValueDomainMax) throw std::invalid_argument{"Domain min must be below domain max"};
-			if (pNewDomainMin >= pNewDomainMax) throw std::invalid_argument{"Domain min must be below domain max"};
-			if (pValue < pValueDomainMin || pValue > pValueDomainMax) throw std::invalid_argument{"Value must be within domain"};
-			double valueRange = pValueDomainMax - pValueDomainMin;
-			double newRange = pNewDomainMax - pNewDomainMin;
-			return static_cast<TElement>(
-				((static_cast<double>(pValue) - pValueDomainMin) / valueRange) *
-				newRange + pNewDomainMin);
-		}
+			template <typename TElement>
+			auto convert_linear_scale(
+				const TElement &value,
+				const TElement &value_domain_min,
+				const TElement &value_domain_max,
+				const TElement &new_domain_min,
+				const TElement &new_domain_max) -> TElement
+			{
+				if (value_domain_min >= value_domain_max) throw std::invalid_argument{"Domain min must be below domain max"};
+				if (new_domain_min >= new_domain_max) throw std::invalid_argument{"Domain min must be below domain max"};
+				if (value < value_domain_min || value > value_domain_max) throw std::invalid_argument{"Value must be within domain"};
+				double value_range = value_domain_max - value_domain_min;
+				double new_range = new_domain_max - new_domain_min;
+				return static_cast<TElement>(
+					((static_cast<double>(value) - new_domain_min) / value_range) *
+					new_range + new_domain_min);
+			}
 
-		template <typename TElement>
-		auto getOptional(const TElement &testVal, NullableMode mode, init_list_t<TElement> nullableVals) -> optional_t<TElement> {
-			optional_t<TElement> ret;
-			if (mode == NullableMode::NullIfFound) {
-				bool found = false;
-				for (const auto &nullableVal : nullableVals) {
-					if (testVal == nullableVal) {
-						found = true;
-						break;
+			template <typename TElement>
+			auto get_optional(const TElement &test_value, nullable_mode mode, init_list<TElement> nullable_values) -> optional<TElement> {
+				optional<TElement> ret;
+				if (mode == nullable_mode::null_if_found) {
+					bool found = false;
+					for (const auto &null_value : nullable_values) {
+						if (test_value == null_value) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						ret = test_value;
 					}
 				}
-				if (!found) {
-					ret = testVal;
+				else if (mode == nullable_mode::force_not_null) {
+					ret = test_value;
 				}
+				return ret;
 			}
-			else if (mode == NullableMode::ForceNotNull) {
-				ret = testVal;
-			}
-			return ret;
 		}
 	}
 }

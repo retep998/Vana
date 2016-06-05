@@ -23,64 +23,64 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Session.hpp"
 #include "Common/ThreadPool.hpp"
 
-namespace Vana {
+namespace vana {
 
-ConnectionListener::ConnectionListener(
-	const ConnectionListenerConfig &config,
-	HandlerCreator handlerCreator,
-	asio::io_service &ioService,
+connection_listener::connection_listener(
+	const connection_listener_config &config,
+	handler_creator handler_creator,
+	asio::io_service &io_service,
 	asio::ip::tcp::endpoint endpoint,
-	ConnectionManager &manager) :
-	m_acceptor{ioService, endpoint},
+	connection_manager &manager) :
+	m_acceptor{io_service, endpoint},
 	m_config{config},
-	m_handlerCreator{handlerCreator},
+	m_handler_creator{handler_creator},
 	m_manager{manager}
 {
 }
 
-void ConnectionListener::beginAccept() {
-	auto handler = m_handlerCreator();
-	auto newSession = make_ref_ptr<Session>(
+void connection_listener::begin_accept() {
+	auto handler = m_handler_creator();
+	auto new_session = make_ref_ptr<session>(
 		m_acceptor.get_io_service(),
 		m_manager,
 		handler);
 
-	m_manager.start(newSession);
-	m_acceptor.async_accept(newSession->getSocket(), [this, newSession](const asio::error_code &error) mutable {
+	m_manager.start(new_session);
+	m_acceptor.async_accept(new_session->get_socket(), [this, new_session](const asio::error_code &error) mutable {
 		if (!error) {
-			newSession->setType(m_config.type);
+			new_session->set_type(m_config.type);
 
-			iv_t recvIv = 0;
-			iv_t sendIv = 0;
+			crypto_iv recv_iv = 0;
+			crypto_iv send_iv = 0;
 			if (!m_config.encrypt) {
-				newSession->start(m_config.ping, make_ref_ptr<PacketTransformer>());
+				new_session->start(m_config.ping, make_ref_ptr<packet_transformer>());
 			}
 			else {
-				recvIv = Randomizer::rand<iv_t>();
-				sendIv = Randomizer::rand<iv_t>();
-				newSession->start(m_config.ping, make_ref_ptr<EncryptedPacketTransformer>(recvIv, sendIv));
+				recv_iv = randomizer::rand<crypto_iv>();
+				send_iv = randomizer::rand<crypto_iv>();
+				new_session->start(m_config.ping, make_ref_ptr<encrypted_packet_transformer>(recv_iv, send_iv));
 			}
 
-			newSession->send(
-				Packets::connect(
+			new_session->send(
+				packets::connect(
 					m_config.subversion,
-					recvIv,
-					sendIv),
+					recv_iv,
+					send_iv),
 				false);
 
-			this->beginAccept();
+			this->begin_accept();
 		}
 		else if (error.value() == asio::error::operation_aborted) {
 			// Intentionally blank
 		}
 		else {
 			std::cerr << "BEGINACCEPT ERROR: " << error.message() << std::endl;
-			this->m_manager.stop(newSession);
+			this->m_manager.stop(new_session);
 		}
 	});
 }
 
-void ConnectionListener::stop() {
+void connection_listener::stop() {
 	m_acceptor.close();
 }
 

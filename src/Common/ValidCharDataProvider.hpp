@@ -24,25 +24,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-	class ValidCharDataProvider {
+namespace vana {
+	class valid_char_data_provider {
 	public:
-		auto loadData() -> void;
+		auto load_data() -> void;
 
-		auto isForbiddenName(const string_t &cmp) const -> bool;
-		auto isValidCharacter(gender_id_t genderId, hair_id_t hair, hair_id_t hairColor, face_id_t face, skin_id_t skin, item_id_t top, item_id_t bottom, item_id_t shoes, item_id_t weapon, int8_t classId = Adventurer) const -> bool;
+		auto is_forbidden_name(const string &cmp) const -> bool;
+		auto is_valid_character(game_gender_id gender_id, game_hair_id hair, game_hair_id hair_color, game_face_id face, game_skin_id skin, game_item_id top, game_item_id bottom, game_item_id shoes, game_item_id weapon, int8_t class_id = adventurer) const -> bool;
 
-		const static int8_t Adventurer = 1;
-		const static int8_t Cygnus = 2;
+		const static int8_t adventurer = 1;
+		const static int8_t cygnus = 2;
 	private:
-		auto loadForbiddenNames() -> void;
-		auto loadCreationItems() -> void;
+		auto load_forbidden_names() -> void;
+		auto load_creation_items() -> void;
 
-		auto isValidItem(int32_t id, const ValidClassData &items, ValidItemType type) const -> bool;
-		auto getItems(gender_id_t genderId, int8_t classId) const -> const ValidClassData &;
+		auto is_valid_item(int32_t id, const valid_class_data &items, valid_item_type type) const -> bool;
+		auto get_items(game_gender_id gender_id, int8_t class_id) const -> const valid_class_data &;
 
-		vector_t<string_t> m_forbiddenNames;
-		ValidClassGenderData m_adventurer;
-		ValidClassGenderData m_cygnus;
+		vector<string> m_forbidden_names;
+		valid_class_gender_data m_adventurer;
+		valid_class_gender_data m_cygnus;
 	};
 }

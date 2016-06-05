@@ -19,32 +19,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class PacketReader;
-	enum class SkillType;
-	struct AttackData;
+namespace vana {
+	class packet_reader;
+	enum class skill_type;
+	struct attack_data;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		namespace PlayerHandler {
-			auto handleDoorUse(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleDamage(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleFacialExpression(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleGetInfo(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleHeal(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleMoving(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleSpecialSkills(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleMonsterBook(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleAdminMessenger(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+		namespace player_handler {
+			auto handle_door_use(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_damage(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_facial_expression(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_get_info(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_heal(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_moving(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_special_skills(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_monster_book(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_admin_messenger(ref_ptr<player> player, packet_reader &reader) -> void;
 
-			auto useBombSkill(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto useMeleeAttack(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto useRangedAttack(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto useSpellAttack(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto useEnergyChargeAttack(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto useSummonAttack(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto compileAttack(ref_ptr_t<Player> player, PacketReader &reader, SkillType skillType) -> AttackData;
+			auto use_bomb_skill(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto use_melee_attack(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto use_ranged_attack(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto use_spell_attack(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto use_energy_charge_attack(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto use_summon_attack(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto compile_attack(ref_ptr<player> player, packet_reader &reader, skill_type skill_type) -> attack_data;
 		}
 	}
 }

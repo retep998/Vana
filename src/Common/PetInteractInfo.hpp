@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct PetInteractInfo {
+namespace vana {
+	struct pet_interact_info {
 		uint32_t prob = 0;
 		int16_t increase = 0;
 	};

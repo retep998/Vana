@@ -21,11 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <vector>
 
-namespace Vana {
-	namespace ChannelServer {
-		namespace Packets {
-			namespace Helpers {
-				PACKET(fillRockPacket, const vector_t<map_id_t> &vec, size_t maxSize);
+namespace vana {
+	namespace channel_server {
+		namespace packets {
+			namespace helpers {
+				PACKET(fill_rock_packet, const vector<game_map_id> &vec, size_t max_size);
 			}
 		}
 	}

@@ -23,42 +23,42 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-	class PacketBuilder;
-	class PacketReader;
+namespace vana {
+	class packet_builder;
+	class packet_reader;
 
-	class ExternalIp : public Ip {
+	class external_ip : public ip {
 	public:
-		ExternalIp(const string_t &addr, uint32_t ipv4SubnetMask);
-		ExternalIp(uint32_t ipv4, uint32_t ipv4SubnetMask);
+		external_ip(const string &addr, uint32_t ipv4_subnet_mask);
+		external_ip(uint32_t ipv4, uint32_t ipv4_subnet_mask);
 
-		auto tryMatchIpToSubnet(const Ip &test, Ip &result) const -> bool;
+		auto try_match_ip_to_subnet(const ip &test, ip &result) const -> bool;
 	private:
-		friend struct PacketSerialize<ExternalIp>;
-		ExternalIp() : Ip{} { }
+		friend struct packet_serialize<external_ip>;
+		external_ip() : ip{} { }
 
-		uint32_t m_ipv4SubnetMask = 0;
+		uint32_t m_ipv4_subnet_mask = 0;
 	};
 
 	template <>
-	struct PacketSerialize<ExternalIp> {
-		auto read(PacketReader &reader) -> ExternalIp {
-			ExternalIp ret;
-			ret.m_type = reader.get<Ip::Type>();
-			if (ret.m_type == Ip::Type::Ipv4) {
+	struct packet_serialize<external_ip> {
+		auto read(packet_reader &reader) -> external_ip {
+			external_ip ret;
+			ret.m_type = reader.get<ip::type>();
+			if (ret.m_type == ip::type::ipv4) {
 				ret.m_ipv4 = reader.get<uint32_t>();
-				ret.m_ipv4SubnetMask = reader.get<uint32_t>();
+				ret.m_ipv4_subnet_mask = reader.get<uint32_t>();
 			}
 			return ret;
 		}
-		auto write(PacketBuilder &builder, const ExternalIp &obj) -> void {
-			builder.add<Ip::Type>(obj.m_type);
-			if (obj.m_type == Ip::Type::Ipv4) {
+		auto write(packet_builder &builder, const external_ip &obj) -> void {
+			builder.add<ip::type>(obj.m_type);
+			if (obj.m_type == ip::type::ipv4) {
 				builder.add<uint32_t>(obj.m_ipv4);
-				builder.add<uint32_t>(obj.m_ipv4SubnetMask);
+				builder.add<uint32_t>(obj.m_ipv4_subnet_mask);
 			}
 		}
 	};
 
-	using IpMatrix = vector_t<ExternalIp>;
+	using ip_matrix = vector<external_ip>;
 }

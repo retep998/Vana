@@ -22,18 +22,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	namespace ChannelServer {
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class player;
 
-		namespace Packets {
-			PACKET(playMusic, const string_t &music);
-			PACKET(sendEvent, const string_t &id);
-			PACKET(sendEffect, const string_t &effect);
-			PACKET(playPortalSoundEffect);
-			PACKET(sendFieldSound, const string_t &sound);
-			PACKET(sendMinigameSound, const string_t &sound);
-			SPLIT_PACKET(sendMobItemBuffEffect, player_id_t playerId, item_id_t itemId);
+		namespace packets {
+			PACKET(play_music, const string &music);
+			PACKET(send_event, const string &id);
+			PACKET(send_effect, const string &effect);
+			PACKET(play_portal_sound_effect);
+			PACKET(send_field_sound, const string &sound);
+			PACKET(send_minigame_sound, const string &sound);
+			SPLIT_PACKET(send_mob_item_buff_effect, game_player_id player_id, game_item_id item_id);
 		}
 	}
 }

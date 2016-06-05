@@ -29,34 +29,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 #include <iostream>
 
-namespace Vana {
-	extern exit_code_t exitCode;
+namespace vana {
+	extern exit_code g_exit_code;
 
 	template <typename TAbstractServer>
-	auto main() -> exit_code_t {
+	auto main() -> exit_code_underlying {
 		Botan::LibraryInitializer init{"thread_safe=true"};
 		asio::io_service s;
 		asio::signal_set signals{s, SIGINT};
 
 		try {
-			AbstractServer &server = TAbstractServer::getInstance();
-			signals.async_wait([&server](const asio::error_code &ec, int handlerId) {
+			abstract_server &server = TAbstractServer::get_instance();
+			signals.async_wait([&server](const asio::error_code &ec, int handler_id) {
 				server.shutdown();
 			});
 
-			if (server.initialize() == Result::Successful) {
+			if (server.initialize() == result::successful) {
 				s.run();
 			}
 			else {
 				server.shutdown();
 			}
 		}
-		catch (ConfigException &) { }
+		catch (config_exception &) { }
 		catch (std::exception &e) {
 			std::cerr << "PROGRAM ERROR: " << e.what() << std::endl;
-			ExitCodes::exit(ExitCodes::ProgramException);
+			exit(exit_code::program_exception);
 		}
 
-		return exitCode;
+		return static_cast<exit_code_underlying>(g_exit_code);
 	}
 }

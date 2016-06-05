@@ -24,167 +24,167 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-namespace Vana {
+namespace vana {
 
-auto SkillDataProvider::loadData() -> void {
-	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Skills... ";
+auto skill_data_provider::load_data() -> void {
+	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Skills... ";
 
-	loadPlayerSkills();
-	loadPlayerSkillLevels();
-	loadMobSkills();
-	loadMobSummons();
-	loadBanishData();
-	loadMorphs();
+	load_player_skills();
+	load_player_skill_levels();
+	load_mob_skills();
+	load_mob_summons();
+	load_banish_data();
+	load_morphs();
 
 	std::cout << "DONE" << std::endl;
 }
 
-auto SkillDataProvider::loadPlayerSkills() -> void {
-	m_skillLevels.clear();
-	m_skillMaxLevels.clear();
+auto skill_data_provider::load_player_skills() -> void {
+	m_skill_levels.clear();
+	m_skill_max_levels.clear();
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("skill_player_data"));
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("skill_player_data"));
 
 	for (const auto &row : rs) {
-		skill_id_t skillId = row.get<skill_id_t>("skillid");
+		game_skill_id skill_id = row.get<game_skill_id>("skillid");
 
-		m_skillLevels[skillId] = hash_map_t<skill_level_t, SkillLevelInfo>();
-		m_skillMaxLevels[skillId] = 1;
+		m_skill_levels[skill_id] = hash_map<game_skill_level, skill_level_info>();
+		m_skill_max_levels[skill_id] = 1;
 	}
 }
 
-auto SkillDataProvider::loadPlayerSkillLevels() -> void {
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("skill_player_level_data"));
+auto skill_data_provider::load_player_skill_levels() -> void {
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("skill_player_level_data"));
 
 	for (const auto &row : rs) {
-		SkillLevelInfo level;
-		skill_id_t skillId = row.get<skill_id_t>("skillid");
-		skill_level_t skillLevel = row.get<skill_level_t>("skill_level");
+		skill_level_info level;
+		game_skill_id skill_id = row.get<game_skill_id>("skillid");
+		game_skill_level skill_level = row.get<game_skill_level>("skill_level");
 
-		level.level = skillLevel;
-		level.mobCount = row.get<int8_t>("mob_count");
-		level.hitCount = row.get<int8_t>("hit_count");
+		level.level = skill_level;
+		level.mob_count = row.get<int8_t>("mob_count");
+		level.hit_count = row.get<int8_t>("hit_count");
 		level.range = row.get<int16_t>("range");
-		level.buffTime = seconds_t{row.get<int32_t>("buff_time")};
-		level.mp = row.get<health_t>("mp_cost");
-		level.hp = row.get<health_t>("hp_cost");
+		level.buff_time = seconds{row.get<int32_t>("buff_time")};
+		level.mp = row.get<game_health>("mp_cost");
+		level.hp = row.get<game_health>("hp_cost");
 		level.damage = row.get<int16_t>("damage");
-		level.fixedDamage = row.get<damage_t>("fixed_damage");
-		level.criticalDamage = row.get<uint8_t>("critical_damage");
+		level.fixed_damage = row.get<game_damage>("fixed_damage");
+		level.critical_damage = row.get<uint8_t>("critical_damage");
 		level.mastery = row.get<int8_t>("mastery");
-		level.optionalItem = row.get<item_id_t>("optional_item_cost");
-		level.item = row.get<item_id_t>("item_cost");
-		level.itemCount = row.get<slot_qty_t>("item_count");
-		level.bulletConsume = row.get<slot_qty_t>("bullet_cost");
-		level.moneyConsume = row.get<int16_t>("money_cost");
+		level.optional_item = row.get<game_item_id>("optional_item_cost");
+		level.item = row.get<game_item_id>("item_cost");
+		level.item_count = row.get<game_slot_qty>("item_count");
+		level.bullet_consume = row.get<game_slot_qty>("bullet_cost");
+		level.money_consume = row.get<int16_t>("money_cost");
 		level.x = row.get<int16_t>("x_property");
 		level.y = row.get<int16_t>("y_property");
-		level.speed = row.get<stat_t>("speed");
-		level.jump = row.get<stat_t>("jump");
-		level.str = row.get<stat_t>("str");
-		level.wAtk = row.get<stat_t>("weapon_atk");
-		level.wDef = row.get<stat_t>("weapon_def");
-		level.mAtk = row.get<stat_t>("magic_atk");
-		level.mDef = row.get<stat_t>("magic_def");
-		level.acc = row.get<stat_t>("accuracy");
-		level.avo = row.get<stat_t>("avoid");
-		level.hpProp = row.get<uint16_t>("hp");
-		level.mpProp = row.get<uint16_t>("mp");
+		level.speed = row.get<game_stat>("speed");
+		level.jump = row.get<game_stat>("jump");
+		level.str = row.get<game_stat>("str");
+		level.w_atk = row.get<game_stat>("weapon_atk");
+		level.w_def = row.get<game_stat>("weapon_def");
+		level.m_atk = row.get<game_stat>("magic_atk");
+		level.m_def = row.get<game_stat>("magic_def");
+		level.acc = row.get<game_stat>("accuracy");
+		level.avo = row.get<game_stat>("avoid");
+		level.hp_prop = row.get<uint16_t>("hp");
+		level.mp_prop = row.get<uint16_t>("mp");
 		level.prop = row.get<uint16_t>("prop");
-		level.morph = row.get<morph_id_t>("morph");
-		level.dimensions = Rect{
-			Point{row.get<coord_t>("ltx"), row.get<coord_t>("lty")},
-			Point{row.get<coord_t>("rbx"), row.get<coord_t>("rby")}
+		level.morph = row.get<game_morph_id>("morph");
+		level.dimensions = rect{
+			point{row.get<game_coord>("ltx"), row.get<game_coord>("lty")},
+			point{row.get<game_coord>("rbx"), row.get<game_coord>("rby")}
 		};
-		level.coolTime = seconds_t{row.get<int32_t>("cooldown_time")};
+		level.cool_time = seconds{row.get<int32_t>("cooldown_time")};
 
-		m_skillLevels[skillId][skillLevel] = level;
-		if (m_skillMaxLevels.find(skillId) == std::end(m_skillMaxLevels) || m_skillMaxLevels[skillId] < skillLevel) {
-			m_skillMaxLevels[skillId] = skillLevel;
+		m_skill_levels[skill_id][skill_level] = level;
+		if (m_skill_max_levels.find(skill_id) == std::end(m_skill_max_levels) || m_skill_max_levels[skill_id] < skill_level) {
+			m_skill_max_levels[skill_id] = skill_level;
 		}
 	}
 }
 
-auto SkillDataProvider::loadMobSkills() -> void {
-	m_mobSkills.clear();
+auto skill_data_provider::load_mob_skills() -> void {
+	m_mob_skills.clear();
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("skill_mob_data"));
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("skill_mob_data"));
 
 	for (const auto &row : rs) {
-		MobSkillLevelInfo mobLevel;
-		mob_skill_id_t skillId = row.get<mob_skill_id_t>("skillid");
-		mob_skill_level_t level = row.get<mob_skill_level_t>("skill_level");
+		mob_skill_level_info mob_level;
+		game_mob_skill_id skill_id = row.get<game_mob_skill_id>("skillid");
+		game_mob_skill_level level = row.get<game_mob_skill_level>("skill_level");
 
-		mobLevel.level = level;
-		mobLevel.time = seconds_t{row.get<int16_t>("buff_time")};
-		mobLevel.mp = row.get<uint8_t>("mp_cost");
-		mobLevel.x = row.get<int32_t>("x_property");
-		mobLevel.y = row.get<int32_t>("y_property");
-		mobLevel.prop = row.get<int16_t>("chance");
-		mobLevel.count = row.get<uint8_t>("target_count");
-		mobLevel.cooldown = row.get<int16_t>("cooldown");
-		mobLevel.dimensions = Rect{
-			Point{row.get<coord_t>("ltx"), row.get<coord_t>("lty")},
-			Point{row.get<coord_t>("rbx"), row.get<coord_t>("rby")}
+		mob_level.level = level;
+		mob_level.time = seconds{row.get<int16_t>("buff_time")};
+		mob_level.mp = row.get<uint8_t>("mp_cost");
+		mob_level.x = row.get<int32_t>("x_property");
+		mob_level.y = row.get<int32_t>("y_property");
+		mob_level.prop = row.get<int16_t>("chance");
+		mob_level.count = row.get<uint8_t>("target_count");
+		mob_level.cooldown = row.get<int16_t>("cooldown");
+		mob_level.dimensions = rect{
+			point{row.get<game_coord>("ltx"), row.get<game_coord>("lty")},
+			point{row.get<game_coord>("rbx"), row.get<game_coord>("rby")}
 		};
-		mobLevel.hp = row.get<uint8_t>("hp_limit_percentage");
-		mobLevel.limit = row.get<int16_t>("summon_limit");
-		mobLevel.summonEffect = row.get<int8_t>("summon_effect");
+		mob_level.hp = row.get<uint8_t>("hp_limit_percentage");
+		mob_level.limit = row.get<int16_t>("summon_limit");
+		mob_level.summon_effect = row.get<int8_t>("summon_effect");
 
-		m_mobSkills[skillId][level] = mobLevel;
+		m_mob_skills[skill_id][level] = mob_level;
 	}
 }
 
-auto SkillDataProvider::loadMobSummons() -> void {
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("skill_mob_summons"));
+auto skill_data_provider::load_mob_summons() -> void {
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("skill_mob_summons"));
 
 	for (const auto &row : rs) {
-		mob_skill_level_t level = row.get<mob_skill_level_t>("level");
-		mob_id_t mobId = row.get<mob_id_t>("mobid");
+		game_mob_skill_level level = row.get<game_mob_skill_level>("level");
+		game_mob_id mob_id = row.get<game_mob_id>("mobid");
 
-		m_mobSkills[MobSkills::Summon][level].summons.push_back(mobId);
+		m_mob_skills[mob_skills::summon][level].summons.push_back(mob_id);
 	}
 }
 
-auto SkillDataProvider::loadBanishData() -> void {
-	m_banishInfo.clear();
+auto skill_data_provider::load_banish_data() -> void {
+	m_banish_info.clear();
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("skill_mob_banish_data"));
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("skill_mob_banish_data"));
 
 	for (const auto &row : rs) {
-		BanishFieldInfo banish;
-		mob_id_t mobId = row.get<mob_id_t>("mobid");
+		banish_field_info banish;
+		game_mob_id mob_id = row.get<game_mob_id>("mobid");
 
-		banish.message = row.get<string_t>("message");
-		banish.field = row.get<map_id_t>("destination");
-		banish.portal = row.get<string_t>("portal");
+		banish.message = row.get<string>("message");
+		banish.field = row.get<game_map_id>("destination");
+		banish.portal = row.get<string>("portal");
 
-		m_banishInfo[mobId] = banish;
+		m_banish_info[mob_id] = banish;
 	}
 }
 
-auto SkillDataProvider::loadMorphs() -> void {
-	m_morphInfo.clear();
+auto skill_data_provider::load_morphs() -> void {
+	m_morph_info.clear();
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("morph_data"));
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("morph_data"));
 
 	for (const auto &row : rs) {
-		MorphInfo morph;
-		morph_id_t morphId = row.get<morph_id_t>("morphid");
+		morph_info morph;
+		game_morph_id morph_id = row.get<game_morph_id>("morphid");
 
-		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&morph](const string_t &cmp) {
+		utilities::str::run_flags(row.get<opt_string>("flags"), [&morph](const string &cmp) {
 			if (cmp == "superman") morph.superman = true;
 		});
 
@@ -193,34 +193,34 @@ auto SkillDataProvider::loadMorphs() -> void {
 		morph.traction = row.get<double>("traction");
 		morph.swim = row.get<double>("swim");
 
-		m_morphInfo[morphId] = morph;
+		m_morph_info[morph_id] = morph;
 	}
 }
 
-auto SkillDataProvider::isValidSkill(skill_id_t skillId) const -> bool {
-	return ext::is_element(m_skillLevels, skillId);
+auto skill_data_provider::is_valid_skill(game_skill_id skill_id) const -> bool {
+	return ext::is_element(m_skill_levels, skill_id);
 }
 
-auto SkillDataProvider::getMaxLevel(skill_id_t skillId) const -> skill_level_t {
-	return m_skillMaxLevels.find(skillId)->second;
+auto skill_data_provider::get_max_level(game_skill_id skill_id) const -> game_skill_level {
+	return m_skill_max_levels.find(skill_id)->second;
 }
 
-auto SkillDataProvider::getSkill(skill_id_t skill, skill_level_t level) const -> const SkillLevelInfo * const {
+auto skill_data_provider::get_skill(game_skill_id skill, game_skill_level level) const -> const skill_level_info * const {
 	return ext::find_value_ptr(
-		ext::find_value_ptr(m_skillLevels, skill), level);
+		ext::find_value_ptr(m_skill_levels, skill), level);
 }
 
-auto SkillDataProvider::getMobSkill(mob_skill_id_t skill, mob_skill_level_t level) const -> const MobSkillLevelInfo * const {
+auto skill_data_provider::get_mob_skill(game_mob_skill_id skill, game_mob_skill_level level) const -> const mob_skill_level_info * const {
 	return ext::find_value_ptr(
-		ext::find_value_ptr(m_mobSkills, skill), level);
+		ext::find_value_ptr(m_mob_skills, skill), level);
 }
 
-auto SkillDataProvider::getBanishData(mob_id_t mobId) const -> const BanishFieldInfo * const {
-	return ext::find_value_ptr(m_banishInfo, mobId);
+auto skill_data_provider::get_banish_data(game_mob_id mob_id) const -> const banish_field_info * const {
+	return ext::find_value_ptr(m_banish_info, mob_id);
 }
 
-auto SkillDataProvider::getMorphData(morph_id_t morph) const -> const MorphInfo * const {
-	return ext::find_value_ptr(m_morphInfo, morph);
+auto skill_data_provider::get_morph_data(game_morph_id morph) const -> const morph_info * const {
+	return ext::find_value_ptr(m_morph_info, morph);
 }
 
 }

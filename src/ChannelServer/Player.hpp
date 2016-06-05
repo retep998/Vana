@@ -42,176 +42,176 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_set>
 #include <vector>
 
-namespace Vana {
-	class PacketBuilder;
-	class PacketReader;
-	struct PortalInfo;
-	struct SplitPacketBuilder;
+namespace vana {
+	class packet_builder;
+	class packet_reader;
+	struct portal_info;
+	struct split_packet_builder;
 
-	namespace ChannelServer {
-		class Instance;
-		class Map;
-		class Party;
+	namespace channel_server {
+		class instance;
+		class map;
+		class party;
 
-		class Player : public PacketHandler, public enable_shared<Player>, public TimerContainerHolder, public MovableLife {
-			NONCOPYABLE(Player);
+		class player : public packet_handler, public enable_shared<player>, public timer_container_holder, public movable_life {
+			NONCOPYABLE(player);
 		public:
-			Player();
+			player();
 
-			auto setGmChat(bool chat) -> void { m_gmChat = chat; }
-			auto setSaveOnDc(bool save) -> void { m_saveOnDc = save; }
-			auto setTrading(bool state) -> void { m_tradeState = state; }
-			auto setChangingChannel(bool v) -> void { m_changingChannel = v; }
-			auto setSkin(skin_id_t id) -> void;
-			auto setFallCounter(int8_t falls) -> void { m_fallCounter = falls; }
-			auto setMapChair(seat_id_t s) -> void { m_mapChair = s; }
-			auto setFace(face_id_t id) -> void;
-			auto setHair(hair_id_t id) -> void;
-			auto setMap(map_id_t mapId, const PortalInfo * const portal = nullptr, bool instance = false) -> void;
-			auto setMap(map_id_t mapId, portal_id_t portalId, const Point &pos) -> void;
-			auto setBuddyListSize(uint8_t size) -> void;
-			auto setConnectionTime(int64_t newtime) -> void { m_onlineTime = newtime; }
-			auto setTradeId(trade_id_t id) -> void { m_tradeId = id; }
-			auto setShop(shop_id_t shopId) -> void { m_shop = shopId; }
-			auto setChair(item_id_t chair) -> void { m_chair = chair; }
-			auto setItemEffect(item_id_t effect) -> void { m_itemEffect = effect; }
-			auto setChalkboard(const string_t &msg) -> void { m_chalkboard = msg; }
-			auto setChargeOrStationarySkill(const ChargeOrStationarySkillData &info) -> void { m_info = info; }
-			auto setNpc(Npc *npc) -> void { m_npc.reset(npc); }
-			auto setParty(Party *party) -> void { m_party = party; }
-			auto setFollow(ref_ptr_t<Player> target) -> void { m_follow = target; }
-			auto setInstance(Instance *instance) -> void { m_instance = instance; }
-			auto parseTransferPacket(PacketReader &reader) -> void;
+			auto set_gm_chat(bool chat) -> void { m_gm_chat = chat; }
+			auto set_save_on_dc(bool save) -> void { m_save_on_dc = save; }
+			auto set_trading(bool state) -> void { m_trade_state = state; }
+			auto set_changing_channel(bool v) -> void { m_changing_channel = v; }
+			auto set_skin(game_skin_id id) -> void;
+			auto set_fall_counter(int8_t falls) -> void { m_fall_counter = falls; }
+			auto set_map_chair(game_seat_id s) -> void { m_map_chair = s; }
+			auto set_face(game_face_id id) -> void;
+			auto set_hair(game_hair_id id) -> void;
+			auto set_map(game_map_id map_id, const portal_info * const portal = nullptr, bool is_instance = false) -> void;
+			auto set_map(game_map_id map_id, game_portal_id portal_id, const point &pos) -> void;
+			auto set_buddy_list_size(uint8_t size) -> void;
+			auto set_connection_time(int64_t newtime) -> void { m_online_time = newtime; }
+			auto set_trade_id(game_trade_id id) -> void { m_trade_id = id; }
+			auto set_shop(game_shop_id shop_id) -> void { m_shop = shop_id; }
+			auto set_chair(game_item_id chair) -> void { m_chair = chair; }
+			auto set_item_effect(game_item_id effect) -> void { m_item_effect = effect; }
+			auto set_chalkboard(const string &msg) -> void { m_chalkboard = msg; }
+			auto set_charge_or_stationary_skill(const charge_or_stationary_skill_data &info) -> void { m_info = info; }
+			auto set_npc(npc *npc) -> void { m_npc.reset(npc); }
+			auto set_party(party *party) -> void { m_party = party; }
+			auto set_follow(ref_ptr<player> target) -> void { m_follow = target; }
+			auto set_instance(instance *inst) -> void { m_instance = inst; }
+			auto parse_transfer_packet(packet_reader &reader) -> void;
 
-			auto isGm() const -> bool { return m_gmLevel > 0; }
-			auto isGmChat() const -> bool { return m_gmChat; }
-			auto isAdmin() const -> bool { return m_admin; }
-			auto isChangingChannel() const -> bool { return m_changingChannel; }
-			auto isTrading() const -> bool { return m_tradeState; }
-			auto isDisconnecting() const -> bool { return m_disconnecting; }
-			auto hasGmEquip() const -> bool;
-			auto isUsingGmHide() const -> bool;
-			auto hasGmBenefits() const -> bool;
-			auto hasChargeOrStationarySkill() const -> bool { return m_info.skillId != 0; }
-			auto getWorldId() const -> world_id_t { return m_worldId; }
-			auto getGender() const -> gender_id_t { return m_gender; }
-			auto getSkin() const -> skin_id_t { return m_skin; }
-			auto getMapPos() const -> portal_id_t { return m_mapPos; }
-			auto getFallCounter() const -> int8_t { return m_fallCounter; }
-			auto getBuddyListSize() const -> uint8_t { return m_buddylistSize; }
-			auto getPortalCount(bool add = false) -> portal_count_t;
-			auto getMapChair() const -> seat_id_t { return m_mapChair; }
-			auto getId() const -> player_id_t { return m_id; }
-			auto getAccountId() const -> account_id_t { return m_accountId; }
-			auto getFace() const -> face_id_t { return m_face; }
-			auto getHair() const -> hair_id_t { return m_hair; }
-			auto getMapId() const -> map_id_t { return m_map; }
-			auto getLastMapId() const -> map_id_t { return m_lastMap; }
-			auto getShop() const -> shop_id_t { return m_shop; }
-			auto getChair() const -> item_id_t { return m_chair; }
-			auto getItemEffect() const -> item_id_t { return m_itemEffect; }
-			auto getGmLevel() const -> int32_t { return m_gmLevel; }
-			auto getTradeId() const -> trade_id_t { return m_tradeId; }
-			auto getConnectionTime() const -> int64_t { return m_onlineTime; }
-			auto getConnectedTime() const -> int64_t { return time(nullptr) - m_onlineTime; }
-			auto getChalkboard() const -> string_t { return m_chalkboard; }
-			auto getMedalName() -> string_t;
-			auto getName() const -> string_t { return m_name; }
-			auto getChargeOrStationarySkill() const -> ChargeOrStationarySkillData { return m_info; }
-			auto getTransferPacket() const -> PacketBuilder;
+			auto is_gm() const -> bool { return m_gm_level > 0; }
+			auto is_gm_chat() const -> bool { return m_gm_chat; }
+			auto is_admin() const -> bool { return m_admin; }
+			auto is_changing_channel() const -> bool { return m_changing_channel; }
+			auto is_trading() const -> bool { return m_trade_state; }
+			auto is_disconnecting() const -> bool { return m_disconnecting; }
+			auto has_gm_equip() const -> bool;
+			auto is_using_gm_hide() const -> bool;
+			auto has_gm_benefits() const -> bool;
+			auto has_charge_or_stationary_skill() const -> bool { return m_info.skill_id != 0; }
+			auto get_world_id() const -> game_world_id { return m_world_id; }
+			auto get_gender() const -> game_gender_id { return m_gender; }
+			auto get_skin() const -> game_skin_id { return m_skin; }
+			auto get_map_pos() const -> game_portal_id { return m_map_pos; }
+			auto get_fall_counter() const -> int8_t { return m_fall_counter; }
+			auto get_buddy_list_size() const -> uint8_t { return m_buddylist_size; }
+			auto get_portal_count(bool add = false) -> game_portal_count;
+			auto get_map_chair() const -> game_seat_id { return m_map_chair; }
+			auto get_id() const -> game_player_id { return m_id; }
+			auto get_account_id() const -> game_account_id { return m_account_id; }
+			auto get_face() const -> game_face_id { return m_face; }
+			auto get_hair() const -> game_hair_id { return m_hair; }
+			auto get_map_id() const -> game_map_id { return m_map; }
+			auto get_last_map_id() const -> game_map_id { return m_last_map; }
+			auto get_shop() const -> game_shop_id { return m_shop; }
+			auto get_chair() const -> game_item_id { return m_chair; }
+			auto get_item_effect() const -> game_item_id { return m_item_effect; }
+			auto get_gm_level() const -> int32_t { return m_gm_level; }
+			auto get_trade_id() const -> game_trade_id { return m_trade_id; }
+			auto get_connection_time() const -> int64_t { return m_online_time; }
+			auto get_connected_time() const -> int64_t { return time(nullptr) - m_online_time; }
+			auto get_chalkboard() const -> string { return m_chalkboard; }
+			auto get_medal_name() -> string;
+			auto get_name() const -> string { return m_name; }
+			auto get_charge_or_stationary_skill() const -> charge_or_stationary_skill_data { return m_info; }
+			auto get_transfer_packet() const -> packet_builder;
 
-			auto getMap() const -> Map *;
-			auto getFollow() const -> ref_ptr_t<Player> { return m_follow; }
-			auto getNpc() const -> Npc * { return m_npc.get(); }
-			auto getParty() const -> Party * { return m_party; }
-			auto getInstance() const -> Instance * { return m_instance; }
-			auto getActiveBuffs() const -> PlayerActiveBuffs * { return m_activeBuffs.get(); }
-			auto getBuddyList() const -> PlayerBuddyList * { return m_buddyList.get(); }
-			auto getInventory() const -> PlayerInventory * { return m_inventory.get(); }
-			auto getMonsterBook() const -> PlayerMonsterBook * { return m_monsterBook.get(); }
-			auto getMounts() const -> PlayerMounts * { return m_mounts.get(); }
-			auto getPets() const -> PlayerPets * { return m_pets.get(); }
-			auto getQuests() const -> PlayerQuests * { return m_quests.get(); }
-			auto getSkills() const -> PlayerSkills * { return m_skills.get(); }
-			auto getStats() const -> PlayerStats * { return m_stats.get(); }
-			auto getStorage() const -> PlayerStorage * { return m_storage.get(); }
-			auto getSummons() const -> PlayerSummons * { return m_summons.get(); }
-			auto getVariables() const -> PlayerVariables * { return m_variables.get(); }
-			auto getRandStream() const -> TauswortheGenerator * { return m_randStream.get(); }
-			auto getTimerContainer() const -> ref_ptr_t<Vana::Timer::Container> { return getTimers(); }
+			auto get_map() const -> map *;
+			auto get_follow() const -> ref_ptr<player> { return m_follow; }
+			auto get_npc() const -> npc * { return m_npc.get(); }
+			auto get_party() const -> party * { return m_party; }
+			auto get_instance() const -> instance * { return m_instance; }
+			auto get_active_buffs() const -> player_active_buffs * { return m_active_buffs.get(); }
+			auto get_buddy_list() const -> player_buddy_list * { return m_buddy_list.get(); }
+			auto get_inventory() const -> player_inventory * { return m_inventory.get(); }
+			auto get_monster_book() const -> player_monster_book * { return m_monster_book.get(); }
+			auto get_mounts() const -> player_mounts * { return m_mounts.get(); }
+			auto get_pets() const -> player_pets * { return m_pets.get(); }
+			auto get_quests() const -> player_quests * { return m_quests.get(); }
+			auto get_skills() const -> player_skills * { return m_skills.get(); }
+			auto get_stats() const -> player_stats * { return m_stats.get(); }
+			auto get_storage() const -> player_storage * { return m_storage.get(); }
+			auto get_summons() const -> player_summons * { return m_summons.get(); }
+			auto get_variables() const -> player_variables * { return m_variables.get(); }
+			auto get_rand_stream() const -> tausworthe_generator * { return m_rand_stream.get(); }
+			auto get_timer_container() const -> ref_ptr<vana::timer::container> { return get_timers(); }
 
-			auto addUsedPortal(portal_id_t portalId) -> void { m_usedPortals.insert(portalId); }
-			auto usedPortal(portal_id_t portalId) const -> bool { return m_usedPortals.find(portalId) != std::end(m_usedPortals); }
+			auto add_used_portal(game_portal_id portal_id) -> void { m_used_portals.insert(portal_id); }
+			auto used_portal(game_portal_id portal_id) const -> bool { return m_used_portals.find(portal_id) != std::end(m_used_portals); }
 
-			auto changeChannel(channel_id_t channel) -> void;
-			auto saveAll(bool saveCooldowns = false) -> void;
-			auto setOnline(bool online) -> void;
-			auto setLevelDate() -> void;
-			auto acceptDeath(bool wheel) -> void;
-			auto initializeRng(PacketBuilder &builder) -> void;
+			auto change_channel(game_channel_id channel) -> void;
+			auto save_all(bool save_cooldowns = false) -> void;
+			auto set_online(bool online) -> void;
+			auto set_level_date() -> void;
+			auto accept_death(bool wheel) -> void;
+			auto initialize_rng(packet_builder &builder) -> void;
 
-			auto send(const PacketBuilder &builder) -> void;
-			auto send(const SplitPacketBuilder &builder) -> void;
-			auto sendMap(const PacketBuilder &builder, bool excludeSelf = false) -> void;
-			auto sendMap(const SplitPacketBuilder &builder) -> void;
+			auto send(const packet_builder &builder) -> void;
+			auto send(const split_packet_builder &builder) -> void;
+			auto send_map(const packet_builder &builder, bool exclude_self = false) -> void;
+			auto send_map(const split_packet_builder &builder) -> void;
 		protected:
-			auto handle(PacketReader &reader) -> Result override;
-			auto onDisconnect() -> void override;
+			auto handle(packet_reader &reader) -> result override;
+			auto on_disconnect() -> void override;
 		private:
-			auto playerConnect(PacketReader &reader) -> void;
-			auto changeKey(PacketReader &reader) -> void;
-			auto changeSkillMacros(PacketReader &reader) -> void;
-			auto saveStats() -> void;
-			auto internalSetMap(map_id_t mapId, portal_id_t portalId, const Point &pos, bool fromPosition) -> void;
+			auto player_connect(packet_reader &reader) -> void;
+			auto change_key(packet_reader &reader) -> void;
+			auto change_skill_macros(packet_reader &reader) -> void;
+			auto save_stats() -> void;
+			auto internal_set_map(game_map_id map_id, game_portal_id portal_id, const point &pos, bool from_position) -> void;
 
-			bool m_tradeState = false;
-			bool m_saveOnDc = true;
-			bool m_isConnect = false;
-			bool m_changingChannel = false;
+			bool m_trade_state = false;
+			bool m_save_on_dc = true;
+			bool m_is_connect = false;
+			bool m_changing_channel = false;
 			bool m_admin = false;
-			bool m_gmChat = false;
+			bool m_gm_chat = false;
 			bool m_disconnecting = false;
-			world_id_t m_worldId = -1;
-			portal_id_t m_mapPos = -1;
-			gender_id_t m_gender = -1;
-			skin_id_t m_skin = 0;
-			int8_t m_fallCounter = 0;
-			uint8_t m_buddylistSize = 0;
-			portal_count_t m_portalCount = 0;
-			seat_id_t m_mapChair = 0;
-			player_id_t m_id = 0;
-			account_id_t m_accountId = 0;
-			face_id_t m_face = 0;
-			hair_id_t m_hair = 0;
-			map_id_t m_map = 0;
-			map_id_t m_lastMap = 0;
-			shop_id_t m_shop = 0;
-			item_id_t m_itemEffect = 0;
-			item_id_t m_chair = 0;
-			int32_t m_gmLevel = 0;
-			trade_id_t m_tradeId = 0;
-			int64_t m_onlineTime = 0;
-			Instance *m_instance = nullptr;
-			Party *m_party = nullptr;
-			string_t m_chalkboard;
-			string_t m_name;
-			ChargeOrStationarySkillData m_info;
-			ref_ptr_t<Player> m_follow = nullptr;
-			owned_ptr_t<Npc> m_npc;
-			owned_ptr_t<PlayerActiveBuffs> m_activeBuffs;
-			owned_ptr_t<PlayerBuddyList> m_buddyList;
-			owned_ptr_t<PlayerInventory> m_inventory;
-			owned_ptr_t<PlayerMonsterBook> m_monsterBook;
-			owned_ptr_t<PlayerMounts> m_mounts;
-			owned_ptr_t<PlayerPets> m_pets;
-			owned_ptr_t<PlayerQuests> m_quests;
-			owned_ptr_t<PlayerSkills> m_skills;
-			owned_ptr_t<PlayerStats> m_stats;
-			owned_ptr_t<PlayerStorage> m_storage;
-			owned_ptr_t<PlayerSummons> m_summons;
-			owned_ptr_t<PlayerVariables> m_variables;
-			owned_ptr_t<TauswortheGenerator> m_randStream;
-			hash_set_t<portal_id_t> m_usedPortals;
+			game_world_id m_world_id = -1;
+			game_portal_id m_map_pos = -1;
+			game_gender_id m_gender = -1;
+			game_skin_id m_skin = 0;
+			int8_t m_fall_counter = 0;
+			uint8_t m_buddylist_size = 0;
+			game_portal_count m_portal_count = 0;
+			game_seat_id m_map_chair = 0;
+			game_player_id m_id = 0;
+			game_account_id m_account_id = 0;
+			game_face_id m_face = 0;
+			game_hair_id m_hair = 0;
+			game_map_id m_map = 0;
+			game_map_id m_last_map = 0;
+			game_shop_id m_shop = 0;
+			game_item_id m_item_effect = 0;
+			game_item_id m_chair = 0;
+			int32_t m_gm_level = 0;
+			game_trade_id m_trade_id = 0;
+			int64_t m_online_time = 0;
+			instance *m_instance = nullptr;
+			party *m_party = nullptr;
+			string m_chalkboard;
+			string m_name;
+			charge_or_stationary_skill_data m_info;
+			ref_ptr<player> m_follow = nullptr;
+			owned_ptr<npc> m_npc;
+			owned_ptr<player_active_buffs> m_active_buffs;
+			owned_ptr<player_buddy_list> m_buddy_list;
+			owned_ptr<player_inventory> m_inventory;
+			owned_ptr<player_monster_book> m_monster_book;
+			owned_ptr<player_mounts> m_mounts;
+			owned_ptr<player_pets> m_pets;
+			owned_ptr<player_quests> m_quests;
+			owned_ptr<player_skills> m_skills;
+			owned_ptr<player_stats> m_stats;
+			owned_ptr<player_storage> m_storage;
+			owned_ptr<player_summons> m_summons;
+			owned_ptr<player_variables> m_variables;
+			owned_ptr<tausworthe_generator> m_rand_stream;
+			hash_set<game_portal_id> m_used_portals;
 		};
 	}
 }

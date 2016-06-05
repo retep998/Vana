@@ -20,14 +20,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/MobAttackType.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct MobAttackInfo {
+namespace vana {
+	struct mob_attack_info {
 		int8_t id = 0;
-		mob_skill_level_t level = 0;
-		mob_skill_id_t disease = 0;
-		uint8_t mpConsume = 0;
-		uint16_t mpBurn = 0;
-		bool deadlyAttack = false;
-		MobAttackType attackType = MobAttackType::Normal;
+		game_mob_skill_level level = 0;
+		game_mob_skill_id disease = 0;
+		uint8_t mp_consume = 0;
+		uint16_t mp_burn = 0;
+		bool deadly_attack = false;
+		mob_attack_type attack_type = mob_attack_type::normal;
 	};
 }

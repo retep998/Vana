@@ -30,216 +30,216 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <chrono>
 #include <iostream>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto MapFunctions::eventInstruction(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	player->sendMap(Packets::Map::showEventInstructions());
-	return ChatResult::HandledDisplay;
+auto map_functions::event_instruction(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	player->send_map(packets::map::show_event_instructions());
+	return chat_result::handled_display;
 }
 
-auto MapFunctions::instruction(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
+auto map_functions::instruction(ref_ptr<player> player, const game_chat &args) -> chat_result {
 	if (!args.empty()) {
-		player->sendMap(Packets::Player::instructionBubble(args));
-		ChatHandlerFunctions::showInfo(player, "Showing instruction bubble to everyone on the map");
-		return ChatResult::HandledDisplay;
+		player->send_map(packets::player::instruction_bubble(args));
+		chat_handler_functions::show_info(player, "Showing instruction bubble to everyone on the map");
+		return chat_result::handled_display;
 	}
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto MapFunctions::timer(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
+auto map_functions::timer(ref_ptr<player> player, const game_chat &args) -> chat_result {
 	if (!args.empty()) {
-		seconds_t time{atoi(args.c_str())};
-		out_stream_t msg;
+		seconds time{atoi(args.c_str())};
+		out_stream msg;
 		msg << "Stopped map timer";
 		if (time.count() > 0) {
 			msg.str("");
 			msg.clear();
 			msg << "Started map timer. Counting down from ";
 
-			hours_t hours = duration_cast<hours_t>(time);
-			minutes_t minutes = duration_cast<minutes_t>(time - hours);
-			seconds_t seconds = duration_cast<seconds_t>(time - hours - minutes);
+			hours hours_value = duration_cast<hours>(time);
+			minutes minutes_value = duration_cast<minutes>(time - hours_value);
+			seconds seconds_value = duration_cast<seconds>(time - hours_value - minutes_value);
 
-			if (hours.count() > 0) {
-				msg << hours.count() << " hours";
+			if (hours_value.count() > 0) {
+				msg << hours_value.count() << " hours";
 			}
-			if (minutes.count() > 0) {
-				if (hours.count() > 0) {
+			if (minutes_value.count() > 0) {
+				if (hours_value.count() > 0) {
 					msg << ", ";
 				}
-				msg << minutes.count() << " minutes";
+				msg << minutes_value.count() << " minutes";
 			}
-			if (seconds.count() > 0) {
-				if (hours.count() > 0 || minutes.count() > 0) {
+			if (seconds_value.count() > 0) {
+				if (hours_value.count() > 0 || minutes_value.count() > 0) {
 					msg << " and ";
 				}
-				msg << seconds.count() << " seconds";
+				msg << seconds_value.count() << " seconds";
 			}
 		}
-		ChatHandlerFunctions::showInfo(player, msg.str());
-		player->getMap()->setMapTimer(time);
-		return ChatResult::HandledDisplay;
+		chat_handler_functions::show_info(player, msg.str());
+		player->get_map()->set_map_timer(time);
+		return chat_result::handled_display;
 	}
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto MapFunctions::killMob(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
+auto map_functions::kill_mob(ref_ptr<player> player, const game_chat &args) -> chat_result {
 	if (!args.empty()) {
-		map_object_t mobId = atoi(args.c_str());
-		auto mob = player->getMap()->getMob(mobId);
+		game_map_object mob_id = atoi(args.c_str());
+		auto mob = player->get_map()->get_mob(mob_id);
 		if (mob != nullptr) {
-			ChatHandlerFunctions::showInfo(player, "Killed mob with map mob ID " + args + ". Damage applied: " + StringUtilities::lexical_cast<string_t>(mob->getHp()));
-			mob->applyDamage(player->getId(), mob->getHp());
+			chat_handler_functions::show_info(player, "Killed mob with map mob ID " + args + ". Damage applied: " + utilities::str::lexical_cast<string>(mob->get_hp()));
+			mob->apply_damage(player->get_id(), mob->get_hp());
 		}
 		else {
-			ChatHandlerFunctions::showError(player, "Invalid mob: " + args);
+			chat_handler_functions::show_error(player, "Invalid mob: " + args);
 		}
-		return ChatResult::HandledDisplay;
+		return chat_result::handled_display;
 	}
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto MapFunctions::getMobHp(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
+auto map_functions::get_mob_hp(ref_ptr<player> player, const game_chat &args) -> chat_result {
 	if (!args.empty()) {
-		map_object_t mobId = atoi(args.c_str());
-		auto mob = player->getMap()->getMob(mobId);
+		game_map_object mob_id = atoi(args.c_str());
+		auto mob = player->get_map()->get_mob(mob_id);
 		if (mob != nullptr) {
-			out_stream_t message;
-			message << "Mob " << mobId
-					<< " HP: " << mob->getHp() << "/" << mob->getMaxHp()
-					<< " (" << static_cast<int64_t>(mob->getHp()) * 100 / mob->getMaxHp() << "%)";
+			out_stream message;
+			message << "Mob " << mob_id
+					<< " HP: " << mob->get_hp() << "/" << mob->get_max_hp()
+					<< " (" << static_cast<int64_t>(mob->get_hp()) * 100 / mob->get_max_hp() << "%)";
 
-			ChatHandlerFunctions::showInfo(player, message.str());
+			chat_handler_functions::show_info(player, message.str());
 		}
 		else {
-			ChatHandlerFunctions::showError(player, "Invalid mob: " + args);
+			chat_handler_functions::show_error(player, "Invalid mob: " + args);
 		}
-		return ChatResult::HandledDisplay;
+		return chat_result::handled_display;
 	}
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto MapFunctions::listMobs(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	map_id_t mapId = args.empty() ?
-		player->getMapId() :
-		ChatHandlerFunctions::getMap(args, player);
-	Map *map = Maps::getMap(mapId);
+auto map_functions::list_mobs(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	game_map_id map_id = args.empty() ?
+		player->get_map_id() :
+		chat_handler_functions::get_map(args, player);
+	map *map = maps::get_map(map_id);
 	if (map == nullptr) {
-		ChatHandlerFunctions::showError(player, "Invalid map: " + args);
-		return ChatResult::HandledDisplay;
+		chat_handler_functions::show_error(player, "Invalid map: " + args);
+		return chat_result::handled_display;
 	}
 
-	ChatHandlerFunctions::showInfo(player, "Mobs for Map " + std::to_string(mapId));
-	if (map->countMobs(0) > 0) {
-		out_stream_t message;
-		map->runFunctionMobs([&message, &player](ref_ptr_t<const Mob> mob) {
+	chat_handler_functions::show_info(player, "Mobs for Map " + std::to_string(map_id));
+	if (map->count_mobs(0) > 0) {
+		out_stream message;
+		map->run_function_mobs([&message, &player](ref_ptr<const mob> mob) {
 			message.str("");
 			message.clear();
 
-			message << "Mob " << mob->getMapMobId()
-				<< " (ID: " << mob->getMobId()
-				<< ", HP: " << mob->getHp()
-				<< "/" << mob->getMaxHp()
-				<< " ~ " << static_cast<int64_t>(mob->getHp()) * 100 / mob->getMaxHp()
-				<< "%) " << mob->getMapPosition();
+			message << "Mob " << mob->get_map_mob_id()
+				<< " (ID: " << mob->get_mob_id()
+				<< ", HP: " << mob->get_hp()
+				<< "/" << mob->get_max_hp()
+				<< " ~ " << static_cast<int64_t>(mob->get_hp()) * 100 / mob->get_max_hp()
+				<< "%) " << mob->get_map_position();
 
-			ChatHandlerFunctions::showInfo(player, message.str());
+			chat_handler_functions::show_info(player, message.str());
 		});
 	}
 	else {
-		ChatHandlerFunctions::showError(player, "No results");
+		chat_handler_functions::show_error(player, "No results");
 	}
-	return ChatResult::HandledDisplay;
+	return chat_result::handled_display;
 }
 
-auto MapFunctions::listPortals(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	match_t matches;
+auto map_functions::list_portals(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	match matches;
 	auto result = args.empty() ?
-		MatchResult::NoMatches :
-		ChatHandlerFunctions::runRegexPattern(args, R"((\w+)? ?(\w+)?)", matches);
+		match_result::no_matches :
+		chat_handler_functions::run_regex_pattern(args, R"((\w+)? ?(\w+)?)", matches);
 
-	map_id_t mapId = result == MatchResult::NoMatches ?
-		player->getMapId() :
-		ChatHandlerFunctions::getMap(matches[1], player);
+	game_map_id map_id = result == match_result::no_matches ?
+		player->get_map_id() :
+		chat_handler_functions::get_map(matches[1], player);
 
-	opt_string_t filter;
-	if (result == MatchResult::AnyMatches) {
-		string_t matchFilter = matches[2];
-		if (!matchFilter.empty()) {
-			filter = matchFilter;
+	opt_string filter;
+	if (result == match_result::any_matches) {
+		string match_filter = matches[2];
+		if (!match_filter.empty()) {
+			filter = match_filter;
 		}
 	}
 
-	Map *map = Maps::getMap(mapId);
+	map *map = maps::get_map(map_id);
 	if (map == nullptr) {
-		ChatHandlerFunctions::showError(player, "Invalid map: " + args);
-		return ChatResult::HandledDisplay;
+		chat_handler_functions::show_error(player, "Invalid map: " + args);
+		return chat_result::handled_display;
 	}
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT mp.id, mp.label, mp.destination, mp.destination_label, mp.script, mp.x_pos, mp.y_pos "
-		<< "FROM " << db.makeTable("map_portals") << " mp "
+		<< "FROM " << db.make_table("map_portals") << " mp "
 		<< "WHERE mp.mapid = :mapId",
-		soci::use(mapId, "mapId"));
+		soci::use(map_id, "map_id"));
 
-	auto format = [&map](const soci::row &row, out_stream_t &str) {
-		map_id_t destination = row.get<map_id_t>(2);
-		opt_string_t destinationLabel = row.get<opt_string_t>(3);
-		opt_string_t portalScript = row.get<opt_string_t>(4);
-		coord_t x = row.get<coord_t>(5);
-		coord_t y = row.get<coord_t>(6);
+	auto format = [&map](const soci::row &row, out_stream &str) {
+		game_map_id destination = row.get<game_map_id>(2);
+		opt_string destination_label = row.get<opt_string>(3);
+		opt_string portal_script = row.get<opt_string>(4);
+		game_coord x = row.get<game_coord>(5);
+		game_coord y = row.get<game_coord>(6);
 
-		str << row.get<map_id_t>(0) << " : " << row.get<string_t>(1);
-		if (destination != Vana::Maps::NoMap) {
+		str << row.get<game_map_id>(0) << " : " << row.get<string>(1);
+		if (destination != vana::maps::no_map) {
 			str << " (destination " << destination;
-			if (destinationLabel.is_initialized()) {
-				string_t label = destinationLabel.get();
+			if (destination_label.is_initialized()) {
+				string label = destination_label.get();
 				if (!label.empty()) {
-					str << " -> " << destinationLabel.get();
+					str << " -> " << destination_label.get();
 				}
 			}
 			str << ")";
 		}
 
-		if (portalScript.is_initialized()) {
-			string_t script = portalScript.get();
+		if (portal_script.is_initialized()) {
+			string script = portal_script.get();
 			if (!script.empty()) {
 				str << " (script '" << script << "')";
 			}
 		}
 
-		auto pos = Point{x, y};
-		auto searchRect = Rect{x - 25, y - 20, 50, 70};
-		Point floorPos;
-		foothold_id_t foothold = 0;
-		if (map->findFloor(pos, floorPos, -20, searchRect) == SearchResult::NotFound) {
-			foothold = map->getFootholdAtPosition(pos);
+		auto pos = point{x, y};
+		auto search_rect = rect{x - 25, y - 20, 50, 70};
+		point floor_pos;
+		game_foothold_id foothold = 0;
+		if (map->find_floor(pos, floor_pos, -20, search_rect) == search_result::not_found) {
+			foothold = map->get_foothold_at_position(pos);
 		}
 		else {
-			foothold = map->getFootholdAtPosition(floorPos);
+			foothold = map->get_foothold_at_position(floor_pos);
 		}
-		str << " " << MapPosition{pos, foothold};
+		str << " " << map_position{pos, foothold};
 	};
 
 	if (filter.is_initialized()) {
-		ChatHandlerFunctions::showInfo(player, "Portals with label '" + filter.get() + "' for Map " + std::to_string(mapId));
+		chat_handler_functions::show_info(player, "Portals with label '" + filter.get() + "' for Map " + std::to_string(map_id));
 	}
 	else {
-		ChatHandlerFunctions::showInfo(player, "Portals for Map " + std::to_string(mapId));
+		chat_handler_functions::show_info(player, "Portals for Map " + std::to_string(map_id));
 	}
-	out_stream_t str{""};
+	out_stream str{""};
 	bool found = false;
 	for (const auto &row : rs) {
-		string_t portalLabel = row.get<string_t>(1);
+		string portal_label = row.get<string>(1);
 		if (filter.is_initialized()) {
-			if (StringUtilities::noCaseCompare(filter.get(), portalLabel) != 0) {
+			if (utilities::str::no_case_compare(filter.get(), portal_label) != 0) {
 				continue;
 			}
 		}
-		else if (portalLabel == "sp" || portalLabel == "tp") {
+		else if (portal_label == "sp" || portal_label == "tp") {
 			continue;
 		}
 		found = true;
@@ -247,32 +247,32 @@ auto MapFunctions::listPortals(ref_ptr_t<Player> player, const chat_t &args) -> 
 		str.str("");
 		str.clear();
 		format(row, str);
-		ChatHandlerFunctions::showInfo(player, str.str());
+		chat_handler_functions::show_info(player, str.str());
 	}
 
 	if (!found) {
-		ChatHandlerFunctions::showError(player, "No results");
+		chat_handler_functions::show_error(player, "No results");
 	}
 
-	return ChatResult::HandledDisplay;
+	return chat_result::handled_display;
 }
 
-auto MapFunctions::listPlayers(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	map_id_t mapId = args.empty() ?
-		player->getMapId() :
-		ChatHandlerFunctions::getMap(args, player);
-	Map *map = Maps::getMap(mapId);
+auto map_functions::list_players(ref_ptr<player> player_value, const game_chat &args) -> chat_result {
+	game_map_id map_id = args.empty() ?
+		player_value->get_map_id() :
+		chat_handler_functions::get_map(args, player_value);
+	map *map = maps::get_map(map_id);
 	if (map == nullptr) {
-		ChatHandlerFunctions::showError(player, "Invalid map: " + args);
-		return ChatResult::HandledDisplay;
+		chat_handler_functions::show_error(player_value, "invalid map: " + args);
+		return chat_result::handled_display;
 	}
 
-	ChatHandlerFunctions::showInfo(player, "Players for Map " + std::to_string(mapId));
+	chat_handler_functions::show_info(player_value, "Players for Map " + std::to_string(map_id));
 
-	out_stream_t str{""};
+	out_stream str{""};
 	bool found = false;
-	map->runFunctionPlayers([&](ref_ptr_t<Player> target) {
-		if (target->isUsingGmHide()) {
+	map->run_function_players([&](ref_ptr<player> target) {
+		if (target->is_using_gm_hide()) {
 			return;
 		}
 
@@ -280,66 +280,66 @@ auto MapFunctions::listPlayers(ref_ptr_t<Player> player, const chat_t &args) -> 
 		str.str("");
 		str.clear();
 
-		str << StringUtilities::toUpper(target->getName())
-			<< " (ID: " << target->getId() << ", ";
+		str << utilities::str::to_upper(target->get_name())
+			<< " (ID: " << target->get_id() << ", ";
 
-		if (Party *party = target->getParty()) {
-			str << "Party ID: " << party->getId() << ", ";
+		if (party *party = target->get_party()) {
+			str << "Party ID: " << party->get_id() << ", ";
 		}
 			
-		str << "HP: " << target->getStats()->getHp() << "/" << target->getStats()->getMaxHp() << " ~ "
-			<< target->getStats()->getHp() * 100 / target->getStats()->getMaxHp() << "%) "
-			<< target->getMapPosition();
+		str << "HP: " << target->get_stats()->get_hp() << "/" << target->get_stats()->get_max_hp() << " ~ "
+			<< target->get_stats()->get_hp() * 100 / target->get_stats()->get_max_hp() << "%) "
+			<< target->get_map_position();
 
-		ChatHandlerFunctions::showInfo(player, str.str());
+		chat_handler_functions::show_info(player_value, str.str());
 	});
 
 	if (!found) {
-		ChatHandlerFunctions::showError(player, "No results");
+		chat_handler_functions::show_error(player_value, "No results");
 	}
 
-	return ChatResult::HandledDisplay;
+	return chat_result::handled_display;
 }
 
-auto MapFunctions::listReactors(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	map_id_t mapId = args.empty() ?
-		player->getMapId() :
-		ChatHandlerFunctions::getMap(args, player);
-	Map *map = Maps::getMap(mapId);
+auto map_functions::list_reactors(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	game_map_id map_id = args.empty() ?
+		player->get_map_id() :
+		chat_handler_functions::get_map(args, player);
+	map *map = maps::get_map(map_id);
 	if (map == nullptr) {
-		ChatHandlerFunctions::showError(player, "Invalid map: " + args);
-		return ChatResult::HandledDisplay;
+		chat_handler_functions::show_error(player, "Invalid map: " + args);
+		return chat_result::handled_display;
 	}
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT ml.lifeid, sc.script, ml.x_pos, ml.y_pos, ml.foothold "
-		<< "FROM " << db.makeTable("map_life") << " ml "
-		<< "LEFT OUTER JOIN " << db.makeTable("scripts") << " sc ON sc.objectid = ml.lifeid AND sc.script_type = 'reactor' "
+		<< "FROM " << db.make_table("map_life") << " ml "
+		<< "LEFT OUTER JOIN " << db.make_table("scripts") << " sc ON sc.objectid = ml.lifeid AND sc.script_type = 'reactor' "
 		<< "WHERE ml.life_type = 'reactor' AND ml.mapid = :mapId",
-		soci::use(mapId, "mapId"));
+		soci::use(map_id, "map_id"));
 
-	auto format = [](const soci::row &row, out_stream_t &str) {
-		opt_string_t reactorScript = row.get<opt_string_t>(1);
-		coord_t x = row.get<coord_t>(2);
-		coord_t y = row.get<coord_t>(3);
-		foothold_id_t foothold = row.get<foothold_id_t>(4);
+	auto format = [](const soci::row &row, out_stream &str) {
+		opt_string reactor_script = row.get<opt_string>(1);
+		game_coord x = row.get<game_coord>(2);
+		game_coord y = row.get<game_coord>(3);
+		game_foothold_id foothold = row.get<game_foothold_id>(4);
 
-		str << row.get<reactor_id_t>(0);
-		if (reactorScript.is_initialized()) {
-			string_t script = reactorScript.get();
+		str << row.get<game_reactor_id>(0);
+		if (reactor_script.is_initialized()) {
+			string script = reactor_script.get();
 			if (!script.empty()) {
 				str << " (script '" << script << "')";
 			}
 		}
 
-		str << " " << MapPosition{Point{x, y}, foothold};
+		str << " " << map_position{point{x, y}, foothold};
 	};
 
-	ChatHandlerFunctions::showInfo(player, "Reactors for Map " + std::to_string(mapId));
+	chat_handler_functions::show_info(player, "Reactors for Map " + std::to_string(map_id));
 
-	out_stream_t str{""};
+	out_stream str{""};
 	bool found = false;
 	for (const auto &row : rs) {
 		found = true;
@@ -347,53 +347,53 @@ auto MapFunctions::listReactors(ref_ptr_t<Player> player, const chat_t &args) ->
 		str.str("");
 		str.clear();
 		format(row, str);
-		ChatHandlerFunctions::showInfo(player, str.str());
+		chat_handler_functions::show_info(player, str.str());
 	}
 
 	if (!found) {
-		ChatHandlerFunctions::showError(player, "No results");
+		chat_handler_functions::show_error(player, "No results");
 	}
 
-	return ChatResult::HandledDisplay;
+	return chat_result::handled_display;
 }
 
-auto MapFunctions::listNpcs(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	map_id_t mapId = args.empty() ?
-		player->getMapId() :
-		ChatHandlerFunctions::getMap(args, player);
-	Map *map = Maps::getMap(mapId);
+auto map_functions::list_npcs(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	game_map_id map_id = args.empty() ?
+		player->get_map_id() :
+		chat_handler_functions::get_map(args, player);
+	map *map = maps::get_map(map_id);
 	if (map == nullptr) {
-		ChatHandlerFunctions::showError(player, "Invalid map: " + args);
-		return ChatResult::HandledDisplay;
+		chat_handler_functions::show_error(player, "Invalid map: " + args);
+		return chat_result::handled_display;
 	}
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT ml.lifeid, st.label, sc.script, ml.x_pos, ml.y_pos, ml.foothold "
-		<< "FROM " << db.makeTable("map_life") << " ml "
-		<< "INNER JOIN " << db.makeTable("strings") << " st ON st.objectid = ml.lifeid AND st.object_type = 'npc' "
-		<< "LEFT OUTER JOIN " << db.makeTable("scripts") << " sc ON sc.objectid = ml.lifeid AND sc.script_type = 'npc' "
+		<< "FROM " << db.make_table("map_life") << " ml "
+		<< "INNER JOIN " << db.make_table("strings") << " st ON st.objectid = ml.lifeid AND st.object_type = 'npc' "
+		<< "LEFT OUTER JOIN " << db.make_table("scripts") << " sc ON sc.objectid = ml.lifeid AND sc.script_type = 'npc' "
 		<< "WHERE ml.life_type = 'npc' AND ml.mapid = :mapId",
-		soci::use(mapId, "mapId"));
+		soci::use(map_id, "map_id"));
 
-	auto format = [](const soci::row &row, out_stream_t &str) {
-		str << row.get<npc_id_t>(0) << " : " << row.get<string_t>(1);
-		opt_string_t script = row.get<opt_string_t>(2);
-		coord_t x = row.get<coord_t>(3);
-		coord_t y = row.get<coord_t>(4);
-		foothold_id_t foothold = row.get<foothold_id_t>(5);
+	auto format = [](const soci::row &row, out_stream &str) {
+		str << row.get<game_npc_id>(0) << " : " << row.get<string>(1);
+		opt_string script = row.get<opt_string>(2);
+		game_coord x = row.get<game_coord>(3);
+		game_coord y = row.get<game_coord>(4);
+		game_foothold_id foothold = row.get<game_foothold_id>(5);
 
 		if (script.is_initialized()) {
 			str << " (script '" << script.get() << "')";
 		}
 
-		str << " " << MapPosition{Point{x, y}, foothold};
+		str << " " << map_position{point{x, y}, foothold};
 	};
 
-	ChatHandlerFunctions::showInfo(player, "NPCs for Map " + std::to_string(mapId));
+	chat_handler_functions::show_info(player, "NPCs for Map " + std::to_string(map_id));
 
-	out_stream_t str{""};
+	out_stream str{""};
 	bool found = false;
 	for (const auto &row : rs) {
 		found = true;
@@ -401,58 +401,58 @@ auto MapFunctions::listNpcs(ref_ptr_t<Player> player, const chat_t &args) -> Cha
 		str.str("");
 		str.clear();
 		format(row, str);
-		ChatHandlerFunctions::showInfo(player, str.str());
+		chat_handler_functions::show_info(player, str.str());
 	}
 
 	if (!found) {
-		ChatHandlerFunctions::showError(player, "No results");
+		chat_handler_functions::show_error(player, "No results");
 	}
 
-	return ChatResult::HandledDisplay;
+	return chat_result::handled_display;
 }
 
-auto MapFunctions::mapDimensions(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	map_id_t mapId = args.empty() ?
-		player->getMapId() :
-		ChatHandlerFunctions::getMap(args, player);
-	Map *map = Maps::getMap(mapId);
+auto map_functions::map_dimensions(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	game_map_id map_id = args.empty() ?
+		player->get_map_id() :
+		chat_handler_functions::get_map(args, player);
+	map *map = maps::get_map(map_id);
 	if (map == nullptr) {
-		ChatHandlerFunctions::showError(player, "Invalid map: " + args);
+		chat_handler_functions::show_error(player, "Invalid map: " + args);
 	}
 	else {
-		ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) {
-			message << "Dimensions for Map " << mapId << ": " << map->getDimensions();
+		chat_handler_functions::show_info(player, [&](out_stream &message) {
+			message << "Dimensions for Map " << map_id << ": " << map->get_dimensions();
 		});
 	}
-	return ChatResult::HandledDisplay;
+	return chat_result::handled_display;
 }
 
-auto MapFunctions::zakum(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	player->getMap()->spawnZakum(player->getPos());
-	ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {
-		log << "GM " << player->getName()
-			<< " spawned Zakum on map " << player->getMapId();
+auto map_functions::zakum(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	player->get_map()->spawn_zakum(player->get_pos());
+	channel_server::get_instance().log(log_type::gm_command, [&](out_stream &log) {
+		log << "GM " << player->get_name()
+			<< " spawned Zakum on map " << player->get_map_id();
 	});
-	return ChatResult::HandledDisplay;
+	return chat_result::handled_display;
 }
 
-auto MapFunctions::horntail(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	player->getMap()->spawnMob(Mobs::SummonHorntail, player->getPos());
-	ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {
-		log << "GM " << player->getName()
-			<< " spawned Horntail on map " << player->getMapId();
+auto map_functions::horntail(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	player->get_map()->spawn_mob(mobs::summon_horntail, player->get_pos());
+	channel_server::get_instance().log(log_type::gm_command, [&](out_stream &log) {
+		log << "GM " << player->get_name()
+			<< " spawned Horntail on map " << player->get_map_id();
 	});
-	return ChatResult::HandledDisplay;
+	return chat_result::handled_display;
 }
 
-auto MapFunctions::music(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
+auto map_functions::music(ref_ptr<player> player, const game_chat &args) -> chat_result {
 	if (args.empty()) {
-		ChatHandlerFunctions::showInfo(player, "Current music: " + player->getMap()->getMusic());
+		chat_handler_functions::show_info(player, "Current music: " + player->get_map()->get_music());
 	}
 	else {
-		auto &db = Database::getDataDb();
-		auto &sql = db.getSession();
-		string_t music;
+		auto &db = database::get_data_db();
+		auto &sql = db.get_session();
+		string music;
 
 		if (args == "default") {
 			music = args;
@@ -460,7 +460,7 @@ auto MapFunctions::music(ref_ptr_t<Player> player, const chat_t &args) -> ChatRe
 		else {
 			sql
 				<< "SELECT m.default_bgm "
-				<< "FROM " << db.makeTable("map_data") << " m "
+				<< "FROM " << db.make_table("map_data") << " m "
 				<< "WHERE m.default_bgm = :q "
 				<< "LIMIT 1",
 				soci::use(args, "q"),
@@ -468,56 +468,56 @@ auto MapFunctions::music(ref_ptr_t<Player> player, const chat_t &args) -> ChatRe
 		}
 
 		if (music.empty()) {
-			ChatHandlerFunctions::showError(player, "Invalid music: " + args);
+			chat_handler_functions::show_error(player, "Invalid music: " + args);
 		}
 		else {
-			player->getMap()->setMusic(music);
-			ChatHandlerFunctions::showInfo(player, "Set music on the map to: " + music);
+			player->get_map()->set_music(music);
+			chat_handler_functions::show_info(player, "Set music on the map to: " + music);
 		}
 	}
-	return ChatResult::HandledDisplay;
+	return chat_result::handled_display;
 }
 
-auto MapFunctions::summon(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	match_t matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) ?(\d+)?)", matches) == MatchResult::AnyMatches) {
-		string_t rawMobId = matches[1];
-		mob_id_t mobId = atoi(rawMobId.c_str());
-		if (ChannelServer::getInstance().getMobDataProvider().mobExists(mobId)) {
-			string_t countString = matches[2];
+auto map_functions::summon(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	match matches;
+	if (chat_handler_functions::run_regex_pattern(args, R"((\d+) ?(\d+)?)", matches) == match_result::any_matches) {
+		string raw_mob_id = matches[1];
+		game_mob_id mob_id = atoi(raw_mob_id.c_str());
+		if (channel_server::get_instance().get_mob_data_provider().mob_exists(mob_id)) {
+			string countString = matches[2];
 			int32_t count = ext::constrain_range(countString.empty() ? 1 : atoi(countString.c_str()), 1, 1000);
 			for (int32_t i = 0; i < count; ++i) {
-				player->getMap()->spawnMob(mobId, player->getPos());
+				player->get_map()->spawn_mob(mob_id, player->get_pos());
 			}
 			if (count > 0) {
-				ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) {
+				chat_handler_functions::show_info(player, [&](out_stream &message) {
 					message << "Spawned " << count
-						<< " mobs with ID " << mobId;
+						<< " mobs with ID " << mob_id;
 				});
 			}
 			else {
-				ChatHandlerFunctions::showError(player, "No mobs spawned");
+				chat_handler_functions::show_error(player, "No mobs spawned");
 			}
 		}
 		else {
-			ChatHandlerFunctions::showError(player, "Invalid mob: " + rawMobId);
+			chat_handler_functions::show_error(player, "Invalid mob: " + raw_mob_id);
 		}
-		return ChatResult::HandledDisplay;
+		return chat_result::handled_display;
 	}
-	return ChatResult::ShowSyntax;
+	return chat_result::show_syntax;
 }
 
-auto MapFunctions::clearDrops(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	player->getMap()->clearDrops();
-	return ChatResult::HandledDisplay;
+auto map_functions::clear_drops(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	player->get_map()->clear_drops();
+	return chat_result::handled_display;
 }
 
-auto MapFunctions::killAllMobs(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult {
-	int32_t killed = player->getMap()->killMobs(player, true);
-	ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) {
+auto map_functions::kill_all_mobs(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	int32_t killed = player->get_map()->kill_mobs(player, true);
+	chat_handler_functions::show_info(player, [&](out_stream &message) {
 		message << "Killed " << killed << " mobs";
 	});
-	return ChatResult::HandledDisplay;
+	return chat_result::handled_display;
 }
 
 }

@@ -19,35 +19,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ChannelServer/ChatHandlerFunctions.hpp"
 
-namespace Vana {
-	namespace ChannelServer {
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class player;
 
-		namespace ManagementFunctions {
-			auto map(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto warp(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto follow(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto changeChannel(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto lag(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto header(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto shutdown(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto kick(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto relog(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto calculateRanks(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto item(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto storage(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto shop(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto reload(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto npc(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto addNpc(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto killNpc(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto kill(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto ban(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto tempBan(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto ipBan(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto unban(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto rehash(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto rates(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+		namespace management_functions {
+			auto user_warp(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto warp(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto follow(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto change_channel(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto lag(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto header(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto shutdown(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto kick(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto relog(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto calculate_ranks(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto item(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto storage(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto shop(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto reload(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto run_npc(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto add_npc(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto kill_npc(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto kill(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto ban(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto temp_ban(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto ip_ban(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto unban(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto rehash(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto rates(ref_ptr<player> player, const game_chat &args) -> chat_result;
 		}
 	}
 }

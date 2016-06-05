@@ -21,59 +21,59 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/WorldConfig.hpp"
 #include "LoginServer/World.hpp"
 
-namespace Vana {
-namespace LoginServer {
-namespace Packets {
-namespace Interserver {
+namespace vana {
+namespace login_server {
+namespace packets {
+namespace interserver {
 
-PACKET_IMPL(connect, World *world) {
-	PacketBuilder builder;
+PACKET_IMPL(connect, world *world_value) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_WORLD_CONNECT)
-		.add<world_id_t>(world->getId().get(-1))
-		.add<port_t>(world->getPort())
-		.add<WorldConfig>(world->getConfig());
+		.add<packet_header>(IMSG_WORLD_CONNECT)
+		.add<game_world_id>(world_value->get_id().get(-1))
+		.add<connection_port>(world_value->get_port())
+		.add<world_config>(world_value->get_config());
 	return builder;
 }
 
-PACKET_IMPL(noMoreWorld) {
-	PacketBuilder builder;
+PACKET_IMPL(no_more_world) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_WORLD_CONNECT)
+		.add<packet_header>(IMSG_WORLD_CONNECT)
 		.add<int8_t>(-1);
 	return builder;
 }
 
-PACKET_IMPL(connectChannel, optional_t<world_id_t> worldId, optional_t<Ip> ip, optional_t<port_t> port) {
-	PacketBuilder builder;
+PACKET_IMPL(connect_channel, optional<game_world_id> world_id, optional<ip> ip_value, optional<connection_port> port) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_LOGIN_CHANNEL_CONNECT)
-		.add<world_id_t>(worldId.get(-1))
-		.add<Ip>(ip.get(Ip{0}))
-		.add<port_t>(port.get(0));
+		.add<packet_header>(IMSG_LOGIN_CHANNEL_CONNECT)
+		.add<game_world_id>(world_id.get(-1))
+		.add<ip>(ip_value.get(ip{0}))
+		.add<connection_port>(port.get(0));
 	return builder;
 }
 
-PACKET_IMPL(playerConnectingToChannel, channel_id_t channel, player_id_t charId, const Ip &ip) {
-	PacketBuilder builder;
+PACKET_IMPL(player_connecting_to_channel, game_channel_id chan_id, game_player_id char_id, const ip &ip_value) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_TO_CHANNEL)
-		.add<channel_id_t>(channel)
-		.add<header_t>(IMSG_SYNC)
-		.add<sync_t>(Sync::SyncTypes::Player)
-		.add<sync_t>(Sync::Player::NewConnectable)
-		.add<player_id_t>(charId)
-		.add<Ip>(ip)
+		.add<packet_header>(IMSG_TO_CHANNEL)
+		.add<game_channel_id>(chan_id)
+		.add<packet_header>(IMSG_SYNC)
+		.add<protocol_sync>(sync::sync_types::player)
+		.add<protocol_sync>(sync::player::new_connectable)
+		.add<game_player_id>(char_id)
+		.add<ip>(ip_value)
 		// The size of the held packet that should be there - there isn't one
 		.add<uint16_t>(0);
 	return builder;
 }
 
-PACKET_IMPL(rehashConfig, World *world) {
-	PacketBuilder builder;
+PACKET_IMPL(rehash_config, world *world_value) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_REHASH_CONFIG)
-		.add<WorldConfig>(world->getConfig());
+		.add<packet_header>(IMSG_REHASH_CONFIG)
+		.add<world_config>(world_value->get_config());
 	return builder;
 }
 

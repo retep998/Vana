@@ -31,123 +31,123 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/PlayerDataProvider.hpp"
 #include "ChannelServer/SmsgHeader.hpp"
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
-namespace Players {
+namespace vana {
+namespace channel_server {
+namespace packets {
+namespace players {
 
-SPLIT_PACKET_IMPL(showMoving, player_id_t playerId, unsigned char *buf, size_t size) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(show_moving, game_player_id player_id, unsigned char *buf, size_t size) {
+	split_packet_builder builder;
 	builder.map
-		.add<header_t>(SMSG_PLAYER_MOVEMENT)
-		.add<player_id_t>(playerId)
+		.add<packet_header>(SMSG_PLAYER_MOVEMENT)
+		.add<game_player_id>(player_id)
 		.unk<int32_t>()
-		.addBuffer(buf, size);
+		.add_buffer(buf, size);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(faceExpression, player_id_t playerId, int32_t face) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(face_expression, game_player_id player_id, int32_t face) {
+	split_packet_builder builder;
 	builder.map
-		.add<header_t>(SMSG_EMOTE)
-		.add<player_id_t>(playerId)
+		.add<packet_header>(SMSG_EMOTE)
+		.add<game_player_id>(player_id)
 		.add<int32_t>(face);
 	return builder;
 }
 
-PACKET_IMPL(showChat, player_id_t playerId, bool isGm, const string_t &msg, bool bubbleOnly) {
-	PacketBuilder builder;
+PACKET_IMPL(show_chat, game_player_id player_id, bool is_gm, const string &msg, bool bubble_only) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_PLAYER_CHAT)
-		.add<player_id_t>(playerId)
-		.add<bool>(isGm)
-		.add<string_t>(msg)
-		.add<bool>(bubbleOnly);
+		.add<packet_header>(SMSG_PLAYER_CHAT)
+		.add<game_player_id>(player_id)
+		.add<bool>(is_gm)
+		.add<string>(msg)
+		.add<bool>(bubble_only);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(damagePlayer, player_id_t playerId, damage_t dmg, mob_id_t mob, uint8_t hit, int8_t type, uint8_t stance, skill_id_t noDamageSkill, const ReturnDamageData &pgmr) {
-	SplitPacketBuilder builder;
-	const int8_t BumpDamage = -1;
-	const int8_t MapDamage = -2;
+SPLIT_PACKET_IMPL(damage_player, game_player_id player_id, game_damage dmg, game_mob_id mob, uint8_t hit, int8_t type, uint8_t stance, game_skill_id no_damage_skill, const return_damage_data &pgmr) {
+	split_packet_builder builder;
+	const int8_t bump_damage = -1;
+	const int8_t map_damage = -2;
 
 	builder.map
-		.add<header_t>(SMSG_PLAYER_DAMAGE)
-		.add<player_id_t>(playerId)
+		.add<packet_header>(SMSG_PLAYER_DAMAGE)
+		.add<game_player_id>(player_id)
 		.add<int8_t>(type);
 
 	switch (type) {
-		case MapDamage:
+		case map_damage:
 			builder.map
-				.add<damage_t>(dmg)
-				.add<damage_t>(dmg);
+				.add<game_damage>(dmg)
+				.add<game_damage>(dmg);
 			break;
 		default:
 			builder.map
-				.add<damage_t>(pgmr.reduction > 0 ? pgmr.damage : dmg)
-				.add<mob_id_t>(mob)
+				.add<game_damage>(pgmr.reduction > 0 ? pgmr.damage : dmg)
+				.add<game_mob_id>(mob)
 				.add<uint8_t>(hit)
 				.add<uint8_t>(pgmr.reduction);
 
 			if (pgmr.reduction > 0) {
 				builder.map
-					.add<bool>(pgmr.isPhysical) // Maybe? No Mana Reflection on global to test with
-					.add<map_object_t>(pgmr.mapMobId)
+					.add<bool>(pgmr.is_physical) // Maybe? No Mana Reflection on global to test with
+					.add<game_map_object>(pgmr.map_mob_id)
 					.unk<int8_t>(6)
-					.add<Point>(pgmr.pos);
+					.add<point>(pgmr.pos);
 			}
 
 			builder.map
 				.add<uint8_t>(stance)
-				.add<damage_t>(dmg);
+				.add<game_damage>(dmg);
 
-			if (noDamageSkill > 0) {
-				builder.map.add<skill_id_t>(noDamageSkill);
+			if (no_damage_skill > 0) {
+				builder.map.add<game_skill_id>(no_damage_skill);
 			}
 			break;
 	}
 	return builder;
 }
 
-PACKET_IMPL(showInfo, ref_ptr_t<Vana::ChannelServer::Player> getInfo, bool isSelf) {
-	PacketBuilder builder;
+PACKET_IMPL(show_info, ref_ptr<vana::channel_server::player> get_info, bool is_self) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_PLAYER_INFO)
-		.add<player_id_t>(getInfo->getId())
-		.add<player_level_t>(getInfo->getStats()->getLevel())
-		.add<job_id_t>(getInfo->getStats()->getJob())
-		.add<fame_t>(getInfo->getStats()->getFame())
+		.add<packet_header>(SMSG_PLAYER_INFO)
+		.add<game_player_id>(get_info->get_id())
+		.add<game_player_level>(get_info->get_stats()->get_level())
+		.add<game_job_id>(get_info->get_stats()->get_job())
+		.add<game_fame>(get_info->get_stats()->get_fame())
 		.add<bool>(false) // Married
-		.add<string_t>("-") // Guild
-		.add<string_t>("") // Guild Alliance
-		.add<bool>(isSelf);
+		.add<string>("-") // Guild
+		.add<string>("") // Guild alliance
+		.add<bool>(is_self);
 
-	getInfo->getPets()->petInfoPacket(builder);
-	getInfo->getMounts()->mountInfoPacket(builder);
-	getInfo->getInventory()->wishlistInfoPacket(builder);
-	getInfo->getMonsterBook()->infoPacket(builder);
+	get_info->get_pets()->pet_info_packet(builder);
+	get_info->get_mounts()->mount_info_packet(builder);
+	get_info->get_inventory()->wishlist_info_packet(builder);
+	get_info->get_monster_book()->info_packet(builder);
 	return builder;
 }
 
-PACKET_IMPL(whisperPlayer, const string_t &whispererName, channel_id_t channel, const string_t &message) {
-	PacketBuilder builder;
+PACKET_IMPL(whisper_player, const string &whisperer_name, game_channel_id channel, const string &message) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_COMMAND)
+		.add<packet_header>(SMSG_COMMAND)
 		.add<int8_t>(0x12)
-		.add<string_t>(whispererName)
+		.add<string>(whisperer_name)
 		.add<int16_t>(channel)
-		.add<string_t>(message);
+		.add<string>(message);
 	return builder;
 }
 
-PACKET_IMPL(findPlayer, const string_t &name, opt_int32_t map, uint8_t is, bool isChannel) {
-	PacketBuilder builder;
-	builder.add<header_t>(SMSG_COMMAND);
+PACKET_IMPL(find_player, const string &name, opt_int32_t map, uint8_t is, bool is_channel) {
+	packet_builder builder;
+	builder.add<packet_header>(SMSG_COMMAND);
 	if (map.is_initialized()) {
 		builder
 			.add<int8_t>(0x09)
-			.add<string_t>(name)
-			.add<int8_t>(isChannel ? 0x03 : 0x01)
+			.add<string>(name)
+			.add<int8_t>(is_channel ? 0x03 : 0x01)
 			.add<int32_t>(map.get())
 			.unk<int32_t>()
 			.unk<int32_t>();
@@ -155,180 +155,180 @@ PACKET_IMPL(findPlayer, const string_t &name, opt_int32_t map, uint8_t is, bool 
 	else {
 		builder
 			.add<int8_t>(0x0A)
-			.add<string_t>(name)
+			.add<string>(name)
 			.add<int8_t>(is);
 	}
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useMeleeAttack, player_id_t playerId, skill_id_t masterySkillId, skill_level_t masteryLevel, const AttackData &attack) {
-	SplitPacketBuilder builder;
-	int8_t hitByte = (attack.targets * 0x10) + attack.hits;
-	skill_id_t skillId = attack.skillId;
-	bool isMesoExplosion = attack.isMesoExplosion;
-	if (isMesoExplosion) {
-		hitByte = (attack.targets * 0x10) + 0x0A;
+SPLIT_PACKET_IMPL(use_melee_attack, game_player_id player_id, game_skill_id mastery_skill_id, game_skill_level mastery_level, const attack_data &attack) {
+	split_packet_builder builder;
+	int8_t hit_byte = (attack.targets * 0x10) + attack.hits;
+	game_skill_id skill_id = attack.skill_id;
+	bool is_meso_explosion = attack.is_meso_explosion;
+	if (is_meso_explosion) {
+		hit_byte = (attack.targets * 0x10) + 0x0A;
 	}
 
 	builder.map
-		.add<header_t>(SMSG_ATTACK_MELEE)
-		.add<player_id_t>(playerId)
-		.add<int8_t>(hitByte)
-		.add<skill_level_t>(attack.skillLevel);
+		.add<packet_header>(SMSG_ATTACK_MELEE)
+		.add<game_player_id>(player_id)
+		.add<int8_t>(hit_byte)
+		.add<game_skill_level>(attack.skill_level);
 
-	if (skillId != Vana::Skills::All::RegularAttack) {
-		builder.map.add<skill_id_t>(skillId);
+	if (skill_id != vana::skills::all::regular_attack) {
+		builder.map.add<game_skill_id>(skill_id);
 	}
 
 	builder.map
 		.add<uint8_t>(attack.display)
 		.add<uint8_t>(attack.animation)
-		.add<uint8_t>(attack.weaponSpeed)
-		.add<uint8_t>(masterySkillId > 0 ? GameLogicUtilities::getMasteryDisplay(masteryLevel) : 0)
+		.add<uint8_t>(attack.weapon_speed)
+		.add<uint8_t>(mastery_skill_id > 0 ? game_logic_utilities::get_mastery_display(mastery_level) : 0)
 		.unk<int32_t>();
 
 	for (const auto &target : attack.damages) {
 		builder.map
-			.add<map_object_t>(target.first)
+			.add<game_map_object>(target.first)
 			.unk<int8_t>(0x06);
 
-		if (isMesoExplosion) {
+		if (is_meso_explosion) {
 			builder.map.add<uint8_t>(static_cast<uint8_t>(target.second.size()));
 		}
 		for (const auto &hit : target.second) {
-			builder.map.add<damage_t>(hit);
+			builder.map.add<game_damage>(hit);
 		}
 	}
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useRangedAttack, player_id_t playerId, skill_id_t masterySkillId, skill_level_t masteryLevel, const AttackData &attack) {
-	SplitPacketBuilder builder;
-	skill_id_t skillId = attack.skillId;
+SPLIT_PACKET_IMPL(use_ranged_attack, game_player_id player_id, game_skill_id mastery_skill_id, game_skill_level mastery_level, const attack_data &attack) {
+	split_packet_builder builder;
+	game_skill_id skill_id = attack.skill_id;
 
 	builder.map
-		.add<header_t>(SMSG_ATTACK_RANGED)
-		.add<player_id_t>(playerId)
+		.add<packet_header>(SMSG_ATTACK_RANGED)
+		.add<game_player_id>(player_id)
 		.add<int8_t>((attack.targets * 0x10) + attack.hits)
-		.add<skill_level_t>(attack.skillLevel);
+		.add<game_skill_level>(attack.skill_level);
 
-	if (skillId != Vana::Skills::All::RegularAttack) {
-		builder.map.add<skill_id_t>(skillId);
+	if (skill_id != vana::skills::all::regular_attack) {
+		builder.map.add<game_skill_id>(skill_id);
 	}
 
 	builder.map
 		.add<uint8_t>(attack.display)
 		.add<uint8_t>(attack.animation)
-		.add<uint8_t>(attack.weaponSpeed)
-		.add<uint8_t>(masterySkillId > 0 ? GameLogicUtilities::getMasteryDisplay(masteryLevel) : 0)
+		.add<uint8_t>(attack.weapon_speed)
+		.add<uint8_t>(mastery_skill_id > 0 ? game_logic_utilities::get_mastery_display(mastery_level) : 0)
 		// Bug in global:
 		// The colored swoosh does not display as it should
-		.add<item_id_t>(attack.starId);
+		.add<game_item_id>(attack.star_id);
 
 	for (const auto &target : attack.damages) {
 		builder.map
-			.add<map_object_t>(target.first)
+			.add<game_map_object>(target.first)
 			.unk<int8_t>(0x06);
 
 		for (const auto &hit : target.second) {
-			damage_t damage = hit;
-			switch (skillId) {
-				case Vana::Skills::Marksman::Snipe: // Snipe is always crit
+			game_damage damage = hit;
+			switch (skill_id) {
+				case vana::skills::marksman::snipe: // Snipe is always crit
 					damage |= 0x80000000; // Critical damage = 0x80000000 + damage
 					break;
 				default:
 					break;
 			}
-			builder.map.add<damage_t>(damage);
+			builder.map.add<game_damage>(damage);
 		}
 	}
-	builder.map.add<Point>(attack.projectilePos);
+	builder.map.add<point>(attack.projectile_pos);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useSpellAttack, player_id_t playerId, const AttackData &attack) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(use_spell_attack, game_player_id player_id, const attack_data &attack) {
+	split_packet_builder builder;
 	builder.map
-		.add<header_t>(SMSG_ATTACK_MAGIC)
-		.add<player_id_t>(playerId)
+		.add<packet_header>(SMSG_ATTACK_MAGIC)
+		.add<game_player_id>(player_id)
 		.add<int8_t>((attack.targets * 0x10) + attack.hits)
-		.add<uint8_t>(attack.skillLevel)
-		.add<skill_id_t>(attack.skillId)
+		.add<uint8_t>(attack.skill_level)
+		.add<game_skill_id>(attack.skill_id)
 		.add<uint8_t>(attack.display)
 		.add<uint8_t>(attack.animation)
-		.add<uint8_t>(attack.weaponSpeed)
+		.add<uint8_t>(attack.weapon_speed)
 		.add<uint8_t>(0) // Mastery byte is always 0 because spells don't have a swoosh
 		.unk<int32_t>();
 
 	for (const auto &target : attack.damages) {
 		builder.map
-			.add<map_object_t>(target.first)
+			.add<game_map_object>(target.first)
 			.unk<int8_t>(0x06);
 
 		for (const auto &hit : target.second) {
-			builder.map.add<damage_t>(hit);
+			builder.map.add<game_damage>(hit);
 		}
 	}
 
 	if (attack.charge > 0) {
-		builder.map.add<charge_time_t>(attack.charge);
+		builder.map.add<game_charge_time>(attack.charge);
 	}
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useSummonAttack, player_id_t playerId, const AttackData &attack) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(use_summon_attack, game_player_id player_id, const attack_data &attack) {
+	split_packet_builder builder;
 	builder.map
-		.add<header_t>(SMSG_SUMMON_ATTACK)
-		.add<player_id_t>(playerId)
-		.add<summon_id_t>(attack.summonId)
+		.add<packet_header>(SMSG_SUMMON_ATTACK)
+		.add<game_player_id>(player_id)
+		.add<game_summon_id>(attack.summon_id)
 		.add<int8_t>(attack.animation)
 		.add<int8_t>(attack.targets);
 
 	for (const auto &target : attack.damages) {
 		builder.map
-			.add<map_object_t>(target.first)
+			.add<game_map_object>(target.first)
 			.unk<int8_t>(0x06);
 
 		for (const auto &hit : target.second) {
-			builder.map.add<damage_t>(hit);
+			builder.map.add<game_damage>(hit);
 		}
 	}
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useBombAttack, player_id_t playerId, charge_time_t chargeTime, skill_id_t skillId, const WidePoint &pos) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(use_bomb_attack, game_player_id player_id, game_charge_time charge_time, game_skill_id skill_id, const wide_point &pos) {
+	split_packet_builder builder;
 	builder.map
-		.add<header_t>(SMSG_3RD_PARTY_BOMB)
-		.add<player_id_t>(playerId)
-		.add<WidePoint>(pos)
-		.add<charge_time_t>(chargeTime)
-		.add<skill_id_t>(skillId);
+		.add<packet_header>(SMSG_3RD_PARTY_BOMB)
+		.add<game_player_id>(player_id)
+		.add<wide_point>(pos)
+		.add<game_charge_time>(charge_time)
+		.add<game_skill_id>(skill_id);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useEnergyChargeAttack, player_id_t playerId, int32_t masterySkillId, uint8_t masteryLevel, const AttackData &attack) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(use_energy_charge_attack, game_player_id player_id, int32_t mastery_skill_id, uint8_t mastery_level, const attack_data &attack) {
+	split_packet_builder builder;
 	builder.map
-		.add<header_t>(SMSG_ATTACK_ENERGYCHARGE)
-		.add<player_id_t>(playerId)
+		.add<packet_header>(SMSG_ATTACK_ENERGYCHARGE)
+		.add<game_player_id>(player_id)
 		.add<int8_t>((attack.targets * 0x10) + attack.hits)
-		.add<skill_level_t>(attack.skillLevel)
-		.add<skill_id_t>(attack.skillId)
+		.add<game_skill_level>(attack.skill_level)
+		.add<game_skill_id>(attack.skill_id)
 		.add<uint8_t>(attack.display)
 		.add<uint8_t>(attack.animation)
-		.add<uint8_t>(attack.weaponSpeed)
-		.add<uint8_t>(masterySkillId > 0 ? GameLogicUtilities::getMasteryDisplay(masteryLevel) : 0)
+		.add<uint8_t>(attack.weapon_speed)
+		.add<uint8_t>(mastery_skill_id > 0 ? game_logic_utilities::get_mastery_display(mastery_level) : 0)
 		.unk<int32_t>();
 
 	for (const auto &target : attack.damages) {
 		builder.map
-			.add<map_object_t>(target.first)
+			.add<game_map_object>(target.first)
 			.unk<int8_t>(0x06);
 
 		for (const auto &hit : target.second) {
-			builder.map.add<damage_t>(hit);
+			builder.map.add<game_damage>(hit);
 		}
 	}
 	return builder;

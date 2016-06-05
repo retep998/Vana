@@ -20,117 +20,117 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/PacketBuilder.hpp"
 #include "Common/Randomizer.hpp"
 
-namespace Vana {
-namespace LoginServer {
+namespace vana {
+namespace login_server {
 
-auto World::setConnected(bool connected) -> void {
+auto world::set_connected(bool connected) -> void {
 	m_connected = connected;
 	if (!connected) {
 		m_session.reset();
 	}
 }
 
-auto World::setId(world_id_t id) -> void {
+auto world::set_id(game_world_id id) -> void {
 	m_id = id;
 }
 
-auto World::setPort(port_t port) -> void {
+auto world::set_port(connection_port port) -> void {
 	m_port = port;
 }
 
-auto World::setPlayerLoad(int32_t load) -> void {
-	m_playerLoad = load;
+auto world::set_player_load(int32_t load) -> void {
+	m_player_load = load;
 }
 
-auto World::setSession(ref_ptr_t<LoginServerAcceptedSession> session) -> void {
+auto world::set_session(ref_ptr<login_server_accepted_session> session) -> void {
 	m_session = session;
 }
 
-auto World::setConfiguration(const WorldConfig &config) -> void {
+auto world::set_configuration(const world_config &config) -> void {
 	m_config = config;
 }
 
-auto World::setEventMessage(const string_t &message) -> void {
-	m_config.eventMessage = message;
+auto world::set_event_message(const string &message) -> void {
+	m_config.event_message = message;
 }
 
-auto World::runChannelFunction(function_t<void (Channel *)> func) -> void {
+auto world::run_channel_function(function<void (channel *)> func) -> void {
 	for (const auto &kvp : m_channels) {
 		func(kvp.second.get());
 	}
 }
 
-auto World::clearChannels() -> void {
+auto world::clear_channels() -> void {
 	m_channels.clear();
 }
 
-auto World::removeChannel(channel_id_t id) -> void {
+auto world::remove_channel(game_channel_id id) -> void {
 	m_channels.erase(id);
 }
 
-auto World::addChannel(channel_id_t id, Channel *channel) -> void {
-	m_channels[id].reset(channel);
+auto world::add_channel(game_channel_id id, channel *chan) -> void {
+	m_channels[id].reset(chan);
 }
 
-auto World::send(const PacketBuilder &builder) -> void {
+auto world::send(const packet_builder &builder) -> void {
 	m_session->send(builder);
 }
 
-auto World::isConnected() const -> bool {
+auto world::is_connected() const -> bool {
 	return m_connected;
 }
 
-auto World::getId() const -> optional_t<world_id_t> {
+auto world::get_id() const -> optional<game_world_id> {
 	return m_id;
 }
 
-auto World::getRibbon() const -> int8_t {
+auto world::get_ribbon() const -> int8_t {
 	return m_config.ribbon;
 }
 
-auto World::getPort() const -> port_t {
+auto world::get_port() const -> connection_port {
 	return m_port;
 }
 
-auto World::getRandomChannel() const -> channel_id_t {
-	return Randomizer::select(m_channels)->first;
+auto world::get_random_channel() const -> game_channel_id {
+	return randomizer::select(m_channels)->first;
 }
 
-auto World::getMaxChannels() const -> channel_id_t {
-	return m_config.maxChannels;
+auto world::get_max_channels() const -> game_channel_id {
+	return m_config.max_channels;
 }
 
-auto World::getPlayerLoad() const -> int32_t {
-	return m_playerLoad;
+auto world::get_player_load() const -> int32_t {
+	return m_player_load;
 }
 
-auto World::getMaxPlayerLoad() const -> int32_t {
-	return m_config.maxPlayerLoad;
+auto world::get_max_player_load() const -> int32_t {
+	return m_config.max_player_load;
 }
 
-auto World::matchSubnet(const Ip &test) -> Ip {
-	return m_session->matchSubnet(test);
+auto world::match_subnet(const ip &test) -> ip {
+	return m_session->match_subnet(test);
 }
 
-auto World::getChannelCount() const -> channel_id_t {
-	return static_cast<channel_id_t>(m_channels.size());
+auto world::get_channel_count() const -> game_channel_id {
+	return static_cast<game_channel_id>(m_channels.size());
 }
 
-auto World::getName() const -> string_t {
+auto world::get_name() const -> string {
 	return m_config.name;
 }
 
-auto World::getEventMessage() const -> string_t {
-	return m_config.eventMessage;
+auto world::get_event_message() const -> string {
+	return m_config.event_message;
 }
 
-auto World::getChannel(channel_id_t id) -> Channel * {
+auto world::get_channel(game_channel_id id) -> channel * {
 	return m_channels.find(id) != std::end(m_channels) ?
 		m_channels[id].get() :
 		nullptr;
 }
 
-auto World::getConfig() const -> const WorldConfig & {
+auto world::get_config() const -> const world_config & {
 	return m_config;
 }
 

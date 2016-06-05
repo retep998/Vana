@@ -19,15 +19,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ChannelServer/ChatHandlerFunctions.hpp"
 
-namespace Vana {
-	namespace ChannelServer {
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class player;
 
-		namespace MessageFunctions {
-			auto worldMessage(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto globalMessage(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto channelMessage(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto gmChatMode(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+		namespace message_functions {
+			auto world_message(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto global_message(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto channel_message(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto gm_chat_mode(ref_ptr<player> player, const game_chat &args) -> chat_result;
 		}
 	}
 }

@@ -19,27 +19,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct ScrollInfo {
-		bool warmSupport = false;
-		bool randStat = false;
-		bool preventSlip = false;
+namespace vana {
+	struct scroll_info {
+		bool warm_support = false;
+		bool rand_stat = false;
+		bool prevent_slip = false;
 		int8_t recover = 0;
-		stat_t istr = 0;
-		stat_t idex = 0;
-		stat_t iint = 0;
-		stat_t iluk = 0;
-		health_t ihp = 0;
-		health_t imp = 0;
-		stat_t iwAtk = 0;
-		stat_t imAtk = 0;
-		stat_t iwDef = 0;
-		stat_t imDef = 0;
-		stat_t iacc = 0;
-		stat_t iavo = 0;
-		stat_t ihand = 0;
-		stat_t ijump = 0;
-		stat_t ispeed = 0;
+		game_stat str = 0;
+		game_stat dex = 0;
+		game_stat intl = 0;
+		game_stat luk = 0;
+		game_health hp = 0;
+		game_health mp = 0;
+		game_stat watk = 0;
+		game_stat matk = 0;
+		game_stat wdef = 0;
+		game_stat mdef = 0;
+		game_stat acc = 0;
+		game_stat avo = 0;
+		game_stat hand = 0;
+		game_stat jump = 0;
+		game_stat speed = 0;
 		uint16_t success = 0;
 		uint16_t cursed = 0;
 	};

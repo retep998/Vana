@@ -21,21 +21,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Ip.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class ExternalIpResolver {
+namespace vana {
+	class external_ip_resolver {
 	public:
-		ExternalIpResolver(const Ip &defaultIp, const IpMatrix &externalIps);
-		ExternalIpResolver() : m_defaultIp{0} { }
+		external_ip_resolver(const ip &default_ip, const ip_matrix &external_ips);
+		external_ip_resolver() : m_default_ip{0} { }
 
-		auto setExternalIpInformation(const Ip &defaultIp, const IpMatrix &matrix) -> void {
-			m_defaultIp = defaultIp;
-			m_externalIps = matrix;
+		auto set_external_ip_information(const ip &default_ip, const ip_matrix &matrix) -> void {
+			m_default_ip = default_ip;
+			m_external_ips = matrix;
 		}
 
-		auto matchIpToSubnet(const Ip &test) const -> Ip;
-		auto getExternalIps() const -> const IpMatrix & { return m_externalIps; }
+		auto match_ip_to_subnet(const ip &test) const -> ip;
+		auto get_external_ips() const -> const ip_matrix & { return m_external_ips; }
 	protected:
-		IpMatrix m_externalIps;
-		Ip m_defaultIp;
+		ip_matrix m_external_ips;
+		ip m_default_ip;
 	};
 }

@@ -21,10 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	struct BanishFieldInfo {
-		map_id_t field = Maps::NoMap;
-		string_t message;
-		string_t portal;
+namespace vana {
+	struct banish_field_info {
+		game_map_id field = maps::no_map;
+		string message;
+		string portal;
 	};
 }

@@ -19,33 +19,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/InterHeader.hpp"
 #include "ChannelServer/SmsgHeader.hpp"
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
-namespace Interserver {
+namespace vana {
+namespace channel_server {
+namespace packets {
+namespace interserver {
 
-PACKET_IMPL(rankingCalculation) {
-	PacketBuilder builder;
+PACKET_IMPL(ranking_calculation) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_TO_LOGIN)
-		.add<header_t>(IMSG_CALCULATE_RANKING);
+		.add<packet_header>(IMSG_TO_LOGIN)
+		.add<packet_header>(IMSG_CALCULATE_RANKING);
 	return builder;
 }
 
-PACKET_IMPL(reloadMcdb, const string_t &type) {
-	PacketBuilder builder;
+PACKET_IMPL(reload_mcdb, const string &type) {
+	packet_builder builder;
 	builder
 		.add<int16_t>(IMSG_TO_ALL_CHANNELS)
-		.add<header_t>(IMSG_REFRESH_DATA)
-		.add<string_t>(type);
+		.add<packet_header>(IMSG_REFRESH_DATA)
+		.add<string>(type);
 	return builder;
 }
 
-PACKET_IMPL(rehashConfig) {
-	PacketBuilder builder;
+PACKET_IMPL(rehash_config) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_TO_LOGIN)
-		.add<header_t>(IMSG_REHASH_CONFIG);
+		.add<packet_header>(IMSG_TO_LOGIN)
+		.add<packet_header>(IMSG_REHASH_CONFIG);
 	return builder;
 }
 

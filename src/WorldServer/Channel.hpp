@@ -23,28 +23,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <vector>
 
-namespace Vana {
-	class PacketBuilder;
+namespace vana {
+	class packet_builder;
 
-	namespace WorldServer {
-		class WorldServerAcceptedSession;
+	namespace world_server {
+		class world_server_accepted_session;
 
-		class Channel : public ExternalIpResolver {
-			NONCOPYABLE(Channel);
+		class channel : public external_ip_resolver {
+			NONCOPYABLE(channel);
 		public:
-			Channel(ref_ptr_t<WorldServerAcceptedSession> session, channel_id_t id, port_t port);
+			channel(ref_ptr<world_server_accepted_session> session, game_channel_id id, connection_port port);
 
-			auto increasePlayers() -> int32_t;
-			auto decreasePlayers() -> int32_t;
-			auto getId() const -> channel_id_t;
-			auto getPort() const -> port_t;
-			auto send(const PacketBuilder &builder) -> void;
+			auto increase_players() -> int32_t;
+			auto decrease_players() -> int32_t;
+			auto get_id() const -> game_channel_id;
+			auto get_port() const -> connection_port;
+			auto send(const packet_builder &builder) -> void;
 			auto disconnect() -> void;
 		private:
-			channel_id_t m_id = 0;
-			port_t m_port = 0;
+			game_channel_id m_id = 0;
+			connection_port m_port = 0;
 			int32_t m_players = 0;
-			ref_ptr_t<WorldServerAcceptedSession> m_session = nullptr;
+			ref_ptr<world_server_accepted_session> m_session = nullptr;
 		};
 	}
 }

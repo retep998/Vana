@@ -21,10 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <botan/filters.h>
 #include <botan/pipe.h>
 
-namespace Vana {
-namespace HashUtilities {
+namespace vana {
+namespace hash_utilities {
 
-auto hashPassword(const string_t &password) -> string_t {
+auto hash_password(const string &password) -> string {
 	Botan::Pipe pipe{
 		new Botan::Chain{
 			new Botan::Hash_Filter{"SHA-512"},
@@ -34,34 +34,34 @@ auto hashPassword(const string_t &password) -> string_t {
 	return pipe.read_all_as_string();
 }
 
-auto hashPassword(const string_t &password, const string_t &rawSalt, const SaltConfig &conf) -> string_t {
-	return hashPassword(saltPassword(password, rawSalt, conf));
+auto hash_password(const string &password, const string &raw_salt, const salt_config &conf) -> string {
+	return hash_password(salt_password(password, raw_salt, conf));
 }
 
-auto saltPassword(const string_t &password, const string_t &rawSalt, const SaltConfig &conf) -> string_t {
-	string_t finalizedSalt = rawSalt;
-	for (const auto &policy : conf.modifyPolicies) {
-		finalizedSalt = policy.apply(finalizedSalt);
+auto salt_password(const string &password, const string &raw_salt, const salt_config &conf) -> string {
+	string finalized_salt = raw_salt;
+	for (const auto &policy : conf.modify_policies) {
+		finalized_salt = policy.apply(finalized_salt);
 	}
 
-	return conf.policy.apply(password, finalizedSalt);
+	return conf.policy.apply(password, finalized_salt);
 }
 
-auto generateSalt(const SaltSizeConfig &conf) -> string_t {
+auto generate_salt(const salt_size_config &conf) -> string {
 	int32_t length = 0;
 	switch (conf.policy) {
-		case SaltSizePolicy::Static:
+		case salt_size_policy::fixed:
 			length = conf.size;
 			break;
-		case SaltSizePolicy::Random:
-			length = Randomizer::rand(conf.max, conf.min);
+		case salt_size_policy::random:
+			length = randomizer::rand(conf.max, conf.min);
 			break;
 	}
 
 	// Explicitly using () constructor style here because {} produces different behavior
-	string_t salt(length, 0);
+	string salt(length, 0);
 	for (int32_t i = 0; i < length; i++) {
-		salt[i] = Randomizer::rand<uint8_t>(255, 0);
+		salt[i] = randomizer::rand<uint8_t>(255, 0);
 	}
 	return salt;
 }

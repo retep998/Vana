@@ -17,6 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 // No need for header guard, this precompiled header file will never
-// be included twice.
+//	be included twice.
 
 #include "Common/PrecompiledHeader.hpp" // Common project precompiled header

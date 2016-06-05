@@ -20,9 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	namespace FileUtilities {
-		auto fileExists(const string_t &file) -> bool;
-		auto removeExtension(const string_t &file) -> string_t;
+namespace vana {
+	namespace utilities {
+		namespace file {
+			auto exists(const string &file) -> bool;
+			auto remove_extension(const string &file) -> string;
+		}
 	}
 }

@@ -27,108 +27,108 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <cmath>
 #include <string>
 
-namespace Vana {
-	namespace GameLogicUtilities {
+namespace vana {
+	namespace game_logic_utilities {
 		// Inventory
-		inline auto getInventory(item_id_t itemId) -> inventory_t { return static_cast<inventory_t>(itemId / 1000000); }
-		inline auto getItemType(item_id_t itemId) -> int32_t { return itemId / 10000; }
-		inline auto getScrollType(item_id_t itemId) -> int32_t { return (itemId % 10000) - (itemId % 100); }
-		inline auto itemTypeToScrollType(item_id_t itemId) -> int32_t { return (getItemType(itemId) % 100) * 100; }
-		inline auto isArrow(item_id_t itemId) -> bool { return getItemType(itemId) == Items::Types::ItemArrow; }
-		inline auto isStar(item_id_t itemId) -> bool { return getItemType(itemId) == Items::Types::ItemStar; }
-		inline auto isBullet(item_id_t itemId) -> bool { return getItemType(itemId) == Items::Types::ItemBullet; }
-		inline auto isProjectile(item_id_t itemId) -> bool { return isBullet(itemId) || isStar(itemId) || isArrow(itemId); }
-		inline auto isRechargeable(item_id_t itemId) -> bool { return isBullet(itemId) || isStar(itemId); }
-		inline auto isEquip(item_id_t itemId) -> bool { return getInventory(itemId) == Inventories::EquipInventory; }
-		inline auto isPet(item_id_t itemId) -> bool {	return (itemId / 100 * 100) == 5000000; }
-		inline auto isStackable(item_id_t itemId) -> bool { return !(isRechargeable(itemId) || isEquip(itemId) || isPet(itemId)); }
-		inline auto isOverall(item_id_t itemId) -> bool { return getItemType(itemId) == Items::Types::ArmorOverall; }
-		inline auto isTop(item_id_t itemId) -> bool { return getItemType(itemId) == Items::Types::ArmorTop; }
-		inline auto isBottom(item_id_t itemId) -> bool { return getItemType(itemId) == Items::Types::ArmorBottom; }
-		inline auto isShield(item_id_t itemId) -> bool { return getItemType(itemId) == Items::Types::ArmorShield; }
-		inline auto is2hWeapon(item_id_t itemId) -> bool { return getItemType(itemId) / 10 == 14; }
-		inline auto is1hWeapon(item_id_t itemId) -> bool { return getItemType(itemId) / 10 == 13; }
-		inline auto isBow(item_id_t itemId) -> bool { return getItemType(itemId) == Items::Types::WeaponBow; }
-		inline auto isCrossbow(item_id_t itemId) -> bool { return getItemType(itemId) == Items::Types::WeaponCrossbow; }
-		inline auto isSword(item_id_t itemId) -> bool { return getItemType(itemId) == Items::Types::Weapon1hSword || getItemType(itemId) == Items::Types::Weapon2hSword; }
-		inline auto isMace(item_id_t itemId) -> bool { return getItemType(itemId) == Items::Types::Weapon1hMace || getItemType(itemId) == Items::Types::Weapon2hMace; }
-		inline auto isMount(item_id_t itemId) -> bool { return getItemType(itemId) == Items::Types::Mount; }
-		inline auto isMedal(item_id_t itemId) -> bool { return getItemType(itemId) == Items::Types::Medal; }
-		inline auto isValidInventory(inventory_t inv) -> bool { return inv > 0 && inv <= Inventories::InventoryCount; }
-		inline auto isCashSlot(inventory_slot_t slot) -> bool { return std::abs(slot) > 100; }
-		inline auto stripCashSlot(inventory_slot_t slot) -> inventory_slot_t { return static_cast<inventory_slot_t>(isCashSlot(slot) ? std::abs(slot) - 100 : std::abs(slot)); }
-		inline auto isGmEquip(item_id_t itemId) -> bool { return itemId == Items::GmBottom || itemId == Items::GmHat || itemId == Items::GmTop || itemId == Items::GmWeapon; }
+		inline auto get_inventory(game_item_id item_id) -> game_inventory { return static_cast<game_inventory>(item_id / 1000000); }
+		inline auto get_item_type(game_item_id item_id) -> int32_t { return item_id / 10000; }
+		inline auto get_scroll_type(game_item_id item_id) -> int32_t { return (item_id % 10000) - (item_id % 100); }
+		inline auto item_type_to_scroll_type(game_item_id item_id) -> int32_t { return (get_item_type(item_id) % 100) * 100; }
+		inline auto is_arrow(game_item_id item_id) -> bool { return get_item_type(item_id) == items::types::item_arrow; }
+		inline auto is_star(game_item_id item_id) -> bool { return get_item_type(item_id) == items::types::item_star; }
+		inline auto is_bullet(game_item_id item_id) -> bool { return get_item_type(item_id) == items::types::item_bullet; }
+		inline auto is_projectile(game_item_id item_id) -> bool { return is_bullet(item_id) || is_star(item_id) || is_arrow(item_id); }
+		inline auto is_rechargeable(game_item_id item_id) -> bool { return is_bullet(item_id) || is_star(item_id); }
+		inline auto is_equip(game_item_id item_id) -> bool { return get_inventory(item_id) == inventories::equip; }
+		inline auto is_pet(game_item_id item_id) -> bool {	return (item_id / 100 * 100) == 5000000; }
+		inline auto is_stackable(game_item_id item_id) -> bool { return !(is_rechargeable(item_id) || is_equip(item_id) || is_pet(item_id)); }
+		inline auto is_overall(game_item_id item_id) -> bool { return get_item_type(item_id) == items::types::armor_overall; }
+		inline auto is_top(game_item_id item_id) -> bool { return get_item_type(item_id) == items::types::armor_top; }
+		inline auto is_bottom(game_item_id item_id) -> bool { return get_item_type(item_id) == items::types::armor_bottom; }
+		inline auto is_shield(game_item_id item_id) -> bool { return get_item_type(item_id) == items::types::armor_shield; }
+		inline auto is2h_weapon(game_item_id item_id) -> bool { return get_item_type(item_id) / 10 == 14; }
+		inline auto is1h_weapon(game_item_id item_id) -> bool { return get_item_type(item_id) / 10 == 13; }
+		inline auto is_bow(game_item_id item_id) -> bool { return get_item_type(item_id) == items::types::weapon_bow; }
+		inline auto is_crossbow(game_item_id item_id) -> bool { return get_item_type(item_id) == items::types::weapon_crossbow; }
+		inline auto is_sword(game_item_id item_id) -> bool { return get_item_type(item_id) == items::types::weapon_1h_sword || get_item_type(item_id) == items::types::weapon_2h_sword; }
+		inline auto is_mace(game_item_id item_id) -> bool { return get_item_type(item_id) == items::types::weapon_1h_mace || get_item_type(item_id) == items::types::weapon_2h_mace; }
+		inline auto is_mount(game_item_id item_id) -> bool { return get_item_type(item_id) == items::types::mount; }
+		inline auto is_medal(game_item_id item_id) -> bool { return get_item_type(item_id) == items::types::medal; }
+		inline auto is_valid_inventory(game_inventory inv) -> bool { return inv > 0 && inv <= inventories::count; }
+		inline auto is_cash_slot(game_inventory_slot slot) -> bool { return std::abs(slot) > 100; }
+		inline auto strip_cash_slot(game_inventory_slot slot) -> game_inventory_slot { return static_cast<game_inventory_slot>(is_cash_slot(slot) ? std::abs(slot) - 100 : std::abs(slot)); }
+		inline auto is_gm_equip(game_item_id item_id) -> bool { return item_id == items::gm_bottom || item_id == items::gm_hat || item_id == items::gm_top || item_id == items::gm_weapon; }
 
 		// Player
-		inline auto getGenderId(const string_t &gender) -> gender_id_t { return static_cast<gender_id_t>(gender == "male" ? Gender::Male : (gender == "female" ? Gender::Female : (gender == "both" ? Gender::Both : -1))); }
+		inline auto get_gender_id(const string &gender) -> game_gender_id { return static_cast<game_gender_id>(gender == "male" ? gender::male : (gender == "female" ? gender::female : (gender == "both" ? gender::both : -1))); }
 
 		// Player skills
-		inline auto isBeginnerSkill(skill_id_t skillId) -> bool { return (skillId / 1000000) == (skillId < 10000000 ? 0 : 10); }
-		inline auto isFourthJobSkill(skill_id_t skillId) -> bool { return (skillId / 10000) % 10 == 2; }
-		inline auto isPuppet(skill_id_t skillId) -> bool { return skillId == Skills::Sniper::Puppet || skillId == Skills::Ranger::Puppet || skillId == Skills::WindArcher::Puppet; }
-		inline auto isSummon(skill_id_t skillId) -> bool { return isPuppet(skillId) || skillId == Skills::Priest::SummonDragon || skillId == Skills::Ranger::SilverHawk || skillId == Skills::Sniper::GoldenEagle || skillId == Skills::DarkKnight::Beholder || skillId == Skills::FpArchMage::Elquines || skillId == Skills::IlArchMage::Ifrit || skillId == Skills::BlazeWizard::Ifrit || skillId == Skills::Bishop::Bahamut || skillId == Skills::Bowmaster::Phoenix || skillId == Skills::Marksman::Frostprey || skillId == Skills::Outlaw::Octopus || skillId == Skills::Corsair::WrathOfTheOctopi || skillId == Skills::Outlaw::Gaviota || skillId == Skills::DawnWarrior::Soul || skillId == Skills::BlazeWizard::Flame || skillId == Skills::WindArcher::Storm || skillId == Skills::NightWalker::Darkness || skillId == Skills::ThunderBreaker::Lightning; }
-		inline auto isDarkSight(skill_id_t skillId) -> bool { return skillId == Skills::Rogue::DarkSight || skillId == Skills::NightWalker::DarkSight || skillId == Skills::WindArcher::WindWalk; }
-		inline auto isBlessingOfTheFairy(skill_id_t skillId) -> bool { return skillId == Skills::Beginner::BlessingOfTheFairy || skillId == Skills::Noblesse::BlessingOfTheFairy; }
-		inline auto skillMatchesJob(skill_id_t skillId, job_id_t job) -> bool { return (skillId / 1000000 == job / 100) && (skillId / 10000 <= job); }
-		inline auto itemSkillMatchesJob(skill_id_t skillId, job_id_t job) -> bool { return (skillId / 10000) == job; }
-		inline auto getMasteryDisplay(skill_level_t level) -> int8_t { return (level + 1) / 2; }
-		inline auto getBattleshipHp(skill_level_t shipLevel, player_level_t playerLevel) -> int32_t { return std::max((2 * shipLevel + (playerLevel - 120)) * 200, 2 * shipLevel * 200); }
+		inline auto is_beginner_skill(game_skill_id skill_id) -> bool { return (skill_id / 1000000) == (skill_id < 10000000 ? 0 : 10); }
+		inline auto is_fourth_job_skill(game_skill_id skill_id) -> bool { return (skill_id / 10000) % 10 == 2; }
+		inline auto is_puppet(game_skill_id skill_id) -> bool { return skill_id == skills::sniper::puppet || skill_id == skills::ranger::puppet || skill_id == skills::wind_archer::puppet; }
+		inline auto is_summon(game_skill_id skill_id) -> bool { return is_puppet(skill_id) || skill_id == skills::priest::summon_dragon || skill_id == skills::ranger::silver_hawk || skill_id == skills::sniper::golden_eagle || skill_id == skills::dark_knight::beholder || skill_id == skills::fp_arch_mage::elquines || skill_id == skills::il_arch_mage::ifrit || skill_id == skills::blaze_wizard::ifrit || skill_id == skills::bishop::bahamut || skill_id == skills::bowmaster::phoenix || skill_id == skills::marksman::frostprey || skill_id == skills::outlaw::octopus || skill_id == skills::corsair::wrath_of_the_octopi || skill_id == skills::outlaw::gaviota || skill_id == skills::dawn_warrior::soul || skill_id == skills::blaze_wizard::flame || skill_id == skills::wind_archer::storm || skill_id == skills::night_walker::darkness || skill_id == skills::thunder_breaker::lightning; }
+		inline auto is_dark_sight(game_skill_id skill_id) -> bool { return skill_id == skills::rogue::dark_sight || skill_id == skills::night_walker::dark_sight || skill_id == skills::wind_archer::wind_walk; }
+		inline auto is_blessing_of_the_fairy(game_skill_id skill_id) -> bool { return skill_id == skills::beginner::blessing_of_the_fairy || skill_id == skills::noblesse::blessing_of_the_fairy; }
+		inline auto skill_matches_job(game_skill_id skill_id, game_job_id job) -> bool { return (skill_id / 1000000 == job / 100) && (skill_id / 10000 <= job); }
+		inline auto item_skill_matches_job(game_skill_id skill_id, game_job_id job) -> bool { return (skill_id / 10000) == job; }
+		inline auto get_mastery_display(game_skill_level level) -> int8_t { return (level + 1) / 2; }
+		inline auto get_battleship_hp(game_skill_level ship_level, game_player_level player_level) -> int32_t { return std::max((2 * ship_level + (player_level - 120)) * 200, 2 * ship_level * 200); }
 
 		// Mob skills
-		inline auto isMobSkill(skill_id_t skillId) -> bool { return skillId >= 100 && skillId <= 200; }
+		inline auto is_mob_skill(game_skill_id skill_id) -> bool { return skill_id >= 100 && skill_id <= 200; }
 
 		// Jobs
-		inline auto isAdventurer(job_id_t jobId) -> bool { return jobId != 128 && jobId != 256 && (jobId == Jobs::JobIds::Beginner || (jobId >= 100 && jobId <= 910)); }
-		inline auto isCygnus(job_id_t jobId) -> bool { return jobId != 1024 && jobId >= 1000 && jobId < 2000; }
-		inline auto isLegend(job_id_t jobId) -> bool { return jobId != 2048 && jobId >= 2000 && jobId < 3000; }
-		inline auto isResistance(job_id_t jobId) -> bool { return jobId >= 3000 && jobId < 4000; }
-		inline auto getJobType(job_id_t jobId) -> Jobs::JobType {
-			if (isAdventurer(jobId)) return Jobs::JobType::Adventurer;
-			if (isCygnus(jobId)) return Jobs::JobType::Cygnus;
-			if (isLegend(jobId)) return Jobs::JobType::Legend;
-			if (isResistance(jobId)) return Jobs::JobType::Resistance;
-			throw std::invalid_argument{"jobId must be a valid type"};
+		inline auto is_adventurer(game_job_id job_id) -> bool { return job_id != 128 && job_id != 256 && (job_id == jobs::job_ids::beginner || (job_id >= 100 && job_id <= 910)); }
+		inline auto is_cygnus(game_job_id job_id) -> bool { return job_id != 1024 && job_id >= 1000 && job_id < 2000; }
+		inline auto is_legend(game_job_id job_id) -> bool { return job_id != 2048 && job_id >= 2000 && job_id < 3000; }
+		inline auto is_resistance(game_job_id job_id) -> bool { return job_id >= 3000 && job_id < 4000; }
+		inline auto get_job_type(game_job_id job_id) -> jobs::job_type {
+			if (is_adventurer(job_id)) return jobs::job_type::adventurer;
+			if (is_cygnus(job_id)) return jobs::job_type::cygnus;
+			if (is_legend(job_id)) return jobs::job_type::legend;
+			if (is_resistance(job_id)) return jobs::job_type::resistance;
+			throw std::invalid_argument{"job_id must be a valid type"};
 		}
-		inline auto isBeginnerJob(job_id_t jobId) -> bool {
-			for (const auto &job : Jobs::Beginners::Jobs) {
-				if (jobId == job) {
+		inline auto is_beginner_job(game_job_id job_id) -> bool {
+			for (const auto &job : jobs::beginners::jobs) {
+				if (job_id == job) {
 					return true;
 				}
 			}
 			return false;
 		}
-		inline auto getJobTrack(job_id_t jobId) -> int8_t { return jobId / 100; }
-		inline auto getJobLine(job_id_t jobId) -> int8_t { return isAdventurer(jobId) ? (jobId / 100) : ((jobId / 100) % 10); }
-		inline auto getJobProgression(job_id_t jobId) -> int8_t {
-			if (isBeginnerJob(jobId)) {
-				return Jobs::JobProgressions::Beginner;
+		inline auto get_job_track(game_job_id job_id) -> int8_t { return job_id / 100; }
+		inline auto get_job_line(game_job_id job_id) -> int8_t { return is_adventurer(job_id) ? (job_id / 100) : ((job_id / 100) % 10); }
+		inline auto get_job_progression(game_job_id job_id) -> int8_t {
+			if (is_beginner_job(job_id)) {
+				return jobs::job_progressions::beginner;
 			}
 
-			int16_t jobProgression = (jobId % 10);
-			if (jobProgression == 0) {
+			int16_t job_progression = (job_id % 10);
+			if (job_progression == 0) {
 				// Might be first job or second job
-				if (getJobTrack(jobId) == 0) {
-					return Jobs::JobProgressions::FirstJob;
+				if (get_job_track(job_id) == 0) {
+					return jobs::job_progressions::first_job;
 				}
 			}
-			return Jobs::JobProgressions::SecondJob + jobProgression;
+			return jobs::job_progressions::second_job + job_progression;
 		}
-		inline auto getMaxLevel(job_id_t jobId) -> player_level_t { return isCygnus(jobId) ? Stats::CygnusLevels : Stats::PlayerLevels; }
+		inline auto get_max_level(game_job_id job_id) -> game_player_level { return is_cygnus(job_id) ? stats::cygnus_levels : stats::player_levels; }
 
 		// Monster card
-		inline auto isMonsterCard(item_id_t itemId) -> bool { return getItemType(itemId) == Items::Types::ItemMonsterCard; }
-		inline auto getCardShortId(item_id_t cardId) -> int16_t { return cardId % 10000; }
-		inline auto isSpecialCard(item_id_t cardId) -> bool { return getCardShortId(cardId) >= 8000; }
+		inline auto is_monster_card(game_item_id item_id) -> bool { return get_item_type(item_id) == items::types::item_monster_card; }
+		inline auto get_card_short_id(game_item_id card_id) -> int16_t { return card_id % 10000; }
+		inline auto is_special_card(game_item_id card_id) -> bool { return get_card_short_id(card_id) >= 8000; }
 
 		// Map
-		inline auto getMapCluster(map_id_t mapId) -> int8_t { return static_cast<int8_t>(mapId / 10000000); }
+		inline auto get_map_cluster(game_map_id map_id) -> int8_t { return static_cast<int8_t>(map_id / 10000000); }
 
 		// Party
-		inline auto getPartyMember1(int8_t totalMembers) -> int8_t { return static_cast<int8_t>(totalMembers >= 1 ? (0x40 >> totalMembers) : 0xFF); }
-		inline auto getPartyMember2(int8_t totalMembers) -> int8_t { return static_cast<int8_t>(totalMembers >= 2 ? (0x80 >> totalMembers) : 0xFF); }
-		inline auto getPartyMember3(int8_t totalMembers) -> int8_t { return static_cast<int8_t>(totalMembers >= 3 ? (0x100 >> totalMembers) : 0xFF); }
-		inline auto getPartyMember4(int8_t totalMembers) -> int8_t { return static_cast<int8_t>(totalMembers >= 4 ? (0x200 >> totalMembers) : 0xFF); }
-		inline auto getPartyMember5(int8_t totalMembers) -> int8_t { return static_cast<int8_t>(totalMembers >= 5 ? (0x400 >> totalMembers) : 0xFF); }
-		inline auto getPartyMember6(int8_t totalMembers) -> int8_t { return static_cast<int8_t>(totalMembers >= 6 ? (0x800 >> totalMembers) : 0xFF); }
+		inline auto get_party_member1(int8_t total_members) -> int8_t { return static_cast<int8_t>(total_members >= 1 ? (0x40 >> total_members) : 0xFF); }
+		inline auto get_party_member2(int8_t total_members) -> int8_t { return static_cast<int8_t>(total_members >= 2 ? (0x80 >> total_members) : 0xFF); }
+		inline auto get_party_member3(int8_t total_members) -> int8_t { return static_cast<int8_t>(total_members >= 3 ? (0x100 >> total_members) : 0xFF); }
+		inline auto get_party_member4(int8_t total_members) -> int8_t { return static_cast<int8_t>(total_members >= 4 ? (0x200 >> total_members) : 0xFF); }
+		inline auto get_party_member5(int8_t total_members) -> int8_t { return static_cast<int8_t>(total_members >= 5 ? (0x400 >> total_members) : 0xFF); }
+		inline auto get_party_member6(int8_t total_members) -> int8_t { return static_cast<int8_t>(total_members >= 6 ? (0x800 >> total_members) : 0xFF); }
 	}
 }

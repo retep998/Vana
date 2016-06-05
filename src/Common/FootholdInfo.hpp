@@ -20,13 +20,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Line.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct FootholdInfo {
-		bool forbidJumpDown = false;
-		bool leftEdge = false;
-		bool rightEdge = false;
-		foothold_id_t id = 0;
-		int16_t dragForce = 0;
-		Line line;
+namespace vana {
+	struct foothold_info {
+		bool forbid_jump_down = false;
+		bool left_edge = false;
+		bool right_edge = false;
+		game_foothold_id id = 0;
+		int16_t drag_force = 0;
+		line line;
 	};
 }

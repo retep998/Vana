@@ -22,16 +22,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <unordered_map>
 
-namespace Vana {
-	namespace ChannelServer {
-		class Instances {
+namespace vana {
+	namespace channel_server {
+		class instances {
 		public:
-			auto addInstance(Instance *instance) -> void;
-			auto removeInstance(Instance *instance) -> void;
-			auto getInstance(const string_t &name) -> Instance *;
-			auto isInstance(const string_t &name) -> bool;
+			auto add_instance(instance *inst) -> void;
+			auto remove_instance(instance *inst) -> void;
+			auto get_instance(const string &name) -> instance *;
+			auto is_instance(const string &name) -> bool;
 		private:
-			case_insensitive_hash_map_t<Instance *> m_instances;
+			case_insensitive_hash_map<instance *> m_instances;
 		};
 	}
 }

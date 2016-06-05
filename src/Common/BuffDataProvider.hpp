@@ -24,24 +24,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-namespace Vana {
-	class BuffSource;
-	struct ConsumeInfo;
+namespace vana {
+	class buff_source;
+	struct consume_info;
 
-	class BuffDataProvider {
+	class buff_data_provider {
 	public:
-		auto loadData() -> void;
-		auto addItemInfo(item_id_t itemId, const ConsumeInfo &cons) -> void;
+		auto load_data() -> void;
+		auto add_item_info(game_item_id item_id, const consume_info &cons) -> void;
 
-		auto isBuff(const BuffSource &source) const -> bool;
-		auto isDebuff(const BuffSource &source) const -> bool;
-		auto getInfo(const BuffSource &source) const -> const Buff &;
-		auto getBuffsByEffect() const -> const BuffInfoByEffect &;
+		auto is_buff(const buff_source &source) const -> bool;
+		auto is_debuff(const buff_source &source) const -> bool;
+		auto get_info(const buff_source &source) const -> const buff &;
+		auto get_buffs_by_effect() const -> const buff_info_by_effect &;
 	private:
-		auto processSkills(Buff value, const init_list_t<skill_id_t> &skills) -> void;
-		hash_map_t<skill_id_t, Buff> m_buffs;
-		hash_map_t<item_id_t, Buff> m_items;
-		hash_map_t<mob_skill_id_t, Buff> m_mobSkillInfo;
-		BuffInfoByEffect m_basics;
+		auto process_skills(buff value, const init_list<game_skill_id> &skills) -> void;
+		hash_map<game_skill_id, buff> m_buffs;
+		hash_map<game_item_id, buff> m_items;
+		hash_map<game_mob_skill_id, buff> m_mob_skill_info;
+		buff_info_by_effect m_basics;
 	};
 }

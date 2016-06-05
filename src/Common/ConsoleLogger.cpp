@@ -20,25 +20,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <sstream>
 
-namespace Vana {
+namespace vana {
 
-ConsoleLogger::ConsoleLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize) :
-	Logger{filename, format, timeFormat, serverType, bufferSize}
+console_logger::console_logger(const string &filename, const string &format, const string &time_format, server_type type, size_t buffer_size) :
+	base_logger{filename, format, time_format, type, buffer_size}
 {
 }
 
-auto ConsoleLogger::log(LogType type, const opt_string_t &identifier, const string_t &message) -> void {
+auto console_logger::log(log_type type, const opt_string &identifier, const string &message) -> void {
 	switch (type) {
-		case LogType::CriticalError:
-		case LogType::DebugError:
-		case LogType::Error:
-		case LogType::ServerAuthFailure:
-		case LogType::Warning:
-		case LogType::MalformedPacket:
-			std::cerr << Logger::formatLog(getFormat(), type, this, identifier, message) << std::endl;
+		case log_type::critical_error:
+		case log_type::debug_error:
+		case log_type::error:
+		case log_type::server_auth_failure:
+		case log_type::warning:
+		case log_type::malformed_packet:
+			std::cerr << base_logger::format_log(get_format(), type, this, identifier, message) << std::endl;
 			break;
 		default:
-			std::cout << Logger::formatLog(getFormat(), type, this, identifier, message) << std::endl;
+			std::cout << base_logger::format_log(get_format(), type, this, identifier, message) << std::endl;
 			break;
 	}
 }

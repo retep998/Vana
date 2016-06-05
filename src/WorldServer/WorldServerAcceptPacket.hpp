@@ -21,15 +21,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	class PacketReader;
-	struct WorldConfig;
+namespace vana {
+	class packet_reader;
+	struct world_config;
 
-	namespace WorldServer {
-		namespace Packets {
-			namespace Interserver {
-				PACKET(connect, channel_id_t channel, port_t port);
-				PACKET(rehashConfig, const WorldConfig &config);
+	namespace world_server {
+		namespace packets {
+			namespace interserver {
+				PACKET(connect, game_channel_id channel, connection_port port);
+				PACKET(rehash_config, const world_config &config);
 			}
 		}
 	}

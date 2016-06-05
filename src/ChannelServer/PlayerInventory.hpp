@@ -25,80 +25,80 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-namespace Vana {
-	class Item;
-	class PacketBuilder;
+namespace vana {
+	class item;
+	class packet_builder;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		class PlayerInventory {
-			NONCOPYABLE(PlayerInventory);
-			NO_DEFAULT_CONSTRUCTOR(PlayerInventory);
+		class player_inventory {
+			NONCOPYABLE(player_inventory);
+			NO_DEFAULT_CONSTRUCTOR(player_inventory);
 		public:
-			PlayerInventory(Player *player, const array_t<inventory_slot_count_t, Inventories::InventoryCount> &maxSlots, mesos_t mesos);
-			~PlayerInventory();
+			player_inventory(player *player, const array<game_inventory_slot_count, inventories::count> &max_slots, game_mesos mesos);
+			~player_inventory();
 
 			auto load() -> void;
 			auto save() -> void;
 
-			auto connectPacket(PacketBuilder &builder) -> void;
-			auto addEquippedPacket(PacketBuilder &builder) -> void;
-			auto rockPacket(PacketBuilder &builder) -> void;
-			auto wishlistInfoPacket(PacketBuilder &builder) -> void;
+			auto connect_packet(packet_builder &builder) -> void;
+			auto add_equipped_packet(packet_builder &builder) -> void;
+			auto rock_packet(packet_builder &builder) -> void;
+			auto wishlist_info_packet(packet_builder &builder) -> void;
 
-			auto setMesos(mesos_t mesos, bool sendPacket = false) -> void;
-			auto modifyMesos(mesos_t mod, bool sendPacket = false) -> bool;
-			auto addMaxSlots(inventory_t inventory, inventory_slot_count_t rows) -> void;
-			auto addItem(inventory_t inv, inventory_slot_t slot, Item *item, bool sendPacketLoading = false) -> void;
-			auto deleteItem(inventory_t inv, inventory_slot_t slot, bool updateAmount = true) -> void;
-			auto setItem(inventory_t inv, inventory_slot_t slot, Item *item) -> void;
-			auto changeItemAmount(item_id_t itemId, slot_qty_t amount) -> void { m_itemAmounts[itemId] += amount; }
-			auto setAutoHpPot(item_id_t id) -> void { m_autoHpPotId = id; }
-			auto setAutoMpPot(item_id_t id) -> void { m_autoMpPotId = id; }
-			auto swapItems(inventory_t inventory, inventory_slot_t slot1, inventory_slot_t slot2) -> void;
-			auto destroyEquippedItem(item_id_t itemId) -> void;
+			auto set_mesos(game_mesos mesos, bool send_packet = false) -> void;
+			auto modify_mesos(game_mesos mod, bool send_packet = false) -> bool;
+			auto add_max_slots(game_inventory inventory, game_inventory_slot_count rows) -> void;
+			auto add_item(game_inventory inv, game_inventory_slot slot, item *item, bool send_packet_loading = false) -> void;
+			auto delete_item(game_inventory inv, game_inventory_slot slot, bool update_amount = true) -> void;
+			auto set_item(game_inventory inv, game_inventory_slot slot, item *item) -> void;
+			auto change_item_amount(game_item_id item_id, game_slot_qty amount) -> void { m_item_amounts[item_id] += amount; }
+			auto set_auto_hp_pot(game_item_id id) -> void { m_auto_hp_pot_id = id; }
+			auto set_auto_mp_pot(game_item_id id) -> void { m_auto_mp_pot_id = id; }
+			auto swap_items(game_inventory inventory, game_inventory_slot slot1, game_inventory_slot slot2) -> void;
+			auto destroy_equipped_item(game_item_id item_id) -> void;
 
-			auto getMaxSlots(inventory_t inv) const -> inventory_slot_count_t { return m_maxSlots[inv - 1]; }
-			auto getMesos() const -> mesos_t { return m_mesos; }
-			auto getAutoHpPot() const -> item_id_t { return m_autoHpPotId; }
-			auto getAutoMpPot() const -> item_id_t { return m_autoMpPotId; }
+			auto get_max_slots(game_inventory inv) const -> game_inventory_slot_count { return m_max_slots[inv - 1]; }
+			auto get_mesos() const -> game_mesos { return m_mesos; }
+			auto get_auto_hp_pot() const -> game_item_id { return m_auto_hp_pot_id; }
+			auto get_auto_mp_pot() const -> game_item_id { return m_auto_mp_pot_id; }
 
-			auto getItemAmountBySlot(inventory_t inv, inventory_slot_t slot) -> slot_qty_t;
-			auto getItemAmount(item_id_t itemId) -> slot_qty_t;
-			auto getEquippedId(inventory_slot_t slot, bool cash = false) -> item_id_t;
-			auto getItem(inventory_t inv, inventory_slot_t slot) -> Item *;
-			auto isEquippedItem(item_id_t itemId) -> bool;
+			auto get_item_amount_by_slot(game_inventory inv, game_inventory_slot slot) -> game_slot_qty;
+			auto get_item_amount(game_item_id item_id) -> game_slot_qty;
+			auto get_equipped_id(game_inventory_slot slot, bool cash = false) -> game_item_id;
+			auto get_item(game_inventory inv, game_inventory_slot slot) -> item *;
+			auto is_equipped_item(game_item_id item_id) -> bool;
 
-			auto hasOpenSlotsFor(item_id_t itemId, slot_qty_t amount, bool canStack = false) -> bool;
-			auto getOpenSlotsNum(inventory_t inv) -> inventory_slot_count_t;
-			auto doShadowStars() -> item_id_t;
+			auto has_open_slots_for(game_item_id item_id, game_slot_qty amount, bool can_stack = false) -> bool;
+			auto get_open_slots_num(game_inventory inv) -> game_inventory_slot_count;
+			auto do_shadow_stars() -> game_item_id;
 
-			auto isHammering() const -> bool { return m_hammer != -1; }
-			auto getHammerSlot() const -> inventory_slot_t { return m_hammer; }
-			auto setHammerSlot(inventory_slot_t hammer) -> void { m_hammer = hammer; }
+			auto is_hammering() const -> bool { return m_hammer != -1; }
+			auto get_hammer_slot() const -> game_inventory_slot { return m_hammer; }
+			auto set_hammer_slot(game_inventory_slot hammer) -> void { m_hammer = hammer; }
 
-			auto addRockMap(map_id_t mapId, int8_t type) -> void;
-			auto delRockMap(map_id_t mapId, int8_t type) -> void;
-			auto ensureRockDestination(map_id_t mapId) -> bool;
+			auto add_rock_map(game_map_id map_id, int8_t type) -> void;
+			auto del_rock_map(game_map_id map_id, int8_t type) -> void;
+			auto ensure_rock_destination(game_map_id map_id) -> bool;
 
-			auto addWishListItem(item_id_t itemId) -> void;
-			auto checkExpiredItems() -> void;
+			auto add_wish_list_item(game_item_id item_id) -> void;
+			auto check_expired_items() -> void;
 		private:
-			auto addEquipped(inventory_slot_t slot, item_id_t itemId) -> void;
+			auto add_equipped(game_inventory_slot slot, game_item_id item_id) -> void;
 
-			inventory_slot_t m_hammer = -1;
-			mesos_t m_mesos = 0;
-			item_id_t m_autoHpPotId = 0;
-			item_id_t m_autoMpPotId = 0;
-			Player *m_player = nullptr;
-			array_t<inventory_slot_count_t, Inventories::InventoryCount> m_maxSlots;
-			array_t<array_t<item_id_t, 2>, Inventories::EquippedSlots> m_equipped; // Separate sets of slots for regular items and cash items
-			array_t<hash_map_t<inventory_slot_t, Item *>, Inventories::InventoryCount> m_items;
-			vector_t<map_id_t> m_vipLocations;
-			vector_t<map_id_t> m_rockLocations;
-			vector_t<item_id_t> m_wishlist;
-			hash_map_t<item_id_t, slot_qty_t> m_itemAmounts;
+			game_inventory_slot m_hammer = -1;
+			game_mesos m_mesos = 0;
+			game_item_id m_auto_hp_pot_id = 0;
+			game_item_id m_auto_mp_pot_id = 0;
+			player *m_player = nullptr;
+			array<game_inventory_slot_count, inventories::count> m_max_slots;
+			array<array<game_item_id, 2>, inventories::equipped_slots> m_equipped; // Separate sets of slots for regular items and cash items
+			array<hash_map<game_inventory_slot, item *>, inventories::count> m_items;
+			vector<game_map_id> m_vip_locations;
+			vector<game_map_id> m_rock_locations;
+			vector<game_item_id> m_wishlist;
+			hash_map<game_item_id, game_slot_qty> m_item_amounts;
 		};
 	}
 }

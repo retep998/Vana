@@ -30,223 +30,223 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Player.hpp"
 #include "ChannelServer/PlayerMonsterBook.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto Inventory::addItem(ref_ptr_t<Player> player, Item *item, bool fromDrop) -> slot_qty_t {
-	inventory_t inv = GameLogicUtilities::getInventory(item->getId());
-	inventory_slot_t freeSlot = 0;
-	for (inventory_slot_t s = 1; s <= player->getInventory()->getMaxSlots(inv); s++) {
-		Item *oldItem = player->getInventory()->getItem(inv, s);
-		if (oldItem != nullptr) {
-			auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(item->getId());
-			slot_qty_t maxSlot = itemInfo->maxSlot;
-			if (GameLogicUtilities::isStackable(item->getId()) && oldItem->getId() == item->getId() && oldItem->getAmount() < maxSlot) {
-				if (item->getAmount() + oldItem->getAmount() > maxSlot) {
-					slot_qty_t amount = maxSlot - oldItem->getAmount();
-					item->decAmount(amount);
-					oldItem->setAmount(maxSlot);
+auto inventory::add_item(ref_ptr<player> player, item *item_value, bool from_drop) -> game_slot_qty {
+	game_inventory inv = game_logic_utilities::get_inventory(item_value->get_id());
+	game_inventory_slot free_slot = 0;
+	for (game_inventory_slot s = 1; s <= player->get_inventory()->get_max_slots(inv); s++) {
+		item *old_item = player->get_inventory()->get_item(inv, s);
+		if (old_item != nullptr) {
+			auto item_info = channel_server::get_instance().get_item_data_provider().get_item_info(item_value->get_id());
+			game_slot_qty max_slot = item_info->max_slot;
+			if (game_logic_utilities::is_stackable(item_value->get_id()) && old_item->get_id() == item_value->get_id() && old_item->get_amount() < max_slot) {
+				if (item_value->get_amount() + old_item->get_amount() > max_slot) {
+					game_slot_qty amount = max_slot - old_item->get_amount();
+					item_value->dec_amount(amount);
+					old_item->set_amount(max_slot);
 
-					vector_t<InventoryPacketOperation> ops;
-					ops.emplace_back(Packets::Inventory::OperationTypes::AddItem, oldItem, s);
-					player->send(Packets::Inventory::inventoryOperation(fromDrop, ops));
+					vector<inventory_packet_operation> ops;
+					ops.emplace_back(packets::inventory::operation_types::add_item, old_item, s);
+					player->send(packets::inventory::inventory_operation(from_drop, ops));
 				}
 				else {
-					item->incAmount(oldItem->getAmount());
-					player->getInventory()->deleteItem(inv, s);
-					player->getInventory()->addItem(inv, s, item);
-					vector_t<InventoryPacketOperation> ops;
-					ops.emplace_back(Packets::Inventory::OperationTypes::AddItem, item, s);
-					player->send(Packets::Inventory::inventoryOperation(fromDrop, ops));
+					item_value->inc_amount(old_item->get_amount());
+					player->get_inventory()->delete_item(inv, s);
+					player->get_inventory()->add_item(inv, s, item_value);
+					vector<inventory_packet_operation> ops;
+					ops.emplace_back(packets::inventory::operation_types::add_item, item_value, s);
+					player->send(packets::inventory::inventory_operation(from_drop, ops));
 					return 0;
 				}
 			}
 		}
-		else if (!freeSlot) {
-			freeSlot = s;
-			if (!GameLogicUtilities::isStackable(item->getId())) {
+		else if (!free_slot) {
+			free_slot = s;
+			if (!game_logic_utilities::is_stackable(item_value->get_id())) {
 				break;
 			}
 		}
 	}
-	if (freeSlot != 0) {
-		player->getInventory()->addItem(inv, freeSlot, item);
+	if (free_slot != 0) {
+		player->get_inventory()->add_item(inv, free_slot, item_value);
 
-		vector_t<InventoryPacketOperation> ops;
-		ops.emplace_back(Packets::Inventory::OperationTypes::AddItem, item, freeSlot);
-		player->send(Packets::Inventory::inventoryOperation(fromDrop, ops));
+		vector<inventory_packet_operation> ops;
+		ops.emplace_back(packets::inventory::operation_types::add_item, item_value, free_slot);
+		player->send(packets::inventory::inventory_operation(from_drop, ops));
 
-		if (GameLogicUtilities::isPet(item->getId())) {
-			Pet *pet = new Pet{player.get(), item};
-			player->getPets()->addPet(pet);
-			pet->setInventorySlot(static_cast<int8_t>(freeSlot));
-			player->send(Packets::Pets::updatePet(pet, item));
+		if (game_logic_utilities::is_pet(item_value->get_id())) {
+			pet *value = new pet{player.get(), item_value};
+			player->get_pets()->add_pet(value);
+			value->set_inventory_slot(static_cast<int8_t>(free_slot));
+			player->send(packets::pets::update_pet(value, item_value));
 		}
 
 		return 0;
 	}
-	return item->getAmount();
+	return item_value->get_amount();
 }
 
-auto Inventory::addNewItem(ref_ptr_t<Player> player, item_id_t itemId, slot_qty_t amount, Items::StatVariance variancePolicy) -> void {
-	auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(itemId);
-	if (itemInfo == nullptr) {
+auto inventory::add_new_item(ref_ptr<player> player, game_item_id item_id, game_slot_qty amount, items::stat_variance variance_policy) -> void {
+	auto item_info = channel_server::get_instance().get_item_data_provider().get_item_info(item_id);
+	if (item_info == nullptr) {
 		return;
 	}
 
-	slot_qty_t max = itemInfo->maxSlot;
-	slot_qty_t thisAmount = 0;
-	if (GameLogicUtilities::isRechargeable(itemId)) {
-		thisAmount = max + player->getSkills()->getRechargeableBonus();
+	game_slot_qty max = item_info->max_slot;
+	game_slot_qty this_amount = 0;
+	if (game_logic_utilities::is_rechargeable(item_id)) {
+		this_amount = max + player->get_skills()->get_rechargeable_bonus();
 		amount -= 1;
 	}
-	else if (GameLogicUtilities::isEquip(itemId) || GameLogicUtilities::isPet(itemId)) {
-		thisAmount = 1;
+	else if (game_logic_utilities::is_equip(item_id) || game_logic_utilities::is_pet(item_id)) {
+		this_amount = 1;
 		amount -= 1;
 	}
 	else if (amount > max) {
-		thisAmount = max;
+		this_amount = max;
 		amount -= max;
 	}
 	else {
-		thisAmount = amount;
+		this_amount = amount;
 		amount = 0;
 	}
 
-	Item *item = nullptr;
-	if (GameLogicUtilities::isEquip(itemId)) {
-		item = new Item{
-			ChannelServer::getInstance().getEquipDataProvider(),
-			itemId,
-			variancePolicy,
-			player->hasGmBenefits()
+	item *value = nullptr;
+	if (game_logic_utilities::is_equip(item_id)) {
+		value = new item{
+			channel_server::get_instance().get_equip_data_provider(),
+			item_id,
+			variance_policy,
+			player->has_gm_benefits()
 		};
-		if (GameLogicUtilities::isMount(itemId)) {
-			player->getMounts()->addMount(itemId);
+		if (game_logic_utilities::is_mount(item_id)) {
+			player->get_mounts()->add_mount(item_id);
 		}
 	}
 	else {
-		item = new Item{itemId, thisAmount};
+		value = new item{item_id, this_amount};
 	}
-	if (addItem(player, item, GameLogicUtilities::isPet(itemId)) == 0 && amount > 0) {
-		addNewItem(player, itemId, amount);
+	if (add_item(player, value, game_logic_utilities::is_pet(item_id)) == 0 && amount > 0) {
+		add_new_item(player, item_id, amount);
 	}
 }
 
-auto Inventory::takeItem(ref_ptr_t<Player> player, item_id_t itemId, slot_qty_t howMany) -> void {
-	if (player->hasGmBenefits()) {
-		player->send(Packets::Inventory::blankUpdate());
+auto inventory::take_item(ref_ptr<player> player, game_item_id item_id, game_slot_qty how_many) -> void {
+	if (player->has_gm_benefits()) {
+		player->send(packets::inventory::blank_update());
 		return;
 	}
 
-	player->getInventory()->changeItemAmount(itemId, -howMany);
-	inventory_t inv = GameLogicUtilities::getInventory(itemId);
-	for (inventory_slot_t i = 1; i <= player->getInventory()->getMaxSlots(inv); i++) {
-		Item *item = player->getInventory()->getItem(inv, i);
+	player->get_inventory()->change_item_amount(item_id, -how_many);
+	game_inventory inv = game_logic_utilities::get_inventory(item_id);
+	for (game_inventory_slot i = 1; i <= player->get_inventory()->get_max_slots(inv); i++) {
+		item *item = player->get_inventory()->get_item(inv, i);
 		if (item == nullptr) {
 			continue;
 		}
-		if (item->getId() == itemId) {
-			if (item->getAmount() >= howMany) {
-				item->decAmount(howMany);
-				if (item->getAmount() == 0 && !GameLogicUtilities::isRechargeable(item->getId())) {
-					vector_t<InventoryPacketOperation> ops;
-					ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, item, i);
-					player->send(Packets::Inventory::inventoryOperation(true, ops));
+		if (item->get_id() == item_id) {
+			if (item->get_amount() >= how_many) {
+				item->dec_amount(how_many);
+				if (item->get_amount() == 0 && !game_logic_utilities::is_rechargeable(item->get_id())) {
+					vector<inventory_packet_operation> ops;
+					ops.emplace_back(packets::inventory::operation_types::modify_slot, item, i);
+					player->send(packets::inventory::inventory_operation(true, ops));
 
-					player->getInventory()->deleteItem(inv, i);
+					player->get_inventory()->delete_item(inv, i);
 				}
 				else {
-					vector_t<InventoryPacketOperation> ops;
-					ops.emplace_back(Packets::Inventory::OperationTypes::ModifyQuantity, item, i);
-					player->send(Packets::Inventory::inventoryOperation(true, ops));
+					vector<inventory_packet_operation> ops;
+					ops.emplace_back(packets::inventory::operation_types::modify_quantity, item, i);
+					player->send(packets::inventory::inventory_operation(true, ops));
 				}
 				break;
 			}
-			else if (!GameLogicUtilities::isRechargeable(item->getId())) {
-				howMany -= item->getAmount();
-				item->setAmount(0);
+			else if (!game_logic_utilities::is_rechargeable(item->get_id())) {
+				how_many -= item->get_amount();
+				item->set_amount(0);
 
-				vector_t<InventoryPacketOperation> ops;
-				ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, item, i);
-				player->send(Packets::Inventory::inventoryOperation(true, ops));
+				vector<inventory_packet_operation> ops;
+				ops.emplace_back(packets::inventory::operation_types::modify_slot, item, i);
+				player->send(packets::inventory::inventory_operation(true, ops));
 
-				player->getInventory()->deleteItem(inv, i);
+				player->get_inventory()->delete_item(inv, i);
 			}
 		}
 	}
 }
 
-auto Inventory::takeItemSlot(ref_ptr_t<Player> player, inventory_t inv, inventory_slot_t slot, slot_qty_t amount, bool takeStar, bool overrideGmBenefits) -> void {
-	if (!overrideGmBenefits && player->hasGmBenefits()) {
+auto inventory::take_item_slot(ref_ptr<player> player, game_inventory inv, game_inventory_slot slot, game_slot_qty amount, bool take_star, bool override_gm_benefits) -> void {
+	if (!override_gm_benefits && player->has_gm_benefits()) {
 		return;
 	}
 
-	Item *item = player->getInventory()->getItem(inv, slot);
-	if (item == nullptr || item->getAmount() - amount < 0) {
+	item *item = player->get_inventory()->get_item(inv, slot);
+	if (item == nullptr || item->get_amount() - amount < 0) {
 		return;
 	}
-	item->decAmount(amount);
-	if ((item->getAmount() == 0 && !GameLogicUtilities::isRechargeable(item->getId())) || (takeStar && GameLogicUtilities::isRechargeable(item->getId()))) {
-		vector_t<InventoryPacketOperation> ops;
-		ops.emplace_back(Packets::Inventory::OperationTypes::ModifySlot, item, slot);
-		player->send(Packets::Inventory::inventoryOperation(true, ops));
+	item->dec_amount(amount);
+	if ((item->get_amount() == 0 && !game_logic_utilities::is_rechargeable(item->get_id())) || (take_star && game_logic_utilities::is_rechargeable(item->get_id()))) {
+		vector<inventory_packet_operation> ops;
+		ops.emplace_back(packets::inventory::operation_types::modify_slot, item, slot);
+		player->send(packets::inventory::inventory_operation(true, ops));
 
-		player->getInventory()->deleteItem(inv, slot);
+		player->get_inventory()->delete_item(inv, slot);
 	}
 	else {
-		player->getInventory()->changeItemAmount(item->getId(), -amount);
+		player->get_inventory()->change_item_amount(item->get_id(), -amount);
 
-		vector_t<InventoryPacketOperation> ops;
-		ops.emplace_back(Packets::Inventory::OperationTypes::ModifyQuantity, item, slot);
-		player->send(Packets::Inventory::inventoryOperation(true, ops));
+		vector<inventory_packet_operation> ops;
+		ops.emplace_back(packets::inventory::operation_types::modify_quantity, item, slot);
+		player->send(packets::inventory::inventory_operation(true, ops));
 	}
 }
 
-auto Inventory::useItem(ref_ptr_t<Player> player, item_id_t itemId) -> void {
-	auto item = ChannelServer::getInstance().getItemDataProvider().getConsumeInfo(itemId);
+auto inventory::use_item(ref_ptr<player> player, game_item_id item_id) -> void {
+	auto item = channel_server::get_instance().get_item_data_provider().get_consume_info(item_id);
 	if (item == nullptr) {
 		// Not a consume
 		return;
 	}
 
 	int16_t potency = 100;
-	skill_id_t alchemist = player->getSkills()->getAlchemist();
+	game_skill_id alchemist = player->get_skills()->get_alchemist();
 
-	if (player->getSkills()->getSkillLevel(alchemist) > 0) {
-		potency = player->getSkills()->getSkillInfo(alchemist)->x;
+	if (player->get_skills()->get_skill_level(alchemist) > 0) {
+		potency = player->get_skills()->get_skill_info(alchemist)->x;
 	}
 
-	auto buffs = player->getActiveBuffs();
+	auto buffs = player->get_active_buffs();
 	if (item->hp > 0) {
-		player->getStats()->modifyHp(item->hp * buffs->getZombifiedPotency(potency) / 100);
+		player->get_stats()->modify_hp(item->hp * buffs->get_zombified_potency(potency) / 100);
 	}
 	if (item->mp > 0) {
-		player->getStats()->modifyMp(item->mp * potency / 100);
+		player->get_stats()->modify_mp(item->mp * potency / 100);
 	}
 	else {
-		player->getStats()->setMp(player->getStats()->getMp(), true);
+		player->get_stats()->set_mp(player->get_stats()->get_mp(), true);
 	}
-	if (item->hpr != 0) {
-		player->getStats()->modifyHp(item->hpr * buffs->getZombifiedPotency(player->getStats()->getMaxHp()) / 100);
+	if (item->hp_rate != 0) {
+		player->get_stats()->modify_hp(item->hp_rate * buffs->get_zombified_potency(player->get_stats()->get_max_hp()) / 100);
 	}
-	if (item->mpr != 0) {
-		player->getStats()->modifyMp(item->mpr * player->getStats()->getMaxMp() / 100);
+	if (item->mp_rate != 0) {
+		player->get_stats()->modify_mp(item->mp_rate * player->get_stats()->get_max_mp() / 100);
 	}
 	if (item->ailment > 0) {
-		player->getActiveBuffs()->useDebuffHealingItem(item->ailment);
+		player->get_active_buffs()->use_debuff_healing_item(item->ailment);
 	}
-	if (item->buffTime.count() > 0 && item->chance == 0) {
-		seconds_t time{item->buffTime.count() * potency / 100};
-		Buffs::addBuff(player, itemId, time);
+	if (item->buff_time.count() > 0 && item->chance == 0) {
+		seconds time{item->buff_time.count() * potency / 100};
+		buffs::add_buff(player, item_id, time);
 	}
-	if (GameLogicUtilities::isMonsterCard(itemId)) {
-		bool isFull = player->getMonsterBook()->addCard(itemId); // Has a special buff for being full?
-		player->send(Packets::MonsterBook::addCard(itemId, player->getMonsterBook()->getCardLevel(itemId), isFull));
-		if (!isFull) {
-			player->sendMap(Packets::MonsterBook::addCardEffect(player->getId()));
+	if (game_logic_utilities::is_monster_card(item_id)) {
+		bool is_full = player->get_monster_book()->add_card(item_id); // Has a special buff for being full?
+		player->send(packets::monster_book::add_card(item_id, player->get_monster_book()->get_card_level(item_id), is_full));
+		if (!is_full) {
+			player->send_map(packets::monster_book::add_card_effect(player->get_id()));
 		}
-		Buffs::addBuff(player, itemId, item->buffTime);
+		buffs::add_buff(player, item_id, item->buff_time);
 	}
 }
 

@@ -24,74 +24,74 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Player.hpp"
 #include "ChannelServer/PlayerDataProvider.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-Drop::Drop(map_id_t mapId, mesos_t mesos, const Point &pos, player_id_t owner, bool playerDrop) :
+drop::drop(game_map_id map_id, game_mesos mesos, const point &pos, game_player_id owner, bool player_drop) :
 	m_owner{owner},
-	m_mapId{mapId},
+	m_map_id{map_id},
 	m_mesos{mesos},
-	m_playerDrop{playerDrop},
+	m_player_drop{player_drop},
 	m_pos{pos}
 {
 }
 
-Drop::Drop(map_id_t mapId, const Item &item, const Point &pos, player_id_t owner, bool playerDrop) :
+drop::drop(game_map_id map_id, const item &item, const point &pos, game_player_id owner, bool player_drop) :
 	m_owner{owner},
-	m_mapId{mapId},
-	m_playerDrop{playerDrop},
+	m_map_id{map_id},
+	m_player_drop{player_drop},
 	m_pos{pos},
 	m_item{item}
 {
 }
 
-auto Drop::getObjectId() -> int32_t {
-	return m_mesos > 0 ? m_mesos : m_item.getId();
+auto drop::get_object_id() -> int32_t {
+	return m_mesos > 0 ? m_mesos : m_item.get_id();
 }
 
-auto Drop::getAmount() -> slot_qty_t {
-	return m_item.getAmount();
+auto drop::get_amount() -> game_slot_qty {
+	return m_item.get_amount();
 }
 
-auto Drop::doDrop(const Point &origin) -> void {
-	setDroppedAtTime(TimeUtilities::getNow());
-	Map *map = getMap();
-	map->addDrop(this);
+auto drop::do_drop(const point &origin) -> void {
+	set_dropped_at_time(utilities::time::get_now());
+	map *map = get_map();
+	map->add_drop(this);
 
-	if (!isQuest()) {
-		if (!isTradeable()) {
-			map->send(Packets::Drops::showDrop(this, Packets::Drops::DropTypes::DisappearDuringDrop, origin));
-			this->removeDrop(false);
+	if (!is_quest()) {
+		if (!is_tradeable()) {
+			map->send(packets::drops::show_drop(this, packets::drops::drop_types::disappear_during_drop, origin));
+			this->remove_drop(false);
 		}
 		else {
-			map->send(Packets::Drops::showDrop(this, Packets::Drops::DropTypes::DropAnimation, origin));
-			map->send(Packets::Drops::showDrop(this, Packets::Drops::DropTypes::ShowDrop, origin));
+			map->send(packets::drops::show_drop(this, packets::drops::drop_types::drop_animation, origin));
+			map->send(packets::drops::show_drop(this, packets::drops::drop_types::show_drop, origin));
 		}
 	}
 	else if (m_owner != 0) {
-		if (auto player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(m_owner)) {
-			if (player->getMapId() == m_mapId) {
-				player->send(Packets::Drops::showDrop(this, Packets::Drops::DropTypes::DropAnimation, origin));
-				player->send(Packets::Drops::showDrop(this, Packets::Drops::DropTypes::ShowDrop, origin));
+		if (auto player = channel_server::get_instance().get_player_data_provider().get_player(m_owner)) {
+			if (player->get_map_id() == m_map_id) {
+				player->send(packets::drops::show_drop(this, packets::drops::drop_types::drop_animation, origin));
+				player->send(packets::drops::show_drop(this, packets::drops::drop_types::show_drop, origin));
 			}
 		}
 	}
 }
 
-auto Drop::showDrop(ref_ptr_t<Player> player) -> void {
-	if (isQuest() && player->getId() != m_owner) {
+auto drop::show_drop(ref_ptr<player> player) -> void {
+	if (is_quest() && player->get_id() != m_owner) {
 		return;
 	}
-	player->send(Packets::Drops::showDrop(this, Packets::Drops::DropTypes::ShowExisting, Point{}));
+	player->send(packets::drops::show_drop(this, packets::drops::drop_types::show_existing, point{}));
 }
 
-auto Drop::takeDrop(ref_ptr_t<Player> player, pet_id_t petId) -> void {
-	Map *map = getMap();
-	map->removeDrop(m_id);
+auto drop::take_drop(ref_ptr<player> player, game_pet_id pet_id) -> void {
+	map *map = get_map();
+	map->remove_drop(m_id);
 
-	if (petId == 0) {
-		auto &packet = Packets::Drops::takeDrop(player->getId(), getId());
-		if (isQuest()) {
+	if (pet_id == 0) {
+		auto &packet = packets::drops::take_drop(player->get_id(), get_id());
+		if (is_quest()) {
 			player->send(packet);
 		}
 		else {
@@ -99,14 +99,14 @@ auto Drop::takeDrop(ref_ptr_t<Player> player, pet_id_t petId) -> void {
 		}
 	}
 	else {
-		Pet *pet = player->getPets()->getPet(petId);
-		if (pet == nullptr || !pet->isSummoned()) {
+		pet *pet = player->get_pets()->get_pet(pet_id);
+		if (pet == nullptr || !pet->is_summoned()) {
 			// nullptr = definitely hacking. Otherwise may be lag.
 			return;
 		}
 
-		auto &packet = Packets::Drops::takeDrop(player->getId(), getId(), pet->getIndex().get());
-		if (isQuest()) {
+		auto &packet = packets::drops::take_drop(player->get_id(), get_id(), pet->get_index().get());
+		if (is_quest()) {
 			player->send(packet);
 		}
 		else {
@@ -117,17 +117,17 @@ auto Drop::takeDrop(ref_ptr_t<Player> player, pet_id_t petId) -> void {
 	delete this;
 }
 
-auto Drop::removeDrop(bool showPacket) -> void {
-	Map *map = getMap();
-	map->removeDrop(m_id);
-	if (showPacket) {
-		map->send(Packets::Drops::removeDrop(getId()));
+auto drop::remove_drop(bool show_packet) -> void {
+	map *map = get_map();
+	map->remove_drop(m_id);
+	if (show_packet) {
+		map->send(packets::drops::remove_drop(get_id()));
 	}
 	delete this;
 }
 
-auto Drop::getMap() const -> Map * {
-	return Maps::getMap(m_mapId);
+auto drop::get_map() const -> map * {
+	return maps::get_map(m_map_id);
 }
 
 }

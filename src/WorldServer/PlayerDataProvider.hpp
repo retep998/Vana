@@ -28,68 +28,68 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <unordered_map>
 
-namespace Vana {
-	class PacketBuilder;
+namespace vana {
+	class packet_builder;
 	class soci::row;
 
-	namespace WorldServer {
-		class LoginServerSession;
-		class WorldServerAcceptedSession;
+	namespace world_server {
+		class login_server_session;
+		class world_server_accepted_session;
 
-		class PlayerDataProvider {
+		class player_data_provider {
 		public:
-			PlayerDataProvider();
+			player_data_provider();
 
-			auto loadData() -> void;
-			auto getChannelConnectPacket(PacketBuilder &builder) -> void;
-			auto channelDisconnect(channel_id_t channel) -> void;
-			auto send(player_id_t playerId, const PacketBuilder &builder) -> void;
-			auto send(const vector_t<player_id_t> &playerIds, const PacketBuilder &builder) -> void;
-			auto send(const PacketBuilder &builder) -> void;
+			auto load_data() -> void;
+			auto get_channel_connect_packet(packet_builder &builder) -> void;
+			auto channel_disconnect(game_channel_id channel) -> void;
+			auto send(game_player_id player_id, const packet_builder &builder) -> void;
+			auto send(const vector<game_player_id> &player_ids, const packet_builder &builder) -> void;
+			auto send(const packet_builder &builder) -> void;
 
 			// Handling
-			auto handleSync(ref_ptr_t<WorldServerAcceptedSession> session, sync_t type, PacketReader &reader) -> void;
-			auto handleSync(ref_ptr_t<LoginServerSession> session, sync_t type, PacketReader &reader) -> void;
+			auto handle_sync(ref_ptr<world_server_accepted_session> session, protocol_sync type, packet_reader &reader) -> void;
+			auto handle_sync(ref_ptr<login_server_session> session, protocol_sync type, packet_reader &reader) -> void;
 		private:
-			auto loadPlayers(world_id_t worldId) -> void;
-			auto loadPlayer(player_id_t playerId) -> void;
-			auto addPlayer(const PlayerData &data) -> void;
-			auto sendSync(const PacketBuilder &builder) const -> void;
+			auto load_players(game_world_id world_id) -> void;
+			auto load_player(game_player_id player_id) -> void;
+			auto add_player(const player_data &data) -> void;
+			auto send_sync(const packet_builder &builder) const -> void;
 
 			// Handling
-			auto handlePlayerSync(ref_ptr_t<WorldServerAcceptedSession> session, PacketReader &reader) -> void;
-			auto handlePlayerSync(ref_ptr_t<LoginServerSession> session, PacketReader &reader) -> void;
-			auto handlePartySync(PacketReader &reader) -> void;
-			auto handleBuddySync(PacketReader &reader) -> void;
+			auto handle_player_sync(ref_ptr<world_server_accepted_session> session, packet_reader &reader) -> void;
+			auto handle_player_sync(ref_ptr<login_server_session> session, packet_reader &reader) -> void;
+			auto handle_party_sync(packet_reader &reader) -> void;
+			auto handle_buddy_sync(packet_reader &reader) -> void;
 
 			// Players
-			auto removePendingPlayer(player_id_t id) -> channel_id_t;
-			auto handlePlayerConnect(channel_id_t channel, PacketReader &reader) -> void;
-			auto handlePlayerDisconnect(channel_id_t channel, PacketReader &reader) -> void;
-			auto handleChangeChannelRequest(ref_ptr_t<WorldServerAcceptedSession> session, PacketReader &reader) -> void;
-			auto handleChangeChannel(PacketReader &reader) -> void;
-			auto handlePlayerUpdate(PacketReader &reader) -> void;
-			auto handleCharacterCreated(PacketReader &reader) -> void;
-			auto handleCharacterDeleted(PacketReader &reader) -> void;
+			auto remove_pending_player(game_player_id id) -> game_channel_id;
+			auto handle_player_connect(game_channel_id channel, packet_reader &reader) -> void;
+			auto handle_player_disconnect(game_channel_id channel, packet_reader &reader) -> void;
+			auto handle_change_channel_request(ref_ptr<world_server_accepted_session> session, packet_reader &reader) -> void;
+			auto handle_change_channel(packet_reader &reader) -> void;
+			auto handle_player_update(packet_reader &reader) -> void;
+			auto handle_character_created(packet_reader &reader) -> void;
+			auto handle_character_deleted(packet_reader &reader) -> void;
 
 			// Parties
-			auto handleCreateParty(player_id_t playerId) -> void;
-			auto handlePartyAdd(player_id_t playerId, party_id_t partyId) -> void;
-			auto handlePartyRemove(player_id_t playerId, player_id_t targetId) -> void;
-			auto handlePartyLeave(player_id_t playerId) -> void;
-			auto handlePartyTransfer(player_id_t playerId, player_id_t newLeaderId) -> void;
+			auto handle_create_party(game_player_id player_id) -> void;
+			auto handle_party_add(game_player_id player_id, game_party_id party_id) -> void;
+			auto handle_party_remove(game_player_id player_id, game_player_id target_id) -> void;
+			auto handle_party_leave(game_player_id player_id) -> void;
+			auto handle_party_transfer(game_player_id player_id, game_player_id new_leader_id) -> void;
 
 			// Buddies
-			auto buddyInvite(PacketReader &reader) -> void;
-			auto acceptBuddyInvite(PacketReader &reader) -> void;
-			auto removeBuddy(PacketReader &reader) -> void;
-			auto readdBuddy(PacketReader &reader) -> void;
+			auto buddy_invite(packet_reader &reader) -> void;
+			auto accept_buddy_invite(packet_reader &reader) -> void;
+			auto remove_buddy(packet_reader &reader) -> void;
+			auto readd_buddy(packet_reader &reader) -> void;
 
-			IdPool<party_id_t> m_partyIds;
-			hash_map_t<player_id_t, channel_id_t> m_channelSwitches;
-			hash_map_t<party_id_t, PartyData> m_parties;
-			hash_map_t<player_id_t, PlayerData> m_players;
-			case_insensitive_hash_map_t<PlayerData *> m_playersByName;
+			id_pool<game_party_id> m_party_ids;
+			hash_map<game_player_id, game_channel_id> m_channel_switches;
+			hash_map<game_party_id, party_data> m_parties;
+			hash_map<game_player_id, player_data> m_players;
+			case_insensitive_hash_map<player_data *> m_players_by_name;
 		};
 	}
 }

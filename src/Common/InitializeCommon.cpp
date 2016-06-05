@@ -27,106 +27,107 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-namespace Vana {
+namespace vana {
+namespace initializing {
 
-auto Initializing::checkMcdbVersion(AbstractServer *server) -> Result {
+auto check_mcdb_version(abstract_server *server) -> result {
 	soci::row row;
 
 	try {
-		auto &db = Database::getDataDb();
-		auto &sql = db.getSession();
-		if (!db.tableExists("mcdb_info")) {
-			server->log(LogType::CriticalError, "mcdb_info does not exist.");
-			ExitCodes::exit(ExitCodes::McdbError);
-			return Result::Failure;
+		auto &db = database::get_data_db();
+		auto &sql = db.get_session();
+		if (!db.table_exists("mcdb_info")) {
+			server->log(log_type::critical_error, "mcdb_info does not exist.");
+			exit(exit_code::mcdb_error);
+			return result::failure;
 		}
 
 		sql.once
 			<< "SELECT * "
-			<< "FROM " << db.makeTable("mcdb_info"),
+			<< "FROM " << db.make_table("mcdb_info"),
 			soci::into(row);
 
 		if (!sql.got_data()) {
-			server->log(LogType::CriticalError, "mcdb_info is empty.");
-			ExitCodes::exit(ExitCodes::McdbError);
-			return Result::Failure;
+			server->log(log_type::critical_error, "mcdb_info is empty.");
+			exit(exit_code::mcdb_error);
+			return result::failure;
 		}
 	}
 	catch (soci::soci_error &e) {
-		server->log(LogType::CriticalError, string_t{e.what()});
-		ExitCodes::exit(ExitCodes::McdbError);
-		return Result::Failure;
+		server->log(log_type::critical_error, string{e.what()});
+		exit(exit_code::mcdb_error);
+		return result::failure;
 	}
 
 	int32_t version = row.get<int32_t>("version");
 	int32_t subversion = row.get<int32_t>("subversion");
-	version_t mapleVersion = row.get<version_t>("maple_version");
-	bool testServer = row.get<bool>("test_server");
-	string_t mapleLocale = row.get<string_t>("maple_locale");
+	game_version maple_version = row.get<game_version>("maple_version");
+	bool test_server = row.get<bool>("test_server");
+	string maple_locale = row.get<string>("maple_locale");
 
-	if (version != Mcdb::MajorVersion || subversion != Mcdb::SubVersion) {
-		server->log(LogType::CriticalError, [&](out_stream_t &str) {
+	if (version != mcdb::major_version || subversion != mcdb::sub_version) {
+		server->log(log_type::critical_error, [&](out_stream &str) {
 			str
 				<< "MCDB version incompatible." << std::endl
-				<< "Vana: " << Mcdb::MajorVersion << "." << Mcdb::SubVersion << std::endl
+				<< "Vana: " << mcdb::major_version << "." << mcdb::sub_version << std::endl
 				<< "MCDB: " << version << "." << subversion;
 		});
-		ExitCodes::exit(ExitCodes::McdbIncompatible);
-		return Result::Failure;
+		exit(exit_code::mcdb_incompatible);
+		return result::failure;
 	}
 
-	auto makeLocale = [](const string_t &locale, bool testServer) {
-		string_t loc = locale;
-		if (testServer) {
+	auto make_locale = [](const string &locale, bool test_server) {
+		string loc = locale;
+		if (test_server) {
 			loc += " (test server)";
 		}
 		return loc;
 	};
 
-	if (mapleLocale != Mcdb::Locale || testServer != Mcdb::IsTestServer) {
-		server->log(LogType::CriticalError, [&](out_stream_t &str) {
+	if (maple_locale != mcdb::locale || test_server != mcdb::is_test_server) {
+		server->log(log_type::critical_error, [&](out_stream &str) {
 			str
 			<< "Your MCDB is designed for different locale." << std::endl
-			<< "Vana: " << makeLocale(Mcdb::Locale, Mcdb::IsTestServer) << std::endl
-			<< "MCDB: " << makeLocale(mapleLocale, testServer);
+			<< "Vana: " << make_locale(mcdb::locale, mcdb::is_test_server) << std::endl
+			<< "MCDB: " << make_locale(maple_locale, test_server);
 		});
-		ExitCodes::exit(ExitCodes::McdbLocaleIncompatible);
-		return Result::Failure;
+		exit(exit_code::mcdb_locale_incompatible);
+		return result::failure;
 	}
 
-	if (mapleVersion != MapleVersion::Version) {
-		server->log(LogType::Warning, [&](out_stream_t &str) {
+	if (maple_version != maple_version::version) {
+		server->log(log_type::warning, [&](out_stream &str) {
 			str
 				<< "WARNING: Your copy of MCDB is based on an incongruent version of the WZ files." << std::endl
-				<< "Vana: " << MapleVersion::Version << std::endl
-				<< "MCDB: " << mapleVersion;
+				<< "Vana: " << maple_version::version << std::endl
+				<< "MCDB: " << maple_version;
 		});
 	}
 
-	return Result::Successful;
+	return result::successful;
 }
 
-auto Initializing::checkSchemaVersion(AbstractServer *server, bool update) -> Result {
-	DatabaseUpdater db{server, update};
+auto check_schema_version(abstract_server *server, bool update) -> result {
+	database_updater db{server, update};
 
-	VersionCheckResult check = db.checkVersion();
+	version_check_result check = db.check_version();
 
-	if (check == VersionCheckResult::DatabaseUnavailable) {
-		server->log(LogType::CriticalError, "Vana database is currently inaccessible.");
-		ExitCodes::exit(ExitCodes::InfoDatabaseError);
-		return Result::Failure;
+	if (check == version_check_result::database_unavailable) {
+		server->log(log_type::critical_error, "Vana database is currently inaccessible.");
+		exit(exit_code::info_database_error);
+		return result::failure;
 	}
 
-	if (check == VersionCheckResult::NeedsUpdate) {
+	if (check == version_check_result::needs_update) {
 		if (!update) {
 			// Wrong version and we're not allowed to update, so let's quit
-			server->log(LogType::CriticalError, "Wrong version of database, please run LoginServer to update.");
-			ExitCodes::exit(ExitCodes::InfoDatabaseError);
-			return Result::Failure;
+			server->log(log_type::critical_error, "Wrong version of database, please run LoginServer to update.");
+			exit(exit_code::info_database_error);
+			return result::failure;
 		}
 		else {
 			// Failed, but we can update it
-			std::cout << std::setw(OutputWidth) << std::left << "Updating database...";
+			std::cout << std::setw(output_width) << std::left << "Updating database...";
 
 			db.update();
 
@@ -134,26 +135,27 @@ auto Initializing::checkSchemaVersion(AbstractServer *server, bool update) -> Re
 		}
 	}
 
-	return Result::Successful;
+	return result::successful;
 }
 
-auto Initializing::setUsersOffline(AbstractServer *server, int32_t onlineId) -> void {
+auto set_users_offline(abstract_server *server, int32_t online_id) -> void {
 	std::cout << "Resetting online status of players..." << std::endl;
-	time_point_t startTime = TimeUtilities::getNow();
+	time_point start_time = utilities::time::get_now();
 
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
 	sql.once
-		<< "UPDATE " << db.makeTable("accounts") << " u "
-		<< "INNER JOIN " << db.makeTable("characters") << " c ON u.account_id = c.account_id "
+		<< "UPDATE " << db.make_table("accounts") << " u "
+		<< "INNER JOIN " << db.make_table("characters") << " c ON u.account_id = c.account_id "
 		<< "SET "
 		<< "	u.online = 0,"
 		<< "	c.online = 0 "
 		<< "WHERE u.online = :online",
-		soci::use(onlineId, "online");
+		soci::use(online_id, "online");
 
-	auto loadingTime = TimeUtilities::getDistance<milliseconds_t>(TimeUtilities::getNow(), startTime);
-	std::cout << "Reset all accounts and players in " << std::setprecision(3) << loadingTime / 1000.f << " seconds!" << std::endl << std::endl;
+	auto loading_time = utilities::time::get_distance<milliseconds>(utilities::time::get_now(), start_time);
+	std::cout << "Reset all accounts and players in " << std::setprecision(3) << loading_time / 1000.f << " seconds!" << std::endl << std::endl;
 }
 
+}
 }

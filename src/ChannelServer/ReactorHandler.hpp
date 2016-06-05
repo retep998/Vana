@@ -19,18 +19,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class PacketReader;
+namespace vana {
+	class packet_reader;
 
-	namespace ChannelServer {
-		class Drop;
-		class Player;
+	namespace channel_server {
+		class drop;
+		class player;
 
-		namespace ReactorHandler {
-			auto hitReactor(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto touchReactor(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto checkDrop(ref_ptr_t<Player> player, Drop *drop) -> void;
-			auto checkLoot(Drop *drop) -> void;
+		namespace reactor_handler {
+			auto hit_reactor(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto touch_reactor(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto check_drop(ref_ptr<player> player, drop *drop) -> void;
+			auto check_loot(drop *drop) -> void;
 		}
 	}
 }

@@ -22,31 +22,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <vector>
 
-namespace Vana {
-	struct Point;
+namespace vana {
+	struct point;
 
-	namespace ChannelServer {
-		class Mob;
-		class Player;
-		struct StatusInfo;
+	namespace channel_server {
+		class mob;
+		class player;
+		struct status_info;
 
-		namespace Packets {
-			namespace Mobs {
-				PACKET(spawnMob, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> owner = nullptr, MobSpawnType spawn = MobSpawnType::Existing);
-				PACKET(requestControl, ref_ptr_t<Mob> mob, MobSpawnType spawn);
-				PACKET(mobPacket, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> owner, MobSpawnType spawn);
-				PACKET(endControlMob, map_object_t mapMobId);
-				PACKET(moveMobResponse, map_object_t mapMobId, int16_t moveId, bool skillPossible, int32_t mp, mob_skill_id_t skill, mob_skill_level_t level);
-				PACKET(moveMob, map_object_t mapMobId, bool skillPossible, int8_t rawAction, mob_skill_id_t skill, mob_skill_level_t level, int16_t option, unsigned char *buf, int32_t len);
-				PACKET(healMob, map_object_t mapMobId, int32_t amount);
-				PACKET(hurtMob, map_object_t mapMobId, damage_t amount);
-				PACKET(damageFriendlyMob, ref_ptr_t<Mob> mob, damage_t damage);
-				PACKET(applyStatus, map_object_t mapMobId, int32_t statusMask, const vector_t<StatusInfo> &info, int16_t delay, const vector_t<int32_t> &reflection);
-				PACKET(removeStatus, map_object_t mapMobId, int32_t status);
-				PACKET(showHp, map_object_t mapMobId, int8_t percentage);
-				PACKET(showBossHp, ref_ptr_t<Mob> mob);
-				PACKET(dieMob, map_object_t mapMobId, int8_t death = 1);
-				PACKET(showSpawnEffect, int8_t summonEffect, const Point &pos);
+		namespace packets {
+			namespace mobs {
+				PACKET(spawn_mob, ref_ptr<mob> value, int8_t summon_effect, ref_ptr<mob> owner = nullptr, mob_spawn_type spawn = mob_spawn_type::existing);
+				PACKET(request_control, ref_ptr<mob> value, mob_spawn_type spawn);
+				PACKET(mob_packet, ref_ptr<mob> value, int8_t summon_effect, ref_ptr<mob> owner, mob_spawn_type spawn);
+				PACKET(end_control_mob, game_map_object map_mob_id);
+				PACKET(move_mob_response, game_map_object map_mob_id, int16_t move_id, bool skill_possible, int32_t mp, game_mob_skill_id skill, game_mob_skill_level level);
+				PACKET(move_mob, game_map_object map_mob_id, bool skill_possible, int8_t raw_action, game_mob_skill_id skill, game_mob_skill_level level, int16_t option, unsigned char *buf, int32_t len);
+				PACKET(heal_mob, game_map_object map_mob_id, int32_t amount);
+				PACKET(hurt_mob, game_map_object map_mob_id, game_damage amount);
+				PACKET(damage_friendly_mob, ref_ptr<mob> value, game_damage damage);
+				PACKET(apply_status, game_map_object map_mob_id, int32_t status_mask, const vector<status_info> &info, int16_t delay, const vector<int32_t> &reflection);
+				PACKET(remove_status, game_map_object map_mob_id, int32_t status);
+				PACKET(show_hp, game_map_object map_mob_id, int8_t percentage);
+				PACKET(show_boss_hp, ref_ptr<mob> value);
+				PACKET(die_mob, game_map_object map_mob_id, int8_t death = 1);
+				PACKET(show_spawn_effect, int8_t summon_effect, const point &pos);
 			}
 		}
 	}

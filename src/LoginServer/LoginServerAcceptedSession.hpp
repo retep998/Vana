@@ -20,23 +20,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/ServerAcceptedSession.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class PacketReader;
+namespace vana {
+	class packet_reader;
 
-	namespace LoginServer {
-		class LoginServerAcceptedSession final : public ServerAcceptedSession, public enable_shared<LoginServerAcceptedSession> {
-			NONCOPYABLE(LoginServerAcceptedSession);
+	namespace login_server {
+		class login_server_accepted_session final : public server_accepted_session, public enable_shared<login_server_accepted_session> {
+			NONCOPYABLE(login_server_accepted_session);
 		public:
-			LoginServerAcceptedSession(AbstractServer &server);
+			login_server_accepted_session(abstract_server &server);
 
-			auto setWorldId(world_id_t id) -> void;
-			auto getWorldId() const -> optional_t<world_id_t>;
+			auto set_world_id(game_world_id id) -> void;
+			auto get_world_id() const -> optional<game_world_id>;
 		protected:
-			auto handle(PacketReader &reader) -> Result override;
-			auto authenticated(ServerType type) -> void override;
-			auto onDisconnect() -> void override;
+			auto handle(packet_reader &reader) -> result override;
+			auto authenticated(server_type type) -> void override;
+			auto on_disconnect() -> void override;
 		private:
-			optional_t<world_id_t> m_worldId;
+			optional<game_world_id> m_world_id;
 		};
 	}
 }

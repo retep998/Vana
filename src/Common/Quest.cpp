@@ -17,36 +17,36 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Quest.hpp"
 
-namespace Vana {
+namespace vana {
 
-auto Quest::addReward(bool start, const QuestRewardInfo &info, job_id_t job) -> void {
-	auto &rewards = start ? m_beginState.rewards : m_endState.rewards;
-	auto &rewardList = job == -1 ? rewards.universal : rewards.job[job];
-	rewardList.push_back(info);
+auto quest::add_reward(bool start, const quest_reward_info &info, game_job_id job) -> void {
+	auto &rewards = start ? m_begin_state.rewards : m_end_state.rewards;
+	auto &reward_list = job == -1 ? rewards.universal : rewards.job[job];
+	reward_list.push_back(info);
 }
 
-auto Quest::addRequest(bool start, const QuestRequestInfo &info) -> void {
-	auto &requests = start ? m_beginState.requests : m_endState.requests;
+auto quest::add_request(bool start, const quest_request_info &info) -> void {
+	auto &requests = start ? m_begin_state.requests : m_end_state.requests;
 	requests.universal.push_back(info);
 }
 
-auto Quest::forEachRequest(bool start, function_t<IterationResult (const QuestRequestInfo &)> func) const -> CompletionResult {
+auto quest::for_each_request(bool start, function<iteration_result (const quest_request_info &)> func) const -> completion_result {
 	bool broken = false;
-	const auto &requests = start ? m_beginState.requests : m_endState.requests;
+	const auto &requests = start ? m_begin_state.requests : m_end_state.requests;
 	for (const auto &request : requests.universal) {
-		if (func(request) == IterationResult::StopIterating) {
+		if (func(request) == iteration_result::stop_iterating) {
 			broken = true;
 			break;
 		}
 	}
-	return broken ? CompletionResult::Incomplete : CompletionResult::Complete;
+	return broken ? completion_result::incomplete : completion_result::complete;
 }
 
-auto Quest::forEachReward(bool start, job_id_t job, function_t<IterationResult (const QuestRewardInfo &)> func) const -> CompletionResult {
+auto quest::for_each_reward(bool start, game_job_id job, function<iteration_result (const quest_reward_info &)> func) const -> completion_result {
 	bool broken = false;
-	const auto &rewards = start ? m_beginState.rewards : m_endState.rewards;
+	const auto &rewards = start ? m_begin_state.rewards : m_end_state.rewards;
 	for (const auto &reward : rewards.universal) {
-		if (func(reward) == IterationResult::StopIterating) {
+		if (func(reward) == iteration_result::stop_iterating) {
 			broken = true;
 			break;
 		}
@@ -55,30 +55,30 @@ auto Quest::forEachReward(bool start, job_id_t job, function_t<IterationResult (
 		auto kvp = rewards.job.find(job);
 		if (kvp != std::end(rewards.job)) {
 			for (const auto &reward : kvp->second) {
-				if (func(reward) == IterationResult::StopIterating) {
+				if (func(reward) == iteration_result::stop_iterating) {
 					broken = true;
 					break;
 				}
 			}
 		}
 	}
-	return broken ? CompletionResult::Incomplete : CompletionResult::Complete;
+	return broken ? completion_result::incomplete : completion_result::complete;
 }
 
-auto Quest::getNextQuest() const -> quest_id_t {
-	return m_nextQuest;
+auto quest::get_next_quest() const -> game_quest_id {
+	return m_next_quest;
 }
 
-auto Quest::getQuestId() const -> quest_id_t {
+auto quest::get_quest_id() const -> game_quest_id {
 	return m_id;
 }
 
-auto Quest::setNextQuest(quest_id_t questId) -> void {
-	m_nextQuest = questId;
+auto quest::set_next_quest(game_quest_id quest_id) -> void {
+	m_next_quest = quest_id;
 }
 
-auto Quest::setQuestId(quest_id_t questId) -> void {
-	m_id = questId;
+auto quest::set_quest_id(game_quest_id quest_id) -> void {
+	m_id = quest_id;
 }
 
 }

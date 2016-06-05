@@ -20,12 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/PacketBuilder.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
+namespace vana {
 
-namespace Packets {
+namespace packets {
 	PACKET(ping);
 	PACKET(pong);
-	PACKET(connect, const string_t &subversion, iv_t recvIv, iv_t sendIv);
+	PACKET(connect, const string &subversion, crypto_iv recv, crypto_iv send);
 }
 
 }

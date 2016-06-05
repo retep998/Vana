@@ -22,12 +22,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-namespace Vana {
-	struct MpEaterData {
+namespace vana {
+	struct mp_eater_data {
 		bool used = false;
-		skill_level_t level = 0;
+		game_skill_level level = 0;
 		int16_t x = 0;
 		uint16_t prop = 0;
-		skill_id_t skillId = 0;
+		game_skill_id skill_id = 0;
 	};
 }

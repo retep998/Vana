@@ -22,99 +22,101 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <ctime>
 #include <string>
 
-namespace Vana {
-	namespace TimeUtilities {
-		auto getDate(time_t ctime = time(nullptr)) -> int32_t;
-		auto getMonth(time_t ctime = time(nullptr)) -> int32_t;
-		auto getYear(bool twoDigit, time_t ctime = time(nullptr)) -> int32_t;
-		auto getHour(bool nonMilitary, time_t ctime = time(nullptr)) -> int32_t;
-		auto getMinute(time_t ctime = time(nullptr)) -> int32_t;
-		auto getSecond(time_t ctime = time(nullptr)) -> int32_t;
-		auto getDay(time_t ctime = time(nullptr)) -> int32_t;
-		auto getWeek(time_t ctime = time(nullptr)) -> int32_t;
-		auto getDayString(bool shortened, time_t ctime = time(nullptr)) -> string_t;
-		auto getMonthString(bool shortened, time_t ctime = time(nullptr)) -> string_t;
-		auto addDaysToTicks(int64_t ticks, int16_t days) -> int64_t;
-		auto addDaysToTime(int16_t days) -> time_t;
-		auto isDst(time_t ctime = time(nullptr)) -> bool;
-		auto getTimeZone() -> string_t;
-		auto getTimeZoneOffset() -> int32_t;
-		auto simpleTimestamp() -> string_t;
+namespace vana {
+	namespace utilities {
+		namespace time {
+			auto get_date(time_t ctime = std::time(nullptr)) -> int32_t;
+			auto get_month(time_t ctime = std::time(nullptr)) -> int32_t;
+			auto get_year(bool two_digit, time_t ctime = std::time(nullptr)) -> int32_t;
+			auto get_hour(bool non_military, time_t ctime = std::time(nullptr)) -> int32_t;
+			auto get_minute(time_t ctime = std::time(nullptr)) -> int32_t;
+			auto get_second(time_t ctime = std::time(nullptr)) -> int32_t;
+			auto get_day(time_t ctime = std::time(nullptr)) -> int32_t;
+			auto get_week(time_t ctime = std::time(nullptr)) -> int32_t;
+			auto get_day_string(bool shortened, time_t ctime = std::time(nullptr)) -> string;
+			auto get_month_string(bool shortened, time_t ctime = std::time(nullptr)) -> string;
+			auto add_days_to_ticks(int64_t ticks, int16_t days) -> int64_t;
+			auto add_days_to_time(int16_t days) -> time_t;
+			auto is_dst(time_t ctime = std::time(nullptr)) -> bool;
+			auto get_time_zone() -> string;
+			auto get_time_zone_offset() -> int32_t;
+			auto simple_timestamp() -> string;
 
-		auto getNow() -> time_point_t;
-		template <typename TDuration>
-		auto getNowWithTimeAdded(const TDuration &timeUnit) -> time_point_t;
-		auto getNearestMinuteMark(int32_t interval, const time_point_t &startPoint = getNow()) -> time_point_t;
-		auto getNextOccurringSecondOfHour(uint16_t second, const time_point_t &startPoint = getNow()) -> time_point_t;
-		template <typename TDuration>
-		auto getDistance(const time_point_t &t1, const time_point_t &t2) -> typename TDuration::rep;
-		auto getDistanceInSeconds(const time_point_t &t1, const time_point_t &t2) -> seconds_t;
-		auto getDistanceToNextMinuteMark(int32_t interval, const time_point_t &startPoint = getNow()) -> seconds_t;
-		auto getDistanceToNextOccurringSecondOfHour(uint16_t second, const time_point_t &startPoint = getNow()) -> seconds_t;
+			auto get_now() -> time_point;
+			template <typename TDuration>
+			auto get_now_with_time_added(const TDuration &time_unit) -> time_point;
+			auto get_nearest_minute_mark(int32_t interval, const time_point &start_point = get_now()) -> time_point;
+			auto get_next_occurring_second_of_hour(uint16_t second, const time_point &start_point = get_now()) -> time_point;
+			template <typename TDuration>
+			auto get_distance(const time_point &t1, const time_point &t2) -> typename TDuration::rep;
+			auto get_distance_in_seconds(const time_point &t1, const time_point &t2) -> seconds;
+			auto get_distance_to_next_minute_mark(int32_t interval, const time_point &start_point = get_now()) -> seconds;
+			auto get_distance_to_next_occurring_second_of_hour(uint16_t second, const time_point &start_point = get_now()) -> seconds;
+		}
 	}
 
 	inline
-	auto TimeUtilities::getNow() -> time_point_t {
-		return effective_clock_t::now();
+	auto utilities::time::get_now() -> time_point {
+		return effective_clock::now();
 	}
 
 	template <typename TDuration>
 	inline
-	auto TimeUtilities::getNowWithTimeAdded(const TDuration &timeUnit) -> time_point_t {
-		return effective_clock_t::now() + timeUnit;
+	auto utilities::time::get_now_with_time_added(const TDuration &time_unit) -> time_point {
+		return effective_clock::now() + time_unit;
 	}
 
 	inline
-	auto TimeUtilities::getNearestMinuteMark(int32_t interval, const time_point_t &startPoint) -> time_point_t {
+	auto utilities::time::get_nearest_minute_mark(int32_t interval, const time_point &start_point) -> time_point {
 		// Returns the closest interval minute mark in seconds
-		time_t tmp = effective_clock_t::to_time_t(startPoint);
-		tm *localTime = std::localtime(&tmp);
+		time_t tmp = effective_clock::to_time_t(start_point);
+		tm *local_time = std::localtime(&tmp);
 
-		int32_t nextTrigger = ((localTime->tm_min / interval) + 1) * interval;
-		if (nextTrigger >= 60) {
-			localTime->tm_hour += (nextTrigger / 60);
-			nextTrigger %= 60;
+		int32_t next_trigger = ((local_time->tm_min / interval) + 1) * interval;
+		if (next_trigger >= 60) {
+			local_time->tm_hour += (next_trigger / 60);
+			next_trigger %= 60;
 		}
-		localTime->tm_min = nextTrigger;
-		localTime->tm_sec = 0;
+		local_time->tm_min = next_trigger;
+		local_time->tm_sec = 0;
 
-		return effective_clock_t::from_time_t(std::mktime(localTime));
+		return effective_clock::from_time_t(std::mktime(local_time));
 	}
 
 	inline
-	auto TimeUtilities::getNextOccurringSecondOfHour(uint16_t second, const time_point_t &startPoint) -> time_point_t {
-		time_t tmp = effective_clock_t::to_time_t(startPoint);
-		tm *localTime = std::localtime(&tmp);
-		uint16_t currentSeconds = localTime->tm_min * 60 + localTime->tm_sec;
+	auto utilities::time::get_next_occurring_second_of_hour(uint16_t second, const time_point &start_point) -> time_point {
+		time_t tmp = effective_clock::to_time_t(start_point);
+		tm *local_time = std::localtime(&tmp);
+		uint16_t current_seconds = local_time->tm_min * 60 + local_time->tm_sec;
 
-		if (currentSeconds >= second) {
+		if (current_seconds >= second) {
 			// Already passed the time in this hour, get next hour
-			localTime->tm_hour += 1;
+			local_time->tm_hour += 1;
 		}
-		localTime->tm_min = second / 60;
-		localTime->tm_sec = second % 60;
+		local_time->tm_min = second / 60;
+		local_time->tm_sec = second % 60;
 
-		return effective_clock_t::from_time_t(std::mktime(localTime));
+		return effective_clock::from_time_t(std::mktime(local_time));
 	}
 
 	template <typename TDuration>
 	inline
-	auto TimeUtilities::getDistance(const time_point_t &t1, const time_point_t &t2) -> typename TDuration::rep {
+	auto utilities::time::get_distance(const time_point &t1, const time_point &t2) -> typename TDuration::rep {
 		return duration_cast<TDuration>(t1 - t2).count();
 	}
 
 	inline
-	auto TimeUtilities::getDistanceInSeconds(const time_point_t &t1, const time_point_t &t2) -> seconds_t {
-		return duration_cast<seconds_t>(t1 - t2);
+	auto utilities::time::get_distance_in_seconds(const time_point &t1, const time_point &t2) -> seconds {
+		return duration_cast<seconds>(t1 - t2);
 	}
 
 	inline
-	auto TimeUtilities::getDistanceToNextMinuteMark(int32_t interval, const time_point_t &startPoint) -> seconds_t {
-		return getDistanceInSeconds(getNearestMinuteMark(interval), startPoint);
+	auto utilities::time::get_distance_to_next_minute_mark(int32_t interval, const time_point &start_point) -> seconds {
+		return get_distance_in_seconds(get_nearest_minute_mark(interval), start_point);
 	}
 
 	inline
-	auto TimeUtilities::getDistanceToNextOccurringSecondOfHour(uint16_t second, const time_point_t &startPoint) -> seconds_t {
-		return getDistanceInSeconds(getNextOccurringSecondOfHour(second), startPoint);
+	auto utilities::time::get_distance_to_next_occurring_second_of_hour(uint16_t second, const time_point &start_point) -> seconds {
+		return get_distance_in_seconds(get_next_occurring_second_of_hour(second), start_point);
 	}
 }

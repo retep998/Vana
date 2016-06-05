@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "BlockCipherIv.hpp"
 
-namespace Vana {
+namespace vana {
 
-const uint8_t ivTable[256] = {
+const uint8_t iv_table[256] = {
 	0xEC, 0x3F, 0x77, 0xA4, 0x45, 0xD0, 0x71, 0xBF, 0xB7, 0x98, 0x20, 0xFC, 0x4B, 0xE9, 0xB3, 0xE1,
 	0x5C, 0x22, 0xF7, 0x0C,	0x44, 0x1B, 0x81, 0xBD, 0x63, 0x8D, 0xD4, 0xC3, 0xF2, 0x10, 0x19, 0xE0,
 	0xFB, 0xA1, 0x6E, 0x66, 0xEA, 0xAE, 0xD6, 0xCE, 0x06, 0x18, 0x4E, 0xEB, 0x78, 0x95, 0xDB, 0xBA,
@@ -38,46 +38,46 @@ const uint8_t ivTable[256] = {
 	0x84, 0x7F, 0x61, 0x1E,	0xCF, 0xC5, 0xD1, 0x56, 0x3D, 0xCA, 0xF4, 0x05,	0xC6, 0xE5, 0x08, 0x49
 };
 
-BlockCipherIv::BlockCipherIv()
+block_cipher_iv::block_cipher_iv()
 {
-	updateIv(0);
+	update_iv(0);
 }
 
-BlockCipherIv::BlockCipherIv(iv_t iv)
+block_cipher_iv::block_cipher_iv(crypto_iv iv)
 {
-	updateIv(iv);
+	update_iv(iv);
 }
 
-auto BlockCipherIv::updateIv(iv_t iv) -> void {
-	setIv(m_iv, reinterpret_cast<unsigned char*>(&iv));
+auto block_cipher_iv::update_iv(crypto_iv iv) -> void {
+	set_iv(m_iv, reinterpret_cast<unsigned char*>(&iv));
 }
 
-auto BlockCipherIv::shuffle() -> void {
-	uint8_t newIv[4] = {0xF2, 0x53, 0x50, 0xC6};
+auto block_cipher_iv::shuffle() -> void {
+	uint8_t new_iv[4] = {0xF2, 0x53, 0x50, 0xC6};
 	uint8_t input;
-	uint8_t valueInput;
-	iv_t fullIv;
-	iv_t shift;
+	uint8_t value_input;
+	crypto_iv full_iv;
+	crypto_iv shift;
 
 	for (uint8_t i = 0; i < 4; i++) {
 		input = m_iv[i];
-		valueInput = ivTable[input];
+		value_input = iv_table[input];
 
-		newIv[0] += (ivTable[newIv[1]] - input);
-		newIv[1] -= (newIv[2] ^ valueInput);
-		newIv[2] ^= (ivTable[newIv[3]] + input);
-		newIv[3] -= (newIv[0] - valueInput);
+		new_iv[0] += (iv_table[new_iv[1]] - input);
+		new_iv[1] -= (new_iv[2] ^ value_input);
+		new_iv[2] ^= (iv_table[new_iv[3]] + input);
+		new_iv[3] -= (new_iv[0] - value_input);
 
-		fullIv = (newIv[3] << 24) | (newIv[2] << 16) | (newIv[1] << 8) | newIv[0];
-		shift = (fullIv >> 0x1D) | (fullIv << 0x03);
+		full_iv = (new_iv[3] << 24) | (new_iv[2] << 16) | (new_iv[1] << 8) | new_iv[0];
+		shift = (full_iv >> 0x1D) | (full_iv << 0x03);
 
-		newIv[0] = static_cast<uint8_t>(shift & 0xFFu);
-		newIv[1] = static_cast<uint8_t>((shift >> 8) & 0xFFu);
-		newIv[2] = static_cast<uint8_t>((shift >> 16) & 0xFFu);
-		newIv[3] = static_cast<uint8_t>((shift >> 24) & 0xFFu);
+		new_iv[0] = static_cast<uint8_t>(shift & 0xFFu);
+		new_iv[1] = static_cast<uint8_t>((shift >> 8) & 0xFFu);
+		new_iv[2] = static_cast<uint8_t>((shift >> 16) & 0xFFu);
+		new_iv[3] = static_cast<uint8_t>((shift >> 24) & 0xFFu);
 	}
 
-	setIv(m_iv, newIv);
+	set_iv(m_iv, new_iv);
 }
 
 }

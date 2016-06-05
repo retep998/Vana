@@ -22,11 +22,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-namespace Vana {
-	struct ChargeOrStationarySkillData {
-		skill_level_t level = 0;
-		uint8_t weaponSpeed = 0;
+namespace vana {
+	struct charge_or_stationary_skill_data {
+		game_skill_level level = 0;
+		uint8_t weapon_speed = 0;
 		uint8_t direction = 0;
-		skill_id_t skillId = 0;
+		game_skill_id skill_id = 0;
 	};
 }

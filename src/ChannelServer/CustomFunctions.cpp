@@ -18,12 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "CustomFunctions.hpp"
 #include "ChannelServer/Player.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto CustomFunctions::initialize(case_insensitive_hash_map_t<ChatCommand, chat_t> &commandList) -> void {
-	// Define any custom functions you may have here, just like ChatHandlerFunctions::initialize
-	ChatCommand command;
+auto custom_functions::initialize(case_insensitive_hash_map<chat_command, game_chat> &command_list) -> void {
+	// Define any custom functions you may have here, just like chat_handler_functions::initialize
+	chat_command command;
 
 }
 

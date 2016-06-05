@@ -47,100 +47,100 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-	class PacketBuilder;
-	struct RatesConfig;
+namespace vana {
+	class packet_builder;
+	struct rates_config;
 
-	namespace ChannelServer {
-		class Map;
+	namespace channel_server {
+		class map;
 
-		class ChannelServer final : public AbstractServer {
-			SINGLETON(ChannelServer);
+		class channel_server final : public abstract_server {
+			SINGLETON(channel_server);
 		public:
 			auto shutdown() -> void override;
-			auto connectToWorld(world_id_t worldId, port_t port, const Ip &ip) -> Result;
-			auto establishedWorldConnection(channel_id_t channelId, port_t port, const WorldConfig &config) -> void;
+			auto connect_to_world(game_world_id world_id, connection_port port, const ip &ip) -> result;
+			auto established_world_connection(game_channel_id channel_id, connection_port port, const world_config &config) -> void;
 
 			// TODO FIXME api
 			// Eyeball these for potential refactoring - they involve world<->channel operations and I don't want to dig into that now
-			auto setScrollingHeader(const string_t &message) -> void;
-			auto modifyRate(int32_t rateType, int32_t newValue) -> void;
-			auto setConfig(const WorldConfig &config) -> void;
-			auto setRates(const RatesConfig &rates) -> void;
+			auto set_scrolling_header(const string &message) -> void;
+			auto modify_rate(int32_t rate_type, int32_t new_value) -> void;
+			auto set_config(const world_config &config) -> void;
+			auto set_rates(const rates_config &rates) -> void;
 
-			auto reloadData(const string_t &args) -> void;
+			auto reload_data(const string &args) -> void;
 
-			auto getValidCharDataProvider() const -> const ValidCharDataProvider &;
-			auto getEquipDataProvider() const -> const EquipDataProvider &;
-			auto getCurseDataProvider() const -> const CurseDataProvider &;
-			auto getNpcDataProvider() const -> const NpcDataProvider &;
-			auto getMobDataProvider() const -> const MobDataProvider &;
-			auto getBeautyDataProvider() const -> const BeautyDataProvider &;
-			auto getDropDataProvider() const -> const DropDataProvider &;
-			auto getSkillDataProvider() const -> const SkillDataProvider &;
-			auto getShopDataProvider() const -> const ShopDataProvider &;
-			auto getScriptDataProvider() const -> const ScriptDataProvider &;
-			auto getReactorDataProvider() const -> const ReactorDataProvider &;
-			auto getItemDataProvider() const -> const ItemDataProvider &;
-			auto getQuestDataProvider() const -> const QuestDataProvider &;
-			auto getBuffDataProvider() const -> const BuffDataProvider &;
-			auto getEventDataProvider() const -> const EventDataProvider &;
-			auto getMapDataProvider() const -> const MapDataProvider &;
-			auto getPlayerDataProvider() -> PlayerDataProvider &;
-			auto getTrades() -> Trades &;
-			auto getMapleTvs() -> MapleTvs &;
-			auto getInstances() -> Instances &;
+			auto get_valid_char_data_provider() const -> const valid_char_data_provider &;
+			auto get_equip_data_provider() const -> const equip_data_provider &;
+			auto get_curse_data_provider() const -> const curse_data_provider &;
+			auto get_npc_data_provider() const -> const npc_data_provider &;
+			auto get_mob_data_provider() const -> const mob_data_provider &;
+			auto get_beauty_data_provider() const -> const beauty_data_provider &;
+			auto get_drop_data_provider() const -> const drop_data_provider &;
+			auto get_skill_data_provider() const -> const skill_data_provider &;
+			auto get_shop_data_provider() const -> const shop_data_provider &;
+			auto get_script_data_provider() const -> const script_data_provider &;
+			auto get_reactor_data_provider() const -> const reactor_data_provider &;
+			auto get_item_data_provider() const -> const item_data_provider &;
+			auto get_quest_data_provider() const -> const quest_data_provider &;
+			auto get_buff_data_provider() const -> const buff_data_provider &;
+			auto get_event_data_provider() const -> const event_data_provider &;
+			auto get_map_data_provider() const -> const map_data_provider &;
+			auto get_player_data_provider() -> player_data_provider &;
+			auto get_trades() -> trades &;
+			auto get_maple_tvs() -> maple_tvs &;
+			auto get_instances() -> instances &;
 
-			auto getMap(int32_t mapId) -> Map *;
-			auto unloadMap(int32_t mapId) -> void;
+			auto get_map(int32_t map_id) -> map *;
+			auto unload_map(int32_t map_id) -> void;
 
-			auto isConnected() const -> bool;
-			auto getWorldId() const -> world_id_t;
-			auto getChannelId() const -> channel_id_t;
-			auto getOnlineId() const -> int32_t;
-			auto getConfig() const -> const WorldConfig &;
-			auto sendWorld(const PacketBuilder &builder) -> void;
-			auto onConnectToLogin(ref_ptr_t<LoginServerSession> session) -> void;
-			auto onDisconnectFromLogin() -> void;
-			auto onConnectToWorld(ref_ptr_t<WorldServerSession> session) -> void;
-			auto onDisconnectFromWorld() -> void;
-			auto finalizePlayer(ref_ptr_t<Player> session) -> void;
+			auto is_connected() const -> bool;
+			auto get_world_id() const -> game_world_id;
+			auto get_channel_id() const -> game_channel_id;
+			auto get_online_id() const -> int32_t;
+			auto get_config() const -> const world_config &;
+			auto send_world(const packet_builder &builder) -> void;
+			auto on_connect_to_login(ref_ptr<login_server_session> session) -> void;
+			auto on_disconnect_from_login() -> void;
+			auto on_connect_to_world(ref_ptr<world_server_session> session) -> void;
+			auto on_disconnect_from_world() -> void;
+			auto finalize_player(ref_ptr<player> session) -> void;
 		protected:
-			auto loadData() -> Result override;
+			auto load_data() -> result override;
 			auto listen() -> void;
-			auto makeLogIdentifier() const -> opt_string_t override;
-			auto getLogPrefix() const -> string_t override;
+			auto make_log_identifier() const -> opt_string override;
+			auto get_log_prefix() const -> string override;
 		private:
-			world_id_t m_worldId = -1;
-			channel_id_t m_channelId = -1;
-			port_t m_worldPort = 0;
-			port_t m_port = 0;
-			Ip m_worldIp;
-			WorldConfig m_config;
-			ref_ptr_t<WorldServerSession> m_worldConnection;
-			ref_ptr_t<LoginServerSession> m_loginConnection;
-			FinalizationPool<Player> m_sessionPool;
+			game_world_id m_world_id = -1;
+			game_channel_id m_channel_id = -1;
+			connection_port m_world_port = 0;
+			connection_port m_port = 0;
+			ip m_world_ip;
+			world_config m_config;
+			ref_ptr<world_server_session> m_world_connection;
+			ref_ptr<login_server_session> m_login_connection;
+			finalization_pool<player> m_session_pool;
 
-			ValidCharDataProvider m_validCharDataProvider;
-			EquipDataProvider m_equipDataProvider;
-			CurseDataProvider m_curseDataProvider;
-			NpcDataProvider m_npcDataProvider;
-			MobDataProvider m_mobDataProvider;
-			BeautyDataProvider m_beautyDataProvider;
-			DropDataProvider m_dropDataProvider;
-			SkillDataProvider m_skillDataProvider;
-			ShopDataProvider m_shopDataProvider;
-			ScriptDataProvider m_scriptDataProvider;
-			ReactorDataProvider m_reactorDataProvider;
-			ItemDataProvider m_itemDataProvider;
-			QuestDataProvider m_questDataProvider;
-			BuffDataProvider m_buffDataProvider;
-			EventDataProvider m_eventDataProvider;
-			MapDataProvider m_mapDataProvider;
-			PlayerDataProvider m_playerDataProvider;
-			Trades m_trades;
-			MapleTvs m_mapleTvs;
-			Instances m_instances;
+			valid_char_data_provider m_valid_char_data_provider;
+			equip_data_provider m_equip_data_provider;
+			curse_data_provider m_curse_data_provider;
+			npc_data_provider m_npc_data_provider;
+			mob_data_provider m_mob_data_provider;
+			beauty_data_provider m_beauty_data_provider;
+			drop_data_provider m_drop_data_provider;
+			skill_data_provider m_skill_data_provider;
+			shop_data_provider m_shop_data_provider;
+			script_data_provider m_script_data_provider;
+			reactor_data_provider m_reactor_data_provider;
+			item_data_provider m_item_data_provider;
+			quest_data_provider m_quest_data_provider;
+			buff_data_provider m_buff_data_provider;
+			event_data_provider m_event_data_provider;
+			map_data_provider m_map_data_provider;
+			player_data_provider m_player_data_provider;
+			trades m_trades;
+			maple_tvs m_maple_tvs;
+			instances m_instances;
 		};
 	}
 }

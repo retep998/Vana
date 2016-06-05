@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 #include <string>
 
-namespace Vana {
-	struct CaseInsensitiveEquals : public std::binary_function<std::string, std::string, bool> {
+namespace vana {
+	struct case_insensitive_equals : public std::binary_function<std::string, std::string, bool> {
 		auto operator()(const std::string &left, const std::string &right) const -> bool {
 			if (left.size() != right.size()) return false;
 

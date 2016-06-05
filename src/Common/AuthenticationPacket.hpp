@@ -23,8 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	namespace Packets {
-		PACKET(sendPassword, ServerType serverType, const string_t &pass, const IpMatrix &extIp);
+namespace vana {
+	namespace packets {
+		PACKET(send_password, server_type server_type, const string &pass, const ip_matrix &ext_ip);
 	}
 }

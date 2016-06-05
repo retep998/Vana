@@ -19,18 +19,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/PacketHandler.hpp"
 
-namespace Vana {
-	class PacketReader;
+namespace vana {
+	class packet_reader;
 
-	namespace ChannelServer {
-		class WorldServerSession final : public PacketHandler, public enable_shared<WorldServerSession> {
-			NONCOPYABLE(WorldServerSession);
+	namespace channel_server {
+		class world_server_session final : public packet_handler, public enable_shared<world_server_session> {
+			NONCOPYABLE(world_server_session);
 		public:
-			WorldServerSession() = default;
+			world_server_session() = default;
 		protected:
-			auto handle(PacketReader &reader) -> Result override;
-			auto onConnect() -> void override;
-			auto onDisconnect() -> void override;
+			auto handle(packet_reader &reader) -> result override;
+			auto on_connect() -> void override;
+			auto on_disconnect() -> void override;
 		};
 	}
 }

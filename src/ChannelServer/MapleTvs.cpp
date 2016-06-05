@@ -25,86 +25,86 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/SmsgHeader.hpp"
 #include <functional>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto MapleTvs::addMap(Map *map) -> void {
-	m_maps[map->getId()] = map;
+auto maple_tvs::add_map(map *map) -> void {
+	m_maps[map->get_id()] = map;
 }
 
-auto MapleTvs::addMessage(ref_ptr_t<Player> sender, ref_ptr_t<Player> receiver, const string_t &msg, const string_t &msg2, const string_t &msg3, const string_t &msg4, const string_t &msg5, item_id_t megaphoneId, int32_t time) -> void {
-	MapleTvMessage message;
-	message.hasReceiver = (receiver != nullptr);
-	message.megaphoneId = megaphoneId;
-	message.senderId = sender->getId();
+auto maple_tvs::add_message(ref_ptr<player> sender, ref_ptr<player> receiver, const string &msg, const string &msg2, const string &msg3, const string &msg4, const string &msg5, game_item_id megaphone_id, int32_t time) -> void {
+	maple_tv_message message;
+	message.has_receiver = (receiver != nullptr);
+	message.megaphone_id = megaphone_id;
+	message.sender_id = sender->get_id();
 	message.time = time;
-	message.counter = getCounter();
+	message.counter = get_counter();
 	message.msg1 = msg;
 	message.msg2 = msg2;
 	message.msg3 = msg3;
 	message.msg4 = msg4;
 	message.msg5 = msg5;
-	message.sendDisplay.addBuffer(Packets::Helpers::addPlayerDisplay(sender)); // We need to save the packet since it gets buffered and there's no guarantee the player will exist later
-	message.sendName = sender->getName();
+	message.send_display.add_buffer(packets::helpers::add_player_display(sender)); // We need to save the packet since it gets buffered and there's no guarantee the player will exist later
+	message.send_name = sender->get_name();
 	if (receiver != nullptr) {
-		message.recvDisplay.addBuffer(Packets::Helpers::addPlayerDisplay(receiver));
-		message.recvName = receiver->getName();
+		message.recv_display.add_buffer(packets::helpers::add_player_display(receiver));
+		message.recv_name = receiver->get_name();
 	}
 
 	m_buffer.push_back(message);
 
-	if (!m_hasMessage) {
+	if (!m_has_message) {
 		// First element pushed
-		parseBuffer();
-		m_hasMessage = true;
+		parse_buffer();
+		m_has_message = true;
 	}
 }
 
-auto MapleTvs::parseBuffer() -> void {
+auto maple_tvs::parse_buffer() -> void {
 	if (m_buffer.size() > 0) {
-		MapleTvMessage message = m_buffer.front();
+		maple_tv_message message = m_buffer.front();
 		m_buffer.pop_front();
 
-		send(Packets::MapleTv::showMessage(message, getMessageTime()));
+		send(packets::maple_tv::show_message(message, get_message_time()));
 
-		m_currentMessage = message;
+		m_current_message = message;
 
-		Vana::Timer::Id id{TimerType::MapleTvTimer, message.senderId, message.counter};
-		Vana::Timer::Timer::create(
-			[this](const time_point_t &now) { this->parseBuffer(); },
-			id, getTimers(), seconds_t{message.time});
+		vana::timer::id id{timer_type::maple_tv_timer, message.sender_id, message.counter};
+		vana::timer::timer::create(
+			[this](const time_point &now) { this->parse_buffer(); },
+			id, get_timers(), seconds{message.time});
 	}
 	else {
-		m_hasMessage = false;
-		send(Packets::MapleTv::endDisplay());
+		m_has_message = false;
+		send(packets::maple_tv::end_display());
 	}
 }
 
-auto MapleTvs::send(const PacketBuilder &builder) -> void {
+auto maple_tvs::send(const packet_builder &builder) -> void {
 	for (const auto &kvp : m_maps) {
 		kvp.second->send(builder);
 	}
 }
 
-auto MapleTvs::getMessageTime() const -> seconds_t {
-	Vana::Timer::Id id{TimerType::MapleTvTimer, m_currentMessage.senderId, m_currentMessage.counter};
-	return getTimers()->getRemainingTime<seconds_t>(id);
+auto maple_tvs::get_message_time() const -> seconds {
+	vana::timer::id id{timer_type::maple_tv_timer, m_current_message.sender_id, m_current_message.counter};
+	return get_timers()->get_remaining_time<seconds>(id);
 }
 
-auto MapleTvs::isMapleTvMap(map_id_t id) const -> bool {
+auto maple_tvs::is_maple_tv_map(game_map_id id) const -> bool {
 	return m_maps.find(id) != std::end(m_maps);
 }
 
-auto MapleTvs::hasMessage() const -> bool {
-	return m_hasMessage;
+auto maple_tvs::has_message() const -> bool {
+	return m_has_message;
 }
 
-auto MapleTvs::getCounter() -> uint32_t {
+auto maple_tvs::get_counter() -> uint32_t {
 	return ++m_counter;
 }
 
-auto MapleTvs::getCurrentMessage() const -> const MapleTvMessage & {
-	return m_currentMessage;
+auto maple_tvs::get_current_message() const -> const maple_tv_message & {
+	return m_current_message;
 }
 
 }

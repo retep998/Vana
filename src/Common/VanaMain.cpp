@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "VanaMain.hpp"
 
-namespace Vana {
+namespace vana {
 
-exit_code_t exitCode = ExitCodes::Ok;
+exit_code g_exit_code = exit_code::ok;
 
 }

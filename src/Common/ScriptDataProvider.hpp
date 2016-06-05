@@ -22,27 +22,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <unordered_map>
 
-namespace Vana {
-	class AbstractServer;
+namespace vana {
+	class abstract_server;
 
-	class ScriptDataProvider {
+	class script_data_provider {
 	public:
-		auto loadData() -> void;
+		auto load_data() -> void;
 
-		auto getQuestScript(AbstractServer *server, quest_id_t questId, int8_t state) const -> string_t;
-		auto getScript(AbstractServer *server, int32_t objectId, ScriptTypes type) const -> string_t;
-		auto hasQuestScript(quest_id_t questId, int8_t state) const -> bool;
-		auto hasScript(int32_t objectId, ScriptTypes type) const -> bool;
-		auto buildScriptPath(ScriptTypes type, const string_t &location) const -> string_t;
+		auto get_quest_script(abstract_server *server, game_quest_id quest_id, int8_t state) const -> string;
+		auto get_script(abstract_server *server, int32_t object_id, script_types type) const -> string;
+		auto has_quest_script(game_quest_id quest_id, int8_t state) const -> bool;
+		auto has_script(int32_t object_id, script_types type) const -> bool;
+		auto build_script_path(script_types type, const string &location) const -> string;
 	private:
-		auto resolve(ScriptTypes type) const -> const hash_map_t<int32_t, string_t> &;
-		auto resolvePath(ScriptTypes type) const -> string_t;
+		auto resolve(script_types type) const -> const hash_map<int32_t, string> &;
+		auto resolve_path(script_types type) const -> string;
 
-		hash_map_t<npc_id_t, string_t> m_npcScripts;
-		hash_map_t<reactor_id_t, string_t> m_reactorScripts;
-		hash_map_t<map_id_t, string_t> m_mapEntryScripts;
-		hash_map_t<map_id_t, string_t> m_firstMapEntryScripts;
-		hash_map_t<item_id_t, string_t> m_itemScripts;
-		hash_map_t<quest_id_t, hash_map_t<int8_t, string_t>> m_questScripts;
+		hash_map<game_npc_id, string> m_npc_scripts;
+		hash_map<game_reactor_id, string> m_reactor_scripts;
+		hash_map<game_map_id, string> m_map_entry_scripts;
+		hash_map<game_map_id, string> m_first_map_entry_scripts;
+		hash_map<game_item_id, string> m_item_scripts;
+		hash_map<game_quest_id, hash_map<int8_t, string>> m_quest_scripts;
 	};
 }

@@ -20,13 +20,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/PacketBuilder.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	namespace LoginServer {
-		struct Character;
+namespace vana {
+	namespace login_server {
+		struct character;
 
-		namespace Packets {
-			namespace Helpers {
-				PACKET(addCharacter, const Character &charc);
+		namespace packets {
+			namespace helpers {
+				PACKET(add_character, const character &charc);
 			}
 		}
 	}

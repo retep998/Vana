@@ -20,14 +20,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/PacketBuilder.hpp"
 
 #define SPLIT_PACKET(TypeName, ...) \
-	auto TypeName(__VA_ARGS__) -> SplitPacketBuilder;
+	auto TypeName(__VA_ARGS__) -> split_packet_builder;
 
 #define SPLIT_PACKET_IMPL(TypeName, ...) \
-	auto TypeName(__VA_ARGS__) -> SplitPacketBuilder
+	auto TypeName(__VA_ARGS__) -> split_packet_builder
 
-namespace Vana {
-	struct SplitPacketBuilder {
-		PacketBuilder player;
-		PacketBuilder map;
+namespace vana {
+	struct split_packet_builder {
+		packet_builder player;
+		packet_builder map;
 	};
 }

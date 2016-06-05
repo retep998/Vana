@@ -20,19 +20,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include "ChannelServer/Map.hpp"
 
-namespace Vana {
-	class PacketReader;
+namespace vana {
+	class packet_reader;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		namespace Maps {
-			auto getMap(map_id_t mapId) -> Map *;
-			auto unloadMap(map_id_t mapId) -> void;
-			auto usePortal(ref_ptr_t<Player> player, const PortalInfo * const portal) -> void;
-			auto usePortal(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto useScriptedPortal(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto addPlayer(ref_ptr_t<Player> player, map_id_t mapId) -> void;
+		namespace maps {
+			auto get_map(game_map_id map_id) -> map *;
+			auto unload_map(game_map_id map_id) -> void;
+			auto use_portal(ref_ptr<player> player, const portal_info * const portal) -> void;
+			auto use_portal(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto use_scripted_portal(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto add_player(ref_ptr<player> player, game_map_id map_id) -> void;
 		}
 	}
 }

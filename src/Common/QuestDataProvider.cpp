@@ -26,214 +26,220 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-namespace Vana {
+namespace vana {
 
-auto QuestDataProvider::loadData() -> void {
-	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Quests... ";
+auto quest_data_provider::load_data() -> void {
+	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Quests... ";
 
-	loadQuestData();
-	loadRequests();
-	loadRequiredJobs();
-	loadRewards();
+	load_quest_data();
+	load_requests();
+	load_required_jobs();
+	load_rewards();
 
 	std::cout << "DONE" << std::endl;
 }
 
-auto QuestDataProvider::loadQuestData() -> void {
+auto quest_data_provider::load_quest_data() -> void {
 	m_quests.clear();
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("quest_data"));
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("quest_data"));
 
 	for (const auto &row : rs) {
-		Quest quest;
-		quest_id_t questId = row.get<quest_id_t>("questid");
+		quest quest;
+		game_quest_id quest_id = row.get<game_quest_id>("questid");
 
-		quest.setNextQuest(row.get<quest_id_t>("next_quest"));
-		quest.setQuestId(questId);
+		quest.set_next_quest(row.get<game_quest_id>("next_quest"));
+		quest.set_quest_id(quest_id);
 
-		m_quests.emplace(questId, quest);
+		m_quests.emplace(quest_id, quest);
 	}
 }
 
-auto QuestDataProvider::loadRequests() -> void {
+auto quest_data_provider::load_requests() -> void {
 	// TODO FIXME quest
 	// Process the state when you add quest requests
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("quest_requests"));
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("quest_requests"));
 
 	for (const auto &row : rs) {
-		quest_id_t questId = row.get<quest_id_t>("questid");
+		game_quest_id questId = row.get<game_quest_id>("questid");
 		auto &quest = m_quests[questId];
-		QuestRequestInfo questRequest;
+		quest_request_info quest_request;
 
 		int32_t request = row.get<int32_t>("objectid");
 		int16_t count = row.get<int16_t>("quantity");
 
-		StringUtilities::runEnum(row.get<string_t>("request_type"), [&questRequest, request, count](const string_t &cmp) {
+		utilities::str::run_enum(row.get<string>("request_type"), [&quest_request, request, count](const string &cmp) {
 			if (cmp == "item") {
-				questRequest.isItem = true;
-				questRequest.id = request;
-				questRequest.count = count;
+				quest_request.is_item = true;
+				quest_request.id = request;
+				quest_request.count = count;
 			}
 			else if (cmp == "mob") {
-				questRequest.isMob = true;
-				questRequest.id = request;
-				questRequest.count = count;
+				quest_request.is_mob = true;
+				quest_request.id = request;
+				quest_request.count = count;
 			}
 			else if (cmp == "quest") {
-				questRequest.isQuest = true;
-				questRequest.id = request;
-				questRequest.questState = static_cast<int8_t>(count);
+				quest_request.is_quest = true;
+				quest_request.id = request;
+				quest_request.quest_state = static_cast<int8_t>(count);
+			}
+			else {
+				throw not_implemented_exception{"request_type"};
 			}
 		});
 
-		quest.addRequest(false, questRequest);
+		quest.add_request(false, quest_request);
 	}
 }
 
-auto QuestDataProvider::loadRequiredJobs() -> void {
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("quest_required_jobs"));
+auto quest_data_provider::load_required_jobs() -> void {
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("quest_required_jobs"));
 
 	for (const auto &row : rs) {
-		quest_id_t questId = row.get<quest_id_t>("questid");
+		game_quest_id questId = row.get<game_quest_id>("questid");
 		auto &quest = m_quests[questId];
-		QuestRequestInfo request;
-		request.isJob = true;
-		request.id = row.get<job_id_t>("valid_jobid");
-		quest.addRequest(true, request);
+		quest_request_info request;
+		request.is_job = true;
+		request.id = row.get<game_job_id>("valid_jobid");
+		quest.add_request(true, request);
 	}
 }
 
-auto QuestDataProvider::loadRewards() -> void {
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("quest_rewards"));
+auto quest_data_provider::load_rewards() -> void {
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("quest_rewards"));
 
 	for (const auto &row : rs) {
-		quest_id_t questId = row.get<quest_id_t>("questid");
-		Quest &quest = m_quests[questId];
-		QuestRewardInfo reward;
-		job_id_t job = row.get<job_id_t>("job");
-		string_t jobTracks = row.get<string_t>("job_tracks");
-		bool start = (row.get<string_t>("quest_state") == "start");
+		game_quest_id quest_id = row.get<game_quest_id>("questid");
+		quest &quest = m_quests[quest_id];
+		quest_reward_info reward;
+		game_job_id job = row.get<game_job_id>("job");
+		string job_tracks = row.get<string>("job_tracks");
+		bool start = (row.get<string>("quest_state") == "start");
 
-		StringUtilities::runEnum(row.get<string_t>("reward_type"), [&reward](const string_t &cmp) {
-			if (cmp == "item") reward.isItem = true;
-			else if (cmp == "exp") reward.isExp = true;
-			else if (cmp == "mesos") reward.isMesos = true;
-			else if (cmp == "fame") reward.isFame = true;
-			else if (cmp == "skill") reward.isSkill = true;
-			else if (cmp == "buff") reward.isBuff = true;
+		utilities::str::run_enum(row.get<string>("reward_type"), [&reward](const string &cmp) {
+			if (cmp == "item") reward.is_item = true;
+			else if (cmp == "exp") reward.is_exp = true;
+			else if (cmp == "mesos") reward.is_mesos = true;
+			else if (cmp == "fame") reward.is_fame = true;
+			else if (cmp == "skill") reward.is_skill = true;
+			else if (cmp == "buff") reward.is_buff = true;
 		});
-		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&reward](const string_t &cmp) {
-			if (cmp == "master_level_only") reward.masterLevelOnly = true;
+		utilities::str::run_flags(row.get<opt_string>("flags"), [&reward](const string &cmp) {
+			if (cmp == "master_level_only") reward.master_level_only = true;
 		});
 
 		reward.id = row.get<int32_t>("rewardid");
 		reward.count = row.get<int16_t>("quantity");
-		reward.masterLevel = row.get<int16_t>("master_level");
-		reward.gender = GameLogicUtilities::getGenderId(row.get<string_t>("gender"));
+		reward.master_level = row.get<int16_t>("master_level");
+		reward.gender = game_logic_utilities::get_gender_id(row.get<string>("gender"));
 		reward.prop = row.get<int32_t>("prop");
 
-		if (job != -1 || jobTracks.empty()) {
-			quest.addReward(start, reward, job);
+		if (job != -1 || job_tracks.empty()) {
+			quest.add_reward(start, reward, job);
 		}
 		else {
-			StringUtilities::runFlags(jobTracks, [&quest, &reward, &start](const string_t &cmp) {
-				auto addRewardForJobs = [&quest, &reward, &start](init_list_t<job_id_t> jobs) {
+			utilities::str::run_flags(job_tracks, [&quest, &reward, &start](const string &cmp) {
+				auto add_reward_for_jobs = [&quest, &reward, &start](init_list<game_job_id> jobs) {
 					for (const auto &job : jobs) {
-						quest.addReward(start, reward, job);
+						quest.add_reward(start, reward, job);
 					}
 				};
 				if (cmp == "beginner") {
-					addRewardForJobs({Jobs::JobIds::Beginner});
+					add_reward_for_jobs({jobs::job_ids::beginner});
 				}
 				else if (cmp == "warrior") {
-					addRewardForJobs({
-						Jobs::JobIds::Swordsman,
-						Jobs::JobIds::Fighter, Jobs::JobIds::Crusader, Jobs::JobIds::Hero,
-						Jobs::JobIds::Page, Jobs::JobIds::WhiteKnight, Jobs::JobIds::Paladin,
-						Jobs::JobIds::Spearman, Jobs::JobIds::DragonKnight, Jobs::JobIds::DarkKnight
+					add_reward_for_jobs({
+						jobs::job_ids::swordsman,
+						jobs::job_ids::fighter, jobs::job_ids::crusader, jobs::job_ids::hero,
+						jobs::job_ids::page, jobs::job_ids::white_knight, jobs::job_ids::paladin,
+						jobs::job_ids::spearman, jobs::job_ids::dragon_knight, jobs::job_ids::dark_knight
 					});
 				}
 				else if (cmp == "magician") {
-					addRewardForJobs({
-						Jobs::JobIds::Magician,
-						Jobs::JobIds::FpWizard, Jobs::JobIds::FpMage, Jobs::JobIds::FpArchMage,
-						Jobs::JobIds::IlWizard, Jobs::JobIds::IlMage, Jobs::JobIds::IlArchMage,
-						Jobs::JobIds::Cleric, Jobs::JobIds::Priest, Jobs::JobIds::Bishop
+					add_reward_for_jobs({
+						jobs::job_ids::magician,
+						jobs::job_ids::fp_wizard, jobs::job_ids::fp_mage, jobs::job_ids::fp_arch_mage,
+						jobs::job_ids::il_wizard, jobs::job_ids::il_mage, jobs::job_ids::il_arch_mage,
+						jobs::job_ids::cleric, jobs::job_ids::priest, jobs::job_ids::bishop
 					});
 				}
 				else if (cmp == "bowman") {
-					addRewardForJobs({
-						Jobs::JobIds::Archer,
-						Jobs::JobIds::Hunter, Jobs::JobIds::Ranger, Jobs::JobIds::Bowmaster,
-						Jobs::JobIds::Crossbowman, Jobs::JobIds::Sniper, Jobs::JobIds::Marksman
+					add_reward_for_jobs({
+						jobs::job_ids::archer,
+						jobs::job_ids::hunter, jobs::job_ids::ranger, jobs::job_ids::bowmaster,
+						jobs::job_ids::crossbowman, jobs::job_ids::sniper, jobs::job_ids::marksman
 					});
 				}
 				else if (cmp == "thief") {
-					addRewardForJobs({
-						Jobs::JobIds::Rogue,
-						Jobs::JobIds::Assassin, Jobs::JobIds::Hermit, Jobs::JobIds::NightLord,
-						Jobs::JobIds::Bandit, Jobs::JobIds::ChiefBandit, Jobs::JobIds::Shadower
+					add_reward_for_jobs({
+						jobs::job_ids::rogue,
+						jobs::job_ids::assassin, jobs::job_ids::hermit, jobs::job_ids::night_lord,
+						jobs::job_ids::bandit, jobs::job_ids::chief_bandit, jobs::job_ids::shadower
 					});
 				}
 				else if (cmp == "pirate") {
-					addRewardForJobs({
-						Jobs::JobIds::Pirate,
-						Jobs::JobIds::Brawler, Jobs::JobIds::Marauder, Jobs::JobIds::Buccaneer,
-						Jobs::JobIds::Gunslinger, Jobs::JobIds::Outlaw, Jobs::JobIds::Corsair
+					add_reward_for_jobs({
+						jobs::job_ids::pirate,
+						jobs::job_ids::brawler, jobs::job_ids::marauder, jobs::job_ids::buccaneer,
+						jobs::job_ids::gunslinger, jobs::job_ids::outlaw, jobs::job_ids::corsair
 					});
 				}
 				else if (cmp == "cygnus_beginner") {
-					addRewardForJobs({Jobs::JobIds::Noblesse});
+					add_reward_for_jobs({jobs::job_ids::noblesse});
 				}
 				else if (cmp == "cygnus_warrior") {
-					addRewardForJobs({Jobs::JobIds::DawnWarrior1, Jobs::JobIds::DawnWarrior2, Jobs::JobIds::DawnWarrior3});
+					add_reward_for_jobs({jobs::job_ids::dawn_warrior1, jobs::job_ids::dawn_warrior2, jobs::job_ids::dawn_warrior3});
 				}
 				else if (cmp == "cygnus_magician") {
-					addRewardForJobs({Jobs::JobIds::BlazeWizard1, Jobs::JobIds::BlazeWizard2, Jobs::JobIds::BlazeWizard3});
+					add_reward_for_jobs({jobs::job_ids::blaze_wizard1, jobs::job_ids::blaze_wizard2, jobs::job_ids::blaze_wizard3});
 				}
 				else if (cmp == "cygnus_bowman") {
-					addRewardForJobs({Jobs::JobIds::WindArcher1, Jobs::JobIds::WindArcher2, Jobs::JobIds::WindArcher3});
+					add_reward_for_jobs({jobs::job_ids::wind_archer1, jobs::job_ids::wind_archer2, jobs::job_ids::wind_archer3});
 				}
 				else if (cmp == "cygnus_thief") {
-					addRewardForJobs({Jobs::JobIds::NightWalker1, Jobs::JobIds::NightWalker2, Jobs::JobIds::NightWalker3});
+					add_reward_for_jobs({jobs::job_ids::night_walker1, jobs::job_ids::night_walker2, jobs::job_ids::night_walker3});
 				}
 				else if (cmp == "cygnus_pirate") {
-					addRewardForJobs({Jobs::JobIds::ThunderBreaker1, Jobs::JobIds::ThunderBreaker2, Jobs::JobIds::ThunderBreaker3});
+					add_reward_for_jobs({jobs::job_ids::thunder_breaker1, jobs::job_ids::thunder_breaker2, jobs::job_ids::thunder_breaker3});
 				}
 				else if (cmp == "episode2_beginner") {
-					addRewardForJobs({Jobs::JobIds::Legend});
+					add_reward_for_jobs({jobs::job_ids::legend});
 				}
 				else if (cmp == "episode2_warrior") {
-					addRewardForJobs({Jobs::JobIds::Aran1, Jobs::JobIds::Aran2, Jobs::JobIds::Aran3, Jobs::JobIds::Aran4});
+					add_reward_for_jobs({jobs::job_ids::aran1, jobs::job_ids::aran2, jobs::job_ids::aran3, jobs::job_ids::aran4});
 				}
 				else if (cmp == "episode2_magician") {
-					addRewardForJobs({
-						Jobs::JobIds::Evan1,
-						Jobs::JobIds::Evan2, Jobs::JobIds::Evan3, Jobs::JobIds::Evan4,
-						Jobs::JobIds::Evan5, Jobs::JobIds::Evan6, Jobs::JobIds::Evan7,
-						Jobs::JobIds::Evan8, Jobs::JobIds::Evan9, Jobs::JobIds::Evan10
+					add_reward_for_jobs({
+						jobs::job_ids::evan1,
+						jobs::job_ids::evan2, jobs::job_ids::evan3, jobs::job_ids::evan4,
+						jobs::job_ids::evan5, jobs::job_ids::evan6, jobs::job_ids::evan7,
+						jobs::job_ids::evan8, jobs::job_ids::evan9, jobs::job_ids::evan10
 					});
+				}
+				else {
+					throw not_implemented_exception{"job_tracks"};
 				}
 			});
 		}
 	}
 }
 
-auto QuestDataProvider::isQuest(quest_id_t questId) const -> bool {
-	return ext::is_element(m_quests, questId);
+auto quest_data_provider::is_quest(game_quest_id quest_id) const -> bool {
+	return ext::is_element(m_quests, quest_id);
 }
 
-auto QuestDataProvider::getInfo(quest_id_t questId) const -> const Quest & {
-	return m_quests.find(questId)->second;
+auto quest_data_provider::get_info(game_quest_id quest_id) const -> const quest & {
+	return m_quests.find(quest_id)->second;
 }
 
 }

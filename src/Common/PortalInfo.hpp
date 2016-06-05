@@ -21,15 +21,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	struct PortalInfo {
+namespace vana {
+	struct portal_info {
 		bool disabled = false;
-		bool onlyOnce = false;
-		portal_id_t id = 0;
-		map_id_t toMap = 0;
-		string_t toName;
-		string_t script;
-		string_t name;
-		Point pos;
+		bool only_once = false;
+		game_portal_id id = 0;
+		game_map_id to_map = 0;
+		string to_name;
+		string script;
+		string name;
+		point pos;
 	};
 }

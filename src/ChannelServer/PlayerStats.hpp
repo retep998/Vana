@@ -20,141 +20,141 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <map>
 
-namespace Vana {
-	class Item;
-	class PacketBuilder;
-	class PacketReader;
+namespace vana {
+	class item;
+	class packet_builder;
+	class packet_reader;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		struct BonusSet {
+		struct bonus_set {
 			int32_t hp = 0;
 			int32_t mp = 0;
 			int32_t str = 0;
 			int32_t dex = 0;
-			int32_t intt = 0;
+			int32_t intl = 0;
 			int32_t luk = 0;
 		};
 
-		struct EquipBonus : public BonusSet {
+		struct equip_bonus : public bonus_set {
 			int32_t id = 0;
 		};
 
-		class PlayerStats {
-			NONCOPYABLE(PlayerStats);
-			NO_DEFAULT_CONSTRUCTOR(PlayerStats);
+		class player_stats {
+			NONCOPYABLE(player_stats);
+			NO_DEFAULT_CONSTRUCTOR(player_stats);
 		public:
-			PlayerStats(Player *player,
-				player_level_t level,
-				job_id_t job,
-				fame_t fame,
-				stat_t str,
-				stat_t dex,
-				stat_t intt,
-				stat_t luk,
-				stat_t ap,
-				health_ap_t hpMpAp,
-				stat_t sp,
-				health_t hp,
-				health_t maxHp,
-				health_t mp,
-				health_t maxMp,
-				experience_t exp);
+			player_stats(player *player,
+				game_player_level level,
+				game_job_id job,
+				game_fame fame,
+				game_stat str,
+				game_stat dex,
+				game_stat intl,
+				game_stat luk,
+				game_stat ap,
+				game_health_ap hp_mp_ap,
+				game_stat sp,
+				game_health hp,
+				game_health max_hp,
+				game_health mp,
+				game_health max_mp,
+				game_experience exp);
 
 			// Data modification
-			auto checkHpMp() -> void;
-			auto setLevel(player_level_t level) -> void;
-			auto modifyHp(int32_t hpMod, bool sendPacket = true) -> void;
-			auto modifyMp(int32_t mpMod, bool sendPacket = false) -> void;
-			auto damageHp(int32_t damageHp) -> void;
-			auto damageMp(int32_t damageMp) -> void;
-			auto setHp(health_t hp, bool sendPacket = true) -> void;
-			auto setMp(health_t mp, bool sendPacket = false) -> void;
-			auto setMaxHp(health_t maxHp) -> void;
-			auto setMaxMp(health_t maxMp) -> void;
-			auto modifyMaxHp(health_t mod) -> void;
-			auto modifyMaxMp(health_t mod) -> void;
-			auto setHyperBodyHp(int16_t mod) -> void;
-			auto setHyperBodyMp(int16_t mod) -> void;
-			auto setHpMpAp(health_ap_t ap) -> void { m_hpMpAp = ap; }
-			auto setExp(experience_t exp) -> void;
-			auto setAp(stat_t ap) -> void;
-			auto setSp(stat_t sp) -> void;
+			auto check_hp_mp() -> void;
+			auto set_level(game_player_level level) -> void;
+			auto modify_hp(int32_t hp_mod, bool send_packet = true) -> void;
+			auto modify_mp(int32_t mp_mod, bool send_packet = false) -> void;
+			auto damage_hp(int32_t damage_hp) -> void;
+			auto damage_mp(int32_t damage_mp) -> void;
+			auto set_hp(game_health hp, bool send_packet = true) -> void;
+			auto set_mp(game_health mp, bool send_packet = false) -> void;
+			auto set_max_hp(game_health max_hp) -> void;
+			auto set_max_mp(game_health max_mp) -> void;
+			auto modify_max_hp(game_health mod) -> void;
+			auto modify_max_mp(game_health mod) -> void;
+			auto set_hyper_body_hp(int16_t mod) -> void;
+			auto set_hyper_body_mp(int16_t mod) -> void;
+			auto set_hp_mp_ap(game_health_ap ap) -> void { m_hp_mp_ap = ap; }
+			auto set_exp(game_experience exp) -> void;
+			auto set_ap(game_stat ap) -> void;
+			auto set_sp(game_stat sp) -> void;
 
-			auto setFame(fame_t fame) -> void;
-			auto setJob(job_id_t job) -> void;
-			auto setStr(stat_t str) -> void;
-			auto setDex(stat_t dex) -> void;
-			auto setInt(stat_t intt) -> void;
-			auto setLuk(stat_t luk) -> void;
-			auto setMapleWarrior(int16_t mod) -> void;
-			auto loseExp() -> void;
+			auto set_fame(game_fame fame) -> void;
+			auto set_job(game_job_id job) -> void;
+			auto set_str(game_stat str) -> void;
+			auto set_dex(game_stat dex) -> void;
+			auto set_int(game_stat intl) -> void;
+			auto set_luk(game_stat luk) -> void;
+			auto set_maple_warrior(int16_t mod) -> void;
+			auto lose_exp() -> void;
 
-			auto setEquip(inventory_slot_t slot, Item *equip, bool isLoading = false) -> void;
+			auto set_equip(game_inventory_slot slot, item *equip, bool is_loading = false) -> void;
 
 			// Level related functions
-			auto giveExp(uint64_t exp, bool inChat = false, bool white = true) -> void;
-			auto addStat(PacketReader &reader) -> void;
-			auto addStatMulti(PacketReader &reader) -> void;
-			auto addStat(int32_t type, int16_t mod = 1, bool isReset = false) -> void;
-			auto apResetHp(bool isReset, bool isSubtract, int16_t val, int16_t sVal = 0) -> int16_t;
-			auto apResetMp(bool isReset, bool isSubtract, int16_t val, int16_t sVal = 0) -> int16_t;
-			auto getX(skill_id_t skillId) -> int16_t;
-			auto getY(skill_id_t skillId) -> int16_t;
-			auto getExp(player_level_t level) -> experience_t;
+			auto give_exp(uint64_t exp, bool in_chat = false, bool white = true) -> void;
+			auto add_stat(packet_reader &reader) -> void;
+			auto add_stat_multi(packet_reader &reader) -> void;
+			auto add_stat(int32_t type, int16_t mod = 1, bool is_reset = false) -> void;
+			auto ap_reset_hp(bool is_reset, bool is_subtract, int16_t val, int16_t s_val = 0) -> int16_t;
+			auto ap_reset_mp(bool is_reset, bool is_subtract, int16_t val, int16_t s_val = 0) -> int16_t;
+			auto get_x(game_skill_id skill_id) -> int16_t;
+			auto get_y(game_skill_id skill_id) -> int16_t;
+			auto get_exp(game_player_level level) -> game_experience;
 
 			// Data acquisition
-			auto connectPacket(PacketBuilder &builder) -> void;
-			auto getLevel() const -> player_level_t { return m_level; }
-			auto getJob() const -> job_id_t { return m_job; }
-			auto getExp() const -> experience_t { return m_exp; }
-			auto getAp() const -> stat_t { return m_ap; }
-			auto getHpMpAp() const -> health_ap_t { return m_hpMpAp; }
-			auto getSp() const -> stat_t { return m_sp; }
-			auto getFame() const -> fame_t { return m_fame; }
+			auto connect_packet(packet_builder &builder) -> void;
+			auto get_level() const -> game_player_level { return m_level; }
+			auto get_job() const -> game_job_id { return m_job; }
+			auto get_exp() const -> game_experience { return m_exp; }
+			auto get_ap() const -> game_stat { return m_ap; }
+			auto get_hp_mp_ap() const -> game_health_ap { return m_hp_mp_ap; }
+			auto get_sp() const -> game_stat { return m_sp; }
+			auto get_fame() const -> game_fame { return m_fame; }
 
-			auto getStr(bool withBonus = false) -> stat_t;
-			auto getDex(bool withBonus = false) -> stat_t;
-			auto getInt(bool withBonus = false) -> stat_t;
-			auto getLuk(bool withBonus = false) -> stat_t;
-			auto getHp() const -> health_t { return m_hp; }
-			auto getMaxHp(bool withoutBonus = false) -> health_t;
-			auto getMp() const -> health_t { return m_mp; }
-			auto getMaxMp(bool withoutBonus = false) -> health_t;
-			auto isDead() const -> bool;
+			auto get_str(bool with_bonus = false) -> game_stat;
+			auto get_dex(bool with_bonus = false) -> game_stat;
+			auto get_int(bool with_bonus = false) -> game_stat;
+			auto get_luk(bool with_bonus = false) -> game_stat;
+			auto get_hp() const -> game_health { return m_hp; }
+			auto get_max_hp(bool without_bonus = false) -> game_health;
+			auto get_mp() const -> game_health { return m_mp; }
+			auto get_max_mp(bool without_bonus = false) -> game_health;
+			auto is_dead() const -> bool;
 		private:
-			auto updateBonuses(bool updateEquips = false, bool isLoading = false) -> void;
-			auto modifiedHp() -> void;
-			auto randHp() -> health_t;
-			auto randMp() -> health_t;
-			auto levelHp(health_t val, health_t bonus = 0) -> health_t;
-			auto levelMp(health_t val, health_t bonus = 0) -> health_t;
-			auto statUtility(int32_t test) -> int16_t;
+			auto update_bonuses(bool update_equips = false, bool is_loading = false) -> void;
+			auto modified_hp() -> void;
+			auto rand_hp() -> game_health;
+			auto rand_mp() -> game_health;
+			auto level_hp(game_health val, game_health bonus = 0) -> game_health;
+			auto level_mp(game_health val, game_health bonus = 0) -> game_health;
+			auto stat_utility(int32_t test) -> int16_t;
 
-			player_level_t m_level = 0;
-			job_id_t m_job = 0;
-			stat_t m_ap = 0;
-			stat_t m_sp = 0;
-			fame_t m_fame = 0;
-			health_t m_hp = 0;
-			health_t m_maxHp = 0;
-			health_t m_mp = 0;
-			health_t m_maxMp = 0;
-			stat_t m_str = 0;
-			stat_t m_dex = 0;
-			stat_t m_int = 0;
-			stat_t m_luk = 0;
-			int16_t m_hyperBodyX = 0;
-			int16_t m_hyperBodyY = 0;
-			int16_t m_mapleWarrior = 0;
-			health_ap_t m_hpMpAp = 0;
-			experience_t m_exp = 0;
+			game_player_level m_level = 0;
+			game_job_id m_job = 0;
+			game_stat m_ap = 0;
+			game_stat m_sp = 0;
+			game_fame m_fame = 0;
+			game_health m_hp = 0;
+			game_health m_max_hp = 0;
+			game_health m_mp = 0;
+			game_health m_max_mp = 0;
+			game_stat m_str = 0;
+			game_stat m_dex = 0;
+			game_stat m_int = 0;
+			game_stat m_luk = 0;
+			int16_t m_hyper_body_x = 0;
+			int16_t m_hyper_body_y = 0;
+			int16_t m_maple_warrior = 0;
+			game_health_ap m_hp_mp_ap = 0;
+			game_experience m_exp = 0;
 
-			BonusSet m_equipBonuses;
-			BonusSet m_buffBonuses;
-			Player *m_player = nullptr;
-			ord_map_t<int16_t, EquipBonus> m_equipStats;
+			bonus_set m_equip_bonuses;
+			bonus_set m_buff_bonuses;
+			player *m_player = nullptr;
+			ord_map<int16_t, equip_bonus> m_equip_stats;
 		};
 	}
 }

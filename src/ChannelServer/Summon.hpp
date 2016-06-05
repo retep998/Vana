@@ -20,39 +20,39 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include "ChannelServer/MovableLife.hpp"
 
-namespace Vana {
-	namespace ChannelServer {
-		class Summon : public MovableLife {
-			NONCOPYABLE(Summon);
-			NO_DEFAULT_CONSTRUCTOR(Summon);
+namespace vana {
+	namespace channel_server {
+		class summon : public movable_life {
+			NONCOPYABLE(summon);
+			NO_DEFAULT_CONSTRUCTOR(summon);
 		public:
-			enum MovementPatterns : int8_t {
-				Static = 0,
-				Follow = 1,
-				FlyClose = 3,
-				FlyFar = 4,
+			enum movement_patterns : int8_t {
+				fixed = 0,
+				follow = 1,
+				fly_close = 3,
+				fly_far = 4,
 			};
-			enum ActionPatterns : int8_t {
-				DoNothing = 0,
-				Attack = 1,
-				Beholder = 2,
+			enum action_patterns : int8_t {
+				do_nothing = 0,
+				attack = 1,
+				beholder = 2,
 			};
 
-			Summon(map_object_t id, skill_id_t summonId, skill_level_t level, bool isFacingLeft, const Point &position, foothold_id_t foothold = 0);
+			summon(game_map_object id, game_skill_id summon_id, game_skill_level level, bool is_facing_left, const point &position, game_foothold_id foothold = 0);
 
-			auto getId() -> summon_id_t { return m_id; }
-			auto getSkillId() -> skill_id_t { return m_summonId; }
-			auto getSkillLevel() -> skill_level_t { return m_level; }
-			auto getMovementType() -> uint8_t { return m_movementType; }
-			auto getActionType() -> uint8_t { return m_actionType; }
-			auto getHp() -> int32_t { return m_hp; }
-			auto doDamage(damage_t damage) -> void { m_hp -= damage; }
+			auto get_id() -> game_summon_id { return m_id; }
+			auto get_skill_id() -> game_skill_id { return m_summon_id; }
+			auto get_skill_level() -> game_skill_level { return m_level; }
+			auto get_movement_type() -> uint8_t { return m_movement_type; }
+			auto get_action_type() -> uint8_t { return m_action_type; }
+			auto get_hp() -> int32_t { return m_hp; }
+			auto do_damage(game_damage damage) -> void { m_hp -= damage; }
 		private:
-			skill_level_t m_level = 0;
-			uint8_t m_movementType = 0;
-			uint8_t m_actionType = 0;
-			summon_id_t m_id = 0;
-			skill_id_t m_summonId = 0;
+			game_skill_level m_level = 0;
+			uint8_t m_movement_type = 0;
+			uint8_t m_action_type = 0;
+			game_summon_id m_id = 0;
+			game_skill_id m_summon_id = 0;
 			int32_t m_hp = 0;
 		};
 	}

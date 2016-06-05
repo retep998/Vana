@@ -21,63 +21,63 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-	class PacketReader;
+namespace vana {
+	class packet_reader;
 	class soci::row;
 
-	namespace LoginServer {
-		class User;
+	namespace login_server {
+		class user;
 
-		struct CharEquip {
-			item_id_t id = 0;
-			inventory_slot_t slot = 0;
+		struct char_equip {
+			game_item_id id = 0;
+			game_inventory_slot slot = 0;
 		};
 
-		struct Character {
+		struct character {
 			int8_t pos = 0;
-			gender_id_t gender = 0;
-			skin_id_t skin = 0;
-			player_level_t level = 0;
-			job_id_t job = 0;
-			stat_t str = 0;
-			stat_t dex = 0;
-			stat_t intt = 0;
-			stat_t luk = 0;
-			health_t hp = 0;
-			health_t mhp = 0;
-			health_t mp = 0;
-			health_t mmp = 0;
-			stat_t ap = 0;
-			stat_t sp = 0;
-			fame_t fame = 0;
-			map_id_t map = 0;
-			face_id_t face = 0;
-			hair_id_t hair = 0;
-			experience_t exp = 0;
-			int32_t worldRankChange = 0;
-			int32_t jobRankChange = 0;
-			player_id_t id = 0;
-			uint32_t worldRank = 0;
-			uint32_t jobRank = 0;
-			string_t name;
-			vector_t<CharEquip> equips;
+			game_gender_id gender = 0;
+			game_skin_id skin = 0;
+			game_player_level level = 0;
+			game_job_id job = 0;
+			game_stat str = 0;
+			game_stat dex = 0;
+			game_stat intt = 0;
+			game_stat luk = 0;
+			game_health hp = 0;
+			game_health mhp = 0;
+			game_health mp = 0;
+			game_health mmp = 0;
+			game_stat ap = 0;
+			game_stat sp = 0;
+			game_fame fame = 0;
+			game_map_id map = 0;
+			game_face_id face = 0;
+			game_hair_id hair = 0;
+			game_experience exp = 0;
+			int32_t world_rank_change = 0;
+			int32_t job_rank_change = 0;
+			game_player_id id = 0;
+			uint32_t world_rank = 0;
+			uint32_t job_rank = 0;
+			string name;
+			vector<char_equip> equips;
 		};
 
-		namespace Characters {
-			auto connectGame(ref_ptr_t<User> user, player_id_t charId) -> void;
-			auto connectGame(ref_ptr_t<User> user, PacketReader &reader) -> void;
-			auto connectGameWorldFromViewAllCharacters(ref_ptr_t<User> user, PacketReader &reader) -> void;
-			auto checkCharacterName(ref_ptr_t<User> user, PacketReader &reader) -> void;
-			auto createCharacter(ref_ptr_t<User> user, PacketReader &reader) -> void;
-			auto deleteCharacter(ref_ptr_t<User> user, PacketReader &reader) -> void;
-			auto showAllCharacters(ref_ptr_t<User> user) -> void;
-			auto showCharacters(ref_ptr_t<User> user) -> void;
-			auto loadCharacter(Character &charc, const soci::row &row) -> void;
-			auto loadEquips(player_id_t id, vector_t<CharEquip> &vec) -> void;
-			auto createItem(item_id_t itemId, ref_ptr_t<User> user, player_id_t charId, inventory_slot_t slot, slot_qty_t amount = 1) -> void;
-			auto ownerCheck(ref_ptr_t<User> user, player_id_t id) -> bool;
-			auto nameTaken(const string_t &name) -> bool;
-			auto nameInvalid(const string_t &name) -> bool;
+		namespace characters {
+			auto connect_game(ref_ptr<user> user_value, game_player_id char_id) -> void;
+			auto connect_game(ref_ptr<user> user_value, packet_reader &reader) -> void;
+			auto connect_game_world_from_view_all_characters(ref_ptr<user> user_value, packet_reader &reader) -> void;
+			auto check_character_name(ref_ptr<user> user_value, packet_reader &reader) -> void;
+			auto create_character(ref_ptr<user> user_value, packet_reader &reader) -> void;
+			auto delete_character(ref_ptr<user> user_value, packet_reader &reader) -> void;
+			auto show_all_characters(ref_ptr<user> user_value) -> void;
+			auto show_characters(ref_ptr<user> user_value) -> void;
+			auto load_character(character &charc, const soci::row &row) -> void;
+			auto load_equips(game_player_id id, vector<char_equip> &vec) -> void;
+			auto create_item(game_item_id item_id, ref_ptr<user> user_value, game_player_id char_id, game_inventory_slot slot, game_slot_qty amount = 1) -> void;
+			auto owner_check(ref_ptr<user> user_value, game_player_id id) -> bool;
+			auto name_taken(const string &name) -> bool;
+			auto name_invalid(const string &name) -> bool;
 		}
 	}
 }

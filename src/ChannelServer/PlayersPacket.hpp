@@ -22,30 +22,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	class PacketReader;
-	struct AttackData;
-	struct ReturnDamageData;
-	struct WidePoint;
+namespace vana {
+	class packet_reader;
+	struct attack_data;
+	struct return_damage_data;
+	struct wide_point;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		namespace Packets {
-			namespace Players {
-				SPLIT_PACKET(showMoving, player_id_t playerId, unsigned char *buf, size_t size);
-				SPLIT_PACKET(faceExpression, player_id_t playerId, int32_t face);
-				PACKET(showChat, player_id_t playerId, bool isGm, const string_t &msg, bool bubbleOnly);
-				SPLIT_PACKET(damagePlayer, player_id_t playerId, damage_t dmg, mob_id_t mob, uint8_t hit, int8_t type, uint8_t stance, skill_id_t noDamageSkill, const ReturnDamageData &pgmr);
-				PACKET(showInfo, ref_ptr_t<Vana::ChannelServer::Player> getInfo, bool isSelf);
-				PACKET(findPlayer, const string_t &name, opt_int32_t map, uint8_t is = 0, bool isChannel = false);
-				PACKET(whisperPlayer, const string_t &whispererName, channel_id_t channel, const string_t &message);
-				SPLIT_PACKET(useMeleeAttack, player_id_t playerId, skill_id_t masterySkillId, skill_level_t masteryLevel, const AttackData &attack);
-				SPLIT_PACKET(useRangedAttack, player_id_t playerId, skill_id_t masterySkillId, skill_level_t masteryLevel, const AttackData &attack);
-				SPLIT_PACKET(useSpellAttack, player_id_t playerId, const AttackData &attack);
-				SPLIT_PACKET(useSummonAttack, player_id_t playerId, const AttackData &attack);
-				SPLIT_PACKET(useBombAttack, player_id_t playerId, charge_time_t chargeTime, skill_id_t skillId, const WidePoint &pos);
-				SPLIT_PACKET(useEnergyChargeAttack, player_id_t playerId, skill_id_t masterySkillId, skill_level_t masteryLevel, const AttackData &attack);
+		namespace packets {
+			namespace players {
+				SPLIT_PACKET(show_moving, game_player_id player_id, unsigned char *buf, size_t size);
+				SPLIT_PACKET(face_expression, game_player_id player_id, int32_t face);
+				PACKET(show_chat, game_player_id player_id, bool is_gm, const string &msg, bool bubble_only);
+				SPLIT_PACKET(damage_player, game_player_id player_id, game_damage dmg, game_mob_id mob, uint8_t hit, int8_t type, uint8_t stance, game_skill_id no_damage_skill, const return_damage_data &pgmr);
+				PACKET(show_info, ref_ptr<vana::channel_server::player> get_info, bool is_self);
+				PACKET(find_player, const string &name, opt_int32_t map, uint8_t is = 0, bool is_channel = false);
+				PACKET(whisper_player, const string &whisperer_name, game_channel_id channel, const string &message);
+				SPLIT_PACKET(use_melee_attack, game_player_id player_id, game_skill_id mastery_skill_id, game_skill_level mastery_level, const attack_data &attack);
+				SPLIT_PACKET(use_ranged_attack, game_player_id player_id, game_skill_id mastery_skill_id, game_skill_level mastery_level, const attack_data &attack);
+				SPLIT_PACKET(use_spell_attack, game_player_id player_id, const attack_data &attack);
+				SPLIT_PACKET(use_summon_attack, game_player_id player_id, const attack_data &attack);
+				SPLIT_PACKET(use_bomb_attack, game_player_id player_id, game_charge_time charge_time, game_skill_id skill_id, const wide_point &pos);
+				SPLIT_PACKET(use_energy_charge_attack, game_player_id player_id, game_skill_id mastery_skill_id, game_skill_level mastery_level, const attack_data &attack);
 			}
 		}
 	}

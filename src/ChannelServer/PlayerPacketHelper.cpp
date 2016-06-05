@@ -25,16 +25,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Player.hpp"
 #include <cmath>
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
-namespace Helpers {
+namespace vana {
+namespace channel_server {
+namespace packets {
+namespace helpers {
 
-PACKET_IMPL(addItemInfo, inventory_slot_t slot, Item *item, bool shortSlot) {
-	PacketBuilder builder;
+PACKET_IMPL(add_item_info, game_inventory_slot slot, item *item, bool short_slot) {
+	packet_builder builder;
 	if (slot != 0) {
-		if (shortSlot) {
-			builder.add<inventory_slot_t>(slot);
+		if (short_slot) {
+			builder.add<game_inventory_slot>(slot);
 		}
 		else {
 			slot = std::abs(slot);
@@ -44,45 +44,45 @@ PACKET_IMPL(addItemInfo, inventory_slot_t slot, Item *item, bool shortSlot) {
 			builder.add<int8_t>(static_cast<int8_t>(slot));
 		}
 	}
-	bool equip = GameLogicUtilities::isEquip(item->getId());
+	bool equip = game_logic_utilities::is_equip(item->get_id());
 	builder
 		.add<int8_t>(equip ? 1 : 2)
-		.add<item_id_t>(item->getId());
+		.add<game_item_id>(item->get_id());
 
-	if (false) { //item->getCashId() != 0) {
+	if (false) { //item->get_cash_id() != 0) {
 		builder
 			.add<int8_t>(1)
-			.add<int64_t>(0); //item->getCashId());
+			.add<int64_t>(0); //item->get_cash_id());
 	}
 	else {
 		builder.add<int8_t>(0);
 	}
-	builder.add<FileTime>(item->getExpirationTime());
+	builder.add<file_time>(item->get_expiration_time());
 	if (equip) {
 		builder
-			.add<int8_t>(item->getSlots())
-			.add<int8_t>(item->getScrolls())
-			.add<stat_t>(item->getStr())
-			.add<stat_t>(item->getDex())
-			.add<stat_t>(item->getInt())
-			.add<stat_t>(item->getLuk())
-			.add<health_t>(item->getHp())
-			.add<health_t>(item->getMp())
-			.add<stat_t>(item->getWatk())
-			.add<stat_t>(item->getMatk())
-			.add<stat_t>(item->getWdef())
-			.add<stat_t>(item->getMdef())
-			.add<stat_t>(item->getAccuracy())
-			.add<stat_t>(item->getAvoid())
-			.add<stat_t>(item->getHands())
-			.add<stat_t>(item->getSpeed())
-			.add<stat_t>(item->getJump())
-			.add<string_t>(item->getName()) // Owner string
-			.add<int16_t>(item->getFlags()); // Lock, shoe spikes, cape cold protection, etc.
+			.add<int8_t>(item->get_slots())
+			.add<int8_t>(item->get_scrolls())
+			.add<game_stat>(item->get_str())
+			.add<game_stat>(item->get_dex())
+			.add<game_stat>(item->get_int())
+			.add<game_stat>(item->get_luk())
+			.add<game_health>(item->get_hp())
+			.add<game_health>(item->get_mp())
+			.add<game_stat>(item->get_watk())
+			.add<game_stat>(item->get_matk())
+			.add<game_stat>(item->get_wdef())
+			.add<game_stat>(item->get_mdef())
+			.add<game_stat>(item->get_accuracy())
+			.add<game_stat>(item->get_avoid())
+			.add<game_stat>(item->get_hands())
+			.add<game_stat>(item->get_speed())
+			.add<game_stat>(item->get_jump())
+			.add<string>(item->get_name()) // Owner string
+			.add<int16_t>(item->get_flags()); // Lock, shoe spikes, cape cold protection, etc.
 
-		if (false) { //item->getCashId() != 0) {
+		if (false) { //item->get_cash_id() != 0) {
 			builder
-				.addBytes("91174826F700") // Always the same for cash equips
+				.add_bytes("91174826F700") // Always the same for cash equips
 				.unk<int32_t>();
 		}
 		else {
@@ -91,42 +91,42 @@ PACKET_IMPL(addItemInfo, inventory_slot_t slot, Item *item, bool shortSlot) {
 				.unk<int8_t>() // Item level
 				.unk<int16_t>()
 				.unk<int16_t>() // Item EXP of.. some sort
-				.add<int32_t>(item->getHammers())
+				.add<int32_t>(item->get_hammers())
 				.unk<int64_t>(-1);
 		}
 		builder
-			.addBytes("0040E0FD3B374F01") // Always the same?
+			.add_bytes("0040E0FD3B374F01") // Always the same?
 			.unk<int32_t>(-1);
 	}
 	else {
 		builder
-			.add<slot_qty_t>(item->getAmount())
-			.add<string_t>(item->getName()) // Specially made by <IGN>
-			.add<int16_t>(item->getFlags());
+			.add<game_slot_qty>(item->get_amount())
+			.add<string>(item->get_name()) // Specially made by <IGN>
+			.add<int16_t>(item->get_flags());
 
-		if (GameLogicUtilities::isRechargeable(item->getId())) {
+		if (game_logic_utilities::is_rechargeable(item->get_id())) {
 			builder.add<int64_t>(0); // Might be rechargeable ID for internal tracking/duping tracking
 		}
 	}
 	return builder;
 }
 
-PACKET_IMPL(addPlayerDisplay, ref_ptr_t<Vana::ChannelServer::Player> player) {
-	PacketBuilder builder;
+PACKET_IMPL(add_player_display, ref_ptr<vana::channel_server::player> player) {
+	packet_builder builder;
 	builder
-		.add<gender_id_t>(player->getGender())
-		.add<skin_id_t>(player->getSkin())
-		.add<face_id_t>(player->getFace())
+		.add<game_gender_id>(player->get_gender())
+		.add<game_skin_id>(player->get_skin())
+		.add<game_face_id>(player->get_face())
 		.unk<int8_t>(1)
-		.add<hair_id_t>(player->getHair());
+		.add<game_hair_id>(player->get_hair());
 
-	player->getInventory()->addEquippedPacket(builder);
-	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
-		if (Pet *pet = player->getPets()->getSummoned(i)) {
-			builder.add<item_id_t>(pet->getItemId());
+	player->get_inventory()->add_equipped_packet(builder);
+	for (int8_t i = 0; i < inventories::max_pet_count; i++) {
+		if (pet *pet = player->get_pets()->get_summoned(i)) {
+			builder.add<game_item_id>(pet->get_item_id());
 		}
 		else {
-			builder.add<item_id_t>(0);
+			builder.add<game_item_id>(0);
 		}
 	}
 	return builder;

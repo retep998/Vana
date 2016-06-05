@@ -20,14 +20,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include "Common/ValidClassData.hpp"
 
-namespace Vana {
-	struct ValidClassGenderData {
+namespace vana {
+	struct valid_class_gender_data {
 		auto clear() -> void {
 			male.clear();
 			female.clear();
 		}
 
-		ValidClassData male;
-		ValidClassData female;
+		valid_class_data male;
+		valid_class_data female;
 	};
 }

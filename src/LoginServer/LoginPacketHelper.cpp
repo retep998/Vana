@@ -19,53 +19,53 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/ItemConstants.hpp"
 #include "LoginServer/Characters.hpp"
 
-namespace Vana {
-namespace LoginServer {
-namespace Packets {
-namespace Helpers {
+namespace vana {
+namespace login_server {
+namespace packets {
+namespace helpers {
 
-PACKET_IMPL(addCharacter, const Character &charc) {
-	PacketBuilder builder;
+PACKET_IMPL(add_character, const character &charc) {
+	packet_builder builder;
 	builder
-		.add<player_id_t>(charc.id)
-		.add<string_t>(charc.name, 13)
-		.add<gender_id_t>(charc.gender)
-		.add<skin_id_t>(charc.skin)
-		.add<face_id_t>(charc.face)
-		.add<hair_id_t>(charc.hair)
+		.add<game_player_id>(charc.id)
+		.add<string>(charc.name, 13)
+		.add<game_gender_id>(charc.gender)
+		.add<game_skin_id>(charc.skin)
+		.add<game_face_id>(charc.face)
+		.add<game_hair_id>(charc.hair)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
-		.add<player_level_t>(charc.level)
-		.add<job_id_t>(charc.job)
-		.add<stat_t>(charc.str)
-		.add<stat_t>(charc.dex)
-		.add<stat_t>(charc.intt)
-		.add<stat_t>(charc.luk)
-		.add<health_t>(charc.hp)
-		.add<health_t>(charc.mhp)
-		.add<health_t>(charc.mp)
-		.add<health_t>(charc.mmp)
-		.add<stat_t>(charc.ap)
-		.add<stat_t>(charc.sp)
-		.add<experience_t>(charc.exp)
-		.add<fame_t>(charc.fame)
+		.add<game_player_level>(charc.level)
+		.add<game_job_id>(charc.job)
+		.add<game_stat>(charc.str)
+		.add<game_stat>(charc.dex)
+		.add<game_stat>(charc.intt)
+		.add<game_stat>(charc.luk)
+		.add<game_health>(charc.hp)
+		.add<game_health>(charc.mhp)
+		.add<game_health>(charc.mp)
+		.add<game_health>(charc.mmp)
+		.add<game_stat>(charc.ap)
+		.add<game_stat>(charc.sp)
+		.add<game_experience>(charc.exp)
+		.add<game_fame>(charc.fame)
 		.add<int32_t>(0) // Unknown int32 added in .62
-		.add<map_id_t>(charc.map)
+		.add<game_map_id>(charc.map)
 		.add<int8_t>(charc.pos)
 		.add<int32_t>(0) // Unknown int32 added in .62
-		.add<gender_id_t>(charc.gender)
-		.add<skin_id_t>(charc.skin)
-		.add<face_id_t>(charc.face)
+		.add<game_gender_id>(charc.gender)
+		.add<game_skin_id>(charc.skin)
+		.add<game_face_id>(charc.face)
 		.add<int8_t>(1)
-		.add<hair_id_t>(charc.hair);
+		.add<game_hair_id>(charc.hair);
 
-	item_id_t equips[Inventories::EquippedSlots][2] = {0};
+	game_item_id equips[inventories::equipped_slots][2] = {0};
 	for (const auto &equip : charc.equips) {
-		inventory_slot_t slot = -equip.slot;
+		game_inventory_slot slot = -equip.slot;
 		if (slot > 100) {
 			slot -= 100;
 		}
@@ -82,40 +82,40 @@ PACKET_IMPL(addCharacter, const Character &charc) {
 			equips[slot][0] = equip.id;
 		}
 	}
-	for (uint8_t i = 0; i < Inventories::EquippedSlots; i++) {
+	for (uint8_t i = 0; i < inventories::equipped_slots; i++) {
 		// Shown items
 		if (equips[i][0] > 0) {
 			builder.add<uint8_t>(i);
-			if (i == EquipSlots::Weapon && equips[i][1] > 0) {
+			if (i == equip_slots::weapon && equips[i][1] > 0) {
 				// Normal weapons always here
-				builder.add<item_id_t>(equips[i][1]);
+				builder.add<game_item_id>(equips[i][1]);
 			}
 			else {
-				builder.add<item_id_t>(equips[i][0]);
+				builder.add<game_item_id>(equips[i][0]);
 			}
 		}
 	}
 	builder.add<int8_t>(-1);
-	for (uint8_t i = 0; i < Inventories::EquippedSlots; i++) {
+	for (uint8_t i = 0; i < inventories::equipped_slots; i++) {
 		// Covered items
-		if (equips[i][1] > 0 && i != EquipSlots::Weapon) {
+		if (equips[i][1] > 0 && i != equip_slots::weapon) {
 			builder.add<uint8_t>(i);
-			builder.add<item_id_t>(equips[i][1]);
+			builder.add<game_item_id>(equips[i][1]);
 		}
 	}
 
 	builder
 		.add<int8_t>(-1)
-		.add<item_id_t>(equips[EquipSlots::Weapon][0]) // Cash weapon
+		.add<game_item_id>(equips[equip_slots::weapon][0]) // Cash weapon
 		.add<int32_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
 		// Rankings
 		.add<int8_t>(1)
-		.add<int32_t>(charc.worldRank)
-		.add<int32_t>(charc.worldRankChange)
-		.add<int32_t>(charc.jobRank)
-		.add<int32_t>(charc.jobRankChange);
+		.add<int32_t>(charc.world_rank)
+		.add<int32_t>(charc.world_rank_change)
+		.add<int32_t>(charc.job_rank)
+		.add<int32_t>(charc.job_rank_change);
 	return builder;
 }
 

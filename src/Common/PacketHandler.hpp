@@ -21,22 +21,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Session.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class PacketHandler {
+namespace vana {
+	class packet_handler {
 	public:
-		auto getIp() const -> optional_t<Ip>;
+		auto get_ip() const -> optional<ip>;
 		auto disconnect() -> void;
-		auto send(const PacketBuilder &builder) -> void;
-		auto getLatency() const -> milliseconds_t;
+		auto send(const packet_builder &builder) -> void;
+		auto get_latency() const -> milliseconds;
 	protected:
-		friend class Session;
-		virtual auto handle(PacketReader &reader) -> Result;
-		virtual auto onConnect() -> void;
-		virtual auto onDisconnect() -> void;
-		auto onConnectBase(ref_ptr_t<Session> session) -> void;
-		auto onDisconnectBase() -> void;
+		friend class session;
+		virtual auto handle(packet_reader &reader) -> result;
+		virtual auto on_connect() -> void;
+		virtual auto on_disconnect() -> void;
+		auto on_connect_base(ref_ptr<session> session) -> void;
+		auto on_disconnect_base() -> void;
 
 		bool m_disconnected = false;
-		ref_ptr_t<Session> m_session;
+		ref_ptr<session> m_session;
 	};
 }

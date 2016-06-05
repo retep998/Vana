@@ -21,24 +21,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Player.hpp"
 #include "ChannelServer/SmsgHeader.hpp"
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
+namespace vana {
+namespace channel_server {
+namespace packets {
 
-PACKET_IMPL(showExp, experience_t exp, bool white, bool inChat) {
-	PacketBuilder builder;
+PACKET_IMPL(show_exp, game_experience exp, bool white, bool in_chat) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_NOTICE)
+		.add<packet_header>(SMSG_NOTICE)
 		.add<int8_t>(3)
 		.add<bool>(white)
-		.add<experience_t>(exp)
-		.add<bool>(inChat)
+		.add<game_experience>(exp)
+		.add<bool>(in_chat)
 		.unk<int32_t>()
 		.unk<int8_t>()
 		.unk<int8_t>()
 		.unk<int32_t>();
 
-	if (inChat) {
+	if (in_chat) {
 		builder.unk<int8_t>();
 	}
 	builder
@@ -47,34 +47,34 @@ PACKET_IMPL(showExp, experience_t exp, bool white, bool inChat) {
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(levelUp, player_id_t playerId) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(level_up, game_player_id player_id) {
+	split_packet_builder builder;
 	builder.player
-		.add<header_t>(SMSG_SKILL_SHOW)
-		.add<player_id_t>(playerId)
+		.add<packet_header>(SMSG_SKILL_SHOW)
+		.add<game_player_id>(player_id)
 		.add<int8_t>(0);
 
-	builder.map.addBuffer(builder.player);
+	builder.map.add_buffer(builder.player);
 	return builder;
 }
 
-PACKET_IMPL(statOk) {
-	PacketBuilder builder;
+PACKET_IMPL(stat_ok) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_PLAYER_UPDATE)
+		.add<packet_header>(SMSG_PLAYER_UPDATE)
 		.unk<int16_t>(1)
 		.unk<int32_t>();
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(jobChange, player_id_t playerId) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(job_change, game_player_id player_id) {
+	split_packet_builder builder;
 	builder.player
-		.add<header_t>(SMSG_SKILL_SHOW)
-		.add<player_id_t>(playerId)
+		.add<packet_header>(SMSG_SKILL_SHOW)
+		.add<game_player_id>(player_id)
 		.add<int8_t>(8);
 
-	builder.map.addBuffer(builder.player);
+	builder.map.add_buffer(builder.player);
 	return builder;
 }
 

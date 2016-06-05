@@ -30,51 +30,51 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServer/World.hpp"
 #include <iostream>
 
-namespace Vana {
-namespace LoginServer {
+namespace vana {
+namespace login_server {
 
-auto Worlds::showWorld(ref_ptr_t<User> user) -> void {
-	if (user->getStatus() != PlayerStatus::LoggedIn) {
+auto worlds::show_world(ref_ptr<user> user_value) -> void {
+	if (user_value->get_status() != player_status::logged_in) {
 		// Hacking
 		return;
 	}
 
 	for (const auto &kvp : m_worlds) {
-		if (kvp.second->isConnected()) {
-			user->send(Packets::showWorld(kvp.second));
+		if (kvp.second->is_connected()) {
+			user_value->send(packets::show_world(kvp.second));
 		}
 	}
-	user->send(Packets::worldEnd());
+	user_value->send(packets::world_end());
 }
 
-auto Worlds::addWorld(World *world) -> void {
-	optional_t<world_id_t> worldId = world->getId();
-	if (!worldId.is_initialized()) {
-		throw CodePathInvalidException{"!worldId.is_initialized()"};
+auto worlds::add_world(world *world_value) -> void {
+	optional<game_world_id> world_id = world_value->get_id();
+	if (!world_id.is_initialized()) {
+		throw codepath_invalid_exception{"!world_id.is_initialized()"};
 	}
-	m_worlds[worldId.get()] = world;
+	m_worlds[world_id.get()] = world_value;
 }
 
-auto Worlds::selectWorld(ref_ptr_t<User> user, PacketReader &reader) -> void {
-	if (user->getStatus() != PlayerStatus::LoggedIn) {
+auto worlds::select_world(ref_ptr<user> user_value, packet_reader &reader) -> void {
+	if (user_value->get_status() != player_status::logged_in) {
 		// Hacking
 		return;
 	}
 
-	world_id_t worldId = reader.get<world_id_t>();
-	if (World *world = getWorld(worldId)) {
-		int32_t load = world->getPlayerLoad();
-		int32_t maxLoad = world->getMaxPlayerLoad();
-		int32_t minMaxLoad = (maxLoad / 100) * 90;
-		int8_t message = Packets::WorldMessages::Normal;
+	game_world_id world_id = reader.get<game_world_id>();
+	if (world *world_value = get_world(world_id)) {
+		int32_t load = world_value->get_player_load();
+		int32_t max_load = world_value->get_max_player_load();
+		int32_t min_max_load = (max_load / 100) * 90;
+		int8_t message = packets::world_messages::normal;
 
-		if (load >= minMaxLoad && load < maxLoad) {
-			message = Packets::WorldMessages::HeavyLoad;
+		if (load >= min_max_load && load < max_load) {
+			message = packets::world_messages::heavy_load;
 		}
-		else if (load == maxLoad) {
-			message = Packets::WorldMessages::MaxLoad;
+		else if (load == max_load) {
+			message = packets::world_messages::max_load;
 		}
-		user->send(Packets::showChannels(message));
+		user_value->send(packets::show_channels(message));
 	}
 	else {
 		// Hacking
@@ -82,129 +82,129 @@ auto Worlds::selectWorld(ref_ptr_t<User> user, PacketReader &reader) -> void {
 	}
 }
 
-auto Worlds::channelSelect(ref_ptr_t<User> user, PacketReader &reader) -> void {
-	if (user->getStatus() != PlayerStatus::LoggedIn) {
+auto worlds::channel_select(ref_ptr<user> user_value, packet_reader &reader) -> void {
+	if (user_value->get_status() != player_status::logged_in) {
 		// Hacking
 		return;
 	}
-	world_id_t worldId = reader.get<world_id_t>();
-	if (World *world = getWorld(worldId)) {
-		user->setWorldId(worldId);
+	game_world_id world_id = reader.get<game_world_id>();
+	if (world *world_value = get_world(world_id)) {
+		user_value->set_world_id(world_id);
 	}
 	else {
 		// Hacking
 		return;
 	}
 
-	channel_id_t channelId = reader.get<int8_t>();
+	game_channel_id chan_id = reader.get<int8_t>();
 
-	user->send(Packets::channelSelect());
-	World *world = m_worlds[worldId];
+	user_value->send(packets::channel_select());
+	world *world_value = m_worlds[world_id];
 
-	if (world == nullptr) {
+	if (world_value == nullptr) {
 		// Hacking, lag, or client that hasn't been updated (e.g. in the middle of logging in)
 		return;
 	}
 
-	if (Channel *channel = world->getChannel(channelId)) {
-		user->setChannel(channelId);
-		Characters::showCharacters(user);
+	if (channel *chan = world_value->get_channel(chan_id)) {
+		user_value->set_channel(chan_id);
+		characters::show_characters(user_value);
 	}
 	else {
-		user->send(Packets::channelOffline());
+		user_value->send(packets::channel_offline());
 	}
 }
 
-auto Worlds::addWorldServer(ref_ptr_t<LoginServerAcceptedSession> session) -> optional_t<world_id_t> {
-	World *world = nullptr;
+auto worlds::add_world_server(ref_ptr<login_server_accepted_session> session) -> optional<game_world_id> {
+	world *world_value = nullptr;
 	for (const auto &kvp : m_worlds) {
-		if (!kvp.second->isConnected()) {
-			world = kvp.second;
+		if (!kvp.second->is_connected()) {
+			world_value = kvp.second;
 			break;
 		}
 	}
 
-	auto &server = LoginServer::getInstance();
-	if (world == nullptr) {
-		session->send(Packets::Interserver::noMoreWorld());
-		server.log(LogType::Error, "No more worlds to assign.");
+	auto &server = login_server::get_instance();
+	if (world_value == nullptr) {
+		session->send(packets::interserver::no_more_world());
+		server.log(log_type::error, "No more worlds to assign.");
 		session->disconnect();
 		return {};
 	}
 
-	optional_t<world_id_t> worldId = world->getId();
-	if (!worldId.is_initialized()) {
-		throw CodePathInvalidException{"!worldId.is_initialized()"};
+	optional<game_world_id> world_id = world_value->get_id();
+	if (!world_id.is_initialized()) {
+		throw codepath_invalid_exception{"!world_id.is_initialized()"};
 	}
 
-	world_id_t cached = worldId.get();
-	session->setWorldId(cached);
-	world->setConnected(true);
-	world->setSession(session);
+	game_world_id cached = world_id.get();
+	session->set_world_id(cached);
+	world_value->set_connected(true);
+	world_value->set_session(session);
 
-	session->send(Packets::Interserver::connect(world));
+	session->send(packets::interserver::connect(world_value));
 
-	server.log(LogType::ServerConnect, [&](out_stream_t &log) {
+	server.log(log_type::server_connect, [&](out_stream &log) {
 		log << "World " << static_cast<int32_t>(cached);
 	});
 
 	return cached;
 }
 
-auto Worlds::addChannelServer(ref_ptr_t<LoginServerAcceptedSession> session) -> optional_t<world_id_t> {
-	World *validWorld = nullptr;
+auto worlds::add_channel_server(ref_ptr<login_server_accepted_session> session) -> optional<game_world_id> {
+	world *valid_world = nullptr;
 	for (const auto &kvp : m_worlds) {
-		World *world = kvp.second;
-		if (world->getChannelCount() < world->getMaxChannels() && world->isConnected()) {
-			validWorld = world;
+		world *world_value = kvp.second;
+		if (world_value->get_channel_count() < world_value->get_max_channels() && world_value->is_connected()) {
+			valid_world = world_value;
 			break;
 		}
 	}
 
-	if (validWorld == nullptr) {
-		session->send(Packets::Interserver::connectChannel({}, {}, {}));
-		LoginServer::getInstance().log(LogType::Error, "No more channels to assign.");
+	if (valid_world == nullptr) {
+		session->send(packets::interserver::connect_channel({}, {}, {}));
+		login_server::get_instance().log(log_type::error, "No more channels to assign.");
 		session->disconnect();
 		return {};
 	}
 
-	optional_t<world_id_t> worldId = validWorld->getId();
-	if (!worldId.is_initialized()) {
-		throw CodePathInvalidException{"!worldId.is_initialized()"};
+	optional<game_world_id> world_id = valid_world->get_id();
+	if (!world_id.is_initialized()) {
+		throw codepath_invalid_exception{"!world_id.is_initialized()"};
 	}
 
-	Ip worldIp = validWorld->matchSubnet(session->getIp().get(Ip{0}));
-	session->send(Packets::Interserver::connectChannel(worldId.get(), worldIp, validWorld->getPort()));
+	ip world_ip = valid_world->match_subnet(session->get_ip().get(ip{0}));
+	session->send(packets::interserver::connect_channel(world_id.get(), world_ip, valid_world->get_port()));
 	session->disconnect();
-	return worldId;
+	return world_id;
 }
 
-auto Worlds::send(world_id_t id, const PacketBuilder &builder) -> void {
-	if (World *world = getWorld(id)) {
-		if (world->isConnected()) {
-			world->send(builder);
+auto worlds::send(game_world_id id, const packet_builder &builder) -> void {
+	if (world *world_value = get_world(id)) {
+		if (world_value->is_connected()) {
+			world_value->send(builder);
 		}
 	}
 }
 
-auto Worlds::send(const vector_t<world_id_t> &worlds, const PacketBuilder &builder) -> void {
-	for (const auto &worldId : worlds) {
-		auto kvp = m_worlds.find(worldId);
-		if (kvp != std::end(m_worlds) && kvp->second->isConnected()) {
+auto worlds::send(const vector<game_world_id> &worlds, const packet_builder &builder) -> void {
+	for (const auto &world_id : worlds) {
+		auto kvp = m_worlds.find(world_id);
+		if (kvp != std::end(m_worlds) && kvp->second->is_connected()) {
 			kvp->second->send(builder);
 		}
 	}
 }
 
-auto Worlds::send(const PacketBuilder &builder) -> void {
+auto worlds::send(const packet_builder &builder) -> void {
 	for (const auto &kvp : m_worlds) {
-		if (kvp.second->isConnected()) {
+		if (kvp.second->is_connected()) {
 			kvp.second->send(builder);
 		}
 	}
 }
 
-auto Worlds::runFunction(function_t<bool (World *)> func) -> void {
+auto worlds::run_function(function<bool (world *)> func) -> void {
 	for (const auto &kvp : m_worlds) {
 		if (func(kvp.second)) {
 			break;
@@ -212,21 +212,21 @@ auto Worlds::runFunction(function_t<bool (World *)> func) -> void {
 	}
 }
 
-auto Worlds::calculatePlayerLoad(World *world) -> void {
-	world->setPlayerLoad(0);
-	world->runChannelFunction([&world](Channel *channel) {
-		world->setPlayerLoad(world->getPlayerLoad() + channel->getPopulation());
+auto worlds::calculate_player_load(world *world_value) -> void {
+	world_value->set_player_load(0);
+	world_value->run_channel_function([&world_value](channel *chan) {
+		world_value->set_player_load(world_value->get_player_load() + chan->get_population());
 	});
 }
 
-auto Worlds::getWorld(world_id_t id) -> World * {
+auto worlds::get_world(game_world_id id) -> world * {
 	auto kvp = m_worlds.find(id);
 	return kvp != std::end(m_worlds) ? kvp->second : nullptr;
 }
 
-auto Worlds::setEventMessages(const string_t &message) -> void {
+auto worlds::set_event_messages(const string &message) -> void {
 	for (const auto &kvp : m_worlds) {
-		kvp.second->setEventMessage(message);
+		kvp.second->set_event_message(message);
 	}
 }
 

@@ -19,30 +19,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Database.hpp"
 #include "ChannelServer/Player.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-PlayerVariables::PlayerVariables(Player *player) :
+player_variables::player_variables(player *player) :
 	m_player{player}
 {
 	load();
 }
 
-auto PlayerVariables::save() -> void {
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
-	player_id_t charId = m_player->getId();
+auto player_variables::save() -> void {
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
+	game_player_id char_id = m_player->get_id();
 
-	sql.once << "DELETE FROM " << db.makeTable("character_variables") << " WHERE character_id = :char", soci::use(charId, "char");
+	sql.once << "DELETE FROM " << db.make_table("character_variables") << " WHERE character_id = :char",
+		soci::use(char_id, "char");
 
 	if (m_variables.size() > 0) {
-		string_t key = "";
-		string_t value = "";
+		string key = "";
+		string value = "";
 
 		soci::statement st = (sql.prepare
-			<< "INSERT INTO " << db.makeTable("character_variables") << " "
+			<< "INSERT INTO " << db.make_table("character_variables") << " "
 			<< "VALUES (:char, :key, :value)",
-			soci::use(charId, "char"),
+			soci::use(char_id, "char"),
 			soci::use(key, "key"),
 			soci::use(value, "value"));
 
@@ -54,13 +55,14 @@ auto PlayerVariables::save() -> void {
 	}
 }
 
-auto PlayerVariables::load() -> void {
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("character_variables") << " WHERE character_id = :char", soci::use(m_player->getId(), "char"));
+auto player_variables::load() -> void {
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("character_variables") << " WHERE character_id = :char",
+		soci::use(m_player->get_id(), "char"));
 
 	for (const auto &row : rs) {
-		m_variables[row.get<string_t>("key")] = row.get<string_t>("value");
+		m_variables[row.get<string>("key")] = row.get<string>("value");
 	}
 }
 

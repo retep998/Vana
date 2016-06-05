@@ -23,28 +23,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	struct ConnectionListenerConfig {
-		PingConfig ping;
+namespace vana {
+	struct connection_listener_config {
+		ping_config ping;
 		bool encrypt;
-		ConnectionType type;
-		string_t subversion;
-		port_t port;
-		Ip::Type ipType;
+		connection_type type;
+		string subversion;
+		connection_port port;
+		ip::type ip_type;
 
-		ConnectionListenerConfig(
-			const PingConfig &ping,
+		connection_listener_config(
+			const ping_config &ping,
 			bool encrypt,
-			ConnectionType type,
-			string_t subversion,
-			port_t port,
-			Ip::Type ipType) :
+			connection_type type,
+			string subversion,
+			connection_port port,
+			ip::type ip_type) :
 			ping{ping},
 			encrypt{encrypt},
 			type{type},
 			subversion{subversion},
 			port{port},
-			ipType{ipType}
+			ip_type{ip_type}
 		{
 		}
 	};

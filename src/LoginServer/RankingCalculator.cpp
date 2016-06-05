@@ -36,71 +36,71 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <memory>
 #include <thread>
 
-namespace Vana {
-namespace LoginServer {
+namespace vana {
+namespace login_server {
 
-mutex_t RankingCalculator::RankingsMutex;
+mutex ranking_calculator::g_rankings_mutex;
 
-auto RankingCalculator::setTimer() -> void {
-	//Timer::Timer::create([]() { RankingCalculator::runThread(); },
-	//	Timer::Id{TimerType::RankTimer),
-	//	nullptr, TimeUtilities::getDistanceToNextOccurringSecondOfHour(0), hours_t{1});
+auto ranking_calculator::set_timer() -> void {
+	//timer::timer::create([]() { ranking_calculator::run_thread(); },
+	//	timer::id{timer_type::rank_timer),
+	//	nullptr, utilities::time::get_distance_to_next_occurring_second_of_hour(0), hours{1});
 	// Calculate ranking every 1 hour, starting on the hour
 }
 
-auto RankingCalculator::runThread() -> void {
+auto ranking_calculator::run_thread() -> void {
 	// Ranking on larger servers may take a long time and we don't want that to be blocking
 	// The thread_t object will be deleted immediately, but the thread will continue to run
-	auto p = make_owned_ptr<thread_t>([] { RankingCalculator::all(); });
+	auto p = make_owned_ptr<thread>([] { ranking_calculator::all(); });
 	p->detach();
 }
 
-auto RankingCalculator::all() -> void {
+auto ranking_calculator::all() -> void {
 	// There's no guarantee what effect running two at once will have, but it's likely to be bad
-	owned_lock_t<mutex_t> l{RankingsMutex, std::try_to_lock};
+	owned_lock<mutex> l{g_rankings_mutex, std::try_to_lock};
 	if (!l) {
 		return;
 	}
 
-	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Calculating rankings... " << std::endl;
-	StopWatch sw;
+	std::cout << std::setw(initializing::output_width) << std::left << "Calculating rankings... " << std::endl;
+	stop_watch sw;
 
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
-	RankPlayer out;
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
+	rank_player out;
 	soci::statement statement = (sql.prepare
 		<< "SELECT c.character_id, c.exp, c.fame, c.job, c.level, c.world_id, c.time_level, c.fame_cpos, c.world_cpos, c.job_cpos, c.overall_cpos "
-		<< "FROM " << db.makeTable("characters") << " c "
-		<< "INNER JOIN " << db.makeTable("accounts") << " u ON u.account_id = c.account_id "
+		<< "FROM " << db.make_table("characters") << " c "
+		<< "INNER JOIN " << db.make_table("accounts") << " u ON u.account_id = c.account_id "
 		<< "WHERE "
 		<< "	(u.banned = 0 OR u.ban_expire >= NOW()) "
 		<< "	AND u.gm_level IS NULL "
 		<< "	AND u.admin IS NULL "
 		<< "	AND ("
 		<< "		("
-		<< "			c.job IN (" << StringUtilities::delimit(",", Jobs::Beginners::Jobs) << ")"
+		<< "			c.job IN (" << utilities::str::delimit(",", jobs::beginners::jobs) << ")"
 		<< "			AND c.level > 9"
 		<< "		)"
-		<< "		OR c.job NOT IN (" << StringUtilities::delimit(",", Jobs::Beginners::Jobs) << ")"
+		<< "		OR c.job NOT IN (" << utilities::str::delimit(",", jobs::beginners::jobs) << ")"
 		<< "	) "
 		<< "ORDER BY c.overall_cpos DESC",
-		soci::into(out.charId),
-		soci::into(out.expStat),
-		soci::into(out.fameStat),
-		soci::into(out.jobStat),
-		soci::into(out.levelStat),
-		soci::into(out.worldId),
-		soci::into(out.levelTime),
-		soci::into(out.fame.newRank),
-		soci::into(out.world.newRank),
-		soci::into(out.job.newRank),
-		soci::into(out.overall.newRank));
+		soci::into(out.char_id),
+		soci::into(out.exp_stat),
+		soci::into(out.fame_stat),
+		soci::into(out.job_stat),
+		soci::into(out.level_stat),
+		soci::into(out.world_id),
+		soci::into(out.level_time),
+		soci::into(out.fame.new_rank),
+		soci::into(out.world.new_rank),
+		soci::into(out.job.new_rank),
+		soci::into(out.overall.new_rank));
 
-	vector_t<RankPlayer> v;
+	vector<rank_player> v;
 	statement.execute();
 
 	while (statement.fetch()) {
-		out.jobLevelMax = GameLogicUtilities::getMaxLevel(out.jobStat);
+		out.job_level_max = game_logic_utilities::get_max_level(out.job_stat);
 		v.push_back(out);
 	}
 
@@ -110,231 +110,231 @@ auto RankingCalculator::all() -> void {
 		job(v);
 		fame(v);
 
-		player_id_t charId = 0;
-		opt_int32_t oFame = 0;
-		int32_t cFame = 0;
-		opt_int32_t oWorld = 0;
-		int32_t cWorld = 0;
-		opt_int32_t oJob = 0;
-		int32_t cJob = 0;
-		opt_int32_t oOverall = 0;
-		int32_t cOverall = 0;
+		game_player_id char_id = 0;
+		opt_int32_t o_fame = 0;
+		int32_t c_fame = 0;
+		opt_int32_t o_world = 0;
+		int32_t c_world = 0;
+		opt_int32_t o_job = 0;
+		int32_t c_job = 0;
+		opt_int32_t o_overall = 0;
+		int32_t c_overall = 0;
 
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << db.makeTable("characters") << " "
+			<< "UPDATE " << db.make_table("characters") << " "
 			<< "SET "
-			<< "	fame_opos = :ofame,"
-			<< "	fame_cpos = :cfame,"
-			<< "	world_opos = :oworld,"
-			<< "	world_cpos = :cworld,"
-			<< "	job_opos = :ojob,"
-			<< "	job_cpos = :cjob,"
-			<< "	overall_opos = :ooverall,"
-			<< "	overall_cpos = :coverall "
+			<< "	fame_opos = :o_fame,"
+			<< "	fame_cpos = :c_fame,"
+			<< "	world_opos = :o_world,"
+			<< "	world_cpos = :c_world,"
+			<< "	job_opos = :o_job,"
+			<< "	job_cpos = :c_job,"
+			<< "	overall_opos = :o_overall,"
+			<< "	overall_cpos = :c_overall "
 			<< "	WHERE character_id = :char",
-			soci::use(charId, "char"),
-			soci::use(oFame, "ofame"),
-			soci::use(cFame, "cfame"),
-			soci::use(oWorld, "oworld"),
-			soci::use(cWorld, "cworld"),
-			soci::use(oJob, "ojob"),
-			soci::use(cJob, "cjob"),
-			soci::use(oOverall, "ooverall"),
-			soci::use(cOverall, "coverall"));
+			soci::use(char_id, "char"),
+			soci::use(o_fame, "o_fame"),
+			soci::use(c_fame, "c_fame"),
+			soci::use(o_world, "o_world"),
+			soci::use(c_world, "c_world"),
+			soci::use(o_job, "o_job"),
+			soci::use(c_job, "c_job"),
+			soci::use(o_overall, "o_overall"),
+			soci::use(c_overall, "c_overall"));
 
 		for (const auto &p : v) {
-			charId = p.charId;
-			oFame = p.fame.oldRank;
-			cFame = p.fame.newRank.get();
-			oWorld = p.world.oldRank;
-			cWorld = p.world.newRank.get();
-			oJob = p.job.oldRank;
-			cJob = p.job.newRank.get();
-			oOverall = p.overall.oldRank;
-			cOverall = p.overall.newRank.get();
+			char_id = p.char_id;
+			o_fame = p.fame.old_rank;
+			c_fame = p.fame.new_rank.get();
+			o_world = p.world.old_rank;
+			c_world = p.world.new_rank.get();
+			o_job = p.job.old_rank;
+			c_job = p.job.new_rank.get();
+			o_overall = p.overall.old_rank;
+			c_overall = p.overall.new_rank.get();
 			st.execute(true);
 		}
 	}
 
-	LoginServer::getInstance().log(LogType::Info, [&](out_stream_t &str) {
-		str << "Calculating rankings completed in " << std::setprecision(3) << sw.elapsed<milliseconds_t>() / 1000.f << " seconds!";
+	login_server::get_instance().log(log_type::info, [&](out_stream &str) {
+		str << "Calculating rankings completed in " << std::setprecision(3) << sw.elapsed<milliseconds>() / 1000.f << " seconds!";
 	});
 
 	l.unlock();
 }
 
-auto RankingCalculator::increaseRank(player_level_t level, player_level_t maxLevel, player_level_t lastLevel, experience_t exp, experience_t lastExp, job_id_t job) -> bool {
-	if (level == maxLevel) {
+auto ranking_calculator::increase_rank(game_player_level level, game_player_level max_level, game_player_level last_level, game_experience exp, game_experience last_exp, game_job_id job) -> bool {
+	if (level == max_level) {
 		return true;
 	}
-	else if (lastLevel != level) {
+	else if (last_level != level) {
 		return true;
 	}
-	else if (lastExp != exp) {
+	else if (last_exp != exp) {
 		return true;
 	}
 	// Level time only matters for level 200/120 Cygnus (taken care of in the first case)
 	return false;
 }
 
-auto RankingCalculator::baseCompare(const RankPlayer &t1, const RankPlayer &t2) -> bool {
-	if (t1.levelStat == t2.levelStat) {
-		if (t1.expStat == t2.expStat) {
-			return t1.levelTime < t2.levelTime;
+auto ranking_calculator::base_compare(const rank_player &t1, const rank_player &t2) -> bool {
+	if (t1.level_stat == t2.level_stat) {
+		if (t1.exp_stat == t2.exp_stat) {
+			return t1.level_time < t2.level_time;
 		}
-		return t1.expStat > t2.expStat;
+		return t1.exp_stat > t2.exp_stat;
 	}
-	return t1.levelStat > t2.levelStat;
+	return t1.level_stat > t2.level_stat;
 }
 
-auto RankingCalculator::updateRank(Rank &r, int32_t newRank) -> void {
-	r.oldRank = r.newRank;
-	r.newRank = newRank;
+auto ranking_calculator::update_rank(rank &r, int32_t new_rank) -> void {
+	r.old_rank = r.new_rank;
+	r.new_rank = new_rank;
 }
 
-auto RankingCalculator::overall(vector_t<RankPlayer> &v) -> void {
-	std::sort(std::begin(v), std::end(v), &baseCompare);
+auto ranking_calculator::overall(vector<rank_player> &v) -> void {
+	std::sort(std::begin(v), std::end(v), &base_compare);
 
-	player_level_t lastLevel = 0;
-	time_t lastTime = 0;
-	experience_t lastExp = 0;
+	game_player_level last_level = 0;
+	time_t last_time = 0;
+	game_experience last_exp = 0;
 	bool first = true;
 	size_t rank = 1;
 
 	for (size_t i = 0; i < v.size(); ++i) {
-		RankPlayer &p = v[i];
+		rank_player &p = v[i];
 
-		if (!first && increaseRank(p.levelStat, p.jobLevelMax, lastLevel, p.expStat, lastExp, p.jobStat)) {
+		if (!first && increase_rank(p.level_stat, p.job_level_max, last_level, p.exp_stat, last_exp, p.job_stat)) {
 			++rank;
 		}
 
-		updateRank(p.overall, rank);
+		update_rank(p.overall, rank);
 
 		first = false;
-		lastLevel = p.levelStat;
-		lastExp = p.expStat;
-		lastTime = p.levelTime;
+		last_level = p.level_stat;
+		last_exp = p.exp_stat;
+		last_time = p.level_time;
 	}
 }
 
-auto RankingCalculator::world(vector_t<RankPlayer> &v) -> void {
-	std::sort(std::begin(v), std::end(v), [](const RankPlayer &t1, const RankPlayer &t2) -> bool {
-		if (t1.worldId == t2.worldId) {
-			return baseCompare(t1, t2);
+auto ranking_calculator::world(vector<rank_player> &v) -> void {
+	std::sort(std::begin(v), std::end(v), [](const rank_player &t1, const rank_player &t2) -> bool {
+		if (t1.world_id == t2.world_id) {
+			return base_compare(t1, t2);
 		}
-		return t1.worldId > t2.worldId;
+		return t1.world_id > t2.world_id;
 	});
 
-	LoginServer::getInstance().getWorlds().runFunction([&v](World *world) -> bool {
-		optional_t<world_id_t> worldId = world->getId();
-		if (!worldId.is_initialized()) {
-			throw CodePathInvalidException{"!worldId.is_initialized()"};
+	login_server::get_instance().get_worlds().run_function([&v](vana::login_server::world *world_value) -> bool {
+		optional<game_world_id> world_id = world_value->get_id();
+		if (!world_id.is_initialized()) {
+			throw codepath_invalid_exception{"!world_id.is_initialized()"};
 		}
 
-		player_level_t lastLevel = 0;
-		time_t lastTime = 0;
-		experience_t lastExp = 0;
+		game_player_level last_level = 0;
+		time_t last_time = 0;
+		game_experience last_exp = 0;
 		bool first = true;
 		size_t rank = 1;
-		world_id_t cached = worldId.get();
+		game_world_id cached = world_id.get();
 
 		for (size_t i = 0; i < v.size(); ++i) {
-			RankPlayer &p = v[i];
-			if (p.worldId != cached) {
+			rank_player &p = v[i];
+			if (p.world_id != cached) {
 				continue;
 			}
 
-			if (!first && increaseRank(p.levelStat, p.jobLevelMax, lastLevel, p.expStat, lastExp, p.jobStat)) {
+			if (!first && increase_rank(p.level_stat, p.job_level_max, last_level, p.exp_stat, last_exp, p.job_stat)) {
 				++rank;
 			}
 
-			updateRank(p.world, rank);
+			update_rank(p.world, rank);
 
 			first = false;
-			lastLevel = p.levelStat;
-			lastExp = p.expStat;
-			lastTime = p.levelTime;
+			last_level = p.level_stat;
+			last_exp = p.exp_stat;
+			last_time = p.level_time;
 		}
 		return false;
 	});
 }
 
-auto RankingCalculator::job(vector_t<RankPlayer> &v) -> void {
-	std::sort(std::begin(v), std::end(v), [](const RankPlayer &t1, const RankPlayer &t2) -> bool {
-		int8_t job1 = GameLogicUtilities::getJobTrack(t1.jobStat);
-		int8_t job2 = GameLogicUtilities::getJobTrack(t2.jobStat);
+auto ranking_calculator::job(vector<rank_player> &v) -> void {
+	std::sort(std::begin(v), std::end(v), [](const rank_player &t1, const rank_player &t2) -> bool {
+		int8_t job1 = game_logic_utilities::get_job_track(t1.job_stat);
+		int8_t job2 = game_logic_utilities::get_job_track(t2.job_stat);
 
 		if (job1 == job2) {
-			return baseCompare(t1, t2);
+			return base_compare(t1, t2);
 		}
 		return job1 > job2;
 	});
 
 	// We will iterate through each job track
-	for (const auto &jobTrack : Jobs::JobTracks::JobTracks) {
-		player_level_t lastLevel = 0;
-		time_t lastTime = 0;
-		experience_t lastExp = 0;
+	for (const auto &job_track : jobs::job_tracks::job_tracks) {
+		game_player_level last_level = 0;
+		time_t last_time = 0;
+		game_experience last_exp = 0;
 		bool first = true;
 		size_t rank = 1;
 
 		for (size_t i = 0; i < v.size(); ++i) {
-			RankPlayer &p = v[i];
+			rank_player &p = v[i];
 			bool valid = false;
-			bool isTrack = GameLogicUtilities::getJobTrack(p.jobStat) == jobTrack;
+			bool is_track = game_logic_utilities::get_job_track(p.job_stat) == job_track;
 
 			// These exceptions have beginner jobs that are not in their tracks ID-wise
 			// Which means we also need to account for them within the tracks they aren't supposed to be in as well
-			switch (jobTrack) {
-				case Jobs::JobTracks::Legend: valid = (p.jobStat != Jobs::JobIds::Evan && p.jobStat != Jobs::JobIds::Mercedes && isTrack); break;
-				case Jobs::JobTracks::Evan: valid = (p.jobStat == Jobs::JobIds::Evan || isTrack); break;
-				case Jobs::JobTracks::Mercedes: valid = (p.jobStat == Jobs::JobIds::Mercedes || isTrack); break;
-				case Jobs::JobTracks::Citizen: valid = (p.jobStat != Jobs::JobIds::DemonSlayer && isTrack); break;
-				case Jobs::JobTracks::DemonSlayer: valid = (p.jobStat == Jobs::JobIds::DemonSlayer || isTrack); break;
-				default: valid = isTrack;
+			switch (job_track) {
+				case jobs::job_tracks::legend: valid = (p.job_stat != jobs::job_ids::evan && p.job_stat != jobs::job_ids::mercedes && is_track); break;
+				case jobs::job_tracks::evan: valid = (p.job_stat == jobs::job_ids::evan || is_track); break;
+				case jobs::job_tracks::mercedes: valid = (p.job_stat == jobs::job_ids::mercedes || is_track); break;
+				case jobs::job_tracks::citizen: valid = (p.job_stat != jobs::job_ids::demon_slayer && is_track); break;
+				case jobs::job_tracks::demon_slayer: valid = (p.job_stat == jobs::job_ids::demon_slayer || is_track); break;
+				default: valid = is_track;
 			}
 
 			if (!valid) {
 				continue;
 			}
 
-			if (!first && increaseRank(p.levelStat, p.jobLevelMax, lastLevel, p.expStat, lastExp, p.jobStat)) {
+			if (!first && increase_rank(p.level_stat, p.job_level_max, last_level, p.exp_stat, last_exp, p.job_stat)) {
 				++rank;
 			}
 
-			updateRank(p.job, rank);
+			update_rank(p.job, rank);
 
 			first = false;
-			lastLevel = p.levelStat;
-			lastExp = p.expStat;
-			lastTime = p.levelTime;
+			last_level = p.level_stat;
+			last_exp = p.exp_stat;
+			last_time = p.level_time;
 		}
 	}
 }
 
-auto RankingCalculator::fame(vector_t<RankPlayer> &v) -> void {
-	std::sort(std::begin(v), std::end(v), [](const RankPlayer &t1, const RankPlayer &t2) -> bool {
-		return t1.fameStat > t2.fameStat;
+auto ranking_calculator::fame(vector<rank_player> &v) -> void {
+	std::sort(std::begin(v), std::end(v), [](const rank_player &t1, const rank_player &t2) -> bool {
+		return t1.fame_stat > t2.fame_stat;
 	});
 
-	fame_t lastFame = 0;
+	game_fame last_fame = 0;
 	bool first = true;
 	size_t rank = 1;
 
 	for (size_t i = 0; i < v.size(); ++i) {
-		RankPlayer &p = v[i];
-		if (p.fameStat <= 0) {
+		rank_player &p = v[i];
+		if (p.fame_stat <= 0) {
 			continue;
 		}
 
-		if (!first && lastFame != p.fameStat) {
+		if (!first && last_fame != p.fame_stat) {
 			++rank;
 		}
 
-		updateRank(p.fame, rank);
+		update_rank(p.fame, rank);
 
 		first = false;
-		lastFame = p.fameStat;
+		last_fame = p.fame_stat;
 	}
 }
 

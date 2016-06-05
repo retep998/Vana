@@ -29,65 +29,65 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-namespace Vana {
-	class PacketBuilder;
+namespace vana {
+	class packet_builder;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		struct ActiveQuest {
-			auto getQuestData() const -> string_t {
+		struct active_quest {
+			auto get_quest_data() const -> string {
 				if (kills.size() == 0) {
 					return data;
 				}
 
-				out_stream_t info;
+				out_stream info;
 				for (const auto &kvp : kills) {
 					info << std::setw(3) << std::setfill('0') << kvp.second;
 				}
 				return info.str();
 			}
 
-			quest_id_t id = 0;
+			game_quest_id id = 0;
 			bool done = false;
-			string_t data;
-			ord_map_t<mob_id_t, uint16_t> kills;
+			string data;
+			ord_map<game_mob_id, uint16_t> kills;
 		};
 
 		// TODO FIXME accuracy
 		// Potentially refactor quest drop display to the MAP instead of the drops, because that's how global does it
-		enum class AllowQuestItemResult {
-			Allow,
-			Disallow,
+		enum class allow_quest_item_result {
+			allow,
+			disallow,
 		};
 
-		class PlayerQuests {
-			NONCOPYABLE(PlayerQuests);
-			NO_DEFAULT_CONSTRUCTOR(PlayerQuests);
+		class player_quests {
+			NONCOPYABLE(player_quests);
+			NO_DEFAULT_CONSTRUCTOR(player_quests);
 		public:
-			PlayerQuests(Player *player);
+			player_quests(player *player);
 
 			auto load() -> void;
 			auto save() -> void;
-			auto connectPacket(PacketBuilder &builder) -> void;
+			auto connect_packet(packet_builder &builder) -> void;
 
-			auto itemDropAllowed(item_id_t itemId, quest_id_t questId) -> AllowQuestItemResult;
-			auto addQuest(quest_id_t questId, npc_id_t npcId) -> void;
-			auto updateQuestMob(mob_id_t mobId) -> void;
-			auto checkDone(ActiveQuest &quest) -> void;
-			auto finishQuest(quest_id_t questId, npc_id_t npcId) -> void;
-			auto removeQuest(quest_id_t questId) -> void;
-			auto isQuestActive(quest_id_t questId) -> bool;
-			auto isQuestComplete(quest_id_t questId) -> bool;
-			auto setQuestData(quest_id_t id, const string_t &data) -> void;
-			auto getQuestData(quest_id_t id) -> string_t;
+			auto item_drop_allowed(game_item_id item_id, game_quest_id quest_id) -> allow_quest_item_result;
+			auto add_quest(game_quest_id quest_id, game_npc_id npc_id) -> void;
+			auto update_quest_mob(game_mob_id mob_id) -> void;
+			auto check_done(active_quest &quest) -> void;
+			auto finish_quest(game_quest_id quest_id, game_npc_id npc_id) -> void;
+			auto remove_quest(game_quest_id quest_id) -> void;
+			auto is_quest_active(game_quest_id quest_id) -> bool;
+			auto is_quest_complete(game_quest_id quest_id) -> bool;
+			auto set_quest_data(game_quest_id id, const string &data) -> void;
+			auto get_quest_data(game_quest_id id) -> string;
 		private:
-			auto giveRewards(quest_id_t questId, bool start) -> Result;
+			auto give_rewards(game_quest_id quest_id, bool start) -> result;
 
-			Player *m_player = nullptr;
-			hash_map_t<mob_id_t, vector_t<quest_id_t>> m_mobToQuestMapping;
-			ord_map_t<quest_id_t, ActiveQuest> m_quests;
-			ord_map_t<quest_id_t, FileTime> m_completed;
+			player *m_player = nullptr;
+			hash_map<game_mob_id, vector<game_quest_id>> m_mob_to_quest_mapping;
+			ord_map<game_quest_id, active_quest> m_quests;
+			ord_map<game_quest_id, file_time> m_completed;
 		};
 	}
 }

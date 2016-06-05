@@ -19,12 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ChannelServer/ChatHandlerFunctions.hpp"
 
-namespace Vana {
-	namespace ChannelServer {
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class player;
 
-		namespace CustomFunctions {
-			auto initialize(case_insensitive_hash_map_t<ChatCommand, chat_t> &commandList) -> void;
+		namespace custom_functions {
+			auto initialize(case_insensitive_hash_map<chat_command, game_chat> &command_list) -> void;
 		}
 	}
 }

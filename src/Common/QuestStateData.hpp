@@ -21,9 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/QuestRewardsData.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct QuestStateData {
-		QuestRewardsData rewards;
-		QuestRequestsData requests;
+namespace vana {
+	struct quest_state_data {
+		quest_rewards_data rewards;
+		quest_requests_data requests;
 	};
 }

@@ -19,12 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	enum class MobAttackType {
-		Normal,
-		SingleTarget,
-		Projectile,
-		AreaEffect,
-		AreaEffectPlus,
+namespace vana {
+	enum class mob_attack_type {
+		normal,
+		single_target,
+		projectile,
+		area_effect,
+		area_effect_plus,
 	};
 }

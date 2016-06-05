@@ -31,62 +31,62 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <queue>
 #include <string>
 
-namespace Vana {
-	class ConnectionManager;
-	class PacketBuilder;
-	class PacketHandler;
-	class PacketReader;
-	class Session;
+namespace vana {
+	class connection_manager;
+	class packet_builder;
+	class packet_handler;
+	class packet_reader;
+	class session;
 
-	using Handler = ref_ptr_t<PacketHandler>;
-	using HandlerCreator = function_t<Handler()>;
+	using handler = ref_ptr<packet_handler>;
+	using handler_creator = function<handler()>;
 
-	class Session : public enable_shared<Session>, public TimerContainerHolder {
+	class session : public enable_shared<session>, public timer_container_holder {
 	public:
-		Session(
+		session(
 			asio::io_service &service,
-			ConnectionManager &manager,
-			Handler handler);
+			connection_manager &manager,
+			handler handler);
 
 		auto disconnect() -> void;
-		auto send(const PacketBuilder &builder, bool encrypt = true) -> void;
-		auto getIp() const -> const Ip &;
-		auto getLatency() const -> milliseconds_t;
-		auto getType() const -> ConnectionType;
-		auto setType(ConnectionType type) -> void;
+		auto send(const packet_builder &builder, bool encrypt = true) -> void;
+		auto get_ip() const -> const ip &;
+		auto get_latency() const -> milliseconds;
+		auto get_type() const -> connection_type;
+		auto set_type(connection_type type) -> void;
 	private:
-		static const size_t HeaderLen = 4;
-		static const size_t MaxBufferLen = 65535;
+		static const size_t header_len = 4;
+		static const size_t max_buffer_len = 65535;
 
-		auto syncRead(size_t minimumBytes) -> pair_t<asio::error_code, PacketReader>;
-		auto startReadHeader() -> void;
-		auto handleWrite(const asio::error_code &error, size_t bytesTransferred) -> void;
-		auto handleReadHeader(const asio::error_code &error, size_t bytesTransferred) -> void;
-		auto handleReadBody(const asio::error_code &error, size_t bytesTransferred) -> void;
-		auto getSocket() -> asio::ip::tcp::socket &;
-		auto getCodec() -> PacketTransformer &;
-		auto getBuffer() -> MiscUtilities::shared_array<unsigned char> &;
-		auto start(const PingConfig &ping, ref_ptr_t<PacketTransformer> transformer) -> void;
+		auto sync_read(size_t minimum_bytes) -> pair<asio::error_code, packet_reader>;
+		auto start_read_header() -> void;
+		auto handle_write(const asio::error_code &error, size_t bytes_transferred) -> void;
+		auto handle_read_header(const asio::error_code &error, size_t bytes_transferred) -> void;
+		auto handle_read_body(const asio::error_code &error, size_t bytes_transferred) -> void;
+		auto get_socket() -> asio::ip::tcp::socket &;
+		auto get_codec() -> packet_transformer &;
+		auto get_buffer() -> utilities::misc::shared_array<unsigned char> &;
+		auto start(const ping_config &ping, ref_ptr<packet_transformer> transformer) -> void;
 		auto send(const unsigned char *buf, int32_t len, bool encrypt = true) -> void;
 		auto ping() -> void;
-		auto baseHandleRequest(PacketReader &reader) -> void;
+		auto base_handle_request(packet_reader &reader) -> void;
 
-		friend class ConnectionManager;
-		friend class ConnectionListener;
+		friend class connection_manager;
+		friend class connection_listener;
 
-		bool m_isConnected = false;
-		ConnectionType m_type = ConnectionType::Unknown;
-		int8_t m_pingCount = 0;
-		int32_t m_maxPingCount = 0;
-		milliseconds_t m_latency = milliseconds_t{0};
-		time_point_t m_lastPing;
-		Handler m_handler;
-		Ip m_ip;
-		ConnectionManager &m_manager;
+		bool m_is_connected = false;
+		connection_type m_type = connection_type::unknown;
+		int8_t m_ping_count = 0;
+		int32_t m_max_ping_count = 0;
+		milliseconds m_latency = milliseconds{0};
+		time_point m_last_ping;
+		handler m_handler;
+		ip m_ip;
+		connection_manager &m_manager;
 		asio::ip::tcp::socket m_socket;
-		MiscUtilities::shared_array<unsigned char> m_buffer;
-		MiscUtilities::shared_array<unsigned char> m_sendPacket;
-		ref_ptr_t<PacketTransformer> m_codec;
-		mutex_t m_sendMutex;
+		utilities::misc::shared_array<unsigned char> m_buffer;
+		utilities::misc::shared_array<unsigned char> m_send_packet;
+		ref_ptr<packet_transformer> m_codec;
+		mutex m_send_mutex;
 	};
 }

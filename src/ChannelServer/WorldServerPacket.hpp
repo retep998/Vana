@@ -22,17 +22,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-	class PacketBuilder;
+namespace vana {
+	class packet_builder;
 
-	namespace ChannelServer {
-		class Player;
-
-		namespace Packets {
-			namespace Interserver {
-				PACKET(rankingCalculation);
-				PACKET(reloadMcdb, const string_t &type);
-				PACKET(rehashConfig);
+	namespace channel_server {
+		namespace packets {
+			namespace interserver {
+				PACKET(ranking_calculation);
+				PACKET(reload_mcdb, const string &type);
+				PACKET(rehash_config);
 			}
 		}
 	}

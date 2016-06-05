@@ -19,22 +19,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class PacketReader;
+namespace vana {
+	class packet_reader;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		namespace NpcHandler {
-			auto handleNpc(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleNpcIn(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleNpcAnimation(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleQuestNpc(ref_ptr_t<Player> player, npc_id_t npcId, bool start, quest_id_t questId = 0) -> void;
-			auto useShop(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto useStorage(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto showShop(ref_ptr_t<Player> player, shop_id_t shopId) -> Result;
-			auto showStorage(ref_ptr_t<Player> player, npc_id_t npcId) -> Result;
-			auto showGuildRank(ref_ptr_t<Player> player, npc_id_t npcId) -> Result;
+		namespace npc_handler {
+			auto handle_npc(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_npc_in(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_npc_animation(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_quest_npc(ref_ptr<player> player, game_npc_id npc_id, bool start, game_quest_id quest_id = 0) -> void;
+			auto use_shop(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto use_storage(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto show_shop(ref_ptr<player> player, game_shop_id shop_id) -> result;
+			auto show_storage(ref_ptr<player> player, game_npc_id npc_id) -> result;
+			auto show_guild_rank(ref_ptr<player> player, game_npc_id npc_id) -> result;
 		}
 	}
 }

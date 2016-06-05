@@ -21,16 +21,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <unordered_map>
 
-namespace Vana {
-	class NpcDataProvider {
+namespace vana {
+	class npc_data_provider {
 	public:
-		auto loadData() -> void;
+		auto load_data() -> void;
 
-		auto getStorageCost(npc_id_t npc) const -> mesos_t;
-		auto isMapleTv(npc_id_t npc) const -> bool;
-		auto isGuildRank(npc_id_t npc) const -> bool;
-		auto isValidNpcId(npc_id_t npc) const -> bool;
+		auto get_storage_cost(game_npc_id npc) const -> game_mesos;
+		auto is_maple_tv(game_npc_id npc) const -> bool;
+		auto is_guild_rank(game_npc_id npc) const -> bool;
+		auto is_valid_npc_id(game_npc_id npc) const -> bool;
 	private:
-		hash_map_t<npc_id_t, NpcInfo> m_data;
+		hash_map<game_npc_id, npc_info> m_data;
 	};
 }

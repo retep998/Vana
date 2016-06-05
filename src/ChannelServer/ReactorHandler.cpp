@@ -36,97 +36,97 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <sstream>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto ReactorHandler::hitReactor(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	map_object_t id = Map::makeReactorId(reader.get<map_object_t>());
+auto reactor_handler::hit_reactor(ref_ptr<player> player, packet_reader &reader) -> void {
+	game_map_object id = map::make_reactor_id(reader.get<game_map_object>());
 
-	Map *map = player->getMap();
-	Reactor *reactor = map->getReactor(id);
+	map *map = player->get_map();
+	reactor *reactor = map->get_reactor(id);
 
-	if (reactor != nullptr && reactor->isAlive()) {
-		auto &data = ChannelServer::getInstance().getReactorDataProvider().getReactorData(reactor->getReactorId(), true);
-		if (reactor->getState() < data.maxStates - 1) {
-			const auto &reactorEvent = data.states.at(reactor->getState())[0]; // There's only one way to hit something
-			if (reactorEvent.nextState < data.maxStates - 1) {
-				if (reactorEvent.type == 100) {
+	if (reactor != nullptr && reactor->is_alive()) {
+		auto &data = channel_server::get_instance().get_reactor_data_provider().get_reactor_data(reactor->get_reactor_id(), true);
+		if (reactor->get_state() < data.max_states - 1) {
+			const auto &reactor_event = data.states.at(reactor->get_state())[0]; // There's only one way to hit something
+			if (reactor_event.next_state < data.max_states - 1) {
+				if (reactor_event.type == 100) {
 					return;
 				}
-				map->send(Packets::triggerReactor(reactor));
-				reactor->setState(reactorEvent.nextState, true);
+				map->send(packets::trigger_reactor(reactor));
+				reactor->set_state(reactor_event.next_state, true);
 				return;
 			}
 			else {
-				auto &channel = ChannelServer::getInstance();
-				string_t filename = channel.getScriptDataProvider().getScript(&channel, reactor->getReactorId(), ScriptTypes::Reactor);
+				auto &channel = channel_server::get_instance();
+				string filename = channel.get_script_data_provider().get_script(&channel, reactor->get_reactor_id(), script_types::reactor);
 
-				if (FileUtilities::fileExists(filename)) {
-					LuaReactor{filename, player->getId(), id, reactor->getMapId()};
+				if (utilities::file::exists(filename)) {
+					lua_reactor{filename, player->get_id(), id, reactor->get_map_id()};
 				}
 				else {
 					// Default action of dropping an item
 					reactor->drop(player);
 				}
 
-				reactor->setState(reactorEvent.nextState, false);
+				reactor->set_state(reactor_event.next_state, false);
 				reactor->kill();
-				map->removeReactor(id);
-				map->send(Packets::destroyReactor(reactor));
+				map->remove_reactor(id);
+				map->send(packets::destroy_reactor(reactor));
 			}
 		}
 	}
 }
 
-auto ReactorHandler::touchReactor(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	size_t id = Map::makeReactorId(reader.get<map_object_t>());
-	bool isTouching = reader.get<bool>();
+auto reactor_handler::touch_reactor(ref_ptr<player> player, packet_reader &reader) -> void {
+	size_t id = map::make_reactor_id(reader.get<game_map_object>());
+	bool is_touching = reader.get<bool>();
 
-	Map *map = player->getMap();
-	Reactor *reactor = map->getReactor(id);
+	map *map = player->get_map();
+	reactor *reactor = map->get_reactor(id);
 
-	if (reactor != nullptr && reactor->isAlive()) {
-		int8_t newState = reactor->getState() + (isTouching ? 1 : -1);
-		map->send(Packets::triggerReactor(reactor));
-		reactor->setState(newState, true);
+	if (reactor != nullptr && reactor->is_alive()) {
+		int8_t new_state = reactor->get_state() + (is_touching ? 1 : -1);
+		map->send(packets::trigger_reactor(reactor));
+		reactor->set_state(new_state, true);
 	}
 }
 
-struct Reaction {
-	auto operator()(const time_point_t &now) -> void {
-		reactor->setState(state, true);
-		drop->removeDrop();
-		auto &channel = ChannelServer::getInstance();
-		string_t filename = channel.getScriptDataProvider().getScript(&channel, reactor->getReactorId(), ScriptTypes::Reactor);
+struct reaction {
+	auto operator()(const time_point &now) -> void {
+		reactor->set_state(state, true);
+		drop->remove_drop();
+		auto &channel = channel_server::get_instance();
+		string filename = channel.get_script_data_provider().get_script(&channel, reactor->get_reactor_id(), script_types::reactor);
 		// TODO FIXME reactor
 		// Not sure if this reactor identifier dispatch is correct
-		LuaReactor{filename, player->getId(), static_cast<map_object_t>(Map::makeReactorId(reactor->getId())), reactor->getMapId()};
+		lua_reactor{filename, player->get_id(), static_cast<game_map_object>(map::make_reactor_id(reactor->get_id())), reactor->get_map_id()};
 	}
 
-	Reactor *reactor = nullptr;
-	Drop *drop = nullptr;
-	ref_ptr_t<Player> player = nullptr;
+	reactor *reactor = nullptr;
+	drop *drop = nullptr;
+	ref_ptr<player> player = nullptr;
 	int8_t state = 0;
 };
 
-auto ReactorHandler::checkDrop(ref_ptr_t<Player> player, Drop *drop) -> void {
-	Reactor *reactor;
-	Map *map = drop->getMap();
-	for (size_t i = 0; i < map->getNumReactors(); ++i) {
-		reactor = map->getReactor(i);
-		auto &data = ChannelServer::getInstance().getReactorDataProvider().getReactorData(reactor->getReactorId(), true);
-		if (reactor->getState() < data.maxStates - 1) {
-			for (const auto &reactorEvent : data.states.at(reactor->getState())) {
-				if (reactorEvent.type == 100 && drop->getObjectId() == reactorEvent.itemId) {
-					if (reactorEvent.dimensions.move(reactor->getPos()).contains(drop->getPos())) {
-						Reaction reaction;
+auto reactor_handler::check_drop(ref_ptr<player> player, drop *drop) -> void {
+	reactor *reactor;
+	map *map = drop->get_map();
+	for (size_t i = 0; i < map->get_num_reactors(); ++i) {
+		reactor = map->get_reactor(i);
+		auto &data = channel_server::get_instance().get_reactor_data_provider().get_reactor_data(reactor->get_reactor_id(), true);
+		if (reactor->get_state() < data.max_states - 1) {
+			for (const auto &reactor_event : data.states.at(reactor->get_state())) {
+				if (reactor_event.type == 100 && drop->get_object_id() == reactor_event.item_id) {
+					if (reactor_event.dimensions.move(reactor->get_pos()).contains(drop->get_pos())) {
+						reaction reaction;
 						reaction.reactor = reactor;
 						reaction.drop = drop;
 						reaction.player = player;
-						reaction.state = reactorEvent.nextState;
+						reaction.state = reactor_event.next_state;
 
-						Vana::Timer::Id id{TimerType::ReactionTimer, drop->getId()};
-						Vana::Timer::Timer::create(reaction, id, nullptr, seconds_t{3});
+						vana::timer::id id{timer_type::reaction_timer, drop->get_id()};
+						vana::timer::timer::create(reaction, id, nullptr, seconds{3});
 					}
 					return;
 				}
@@ -135,9 +135,9 @@ auto ReactorHandler::checkDrop(ref_ptr_t<Player> player, Drop *drop) -> void {
 	}
 }
 
-auto ReactorHandler::checkLoot(Drop *drop) -> void {
-	Vana::Timer::Id id{TimerType::ReactionTimer, drop->getId()};
-	Vana::Timer::TimerThread::getInstance().getTimerContainer()->removeTimer(id);
+auto reactor_handler::check_loot(drop *drop) -> void {
+	vana::timer::id id{timer_type::reaction_timer, drop->get_id()};
+	vana::timer::timer_thread::get_instance().get_timer_container()->remove_timer(id);
 }
 
 }

@@ -22,14 +22,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/SplitPacketBuilder.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	namespace ChannelServer {
-		class Player;
-		struct BuffPacketValues;
+namespace vana {
+	namespace channel_server {
+		class player;
+		struct buff_packet_values;
 
-		namespace Packets {
-			SPLIT_PACKET(addBuff, player_id_t playerId, int32_t buffId, const seconds_t &time, const BuffPacketValues &buff, int16_t addedInfo);
-			SPLIT_PACKET(endBuff, player_id_t playerId, const BuffPacketValues &buff);
+		namespace packets {
+			SPLIT_PACKET(add_buff, game_player_id player_id, int32_t buff_id, const seconds &time, const buff_packet_values &buff, int16_t added_info);
+			SPLIT_PACKET(end_buff, game_player_id player_id, const buff_packet_values &buff);
 		}
 	}
 }

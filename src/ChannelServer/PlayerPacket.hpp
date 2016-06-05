@@ -22,45 +22,45 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	class PacketBuilder;
+namespace vana {
+	class packet_builder;
 
-	namespace ChannelServer {
-		class KeyMaps;
-		class Player;
-		class SkillMacros;
+	namespace channel_server {
+		class key_maps;
+		class player;
+		class skill_macros;
 
-		namespace Packets {
-			namespace Player {
-				namespace BlockMessages {
-					enum Messages : int8_t {
-						CannotGo = 0x01,
-						NoCashShop = 0x02,
-						MtsUnavailable = 0x03,
-						MtsUserLimit = 0x04,
-						LevelTooLow = 0x05
+		namespace packets {
+			namespace player {
+				namespace block_messages {
+					enum messages : int8_t {
+						cannot_go = 0x01,
+						no_cash_shop = 0x02,
+						mts_unavailable = 0x03,
+						mts_user_limit = 0x04,
+						level_too_low = 0x05
 					};
 				}
-				namespace NoticeTypes {
-					enum Types : int8_t {
-						Notice = 0x00,
-						Box = 0x01,
-						Red = 0x05,
-						Blue = 0x06
+				namespace notice_types {
+					enum types : int8_t {
+						notice = 0x00,
+						box = 0x01,
+						red = 0x05,
+						blue = 0x06
 					};
 				}
 
-				PACKET(connectData, ref_ptr_t<Vana::ChannelServer::Player> player);
-				PACKET(showKeys, KeyMaps *keymaps);
-				PACKET(showSkillMacros, SkillMacros *macros);
-				PACKET(updateStat, int32_t updateBits, int32_t value, bool itemResponse = false);
-				PACKET(changeChannel, const Ip &ip, port_t port);
-				PACKET(showMessage, const chat_t &msg, int8_t type);
-				PACKET(groupChat, const string_t &name, const chat_t &msg, int8_t type);
-				PACKET(instructionBubble, const chat_t &msg, coord_t width = -1, int16_t time = 5, bool isStatic = false, int32_t x = 0, int32_t y = 0);
-				PACKET(showHpBar, player_id_t playerId, int32_t hp, int32_t maxHp);
-				PACKET(sendBlockedMessage, int8_t type);
-				PACKET(sendYellowMessage, const chat_t &msg);
+				PACKET(connect_data, ref_ptr<vana::channel_server::player> player);
+				PACKET(show_keys, key_maps *keymaps);
+				PACKET(show_skill_macros, skill_macros *macros);
+				PACKET(update_stat, int32_t update_bits, int32_t value, bool item_response = false);
+				PACKET(change_channel, const ip &ip, connection_port port);
+				PACKET(show_message, const game_chat &msg, int8_t type);
+				PACKET(group_chat, const string &name, const game_chat &msg, int8_t type);
+				PACKET(instruction_bubble, const game_chat &msg, game_coord width = -1, int16_t time = 5, bool is_static = false, int32_t x = 0, int32_t y = 0);
+				PACKET(show_hp_bar, game_player_id player_id, int32_t hp, int32_t max_hp);
+				PACKET(send_blocked_message, int8_t type);
+				PACKET(send_yellow_message, const game_chat &msg);
 			}
 		}
 	}

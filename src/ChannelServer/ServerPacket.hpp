@@ -21,12 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	namespace ChannelServer {
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class player;
 
-		namespace Packets {
-			PACKET(showScrollingHeader, const string_t &msg);
+		namespace packets {
+			PACKET(show_scrolling_header, const string &msg);
 		}
 	}
 }

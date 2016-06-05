@@ -22,24 +22,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-	DEFAULT_EXCEPTION(ConfigException, std::runtime_error);
+namespace vana {
+	DEFAULT_EXCEPTION(config_exception, std::runtime_error);
 
-	class ConfigFile : public LuaEnvironment {
-		NONCOPYABLE(ConfigFile);
-		NO_DEFAULT_CONSTRUCTOR(ConfigFile);
+	class config_file : public lua_environment {
+		NONCOPYABLE(config_file);
+		NO_DEFAULT_CONSTRUCTOR(config_file);
 	public:
-		ConfigFile(const string_t &filename);
-		~ConfigFile();
-		auto static getSaltingConfig() -> owned_ptr_t<ConfigFile>;
-		auto static getWorldsConfig() -> owned_ptr_t<ConfigFile>;
-		auto static getLoginServerConfig() -> owned_ptr_t<ConfigFile>;
-		auto static getLoggerConfig() -> owned_ptr_t<ConfigFile>;
-		auto static getDatabaseConfig() -> owned_ptr_t<ConfigFile>;
-		auto static getConnectionPropertiesConfig() -> owned_ptr_t<ConfigFile>;
+		config_file(const string &filename);
+		~config_file();
+		auto static get_salting_config() -> owned_ptr<config_file>;
+		auto static get_worlds_config() -> owned_ptr<config_file>;
+		auto static get_login_config() -> owned_ptr<config_file>;
+		auto static get_logger_config() -> owned_ptr<config_file>;
+		auto static get_database_config() -> owned_ptr<config_file>;
+		auto static get_connection_properties_config() -> owned_ptr<config_file>;
 	protected:
-		auto handleError(const string_t &filename, const string_t &error) -> void override;
-		auto handleKeyNotFound(const string_t &filename, const string_t &key) -> void override;
-		auto handleFileNotFound(const string_t &filename) -> void override;
+		auto handle_error(const string &filename, const string &error) -> void override;
+		auto handle_key_not_found(const string &filename, const string &key) -> void override;
+		auto handle_file_not_found(const string &filename) -> void override;
 	};
 }

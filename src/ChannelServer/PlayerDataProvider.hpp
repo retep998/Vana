@@ -27,99 +27,99 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <unordered_map>
 
-namespace Vana {
-	class PacketBuilder;
-	class PacketReader;
+namespace vana {
+	class packet_builder;
+	class packet_reader;
 
-	namespace ChannelServer {
-		class Party;
-		class Player;
+	namespace channel_server {
+		class party;
+		class player;
 
-		struct ConnectingPlayer {
-			ConnectingPlayer() : connectIp{0} { }
+		struct connecting_player {
+			connecting_player() : connect_ip{0} { }
 
-			Ip connectIp;
-			time_point_t connectTime;
-			map_id_t mapId = -1;
-			string_t portal;
-			uint16_t packetSize;
-			MiscUtilities::shared_array<unsigned char> heldPacket;
+			ip connect_ip;
+			time_point connect_time;
+			game_map_id map_id = -1;
+			string portal;
+			uint16_t packet_size;
+			utilities::misc::shared_array<unsigned char> held_packet;
 		};
 
-		class PlayerDataProvider {
+		class player_data_provider {
 		public:
-			auto handleSync(sync_t type, PacketReader &reader) -> void;
+			auto handle_sync(protocol_sync type, packet_reader &reader) -> void;
 
 			// Online players
-			auto addPlayer(ref_ptr_t<Player> player) -> void;
-			auto removePlayer(ref_ptr_t<Player> player) -> void;
-			auto updatePlayerLevel(ref_ptr_t<Player> player) -> void;
-			auto updatePlayerMap(ref_ptr_t<Player> player) -> void;
-			auto updatePlayerJob(ref_ptr_t<Player> player) -> void;
-			auto getPlayer(player_id_t id) -> ref_ptr_t<Player>;
-			auto getPlayer(const string_t &name) -> ref_ptr_t<Player>;
-			auto run(function_t<void(ref_ptr_t<Player>)> func) -> void;
-			auto send(player_id_t playerId, const PacketBuilder &builder) -> void;
-			auto send(const vector_t<player_id_t> &playerIds, const PacketBuilder &builder) -> void;
-			auto send(const PacketBuilder &builder) -> void;
-			auto addFollower(ref_ptr_t<Player> follower, ref_ptr_t<Player> target) -> void;
-			auto stopFollowing(ref_ptr_t<Player> follower) -> void;
+			auto add_player(ref_ptr<player> player) -> void;
+			auto remove_player(ref_ptr<player> player) -> void;
+			auto update_player_level(ref_ptr<player> player) -> void;
+			auto update_player_map(ref_ptr<player> player) -> void;
+			auto update_player_job(ref_ptr<player> player) -> void;
+			auto get_player(game_player_id id) -> ref_ptr<player>;
+			auto get_player(const string &name) -> ref_ptr<player>;
+			auto run(function<void(ref_ptr<player>)> func) -> void;
+			auto send(game_player_id player_id, const packet_builder &builder) -> void;
+			auto send(const vector<game_player_id> &player_ids, const packet_builder &builder) -> void;
+			auto send(const packet_builder &builder) -> void;
+			auto add_follower(ref_ptr<player> follower, ref_ptr<player> target) -> void;
+			auto stop_following(ref_ptr<player> follower) -> void;
 			auto disconnect() -> void;
 
 			// Player data
-			auto getPlayerData(player_id_t id) const -> const PlayerData * const;
-			auto getPlayerDataByName(const string_t &name) const -> const PlayerData * const;
+			auto get_player_data(game_player_id id) const -> const player_data * const;
+			auto get_player_data_by_name(const string &name) const -> const player_data * const;
 
 			// Parties
-			auto getParty(party_id_t id) -> Party *;
+			auto get_party(game_party_id id) -> party *;
 
 			// Chat
-			auto handleGroupChat(int8_t chatType, player_id_t playerId, const vector_t<player_id_t> &receivers, const chat_t &chat) -> void;
-			auto handleGmChat(ref_ptr_t<Player> player, const chat_t &chat) -> void;
+			auto handle_group_chat(int8_t chat_type, game_player_id player_id, const vector<game_player_id> &receivers, const game_chat &chat) -> void;
+			auto handle_gm_chat(ref_ptr<player> player, const game_chat &chat) -> void;
 
 			// Connections
-			auto checkPlayer(player_id_t id, const Ip &ip, bool &hasPacket) const -> Result;
-			auto getPacket(player_id_t id) const -> PacketReader;
-			auto playerEstablished(player_id_t id) -> void;
+			auto check_player(game_player_id id, const ip &ip, bool &has_packet) const -> result;
+			auto get_packet(game_player_id id) const -> packet_reader;
+			auto player_established(game_player_id id) -> void;
 		private:
-			auto parseChannelConnectPacket(PacketReader &reader) -> void;
+			auto parse_channel_connect_packet(packet_reader &reader) -> void;
 
-			auto handlePlayerSync(PacketReader &reader) -> void;
-			auto handlePartySync(PacketReader &reader) -> void;
-			auto handleBuddySync(PacketReader &reader) -> void;
+			auto handle_player_sync(packet_reader &reader) -> void;
+			auto handle_party_sync(packet_reader &reader) -> void;
+			auto handle_buddy_sync(packet_reader &reader) -> void;
 
-			auto sendSync(const PacketBuilder &builder) const -> void;
-			auto addPlayerData(const PlayerData &data) -> void;
-			auto handleCharacterCreated(PacketReader &reader) -> void;
-			auto handleCharacterDeleted(PacketReader &reader) -> void;
-			auto handleChangeChannel(PacketReader &reader) -> void;
-			auto handleNewConnectable(PacketReader &reader) -> void;
-			auto handleDeleteConnectable(PacketReader &reader) -> void;
-			auto handleUpdatePlayer(PacketReader &reader) -> void;
+			auto send_sync(const packet_builder &builder) const -> void;
+			auto add_player_data(const player_data &data) -> void;
+			auto handle_character_created(packet_reader &reader) -> void;
+			auto handle_character_deleted(packet_reader &reader) -> void;
+			auto handle_change_channel(packet_reader &reader) -> void;
+			auto handle_new_connectable(packet_reader &reader) -> void;
+			auto handle_delete_connectable(packet_reader &reader) -> void;
+			auto handle_update_player(packet_reader &reader) -> void;
 
-			auto handleCreateParty(party_id_t id, player_id_t leaderId) -> void;
-			auto handleDisbandParty(party_id_t id) -> void;
-			auto handlePartyTransfer(party_id_t id, player_id_t leaderId) -> void;
-			auto handlePartyRemove(party_id_t id, player_id_t playerId, bool kicked) -> void;
-			auto handlePartyAdd(party_id_t id, player_id_t playerId) -> void;
+			auto handle_create_party(game_party_id id, game_player_id leader_id) -> void;
+			auto handle_disband_party(game_party_id id) -> void;
+			auto handle_party_transfer(game_party_id id, game_player_id leader_id) -> void;
+			auto handle_party_remove(game_party_id id, game_player_id player_id, bool kicked) -> void;
+			auto handle_party_add(game_party_id id, game_player_id player_id) -> void;
 
-			auto buddyInvite(PacketReader &reader) -> void;
-			auto acceptBuddyInvite(PacketReader &reader) -> void;
-			auto removeBuddy(PacketReader &reader) -> void;
-			auto readdBuddy(PacketReader &reader) -> void;
+			auto buddy_invite(packet_reader &reader) -> void;
+			auto accept_buddy_invite(packet_reader &reader) -> void;
+			auto remove_buddy(packet_reader &reader) -> void;
+			auto readd_buddy(packet_reader &reader) -> void;
 
-			auto newPlayer(player_id_t id, const Ip &ip, PacketReader &reader) -> void;
+			auto new_player(game_player_id id, const ip &ip, packet_reader &reader) -> void;
 
-			const static uint32_t MaxConnectionMilliseconds = 5000;
+			const static uint32_t max_connection_milliseconds = 5000;
 
-			hash_set_t<player_id_t> m_gmList;
-			hash_map_t<player_id_t, PlayerData> m_playerData;
-			hash_map_t<player_id_t, vector_t<ref_ptr_t<Player>>> m_followers;
-			case_insensitive_hash_map_t<PlayerData *> m_playerDataByName;
-			hash_map_t<party_id_t, ref_ptr_t<Party>> m_parties;
-			hash_map_t<player_id_t, ref_ptr_t<Player>> m_players;
-			case_insensitive_hash_map_t<ref_ptr_t<Player>> m_playersByName;
-			hash_map_t<player_id_t, ConnectingPlayer> m_connections;
+			hash_set<game_player_id> m_gm_list;
+			hash_map<game_player_id, player_data> m_player_data;
+			hash_map<game_player_id, vector<ref_ptr<player>>> m_followers;
+			case_insensitive_hash_map<player_data *> m_player_data_by_name;
+			hash_map<game_party_id, ref_ptr<party>> m_parties;
+			hash_map<game_player_id, ref_ptr<player>> m_players;
+			case_insensitive_hash_map<ref_ptr<player>> m_players_by_name;
+			hash_map<game_player_id, connecting_player> m_connections;
 		};
 	}
 }

@@ -20,21 +20,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	class PacketReader;
+namespace vana {
+	class packet_reader;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		namespace PetHandler {
-			auto showPets(ref_ptr_t<Player> player) -> void;
-			auto handleChat(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleFeed(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleMovement(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleSummon(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleCommand(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleConsumePotion(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto changeName(ref_ptr_t<Player> player, const string_t &name) -> void;
+		namespace pet_handler {
+			auto show_pets(ref_ptr<player> player) -> void;
+			auto handle_chat(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_feed(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_movement(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_summon(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_command(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_consume_potion(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto change_name(ref_ptr<player> player, const string &name) -> void;
 		}
 	}
 }

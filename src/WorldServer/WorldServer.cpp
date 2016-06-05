@@ -26,172 +26,172 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer/SyncPacket.hpp"
 #include "WorldServer/WorldServerAcceptPacket.hpp"
 
-namespace Vana {
-namespace WorldServer {
+namespace vana {
+namespace world_server {
 
-WorldServer::WorldServer() :
-	AbstractServer{ServerType::World}
+world_server::world_server() :
+	abstract_server{server_type::world}
 {
 }
 
-auto WorldServer::shutdown() -> void {
+auto world_server::shutdown() -> void {
 	// If we don't do this and the connection disconnects, it will try to call shutdown() again
-	m_worldId = -1;
-	AbstractServer::shutdown();
+	m_world_id = -1;
+	abstract_server::shutdown();
 }
 
-auto WorldServer::listen() -> void {
-	m_sessionPool.initialize(1);
+auto world_server::listen() -> void {
+	m_session_pool.initialize(1);
 
-	auto &config = getInterServerConfig();
-	getConnectionManager().listen(
-		ConnectionListenerConfig{
-			config.serverPing,
+	auto &config = get_inter_server_config();
+	get_connection_manager().listen(
+		connection_listener_config{
+			config.server_ping,
 			true,
-			ConnectionType::Unknown,
-			MapleVersion::LoginSubversion,
+			connection_type::unknown,
+			maple_version::login_subversion,
 			m_port,
-			Ip::Type::Ipv4
+			ip::type::ipv4
 		},
-		[&] { return make_ref_ptr<WorldServerAcceptedSession>(*this); }
+		[&] { return make_ref_ptr<world_server_accepted_session>(*this); }
 	);
 }
 
-auto WorldServer::finalizeServerSession(ref_ptr_t<WorldServerAcceptedSession> session) -> void {
-	m_sessionPool.store(session);
+auto world_server::finalize_server_session(ref_ptr<world_server_accepted_session> session) -> void {
+	m_session_pool.store(session);
 }
 
-auto WorldServer::loadData() -> Result {
-	Initializing::checkSchemaVersion(this);
+auto world_server::load_data() -> result {
+	initializing::check_schema_version(this);
 
-	auto &config = getInterServerConfig();
-	auto result = getConnectionManager().connect(
-		config.loginIp,
-		config.loginPort,
-		config.serverPing,
-		ServerType::World,
+	auto &config = get_inter_server_config();
+	auto result = get_connection_manager().connect(
+		config.login_ip,
+		config.login_port,
+		config.server_ping,
+		server_type::world,
 		[&] {
-			return make_ref_ptr<LoginServerSession>();
+			return make_ref_ptr<login_server_session>();
 		});
 
-	if (result.first == Result::Failure) {
-		return Result::Failure;
+	if (result.first == result::failure) {
+		return result::failure;
 	}
 
-	sendAuth(result.second);
-	return Result::Successful;
+	send_auth(result.second);
+	return result::successful;
 }
 
-auto WorldServer::onConnectToLogin(ref_ptr_t<LoginServerSession> connection) -> void {
-	m_loginSession = connection;
+auto world_server::on_connect_to_login(ref_ptr<login_server_session> connection) -> void {
+	m_login_session = connection;
 }
 
-auto WorldServer::onDisconnectFromLogin() -> void {
-	m_loginSession.reset();
+auto world_server::on_disconnect_from_login() -> void {
+	m_login_session.reset();
 
-	if (isConnected()) {
-		m_worldId = -1;
-		log(LogType::ServerDisconnect, "Disconnected from the LoginServer. Shutting down...");
-		getChannels().disconnect();
-		ExitCodes::exit(ExitCodes::ServerDisconnection);
+	if (is_connected()) {
+		m_world_id = -1;
+		log(log_type::server_disconnect, "Disconnected from the LoginServer. Shutting down...");
+		get_channels().disconnect();
+		exit(exit_code::server_disconnection);
 	}
 }
 
-auto WorldServer::rehashConfig(const WorldConfig &config) -> void {
+auto world_server::rehash_config(const world_config &config) -> void {
 	m_config = config;
-	m_defaultRates = config.rates;
-	m_channels.send(Packets::Interserver::rehashConfig(config));
+	m_default_rates = config.rates;
+	m_channels.send(packets::interserver::rehash_config(config));
 }
 
-auto WorldServer::establishedLoginConnection(world_id_t worldId, port_t port, const WorldConfig &conf) -> void {
-	m_worldId = worldId;
+auto world_server::established_login_connection(game_world_id world_id, connection_port port, const world_config &conf) -> void {
+	m_world_id = world_id;
 
-	log(LogType::ServerConnect, [&](out_stream_t &str) {
-		str << "Handling world " << static_cast<int32_t>(worldId);
+	log(log_type::server_connect, [&](out_stream &str) {
+		str << "Handling world " << static_cast<int32_t>(world_id);
 	});
 
 	m_port = port;
 	m_config = conf;
-	m_defaultRates = conf.rates;
+	m_default_rates = conf.rates;
 	listen();
 
-	m_playerDataProvider.loadData();
+	m_player_data_provider.load_data();
 
-	displayLaunchTime();
+	display_launch_time();
 }
 
-auto WorldServer::setRates(const RatesConfig &rates) -> void {
+auto world_server::set_rates(const rates_config &rates) -> void {
 	m_config.rates = rates;
-	m_channels.send(Packets::Interserver::Config::setRates(rates));
+	m_channels.send(packets::interserver::config::set_rates(rates));
 }
 
-auto WorldServer::resetRates(int32_t flags) -> void {
-	if ((flags & RatesConfig::Types::all) == RatesConfig::Types::all) {
-		setRates(m_defaultRates);
+auto world_server::reset_rates(int32_t flags) -> void {
+	if ((flags & rates_config::types::all) == rates_config::types::all) {
+		set_rates(m_default_rates);
 	}
 	else {
-		RatesConfig newRates = m_config.rates;
-		if ((flags & RatesConfig::Types::mobExpRate) == RatesConfig::Types::mobExpRate) {
-			newRates.mobExpRate = m_defaultRates.mobExpRate;
+		rates_config new_rates = m_config.rates;
+		if ((flags & rates_config::types::mob_exp_rate) == rates_config::types::mob_exp_rate) {
+			new_rates.mob_exp_rate = m_default_rates.mob_exp_rate;
 		}
-		if ((flags & RatesConfig::Types::questExpRate) == RatesConfig::Types::questExpRate) {
-			newRates.questExpRate = m_defaultRates.questExpRate;
+		if ((flags & rates_config::types::quest_exp_rate) == rates_config::types::quest_exp_rate) {
+			new_rates.quest_exp_rate = m_default_rates.quest_exp_rate;
 		}
-		if ((flags & RatesConfig::Types::dropRate) == RatesConfig::Types::dropRate) {
-			newRates.dropRate = m_defaultRates.dropRate;
+		if ((flags & rates_config::types::drop_rate) == rates_config::types::drop_rate) {
+			new_rates.drop_rate = m_default_rates.drop_rate;
 		}
-		if ((flags & RatesConfig::Types::dropMeso) == RatesConfig::Types::dropMeso) {
-			newRates.dropMeso = m_defaultRates.dropMeso;
+		if ((flags & rates_config::types::drop_meso) == rates_config::types::drop_meso) {
+			new_rates.drop_meso = m_default_rates.drop_meso;
 		}
-		if ((flags & RatesConfig::Types::globalDropRate) == RatesConfig::Types::globalDropRate) {
-			newRates.globalDropRate = m_defaultRates.globalDropRate;
+		if ((flags & rates_config::types::global_drop_rate) == rates_config::types::global_drop_rate) {
+			new_rates.global_drop_rate = m_default_rates.global_drop_rate;
 		}
-		if ((flags & RatesConfig::Types::globalDropMeso) == RatesConfig::Types::globalDropMeso) {
-			newRates.globalDropMeso = m_defaultRates.globalDropMeso;
+		if ((flags & rates_config::types::global_drop_meso) == rates_config::types::global_drop_meso) {
+			new_rates.global_drop_meso = m_default_rates.global_drop_meso;
 		}
-		setRates(newRates);
+		set_rates(new_rates);
 	}
 }
 
-auto WorldServer::getPlayerDataProvider() -> PlayerDataProvider & {
-	return m_playerDataProvider;
+auto world_server::get_player_data_provider() -> player_data_provider & {
+	return m_player_data_provider;
 }
 
-auto WorldServer::getChannels() -> Channels & {
+auto world_server::get_channels() -> channels & {
 	return m_channels;
 }
 
-auto WorldServer::makeLogIdentifier() const -> opt_string_t {
-	return buildLogIdentifier([&](out_stream_t &id) { id << "World " << static_cast<int32_t>(m_worldId); });
+auto world_server::make_log_identifier() const -> opt_string {
+	return build_log_identifier([&](out_stream &id) { id << "World " << static_cast<int32_t>(m_world_id); });
 }
 
-auto WorldServer::getLogPrefix() const -> string_t {
+auto world_server::get_log_prefix() const -> string {
 	return "world";
 }
 
-auto WorldServer::isConnected() const -> bool {
-	return m_worldId != -1;
+auto world_server::is_connected() const -> bool {
+	return m_world_id != -1;
 }
 
-auto WorldServer::getWorldId() const -> world_id_t {
-	return m_worldId;
+auto world_server::get_world_id() const -> game_world_id {
+	return m_world_id;
 }
 
-auto WorldServer::makeChannelPort(channel_id_t channelId) const -> port_t {
-	return m_port + channelId + 1;
+auto world_server::make_channel_port(game_channel_id channel_id) const -> connection_port {
+	return m_port + channel_id + 1;
 }
 
-auto WorldServer::getConfig() -> const WorldConfig & {
+auto world_server::get_config() -> const world_config & {
 	return m_config;
 }
 
-auto WorldServer::setScrollingHeader(const string_t &message) -> void {
-	m_config.scrollingHeader = message;
-	m_channels.send(Packets::Interserver::Config::scrollingHeader(message));
+auto world_server::set_scrolling_header(const string &message) -> void {
+	m_config.scrolling_header = message;
+	m_channels.send(packets::interserver::config::scrolling_header(message));
 }
 
-auto WorldServer::sendLogin(const PacketBuilder &builder) -> void {
-	m_loginSession->send(builder);
+auto world_server::send_login(const packet_builder &builder) -> void {
+	m_login_session->send(builder);
 }
 
 }

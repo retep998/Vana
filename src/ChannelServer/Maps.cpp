@@ -31,104 +31,104 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/SummonHandler.hpp"
 #include <string>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto Maps::getMap(map_id_t mapId) -> Map * {
-	return ChannelServer::getInstance().getMap(mapId);
+auto maps::get_map(game_map_id map_id) -> map * {
+	return channel_server::get_instance().get_map(map_id);
 }
 
-auto Maps::unloadMap(map_id_t mapId) -> void {
-	ChannelServer::getInstance().unloadMap(mapId);
+auto maps::unload_map(game_map_id map_id) -> void {
+	channel_server::get_instance().unload_map(map_id);
 }
 
-auto Maps::usePortal(ref_ptr_t<Player> player, const PortalInfo * const portal) -> void {
+auto maps::use_portal(ref_ptr<player> player, const portal_info * const portal) -> void {
 	if (portal->disabled) {
-		player->send(Packets::Map::portalBlocked());
-		player->send(Packets::Player::showMessage("The portal is closed for now.", Packets::Player::NoticeTypes::Red));
+		player->send(packets::map::portal_blocked());
+		player->send(packets::player::show_message("the portal is closed for now.", packets::player::notice_types::red));
 		return;
 	}
 
 	if (portal->script.size() != 0) {
 		// Check for "onlyOnce" portal
-		if (portal->onlyOnce && player->usedPortal(portal->id)) {
-			player->send(Packets::Map::portalBlocked());
+		if (portal->only_once && player->used_portal(portal->id)) {
+			player->send(packets::map::portal_blocked());
 			return;
 		}
 
-		string_t filename = ChannelServer::getInstance().getScriptDataProvider().buildScriptPath(ScriptTypes::Portal, portal->script);
+		string filename = channel_server::get_instance().get_script_data_provider().build_script_path(script_types::portal, portal->script);
 
-		if (FileUtilities::fileExists(filename)) {
-			LuaPortal luaEnv = {filename, player->getId(), player->getMapId(), portal};
+		if (utilities::file::exists(filename)) {
+			lua_portal lua_env = {filename, player->get_id(), player->get_map_id(), portal};
 
-			if (!luaEnv.playerMapChanged()) {
-				player->send(Packets::Map::portalBlocked());
+			if (!lua_env.player_map_changed()) {
+				player->send(packets::map::portal_blocked());
 			}
-			if (portal->onlyOnce && !luaEnv.portalFailed()) {
-				player->addUsedPortal(portal->id);
+			if (portal->only_once && !lua_env.portal_failed()) {
+				player->add_used_portal(portal->id);
 			}
 		}
 		else {
-			string_t message = player->isGm() ?
-				"Portal '" + portal->script + "' is currently unavailable." :
-				"This portal is currently unavailable.";
+			string message = player->is_gm() ?
+				"portal '" + portal->script + "' is currently unavailable." :
+				"this portal is currently unavailable.";
 
-			player->send(Packets::Player::showMessage(message, Packets::Player::NoticeTypes::Red));
-			player->send(Packets::Map::portalBlocked());
+			player->send(packets::player::show_message(message, packets::player::notice_types::red));
+			player->send(packets::map::portal_blocked());
 		}
 	}
 	else {
 		// Normal portal
-		Map *toMap = getMap(portal->toMap);
-		if (toMap == nullptr) {
-			player->send(Packets::Player::showMessage("Bzzt. The map you're attempting to travel to doesn't exist.", Packets::Player::NoticeTypes::Red));
-			player->send(Packets::Map::portalBlocked());
+		map *to_map = get_map(portal->to_map);
+		if (to_map == nullptr) {
+			player->send(packets::player::show_message("bzzt. the map you're attempting to travel to doesn't exist.", packets::player::notice_types::red));
+			player->send(packets::map::portal_blocked());
 			return;
 		}
-		const PortalInfo * const nextPortal = toMap->getPortal(portal->toName);
-		player->setMap(portal->toMap, nextPortal);
+		const portal_info * const next_portal = to_map->get_portal(portal->to_name);
+		player->set_map(portal->to_map, next_portal);
 	}
 }
 
-auto Maps::usePortal(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	reader.skip<portal_count_t>();
+auto maps::use_portal(ref_ptr<player> player, packet_reader &reader) -> void {
+	reader.skip<game_portal_count>();
 
 	int32_t opcode = reader.get<int32_t>();
 	switch (opcode) {
 		case 0: // Dead
-			if (player->getStats()->isDead()) {
-				reader.unk<string_t>(); // Seemingly useless
+			if (player->get_stats()->is_dead()) {
+				reader.unk<string>(); // Seemingly useless
 				reader.unk<int8_t>(); // Seemingly useless
 				bool wheel = reader.get<bool>();
 				if (wheel) {
-					if (player->getInventory()->getItemAmount(Items::WheelOfDestiny) <= 0) {
-						player->acceptDeath(false);
+					if (player->get_inventory()->get_item_amount(items::wheel_of_destiny) <= 0) {
+						player->accept_death(false);
 						return;
 					}
-					Inventory::takeItem(player, Items::WheelOfDestiny, 1);
+					inventory::take_item(player, items::wheel_of_destiny, 1);
 				}
-				player->acceptDeath(wheel);
+				player->accept_death(wheel);
 			}
 			break;
 		case -1: {
-			string_t portalName = reader.get<string_t>();
+			string portal_name = reader.get<string>();
 
-			Map *toMap = player->getMap();
-			if (toMap == nullptr) {
+			map *to_map = player->get_map();
+			if (to_map == nullptr) {
 				return;
 			}
-			const PortalInfo * const portal = toMap->getPortal(portalName);
+			const portal_info * const portal = to_map->get_portal(portal_name);
 			if (portal == nullptr) {
 				return;
 			}
-			usePortal(player, portal);
+			use_portal(player, portal);
 			break;
 		}
 		default: {
 			// GM Map change (command "/m")
-			if (player->isGm()) {
-				if (getMap(opcode) != nullptr) {
-					player->setMap(opcode);
+			if (player->is_gm()) {
+				if (get_map(opcode) != nullptr) {
+					player->set_map(opcode);
 				}
 				else {
 					// TODO FIXME message
@@ -142,25 +142,25 @@ auto Maps::usePortal(ref_ptr_t<Player> player, PacketReader &reader) -> void {
 	}
 }
 
-auto Maps::useScriptedPortal(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	reader.skip<portal_count_t>();
-	string_t portalName = reader.get<string_t>();
+auto maps::use_scripted_portal(ref_ptr<player> player, packet_reader &reader) -> void {
+	reader.skip<game_portal_count>();
+	string portal_name = reader.get<string>();
 
-	const PortalInfo * const portal = player->getMap()->getPortal(portalName);
+	const portal_info * const portal = player->get_map()->get_portal(portal_name);
 	if (portal == nullptr) {
 		return;
 	}
-	usePortal(player, portal);
+	use_portal(player, portal);
 }
 
-auto Maps::addPlayer(ref_ptr_t<Player> player, map_id_t mapId) -> void {
-	getMap(mapId)->addPlayer(player);
-	getMap(mapId)->showObjects(player);
-	PetHandler::showPets(player);
-	SummonHandler::showSummon(player);
+auto maps::add_player(ref_ptr<player> player, game_map_id map_id) -> void {
+	get_map(map_id)->add_player(player);
+	get_map(map_id)->show_objects(player);
+	pet_handler::show_pets(player);
+	summon_handler::show_summon(player);
 	// Bug in global - would be fixed here:
 	// Berserk doesn't display properly when switching maps with it activated - client displays, but no message is sent to any client
-	// player->getActiveBuffs()->checkBerserk(true) would override the default of only displaying changes
+	// player->get_active_buffs()->check_berserk(true) would override the default of only displaying changes
 }
 
 }

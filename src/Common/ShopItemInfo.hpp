@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct ShopItemInfo {
-		item_id_t itemId = 0;
-		mesos_t price = 0;
-		slot_qty_t quantity = 0;
+namespace vana {
+	struct shop_item_info {
+		game_item_id item_id = 0;
+		game_mesos price = 0;
+		game_slot_qty quantity = 0;
 	};
 }

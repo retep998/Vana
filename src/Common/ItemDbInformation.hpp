@@ -19,23 +19,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct ItemDbInformation {
-		NO_DEFAULT_CONSTRUCTOR(ItemDbInformation);
+namespace vana {
+	struct item_db_info {
+		NO_DEFAULT_CONSTRUCTOR(item_db_info);
 	public:
-		ItemDbInformation(inventory_slot_t slot, player_id_t charId, account_id_t userId, world_id_t worldId, const string_t &location) :
+		item_db_info(game_inventory_slot slot, game_player_id char_id, game_account_id user_id, game_world_id world_id, const string &location) :
 			slot{slot},
-			charId{charId},
-			userId{userId},
-			worldId{worldId},
+			char_id{char_id},
+			user_id{user_id},
+			world_id{world_id},
 			location{location}
 		{
 		}
 
-		inventory_slot_t slot;
-		player_id_t charId;
-		account_id_t userId;
-		world_id_t worldId;
-		string_t location;
+		game_inventory_slot slot;
+		game_player_id char_id;
+		game_account_id user_id;
+		game_world_id world_id;
+		string location;
 	};
 }

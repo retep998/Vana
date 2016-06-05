@@ -19,14 +19,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class PacketReader;
+namespace vana {
+	class packet_reader;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		namespace PartyHandler {
-			auto handleRequest(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+		namespace party_handler {
+			auto handle_request(ref_ptr<player> player, packet_reader &reader) -> void;
 		}
 	}
 }

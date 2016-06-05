@@ -28,31 +28,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <thread>
 #include <vector>
 
-namespace Vana {
-	class AbstractConnection;
-	class AbstractServer;
-	class ConnectionListener;
-	class PacketHandler;
-	struct ConnectionListenerConfig;
-	struct PingConfig;
+namespace vana {
+	class abstract_connection;
+	class abstract_server;
+	class connection_listener;
+	class packet_handler;
+	struct connection_listener_config;
+	struct ping_config;
 
-	class ConnectionManager {
+	class connection_manager {
 	public:
-		ConnectionManager(AbstractServer *server);
-		~ConnectionManager();
-		auto listen(const ConnectionListenerConfig &listener, HandlerCreator handlerCreator) -> void;
-		auto connect(const Ip &destination, port_t port, const PingConfig &ping, ServerType sourceType, HandlerCreator handlerCreator) -> pair_t<Result, ref_ptr_t<Session>>;
+		connection_manager(abstract_server *server);
+		~connection_manager();
+		auto listen(const connection_listener_config &listener, handler_creator handler_creator) -> void;
+		auto connect(const ip &destination, connection_port port, const ping_config &ping, server_type source_type, handler_creator handler_creator) -> pair<result, ref_ptr<session>>;
 		auto run() -> void;
 		auto stop() -> void;
-		auto stop(ref_ptr_t<Session> session) -> void;
-		auto start(ref_ptr_t<Session> session) -> void;
-		auto getServer() -> AbstractServer *;
+		auto stop(ref_ptr<session> session) -> void;
+		auto start(ref_ptr<session> session) -> void;
+		auto get_server() -> abstract_server *;
 	private:
-		vector_t<ref_ptr_t<ConnectionListener>> m_servers;
-		hash_set_t<ref_ptr_t<Session>> m_sessions;
-		ref_ptr_t<thread_t> m_thread;
-		owned_ptr_t<asio::io_service::work> m_work;
-		asio::io_service m_ioService;
-		AbstractServer *m_server;
+		vector<ref_ptr<connection_listener>> m_servers;
+		hash_set<ref_ptr<session>> m_sessions;
+		ref_ptr<thread> m_thread;
+		owned_ptr<asio::io_service::work> m_work;
+		asio::io_service m_io_service;
+		abstract_server *m_server;
 	};
 }

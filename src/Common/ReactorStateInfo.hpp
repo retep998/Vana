@@ -21,14 +21,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <vector>
 
-namespace Vana {
-	struct ReactorStateInfo {
-		int8_t nextState = 0;
+namespace vana {
+	struct reactor_state_info {
+		int8_t next_state = 0;
 		int16_t type = 0;
-		slot_qty_t itemQuantity = 0;
-		item_id_t itemId = 0;
+		game_slot_qty item_quantity = 0;
+		game_item_id item_id = 0;
 		int32_t timeout = 0;
-		Rect dimensions;
-		vector_t<skill_id_t> triggerSkills;
+		rect dimensions;
+		vector<game_skill_id> trigger_skills;
 	};
 }

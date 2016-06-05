@@ -26,82 +26,82 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-namespace Vana {
-	namespace ChannelServer {
-		class Map;
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class map;
+		class player;
 
-		struct TimeMob {
-			int8_t startHour = 0;
-			int8_t endHour = 0;
-			mob_id_t id = 0;
-			string_t message;
+		struct time_mob {
+			int8_t start_hour = 0;
+			int8_t end_hour = 0;
+			game_mob_id id = 0;
+			string message;
 		};
 
-		struct FieldLimit {
+		struct field_limit {
 			bool jump = false;
-			bool movementSkills = false;
-			bool summoningBag = false;
-			bool mysticDoor = false;
-			bool channelSwitching = false;
-			bool regularExpLoss = false;
-			bool vipRock = false;
+			bool movement_skills = false;
+			bool summoning_bag = false;
+			bool mystic_door = false;
+			bool channel_switching = false;
+			bool regular_exp_loss = false;
+			bool vip_rock = false;
 			bool minigames = false;
 			bool mount = false;
-			bool potionUse = false;
-			bool dropDown = false;
+			bool potion_use = false;
+			bool drop_down = false;
 			bool chalkboard = false;
 		};
 
-		struct MapInfo {
+		struct map_info {
 			bool clock = false;
 			bool town = false;
 			bool swim = false;
 			bool fly = false;
 			bool everlast = false;
-			bool noLeaderPass = false;
+			bool no_leader_pass = false;
 			bool shop = false;
-			bool scrollDisable = false;
-			bool shuffleReactors = false;
-			bool forceMapEquip = false;
+			bool scroll_disable = false;
+			bool shuffle_reactors = false;
+			bool force_map_equip = false;
 			int8_t continent = -1;
-			int8_t regenRate = 0;
-			int8_t shipKind = -1;
-			player_level_t minLevel = 0;
-			uint8_t regularHpDecrease = 0;
-			map_id_t returnMap = 0;
-			map_id_t forcedReturn = 0;
-			map_id_t link = 0;
-			int32_t timeLimit = 0;
-			item_id_t protectItem = 0;
-			damage_t damagePerSecond = 0;
-			double spawnRate = 0.;
+			int8_t regen_rate = 0;
+			int8_t ship_kind = -1;
+			game_player_level min_level = 0;
+			uint8_t regular_hp_decrease = 0;
+			game_map_id return_map = 0;
+			game_map_id forced_return = 0;
+			game_map_id link = 0;
+			int32_t time_limit = 0;
+			game_item_id protect_item = 0;
+			game_damage damage_per_second = 0;
+			double spawn_rate = 0.;
 			double traction = 0.;
-			string_t defaultMusic;
-			string_t shuffleName;
-			string_t message;
-			Rect dimensions;
-			FieldLimit limitations;
+			string default_music;
+			string shuffle_name;
+			string message;
+			rect dimensions;
+			field_limit limitations;
 		};
 
-		class MapDataProvider {
+		class map_data_provider {
 		public:
-			auto loadData() -> void;
-			auto getMap(map_id_t mapId) -> Map *;
-			auto unloadMap(map_id_t mapId) -> void;
-			auto getContinent(map_id_t mapId) const -> opt_int8_t;
+			auto load_data() -> void;
+			auto get_map(game_map_id map_id) -> map *;
+			auto unload_map(game_map_id map_id) -> void;
+			auto get_continent(game_map_id map_id) const -> opt_int8_t;
 		private:
-			auto loadMapData(map_id_t mapId, Map *&map) -> map_id_t;
-			auto loadMapTimeMob(Map *map) -> void;
-			auto loadFootholds(Map *map, map_id_t link) -> void;
-			auto loadMapLife(Map *map, map_id_t link) -> void;
-			auto loadPortals(Map *map, map_id_t link) -> void;
-			auto loadSeats(Map *map, map_id_t link) -> void;
-			auto loadMap(map_id_t mapId, Map *&map) -> void;
+			auto load_map_data(game_map_id map_id, map *&data) -> game_map_id;
+			auto load_map_time_mob(map *map) -> void;
+			auto load_footholds(map *map, game_map_id link) -> void;
+			auto load_map_life(map *map, game_map_id link) -> void;
+			auto load_portals(map *map, game_map_id link) -> void;
+			auto load_seats(map *map, game_map_id link) -> void;
+			auto load_map(game_map_id map_id, map *&map) -> void;
 
-			mutex_t m_loadMutex;
-			hash_map_t<map_id_t, Map *> m_maps;
-			hash_map_t<int8_t, int8_t> m_continents;
+			mutex m_load_mutex;
+			hash_map<game_map_id, map *> m_maps;
+			hash_map<int8_t, int8_t> m_continents;
 		};
 	}
 }

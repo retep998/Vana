@@ -25,17 +25,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <thread>
 
-namespace Vana {
-namespace ExitCodes {
+namespace vana {
 
-auto exit(exit_code_t code) -> void {
+auto exit(exit_code code) -> void {
 #ifndef DAEMON
 	std::cout << "Please press enter to quit..." << std::endl;
 	std::cin.get();
 #endif
-	Vana::exitCode = code;
+	vana::g_exit_code = code;
 	raise(SIGINT);
 }
 
-}
 }

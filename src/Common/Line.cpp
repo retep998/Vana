@@ -18,135 +18,135 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Line.hpp"
 #include <cmath>
 
-namespace Vana {
+namespace vana {
 
-Line::Line(const Point &pt1, const Point &pt2) :
+line::line(const point &pt1, const point &pt2) :
 	pt1{pt1},
 	pt2{pt2}
 {
 }
 
-auto Line::slope() const -> Ratio {
-	coord_t rise = pt2.y - pt1.y;
-	coord_t run = pt2.x - pt1.x;
-	return Ratio{rise, run};
+auto line::slope() const -> ratio {
+	game_coord rise = pt2.y - pt1.y;
+	game_coord run = pt2.x - pt1.x;
+	return ratio{rise, run};
 }
 
-auto Line::contains(const Point &pos) const -> bool {
-	return slopeContains(pos) && (pt1.x != pt2.x ?
-		withinRangeX(pos.x) :
-		withinRangeY(pos.y));
+auto line::contains(const point &pos) const -> bool {
+	return slope_contains(pos) && (pt1.x != pt2.x ?
+		within_range_x(pos.x) :
+		within_range_y(pos.y));
 }
 
-auto Line::slopeContains(const Point &pos) const -> bool {
+auto line::slope_contains(const point &pos) const -> bool {
 	// Tests for colinearity
 	auto slope1 = static_cast<int32_t>(pt2.x - pt1.x) * static_cast<int32_t>(pos.y - pt1.y);
 	auto slope2 = static_cast<int32_t>(pos.x - pt1.x) * static_cast<int32_t>(pt2.y - pt1.y);
 	return slope1 == slope2;
 }
 
-auto Line::withinRangeX(coord_t xValue) const -> bool {
+auto line::within_range_x(game_coord value_x) const -> bool {
 	return
-		(pt1.x < xValue && xValue <= pt2.x) ||
-		(pt2.x < xValue && xValue <= pt1.x);
+		(pt1.x < value_x && value_x <= pt2.x) ||
+		(pt2.x < value_x && value_x <= pt1.x);
 }
 
-auto Line::withinRangeY(coord_t yValue) const -> bool {
+auto line::within_range_y(game_coord value_y) const -> bool {
 	return
-		(pt1.y < yValue && yValue <= pt2.y) ||
-		(pt2.y < yValue && yValue <= pt1.y);
+		(pt1.y < value_y && value_y <= pt2.y) ||
+		(pt2.y < value_y && value_y <= pt1.y);
 }
 
-auto Line::interpolateForX(coord_t yValue) const -> optional_t<coord_t> {
-	auto lineSlope = slope();
+auto line::interpolate_for_x(game_coord value_y) const -> optional<game_coord> {
+	auto line_slope = slope();
 	// Both x values are the same, there is no slope, we have no sensible interpolation for this particular value
-	if (!lineSlope.isDefined()) {
+	if (!line_slope.is_defined()) {
 		// Unless the y value happens to be within our range
-		if (withinRangeY(yValue)) {
+		if (within_range_y(value_y)) {
 			return pt1.x;
 		}
 		return {};
 	}
-	int32_t difference = yValue - pt1.y;
-	difference *= lineSlope.bottom();
-	difference /= lineSlope.top();
-	if (lineSlope.isNegative()) difference *= -1;
-	return static_cast<coord_t>(difference + pt1.x);
+	int32_t difference = value_y - pt1.y;
+	difference *= line_slope.bottom();
+	difference /= line_slope.top();
+	if (line_slope.is_negative()) difference *= -1;
+	return static_cast<game_coord>(difference + pt1.x);
 }
 
-auto Line::interpolateForY(coord_t xValue) const -> optional_t<coord_t> {
-	auto lineSlope = slope();
+auto line::interpolate_for_y(game_coord value_x) const -> optional<game_coord> {
+	auto line_slope = slope();
 	// Both y values are the same, there is no slope, we have no sensible interpolation for this particular value
-	if (lineSlope.isZero()) {
+	if (line_slope.is_zero()) {
 		// Unless the x value happens to be within our range
-		if (withinRangeX(xValue)) {
+		if (within_range_x(value_x)) {
 			return pt1.y;
 		}
 		return {};
 	}
-	int32_t difference = xValue - pt1.x;
-	difference *= lineSlope.top();
-	difference /= lineSlope.bottom();
-	if (lineSlope.isNegative()) difference *= -1;
-	return static_cast<coord_t>(difference + pt1.y);
+	int32_t difference = value_x - pt1.x;
+	difference *= line_slope.top();
+	difference /= line_slope.bottom();
+	if (line_slope.is_negative()) difference *= -1;
+	return static_cast<game_coord>(difference + pt1.y);
 }
 
-auto Line::move(coord_t xOffset, coord_t yOffset) const -> Line {
-	return Line{
-		pt1.move(xOffset, yOffset),
-		pt2.move(xOffset, yOffset)
+auto line::move(game_coord offset_x, game_coord offset_y) const -> line {
+	return line{
+		pt1.move(offset_x, offset_y),
+		pt2.move(offset_x, offset_y)
 	};
 }
 
-auto Line::moveX(coord_t xOffset) const -> Line {
-	return Line{
-		pt1.moveX(xOffset),
-		pt2.moveX(xOffset)
+auto line::move_x(game_coord offset) const -> line {
+	return line{
+		pt1.move_x(offset),
+		pt2.move_x(offset)
 	};
 }
 
-auto Line::moveY(coord_t yOffset) const -> Line {
-	return Line{
-		pt1.moveY(yOffset),
-		pt2.moveY(yOffset)
+auto line::move_y(game_coord offset) const -> line {
+	return line{
+		pt1.move_y(offset),
+		pt2.move_y(offset)
 	};
 }
 
-auto Line::center() const -> Point {
-	return Point{
+auto line::center() const -> point {
+	return point{
 		(pt2.x + pt1.x) / 2,
 		(pt2.y + pt1.y) / 2
 	};;
 }
 
-auto Line::length() const -> int32_t {
+auto line::length() const -> int32_t {
 	return std::abs(pt1 - pt2);
 }
 
-auto Line::makeRect() const -> Rect {
-	return Rect{pt1, pt2}.normalize();
+auto line::make_rect() const -> rect {
+	return rect{pt1, pt2}.normalize();
 }
 
-auto Line::isVertical() const -> bool {
+auto line::is_vertical() const -> bool {
 	return pt1.x == pt2.x;
 }
 
-auto Line::isHorizontal() const -> bool {
+auto line::is_horizontal() const -> bool {
 	return pt1.y == pt2.y;
 }
 
-auto Line::isOrigin() const -> bool {
-	return pt1.isOrigin() && pt2.isOrigin();
+auto line::is_origin() const -> bool {
+	return pt1.is_origin() && pt2.is_origin();
 }
 
-auto Line::isEdge(const Point &pt) -> bool {
+auto line::is_edge(const point &pt) -> bool {
 	return
 		(pt.x == pt1.x && pt.y == pt1.y) ||
 		(pt.x == pt2.x && pt.y == pt2.y);
 }
 
-auto Line::isEdge(coord_t xValue, coord_t yValue) -> bool {
-	return isEdge(Point{xValue, yValue});
+auto line::is_edge(game_coord value_x, game_coord value_y) -> bool {
+	return is_edge(point{value_x, value_y});
 }
 
 }

@@ -22,35 +22,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Player.hpp"
 #include "ChannelServer/PlayerDataProvider.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-LuaInstance::LuaInstance(const string_t &name, player_id_t playerId) :
-	LuaScriptable{ChannelServer::getInstance().getScriptDataProvider().buildScriptPath(ScriptTypes::Instance, name), playerId}
+lua_instance::lua_instance(const string &name, game_player_id player_id) :
+	lua_scriptable{channel_server::get_instance().get_script_data_provider().build_script_path(script_types::instance, name), player_id}
 {
-	set<string_t>("system_instance_name", name);
+	set<string>("system_instance_name", name);
 
-	expose("createInstance", &LuaExports::createInstanceInstance);
+	expose("createInstance", &lua_exports::create_instance_instance);
 
 	run(); // Running is loading the functions
 }
 
-auto LuaExports::createInstanceInstance(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	string_t name = env.get<string_t>(luaVm, 1);
-	int32_t time = env.get<int32_t>(luaVm, 2);
-	bool showTimer = env.get<bool>(luaVm, 3);
+auto lua_exports::create_instance_instance(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	string name = env.get<string>(lua_vm, 1);
+	int32_t time = env.get<int32_t>(lua_vm, 2);
+	bool show_timer = env.get<bool>(lua_vm, 3);
 	int32_t persistent = 0;
-	if (env.is(luaVm, 4, LuaType::Number)) {
-		persistent = env.get<int32_t>(luaVm, 4);
+	if (env.is(lua_vm, 4, lua::lua_type::number)) {
+		persistent = env.get<int32_t>(lua_vm, 4);
 	}
 
-	Instance *instance = new Instance{name, 0, 0, seconds_t{time}, seconds_t{persistent}, showTimer};
-	ChannelServer::getInstance().getInstances().addInstance(instance);
-	instance->beginInstance();
+	instance *inst = new instance{name, 0, 0, seconds{time}, seconds{persistent}, show_timer};
+	channel_server::get_instance().get_instances().add_instance(inst);
+	inst->begin_instance();
 
-	if (instance->showTimer()) {
-		instance->showTimer(true, true);
+	if (inst->show_timer()) {
+		inst->show_timer(true, true);
 	}
 
 	return 0;

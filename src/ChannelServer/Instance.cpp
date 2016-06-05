@@ -33,317 +33,317 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sstream>
 #include <utility>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-Instance::Instance(const string_t &name, map_id_t map, player_id_t playerId, const duration_t &time, const duration_t &persistent, bool showTimer) :
+instance::instance(const string &name, game_map_id map, game_player_id player_id, const duration &time, const duration &persistent, bool show_timer) :
 	m_name{name},
 	m_persistent{persistent},
-	m_showTimer{showTimer},
-	m_start{TimeUtilities::getNow()}
+	m_show_timer{show_timer},
+	m_start{utilities::time::get_now()}
 {
-	m_variables = make_owned_ptr<Variables>();
-	m_luaInstance = make_owned_ptr<LuaInstance>(name, playerId);
+	m_variables = make_owned_ptr<variables>();
+	m_lua_instance = make_owned_ptr<lua_instance>(name, player_id);
 
-	if (playerId != 0) {
-		ChannelServer::getInstance().log(LogType::InstanceBegin, [&](out_stream_t &log) { log << name << " started by player ID " << playerId; });
+	if (player_id != 0) {
+		channel_server::get_instance().log(log_type::instance_begin, [&](out_stream &log) { log << name << " started by player ID " << player_id; });
 	}
-	setInstanceTimer(time, true);
+	set_instance_timer(time, true);
 }
 
-Instance::~Instance() {
+instance::~instance() {
 	// Maps
 	for (const auto &map : m_maps) {
-		map->endInstance(m_resetOnDestroy);
+		map->end_instance(m_reset_on_destroy);
 	}
 	m_maps.clear();
 
 	// Parties
 	for (const auto &party : m_parties) {
-		party->setInstance(nullptr);
+		party->set_instance(nullptr);
 	}
 	m_parties.clear();
 
 	// Players
 	for (const auto &kvp : m_players) {
-		kvp.second->setInstance(nullptr);
+		kvp.second->set_instance(nullptr);
 	}
 	m_players.clear();
-	ChannelServer::getInstance().getInstances().removeInstance(this);
+	channel_server::get_instance().get_instances().remove_instance(this);
 }
 
-auto Instance::addPlayer(ref_ptr_t<Player> player) -> void {
+auto instance::add_player(ref_ptr<player> player) -> void {
 	if (player != nullptr) {
-		m_players[player->getId()] = player;
-		player->setInstance(this);
+		m_players[player->get_id()] = player;
+		player->set_instance(this);
 	}
 }
 
-auto Instance::removePlayer(ref_ptr_t<Player> player) -> void {
-	removePlayer(player->getId());
-	player->setInstance(nullptr);
+auto instance::remove_player(ref_ptr<player> player) -> void {
+	remove_player(player->get_id());
+	player->set_instance(nullptr);
 }
 
-auto Instance::removePlayer(player_id_t id) -> void {
+auto instance::remove_player(game_player_id id) -> void {
 	auto kvp = m_players.find(id);
 	if (kvp != std::end(m_players)) {
 		m_players.erase(kvp);
 	}
 }
 
-auto Instance::removeAllPlayers() -> void {
+auto instance::remove_all_players() -> void {
 	auto copy = m_players;
 	for (const auto &kvp : copy) {
-		removePlayer(kvp.second);
+		remove_player(kvp.second);
 	}
 }
 
-auto Instance::moveAllPlayers(map_id_t mapId, bool respectInstances, const PortalInfo * const portal) -> void {
-	if (!Maps::getMap(mapId)) {
+auto instance::move_all_players(game_map_id map_id, bool respect_instances, const portal_info * const portal) -> void {
+	if (!maps::get_map(map_id)) {
 		return;
 	}
 	// Copy in the event that we don't respect instances
 	auto copy = m_players;
 	for (const auto &kvp : copy) {
-		kvp.second->setMap(mapId, portal, respectInstances);
+		kvp.second->set_map(map_id, portal, respect_instances);
 	}
 }
 
-auto Instance::getAllPlayerIds() -> vector_t<player_id_t> {
-	vector_t<player_id_t> playerIds;
+auto instance::get_all_player_ids() -> vector<game_player_id> {
+	vector<game_player_id> player_ids;
 	for (const auto &kvp : m_players) {
-		playerIds.push_back(kvp.first);
+		player_ids.push_back(kvp.first);
 	}
-	return playerIds;
+	return player_ids;
 }
 
-auto Instance::instanceHasPlayers() const -> bool {
+auto instance::instance_has_players() const -> bool {
 	for (const auto &map : m_maps) {
-		if (map->getNumPlayers() != 0) {
+		if (map->get_num_players() != 0) {
 			return true;
 		}
 	}
 	return false;
 }
 
-auto Instance::addMap(Map *map) -> void {
+auto instance::add_map(map *map) -> void {
 	m_maps.push_back(map);
-	map->setInstance(this);
+	map->set_instance(this);
 }
 
-auto Instance::addMap(map_id_t mapId) -> void {
-	Map *map = Maps::getMap(mapId);
-	addMap(map);
+auto instance::add_map(game_map_id map_id) -> void {
+	map *map = maps::get_map(map_id);
+	add_map(map);
 }
 
-auto Instance::isInstanceMap(map_id_t mapId) const -> bool {
+auto instance::is_instance_map(game_map_id map_id) const -> bool {
 	for (const auto &map : m_maps) {
-		if (map->getId() == mapId) {
+		if (map->get_id() == map_id) {
 			return true;
 		}
 	}
 	return false;
 }
 
-auto Instance::addParty(Party *party) -> void {
+auto instance::add_party(party *party) -> void {
 	m_parties.push_back(party);
-	party->setInstance(this);
+	party->set_instance(this);
 }
 
-auto Instance::addFutureTimer(const string_t &timerName, seconds_t time, seconds_t persistence) -> bool {
-	if (timerName == "instance") {
-		setInstanceTimer(time, false);
+auto instance::add_future_timer(const string &timer_name, seconds time, seconds persistence) -> bool {
+	if (timer_name == "instance") {
+		set_instance_timer(time, false);
 		return true;
 	}
 
-	if (m_timerActions.find(timerName) == std::end(m_timerActions)) {
-		TimerAction timer;
-		timer.counterId = getCounterId();
-		timer.isPersistent = persistence.count() > 0;
-		m_timerActions.emplace(timerName, timer);
+	if (m_timer_actions.find(timer_name) == std::end(m_timer_actions)) {
+		timer_action timer;
+		timer.counter_id = get_counter_id();
+		timer.is_persistent = persistence.count() > 0;
+		m_timer_actions.emplace(timer_name, timer);
 
-		Vana::Timer::Id id{TimerType::InstanceTimer, timer.counterId};
-		Vana::Timer::Timer::create([this, timerName](const time_point_t &now) { this->timerComplete(timerName, true); },
-			id, getTimers(), time, persistence);
-
-		return true;
-	}
-	return false;
-}
-
-auto Instance::addSecondOfHourTimer(const string_t &timerName, int16_t secondOfHour, seconds_t persistence) -> bool {
-	if (m_timerActions.find(timerName) == std::end(m_timerActions)) {
-		TimerAction timer;
-		timer.counterId = getCounterId();
-		timer.isPersistent = persistence.count() > 0;
-		m_timerActions.emplace(timerName, timer);
-
-		Vana::Timer::Id id{TimerType::InstanceTimer, timer.counterId};
-		Vana::Timer::Timer::create([this, timerName](const time_point_t &now) { this->timerComplete(timerName, true); },
-			id, getTimers(), TimeUtilities::getDistanceToNextOccurringSecondOfHour(secondOfHour), persistence);
+		vana::timer::id id{timer_type::instance_timer, timer.counter_id};
+		vana::timer::timer::create([this, timer_name](const time_point &now) { this->timer_complete(timer_name, true); },
+			id, get_timers(), time, persistence);
 
 		return true;
 	}
 	return false;
 }
 
-auto Instance::getTimerSecondsRemaining(const string_t &timerName) -> seconds_t {
-	seconds_t timeLeft{0};
-	auto kvp = m_timerActions.find(timerName);
-	if (kvp != std::end(m_timerActions)) {
+auto instance::add_second_of_hour_timer(const string &timer_name, int16_t second_of_hour, seconds persistence) -> bool {
+	if (m_timer_actions.find(timer_name) == std::end(m_timer_actions)) {
+		timer_action timer;
+		timer.counter_id = get_counter_id();
+		timer.is_persistent = persistence.count() > 0;
+		m_timer_actions.emplace(timer_name, timer);
+
+		vana::timer::id id{timer_type::instance_timer, timer.counter_id};
+		vana::timer::timer::create([this, timer_name](const time_point &now) { this->timer_complete(timer_name, true); },
+			id, get_timers(), utilities::time::get_distance_to_next_occurring_second_of_hour(second_of_hour), persistence);
+
+		return true;
+	}
+	return false;
+}
+
+auto instance::get_timer_seconds_remaining(const string &timer_name) -> seconds {
+	seconds time_left{0};
+	auto kvp = m_timer_actions.find(timer_name);
+	if (kvp != std::end(m_timer_actions)) {
 		auto &timer = kvp->second;
-		Vana::Timer::Id id{TimerType::InstanceTimer, timer.counterId};
-		timeLeft = getTimers()->getRemainingTime<seconds_t>(id);
+		vana::timer::id id{timer_type::instance_timer, timer.counter_id};
+		time_left = get_timers()->get_remaining_time<seconds>(id);
 	}
-	return timeLeft;
+	return time_left;
 }
 
-auto Instance::removeTimer(const string_t &timerName) -> void {
-	if (timerName == "instance") {
-		instanceEnd(true, false);
+auto instance::remove_timer(const string &timer_name) -> void {
+	if (timer_name == "instance") {
+		instance_end(true, false);
 		return;
 	}
-	removeTimer(timerName, true);
+	remove_timer(timer_name, true);
 }
 
-auto Instance::removeTimer(const string_t &timerName, bool performEvent) -> void {
-	auto kvp = m_timerActions.find(timerName);
-	if (kvp != std::end(m_timerActions)) {
-		const TimerAction &timer = kvp->second;
-		if (getTimerSecondsRemaining(timerName).count() > 0) {
-			Vana::Timer::Id id{TimerType::InstanceTimer, timer.counterId};
-			getTimers()->removeTimer(id);
-			if (performEvent) {
-				timerEnd(timerName, false);
+auto instance::remove_timer(const string &timer_name, bool perform_event) -> void {
+	auto kvp = m_timer_actions.find(timer_name);
+	if (kvp != std::end(m_timer_actions)) {
+		const timer_action &timer = kvp->second;
+		if (get_timer_seconds_remaining(timer_name).count() > 0) {
+			vana::timer::id id{timer_type::instance_timer, timer.counter_id};
+			get_timers()->remove_timer(id);
+			if (perform_event) {
+				timer_end(timer_name, false);
 			}
 		}
-		m_timerActions.erase(kvp);
+		m_timer_actions.erase(kvp);
 	}
 }
 
-auto Instance::removeAllTimers() -> void {
-	auto copy = m_timerActions;
+auto instance::remove_all_timers() -> void {
+	auto copy = m_timer_actions;
 	for (const auto &kvp : copy) {
-		removeTimer(kvp.first);
+		remove_timer(kvp.first);
 	}
 }
 
-auto Instance::getInstanceSecondsRemaining() -> seconds_t {
-	return getTimerSecondsRemaining("instance");
+auto instance::get_instance_seconds_remaining() -> seconds {
+	return get_timer_seconds_remaining("instance");
 }
 
-auto Instance::setInstanceTimer(const duration_t &time, bool firstRun) -> void {
-	if (getInstanceSecondsRemaining().count() > 0) {
-		removeTimer("instance", false);
+auto instance::set_instance_timer(const duration &time, bool first_run) -> void {
+	if (get_instance_seconds_remaining().count() > 0) {
+		remove_timer("instance", false);
 	}
 
 	if (time.count() != 0) {
-		TimerAction timer;
-		timer.counterId = getCounterId();
-		timer.isPersistent = m_persistent.count() > 0;
-		m_timerActions.emplace("instance", timer);
+		timer_action timer;
+		timer.counter_id = get_counter_id();
+		timer.is_persistent = m_persistent.count() > 0;
+		m_timer_actions.emplace("instance", timer);
 
-		Vana::Timer::Id id{TimerType::InstanceTimer, timer.counterId};
-		Vana::Timer::Timer::create(
-			[this](const time_point_t &now) {
-				this->instanceEnd(false, true);
+		vana::timer::id id{timer_type::instance_timer, timer.counter_id};
+		vana::timer::timer::create(
+			[this](const time_point &now) {
+				this->instance_end(false, true);
 			},
 			id,
-			getTimers(),
+			get_timers(),
 			time,
 			m_persistent);
 
-		if (!firstRun && showTimer()) {
-			showTimer(true, true);
+		if (!first_run && show_timer()) {
+			show_timer(true, true);
 		}
 	}
 }
 
-auto Instance::beginInstance() -> Result {
-	return callInstanceFunction("beginInstance");
+auto instance::begin_instance() -> result {
+	return call_instance_function("beginInstance");
 }
 
-auto Instance::playerDeath(player_id_t playerId) -> Result {
-	return callInstanceFunction("playerDeath", playerId);
+auto instance::player_death(game_player_id player_id) -> result {
+	return call_instance_function("playerDeath", player_id);
 }
 
-auto Instance::partyDisband(party_id_t partyId) -> Result {
-	return callInstanceFunction("partyDisband", partyId);
+auto instance::party_disband(game_party_id party_id) -> result {
+	return call_instance_function("partyDisband", party_id);
 }
 
-auto Instance::timerEnd(const string_t &name, bool fromTimer) -> Result {
-	return callInstanceFunction("timerEnd", name, fromTimer);
+auto instance::timer_end(const string &name, bool from_timer) -> result {
+	return call_instance_function("timerEnd", name, from_timer);
 }
 
-auto Instance::playerDisconnect(player_id_t playerId, bool isPartyLeader) -> Result {
-	return callInstanceFunction("playerDisconnect", playerId, isPartyLeader);
+auto instance::player_disconnect(game_player_id player_id, bool is_party_leader) -> result {
+	return call_instance_function("playerDisconnect", player_id, is_party_leader);
 }
 
-auto Instance::removePartyMember(party_id_t partyId, player_id_t playerId) -> Result {
-	return callInstanceFunction("partyRemoveMember", partyId, playerId);
+auto instance::remove_party_member(game_party_id party_id, game_player_id player_id) -> result {
+	return call_instance_function("partyRemoveMember", party_id, player_id);
 }
 
-auto Instance::mobDeath(mob_id_t mobId, map_object_t mapMobId, map_id_t mapId) -> Result {
-	return callInstanceFunction("mobDeath", mobId, mapMobId, mapId);
+auto instance::mob_death(game_mob_id mob_id, game_map_object map_mob_id, game_map_id map_id) -> result {
+	return call_instance_function("mobDeath", mob_id, map_mob_id, map_id);
 }
 
-auto Instance::mobSpawn(mob_id_t mobId, map_object_t mapMobId, map_id_t mapId) -> Result {
-	return callInstanceFunction("mobSpawn", mobId, mapMobId, mapId);
+auto instance::mob_spawn(game_mob_id mob_id, game_map_object map_mob_id, game_map_id map_id) -> result {
+	return call_instance_function("mobSpawn", mob_id, map_mob_id, map_id);
 }
 
-auto Instance::playerChangeMap(player_id_t playerId, map_id_t newMapId, map_id_t oldMapId, bool isPartyLeader) -> Result {
-	return callInstanceFunction("changeMap", playerId, newMapId, oldMapId, isPartyLeader);
+auto instance::player_change_map(game_player_id player_id, game_map_id new_map_id, game_map_id old_map_id, bool is_party_leader) -> result {
+	return call_instance_function("changeMap", player_id, new_map_id, old_map_id, is_party_leader);
 }
 
-auto Instance::friendlyMobHit(mob_id_t mobId, map_object_t mapMobId, map_id_t mapId, int32_t mobHp, int32_t mobMaxHp) -> Result {
-	return callInstanceFunction("friendlyHit", mobId, mapMobId, mapId, mobHp, mobMaxHp);
+auto instance::friendly_mob_hit(game_mob_id mob_id, game_map_object map_mob_id, game_map_id map_id, int32_t mob_hp, int32_t mob_max_hp) -> result {
+	return call_instance_function("friendlyHit", mob_id, map_mob_id, map_id, mob_hp, mob_max_hp);
 }
 
-auto Instance::timerComplete(const string_t &name, bool fromTimer) -> void {
-	timerEnd(name, fromTimer);
-	if (!fromTimer || (fromTimer && !isTimerPersistent(name))) {
-		removeTimer(name);
+auto instance::timer_complete(const string &name, bool from_timer) -> void {
+	timer_end(name, from_timer);
+	if (!from_timer || (from_timer && !is_timer_persistent(name))) {
+		remove_timer(name);
 	}
 }
 
-auto Instance::instanceEnd(bool calledByLua, bool fromTimer) -> void {
-	if (!calledByLua) {
-		timerEnd("instance", fromTimer);
+auto instance::instance_end(bool called_by_lua, bool from_timer) -> void {
+	if (!called_by_lua) {
+		timer_end("instance", from_timer);
 	}
 
-	if (!fromTimer || (fromTimer && m_persistent.count() > 0)) {
-		removeTimer("instance", false);
+	if (!from_timer || (from_timer && m_persistent.count() > 0)) {
+		remove_timer("instance", false);
 	}
 
-	showTimer(false);
+	show_timer(false);
 	if (m_persistent.count() == 0) {
-		markForDelete();
+		mark_for_delete();
 	}
 }
 
-auto Instance::isTimerPersistent(const string_t &name) -> bool {
-	auto iter = m_timerActions.find(name);
-	return iter != std::end(m_timerActions) ?
-		iter->second.isPersistent :
+auto instance::is_timer_persistent(const string &name) -> bool {
+	auto iter = m_timer_actions.find(name);
+	return iter != std::end(m_timer_actions) ?
+		iter->second.is_persistent :
 		false;
 }
 
-auto Instance::getCounterId() -> uint32_t {
-	return ++m_timerCounter;
+auto instance::get_counter_id() -> uint32_t {
+	return ++m_timer_counter;
 }
 
-auto Instance::markForDelete() -> void {
-	m_markedForDeletion = true;
-	clearTimers();
+auto instance::mark_for_delete() -> void {
+	m_marked_for_deletion = true;
+	clear_timers();
 	for (const auto &map : m_maps) {
-		map->setInstance(nullptr);
+		map->set_instance(nullptr);
 	}
 	for (const auto &player : m_players) {
-		player.second->setInstance(nullptr);
+		player.second->set_instance(nullptr);
 	}
 	m_players.clear();
 	for (const auto &party : m_parties) {
-		party->setInstance(nullptr);
+		party->set_instance(nullptr);
 	}
 	m_parties.clear();
 
@@ -353,51 +353,51 @@ auto Instance::markForDelete() -> void {
 	// e.g. a crash can be caused by marking for delete and then going to a map where an instance was (e.g. Zakum signup)
 }
 
-auto Instance::respawnMobs(map_id_t mapId) -> void {
-	if (mapId == Vana::Maps::NoMap) {
+auto instance::respawn_mobs(game_map_id map_id) -> void {
+	if (map_id == vana::maps::no_map) {
 		for (const auto &map : m_maps) {
-			map->respawn(SpawnTypes::Mob);
+			map->respawn(spawn_types::mob);
 		}
 	}
 	else {
-		Maps::getMap(mapId)->respawn(SpawnTypes::Mob);
+		maps::get_map(map_id)->respawn(spawn_types::mob);
 	}
 }
 
-auto Instance::respawnReactors(map_id_t mapId) -> void {
-	if (mapId == Vana::Maps::NoMap) {
+auto instance::respawn_reactors(game_map_id map_id) -> void {
+	if (map_id == vana::maps::no_map) {
 		for (const auto &map : m_maps) {
-			map->respawn(SpawnTypes::Reactor);
+			map->respawn(spawn_types::reactor);
 		}
 	}
 	else {
-		Maps::getMap(mapId)->respawn(SpawnTypes::Reactor);
+		maps::get_map(map_id)->respawn(spawn_types::reactor);
 	}
 }
 
-auto Instance::showTimer(bool show, bool doIt) -> void {
-	if (!show && (doIt || m_showTimer)) {
+auto instance::show_timer(bool show, bool do_it) -> void {
+	if (!show && (do_it || m_show_timer)) {
 		for (const auto &map : m_maps) {
-			map->send(Packets::Map::showTimer(seconds_t{0}));
+			map->send(packets::map::show_timer(seconds{0}));
 		}
 	}
-	else if (show && (doIt || !m_showTimer)) {
+	else if (show && (do_it || !m_show_timer)) {
 		for (const auto &map : m_maps) {
-			map->send(Packets::Map::showTimer(getInstanceSecondsRemaining()));
+			map->send(packets::map::show_timer(get_instance_seconds_remaining()));
 		}
 	}
 }
 
-auto Instance::setPersistence(const duration_t &persistence) -> void {
+auto instance::set_persistence(const duration &persistence) -> void {
 	m_persistent = persistence;
 }
 
-auto Instance::getPersistence() const -> duration_t {
+auto instance::get_persistence() const -> duration {
 	return m_persistent;
 }
 
-auto Instance::showTimer() const -> bool {
-	return m_showTimer;
+auto instance::show_timer() const -> bool {
+	return m_show_timer;
 }
 
 }

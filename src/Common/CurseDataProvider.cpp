@@ -24,27 +24,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-namespace Vana {
+namespace vana {
 
-auto CurseDataProvider::loadData() -> void {
-	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Curse Info... ";
+auto curse_data_provider::load_data() -> void {
+	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Curse Info...";
 
-	m_curseWords.clear();
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("curse_data"));
+	m_curse_words.clear();
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("curse_data"));
 
 	for (const auto &row : rs) {
-		m_curseWords.push_back(row.get<string_t>("word"));
+		m_curse_words.push_back(row.get<string>("word"));
 	}
 
 	std::cout << "DONE" << std::endl;
 }
 
-auto CurseDataProvider::isCurseWord(const string_t &cmp) const -> bool {
-	string_t c = StringUtilities::removeSpaces(StringUtilities::toLower(cmp));
-	return ext::any_of(m_curseWords, [&c](const string_t &s) -> bool {
-		return c.find(s, 0) != string_t::npos;
+auto curse_data_provider::is_curse_word(const string &cmp) const -> bool {
+	string c = utilities::str::remove_spaces(utilities::str::to_lower(cmp));
+	return ext::any_of(m_curse_words, [&c](const string &s) -> bool {
+		return c.find(s, 0) != string::npos;
 	});
 }
 

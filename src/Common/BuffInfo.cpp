@@ -17,198 +17,198 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "BuffInfo.hpp"
 
-namespace Vana {
+namespace vana {
 
-auto BuffInfo::fromPlayerOnly(uint8_t bitPosition) -> BuffInfo {
-	BuffInfo ret;
-	ret.m_bitPosition = bitPosition;
+auto buff_info::from_player_only(uint8_t bit_position) -> buff_info {
+	buff_info ret;
+	ret.m_bit_position = bit_position;
 	return ret;
 }
 
-auto BuffInfo::fromPlayerOnly(uint8_t bitPosition, BuffSkillValue value) -> BuffInfo {
-	BuffInfo ret;
-	ret.m_bitPosition = bitPosition;
+auto buff_info::from_player_only(uint8_t bit_position, buff_skill_value value) -> buff_info {
+	buff_info ret;
+	ret.m_bit_position = bit_position;
 	ret.m_value = value;
 	return ret;
 }
 
-auto BuffInfo::fromPlayerOnly(uint8_t bitPosition, int16_t predefinedValue) -> BuffInfo {
-	BuffInfo ret;
-	ret.m_bitPosition = bitPosition;
-	ret.m_predefinedValue = predefinedValue;
+auto buff_info::from_player_only(uint8_t bit_position, int16_t predefined_value) -> buff_info {
+	buff_info ret;
+	ret.m_bit_position = bit_position;
+	ret.m_predefined_value = predefined_value;
 	return ret;
 }
 
-auto BuffInfo::fromPlayerOnlyMovement(uint8_t bitPosition) -> BuffInfo {
-	BuffInfo ret;
-	ret.m_bitPosition = bitPosition;
-	ret.m_isMovementAffecting = true;
+auto buff_info::from_player_only_movement(uint8_t bit_position) -> buff_info {
+	buff_info ret;
+	ret.m_bit_position = bit_position;
+	ret.m_is_movement_affecting = true;
 	return ret;
 }
 
-auto BuffInfo::fromPlayerOnlyMovement(uint8_t bitPosition, BuffSkillValue value) -> BuffInfo {
-	BuffInfo ret;
-	ret.m_bitPosition = bitPosition;
+auto buff_info::from_player_only_movement(uint8_t bit_position, buff_skill_value value) -> buff_info {
+	buff_info ret;
+	ret.m_bit_position = bit_position;
 	ret.m_value = value;
-	ret.m_isMovementAffecting = true;
+	ret.m_is_movement_affecting = true;
 	return ret;
 }
 
-auto BuffInfo::fromPlayerOnlyMovement(uint8_t bitPosition, int16_t predefinedValue) -> BuffInfo {
-	BuffInfo ret;
-	ret.m_bitPosition = bitPosition;
-	ret.m_predefinedValue = predefinedValue;
-	ret.m_isMovementAffecting = true;
+auto buff_info::from_player_only_movement(uint8_t bit_position, int16_t predefined_value) -> buff_info {
+	buff_info ret;
+	ret.m_bit_position = bit_position;
+	ret.m_predefined_value = predefined_value;
+	ret.m_is_movement_affecting = true;
 	return ret;
 }
 
-auto BuffInfo::fromMapNoMovement(uint8_t bitPosition, BuffMapInfo mapInfo) -> BuffInfo {
-	BuffInfo ret;
-	ret.m_bitPosition = bitPosition;
-	ret.m_hasMapInfo = true;
-	ret.m_mapInfo = mapInfo;
+auto buff_info::from_map_no_movement(uint8_t bit_position, buff_map_info map_info) -> buff_info {
+	buff_info ret;
+	ret.m_bit_position = bit_position;
+	ret.m_has_map_info = true;
+	ret.m_map_info = map_info;
 	return ret;
 }
 
-auto BuffInfo::fromMapNoMovement(uint8_t bitPosition, BuffSkillValue value, BuffMapInfo mapInfo) -> BuffInfo {
-	BuffInfo ret;
-	ret.m_bitPosition = bitPosition;
-	ret.m_hasMapInfo = true;
-	ret.m_mapInfo = mapInfo;
+auto buff_info::from_map_no_movement(uint8_t bit_position, buff_skill_value value, buff_map_info map_info) -> buff_info {
+	buff_info ret;
+	ret.m_bit_position = bit_position;
+	ret.m_has_map_info = true;
+	ret.m_map_info = map_info;
 	ret.m_value = value;
 	return ret;
 }
 
-auto BuffInfo::fromMapNoMovement(uint8_t bitPosition, int16_t predefinedValue, BuffMapInfo mapInfo) -> BuffInfo {
-	BuffInfo ret;
-	ret.m_bitPosition = bitPosition;
-	ret.m_hasMapInfo = true;
-	ret.m_mapInfo = mapInfo;
-	ret.m_predefinedValue = predefinedValue;
+auto buff_info::from_map_no_movement(uint8_t bit_position, int16_t predefined_value, buff_map_info map_info) -> buff_info {
+	buff_info ret;
+	ret.m_bit_position = bit_position;
+	ret.m_has_map_info = true;
+	ret.m_map_info = map_info;
+	ret.m_predefined_value = predefined_value;
 	return ret;
 }
 
-auto BuffInfo::fromMapMovement(uint8_t bitPosition, BuffMapInfo mapInfo) -> BuffInfo {
-	BuffInfo ret;
-	ret.m_bitPosition = bitPosition;
-	ret.m_hasMapInfo = true;
-	ret.m_mapInfo = mapInfo;
-	ret.m_isMovementAffecting = true;
+auto buff_info::from_map_movement(uint8_t bit_position, buff_map_info map_info) -> buff_info {
+	buff_info ret;
+	ret.m_bit_position = bit_position;
+	ret.m_has_map_info = true;
+	ret.m_map_info = map_info;
+	ret.m_is_movement_affecting = true;
 	return ret;
 }
 
-auto BuffInfo::fromMapMovement(uint8_t bitPosition, BuffSkillValue value, BuffMapInfo mapInfo) -> BuffInfo {
-	BuffInfo ret;
-	ret.m_bitPosition = bitPosition;
-	ret.m_hasMapInfo = true;
-	ret.m_mapInfo = mapInfo;
+auto buff_info::from_map_movement(uint8_t bit_position, buff_skill_value value, buff_map_info map_info) -> buff_info {
+	buff_info ret;
+	ret.m_bit_position = bit_position;
+	ret.m_has_map_info = true;
+	ret.m_map_info = map_info;
 	ret.m_value = value;
-	ret.m_isMovementAffecting = true;
+	ret.m_is_movement_affecting = true;
 	return ret;
 }
 
-auto BuffInfo::fromMapMovement(uint8_t bitPosition, int16_t predefinedValue, BuffMapInfo mapInfo) -> BuffInfo {
-	BuffInfo ret;
-	ret.m_bitPosition = bitPosition;
-	ret.m_hasMapInfo = true;
-	ret.m_mapInfo = mapInfo;
-	ret.m_predefinedValue = predefinedValue;
-	ret.m_isMovementAffecting = true;
+auto buff_info::from_map_movement(uint8_t bit_position, int16_t predefined_value, buff_map_info map_info) -> buff_info {
+	buff_info ret;
+	ret.m_bit_position = bit_position;
+	ret.m_has_map_info = true;
+	ret.m_map_info = map_info;
+	ret.m_predefined_value = predefined_value;
+	ret.m_is_movement_affecting = true;
 	return ret;
 }
 
-auto BuffInfo::getPredefinedValue() const -> int16_t {
-	return m_predefinedValue;
+auto buff_info::get_predefined_value() const -> int16_t {
+	return m_predefined_value;
 }
 
-auto BuffInfo::getMapInfo() const -> BuffMapInfo {
-	return m_mapInfo;
+auto buff_info::get_map_info() const -> buff_map_info {
+	return m_map_info;
 }
 
-auto BuffInfo::getValue() const -> BuffSkillValue {
+auto buff_info::get_value() const -> buff_skill_value {
 	return m_value;
 }
 
-auto BuffInfo::getChance() const -> int16_t {
+auto buff_info::get_chance() const -> int16_t {
 	return m_chance;
 }
 
-auto BuffInfo::getBitPosition() const -> uint8_t {
-	return m_bitPosition;
+auto buff_info::get_bit_position() const -> uint8_t {
+	return m_bit_position;
 }
 
-auto BuffInfo::getBuffByte() const -> uint8_t {
-	return getBuffByte(m_bitPosition);
+auto buff_info::get_buff_byte() const -> uint8_t {
+	return get_buff_byte(m_bit_position);
 }
 
-auto BuffInfo::getBuffType() const -> uint8_t {
-	return getBuffType(m_bitPosition);
+auto buff_info::get_buff_type() const -> uint8_t {
+	return get_buff_type(m_bit_position);
 }
 
-auto BuffInfo::getAct() const -> BuffAction {
+auto buff_info::get_act() const -> buff_action {
 	return m_act;
 }
 
-auto BuffInfo::getActValue() const -> BuffSkillValue {
-	return m_actValue;
+auto buff_info::get_act_value() const -> buff_skill_value {
+	return m_act_value;
 }
 
-auto BuffInfo::getActInterval() const -> duration_t {
-	return m_actInterval;
+auto buff_info::get_act_interval() const -> duration {
+	return m_act_interval;
 }
 
-auto BuffInfo::isMovementAffecting() const -> bool {
-	return m_isMovementAffecting;
+auto buff_info::is_movement_affecting() const -> bool {
+	return m_is_movement_affecting;
 }
 
-auto BuffInfo::hasMapInfo() const -> bool {
-	return m_hasMapInfo;
+auto buff_info::has_map_info() const -> bool {
+	return m_has_map_info;
 }
 
-auto BuffInfo::hasAct() const -> bool {
-	return m_act != BuffAction::None;
+auto buff_info::has_act() const -> bool {
+	return m_act != buff_action::none;
 }
 
-auto BuffInfo::withValue(BuffSkillValue value) const -> BuffInfo {
-	BuffInfo result{*this};
+auto buff_info::with_value(buff_skill_value value) const -> buff_info {
+	buff_info result{*this};
 	result.m_value = value;
 	return result;
 }
 
-auto BuffInfo::withMapInfo(BuffMapInfo value) const -> BuffInfo {
-	BuffInfo result{*this};
-	result.m_mapInfo = value;
-	result.m_hasMapInfo = true;
+auto buff_info::with_map_info(buff_map_info value) const -> buff_info {
+	buff_info result{*this};
+	result.m_map_info = value;
+	result.m_has_map_info = true;
 	return result;
 }
 
-auto BuffInfo::withChance(int16_t value) const -> BuffInfo {
-	BuffInfo result{*this};
+auto buff_info::with_chance(int16_t value) const -> buff_info {
+	buff_info result{*this};
 	result.m_chance = value;
 	return result;
 }
 
-auto BuffInfo::withPredefinedValue(int16_t value) const -> BuffInfo {
-	BuffInfo result{*this};
-	result.m_value = BuffSkillValue::Predefined;
-	result.m_predefinedValue = value;
+auto buff_info::with_predefined_value(int16_t value) const -> buff_info {
+	buff_info result{*this};
+	result.m_value = buff_skill_value::predefined;
+	result.m_predefined_value = value;
 	return result;
 }
 
-auto BuffInfo::withAct(BuffAction action, BuffSkillValue value, duration_t interval) const -> BuffInfo {
-	BuffInfo result{*this};
+auto buff_info::with_act(buff_action action, buff_skill_value value, duration interval) const -> buff_info {
+	buff_info result{*this};
 	result.m_act = action;
-	result.m_actValue = value;
-	result.m_actInterval = interval;
+	result.m_act_value = value;
+	result.m_act_interval = interval;
 	return result;
 }
 
-auto BuffInfo::getBuffByte(uint8_t bitPosition) -> uint8_t {
-	return (bitPosition - 1) / 8;
+auto buff_info::get_buff_byte(uint8_t bit_position) -> uint8_t {
+	return (bit_position - 1) / 8;
 }
 
-auto BuffInfo::getBuffType(uint8_t bitPosition) -> uint8_t {
-	return 1U << ((bitPosition - 1) % 8);
+auto buff_info::get_buff_type(uint8_t bit_position) -> uint8_t {
+	return 1U << ((bit_position - 1) % 8);
 }
 
 }

@@ -20,31 +20,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <vector>
 
-namespace Vana {
-	class Item;
+namespace vana {
+	class item;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		class PlayerStorage {
-			NONCOPYABLE(PlayerStorage);
-			NO_DEFAULT_CONSTRUCTOR(PlayerStorage);
+		class player_storage {
+			NONCOPYABLE(player_storage);
+			NO_DEFAULT_CONSTRUCTOR(player_storage);
 		public:
-			PlayerStorage(Player *player);
-			~PlayerStorage();
+			player_storage(player *player);
+			~player_storage();
 
-			auto setSlots(storage_slot_t slots) -> void;
-			auto addItem(Item *item) -> void;
-			auto takeItem(storage_slot_t slot) -> void;
-			auto setMesos(mesos_t mesos) -> void { m_mesos = mesos; }
-			auto changeMesos(mesos_t mesos) -> void;
+			auto set_slots(game_storage_slot slots) -> void;
+			auto add_item(item *item) -> void;
+			auto take_item(game_storage_slot slot) -> void;
+			auto set_mesos(game_mesos mesos) -> void { m_mesos = mesos; }
+			auto change_mesos(game_mesos mesos) -> void;
 
-			auto getSlots() const -> storage_slot_t { return m_slots; }
-			auto getNumItems() const -> storage_slot_t { return static_cast<storage_slot_t>(m_items.size()); }
-			auto getNumItems(inventory_t inv) -> storage_slot_t;
-			auto getMesos() const -> mesos_t { return m_mesos; }
-			auto isFull() const -> bool { return m_items.size() == m_slots; }
-			auto getItem(storage_slot_t slot) const -> Item * {
+			auto get_slots() const -> game_storage_slot { return m_slots; }
+			auto get_num_items() const -> game_storage_slot { return static_cast<game_storage_slot>(m_items.size()); }
+			auto get_num_items(game_inventory inv) -> game_storage_slot;
+			auto get_mesos() const -> game_mesos { return m_mesos; }
+			auto is_full() const -> bool { return m_items.size() == m_slots; }
+			auto get_item(game_storage_slot slot) const -> item * {
 				if (slot < m_items.size()) {
 					return m_items[slot];
 				}
@@ -54,11 +54,11 @@ namespace Vana {
 			auto load() -> void;
 			auto save() -> void;
 		private:
-			storage_slot_t m_slots = 0;
-			mesos_t m_mesos = 0;
-			int32_t m_charSlots = 0;
-			vector_t<Item *> m_items;
-			Player *m_player = nullptr;
+			game_storage_slot m_slots = 0;
+			game_mesos m_mesos = 0;
+			int32_t m_char_slots = 0;
+			vector<item *> m_items;
+			player *m_player = nullptr;
 		};
 	}
 }

@@ -22,12 +22,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-namespace Vana {
-	struct ReactorInfo {
-		bool removeInFieldSet = false;
-		bool activateByTouch = false;
-		int8_t maxStates = 0;
-		reactor_id_t link = 0;
-		hash_map_t<int8_t, vector_t<ReactorStateInfo>> states;
+namespace vana {
+	struct reactor_info {
+		bool remove_in_field_set = false;
+		bool activate_by_touch = false;
+		int8_t max_states = 0;
+		game_reactor_id link = 0;
+		hash_map<int8_t, vector<reactor_state_info>> states;
 	};
 }

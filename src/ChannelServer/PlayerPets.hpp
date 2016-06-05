@@ -20,32 +20,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <unordered_map>
 
-namespace Vana {
-	class PacketBuilder;
+namespace vana {
+	class packet_builder;
 
-	namespace ChannelServer {
-		class Pet;
-		class Player;
+	namespace channel_server {
+		class pet;
+		class player;
 
-		class PlayerPets {
-			NONCOPYABLE(PlayerPets);
-			NO_DEFAULT_CONSTRUCTOR(PlayerPets);
+		class player_pets {
+			NONCOPYABLE(player_pets);
+			NO_DEFAULT_CONSTRUCTOR(player_pets);
 		public:
-			PlayerPets(Player *player);
+			player_pets(player *player);
 
 			auto save() -> void;
-			auto petInfoPacket(PacketBuilder &builder) -> void;
-			auto connectPacket(PacketBuilder &builder) -> void;
+			auto pet_info_packet(packet_builder &builder) -> void;
+			auto connect_packet(packet_builder &builder) -> void;
 
-			auto getPet(pet_id_t petId) -> Pet *;
-			auto getSummoned(int8_t index) -> Pet *;
+			auto get_pet(game_pet_id pet_id) -> pet *;
+			auto get_summoned(int8_t index) -> pet *;
 
-			auto addPet(Pet *pet) -> void;
-			auto setSummoned(int8_t index, pet_id_t petId) -> void;
+			auto add_pet(pet *pet) -> void;
+			auto set_summoned(int8_t index, game_pet_id pet_id) -> void;
 		private:
-			Player *m_player = nullptr;
-			hash_map_t<pet_id_t, Pet *> m_pets;
-			hash_map_t<int8_t, pet_id_t> m_summoned;
+			player *m_player = nullptr;
+			hash_map<game_pet_id, pet *> m_pets;
+			hash_map<int8_t, game_pet_id> m_summoned;
 		};
 	}
 }

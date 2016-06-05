@@ -17,14 +17,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-namespace Vana {
-	class PacketReader;
+namespace vana {
+	class packet_reader;
 
-	namespace ChannelServer {
-		class LoginServerSession;
+	namespace channel_server {
+		class login_server_session;
 
-		namespace LoginServerSessionHandler {
-			auto connect(ref_ptr_t<LoginServerSession> session, PacketReader &reader) -> void;
+		namespace login_server_session_handler {
+			auto connect(ref_ptr<login_server_session> session, packet_reader &reader) -> void;
 		}
 	}
 }

@@ -28,33 +28,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <utility>
 #include <vector>
 
-namespace Vana {
-	namespace Timer {
-		class Container;
-		class Timer;
+namespace vana {
+	namespace timer {
+		class container;
+		class timer;
 
-		class TimerThread {
-			SINGLETON(TimerThread);
+		class timer_thread {
+			SINGLETON(timer_thread);
 		public:
-			~TimerThread();
-			auto getTimerContainer() const -> ref_ptr_t<Container>;
-			auto registerTimer(ref_ptr_t<Timer> timer, time_point_t runAt) -> void;
+			~timer_thread();
+			auto get_timer_container() const -> ref_ptr<container>;
+			auto register_timer(ref_ptr<timer> timer, time_point run_at) -> void;
 		private:
-			auto getWaitTime() const -> time_point_t;
+			auto get_wait_time() const -> time_point;
 
-			using timer_pair_t = pair_t<time_point_t, view_ptr_t<Timer>>;
+			using timer_pair = pair<time_point, view_ptr<timer>>;
 
-			struct FindClosestTimer {
-				auto operator()(const timer_pair_t &t1, const timer_pair_t &t2) const -> bool {
+			struct find_closest_timer {
+				auto operator()(const timer_pair &t1, const timer_pair &t2) const -> bool {
 					return t1.first > t2.first;
 				}
 			};
 
-			std::priority_queue<timer_pair_t, vector_t<timer_pair_t>, FindClosestTimer> m_timers;
-			std::condition_variable_any m_mainLoopCondition;
-			recursive_mutex_t m_timersMutex;
-			ref_ptr_t<thread_t> m_thread;
-			ref_ptr_t<Container> m_container; // Central container for Timers that don't belong to other containers
+			std::priority_queue<timer_pair, vector<timer_pair>, find_closest_timer> m_timers;
+			std::condition_variable_any m_main_loop_condition;
+			recursive_mutex m_timers_mutex;
+			ref_ptr<thread> m_thread;
+			ref_ptr<container> m_container; // Central container for timers that don't belong to other containers
 		};
 	}
 }

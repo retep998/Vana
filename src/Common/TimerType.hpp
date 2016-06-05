@@ -19,28 +19,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	enum class TimerType : uint32_t {
-		BuffTimer,
-		EnergyChargeTimer,
-		CoolTimer,
-		InstanceTimer,
-		MapleTvTimer,
-		MapTimer,
-		MistTimer,
-		DoorTimer,
-		MobHealTimer,
-		MobRemoveTimer,
-		MobStatusTimer,
-		PetTimer,
-		PickpocketTimer,
-		PingTimer,
-		RankTimer,
-		ReactionTimer,
-		SkillActTimer,
-		SpongeCleanupTimer,
-		TradeTimer,
-		WeatherTimer,
-		FinalizeTimer,
+namespace vana {
+	enum class timer_type : uint32_t {
+		buff_timer,
+		energy_charge_timer,
+		cool_timer,
+		instance_timer,
+		maple_tv_timer,
+		map_timer,
+		mist_timer,
+		door_timer,
+		mob_heal_timer,
+		mob_remove_timer,
+		mob_status_timer,
+		pet_timer,
+		pickpocket_timer,
+		ping_timer,
+		rank_timer,
+		reaction_timer,
+		skill_act_timer,
+		sponge_cleanup_timer,
+		trade_timer,
+		weather_timer,
+		finalize_timer,
 	};
 }

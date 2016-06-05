@@ -20,46 +20,46 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/PacketBuilder.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class PacketReader;
-	struct NpcSpawnInfo;
-	struct ShopData;
+namespace vana {
+	class packet_reader;
+	struct npc_spawn_info;
+	struct shop_data;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		namespace Packets {
-			namespace Npc {
-				namespace BoughtMessages {
+		namespace packets {
+			namespace npc {
+				namespace bought_messages {
 					enum {
-						Success = 0,
-						NotEnoughInStock = 1,
-						NotEnoughMesos = 2,
-						NoSlots = 3
+						success = 0,
+						not_enough_in_stock = 1,
+						not_enough_mesos = 2,
+						no_slots = 3
 					};
 				}
-				namespace Dialogs {
-					enum DialogOptions : int8_t {
-						Normal = 0x00,
-						YesNo = 0x01,
-						GetText = 0x02,
-						GetNumber = 0x03,
-						Simple = 0x04,
-						Question = 0x05,
-						Quiz = 0x06,
-						Style = 0x07,
-						AcceptDecline = 0x0C,
-						AcceptDeclineNoExit = 0x0D
+				namespace dialogs {
+					enum dialog_options : int8_t {
+						normal = 0x00,
+						yes_no = 0x01,
+						get_text = 0x02,
+						get_number = 0x03,
+						simple = 0x04,
+						question = 0x05,
+						quiz = 0x06,
+						style = 0x07,
+						accept_decline = 0x0C,
+						accept_decline_no_exit = 0x0D
 					};
 				}
 
-				PACKET(showNpc, const NpcSpawnInfo &npc, map_object_t id, bool show = true);
-				PACKET(controlNpc, const NpcSpawnInfo &npc, map_object_t id, bool show = true);
-				PACKET(animateNpc, PacketReader &reader);
-				PACKET(showNpcEffect, int32_t index, bool show = false);
+				PACKET(show_npc, const npc_spawn_info &npc, game_map_object id, bool show = true);
+				PACKET(control_npc, const npc_spawn_info &npc, game_map_object id, bool show = true);
+				PACKET(animate_npc, packet_reader &reader);
+				PACKET(show_npc_effect, int32_t index, bool show = false);
 				PACKET(bought, uint8_t msg);
-				PACKET(showShop, const ShopData &shop, slot_qty_t rechargeableBonus);
-				PACKET(npcChat, int8_t type, map_object_t npcId, const string_t &text, bool excludeText = false);
+				PACKET(show_shop, const shop_data &shop, game_slot_qty rechargeable_bonus);
+				PACKET(npc_chat, int8_t type, game_map_object npc_id, const string &text, bool exclude_text = false);
 			}
 		}
 	}

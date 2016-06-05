@@ -35,63 +35,63 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/SmsgHeader.hpp"
 #include <unordered_map>
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
-namespace Map {
+namespace vana {
+namespace channel_server {
+namespace packets {
+namespace map {
 
-PACKET_IMPL(playerPacket, ref_ptr_t<Vana::ChannelServer::Player> player) {
-	PacketBuilder builder;
+PACKET_IMPL(player_packet, ref_ptr<vana::channel_server::player> player) {
+	packet_builder builder;
 
 	builder
-		.add<header_t>(SMSG_MAP_PLAYER_SPAWN)
-		.add<player_id_t>(player->getId())
-		.add<string_t>(player->getName())
-		.add<string_t>("") // Guild
+		.add<packet_header>(SMSG_MAP_PLAYER_SPAWN)
+		.add<game_player_id>(player->get_id())
+		.add<string>(player->get_name())
+		.add<string>("") // Guild
 		.add<int16_t>(0) // Guild icon garbage
 		.add<int8_t>(0) // Guild icon garbage
 		.add<int16_t>(0) // Guild icon garbage
 		.add<int8_t>(0); // Guild icon garbage
 
-	PacketBuilder ref = Helpers::addBuffMapValues(player->getActiveBuffs()->getMapBuffValues());
-	builder.addBuffer(ref);
+	packet_builder ref = helpers::add_buff_map_values(player->get_active_buffs()->get_map_buff_values());
+	builder.add_buffer(ref);
 
 	builder
-		.add<job_id_t>(player->getStats()->getJob())
-		.addBuffer(Helpers::addPlayerDisplay(player))
+		.add<game_job_id>(player->get_stats()->get_job())
+		.add_buffer(helpers::add_player_display(player))
 		.unk<int32_t>()
-		.add<item_id_t>(player->getItemEffect())
-		.add<item_id_t>(player->getChair())
-		.add<Point>(player->getPos())
-		.add<int8_t>(player->getStance())
-		.add<foothold_id_t>(player->getFoothold())
+		.add<game_item_id>(player->get_item_effect())
+		.add<game_item_id>(player->get_chair())
+		.add<point>(player->get_pos())
+		.add<int8_t>(player->get_stance())
+		.add<game_foothold_id>(player->get_foothold())
 		.unk<int8_t>();
 
-	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
-		if (Pet *pet = player->getPets()->getSummoned(i)) {
+	for (int8_t i = 0; i < inventories::max_pet_count; i++) {
+		if (pet *pet = player->get_pets()->get_summoned(i)) {
 			builder
 				.add<bool>(true)
-				.add<item_id_t>(pet->getItemId())
-				.add<string_t>(pet->getName())
-				.add<pet_id_t>(pet->getId())
-				.add<Point>(pet->getPos())
-				.add<int8_t>(pet->getStance())
-				.add<foothold_id_t>(pet->getFoothold())
-				.add<bool>(pet->hasNameTag())
-				.add<bool>(pet->hasQuoteItem());
+				.add<game_item_id>(pet->get_item_id())
+				.add<string>(pet->get_name())
+				.add<game_pet_id>(pet->get_id())
+				.add<point>(pet->get_pos())
+				.add<int8_t>(pet->get_stance())
+				.add<game_foothold_id>(pet->get_foothold())
+				.add<bool>(pet->has_name_tag())
+				.add<bool>(pet->has_quote_item());
 		}
 	}
 	// End of pets
 	builder.add<bool>(false);
 
-	player->getMounts()->mountInfoMapSpawnPacket(builder);
+	player->get_mounts()->mount_info_map_spawn_packet(builder);
 
 	builder.add<int8_t>(0); // Player room
 
-	bool hasChalkboard = !player->getChalkboard().empty();
-	builder.add<bool>(hasChalkboard);
-	if (hasChalkboard) {
-		builder.add<string_t>(player->getChalkboard());
+	bool has_chalkboard = !player->get_chalkboard().empty();
+	builder.add<bool>(has_chalkboard);
+	if (has_chalkboard) {
+		builder.add<string>(player->get_chalkboard());
 	}
 
 	builder
@@ -104,58 +104,58 @@ PACKET_IMPL(playerPacket, ref_ptr_t<Vana::ChannelServer::Player> player) {
 	return builder;
 }
 
-PACKET_IMPL(removePlayer, player_id_t playerId) {
-	PacketBuilder builder;
+PACKET_IMPL(remove_player, game_player_id player_id) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MAP_PLAYER_DESPAWN)
-		.add<player_id_t>(playerId);
+		.add<packet_header>(SMSG_MAP_PLAYER_DESPAWN)
+		.add<game_player_id>(player_id);
 	return builder;
 }
 
-PACKET_IMPL(changeMap, ref_ptr_t<Vana::ChannelServer::Player> player, bool spawnByPosition, const Point &spawnPosition) {
-	PacketBuilder builder;
+PACKET_IMPL(change_map, ref_ptr<vana::channel_server::player> player, bool spawn_by_position, const point &spawn_position) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_CHANGE_MAP)
-		.add<int32_t>(ChannelServer::getInstance().getChannelId())
-		.add<uint8_t>(player->getPortalCount(true))
+		.add<packet_header>(SMSG_CHANGE_MAP)
+		.add<int32_t>(channel_server::get_instance().get_channel_id())
+		.add<uint8_t>(player->get_portal_count(true))
 		.add<bool>(false) // Not a connect packet
 		.add<int16_t>(0); // Some amount for a funny message at the top of the screen
 
 	if (false) {
-		size_t lineAmount = 0;
-		builder.add<string_t>("Message title");
-		for (size_t i = 0; i < lineAmount; i++) {
-			builder.add<string_t>("Line");
+		size_t line_amount = 0;
+		builder.add<string>("Message title");
+		for (size_t i = 0; i < line_amount; i++) {
+			builder.add<string>("Line");
 		}
 	}
 
 	builder
-		.add<map_id_t>(player->getMapId())
-		.add<portal_id_t>(player->getMapPos())
-		.add<health_t>(player->getStats()->getHp())
-		.add<bool>(spawnByPosition);
+		.add<game_map_id>(player->get_map_id())
+		.add<game_portal_id>(player->get_map_pos())
+		.add<game_health>(player->get_stats()->get_hp())
+		.add<bool>(spawn_by_position);
 
-	if (spawnByPosition) {
-		builder.add<WidePoint>(WidePoint{spawnPosition});
+	if (spawn_by_position) {
+		builder.add<wide_point>(wide_point{spawn_position});
 	}
 
-	builder.add<FileTime>(FileTime{});
+	builder.add<file_time>(file_time{});
 	return builder;
 }
 
-PACKET_IMPL(portalBlocked) {
-	PacketBuilder builder;
+PACKET_IMPL(portal_blocked) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_PLAYER_UPDATE)
+		.add<packet_header>(SMSG_PLAYER_UPDATE)
 		.unk<int8_t>(1)
 		.unk<int32_t>();
 	return builder;
 }
 
-PACKET_IMPL(showClock, int8_t hour, int8_t min, int8_t sec) {
-	PacketBuilder builder;
+PACKET_IMPL(show_clock, int8_t hour, int8_t min, int8_t sec) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_TIMER)
+		.add<packet_header>(SMSG_TIMER)
 		.add<int8_t>(0x01)
 		.add<int8_t>(hour)
 		.add<int8_t>(min)
@@ -163,136 +163,136 @@ PACKET_IMPL(showClock, int8_t hour, int8_t min, int8_t sec) {
 	return builder;
 }
 
-PACKET_IMPL(showTimer, const seconds_t &sec) {
-	PacketBuilder builder;
+PACKET_IMPL(show_timer, const seconds &sec) {
+	packet_builder builder;
 	if (sec.count() > 0) {
 		builder
-			.add<header_t>(SMSG_TIMER)
+			.add<packet_header>(SMSG_TIMER)
 			.unk<int8_t>(0x02)
 			.add<int32_t>(static_cast<int32_t>(sec.count()));
 	}
 	else {
-		builder.add<header_t>(SMSG_TIMER_OFF);
+		builder.add<packet_header>(SMSG_TIMER_OFF);
 	}
 	return builder;
 }
 
-PACKET_IMPL(forceMapEquip) {
-	PacketBuilder builder;
-	builder.add<header_t>(SMSG_MAP_FORCE_EQUIPMENT);
+PACKET_IMPL(force_map_equip) {
+	packet_builder builder;
+	builder.add<packet_header>(SMSG_MAP_FORCE_EQUIPMENT);
 	return builder;
 }
 
-PACKET_IMPL(showEventInstructions) {
-	PacketBuilder builder;
+PACKET_IMPL(show_event_instructions) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_EVENT_INSTRUCTION)
+		.add<packet_header>(SMSG_EVENT_INSTRUCTION)
 		.unk<int8_t>();
 	return builder;
 }
 
-PACKET_IMPL(spawnMist, Mist *mist, bool mapEntry) {
-	PacketBuilder builder;
+PACKET_IMPL(spawn_mist, mist *mist, bool map_entry) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MIST_SPAWN)
-		.add<mist_id_t>(mist->getId())
-		.add<int32_t>(mist->isMobMist() ? 0 : mist->isPoison() ? 1 : 2)
-		.add<int32_t>(mist->getOwnerId())
-		.add<skill_id_t>(mist->getSkillId())
-		.add<skill_level_t>(mist->getSkillLevel())
-		.add<int16_t>(mapEntry ? 0 : mist->getDelay())
-		.add<WidePoint>(WidePoint{mist->getArea().leftTop()})
-		.add<WidePoint>(WidePoint{mist->getArea().rightBottom()})
+		.add<packet_header>(SMSG_MIST_SPAWN)
+		.add<game_mist_id>(mist->get_id())
+		.add<int32_t>(mist->is_mob_mist() ? 0 : mist->is_poison() ? 1 : 2)
+		.add<int32_t>(mist->get_owner_id())
+		.add<game_skill_id>(mist->get_skill_id())
+		.add<game_skill_level>(mist->get_skill_level())
+		.add<int16_t>(map_entry ? 0 : mist->get_delay())
+		.add<wide_point>(wide_point{mist->get_area().left_top()})
+		.add<wide_point>(wide_point{mist->get_area().right_bottom()})
 		.unk<int32_t>();
 	return builder;
 }
 
-PACKET_IMPL(removeMist, map_object_t id) {
-	PacketBuilder builder;
+PACKET_IMPL(remove_mist, game_map_object id) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MIST_DESPAWN)
-		.add<map_object_t>(id);
+		.add<packet_header>(SMSG_MIST_DESPAWN)
+		.add<game_map_object>(id);
 	return builder;
 }
 
-PACKET_IMPL(spawnDoor, ref_ptr_t<MysticDoor> door, bool isInsideTown, bool alreadyOpen) {
-	PacketBuilder builder;
+PACKET_IMPL(spawn_door, ref_ptr<mystic_door> door, bool is_inside_town, bool already_open) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MYSTIC_DOOR_SPAWN)
-		.add<bool>(alreadyOpen)
-		.add<player_id_t>(door->getOwnerId())
-		.add<Point>(isInsideTown ? door->getTownPos() : door->getMapPos());
+		.add<packet_header>(SMSG_MYSTIC_DOOR_SPAWN)
+		.add<bool>(already_open)
+		.add<game_player_id>(door->get_owner_id())
+		.add<point>(is_inside_town ? door->get_town_pos() : door->get_map_pos());
 	return builder;
 }
 
-PACKET_IMPL(removeDoor, ref_ptr_t<MysticDoor> door, bool isFade) {
-	PacketBuilder builder;
+PACKET_IMPL(remove_door, ref_ptr<mystic_door> door, bool is_fade) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MYSTIC_DOOR_DESPAWN)
-		.add<bool>(!isFade)
-		.add<player_id_t>(door->getOwnerId());
+		.add<packet_header>(SMSG_MYSTIC_DOOR_DESPAWN)
+		.add<bool>(!is_fade)
+		.add<game_player_id>(door->get_owner_id());
 	return builder;
 }
 
-PACKET_IMPL(spawnPortal, ref_ptr_t<MysticDoor> door, map_id_t callingMap) {
-	PacketBuilder builder;
-	builder.add<header_t>(SMSG_PORTAL_ACTION);
-	if (door->getMapId() == callingMap) {
+PACKET_IMPL(spawn_portal, ref_ptr<mystic_door> door, game_map_id calling_map) {
+	packet_builder builder;
+	builder.add<packet_header>(SMSG_PORTAL_ACTION);
+	if (door->get_map_id() == calling_map) {
 		builder
-			.add<map_id_t>(door->getMapId())
-			.add<map_id_t>(door->getTownId())
-			.add<Point>(door->getTownPos());
+			.add<game_map_id>(door->get_map_id())
+			.add<game_map_id>(door->get_town_id())
+			.add<point>(door->get_town_pos());
 	}
 	else {
 		builder
-			.add<map_id_t>(door->getTownId())
-			.add<map_id_t>(door->getMapId())
-			.add<Point>(door->getMapPos());
+			.add<game_map_id>(door->get_town_id())
+			.add<game_map_id>(door->get_map_id())
+			.add<point>(door->get_map_pos());
 	}
 	return builder;
 }
 
-PACKET_IMPL(removePortal) {
-	PacketBuilder builder;
+PACKET_IMPL(remove_portal) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_PORTAL_ACTION)
-		.add<map_id_t>(Vana::Maps::NoMap)
-		.add<map_id_t>(Vana::Maps::NoMap);
+		.add<packet_header>(SMSG_PORTAL_ACTION)
+		.add<game_map_id>(vana::maps::no_map)
+		.add<game_map_id>(vana::maps::no_map);
 	return builder;
 }
 
-PACKET_IMPL(instantWarp, portal_id_t portalId) {
-	PacketBuilder builder;
+PACKET_IMPL(instant_warp, game_portal_id portal_id) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MAP_TELEPORT)
+		.add<packet_header>(SMSG_MAP_TELEPORT)
 		.add<int8_t>(0x01)
-		.add<portal_id_t>(portalId);
+		.add<game_portal_id>(portal_id);
 	return builder;
 }
 
-PACKET_IMPL(boatDockUpdate, bool docked, int8_t shipKind) {
-	PacketBuilder builder;
+PACKET_IMPL(boat_dock_update, bool docked, int8_t ship_kind) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_SHIP)
-		.add<int8_t>(shipKind == ShipKind::Balrog ?
+		.add<packet_header>(SMSG_SHIP)
+		.add<int8_t>(ship_kind == ship_kind::balrog ?
 			0x0A :
 			(docked ? 0x0C : 0x08))
-		.add<int8_t>(shipKind == ShipKind::Balrog ?
+		.add<int8_t>(ship_kind == ship_kind::balrog ?
 			(docked ? 0x04 : 0x05) :
 			(docked ? 0x06 : 0x02));
 	return builder;
 }
 
-PACKET_IMPL(changeWeather, bool adminWeather, item_id_t itemId, const string_t &message) {
-	PacketBuilder builder;
+PACKET_IMPL(change_weather, bool admin_weather, game_item_id item_id, const string &message) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MAP_WEATHER_EFFECT)
-		.add<bool>(adminWeather)
-		.add<item_id_t>(itemId);
+		.add<packet_header>(SMSG_MAP_WEATHER_EFFECT)
+		.add<bool>(admin_weather)
+		.add<game_item_id>(item_id);
 
-	if (itemId != 0 && !adminWeather) {
+	if (item_id != 0 && !admin_weather) {
 		// Admin weathers doesn't have a message
-		builder.add<string_t>(message);
+		builder.add<string>(message);
 	}
 	return builder;
 }

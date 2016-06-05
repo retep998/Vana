@@ -17,15 +17,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-namespace Vana {
-	class PacketReader;
+namespace vana {
+	class packet_reader;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		namespace CommandHandler {
-			auto handleCommand(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleAdminCommand(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+		namespace command_handler {
+			auto handle_command(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_admin_command(ref_ptr<player> player, packet_reader &reader) -> void;
 		}
 	}
 }

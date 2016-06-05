@@ -19,14 +19,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct QuestRequestInfo {
-		bool isQuest = false;
-		bool isMob = false;
-		bool isJob = false;
-		bool isItem = false;
+namespace vana {
+	struct quest_request_info {
+		bool is_quest = false;
+		bool is_mob = false;
+		bool is_job = false;
+		bool is_item = false;
 		int32_t id = -1;
 		int32_t count = -1;
-		int8_t questState = -1;
+		int8_t quest_state = -1;
 	};
 }

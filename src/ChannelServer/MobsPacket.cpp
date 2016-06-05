@@ -24,46 +24,46 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/SmsgHeader.hpp"
 #include "ChannelServer/StatusInfo.hpp"
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
-namespace Mobs {
+namespace vana {
+namespace channel_server {
+namespace packets {
+namespace mobs {
 
-PACKET_IMPL(spawnMob, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> owner, MobSpawnType spawn) {
-	PacketBuilder builder;
+PACKET_IMPL(spawn_mob, ref_ptr<mob> value, int8_t summon_effect, ref_ptr<mob> owner, mob_spawn_type spawn) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MOB_SHOW)
-		.addBuffer(mobPacket(mob, summonEffect, owner, spawn));
+		.add<packet_header>(SMSG_MOB_SHOW)
+		.add_buffer(mob_packet(value, summon_effect, owner, spawn));
 	return builder;
 }
 
-PACKET_IMPL(requestControl, ref_ptr_t<Mob> mob, MobSpawnType spawn) {
-	PacketBuilder builder;
+PACKET_IMPL(request_control, ref_ptr<mob> value, mob_spawn_type spawn) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MOB_CONTROL)
+		.add<packet_header>(SMSG_MOB_CONTROL)
 		.unk<int8_t>(1)
-		.addBuffer(mobPacket(mob, 0, nullptr, spawn));
+		.add_buffer(mob_packet(value, 0, nullptr, spawn));
 	return builder;
 }
 
-PACKET_IMPL(mobPacket, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> owner, MobSpawnType spawn) {
-	PacketBuilder builder;
+PACKET_IMPL(mob_packet, ref_ptr<mob> value, int8_t summon_effect, ref_ptr<mob> owner, mob_spawn_type spawn) {
+	packet_builder builder;
 	builder
-		.add<map_object_t>(mob->getMapMobId())
-		.add<int8_t>(static_cast<int8_t>(mob->getControlStatus()))
-		.add<mob_id_t>(mob->getMobId())
-		.add<int32_t>(mob->getStatusBits());
+		.add<game_map_object>(value->get_map_mob_id())
+		.add<int8_t>(static_cast<int8_t>(value->get_control_status()))
+		.add<game_mob_id>(value->get_mob_id())
+		.add<int32_t>(value->get_status_bits());
 
-	for (const auto &kvp : mob->getStatusInfo()) {
-		if (kvp.first != StatusEffects::Mob::Empty) {
-			const StatusInfo &info = kvp.second;
+	for (const auto &kvp : value->get_status_info()) {
+		if (kvp.first != status_effects::mob::empty) {
+			const status_info &info = kvp.second;
 			builder.add<int16_t>(static_cast<int16_t>(info.val));
-			if (info.skillId >= 0) {
-				builder.add<int32_t>(info.skillId);
+			if (info.skill_id >= 0) {
+				builder.add<int32_t>(info.skill_id);
 			}
 			else {
 				builder
-					.add<int16_t>(info.mobSkill)
+					.add<int16_t>(info.mob_skill)
 					.add<int16_t>(info.level);
 			}
 			builder.add<int16_t>(1);
@@ -73,25 +73,25 @@ PACKET_IMPL(mobPacket, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> o
 		}
 	}
 
-	builder.add<Point>(mob->getPos());
+	builder.add<point>(value->get_pos());
 
-	int8_t bitfield = (owner != nullptr ? 0x08 : 0x02) | (mob->isFacingLeft() ? 0x01 : 0);
-	if (mob->canFly()) {
+	int8_t bitfield = (owner != nullptr ? 0x08 : 0x02) | (value->is_facing_left() ? 0x01 : 0);
+	if (value->can_fly()) {
 		bitfield |= 0x04;
 	}
 
 	builder
 		.add<int8_t>(bitfield) // 0x08 - a summon, 0x04 - flying, 0x02 - ???, 0x01 - faces left
-		.add<foothold_id_t>(mob->getFoothold())
-		.add<foothold_id_t>(mob->getOriginFoothold());
+		.add<game_foothold_id>(value->get_foothold())
+		.add<game_foothold_id>(value->get_origin_foothold());
 
 	if (owner != nullptr) {
 		builder
-			.add<int8_t>(summonEffect != 0 ? summonEffect : -3)
-			.add<map_object_t>(owner->getMapMobId());
+			.add<int8_t>(summon_effect != 0 ? summon_effect : -3)
+			.add<game_map_object>(owner->get_map_mob_id());
 	}
 	else {
-		builder.add<int8_t>(spawn == MobSpawnType::New ? -2 : -1);
+		builder.add<int8_t>(spawn == mob_spawn_type::spawn ? -2 : -1);
 	}
 
 	builder
@@ -100,47 +100,47 @@ PACKET_IMPL(mobPacket, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> o
 	return builder;
 }
 
-PACKET_IMPL(endControlMob, map_object_t mapMobId) {
-	PacketBuilder builder;
+PACKET_IMPL(end_control_mob, game_map_object map_mob_id) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MOB_CONTROL)
+		.add<packet_header>(SMSG_MOB_CONTROL)
 		.add<int8_t>(0)
-		.add<map_object_t>(mapMobId);
+		.add<game_map_object>(map_mob_id);
 	return builder;
 }
 
-PACKET_IMPL(moveMobResponse, map_object_t mapMobId, int16_t moveId, bool skillPossible, int32_t mp, mob_skill_id_t skill, mob_skill_level_t level) {
-	PacketBuilder builder;
+PACKET_IMPL(move_mob_response, game_map_object map_mob_id, int16_t move_id, bool skill_possible, int32_t mp, game_mob_skill_id skill, game_mob_skill_level level) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MOB_MOVEMENT)
-		.add<map_object_t>(mapMobId)
-		.add<int16_t>(moveId)
-		.add<bool>(skillPossible)
+		.add<packet_header>(SMSG_MOB_MOVEMENT)
+		.add<game_map_object>(map_mob_id)
+		.add<int16_t>(move_id)
+		.add<bool>(skill_possible)
 		.add<int16_t>(static_cast<int16_t>(mp))
-		.add<mob_skill_id_t>(skill)
-		.add<mob_skill_level_t>(level);
+		.add<game_mob_skill_id>(skill)
+		.add<game_mob_skill_level>(level);
 	return builder;
 }
 
-PACKET_IMPL(moveMob, map_object_t mapMobId, bool skillPossible, int8_t rawAction, mob_skill_id_t skill, mob_skill_level_t level, int16_t option, unsigned char *buf, int32_t len) {
-	PacketBuilder builder;
+PACKET_IMPL(move_mob, game_map_object map_mob_id, bool skill_possible, int8_t raw_action, game_mob_skill_id skill, game_mob_skill_level level, int16_t option, unsigned char *buf, int32_t len) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MOB_CONTROL_MOVEMENT)
-		.add<map_object_t>(mapMobId)
-		.add<bool>(skillPossible)
-		.add<int8_t>(rawAction)
-		.add<mob_skill_id_t>(skill)
-		.add<mob_skill_level_t>(level)
+		.add<packet_header>(SMSG_MOB_CONTROL_MOVEMENT)
+		.add<game_map_object>(map_mob_id)
+		.add<bool>(skill_possible)
+		.add<int8_t>(raw_action)
+		.add<game_mob_skill_id>(skill)
+		.add<game_mob_skill_level>(level)
 		.add<int16_t>(option)
-		.addBuffer(buf, len);
+		.add_buffer(buf, len);
 	return builder;
 }
 
-PACKET_IMPL(healMob, map_object_t mapMobId, int32_t amount) {
-	PacketBuilder builder;
+PACKET_IMPL(heal_mob, game_map_object map_mob_id, int32_t amount) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MOB_DAMAGE)
-		.add<map_object_t>(mapMobId)
+		.add<packet_header>(SMSG_MOB_DAMAGE)
+		.add<game_map_object>(map_mob_id)
 		.unk<int8_t>()
 		.add<int32_t>(-amount)
 		.unk<int8_t>()
@@ -149,46 +149,46 @@ PACKET_IMPL(healMob, map_object_t mapMobId, int32_t amount) {
 	return builder;
 }
 
-PACKET_IMPL(hurtMob, map_object_t mapMobId, damage_t amount) {
-	PacketBuilder builder;
+PACKET_IMPL(hurt_mob, game_map_object map_mob_id, game_damage amount) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MOB_DAMAGE)
-		.add<map_object_t>(mapMobId)
+		.add<packet_header>(SMSG_MOB_DAMAGE)
+		.add<game_map_object>(map_mob_id)
 		.unk<int8_t>()
-		.add<damage_t>(amount)
+		.add<game_damage>(amount)
 		.unk<int8_t>()
 		.unk<int8_t>()
 		.unk<int8_t>();
 	return builder;
 }
 
-PACKET_IMPL(damageFriendlyMob, ref_ptr_t<Mob> mob, damage_t damage) {
-	PacketBuilder builder;
+PACKET_IMPL(damage_friendly_mob, ref_ptr<mob> value, game_damage damage) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MOB_DAMAGE)
-		.add<map_object_t>(mob->getMapMobId())
+		.add<packet_header>(SMSG_MOB_DAMAGE)
+		.add<game_map_object>(value->get_map_mob_id())
 		.add<int8_t>(1)
-		.add<damage_t>(damage)
-		.add<int32_t>(mob->getHp())
-		.add<int32_t>(mob->getMaxHp());
+		.add<game_damage>(damage)
+		.add<int32_t>(value->get_hp())
+		.add<int32_t>(value->get_max_hp());
 	return builder;
 }
 
-PACKET_IMPL(applyStatus, map_object_t mapMobId, int32_t statusMask, const vector_t<StatusInfo> &info, int16_t delay, const vector_t<int32_t> &reflection) {
-	PacketBuilder builder;
+PACKET_IMPL(apply_status, game_map_object map_mob_id, int32_t status_mask, const vector<status_info> &info, int16_t delay, const vector<int32_t> &reflection) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MOB_STATUS_ADDITION)
-		.add<map_object_t>(mapMobId)
-		.add<int32_t>(statusMask);
+		.add<packet_header>(SMSG_MOB_STATUS_ADDITION)
+		.add<game_map_object>(map_mob_id)
+		.add<int32_t>(status_mask);
 
 	for (const auto &status : info) {
 		builder.add<int16_t>(static_cast<int16_t>(status.val));
-		if (status.skillId >= 0) {
-			builder.add<int32_t>(status.skillId);
+		if (status.skill_id >= 0) {
+			builder.add<int32_t>(status.skill_id);
 		}
 		else {
 			builder
-				.add<int16_t>(status.mobSkill)
+				.add<int16_t>(status.mob_skill)
 				.add<int16_t>(status.level);
 		}
 		builder.add<int16_t>(-1); // Not sure what this is
@@ -200,62 +200,63 @@ PACKET_IMPL(applyStatus, map_object_t mapMobId, int32_t statusMask, const vector
 
 	builder.add<int16_t>(delay);
 
-	uint8_t buffCount = static_cast<uint8_t>(info.size());
+	const auto abc = unsigned long long(2);
+	uint8_t buff_count = static_cast<uint8_t>(info.size());
 	if (reflection.size() > 0) {
-		buffCount /= 2; // This gives 2 buffs per reflection but it's really one buff
+		buff_count /= 2; // This gives 2 buffs per reflection but it's really one buff
 	}
-	builder.add<uint8_t>(buffCount);
+	builder.add<uint8_t>(buff_count);
 	return builder;
 }
 
-PACKET_IMPL(removeStatus, map_object_t mapMobId, int32_t status) {
-	PacketBuilder builder;
+PACKET_IMPL(remove_status, game_map_object map_mob_id, int32_t status) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MOB_STATUS_REMOVE)
-		.add<map_object_t>(mapMobId)
+		.add<packet_header>(SMSG_MOB_STATUS_REMOVE)
+		.add<game_map_object>(map_mob_id)
 		.add<int32_t>(status)
 		.add<int8_t>(1);
 	return builder;
 }
 
-PACKET_IMPL(showHp, map_object_t mapMobId, int8_t percentage) {
-	PacketBuilder builder;
+PACKET_IMPL(show_hp, game_map_object map_mob_id, int8_t percentage) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MOB_HP_DISPLAY)
-		.add<map_object_t>(mapMobId)
+		.add<packet_header>(SMSG_MOB_HP_DISPLAY)
+		.add<game_map_object>(map_mob_id)
 		.add<int8_t>(percentage);
 	return builder;
 }
 
-PACKET_IMPL(showBossHp, ref_ptr_t<Mob> mob) {
-	PacketBuilder builder;
+PACKET_IMPL(show_boss_hp, ref_ptr<mob> value) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MAP_EFFECT)
+		.add<packet_header>(SMSG_MAP_EFFECT)
 		.add<int8_t>(0x05)
-		.add<map_object_t>(mob->getMobId())
-		.add<int32_t>(mob->getHp())
-		.add<int32_t>(mob->getMaxHp())
-		.add<int8_t>(mob->getHpBarColor())
-		.add<int8_t>(mob->getHpBarBgColor());
+		.add<game_map_object>(value->get_mob_id())
+		.add<int32_t>(value->get_hp())
+		.add<int32_t>(value->get_max_hp())
+		.add<int8_t>(value->get_hp_bar_color())
+		.add<int8_t>(value->get_hp_bar_bg_color());
 	return builder;
 }
 
-PACKET_IMPL(dieMob, map_object_t mapMobId, int8_t death) {
-	PacketBuilder builder;
+PACKET_IMPL(die_mob, game_map_object map_mob_id, int8_t death) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MOB_DEATH)
-		.add<map_object_t>(mapMobId)
+		.add<packet_header>(SMSG_MOB_DEATH)
+		.add<game_map_object>(map_mob_id)
 		.add<int8_t>(death);
 	return builder;
 }
 
-PACKET_IMPL(showSpawnEffect, int8_t summonEffect, const Point &pos) {
-	PacketBuilder builder;
+PACKET_IMPL(show_spawn_effect, int8_t summon_effect, const point &pos) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MAP_EFFECT)
+		.add<packet_header>(SMSG_MAP_EFFECT)
 		.add<int8_t>(0x00)
-		.add<int8_t>(summonEffect)
-		.add<WidePoint>(WidePoint{pos});
+		.add<int8_t>(summon_effect)
+		.add<wide_point>(wide_point{pos});
 	return builder;
 }
 

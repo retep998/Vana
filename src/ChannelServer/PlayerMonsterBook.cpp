@@ -24,100 +24,101 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/MonsterBookPacket.hpp"
 #include "ChannelServer/Player.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-PlayerMonsterBook::PlayerMonsterBook(Player *player) :
+player_monster_book::player_monster_book(player *player) :
 	m_player{player}
 {
 	load();
 }
 
-auto PlayerMonsterBook::load() -> void {
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
-	player_id_t charId = m_player->getId();
+auto player_monster_book::load() -> void {
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
+	game_player_id char_id = m_player->get_id();
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT b.card_id, b.level "
-		<< "FROM " << db.makeTable("monster_book") << " b "
+		<< "FROM " << db.make_table("monster_book") << " b "
 		<< "WHERE b.character_id = :char "
 		<< "ORDER BY b.card_id ASC",
-		soci::use(charId, "char"));
+		soci::use(char_id, "char"));
 
 	for (const auto &row : rs) {
-		addCard(row.get<item_id_t>("card_id"), row.get<uint8_t>("level"), true);
+		add_card(row.get<game_item_id>("card_id"), row.get<uint8_t>("level"), true);
 	}
 
-	calculateLevel();
+	calculate_level();
 }
 
-auto PlayerMonsterBook::save() -> void {
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
-	player_id_t charId = m_player->getId();
+auto player_monster_book::save() -> void {
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
+	game_player_id char_id = m_player->get_id();
 
-	sql.once << "DELETE FROM " << db.makeTable("monster_book") << " WHERE character_id = :char", soci::use(charId, "char");
+	sql.once << "DELETE FROM " << db.make_table("monster_book") << " WHERE character_id = :char",
+		soci::use(char_id, "char");
 
 	if (m_cards.size() > 0) {
-		item_id_t cardId = 0;
+		game_item_id card_id = 0;
 		uint8_t level = 0;
 
 		soci::statement st = (sql.prepare
-			<< "INSERT INTO " << db.makeTable("monster_book") << " "
+			<< "INSERT INTO " << db.make_table("monster_book") << " "
 			<< "VALUES (:char, :card, :level) ",
-			soci::use(charId, "char"),
-			soci::use(cardId, "card"),
+			soci::use(char_id, "char"),
+			soci::use(card_id, "card"),
 			soci::use(level, "level"));
 
 		for (const auto &kvp : m_cards) {
-			const MonsterCard &c = kvp.second;
-			cardId = c.id;
+			const monster_card &c = kvp.second;
+			card_id = c.id;
 			level = c.level;
 			st.execute(true);
 		}
 	}
 }
 
-auto PlayerMonsterBook::getCardLevel(int32_t cardId) -> uint8_t {
-	return m_cards[cardId].level;
+auto player_monster_book::get_card_level(int32_t card_id) -> uint8_t {
+	return m_cards[card_id].level;
 }
 
-auto PlayerMonsterBook::addCard(int32_t cardId, uint8_t level, bool initialLoad) -> bool {
-	if (m_cards.find(cardId) == std::end(m_cards)) {
-		if (GameLogicUtilities::isSpecialCard(cardId)) {
-			++m_specialCount;
+auto player_monster_book::add_card(int32_t card_id, uint8_t level, bool initial_load) -> bool {
+	if (m_cards.find(card_id) == std::end(m_cards)) {
+		if (game_logic_utilities::is_special_card(card_id)) {
+			++m_special_count;
 		}
 		else {
-			++m_normalCount;
+			++m_normal_count;
 		}
 	}
 
-	if (initialLoad) {
-		MonsterCard card(cardId, level);
-		m_cards[cardId] = card;
+	if (initial_load) {
+		monster_card card(card_id, level);
+		m_cards[card_id] = card;
 	}
 	else {
-		auto kvp = m_cards.find(cardId);
-		MonsterCard card = kvp != std::end(m_cards) ? kvp->second : MonsterCard(cardId, 0);
-		if (isFull(cardId)) {
+		auto kvp = m_cards.find(card_id);
+		monster_card card = kvp != std::end(m_cards) ? kvp->second : monster_card(card_id, 0);
+		if (is_full(card_id)) {
 			return true;
 		}
 		++card.level;
-		m_cards[cardId] = card;
+		m_cards[card_id] = card;
 		if (card.level == 1) {
-			calculateLevel();
+			calculate_level();
 		}
 		return false;
 	}
 	return false;
 }
 
-auto PlayerMonsterBook::connectPacket(PacketBuilder &builder) -> void {
-	if (getCover() != 0) {
-		optional_t<item_id_t> coverId = ChannelServer::getInstance().getItemDataProvider().getCardId(getCover());
-		if (coverId.is_initialized()) {
-			builder.add<int32_t>(coverId.get());
+auto player_monster_book::connect_packet(packet_builder &builder) -> void {
+	if (get_cover() != 0) {
+		optional<game_item_id> cover_id = channel_server::get_instance().get_item_data_provider().get_card_id(get_cover());
+		if (cover_id.is_initialized()) {
+			builder.add<int32_t>(cover_id.get());
 		}
 		else {
 			// ???
@@ -132,39 +133,39 @@ auto PlayerMonsterBook::connectPacket(PacketBuilder &builder) -> void {
 
 	builder.add<uint16_t>(static_cast<uint16_t>(m_cards.size()));
 	for (const auto &kvp : m_cards) {
-		builder.add<int16_t>(GameLogicUtilities::getCardShortId(kvp.second.id));
+		builder.add<int16_t>(game_logic_utilities::get_card_short_id(kvp.second.id));
 		builder.add<int8_t>(kvp.second.level);
 	}
 }
 
-auto PlayerMonsterBook::calculateLevel() -> void {
-	int32_t size = getSize();
-	m_level = MonsterCards::MaxPlayerLevel;
-	for (int32_t i = 1; i < MonsterCards::MaxPlayerLevel; i++) {
+auto player_monster_book::calculate_level() -> void {
+	int32_t size = get_size();
+	m_level = monster_cards::max_player_level;
+	for (int32_t i = 1; i < monster_cards::max_player_level; i++) {
 		// We don't calculate for the last level because that includes all values above the second to last level
-		if (size < MonsterCards::PlayerLevels[i - 1]) {
+		if (size < monster_cards::player_levels[i - 1]) {
 			m_level = i;
 			break;
 		}
 	}
 }
 
-auto PlayerMonsterBook::infoPacket(PacketBuilder &builder) -> void {
-	builder.add<int32_t>(getLevel());
-	builder.add<int32_t>(getNormals());
-	builder.add<int32_t>(getSpecials());
-	builder.add<int32_t>(getSize());
-	builder.add<int32_t>(getCover());
+auto player_monster_book::info_packet(packet_builder &builder) -> void {
+	builder.add<int32_t>(get_level());
+	builder.add<int32_t>(get_normals());
+	builder.add<int32_t>(get_specials());
+	builder.add<int32_t>(get_size());
+	builder.add<int32_t>(get_cover());
 }
 
-auto PlayerMonsterBook::getCard(int32_t cardId) -> MonsterCard * {
-	auto kvp = m_cards.find(cardId);
+auto player_monster_book::get_card(int32_t card_id) -> monster_card * {
+	auto kvp = m_cards.find(card_id);
 	return kvp != std::end(m_cards) ? &kvp->second : nullptr;
 }
 
-auto PlayerMonsterBook::isFull(int32_t cardId) -> bool {
-	auto kvp = m_cards.find(cardId);
-	return kvp != std::end(m_cards) ? (kvp->second.level == MonsterCards::MaxCardLevel) : false;
+auto player_monster_book::is_full(int32_t card_id) -> bool {
+	auto kvp = m_cards.find(card_id);
+	return kvp != std::end(m_cards) ? (kvp->second.level == monster_cards::max_card_level) : false;
 }
 
 }

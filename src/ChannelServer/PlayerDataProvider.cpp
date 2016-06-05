@@ -39,160 +39,160 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <algorithm>
 #include <cstring>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto PlayerDataProvider::parseChannelConnectPacket(PacketReader &reader) -> void {
+auto player_data_provider::parse_channel_connect_packet(packet_reader &reader) -> void {
 	// Players
 	uint32_t quantity = reader.get<uint32_t>();
 	for (uint32_t i = 0; i < quantity; i++) {
-		PlayerData player = reader.get<PlayerData>();
-		addPlayerData(player);
+		player_data player = reader.get<player_data>();
+		add_player_data(player);
 	}
 
 	// Parties
 	quantity = reader.get<uint32_t>();
 	for (uint32_t i = 0; i < quantity; i++) {
-		PartyData data = reader.get<PartyData>();
-		ref_ptr_t<Party> party = make_ref_ptr<Party>(data.id);
-		party->setLeader(data.leader);
+		party_data data = reader.get<party_data>();
+		ref_ptr<party> party_value = make_ref_ptr<party>(data.id);
+		party_value->set_leader(data.leader);
 
 		for (const auto &member : data.members) {
-			auto &player = m_playerData[member];
+			auto &player = m_player_data[member];
 			player.party = data.id;
-			party->addMember(member, player.name, true);
+			party_value->add_member(member, player.name, true);
 		}
 
-		m_parties[data.id] = party;
+		m_parties[data.id] = party_value;
 	}
 }
 
-auto PlayerDataProvider::sendSync(const PacketBuilder &builder) const -> void {
-	ChannelServer::getInstance().sendWorld(builder);
+auto player_data_provider::send_sync(const packet_builder &builder) const -> void {
+	channel_server::get_instance().send_world(builder);
 }
 
-auto PlayerDataProvider::handleSync(sync_t type, PacketReader &reader) -> void {
+auto player_data_provider::handle_sync(protocol_sync type, packet_reader &reader) -> void {
 	switch (type) {
-		case Sync::SyncTypes::ChannelStart: parseChannelConnectPacket(reader); break;
-		case Sync::SyncTypes::Player: handlePlayerSync(reader); break;
-		case Sync::SyncTypes::Party: handlePartySync(reader); break;
-		case Sync::SyncTypes::Buddy: handleBuddySync(reader); break;
-		default: throw NotImplementedException{"Sync type"};
+		case sync::sync_types::channel_start: parse_channel_connect_packet(reader); break;
+		case sync::sync_types::player: handle_player_sync(reader); break;
+		case sync::sync_types::party: handle_party_sync(reader); break;
+		case sync::sync_types::buddy: handle_buddy_sync(reader); break;
+		default: throw not_implemented_exception{"sync type"};
 	}
 }
 
 // Players
-auto PlayerDataProvider::addPlayerData(const PlayerData &data) -> void {
-	m_playerData[data.id] = data;
-	auto &player = m_playerData[data.id];
-	m_playerDataByName[data.name] = &player;
+auto player_data_provider::add_player_data(const player_data &data) -> void {
+	m_player_data[data.id] = data;
+	auto &player = m_player_data[data.id];
+	m_player_data_by_name[data.name] = &player;
 
-	if (data.gmLevel > 0 || data.admin) {
-		m_gmList.insert(data.id);
+	if (data.gm_level > 0 || data.admin) {
+		m_gm_list.insert(data.id);
 	}
 }
 
-auto PlayerDataProvider::addPlayer(ref_ptr_t<Player> player) -> void {
-	m_players[player->getId()] = player;
-	m_playersByName[player->getName()] = player;
-	auto &playerData = m_playerData[player->getId()];
-	if (playerData.party > 0) {
-		Party *party = getParty(playerData.party);
-		player->setParty(party);
-		party->setMember(playerData.id, player);
+auto player_data_provider::add_player(ref_ptr<player> player) -> void {
+	m_players[player->get_id()] = player;
+	m_players_by_name[player->get_name()] = player;
+	auto &player_data = m_player_data[player->get_id()];
+	if (player_data.party > 0) {
+		party *party = get_party(player_data.party);
+		player->set_party(party);
+		party->set_member(player_data.id, player);
 	}
 }
 
-auto PlayerDataProvider::removePlayer(ref_ptr_t<Player> player) -> void {
-	m_players.erase(player->getId());
-	m_playersByName.erase(player->getName());
+auto player_data_provider::remove_player(ref_ptr<player> player) -> void {
+	m_players.erase(player->get_id());
+	m_players_by_name.erase(player->get_name());
 
-	if (Party *party = player->getParty()) {
-		party->setMember(player->getId(), nullptr);
+	if (party *party = player->get_party()) {
+		party->set_member(player->get_id(), nullptr);
 	}
 
-	if (auto followed = player->getFollow()) {
-		stopFollowing(followed);
+	if (auto followed = player->get_follow()) {
+		stop_following(followed);
 	}
 
-	auto kvp = m_followers.find(player->getId());
+	auto kvp = m_followers.find(player->get_id());
 	if (kvp != std::end(m_followers)) {
 		for (auto follower : kvp->second) {
-			follower->send(Packets::Player::showMessage("Player " + player->getName() + " has disconnected", Packets::Player::NoticeTypes::Red));
-			follower->setFollow(nullptr);
+			follower->send(packets::player::show_message("player " + player->get_name() + " has disconnected", packets::player::notice_types::red));
+			follower->set_follow(nullptr);
 		}
 		m_followers.erase(kvp);
 	}
 }
 
-auto PlayerDataProvider::updatePlayerLevel(ref_ptr_t<Player> player) -> void {
-	auto &data = m_playerData[player->getId()];
-	data.level = player->getStats()->getLevel();
-	sendSync(Packets::Interserver::Player::updatePlayer(data, Sync::Player::UpdateBits::Level));
+auto player_data_provider::update_player_level(ref_ptr<player> player) -> void {
+	auto &data = m_player_data[player->get_id()];
+	data.level = player->get_stats()->get_level();
+	send_sync(packets::interserver::player::update_player(data, sync::player::update_bits::level));
 	if (data.party != 0) {
-		getParty(data.party)->silentUpdate();
+		get_party(data.party)->silent_update();
 	}
 }
 
-auto PlayerDataProvider::updatePlayerMap(ref_ptr_t<Player> player) -> void {
-	auto &data = m_playerData[player->getId()];
-	data.map = player->getMapId();
-	sendSync(Packets::Interserver::Player::updatePlayer(data, Sync::Player::UpdateBits::Map));
+auto player_data_provider::update_player_map(ref_ptr<player> player) -> void {
+	auto &data = m_player_data[player->get_id()];
+	data.map = player->get_map_id();
+	send_sync(packets::interserver::player::update_player(data, sync::player::update_bits::map));
 	if (data.party != 0) {
-		getParty(data.party)->silentUpdate();
+		get_party(data.party)->silent_update();
 	}
 
 	auto kvp = m_followers.find(data.id);
 	if (kvp != std::end(m_followers)) {
 		for (auto player : kvp->second) {
-			player->setMap(data.map.get());
+			player->set_map(data.map.get());
 		}
 	}
 }
 
-auto PlayerDataProvider::updatePlayerJob(ref_ptr_t<Player> player) -> void {
-	auto &data = m_playerData[player->getId()];
-	data.job = player->getStats()->getJob();
-	sendSync(Packets::Interserver::Player::updatePlayer(data, Sync::Player::UpdateBits::Job));
+auto player_data_provider::update_player_job(ref_ptr<player> player) -> void {
+	auto &data = m_player_data[player->get_id()];
+	data.job = player->get_stats()->get_job();
+	send_sync(packets::interserver::player::update_player(data, sync::player::update_bits::job));
 	if (data.party != 0) {
-		getParty(data.party)->silentUpdate();
+		get_party(data.party)->silent_update();
 	}
 }
 
-auto PlayerDataProvider::getPlayer(player_id_t id) -> ref_ptr_t<Player> {
+auto player_data_provider::get_player(game_player_id id) -> ref_ptr<player> {
 	auto kvp = m_players.find(id);
 	return kvp != std::end(m_players) ? kvp->second : nullptr;
 }
 
-auto PlayerDataProvider::getPlayer(const string_t &name) -> ref_ptr_t<Player> {
-	auto kvp = m_playersByName.find(name);
-	return kvp != std::end(m_playersByName) ? kvp->second : nullptr;
+auto player_data_provider::get_player(const string &name) -> ref_ptr<player> {
+	auto kvp = m_players_by_name.find(name);
+	return kvp != std::end(m_players_by_name) ? kvp->second : nullptr;
 }
 
-auto PlayerDataProvider::run(function_t<void(ref_ptr_t<Player>)> func) -> void {
+auto player_data_provider::run(function<void(ref_ptr<player>)> func) -> void {
 	for (const auto &kvp : m_players) {
 		func(kvp.second);
 	}
 }
 
-auto PlayerDataProvider::getParty(party_id_t id) -> Party * {
+auto player_data_provider::get_party(game_party_id id) -> party * {
 	return m_parties.find(id) == std::end(m_parties) ? nullptr : m_parties[id].get();
 }
 
-auto PlayerDataProvider::getPlayerData(player_id_t id) const -> const PlayerData * const {
-	return &m_playerData.find(id)->second;
+auto player_data_provider::get_player_data(game_player_id id) const -> const player_data * const {
+	return &m_player_data.find(id)->second;
 }
 
-auto PlayerDataProvider::getPlayerDataByName(const string_t &name) const -> const PlayerData * const {
-	auto kvp = m_playerDataByName.find(name);
-	if (kvp == std::end(m_playerDataByName)) {
+auto player_data_provider::get_player_data_by_name(const string &name) const -> const player_data * const {
+	auto kvp = m_player_data_by_name.find(name);
+	if (kvp == std::end(m_player_data_by_name)) {
 		return nullptr;
 	}
 	return kvp->second;
 }
 
-auto PlayerDataProvider::send(player_id_t playerId, const PacketBuilder &builder) -> void {
-	auto kvp = m_players.find(playerId);
+auto player_data_provider::send(game_player_id player_id, const packet_builder &builder) -> void {
+	auto kvp = m_players.find(player_id);
 	if (kvp == std::end(m_players)) {
 		return;
 	}
@@ -200,41 +200,41 @@ auto PlayerDataProvider::send(player_id_t playerId, const PacketBuilder &builder
 	kvp->second->send(builder);
 }
 
-auto PlayerDataProvider::send(const vector_t<player_id_t> &playerIds, const PacketBuilder &builder) -> void {
-	for (const auto &playerId : playerIds) {
-		auto kvp = m_players.find(playerId);
+auto player_data_provider::send(const vector<game_player_id> &player_ids, const packet_builder &builder) -> void {
+	for (const auto &player_id : player_ids) {
+		auto kvp = m_players.find(player_id);
 		if (kvp != std::end(m_players)) {
 			kvp->second->send(builder);
 		}
 	}
 }
 
-auto PlayerDataProvider::send(const PacketBuilder &builder) -> void {
+auto player_data_provider::send(const packet_builder &builder) -> void {
 	for (const auto &kvp : m_players) {
 		auto player = kvp.second;
 		player->send(builder);
 	}
 }
 
-auto PlayerDataProvider::addFollower(ref_ptr_t<Player> follower, ref_ptr_t<Player> target) -> void {
-	auto kvp = m_followers.find(target->getId());
+auto player_data_provider::add_follower(ref_ptr<player> follower, ref_ptr<player> target) -> void {
+	auto kvp = m_followers.find(target->get_id());
 	if (kvp == std::end(m_followers)) {
-		kvp = m_followers.emplace(target->getId(), vector_t<ref_ptr_t<Player>>{}).first;
+		kvp = m_followers.emplace(target->get_id(), vector<ref_ptr<player>>{}).first;
 	}
 	kvp->second.push_back(follower);
-	follower->setFollow(target);
+	follower->set_follow(target);
 }
 
-auto PlayerDataProvider::stopFollowing(ref_ptr_t<Player> follower) -> void {
-	auto kvp = m_followers.find(follower->getFollow()->getId());
+auto player_data_provider::stop_following(ref_ptr<player> follower) -> void {
+	auto kvp = m_followers.find(follower->get_follow()->get_id());
 	ext::remove_element(kvp->second, follower);
 	if (kvp->second.size() == 0) {
 		m_followers.erase(kvp);
 	}
-	follower->setFollow(nullptr);
+	follower->set_follow(nullptr);
 }
 
-auto PlayerDataProvider::disconnect() -> void {
+auto player_data_provider::disconnect() -> void {
 	for (auto &kvp : m_players) {
 		if (auto player = kvp.second) {
 			player->disconnect();
@@ -242,300 +242,300 @@ auto PlayerDataProvider::disconnect() -> void {
 	}
 }
 
-auto PlayerDataProvider::handleGroupChat(int8_t chatType, player_id_t playerId, const vector_t<player_id_t> &receivers, const chat_t &chat) -> void {
-	auto &builder = Packets::Player::groupChat(m_playerData[playerId].name, chat, chatType);
+auto player_data_provider::handle_group_chat(int8_t chat_type, game_player_id player_id, const vector<game_player_id> &receivers, const game_chat &chat) -> void {
+	auto &builder = packets::player::group_chat(m_player_data[player_id].name, chat, chat_type);
 
-	vector_t<player_id_t> nonPresentReceivers;
-	for (const auto &playerId : receivers) {
-		if (auto player = getPlayer(playerId)) {
+	vector<game_player_id> non_present_receivers;
+	for (const auto &player_id : receivers) {
+		if (auto player = get_player(player_id)) {
 			player->send(builder);
 		}
 		else {
-			nonPresentReceivers.push_back(playerId);
+			non_present_receivers.push_back(player_id);
 		}
 	}
 
-	if (nonPresentReceivers.size() > 0) {
-		ChannelServer::getInstance().sendWorld(Vana::Packets::prepend(builder, [&nonPresentReceivers](PacketBuilder &header) {
-			header.add<header_t>(IMSG_TO_PLAYER_LIST);
-			header.add<vector_t<player_id_t>>(nonPresentReceivers);
+	if (non_present_receivers.size() > 0) {
+		channel_server::get_instance().send_world(vana::packets::prepend(builder, [&non_present_receivers](packet_builder &header) {
+			header.add<packet_header>(IMSG_TO_PLAYER_LIST);
+			header.add<vector<game_player_id>>(non_present_receivers);
 		}));
 	}
 }
 
-auto PlayerDataProvider::handleGmChat(ref_ptr_t<Player> player, const chat_t &chat) -> void {
-	chat_stream_t message;
-	message << player->getName() << " [ch"
-		<< static_cast<int32_t>(ChannelServer::getInstance().getChannelId() + 1)
+auto player_data_provider::handle_gm_chat(ref_ptr<player> player, const game_chat &chat) -> void {
+	game_chat_stream message;
+	message << player->get_name() << " [ch"
+		<< static_cast<int32_t>(channel_server::get_instance().get_channel_id() + 1)
 		<< "] : " << chat;
 
-	auto &builder = Packets::Player::showMessage(message.str(), Packets::Player::NoticeTypes::Blue);
+	auto &builder = packets::player::show_message(message.str(), packets::player::notice_types::blue);
 
-	vector_t<player_id_t> nonPresentReceivers;
-	for (const auto &playerId : m_gmList) {
-		if (auto player = getPlayer(playerId)) {
+	vector<game_player_id> non_present_receivers;
+	for (const auto &player_id : m_gm_list) {
+		if (auto player = get_player(player_id)) {
 			player->send(builder);
 		}
 		else {
-			nonPresentReceivers.push_back(playerId);
+			non_present_receivers.push_back(player_id);
 		}
 	}
 
-	if (nonPresentReceivers.size() > 0) {
-		ChannelServer::getInstance().sendWorld(Vana::Packets::prepend(builder, [&nonPresentReceivers](PacketBuilder &header) {
-			header.add<header_t>(IMSG_TO_PLAYER_LIST);
-			header.add<vector_t<player_id_t>>(nonPresentReceivers);
+	if (non_present_receivers.size() > 0) {
+		channel_server::get_instance().send_world(vana::packets::prepend(builder, [&non_present_receivers](packet_builder &header) {
+			header.add<packet_header>(IMSG_TO_PLAYER_LIST);
+			header.add<vector<game_player_id>>(non_present_receivers);
 		}));
 	}
 }
 
-auto PlayerDataProvider::newPlayer(player_id_t id, const Ip &ip, PacketReader &reader) -> void {
-	ConnectingPlayer player;
-	player.connectIp = ip;
-	player.connectTime = TimeUtilities::getNow();
-	uint16_t packetSize = reader.get<uint16_t>();
-	player.packetSize = packetSize;
-	if (packetSize > 0) {
-		player.heldPacket.reset(new unsigned char[packetSize]);
-		memcpy(player.heldPacket.get(), reader.getBuffer(), packetSize);
+auto player_data_provider::new_player(game_player_id id, const ip &ip, packet_reader &reader) -> void {
+	connecting_player player;
+	player.connect_ip = ip;
+	player.connect_time = utilities::time::get_now();
+	uint16_t packet_size = reader.get<uint16_t>();
+	player.packet_size = packet_size;
+	if (packet_size > 0) {
+		player.held_packet.reset(new unsigned char[packet_size]);
+		memcpy(player.held_packet.get(), reader.get_buffer(), packet_size);
 	}
 
 	m_connections[id] = player;
 }
 
-auto PlayerDataProvider::checkPlayer(player_id_t id, const Ip &ip, bool &hasPacket) const -> Result {
-	Result result = Result::Failure;
-	hasPacket = false;
+auto player_data_provider::check_player(game_player_id id, const ip &ip, bool &has_packet) const -> result {
+	result result = result::failure;
+	has_packet = false;
 	auto kvp = m_connections.find(id);
 	if (kvp != std::end(m_connections)) {
 		auto &test = kvp->second;
-		auto distance = TimeUtilities::getDistance<milliseconds_t>(TimeUtilities::getNow(), test.connectTime);
-		if (test.connectIp == ip && distance < MaxConnectionMilliseconds) {
-			result = Result::Successful;
-			if (test.packetSize > 0) {
-				hasPacket = true;
+		auto distance = utilities::time::get_distance<milliseconds>(utilities::time::get_now(), test.connect_time);
+		if (test.connect_ip == ip && distance < max_connection_milliseconds) {
+			result = result::successful;
+			if (test.packet_size > 0) {
+				has_packet = true;
 			}
 		}
 	}
 	return result;
 }
 
-auto PlayerDataProvider::getPacket(player_id_t id) const -> PacketReader {
+auto player_data_provider::get_packet(game_player_id id) const -> packet_reader {
 	auto kvp = m_connections.find(id);
 	auto &player = kvp->second;
-	return PacketReader(player.heldPacket.get(), player.packetSize);
+	return packet_reader(player.held_packet.get(), player.packet_size);
 }
 
-auto PlayerDataProvider::playerEstablished(player_id_t id) -> void {
+auto player_data_provider::player_established(game_player_id id) -> void {
 	m_connections.erase(id);
 }
 
-auto PlayerDataProvider::handlePlayerSync(PacketReader &reader) -> void {
-	switch (reader.get<sync_t>()) {
-		case Sync::Player::NewConnectable: handleNewConnectable(reader); break;
-		case Sync::Player::DeleteConnectable: handleDeleteConnectable(reader); break;
-		case Sync::Player::ChangeChannelGo: handleChangeChannel(reader); break;
-		case Sync::Player::UpdatePlayer: handleUpdatePlayer(reader); break;
-		case Sync::Player::CharacterCreated: handleCharacterCreated(reader); break;
-		case Sync::Player::CharacterDeleted: handleCharacterDeleted(reader); break;
-		default: throw NotImplementedException{"PlayerSync type"};
+auto player_data_provider::handle_player_sync(packet_reader &reader) -> void {
+	switch (reader.get<protocol_sync>()) {
+		case sync::player::new_connectable: handle_new_connectable(reader); break;
+		case sync::player::delete_connectable: handle_delete_connectable(reader); break;
+		case sync::player::change_channel_go: handle_change_channel(reader); break;
+		case sync::player::update_player: handle_update_player(reader); break;
+		case sync::player::character_created: handle_character_created(reader); break;
+		case sync::player::character_deleted: handle_character_deleted(reader); break;
+		default: throw not_implemented_exception{"player_sync type"};
 	}
 }
 
-auto PlayerDataProvider::handlePartySync(PacketReader &reader) -> void {
-	sync_t type = reader.get<sync_t>();
-	party_id_t partyId = reader.get<party_id_t>();
+auto player_data_provider::handle_party_sync(packet_reader &reader) -> void {
+	protocol_sync type = reader.get<protocol_sync>();
+	game_party_id party_id = reader.get<game_party_id>();
 	switch (type) {
-		case Sync::Party::Create: handleCreateParty(partyId, reader.get<player_id_t>()); break;
-		case Sync::Party::Disband: handleDisbandParty(partyId); break;
-		case Sync::Party::SwitchLeader: handlePartyTransfer(partyId, reader.get<player_id_t>()); break;
-		case Sync::Party::AddMember: handlePartyAdd(partyId, reader.get<player_id_t>()); break;
-		case Sync::Party::RemoveMember: {
-			player_id_t playerId = reader.get<player_id_t>();
-			handlePartyRemove(partyId, playerId, reader.get<bool>());
+		case sync::party::create: handle_create_party(party_id, reader.get<game_player_id>()); break;
+		case sync::party::disband: handle_disband_party(party_id); break;
+		case sync::party::switch_leader: handle_party_transfer(party_id, reader.get<game_player_id>()); break;
+		case sync::party::add_member: handle_party_add(party_id, reader.get<game_player_id>()); break;
+		case sync::party::remove_member: {
+			game_player_id player_id = reader.get<game_player_id>();
+			handle_party_remove(party_id, player_id, reader.get<bool>());
 			break;
 		}
-		default: throw NotImplementedException{"PartySync type"};
+		default: throw not_implemented_exception{"party_sync type"};
 	}
 }
 
-auto PlayerDataProvider::handleBuddySync(PacketReader &reader) -> void {
-	switch (reader.get<sync_t>()) {
-		case Sync::Buddy::Invite: buddyInvite(reader); break;
-		case Sync::Buddy::AcceptInvite: acceptBuddyInvite(reader); break;
-		case Sync::Buddy::RemoveBuddy: removeBuddy(reader); break;
-		case Sync::Buddy::ReaddBuddy: readdBuddy(reader); break;
-		default: throw NotImplementedException{"BuddySync type"};
+auto player_data_provider::handle_buddy_sync(packet_reader &reader) -> void {
+	switch (reader.get<protocol_sync>()) {
+		case sync::buddy::invite: buddy_invite(reader); break;
+		case sync::buddy::accept_invite: accept_buddy_invite(reader); break;
+		case sync::buddy::remove_buddy: remove_buddy(reader); break;
+		case sync::buddy::readd_buddy: readd_buddy(reader); break;
+		default: throw not_implemented_exception{"buddy_sync type"};
 	}
 }
 
-auto PlayerDataProvider::handleChangeChannel(PacketReader &reader) -> void {
-	player_id_t playerId = reader.get<player_id_t>();
-	channel_id_t channelId = reader.get<channel_id_t>();
-	Ip ip = reader.get<Ip>();
-	port_t port = reader.get<port_t>();
+auto player_data_provider::handle_change_channel(packet_reader &reader) -> void {
+	game_player_id player_id = reader.get<game_player_id>();
+	game_channel_id channel_id = reader.get<game_channel_id>();
+	ip ip_value = reader.get<ip>();
+	connection_port port = reader.get<connection_port>();
 
-	if (auto player = getPlayer(playerId)) {
-		if (!ip.isInitialized()) {
-			player->send(Packets::Player::sendBlockedMessage(Packets::Player::BlockMessages::CannotGo));
+	if (auto player = get_player(player_id)) {
+		if (!ip_value.is_initialized()) {
+			player->send(packets::player::send_blocked_message(packets::player::block_messages::cannot_go));
 		}
 		else {
-			auto kvp = m_followers.find(playerId);
+			auto kvp = m_followers.find(player_id);
 			if (kvp != std::end(m_followers)) {
 				for (auto follower : kvp->second) {
-					follower->changeChannel(channelId);
-					follower->setFollow(nullptr);
+					follower->change_channel(channel_id);
+					follower->set_follow(nullptr);
 				}
 
 				m_followers.erase(kvp);
 			}
 
-			player->setOnline(false); // Set online to false BEFORE CC packet is sent to player
-			player->send(Packets::Player::changeChannel(ip, port));
-			player->saveAll(true);
-			player->setSaveOnDc(false);
+			player->set_online(false); // Set online to false BEFORE CC packet is sent to player
+			player->send(packets::player::change_channel(ip_value, port));
+			player->save_all(true);
+			player->set_save_on_dc(false);
 		}
 	}
 }
 
-auto PlayerDataProvider::handleNewConnectable(PacketReader &reader) -> void {
-	player_id_t playerId = reader.get<player_id_t>();
-	Ip ip = reader.get<Ip>();
-	newPlayer(playerId, ip, reader);
-	sendSync(Packets::Interserver::Player::connectableEstablished(playerId));
+auto player_data_provider::handle_new_connectable(packet_reader &reader) -> void {
+	game_player_id player_id = reader.get<game_player_id>();
+	ip ip_value = reader.get<ip>();
+	new_player(player_id, ip_value, reader);
+	send_sync(packets::interserver::player::connectable_established(player_id));
 }
 
-auto PlayerDataProvider::handleDeleteConnectable(PacketReader &reader) -> void {
-	player_id_t id = reader.get<player_id_t>();
-	playerEstablished(id);
+auto player_data_provider::handle_delete_connectable(packet_reader &reader) -> void {
+	game_player_id id = reader.get<game_player_id>();
+	player_established(id);
 }
 
-auto PlayerDataProvider::handleUpdatePlayer(PacketReader &reader) -> void {
-	player_id_t playerId = reader.get<player_id_t>();
-	auto &player = m_playerData[playerId];
+auto player_data_provider::handle_update_player(packet_reader &reader) -> void {
+	game_player_id player_id = reader.get<game_player_id>();
+	auto &player = m_player_data[player_id];
 
-	update_bits_t flags = reader.get<update_bits_t>();
-	bool updateParty = false;
-	bool updateBuddies = false;
-	bool updateGuild = false;
-	bool updateAlliance = false;
-	auto oldJob = player.job;
-	auto oldLevel = player.level;
-	auto oldMap = player.map;
-	auto oldChannel = player.channel;
-	auto oldCash = player.cashShop;
-	auto oldMts = player.mts;
+	protocol_update_bits flags = reader.get<protocol_update_bits>();
+	bool update_party = false;
+	bool update_buddies = false;
+	bool update_guild = false;
+	bool update_alliance = false;
+	auto old_job = player.job;
+	auto old_level = player.level;
+	auto old_map = player.map;
+	auto old_channel = player.channel;
+	auto old_cash = player.cash_shop;
+	auto old_mts = player.mts;
 
-	if (flags & Sync::Player::UpdateBits::Full) {
-		updateParty = true;
-		updateGuild = true;
-		updateAlliance = true;
-		updateBuddies = true;
+	if (flags & sync::player::update_bits::full) {
+		update_party = true;
+		update_guild = true;
+		update_alliance = true;
+		update_buddies = true;
 
-		PlayerData data = reader.get<PlayerData>();
-		player.copyFrom(data);
-		if (data.gmLevel > 0 || data.admin) {
-			m_gmList.insert(data.id);
+		player_data data = reader.get<player_data>();
+		player.copy_from(data);
+		if (data.gm_level > 0 || data.admin) {
+			m_gm_list.insert(data.id);
 		}
 
 		player.initialized = true;
 	}
 	else {
-		if (flags & Sync::Player::UpdateBits::Job) {
-			player.job = reader.get<job_id_t>();
-			updateParty = true;
-			updateGuild = true;
-			updateAlliance = true;
+		if (flags & sync::player::update_bits::job) {
+			player.job = reader.get<game_job_id>();
+			update_party = true;
+			update_guild = true;
+			update_alliance = true;
 		}
-		if (flags & Sync::Player::UpdateBits::Level) {
-			player.level = reader.get<player_level_t>();
-			updateParty = true;
-			updateGuild = true;
-			updateAlliance = true;
+		if (flags & sync::player::update_bits::level) {
+			player.level = reader.get<game_player_level>();
+			update_party = true;
+			update_guild = true;
+			update_alliance = true;
 		}
-		if (flags & Sync::Player::UpdateBits::Map) {
-			player.map = reader.get<map_id_t>();
-			updateParty = true;
+		if (flags & sync::player::update_bits::map) {
+			player.map = reader.get<game_map_id>();
+			update_party = true;
 		}
-		if (flags & Sync::Player::UpdateBits::Transfer) {
+		if (flags & sync::player::update_bits::transfer) {
 			player.transferring = reader.get<bool>();
 		}
-		if (flags & Sync::Player::UpdateBits::Channel) {
-			player.channel = reader.get<optional_t<channel_id_t>>();
-			updateParty = true;
-			updateBuddies = true;
+		if (flags & sync::player::update_bits::channel) {
+			player.channel = reader.get<optional<game_channel_id>>();
+			update_party = true;
+			update_buddies = true;
 		}
-		if (flags & Sync::Player::UpdateBits::Ip) {
-			player.ip = reader.get<Ip>();
+		if (flags & sync::player::update_bits::ip) {
+			player.ip = reader.get<ip>();
 		}
-		if (flags & Sync::Player::UpdateBits::Cash) {
-			player.cashShop = reader.get<bool>();
-			updateParty = true;
-			updateBuddies = true;
+		if (flags & sync::player::update_bits::cash) {
+			player.cash_shop = reader.get<bool>();
+			update_party = true;
+			update_buddies = true;
 		}
-		if (flags & Sync::Player::UpdateBits::Mts) {
+		if (flags & sync::player::update_bits::mts) {
 			player.mts = reader.get<bool>();
-			updateParty = true;
-			updateBuddies = true;
+			update_party = true;
+			update_buddies = true;
 		}
 	}
 
-	bool actuallyUpdated =
-		oldJob != player.job ||
-		oldLevel != player.level ||
-		oldMap != player.map ||
-		oldChannel != player.channel ||
-		oldCash != player.cashShop ||
-		oldMts != player.mts;
+	bool actually_updated =
+		old_job != player.job ||
+		old_level != player.level ||
+		old_map != player.map ||
+		old_channel != player.channel ||
+		old_cash != player.cash_shop ||
+		old_mts != player.mts;
 
-	if (actuallyUpdated && !player.transferring) {
-		if (updateParty && player.party != 0) {
-			getParty(player.party)->silentUpdate();
+	if (actually_updated && !player.transferring) {
+		if (update_party && player.party != 0) {
+			get_party(player.party)->silent_update();
 		}
-		if (updateBuddies && player.mutualBuddies.size() > 0) {
-			for (auto playerId : player.mutualBuddies) {
-				if (auto listPlayer = getPlayer(playerId)) {
-					listPlayer->send(Packets::Buddy::online(player.id, player.channel.get(-1), player.cashShop));
+		if (update_buddies && player.mutual_buddies.size() > 0) {
+			for (auto player_id : player.mutual_buddies) {
+				if (auto list_player = get_player(player_id)) {
+					list_player->send(packets::buddy::online(player.id, player.channel.get(-1), player.cash_shop));
 				}
 			}
 		}
 	}
 }
 
-auto PlayerDataProvider::handleCharacterCreated(PacketReader &reader) -> void {
-	PlayerData data = reader.get<PlayerData>();
-	addPlayerData(data);
+auto player_data_provider::handle_character_created(packet_reader &reader) -> void {
+	player_data data = reader.get<player_data>();
+	add_player_data(data);
 }
 
-auto PlayerDataProvider::handleCharacterDeleted(PacketReader &reader) -> void {
-	player_id_t id = reader.get<player_id_t>();
+auto player_data_provider::handle_character_deleted(packet_reader &reader) -> void {
+	game_player_id id = reader.get<game_player_id>();
 	// Intentionally blank for now
 }
 
 // Parties
-auto PlayerDataProvider::handleCreateParty(party_id_t id, player_id_t leaderId) -> void {
-	ref_ptr_t<Party> p = make_ref_ptr<Party>(id);
-	auto leader = getPlayer(leaderId);
-	auto &data = m_playerData[leaderId];
+auto player_data_provider::handle_create_party(game_party_id id, game_player_id leader_id) -> void {
+	ref_ptr<party> p = make_ref_ptr<party>(id);
+	auto leader = get_player(leader_id);
+	auto &data = m_player_data[leader_id];
 	data.party = id;
 
 	if (leader == nullptr) {
-		p->addMember(leaderId, data.name, true);
+		p->add_member(leader_id, data.name, true);
 	}
 	else {
-		p->addMember(leader, true);
-		leader->send(Packets::Party::createParty(p.get(), leader));
+		p->add_member(leader, true);
+		leader->send(packets::party::create_party(p.get(), leader));
 	}
 
-	p->setLeader(leaderId);
+	p->set_leader(leader_id);
 	m_parties[id] = p;
 }
 
-auto PlayerDataProvider::handleDisbandParty(party_id_t id) -> void {
-	if (Party *party = getParty(id)) {
-		auto &members = party->getMembers();
+auto player_data_provider::handle_disband_party(game_party_id id) -> void {
+	if (party *party = get_party(id)) {
+		auto &members = party->get_members();
 		for (const auto &kvp : members) {
-			auto &member = m_playerData[kvp.first];
+			auto &member = m_player_data[kvp.first];
 			member.party = 0;
 		}
 
@@ -544,94 +544,94 @@ auto PlayerDataProvider::handleDisbandParty(party_id_t id) -> void {
 	}
 }
 
-auto PlayerDataProvider::handlePartyTransfer(party_id_t id, player_id_t leaderId) -> void {
-	if (Party *party = getParty(id)) {
-		party->setLeader(leaderId, true);
+auto player_data_provider::handle_party_transfer(game_party_id id, game_player_id leader_id) -> void {
+	if (party *party = get_party(id)) {
+		party->set_leader(leader_id, true);
 	}
 }
 
-auto PlayerDataProvider::handlePartyRemove(party_id_t id, player_id_t playerId, bool kicked) -> void {
-	if (Party *party = getParty(id)) {
-		auto &data = m_playerData[playerId];
+auto player_data_provider::handle_party_remove(game_party_id id, game_player_id player_id, bool kicked) -> void {
+	if (party *party = get_party(id)) {
+		auto &data = m_player_data[player_id];
 		data.party = 0;
-		if (auto member = getPlayer(playerId)) {
-			party->deleteMember(member, kicked);
+		if (auto member = get_player(player_id)) {
+			party->delete_member(member, kicked);
 		}
 		else {
-			party->deleteMember(playerId, data.name, kicked);
+			party->delete_member(player_id, data.name, kicked);
 		}
 	}
 }
 
-auto PlayerDataProvider::handlePartyAdd(party_id_t id, player_id_t playerId) -> void {
-	if (Party *party = getParty(id)) {
-		auto &data = m_playerData[playerId];
+auto player_data_provider::handle_party_add(game_party_id id, game_player_id player_id) -> void {
+	if (party *party = get_party(id)) {
+		auto &data = m_player_data[player_id];
 		data.party = id;
-		if (auto member = getPlayer(playerId)) {
-			party->addMember(member);
+		if (auto member = get_player(player_id)) {
+			party->add_member(member);
 		}
 		else {
-			party->addMember(playerId, data.name);
+			party->add_member(player_id, data.name);
 		}
 	}
 }
 
 // Buddies
-auto PlayerDataProvider::buddyInvite(PacketReader &reader) -> void {
-	player_id_t inviterId = reader.get<player_id_t>();
-	player_id_t inviteeId = reader.get<player_id_t>();
-	if (auto invitee = getPlayer(inviteeId)) {
-		BuddyInvite invite;
-		invite.id = inviterId;
-		invite.name = reader.get<string_t>();
-		invitee->getBuddyList()->addBuddyInvite(invite);
-		invitee->getBuddyList()->checkForPendingBuddy();
+auto player_data_provider::buddy_invite(packet_reader &reader) -> void {
+	game_player_id inviter_id = reader.get<game_player_id>();
+	game_player_id invitee_id = reader.get<game_player_id>();
+	if (auto invitee = get_player(invitee_id)) {
+		vana::channel_server::buddy_invite invite;
+		invite.id = inviter_id;
+		invite.name = reader.get<string>();
+		invitee->get_buddy_list()->add_buddy_invite(invite);
+		invitee->get_buddy_list()->check_for_pending_buddy();
 	}
 }
 
-auto PlayerDataProvider::acceptBuddyInvite(PacketReader &reader) -> void {
-	player_id_t inviteeId = reader.get<player_id_t>();
-	player_id_t inviterId = reader.get<player_id_t>();
-	auto &invitee = m_playerData[inviteeId];
-	auto &inviter = m_playerData[inviterId];
+auto player_data_provider::accept_buddy_invite(packet_reader &reader) -> void {
+	game_player_id invitee_id = reader.get<game_player_id>();
+	game_player_id inviter_id = reader.get<game_player_id>();
+	auto &invitee = m_player_data[invitee_id];
+	auto &inviter = m_player_data[inviter_id];
 
-	invitee.mutualBuddies.push_back(inviterId);
-	inviter.mutualBuddies.push_back(inviteeId);
+	invitee.mutual_buddies.push_back(inviter_id);
+	inviter.mutual_buddies.push_back(invitee_id);
 
-	if (auto player = getPlayer(inviterId)) {
-		player->send(Packets::Buddy::online(inviteeId, invitee.channel.get(-1), invitee.cashShop));
-		player->getBuddyList()->buddyAccepted(inviteeId);
+	if (auto player = get_player(inviter_id)) {
+		player->send(packets::buddy::online(invitee_id, invitee.channel.get(-1), invitee.cash_shop));
+		player->get_buddy_list()->buddy_accepted(invitee_id);
 	}
-	if (auto player = getPlayer(inviteeId)) {
-		player->send(Packets::Buddy::online(inviterId, inviter.channel.get(-1), inviter.cashShop));
-	}
-}
-
-auto PlayerDataProvider::removeBuddy(PacketReader &reader) -> void {
-	player_id_t listOwnerId = reader.get<player_id_t>();
-	player_id_t removalId = reader.get<player_id_t>();
-	auto &listOwner = m_playerData[listOwnerId];
-	auto &removal = m_playerData[removalId];
-
-	ext::remove_element(listOwner.mutualBuddies, removalId);
-	ext::remove_element(removal.mutualBuddies, listOwnerId);
-
-	if (auto player = getPlayer(removal.id)) {
-		player->send(Packets::Buddy::online(listOwner.id, -1, false));
+	if (auto player = get_player(invitee_id)) {
+		player->send(packets::buddy::online(inviter_id, inviter.channel.get(-1), inviter.cash_shop));
 	}
 }
 
-auto PlayerDataProvider::readdBuddy(PacketReader &reader) -> void {
-	player_id_t listOwnerId = reader.get<player_id_t>();
-	player_id_t buddyId = reader.get<player_id_t>();
-	auto &listOwner = m_playerData[listOwnerId];
-	auto &buddy = m_playerData[buddyId];
+auto player_data_provider::remove_buddy(packet_reader &reader) -> void {
+	game_player_id list_owner_id = reader.get<game_player_id>();
+	game_player_id removal_id = reader.get<game_player_id>();
+	auto &list_owner = m_player_data[list_owner_id];
+	auto &removal = m_player_data[removal_id];
 
-	listOwner.mutualBuddies.push_back(buddyId);
-	buddy.mutualBuddies.push_back(listOwnerId);
+	ext::remove_element(list_owner.mutual_buddies, removal_id);
+	ext::remove_element(removal.mutual_buddies, list_owner_id);
 
-	if (auto player = getPlayer(buddyId)) {
-		player->getBuddyList()->buddyAccepted(listOwnerId);
+	if (auto player = get_player(removal.id)) {
+		player->send(packets::buddy::online(list_owner.id, -1, false));
+	}
+}
+
+auto player_data_provider::readd_buddy(packet_reader &reader) -> void {
+	game_player_id list_owner_id = reader.get<game_player_id>();
+	game_player_id buddy_id = reader.get<game_player_id>();
+	auto &list_owner = m_player_data[list_owner_id];
+	auto &buddy = m_player_data[buddy_id];
+
+	list_owner.mutual_buddies.push_back(buddy_id);
+	buddy.mutual_buddies.push_back(list_owner_id);
+
+	if (auto player = get_player(buddy_id)) {
+		player->get_buddy_list()->buddy_accepted(list_owner_id);
 	}
 }
 

@@ -20,23 +20,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/ItemDbInformation.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class Item;
+namespace vana {
+	class item;
 
-	struct ItemDbRecord : ItemDbInformation {
-		NO_DEFAULT_CONSTRUCTOR(ItemDbRecord);
+	struct item_db_record : item_db_info {
+		NO_DEFAULT_CONSTRUCTOR(item_db_record);
 	public:
-		ItemDbRecord(inventory_slot_t slot, player_id_t charId, account_id_t userId, world_id_t worldId, const string_t &location, Item *item) :
-			ItemDbInformation{slot, charId, userId, worldId, location},
-			item{item}
-		{
-		}
-		ItemDbRecord(const ItemDbInformation &info, Item *item) :
-			ItemDbInformation{info.slot, info.charId, info.userId, info.worldId, info.location},
+		item_db_record(game_inventory_slot slot, game_player_id char_id, game_account_id user_id, game_world_id world_id, const string &location, item *item) :
+			item_db_info{slot, char_id, user_id, world_id, location},
 			item{item}
 		{
 		}
 
-		Item *item;
+		item_db_record(const item_db_info &info, item *item) :
+			item_db_info{info.slot, info.char_id, info.user_id, info.world_id, info.location},
+			item{item}
+		{
+		}
+
+		item *item;
 	};
 }

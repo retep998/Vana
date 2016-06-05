@@ -20,40 +20,40 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <vector>
 
-namespace Vana {
-	struct EquipInfo {
-		bool tradeBlockOnEquip = false;
+namespace vana {
+	struct equip_info {
+		bool trade_block_on_equip = false;
 		int8_t slots = 0;
-		int8_t attackSpeed = 0;
+		int8_t attack_speed = 0;
 		int8_t healing = 0;
-		uint8_t tamingMob = 0;
-		uint8_t iceDamage = 0;
-		uint8_t fireDamage = 0;
-		uint8_t lightningDamage = 0;
-		uint8_t poisonDamage = 0;
-		uint8_t elementalDefault = 0;
-		stat_t istr = 0;
-		stat_t idex = 0;
-		stat_t iint = 0;
-		stat_t iluk = 0;
-		health_t ihp = 0;
-		health_t imp = 0;
-		stat_t iwAtk = 0;
-		stat_t imAtk = 0;
-		stat_t iwDef = 0;
-		stat_t imDef = 0;
-		stat_t iacc = 0;
-		stat_t iavo = 0;
-		stat_t ihand = 0;
-		stat_t ijump = 0;
-		stat_t ispeed = 0;
-		stat_t reqStr = 0;
-		stat_t reqDex = 0;
-		stat_t reqInt = 0;
-		stat_t reqLuk = 0;
-		fame_t reqFame = 0;
-		uint64_t validSlots = 0;
+		uint8_t taming_mob = 0;
+		uint8_t ice_damage = 0;
+		uint8_t fire_damage = 0;
+		uint8_t lightning_damage = 0;
+		uint8_t poison_damage = 0;
+		uint8_t elemental_default = 0;
+		game_stat str_bonus = 0;
+		game_stat dex_bonus = 0;
+		game_stat int_bonus = 0;
+		game_stat luk_bonus = 0;
+		game_health hp_bonus = 0;
+		game_health mp_bonus = 0;
+		game_stat watk_bonus = 0;
+		game_stat matk_bonus = 0;
+		game_stat wdef_bonus = 0;
+		game_stat mdef_bonus = 0;
+		game_stat acc_bonus = 0;
+		game_stat avo_bonus = 0;
+		game_stat hands_bonus = 0;
+		game_stat jump_bonus = 0;
+		game_stat speed_bonus = 0;
+		game_stat required_str = 0;
+		game_stat required_dex = 0;
+		game_stat required_int = 0;
+		game_stat required_luk = 0;
+		game_fame required_fame = 0;
+		uint64_t valid_slots = 0;
 		double traction = 0.;
-		vector_t<int8_t> validJobs;
+		vector<int8_t> valid_jobs;
 	};
 }

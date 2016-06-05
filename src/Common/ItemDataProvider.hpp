@@ -30,46 +30,46 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-namespace Vana {
-	class BuffDataProvider;
-	class EquipDataProvider;
-	class Item;
+namespace vana {
+	class buff_data_provider;
+	class equip_data_provider;
+	class item;
 
-	class ItemDataProvider {
+	class item_data_provider {
 	public:
-		auto loadData(BuffDataProvider &provider) -> void;
+		auto load_data(buff_data_provider &provider) -> void;
 
-		auto getCardId(mob_id_t mobId) const -> optional_t<item_id_t>;
-		auto getMobId(item_id_t cardId) const -> optional_t<mob_id_t>;
-		auto scrollItem(const EquipDataProvider &provider, item_id_t scrollId, Item *equip, bool whiteScroll, bool gmScroller, int8_t &succeed, bool &cursed) const -> HackingResult;
-		auto getItemInfo(item_id_t itemId) const -> const ItemInfo * const;
-		auto getConsumeInfo(item_id_t itemId) const -> const ConsumeInfo * const;
-		auto getPetInfo(item_id_t itemId) const -> const PetInfo * const;
-		auto getInteraction(item_id_t itemId, int32_t action) const -> const PetInteractInfo * const;
-		auto getItemSkills(item_id_t itemId) const -> const vector_t<SkillbookInfo> * const;
-		auto getItemRewards(item_id_t itemId) const -> const vector_t<ItemRewardInfo> * const;
-		auto getItemSummons(item_id_t itemId) const -> const vector_t<SummonBagInfo> * const;
+		auto get_card_id(game_mob_id mob_id) const -> optional<game_item_id>;
+		auto get_mob_id(game_item_id card_id) const -> optional<game_mob_id>;
+		auto scroll_item(const equip_data_provider &provider, game_item_id scrollId, item *equip, bool white_scroll, bool gm_scroller, int8_t &succeed, bool &cursed) const -> hacking_result;
+		auto get_item_info(game_item_id item_id) const -> const item_info * const;
+		auto get_consume_info(game_item_id item_id) const -> const consume_info * const;
+		auto get_pet_info(game_item_id item_id) const -> const pet_info * const;
+		auto get_interaction(game_item_id item_id, int32_t action) const -> const pet_interact_info * const;
+		auto get_item_skills(game_item_id item_id) const -> const vector<skillbook_info> * const;
+		auto get_item_rewards(game_item_id item_id) const -> const vector<item_reward_info> * const;
+		auto get_item_summons(game_item_id item_id) const -> const vector<summon_bag_info> * const;
 	private:
-		auto loadItems() -> void;
-		auto loadScrolls() -> void;
-		auto loadConsumes(BuffDataProvider &provider) -> void;
-		auto loadMapRanges() -> void;
-		auto loadMonsterCardData() -> void;
-		auto loadItemSkills() -> void;
-		auto loadSummonBags() -> void;
-		auto loadItemRewards() -> void;
-		auto loadPets() -> void;
-		auto loadPetInteractions() -> void;
+		auto load_items() -> void;
+		auto load_scrolls() -> void;
+		auto load_consumes(buff_data_provider &provider) -> void;
+		auto load_map_ranges() -> void;
+		auto load_monster_card_data() -> void;
+		auto load_item_skills() -> void;
+		auto load_summon_bags() -> void;
+		auto load_item_rewards() -> void;
+		auto load_pets() -> void;
+		auto load_pet_interactions() -> void;
 
-		hash_map_t<item_id_t, ItemInfo> m_itemInfo;
-		hash_map_t<item_id_t, ScrollInfo> m_scrollInfo;
-		hash_map_t<item_id_t, ConsumeInfo> m_consumeInfo;
-		hash_map_t<item_id_t, vector_t<SummonBagInfo>> m_summonBags;
-		hash_map_t<item_id_t, vector_t<SkillbookInfo>> m_skillbooks;
-		hash_map_t<item_id_t, vector_t<ItemRewardInfo>> m_itemRewards;
-		hash_map_t<item_id_t, PetInfo> m_petInfo;
-		hash_map_t<item_id_t, hash_map_t<int32_t, PetInteractInfo>> m_petInteractInfo;
-		hash_map_t<item_id_t, mob_id_t> m_cardsToMobs;
-		hash_map_t<mob_id_t, item_id_t> m_mobsToCards;
+		hash_map<game_item_id, item_info> m_item_info;
+		hash_map<game_item_id, scroll_info> m_scroll_info;
+		hash_map<game_item_id, consume_info> m_consume_info;
+		hash_map<game_item_id, vector<summon_bag_info>> m_summon_bags;
+		hash_map<game_item_id, vector<skillbook_info>> m_skillbooks;
+		hash_map<game_item_id, vector<item_reward_info>> m_item_rewards;
+		hash_map<game_item_id, pet_info> m_pet_info;
+		hash_map<game_item_id, hash_map<int32_t, pet_interact_info>> m_pet_interact_info;
+		hash_map<game_item_id, game_mob_id> m_cards_to_mobs;
+		hash_map<game_mob_id, game_item_id> m_mobs_to_cards;
 	};
 }

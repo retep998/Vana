@@ -20,37 +20,37 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Point.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	namespace ChannelServer {
-		class Map;
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class map;
+		class player;
 
-		class MysticDoor {
-			NONCOPYABLE(MysticDoor);
+		class mystic_door {
+			NONCOPYABLE(mystic_door);
 		public:
-			MysticDoor(ref_ptr_t<Player> owner, map_id_t townId, portal_id_t portalId, const Point &mapPos, const Point &townPos, bool isDisplacement, seconds_t doorTime);
-			MysticDoor(player_id_t ownerId, map_id_t mapId, const Point &mapPos, map_id_t townId, portal_id_t portalId, const Point &townPos, seconds_t doorTime);
+			mystic_door(ref_ptr<player> owner, game_map_id town_id, game_portal_id portal_id, const point &map_pos, const point &town_pos, bool is_displacement, seconds door_time);
+			mystic_door(game_player_id owner_id, game_map_id map_id, const point &map_pos, game_map_id town_id, game_portal_id portal_id, const point &town_pos, seconds door_time);
 
-			static const portal_id_t PortalId = 80;
+			static const game_portal_id portal_id = 80;
 
-			auto getOwnerId() const -> player_id_t;
-			auto getTownId() const -> map_id_t;
-			auto getMapId() const -> map_id_t;
-			auto getTown() const -> Map *;
-			auto getMap() const -> Map *;
-			auto getTownPos() const -> Point;
-			auto getMapPos() const -> Point;
-			auto getPortalId() const -> portal_id_t;
-			auto getDoorTime() const -> seconds_t;
-			auto withNewPortal(portal_id_t portalId, const Point &townPos) const -> ref_ptr_t<MysticDoor>;
+			auto get_owner_id() const -> game_player_id;
+			auto get_town_id() const -> game_map_id;
+			auto get_map_id() const -> game_map_id;
+			auto get_town() const -> map *;
+			auto get_map() const -> map *;
+			auto get_town_pos() const -> point;
+			auto get_map_pos() const -> point;
+			auto get_portal_id() const -> game_portal_id;
+			auto get_door_time() const -> seconds;
+			auto with_new_portal(game_portal_id portal_id, const point &town_pos) const -> ref_ptr<mystic_door>;
 		private:
-			map_id_t m_townId = 0;
-			map_id_t m_mapId = 0;
-			portal_id_t m_portalId = 0;
-			player_id_t m_ownerId = 0;
-			seconds_t m_doorTime = seconds_t{0};
-			Point m_mapPos;
-			Point m_townPos;
+			game_map_id m_town_id = 0;
+			game_map_id m_map_id = 0;
+			game_portal_id m_portal_id = 0;
+			game_player_id m_owner_id = 0;
+			seconds m_door_time = seconds{0};
+			point m_map_pos;
+			point m_town_pos;
 		};
 	}
 }

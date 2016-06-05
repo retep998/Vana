@@ -26,19 +26,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer/WorldServer.hpp"
 #include <iostream>
 
-namespace Vana {
-namespace WorldServer {
+namespace vana {
+namespace world_server {
 
-auto LoginServerConnectHandler::connect(ref_ptr_t<LoginServerSession> session, PacketReader &reader) -> void {
-	world_id_t worldId = reader.get<world_id_t>();
-	if (worldId != -1) {
-		port_t port = reader.get<port_t>();
-		WorldConfig conf = reader.get<WorldConfig>();
-		WorldServer::getInstance().establishedLoginConnection(worldId, port, conf);
+auto login_server_connect_handler::connect(ref_ptr<login_server_session> session, packet_reader &reader) -> void {
+	game_world_id world_id = reader.get<game_world_id>();
+	if (world_id != -1) {
+		connection_port port = reader.get<connection_port>();
+		world_config conf = reader.get<world_config>();
+		world_server::get_instance().established_login_connection(world_id, port, conf);
 	}
 	else {
-		WorldServer::getInstance().log(LogType::CriticalError, "No world to handle");
-		ExitCodes::exit(ExitCodes::ServerConnectionError);
+		world_server::get_instance().log(log_type::critical_error, "No world to handle");
+		exit(exit_code::server_connection_error);
 	}
 }
 

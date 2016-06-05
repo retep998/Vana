@@ -19,14 +19,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	using server_type_t = int16_t;
-	enum class ServerType : server_type_t {
-		None,
-		Login = 1, // Started at 1 so it's easy to do logging
-		World,
-		Channel,
-		Cash,
-		Mts
+namespace vana {
+	using server_type_underlying = int16_t;
+	enum class server_type : server_type_underlying {
+		none,
+		login = 1, // Started at 1 so it's easy to do logging
+		world,
+		channel,
+		cash,
+		mts
 	};
 }

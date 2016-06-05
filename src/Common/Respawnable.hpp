@@ -19,13 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct Respawnable {
-		Respawnable() = default;
-		Respawnable(size_t spawnId, time_point_t spawnAt) : spawnAt{spawnAt}, spawnId{spawnId}, spawn{true} { }
+namespace vana {
+	struct respawnable {
+		respawnable() = default;
+		respawnable(size_t spawn_id, time_point spawn_at) : spawn_at{spawn_at}, spawn_id{spawn_id}, spawn{true} { }
 
 		bool spawn = false;
-		size_t spawnId = 0;
-		time_point_t spawnAt = time_point_t{seconds_t{0}};
+		size_t spawn_id = 0;
+		time_point spawn_at = time_point{seconds{0}};
 	};
 }

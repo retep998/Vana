@@ -41,11 +41,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define MAPLE_LOCALE MAPLE_LOCALE_GLOBAL
 #define MAPLE_VERSION 75
 
-namespace Vana {
-	namespace MapleVersion {
-		const version_t Version = static_cast<version_t>(MAPLE_VERSION);
-		const string_t LoginSubversion = "0";
-		const string_t ChannelSubversion = "";
-		const game_locale_t Locale = static_cast<game_locale_t>(MAPLE_LOCALE);
+namespace vana {
+	namespace maple_version {
+		const game_version version = static_cast<game_version>(MAPLE_VERSION);
+		const string login_subversion = "0";
+		const string channel_subversion = "";
+		const game_locale locale = static_cast<game_locale>(MAPLE_LOCALE);
 	}
 }

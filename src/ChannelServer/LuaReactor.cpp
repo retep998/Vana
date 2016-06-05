@@ -28,108 +28,108 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Reactor.hpp"
 #include <string>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-LuaReactor::LuaReactor(const string_t &filename, player_id_t playerId, reactor_id_t reactorId, map_id_t mapId) :
-	LuaScriptable{filename, playerId},
-	m_reactorId{reactorId}
+lua_reactor::lua_reactor(const string &filename, game_player_id player_id, game_reactor_id reactor_id, game_map_id map_id) :
+	lua_scriptable{filename, player_id},
+	m_reactor_id{reactor_id}
 {
-	set<reactor_id_t>("system_reactor_id", reactorId);
-	set<map_id_t>("system_map_id", mapId);
+	set<game_reactor_id>("system_reactor_id", reactor_id);
+	set<game_map_id>("system_map_id", map_id);
 
 	// Reactor
-	expose("getState", &LuaExports::getState);
-	expose("reset", &LuaExports::reset);
-	expose("setState", &LuaExports::setStateReactor);
+	expose("getState", &lua_exports::get_state);
+	expose("reset", &lua_exports::reset);
+	expose("setState", &lua_exports::set_state_reactor);
 
 	// Miscellaneous
-	expose("dropItem", &LuaExports::dropItemReactor);
-	expose("getDistanceToPlayer", &LuaExports::getDistanceReactor);
+	expose("dropItem", &lua_exports::drop_item_reactor);
+	expose("getDistanceToPlayer", &lua_exports::get_distance_reactor);
 
 	// Mob
-	expose("spawnMob", &LuaExports::spawnMobReactor);
-	expose("spawnZakum", &LuaExports::spawnZakum);
+	expose("spawnMob", &lua_exports::spawn_mob_reactor);
+	expose("spawnZakum", &lua_exports::spawn_zakum);
 
 	run();
 }
 
-auto LuaExports::getReactor(lua_State *luaVm, LuaEnvironment &env) -> Reactor * {
-	reactor_id_t reactorId = env.get<reactor_id_t>(luaVm, "system_reactor_id");
-	map_id_t mapId = env.get<map_id_t>(luaVm, "system_map_id");
-	return Maps::getMap(mapId)->getReactor(reactorId);
+auto lua_exports::get_reactor(lua_State *lua_vm, lua_environment &env) -> reactor * {
+	game_reactor_id reactor_id = env.get<game_reactor_id>(lua_vm, "system_reactor_id");
+	game_map_id map_id = env.get<game_map_id>(lua_vm, "system_map_id");
+	return maps::get_map(map_id)->get_reactor(reactor_id);
 }
 
 // Reactor
-auto LuaExports::getState(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	env.push<int8_t>(luaVm, getReactor(luaVm, env)->getState());
+auto lua_exports::get_state(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	env.push<int8_t>(lua_vm, get_reactor(lua_vm, env)->get_state());
 	return 1;
 }
 
-auto LuaExports::reset(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	Reactor *reactor = getReactor(luaVm, env);
+auto lua_exports::reset(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	reactor *reactor = get_reactor(lua_vm, env);
 	reactor->revive();
-	reactor->setState(0, true);
-	reactor->getMap()->send(Packets::triggerReactor(reactor));
+	reactor->set_state(0, true);
+	reactor->get_map()->send(packets::trigger_reactor(reactor));
 	return 0;
 }
 
-auto LuaExports::setStateReactor(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	getReactor(luaVm, env)->setState(env.get<int8_t>(luaVm, 1), true);
+auto lua_exports::set_state_reactor(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	get_reactor(lua_vm, env)->set_state(env.get<int8_t>(lua_vm, 1), true);
 	return 0;
 }
 
 // Miscellaneous
-auto LuaExports::dropItemReactor(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	item_id_t itemId = env.get<item_id_t>(luaVm, 1);
-	slot_qty_t amount = 1;
-	if (env.is(luaVm, 2, LuaType::Number)) {
-		amount = env.get<slot_qty_t>(luaVm, 2);
+auto lua_exports::drop_item_reactor(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	game_item_id item_id = env.get<game_item_id>(lua_vm, 1);
+	game_slot_qty amount = 1;
+	if (env.is(lua_vm, 2, lua::lua_type::number)) {
+		amount = env.get<game_slot_qty>(lua_vm, 2);
 	}
-	Reactor *reactor = getReactor(luaVm, env);
-	auto player = getPlayer(luaVm, env);
-	Drop *drop;
-	if (GameLogicUtilities::isEquip(itemId)) {
-		Item f(itemId, true);
-		drop = new Drop(reactor->getMapId(), f, reactor->getPos(), player != nullptr ? player->getId() : 0);
+	reactor *reactor = get_reactor(lua_vm, env);
+	auto player = get_player(lua_vm, env);
+	drop *value;
+	if (game_logic_utilities::is_equip(item_id)) {
+		item f{item_id, true};
+		value = new drop{reactor->get_map_id(), f, reactor->get_pos(), player != nullptr ? player->get_id() : 0};
 	}
 	else {
-		Item f(itemId, amount);
-		drop = new Drop(reactor->getMapId(), f, reactor->getPos(), player != nullptr ? player->getId() : 0);
+		item f{item_id, amount};
+		value = new drop{reactor->get_map_id(), f, reactor->get_pos(), player != nullptr ? player->get_id() : 0};
 	}
-	drop->setTime(player != nullptr ? 100 : 0); // FFA if player isn't around
-	drop->doDrop(reactor->getPos());
+	value->set_time(player != nullptr ? 100 : 0); // FFA if player isn't around
+	value->do_drop(reactor->get_pos());
 	return 0;
 }
 
-auto LuaExports::getDistanceReactor(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	env.push<int32_t>(luaVm, getPlayer(luaVm, env)->getPos() - getReactor(luaVm, env)->getPos());
+auto lua_exports::get_distance_reactor(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	env.push<int32_t>(lua_vm, get_player(lua_vm, env)->get_pos() - get_reactor(lua_vm, env)->get_pos());
 	return 1;
 }
 
 // Mob
-auto LuaExports::spawnMobReactor(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	mob_id_t mobId = env.get<mob_id_t>(luaVm, 1);
-	Reactor *reactor = getReactor(luaVm, env);
-	env.push<map_object_t>(luaVm, reactor->getMap()->spawnMob(mobId, reactor->getPos())->getMapMobId());
+auto lua_exports::spawn_mob_reactor(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	game_mob_id mob_id = env.get<game_mob_id>(lua_vm, 1);
+	reactor *reactor = get_reactor(lua_vm, env);
+	env.push<game_map_object>(lua_vm, reactor->get_map()->spawn_mob(mob_id, reactor->get_pos())->get_map_mob_id());
 	return 1;
 }
 
-auto LuaExports::spawnZakum(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	coord_t x = env.get<coord_t>(luaVm, 1);
-	coord_t y = env.get<coord_t>(luaVm, 2);
-	foothold_id_t foothold = 0;
-	if (env.is(luaVm, 3, LuaType::Number)) {
-		foothold = env.get<foothold_id_t>(luaVm, 3);
+auto lua_exports::spawn_zakum(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	game_coord x = env.get<game_coord>(lua_vm, 1);
+	game_coord y = env.get<game_coord>(lua_vm, 2);
+	game_foothold_id foothold = 0;
+	if (env.is(lua_vm, 3, lua::lua_type::number)) {
+		foothold = env.get<game_foothold_id>(lua_vm, 3);
 	}
-	Maps::getMap(getReactor(luaVm, env)->getMapId())->spawnZakum(Point{x, y}, foothold);
+	maps::get_map(get_reactor(lua_vm, env)->get_map_id())->spawn_zakum(point{x, y}, foothold);
 	return 0;
 }
 

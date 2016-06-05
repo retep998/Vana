@@ -17,100 +17,100 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaVariant.hpp"
 
-namespace Vana {
+namespace vana {
 
-LuaVariant::LuaVariant() :
+lua_variant::lua_variant() :
 	m_boolean{false},
-	m_type{LuaType::Nil}
+	m_type{lua::lua_type::nil}
 {
 }
 
-LuaVariant::LuaVariant(const LuaVariant &value) :
+lua_variant::lua_variant(const lua_variant &value) :
 	m_type{value.m_type}
 {
 	switch (m_type) {
-		case LuaType::Bool:
+		case lua::lua_type::boolean:
 			m_boolean = value.m_boolean;
 			break;
-		case LuaType::Nil:
+		case lua::lua_type::nil:
 			m_boolean = false;
 			break;
-		case LuaType::String:
-			new (&m_string) string_t{value.m_string};
+		case lua::lua_type::string:
+			new (&m_string) string{value.m_string};
 			break;
-		case LuaType::Table:
-			new (&m_table) table_map_t{value.m_table};
+		case lua::lua_type::table:
+			new (&m_table) table_map{value.m_table};
 			break;
-		case LuaType::Number:
+		case lua::lua_type::number:
 			m_number = value.m_number;
 			break;
 		default:
-			throw NotImplementedException{"LuaType"};
+			throw not_implemented_exception{"lua::lua_type"};
 	}
 }
 
-LuaVariant::LuaVariant(bool value) :
+lua_variant::lua_variant(bool value) :
 	m_boolean{value},
-	m_type{LuaType::Bool}
+	m_type{lua::lua_type::boolean}
 {
 }
 
-LuaVariant::LuaVariant(int32_t value) :
+lua_variant::lua_variant(int32_t value) :
 	m_number{static_cast<double>(value)},
-	m_type{LuaType::Number}
+	m_type{lua::lua_type::number}
 {
 }
 
-LuaVariant::LuaVariant(double value) :
+lua_variant::lua_variant(double value) :
 	m_number{value},
-	m_type{LuaType::Number}
+	m_type{lua::lua_type::number}
 {
 }
 
-LuaVariant::LuaVariant(string_t value) :
+lua_variant::lua_variant(string value) :
 	m_string{value},
-	m_type{LuaType::String}
+	m_type{lua::lua_type::string}
 {
 }
 
-LuaVariant::~LuaVariant() {
-	if (m_type == LuaType::String) m_string.~basic_string();
+lua_variant::~lua_variant() {
+	if (m_type == lua::lua_type::string) m_string.~basic_string();
 }
 
-auto LuaVariant::operator =(const LuaVariant &value) -> LuaVariant & {
+auto lua_variant::operator =(const lua_variant &value) -> lua_variant & {
 	m_type = value.m_type;
 	switch (m_type) {
-		case LuaType::Bool:
+		case lua::lua_type::boolean:
 			m_boolean = value.m_boolean;
 			break;
-		case LuaType::Nil:
+		case lua::lua_type::nil:
 			m_boolean = false;
 			break;
-		case LuaType::String:
-			new (&m_string) string_t{value.m_string};
+		case lua::lua_type::string:
+			new (&m_string) string{value.m_string};
 			break;
-		case LuaType::Table:
-			new (&m_table) table_map_t{value.m_table};
+		case lua::lua_type::table:
+			new (&m_table) table_map{value.m_table};
 			break;
-		case LuaType::Number:
+		case lua::lua_type::number:
 			m_number = value.m_number;
 			break;
 		default:
-			throw NotImplementedException{"LuaType"};
+			throw not_implemented_exception{"lua::lua_type"};
 	}
 	return *this;
 }
 
-auto LuaVariant::getType() const -> LuaType {
+auto lua_variant::get_type() const -> lua::lua_type {
 	return m_type;
 }
 
-auto LuaVariant::is(LuaType type) const -> bool {
+auto lua_variant::is(lua::lua_type type) const -> bool {
 	return m_type == type;
 }
 
-auto LuaVariant::isAny(init_list_t<LuaType> types) const -> bool {
-	return std::any_of(std::begin(types), std::end(types), [&](LuaType type) -> bool {
+auto lua_variant::is_any_of(init_list<lua::lua_type> types) const -> bool {
+	return std::any_of(std::begin(types), std::end(types), [&](lua::lua_type type) -> bool {
 		return type == m_type;
 	});
 }

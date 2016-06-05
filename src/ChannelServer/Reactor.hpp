@@ -20,41 +20,41 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Point.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	namespace ChannelServer {
-		class Map;
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class map;
+		class player;
 
-		class Reactor {
-			NONCOPYABLE(Reactor);
-			NO_DEFAULT_CONSTRUCTOR(Reactor);
+		class reactor {
+			NONCOPYABLE(reactor);
+			NO_DEFAULT_CONSTRUCTOR(reactor);
 		public:
-			Reactor(map_id_t mapId, reactor_id_t reactorId, const Point &pos, bool facesLeft);
+			reactor(game_map_id map_id, game_reactor_id reactor_id, const point &pos, bool faces_left);
 
 			auto kill() -> void { m_alive = false; }
 			auto revive() -> void { m_alive = true; }
-			auto setState(int8_t state, bool sendPacket) -> void;
-			auto setId(map_object_t id) -> void { m_id = id; }
+			auto set_state(int8_t state, bool send_packet) -> void;
+			auto set_id(game_map_object id) -> void { m_id = id; }
 
-			auto getState() const -> int8_t { return m_state; }
-			auto getId() const -> map_object_t { return m_id; }
-			auto getReactorId() const -> reactor_id_t { return m_reactorId; }
-			auto getMapId() const -> map_id_t { return m_mapId; }
-			auto isAlive() const -> bool { return m_alive; }
-			auto getPos() const -> Point { return m_pos; }
-			auto facesLeft() const -> bool { return m_facesLeft; }
+			auto get_state() const -> int8_t { return m_state; }
+			auto get_id() const -> game_map_object { return m_id; }
+			auto get_reactor_id() const -> game_reactor_id { return m_reactor_id; }
+			auto get_map_id() const -> game_map_id { return m_map_id; }
+			auto is_alive() const -> bool { return m_alive; }
+			auto get_pos() const -> point { return m_pos; }
+			auto faces_left() const -> bool { return m_faces_left; }
 
 			auto restore() -> void;
-			auto drop(ref_ptr_t<Player> player) -> void;
-			auto getMap() const -> Map *;
+			auto drop(ref_ptr<player> player) -> void;
+			auto get_map() const -> map *;
 		private:
 			bool m_alive = true;
-			bool m_facesLeft = false;
+			bool m_faces_left = false;
 			int8_t m_state = 0;
-			map_object_t m_id = 0;
-			reactor_id_t m_reactorId = 0;
-			map_id_t m_mapId = 0;
-			Point m_pos;
+			game_map_object m_id = 0;
+			game_reactor_id m_reactor_id = 0;
+			game_map_id m_map_id = 0;
+			point m_pos;
 		};
 	}
 }

@@ -21,76 +21,76 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Mob.hpp"
 #include "ChannelServer/Player.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-MysticDoor::MysticDoor(ref_ptr_t<Player> owner, map_id_t townId, portal_id_t portalId, const Point &mapPos, const Point &townPos, bool isDisplacement, seconds_t doorTime) :
-	m_mapId{owner->getMapId()},
-	m_mapPos{mapPos},
-	m_townId{townId},
-	m_townPos{townPos},
-	m_ownerId{owner->getId()},
-	m_portalId{portalId},
-	m_doorTime{doorTime}
+mystic_door::mystic_door(ref_ptr<player> owner, game_map_id town_id, game_portal_id portal_id, const point &map_pos, const point &town_pos, bool is_displacement, seconds door_time) :
+	m_map_id{owner->get_map_id()},
+	m_map_pos{map_pos},
+	m_town_id{town_id},
+	m_town_pos{town_pos},
+	m_owner_id{owner->get_id()},
+	m_portal_id{portal_id},
+	m_door_time{door_time}
 {
 }
 
-MysticDoor::MysticDoor(player_id_t ownerId, map_id_t mapId, const Point &mapPos, map_id_t townId, portal_id_t portalId, const Point &townPos, seconds_t doorTime) :
-	m_mapId{mapId},
-	m_mapPos{mapPos},
-	m_townId{townId},
-	m_townPos{townPos},
-	m_ownerId{ownerId},
-	m_portalId{portalId},
-	m_doorTime{doorTime}
+mystic_door::mystic_door(game_player_id owner_id, game_map_id map_id, const point &map_pos, game_map_id town_id, game_portal_id portal_id, const point &town_pos, seconds door_time) :
+	m_map_id{map_id},
+	m_map_pos{map_pos},
+	m_town_id{town_id},
+	m_town_pos{town_pos},
+	m_owner_id{owner_id},
+	m_portal_id{portal_id},
+	m_door_time{door_time}
 {
 }
 
-auto MysticDoor::getOwnerId() const -> player_id_t {
-	return m_ownerId;
+auto mystic_door::get_owner_id() const -> game_player_id {
+	return m_owner_id;
 }
 
-auto MysticDoor::getPortalId() const -> portal_id_t {
-	return m_portalId;
+auto mystic_door::get_portal_id() const -> game_portal_id {
+	return m_portal_id;
 }
 
-auto MysticDoor::getTownId() const -> map_id_t {
-	return m_townId;
+auto mystic_door::get_town_id() const -> game_map_id {
+	return m_town_id;
 }
 
-auto MysticDoor::getMapId() const -> map_id_t {
-	return m_mapId;
+auto mystic_door::get_map_id() const -> game_map_id {
+	return m_map_id;
 }
 
-auto MysticDoor::getTown() const -> Map * {
-	return Maps::getMap(m_townId);
+auto mystic_door::get_town() const -> map * {
+	return maps::get_map(m_town_id);
 }
 
-auto MysticDoor::getMap() const -> Map * {
-	return Maps::getMap(m_mapId);
+auto mystic_door::get_map() const -> map * {
+	return maps::get_map(m_map_id);
 }
 
-auto MysticDoor::getTownPos() const -> Point {
-	return m_townPos;
+auto mystic_door::get_town_pos() const -> point {
+	return m_town_pos;
 }
 
-auto MysticDoor::getMapPos() const -> Point {
-	return m_mapPos;
+auto mystic_door::get_map_pos() const -> point {
+	return m_map_pos;
 }
 
-auto MysticDoor::getDoorTime() const -> seconds_t {
-	return m_doorTime;
+auto mystic_door::get_door_time() const -> seconds {
+	return m_door_time;
 }
 
-auto MysticDoor::withNewPortal(portal_id_t portalId, const Point &townPos) const -> ref_ptr_t<MysticDoor> {
-	return make_ref_ptr<MysticDoor>(
-		m_ownerId,
-		m_mapId,
-		m_mapPos,
-		m_townId,
-		portalId,
-		townPos,
-		m_doorTime);
+auto mystic_door::with_new_portal(game_portal_id portal_id, const point &town_pos) const -> ref_ptr<mystic_door> {
+	return make_ref_ptr<mystic_door>(
+		m_owner_id,
+		m_map_id,
+		m_map_pos,
+		m_town_id,
+		portal_id,
+		town_pos,
+		m_door_time);
 }
 
 }

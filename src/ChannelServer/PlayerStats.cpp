@@ -42,683 +42,683 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <limits>
 #include <string>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-PlayerStats::PlayerStats(Player *player, player_level_t level, job_id_t job, fame_t fame, stat_t str, stat_t dex, stat_t intt, stat_t luk, stat_t ap, health_ap_t hpMpAp, stat_t sp, health_t hp, health_t maxHp, health_t mp, health_t maxMp, experience_t exp) :
+player_stats::player_stats(player *player, game_player_level level, game_job_id job, game_fame fame, game_stat str, game_stat dex, game_stat intl, game_stat luk, game_stat ap, game_health_ap hp_mp_ap, game_stat sp, game_health hp, game_health max_hp, game_health mp, game_health max_mp, game_experience exp) :
 	m_player{player},
 	m_level{level},
 	m_job{job},
 	m_fame{fame},
 	m_str{str},
 	m_dex{dex},
-	m_int{intt},
+	m_int{intl},
 	m_luk{luk},
 	m_ap{ap},
-	m_hpMpAp{hpMpAp},
+	m_hp_mp_ap{hp_mp_ap},
 	m_sp{sp},
 	m_hp{hp},
-	m_maxHp{maxHp},
+	m_max_hp{max_hp},
 	m_mp{mp},
-	m_maxMp{maxMp},
+	m_max_mp{max_mp},
 	m_exp{exp}
 {
-	if (isDead()) {
-		m_hp = Stats::DefaultHp;
+	if (is_dead()) {
+		m_hp = stats::default_hp;
 	}
 }
 
-auto PlayerStats::isDead() const -> bool {
-	return m_hp == Stats::MinHp;
+auto player_stats::is_dead() const -> bool {
+	return m_hp == stats::min_hp;
 }
 
 // Equip stat bonus handling
-auto PlayerStats::updateBonuses(bool updateEquips, bool isLoading) -> void {
-	if (m_mapleWarrior > 0) {
-		setMapleWarrior(m_mapleWarrior);
+auto player_stats::update_bonuses(bool update_equips, bool is_loading) -> void {
+	if (m_maple_warrior > 0) {
+		set_maple_warrior(m_maple_warrior);
 	}
-	if (updateEquips) {
-		m_equipBonuses = BonusSet();
-		for (const auto &kvp : m_equipStats) {
-			const EquipBonus &info = kvp.second;
-			if (ChannelServer::getInstance().getEquipDataProvider().canEquip(info.id, m_player->getGender(), getJob(), getStr(true), getDex(true), getInt(true), getLuk(true), getFame())) {
-				m_equipBonuses.hp += info.hp;
-				m_equipBonuses.mp += info.mp;
-				m_equipBonuses.str += info.str;
-				m_equipBonuses.dex += info.dex;
-				m_equipBonuses.intt += info.intt;
-				m_equipBonuses.luk += info.luk;
+	if (update_equips) {
+		m_equip_bonuses = bonus_set();
+		for (const auto &kvp : m_equip_stats) {
+			const equip_bonus &info = kvp.second;
+			if (channel_server::get_instance().get_equip_data_provider().can_equip(info.id, m_player->get_gender(), get_job(), get_str(true), get_dex(true), get_int(true), get_luk(true), get_fame())) {
+				m_equip_bonuses.hp += info.hp;
+				m_equip_bonuses.mp += info.mp;
+				m_equip_bonuses.str += info.str;
+				m_equip_bonuses.dex += info.dex;
+				m_equip_bonuses.intl += info.intl;
+				m_equip_bonuses.luk += info.luk;
 			}
 		}
 	}
 
-	if (m_hyperBodyX > 0) {
-		setHyperBodyHp(m_hyperBodyX);
+	if (m_hyper_body_x > 0) {
+		set_hyper_body_hp(m_hyper_body_x);
 	}
-	if (m_hyperBodyY > 0) {
-		setHyperBodyMp(m_hyperBodyY);
+	if (m_hyper_body_y > 0) {
+		set_hyper_body_mp(m_hyper_body_y);
 	}
 
-	if (!isLoading) {
+	if (!is_loading) {
 		// Adjust current HP/MP down if necessary
-		if (getHp() > getMaxHp()) {
-			setHp(getHp());
+		if (get_hp() > get_max_hp()) {
+			set_hp(get_hp());
 		}
-		if (getMp() > getMaxMp()) {
-			setMp(getMp());
+		if (get_mp() > get_max_mp()) {
+			set_mp(get_mp());
 		}
 	}
 }
 
-auto PlayerStats::setEquip(inventory_slot_t slot, Item *equip, bool isLoading) -> void {
+auto player_stats::set_equip(game_inventory_slot slot, item *equip, bool is_loading) -> void {
 	slot = std::abs(slot);
 	if (equip != nullptr) {
-		m_equipStats[slot].id = equip->getId();
-		m_equipStats[slot].hp = equip->getHp();
-		m_equipStats[slot].mp = equip->getMp();
-		m_equipStats[slot].str = equip->getStr();
-		m_equipStats[slot].dex = equip->getDex();
-		m_equipStats[slot].intt = equip->getInt();
-		m_equipStats[slot].luk = equip->getLuk();
+		m_equip_stats[slot].id = equip->get_id();
+		m_equip_stats[slot].hp = equip->get_hp();
+		m_equip_stats[slot].mp = equip->get_mp();
+		m_equip_stats[slot].str = equip->get_str();
+		m_equip_stats[slot].dex = equip->get_dex();
+		m_equip_stats[slot].intl = equip->get_int();
+		m_equip_stats[slot].luk = equip->get_luk();
 	}
 	else {
-		m_equipStats.erase(slot);
+		m_equip_stats.erase(slot);
 	}
 
-	updateBonuses(true, isLoading);
+	update_bonuses(true, is_loading);
 }
 
 // Data acquisition
-auto PlayerStats::connectPacket(PacketBuilder &builder) -> void {
-	builder.add<player_level_t>(getLevel());
-	builder.add<job_id_t>(getJob());
-	builder.add<stat_t>(getStr());
-	builder.add<stat_t>(getDex());
-	builder.add<stat_t>(getInt());
-	builder.add<stat_t>(getLuk());
-	builder.add<health_t>(getHp());
-	builder.add<health_t>(getMaxHp(true));
-	builder.add<health_t>(getMp());
-	builder.add<health_t>(getMaxMp(true));
-	builder.add<stat_t>(getAp());
-	builder.add<stat_t>(getSp());
-	builder.add<experience_t>(getExp());
-	builder.add<fame_t>(getFame());
+auto player_stats::connect_packet(packet_builder &builder) -> void {
+	builder.add<game_player_level>(get_level());
+	builder.add<game_job_id>(get_job());
+	builder.add<game_stat>(get_str());
+	builder.add<game_stat>(get_dex());
+	builder.add<game_stat>(get_int());
+	builder.add<game_stat>(get_luk());
+	builder.add<game_health>(get_hp());
+	builder.add<game_health>(get_max_hp(true));
+	builder.add<game_health>(get_mp());
+	builder.add<game_health>(get_max_mp(true));
+	builder.add<game_stat>(get_ap());
+	builder.add<game_stat>(get_sp());
+	builder.add<game_experience>(get_exp());
+	builder.add<game_fame>(get_fame());
 }
 
-auto PlayerStats::getMaxHp(bool withoutBonus) -> health_t {
-	if (!withoutBonus) {
-		return static_cast<health_t>(std::min<int32_t>(m_maxHp + m_equipBonuses.hp + m_buffBonuses.hp, Stats::MaxMaxHp));
+auto player_stats::get_max_hp(bool without_bonus) -> game_health {
+	if (!without_bonus) {
+		return static_cast<game_health>(std::min<int32_t>(m_max_hp + m_equip_bonuses.hp + m_buff_bonuses.hp, stats::max_max_hp));
 	}
-	return m_maxHp;
+	return m_max_hp;
 }
 
-auto PlayerStats::getMaxMp(bool withoutBonus) -> health_t {
-	if (!withoutBonus) {
-		return static_cast<health_t>(std::min<int32_t>(m_maxMp + m_equipBonuses.mp + m_buffBonuses.mp, Stats::MaxMaxMp));
+auto player_stats::get_max_mp(bool without_bonus) -> game_health {
+	if (!without_bonus) {
+		return static_cast<game_health>(std::min<int32_t>(m_max_mp + m_equip_bonuses.mp + m_buff_bonuses.mp, stats::max_max_mp));
 	}
-	return m_maxMp;
+	return m_max_mp;
 }
 
-auto PlayerStats::statUtility(int32_t test) -> int16_t {
+auto player_stats::stat_utility(int32_t test) -> int16_t {
 	return static_cast<int16_t>(std::min<int32_t>(std::numeric_limits<int16_t>::max(), test));
 }
 
-auto PlayerStats::getStr(bool withBonus) -> stat_t {
-	if (withBonus) {
-		return statUtility(m_str + m_buffBonuses.str + m_equipBonuses.str);
+auto player_stats::get_str(bool with_bonus) -> game_stat {
+	if (with_bonus) {
+		return stat_utility(m_str + m_buff_bonuses.str + m_equip_bonuses.str);
 	}
 	return m_str;
 }
 
-auto PlayerStats::getDex(bool withBonus) -> stat_t {
-	if (withBonus) {
-		return statUtility(m_dex + m_buffBonuses.dex + m_equipBonuses.dex);
+auto player_stats::get_dex(bool with_bonus) -> game_stat {
+	if (with_bonus) {
+		return stat_utility(m_dex + m_buff_bonuses.dex + m_equip_bonuses.dex);
 	}
 	return m_dex;
 }
 
-auto PlayerStats::getInt(bool withBonus) -> stat_t {
-	if (withBonus) {
-		return statUtility(m_int + m_buffBonuses.intt + m_equipBonuses.intt);
+auto player_stats::get_int(bool with_bonus) -> game_stat {
+	if (with_bonus) {
+		return stat_utility(m_int + m_buff_bonuses.intl + m_equip_bonuses.intl);
 	}
 	return m_int;
 }
 
-auto PlayerStats::getLuk(bool withBonus) -> stat_t {
-	if (withBonus) {
-		return statUtility(m_luk + m_buffBonuses.luk + m_equipBonuses.luk);
+auto player_stats::get_luk(bool with_bonus) -> game_stat {
+	if (with_bonus) {
+		return stat_utility(m_luk + m_buff_bonuses.luk + m_equip_bonuses.luk);
 	}
 	return m_luk;
 }
 
 // Data modification
-auto PlayerStats::checkHpMp() -> void {
-	if (m_hp > getMaxHp()) {
-		m_hp = getMaxHp();
+auto player_stats::check_hp_mp() -> void {
+	if (m_hp > get_max_hp()) {
+		m_hp = get_max_hp();
 	}
-	if (m_mp > getMaxMp()) {
-		m_mp = getMaxMp();
+	if (m_mp > get_max_mp()) {
+		m_mp = get_max_mp();
 	}
 }
 
-auto PlayerStats::setLevel(player_level_t level) -> void {
+auto player_stats::set_level(game_player_level level) -> void {
 	m_level = level;
-	m_player->send(Packets::Player::updateStat(Stats::Level, level));
-	m_player->sendMap(Packets::levelUp(m_player->getId()));
-	ChannelServer::getInstance().getPlayerDataProvider().updatePlayerLevel(ref_ptr_t<Player>{m_player});
+	m_player->send(packets::player::update_stat(stats::level, level));
+	m_player->send_map(packets::level_up(m_player->get_id()));
+	channel_server::get_instance().get_player_data_provider().update_player_level(ref_ptr<player>{m_player});
 }
 
-auto PlayerStats::setHp(health_t hp, bool sendPacket) -> void {
-	m_hp = ext::constrain_range<health_t>(hp, Stats::MinHp, getMaxHp());
-	if (sendPacket) {
-		m_player->send(Packets::Player::updateStat(Stats::Hp, m_hp));
+auto player_stats::set_hp(game_health hp, bool send_packet) -> void {
+	m_hp = ext::constrain_range<game_health>(hp, stats::min_hp, get_max_hp());
+	if (send_packet) {
+		m_player->send(packets::player::update_stat(stats::hp, m_hp));
 	}
-	modifiedHp();
+	modified_hp();
 }
 
-auto PlayerStats::modifyHp(int32_t hpMod, bool sendPacket) -> void {
-	int32_t tempHp = m_hp + hpMod;
-	tempHp = ext::constrain_range<int32_t>(tempHp, Stats::MinHp, getMaxHp());
-	m_hp = static_cast<health_t>(tempHp);
+auto player_stats::modify_hp(int32_t hp_mod, bool send_packet) -> void {
+	int32_t temp_hp = m_hp + hp_mod;
+	temp_hp = ext::constrain_range<int32_t>(temp_hp, stats::min_hp, get_max_hp());
+	m_hp = static_cast<game_health>(temp_hp);
 
-	if (sendPacket) {
-		m_player->send(Packets::Player::updateStat(Stats::Hp, m_hp));
+	if (send_packet) {
+		m_player->send(packets::player::update_stat(stats::hp, m_hp));
 	}
-	modifiedHp();
+	modified_hp();
 }
 
-auto PlayerStats::damageHp(int32_t damageHp) -> void {
-	m_hp = std::max<int32_t>(Stats::MinHp, static_cast<int32_t>(m_hp) - damageHp);
-	m_player->send(Packets::Player::updateStat(Stats::Hp, m_hp));
-	modifiedHp();
+auto player_stats::damage_hp(int32_t damage_hp) -> void {
+	m_hp = std::max<int32_t>(stats::min_hp, static_cast<int32_t>(m_hp) - damage_hp);
+	m_player->send(packets::player::update_stat(stats::hp, m_hp));
+	modified_hp();
 }
 
-auto PlayerStats::modifiedHp() -> void {
-	if (Party *p = m_player->getParty()) {
-		p->showHpBar(ref_ptr_t<Player>{m_player});
+auto player_stats::modified_hp() -> void {
+	if (party *p = m_player->get_party()) {
+		p->show_hp_bar(ref_ptr<player>{m_player});
 	}
-	m_player->getActiveBuffs()->checkBerserk();
-	if (m_hp == Stats::MinHp) {
-		if (Instance *instance = m_player->getInstance()) {
-			instance->playerDeath(m_player->getId());
+	m_player->get_active_buffs()->check_berserk();
+	if (m_hp == stats::min_hp) {
+		if (instance *inst = m_player->get_instance()) {
+			inst->player_death(m_player->get_id());
 		}
-		loseExp();
-		m_player->getSummons()->forEach([this](Summon *summon) {
-			SummonHandler::removeSummon(ref_ptr_t<Player>{m_player}, summon->getId(), false, SummonMessages::Disappearing);
+		lose_exp();
+		m_player->get_summons()->for_each([this](summon *summon) {
+			summon_handler::remove_summon(ref_ptr<player>{m_player}, summon->get_id(), false, summon_messages::disappearing);
 		});
 	}
 }
 
-auto PlayerStats::setMp(health_t mp, bool sendPacket) -> void {
-	if (!m_player->getActiveBuffs()->hasInfinity()) {
-		m_mp = ext::constrain_range<health_t>(mp, Stats::MinMp, getMaxMp());
+auto player_stats::set_mp(game_health mp, bool send_packet) -> void {
+	if (!m_player->get_active_buffs()->has_infinity()) {
+		m_mp = ext::constrain_range<game_health>(mp, stats::min_mp, get_max_mp());
 	}
-	m_player->send(Packets::Player::updateStat(Stats::Mp, m_mp, sendPacket));
+	m_player->send(packets::player::update_stat(stats::mp, m_mp, send_packet));
 }
 
-auto PlayerStats::modifyMp(int32_t mpMod, bool sendPacket) -> void {
-	if (!m_player->getActiveBuffs()->hasInfinity()) {
-		int32_t tempMp = m_mp + mpMod;
-		tempMp = ext::constrain_range<int32_t>(tempMp, Stats::MinMp, getMaxMp());
-		m_mp = static_cast<health_t>(tempMp);
+auto player_stats::modify_mp(int32_t mp_mod, bool send_packet) -> void {
+	if (!m_player->get_active_buffs()->has_infinity()) {
+		int32_t temp_mp = m_mp + mp_mod;
+		temp_mp = ext::constrain_range<int32_t>(temp_mp, stats::min_mp, get_max_mp());
+		m_mp = static_cast<game_health>(temp_mp);
 	}
-	m_player->send(Packets::Player::updateStat(Stats::Mp, m_mp, sendPacket));
+	m_player->send(packets::player::update_stat(stats::mp, m_mp, send_packet));
 }
 
-auto PlayerStats::damageMp(int32_t damageMp) -> void {
-	if (!m_player->getActiveBuffs()->hasInfinity()) {
-		m_mp = std::max<int32_t>(Stats::MinMp, static_cast<int32_t>(m_mp) - damageMp);
+auto player_stats::damage_mp(int32_t damage_mp) -> void {
+	if (!m_player->get_active_buffs()->has_infinity()) {
+		m_mp = std::max<int32_t>(stats::min_mp, static_cast<int32_t>(m_mp) - damage_mp);
 	}
-	m_player->send(Packets::Player::updateStat(Stats::Mp, m_mp, false));
+	m_player->send(packets::player::update_stat(stats::mp, m_mp, false));
 }
 
-auto PlayerStats::setSp(stat_t sp) -> void {
+auto player_stats::set_sp(game_stat sp) -> void {
 	m_sp = sp;
-	m_player->send(Packets::Player::updateStat(Stats::Sp, sp));
+	m_player->send(packets::player::update_stat(stats::sp, sp));
 }
 
-auto PlayerStats::setAp(stat_t ap) -> void {
+auto player_stats::set_ap(game_stat ap) -> void {
 	m_ap = ap;
-	m_player->send(Packets::Player::updateStat(Stats::Ap, ap));
+	m_player->send(packets::player::update_stat(stats::ap, ap));
 }
 
-auto PlayerStats::setJob(job_id_t job) -> void {
+auto player_stats::set_job(game_job_id job) -> void {
 	m_job = job;
-	m_player->send(Packets::Player::updateStat(Stats::Job, job));
-	m_player->sendMap(Packets::jobChange(m_player->getId()));
-	ChannelServer::getInstance().getPlayerDataProvider().updatePlayerJob(ref_ptr_t<Player>{m_player});
+	m_player->send(packets::player::update_stat(stats::job, job));
+	m_player->send_map(packets::job_change(m_player->get_id()));
+	channel_server::get_instance().get_player_data_provider().update_player_job(ref_ptr<player>{m_player});
 }
 
-auto PlayerStats::setStr(stat_t str) -> void {
+auto player_stats::set_str(game_stat str) -> void {
 	m_str = str;
-	m_player->send(Packets::Player::updateStat(Stats::Str, str));
+	m_player->send(packets::player::update_stat(stats::str, str));
 }
 
-auto PlayerStats::setDex(stat_t dex) -> void {
+auto player_stats::set_dex(game_stat dex) -> void {
 	m_dex = dex;
-	m_player->send(Packets::Player::updateStat(Stats::Dex, dex));
+	m_player->send(packets::player::update_stat(stats::dex, dex));
 }
 
-auto PlayerStats::setInt(stat_t intt) -> void {
-	m_int = intt;
-	m_player->send(Packets::Player::updateStat(Stats::Int, intt));
+auto player_stats::set_int(game_stat intl) -> void {
+	m_int = intl;
+	m_player->send(packets::player::update_stat(stats::intl, intl));
 }
 
-auto PlayerStats::setLuk(stat_t luk) -> void {
+auto player_stats::set_luk(game_stat luk) -> void {
 	m_luk = luk;
-	m_player->send(Packets::Player::updateStat(Stats::Luk, luk));
+	m_player->send(packets::player::update_stat(stats::luk, luk));
 }
 
-auto PlayerStats::setMapleWarrior(int16_t mod) -> void {
-	m_buffBonuses.str = (m_str * mod) / 100;
-	m_buffBonuses.dex = (m_dex * mod) / 100;
-	m_buffBonuses.intt = (m_int * mod) / 100;
-	m_buffBonuses.luk = (m_luk * mod) / 100;
-	if (m_mapleWarrior != mod) {
-		m_mapleWarrior = mod;
-		updateBonuses();
+auto player_stats::set_maple_warrior(int16_t mod) -> void {
+	m_buff_bonuses.str = (m_str * mod) / 100;
+	m_buff_bonuses.dex = (m_dex * mod) / 100;
+	m_buff_bonuses.intl = (m_int * mod) / 100;
+	m_buff_bonuses.luk = (m_luk * mod) / 100;
+	if (m_maple_warrior != mod) {
+		m_maple_warrior = mod;
+		update_bonuses();
 	}
 }
 
-auto PlayerStats::setMaxHp(health_t maxHp) -> void {
-	m_maxHp = ext::constrain_range(maxHp, Stats::MinMaxHp, Stats::MaxMaxHp);
-	m_player->send(Packets::Player::updateStat(Stats::MaxHp, m_maxHp));
-	modifiedHp();
+auto player_stats::set_max_hp(game_health max_hp) -> void {
+	m_max_hp = ext::constrain_range(max_hp, stats::min_max_hp, stats::max_max_hp);
+	m_player->send(packets::player::update_stat(stats::max_hp, m_max_hp));
+	modified_hp();
 }
 
-auto PlayerStats::setMaxMp(health_t maxMp) -> void {
-	m_maxMp = ext::constrain_range(maxMp, Stats::MinMaxMp, Stats::MaxMaxMp);
-	m_player->send(Packets::Player::updateStat(Stats::MaxMp, m_maxMp));
+auto player_stats::set_max_mp(game_health max_mp) -> void {
+	m_max_mp = ext::constrain_range(max_mp, stats::min_max_mp, stats::max_max_mp);
+	m_player->send(packets::player::update_stat(stats::max_mp, m_max_mp));
 }
 
-auto PlayerStats::setHyperBodyHp(int16_t mod) -> void {
-	m_hyperBodyX = mod;
-	m_buffBonuses.hp = std::min<uint16_t>((m_maxHp + m_equipBonuses.hp) * mod / 100, Stats::MaxMaxHp);
-	m_player->send(Packets::Player::updateStat(Stats::MaxHp, m_maxHp));
+auto player_stats::set_hyper_body_hp(int16_t mod) -> void {
+	m_hyper_body_x = mod;
+	m_buff_bonuses.hp = std::min<uint16_t>((m_max_hp + m_equip_bonuses.hp) * mod / 100, stats::max_max_hp);
+	m_player->send(packets::player::update_stat(stats::max_hp, m_max_hp));
 	if (mod == 0) {
-		setHp(getHp());
+		set_hp(get_hp());
 	}
-	if (Party *p = m_player->getParty()) {
-		p->showHpBar(ref_ptr_t<Player>{m_player});
+	if (party *p = m_player->get_party()) {
+		p->show_hp_bar(ref_ptr<player>{m_player});
 	}
-	m_player->getActiveBuffs()->checkBerserk();
+	m_player->get_active_buffs()->check_berserk();
 }
 
-auto PlayerStats::setHyperBodyMp(int16_t mod) -> void {
-	m_hyperBodyY = mod;
-	m_buffBonuses.mp = std::min<uint16_t>((m_maxMp + m_equipBonuses.mp) * mod / 100, Stats::MaxMaxMp);
-	m_player->send(Packets::Player::updateStat(Stats::MaxMp, m_maxMp));
+auto player_stats::set_hyper_body_mp(int16_t mod) -> void {
+	m_hyper_body_y = mod;
+	m_buff_bonuses.mp = std::min<uint16_t>((m_max_mp + m_equip_bonuses.mp) * mod / 100, stats::max_max_mp);
+	m_player->send(packets::player::update_stat(stats::max_mp, m_max_mp));
 	if (mod == 0) {
-		setMp(getMp());
+		set_mp(get_mp());
 	}
 }
 
-auto PlayerStats::modifyMaxHp(health_t mod) -> void {
-	m_maxHp = std::min<health_t>(m_maxHp + mod, Stats::MaxMaxHp);
-	m_player->send(Packets::Player::updateStat(Stats::MaxHp, m_maxHp));
+auto player_stats::modify_max_hp(game_health mod) -> void {
+	m_max_hp = std::min<game_health>(m_max_hp + mod, stats::max_max_hp);
+	m_player->send(packets::player::update_stat(stats::max_hp, m_max_hp));
 }
 
-auto PlayerStats::modifyMaxMp(health_t mod) -> void {
-	m_maxMp = std::min<health_t>(m_maxMp + mod, Stats::MaxMaxMp);
-	m_player->send(Packets::Player::updateStat(Stats::MaxMp, m_maxMp));
+auto player_stats::modify_max_mp(game_health mod) -> void {
+	m_max_mp = std::min<game_health>(m_max_mp + mod, stats::max_max_mp);
+	m_player->send(packets::player::update_stat(stats::max_mp, m_max_mp));
 }
 
-auto PlayerStats::setExp(experience_t exp) -> void {
+auto player_stats::set_exp(game_experience exp) -> void {
 	m_exp = std::max(exp, 0);
-	m_player->send(Packets::Player::updateStat(Stats::Exp, m_exp));
+	m_player->send(packets::player::update_stat(stats::exp, m_exp));
 }
 
-auto PlayerStats::setFame(fame_t fame) -> void {
-	m_fame = ext::constrain_range(fame, Stats::MinFame, Stats::MaxFame);
-	m_player->send(Packets::Player::updateStat(Stats::Fame, fame));
+auto player_stats::set_fame(game_fame fame) -> void {
+	m_fame = ext::constrain_range(fame, stats::min_fame, stats::max_fame);
+	m_player->send(packets::player::update_stat(stats::fame, fame));
 }
 
-auto PlayerStats::loseExp() -> void {
-	if (!GameLogicUtilities::isBeginnerJob(getJob()) && getLevel() < GameLogicUtilities::getMaxLevel(getJob()) && m_player->getMapId() != Vana::Maps::SorcerersRoom) {
-		slot_qty_t charms = m_player->getInventory()->getItemAmount(Items::SafetyCharm);
+auto player_stats::lose_exp() -> void {
+	if (!game_logic_utilities::is_beginner_job(get_job()) && get_level() < game_logic_utilities::get_max_level(get_job()) && m_player->get_map_id() != vana::maps::sorcerers_room) {
+		game_slot_qty charms = m_player->get_inventory()->get_item_amount(items::safety_charm);
 		if (charms > 0) {
-			Inventory::takeItem(ref_ptr_t<Player>{m_player}, Items::SafetyCharm, 1);
+			inventory::take_item(ref_ptr<player>{m_player}, items::safety_charm, 1);
 			// TODO FIXME REVIEW
 			charms = --charms;
-			m_player->send(Packets::Inventory::useCharm(static_cast<uint8_t>(charms)));
+			m_player->send(packets::inventory::use_charm(static_cast<uint8_t>(charms)));
 			return;
 		}
-		Map *loc = m_player->getMap();
-		int8_t expLoss = 10;
-		if (loc->loseOnePercent()) {
-			expLoss = 1;
+		map *loc = m_player->get_map();
+		int8_t exp_loss = 10;
+		if (loc->lose_one_percent()) {
+			exp_loss = 1;
 		}
 		else {
-			switch (GameLogicUtilities::getJobLine(getJob())) {
-				case Jobs::JobLines::Magician:
-					expLoss = 7;
+			switch (game_logic_utilities::get_job_line(get_job())) {
+				case jobs::job_lines::magician:
+					exp_loss = 7;
 					break;
-				case Jobs::JobLines::Thief:
-					expLoss = 5;
+				case jobs::job_lines::thief:
+					exp_loss = 5;
 					break;
 			}
 		}
-		experience_t exp = getExp();
-		exp -= static_cast<experience_t>(static_cast<int64_t>(getExp(getLevel())) * expLoss / 100);
-		setExp(exp);
+		game_experience exp = get_exp();
+		exp -= static_cast<game_experience>(static_cast<int64_t>(get_exp(get_level())) * exp_loss / 100);
+		set_exp(exp);
 	}
 }
 
 // Level related functions
-auto PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) -> void {
-	job_id_t fullJob = getJob();
-	player_level_t level = getLevel();
-	player_level_t jobMax = GameLogicUtilities::getMaxLevel(fullJob);
-	if (level >= jobMax) {
+auto player_stats::give_exp(uint64_t exp, bool in_chat, bool white) -> void {
+	game_job_id full_job = get_job();
+	game_player_level level = get_level();
+	game_player_level job_max = game_logic_utilities::get_max_level(full_job);
+	if (level >= job_max) {
 		// Do not give EXP to characters of max level or over
 		return;
 	}
 
-	uint64_t curExp = getExp() + exp;
+	uint64_t cur_exp = get_exp() + exp;
 	if (exp > 0) {
-		uint64_t expCounter = exp;
-		uint64_t batchSize = std::numeric_limits<experience_t>::max();
-		while (expCounter > 0) {
-			experience_t allocate = static_cast<experience_t>(std::min(expCounter, batchSize));
-			m_player->send(Packets::showExp(allocate, white, inChat));
-			expCounter -= allocate;
+		uint64_t exp_counter = exp;
+		uint64_t batch_size = std::numeric_limits<game_experience>::max();
+		while (exp_counter > 0) {
+			game_experience allocate = static_cast<game_experience>(std::min(exp_counter, batch_size));
+			m_player->send(packets::show_exp(allocate, white, in_chat));
+			exp_counter -= allocate;
 		}
 	}
 
-	if (curExp >= getExp(level)) {
-		bool cygnus = GameLogicUtilities::isCygnus(fullJob);
-		player_level_t levelsGained = 0;
-		player_level_t levelsMax = ChannelServer::getInstance().getConfig().maxMultiLevel;
-		stat_t apGain = 0;
-		stat_t spGain = 0;
-		health_t hpGain = 0;
-		health_t mpGain = 0;
-		int8_t jobLine = GameLogicUtilities::getJobLine(fullJob);
-		stat_t intt = getInt(true) / 10;
-		health_t x = 0; // X value for Improving *P Increase skills, cached, only needs to be set once
+	if (cur_exp >= get_exp(level)) {
+		bool cygnus = game_logic_utilities::is_cygnus(full_job);
+		game_player_level levels_gained = 0;
+		game_player_level levels_max = channel_server::get_instance().get_config().max_multi_level;
+		game_stat ap_gain = 0;
+		game_stat sp_gain = 0;
+		game_health hp_gain = 0;
+		game_health mp_gain = 0;
+		int8_t job_line = game_logic_utilities::get_job_line(full_job);
+		game_stat intl = get_int(true) / 10;
+		game_health x = 0; // X value for Improving *P Increase skills, cached, only needs to be set once
 
-		while (curExp >= getExp(level) && levelsGained < levelsMax) {
-			curExp -= getExp(getLevel());
+		while (cur_exp >= get_exp(level) && levels_gained < levels_max) {
+			cur_exp -= get_exp(get_level());
 			level++;
-			levelsGained++;
-			if (cygnus && level <= Stats::CygnusApCutoff) {
-				apGain += Stats::ApPerCygnusLevel;
+			levels_gained++;
+			if (cygnus && level <= stats::cygnus_ap_cutoff) {
+				ap_gain += stats::ap_per_cygnus_level;
 			}
 			else {
-				apGain += Stats::ApPerLevel;
+				ap_gain += stats::ap_per_level;
 			}
-			switch (jobLine) {
-				case Jobs::JobLines::Beginner:
-					hpGain += levelHp(Stats::BaseHp::Beginner);
-					mpGain += levelMp(Stats::BaseMp::Beginner, intt);
+			switch (job_line) {
+				case jobs::job_lines::beginner:
+					hp_gain += level_hp(stats::base_hp::beginner);
+					mp_gain += level_mp(stats::base_mp::beginner, intl);
 					break;
-				case Jobs::JobLines::Warrior:
-					if (levelsGained == 1 && m_player->getSkills()->hasHpIncrease()) {
-						x = getX(m_player->getSkills()->getHpIncrease());
+				case jobs::job_lines::warrior:
+					if (levels_gained == 1 && m_player->get_skills()->has_hp_increase()) {
+						x = get_x(m_player->get_skills()->get_hp_increase());
 					}
-					hpGain += levelHp(Stats::BaseHp::Warrior, x);
-					mpGain += levelMp(Stats::BaseMp::Warrior, intt);
+					hp_gain += level_hp(stats::base_hp::warrior, x);
+					mp_gain += level_mp(stats::base_mp::warrior, intl);
 					break;
-				case Jobs::JobLines::Magician:
-					if (levelsGained == 1 && m_player->getSkills()->hasMpIncrease()) {
-						x = getX(m_player->getSkills()->getMpIncrease());
+				case jobs::job_lines::magician:
+					if (levels_gained == 1 && m_player->get_skills()->has_mp_increase()) {
+						x = get_x(m_player->get_skills()->get_mp_increase());
 					}
-					hpGain += levelHp(Stats::BaseHp::Magician);
-					mpGain += levelMp(Stats::BaseMp::Magician, 2 * x + intt);
+					hp_gain += level_hp(stats::base_hp::magician);
+					mp_gain += level_mp(stats::base_mp::magician, 2 * x + intl);
 					break;
-				case Jobs::JobLines::Bowman:
-					hpGain += levelHp(Stats::BaseHp::Bowman);
-					mpGain += levelMp(Stats::BaseMp::Bowman, intt);
+				case jobs::job_lines::bowman:
+					hp_gain += level_hp(stats::base_hp::bowman);
+					mp_gain += level_mp(stats::base_mp::bowman, intl);
 					break;
-				case Jobs::JobLines::Thief:
-					hpGain += levelHp(Stats::BaseHp::Thief);
-					mpGain += levelMp(Stats::BaseMp::Thief, intt);
+				case jobs::job_lines::thief:
+					hp_gain += level_hp(stats::base_hp::thief);
+					mp_gain += level_mp(stats::base_mp::thief, intl);
 					break;
-				case Jobs::JobLines::Pirate:
-					if (levelsGained == 1 && m_player->getSkills()->hasHpIncrease()) {
-						x = getX(m_player->getSkills()->getHpIncrease());
+				case jobs::job_lines::pirate:
+					if (levels_gained == 1 && m_player->get_skills()->has_hp_increase()) {
+						x = get_x(m_player->get_skills()->get_hp_increase());
 					}
-					hpGain += levelHp(Stats::BaseHp::Pirate, x);
-					mpGain += levelMp(Stats::BaseMp::Pirate, intt);
+					hp_gain += level_hp(stats::base_hp::pirate, x);
+					mp_gain += level_mp(stats::base_mp::pirate, intl);
 					break;
 				default: // GM
-					hpGain += Stats::BaseHp::Gm;
-					mpGain += Stats::BaseMp::Gm;
+					hp_gain += stats::base_hp::gm;
+					mp_gain += stats::base_mp::gm;
 			}
-			if (!GameLogicUtilities::isBeginnerJob(fullJob)) {
-				spGain += Stats::SpPerLevel;
+			if (!game_logic_utilities::is_beginner_job(full_job)) {
+				sp_gain += stats::sp_per_level;
 			}
-			if (level >= jobMax) {
+			if (level >= job_max) {
 				// Do not let people level past the level cap
-				curExp = 0;
+				cur_exp = 0;
 				break;
 			}
 		}
 
-		if (curExp >= getExp(level)) {
+		if (cur_exp >= get_exp(level)) {
 			// If the desired number of level ups have passed and they're still above, we chop
-			curExp = getExp(level) - 1;
+			cur_exp = get_exp(level) - 1;
 		}
 
 		// Check if the m_player has leveled up at all, it is possible that the user hasn't leveled up if multi-level limit is 0
-		if (levelsGained) {
-			modifyMaxHp(hpGain);
-			modifyMaxMp(mpGain);
-			setLevel(level);
-			setAp(getAp() + apGain);
-			setSp(getSp() + spGain);
+		if (levels_gained) {
+			modify_max_hp(hp_gain);
+			modify_max_mp(mp_gain);
+			set_level(level);
+			set_ap(get_ap() + ap_gain);
+			set_sp(get_sp() + sp_gain);
 
 			// Let Hyper Body remain on during a level up, as it should
-			auto activeBuffs = m_player->getActiveBuffs();
-			auto hyperBodyHp = activeBuffs->getHyperBodyHpSource();
-			auto hyperBodyMp = activeBuffs->getHyperBodyMpSource();
-			if (hyperBodyHp.is_initialized()) {
-				setHyperBodyHp(activeBuffs->getBuffSkillInfo(hyperBodyHp.get())->x);
+			auto active_buffs = m_player->get_active_buffs();
+			auto hyper_body_hp = active_buffs->get_hyper_body_hp_source();
+			auto hyper_body_mp = active_buffs->get_hyper_body_mp_source();
+			if (hyper_body_hp.is_initialized()) {
+				set_hyper_body_hp(active_buffs->get_buff_skill_info(hyper_body_hp.get())->x);
 			}
-			if (hyperBodyMp.is_initialized()) {
-				setHyperBodyMp(activeBuffs->getBuffSkillInfo(hyperBodyHp.get())->y);
+			if (hyper_body_mp.is_initialized()) {
+				set_hyper_body_mp(active_buffs->get_buff_skill_info(hyper_body_hp.get())->y);
 			}
 
-			setHp(getMaxHp());
-			setMp(getMaxMp());
-			m_player->setLevelDate();
-			if (getLevel() == jobMax && !m_player->isGm()) {
-				out_stream_t message;
-				message << "[Congrats] " << m_player->getName() << " has reached Level "
-						<< static_cast<int16_t>(jobMax) << "! Congratulate "
-						<< m_player->getName() << " on such an amazing achievement!";
+			set_hp(get_max_hp());
+			set_mp(get_max_mp());
+			m_player->set_level_date();
+			if (get_level() == job_max && !m_player->is_gm()) {
+				out_stream message;
+				message << "[Congrats] " << m_player->get_name() << " has reached Level "
+						<< static_cast<int16_t>(job_max) << "! Congratulate "
+						<< m_player->get_name() << " on such an amazing achievement!";
 
-				ChannelServer::getInstance().sendWorld(
-					Vana::Packets::prepend(Packets::Player::showMessage(message.str(), Packets::Player::NoticeTypes::Blue), [](PacketBuilder &builder) {
-						builder.add<header_t>(IMSG_TO_ALL_CHANNELS);
-						builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
+				channel_server::get_instance().send_world(
+					vana::packets::prepend(packets::player::show_message(message.str(), packets::player::notice_types::blue), [](packet_builder &builder) {
+						builder.add<packet_header>(IMSG_TO_ALL_CHANNELS);
+						builder.add<packet_header>(IMSG_TO_ALL_PLAYERS);
 					}));
 			}
 		}
 	}
 
-	// By this point, the EXP should be a valid EXP in the range of 0 to experience_t max
-	setExp(static_cast<experience_t>(curExp));
+	// By this point, the EXP should be a valid EXP in the range of 0 to game_experience max
+	set_exp(static_cast<game_experience>(cur_exp));
 }
 
-auto PlayerStats::addStat(PacketReader &reader) -> void {
-	reader.skip<tick_count_t>();
+auto player_stats::add_stat(packet_reader &reader) -> void {
+	reader.skip<game_tick_count>();
 	int32_t type = reader.get<int32_t>();
-	if (getAp() == 0) {
+	if (get_ap() == 0) {
 		// Hacking
 		return;
 	}
-	m_player->send(Packets::statOk());
-	addStat(type);
+	m_player->send(packets::stat_ok());
+	add_stat(type);
 }
 
-auto PlayerStats::addStatMulti(PacketReader &reader) -> void {
-	reader.skip<tick_count_t>();
+auto player_stats::add_stat_multi(packet_reader &reader) -> void {
+	reader.skip<game_tick_count>();
 	uint32_t amount = reader.get<uint32_t>();
 
-	m_player->send(Packets::statOk());
+	m_player->send(packets::stat_ok());
 
 	for (uint32_t i = 0; i < amount; i++) {
 		int32_t type = reader.get<int32_t>();
 		int32_t value = reader.get<int32_t>();
 
-		if (value < 0 || getAp() < value) {
+		if (value < 0 || get_ap() < value) {
 			// Hacking
 			return;
 		}
 
-		addStat(type, static_cast<int16_t>(value)); // Prefer a single cast to countless casts/modification down the line
+		add_stat(type, static_cast<int16_t>(value)); // Prefer a single cast to countless casts/modification down the line
 	}
 }
 
-auto PlayerStats::addStat(int32_t type, int16_t mod, bool isReset) -> void {
-	stat_t maxStat = ChannelServer::getInstance().getConfig().maxStats;
-	bool isSubtract = mod < 0;
+auto player_stats::add_stat(int32_t type, int16_t mod, bool is_reset) -> void {
+	game_stat max_stat = channel_server::get_instance().get_config().max_stats;
+	bool is_subtract = mod < 0;
 	switch (type) {
-		case Stats::Str:
-			if (getStr() >= maxStat) {
+		case stats::str:
+			if (get_str() >= max_stat) {
 				return;
 			}
-			setStr(getStr() + mod);
+			set_str(get_str() + mod);
 			break;
-		case Stats::Dex:
-			if (getDex() >= maxStat) {
+		case stats::dex:
+			if (get_dex() >= max_stat) {
 				return;
 			}
-			setDex(getDex() + mod);
+			set_dex(get_dex() + mod);
 			break;
-		case Stats::Int:
-			if (getInt() >= maxStat) {
+		case stats::intl:
+			if (get_int() >= max_stat) {
 				return;
 			}
-			setInt(getInt() + mod);
+			set_int(get_int() + mod);
 			break;
-		case Stats::Luk:
-			if (getLuk() >= maxStat) {
+		case stats::luk:
+			if (get_luk() >= max_stat) {
 				return;
 			}
-			setLuk(getLuk() + mod);
+			set_luk(get_luk() + mod);
 			break;
-		case Stats::MaxHp:
-		case Stats::MaxMp: {
-			if (type == Stats::MaxHp && getMaxHp(true) >= Stats::MaxMaxHp) {
+		case stats::max_hp:
+		case stats::max_mp: {
+			if (type == stats::max_hp && get_max_hp(true) >= stats::max_max_hp) {
 				return;
 			}
-			if (type == Stats::MaxMp && getMaxMp(true) >= Stats::MaxMaxMp) {
+			if (type == stats::max_mp && get_max_mp(true) >= stats::max_max_mp) {
 				return;
 			}
-			if (isSubtract && getHpMpAp() == 0) {
+			if (is_subtract && get_hp_mp_ap() == 0) {
 				// Hacking
 				return;
 			}
-			int8_t job = GameLogicUtilities::getJobTrack(getJob());
-			health_t hpGain = 0;
-			health_t mpGain = 0;
-			health_t y = 0;
+			int8_t job = game_logic_utilities::get_job_track(get_job());
+			game_health hp_gain = 0;
+			game_health mp_gain = 0;
+			game_health y = 0;
 			switch (job) {
-				case Jobs::JobTracks::Beginner:
-					hpGain = apResetHp(isReset, isSubtract, Stats::BaseHp::BeginnerAp);
-					mpGain = apResetMp(isReset, isSubtract, Stats::BaseMp::BeginnerAp);
+				case jobs::job_tracks::beginner:
+					hp_gain = ap_reset_hp(is_reset, is_subtract, stats::base_hp::beginner_ap);
+					mp_gain = ap_reset_mp(is_reset, is_subtract, stats::base_mp::beginner_ap);
 					break;
-				case Jobs::JobTracks::Warrior:
-					if (m_player->getSkills()->hasHpIncrease()) {
-						y = getY(m_player->getSkills()->getHpIncrease());
+				case jobs::job_tracks::warrior:
+					if (m_player->get_skills()->has_hp_increase()) {
+						y = get_y(m_player->get_skills()->get_hp_increase());
 					}
-					hpGain = apResetHp(isReset, isSubtract, Stats::BaseHp::WarriorAp, y);
-					mpGain = apResetMp(isReset, isSubtract, Stats::BaseMp::WarriorAp);
+					hp_gain = ap_reset_hp(is_reset, is_subtract, stats::base_hp::warrior_ap, y);
+					mp_gain = ap_reset_mp(is_reset, is_subtract, stats::base_mp::warrior_ap);
 					break;
-				case Jobs::JobTracks::Magician:
-					if (m_player->getSkills()->hasMpIncrease()) {
-						y = getY(m_player->getSkills()->getMpIncrease());
+				case jobs::job_tracks::magician:
+					if (m_player->get_skills()->has_mp_increase()) {
+						y = get_y(m_player->get_skills()->get_mp_increase());
 					}
-					hpGain = apResetHp(isReset, isSubtract, Stats::BaseHp::MagicianAp);
-					mpGain = apResetMp(isReset, isSubtract, Stats::BaseMp::MagicianAp, 2 * y);
+					hp_gain = ap_reset_hp(is_reset, is_subtract, stats::base_hp::magician_ap);
+					mp_gain = ap_reset_mp(is_reset, is_subtract, stats::base_mp::magician_ap, 2 * y);
 					break;
-				case Jobs::JobTracks::Bowman:
-					hpGain = apResetHp(isReset, isSubtract, Stats::BaseHp::BowmanAp);
-					mpGain = apResetMp(isReset, isSubtract, Stats::BaseMp::BowmanAp);
+				case jobs::job_tracks::bowman:
+					hp_gain = ap_reset_hp(is_reset, is_subtract, stats::base_hp::bowman_ap);
+					mp_gain = ap_reset_mp(is_reset, is_subtract, stats::base_mp::bowman_ap);
 					break;
-				case Jobs::JobTracks::Thief:
-					hpGain = apResetHp(isReset, isSubtract, Stats::BaseHp::ThiefAp);
-					mpGain = apResetMp(isReset, isSubtract, Stats::BaseMp::ThiefAp);
+				case jobs::job_tracks::thief:
+					hp_gain = ap_reset_hp(is_reset, is_subtract, stats::base_hp::thief_ap);
+					mp_gain = ap_reset_mp(is_reset, is_subtract, stats::base_mp::thief_ap);
 					break;
-				case Jobs::JobTracks::Pirate:
-					if (m_player->getSkills()->hasHpIncrease()) {
-						y = getY(m_player->getSkills()->getHpIncrease());
+				case jobs::job_tracks::pirate:
+					if (m_player->get_skills()->has_hp_increase()) {
+						y = get_y(m_player->get_skills()->get_hp_increase());
 					}
-					hpGain = apResetHp(isReset, isSubtract, Stats::BaseHp::PirateAp, y);
-					mpGain = apResetMp(isReset, isSubtract, Stats::BaseMp::PirateAp);
+					hp_gain = ap_reset_hp(is_reset, is_subtract, stats::base_hp::pirate_ap, y);
+					mp_gain = ap_reset_mp(is_reset, is_subtract, stats::base_mp::pirate_ap);
 					break;
 				default: // GM
-					hpGain = apResetHp(isReset, isSubtract, Stats::BaseHp::GmAp);
-					mpGain = apResetMp(isReset, isSubtract, Stats::BaseMp::GmAp);
+					hp_gain = ap_reset_hp(is_reset, is_subtract, stats::base_hp::gm_ap);
+					mp_gain = ap_reset_mp(is_reset, is_subtract, stats::base_mp::gm_ap);
 					break;
 			}
-			setHpMpAp(getHpMpAp() + mod);
+			set_hp_mp_ap(get_hp_mp_ap() + mod);
 			switch (type) {
-				case Stats::MaxHp: modifyMaxHp(hpGain); break;
-				case Stats::MaxMp: modifyMaxMp(mpGain); break;
+				case stats::max_hp: modify_max_hp(hp_gain); break;
+				case stats::max_mp: modify_max_mp(mp_gain); break;
 			}
 
-			auto activeBuffs = m_player->getActiveBuffs();
-			auto hyperBodyHp = activeBuffs->getHyperBodyHpSource();
-			auto hyperBodyMp = activeBuffs->getHyperBodyMpSource();
-			if (hyperBodyHp.is_initialized()) {
-				setHyperBodyHp(activeBuffs->getBuffSkillInfo(hyperBodyHp.get())->x);
+			auto active_buffs = m_player->get_active_buffs();
+			auto hyper_body_hp = active_buffs->get_hyper_body_hp_source();
+			auto hyper_body_mp = active_buffs->get_hyper_body_mp_source();
+			if (hyper_body_hp.is_initialized()) {
+				set_hyper_body_hp(active_buffs->get_buff_skill_info(hyper_body_hp.get())->x);
 			}
-			if (hyperBodyMp.is_initialized()) {
-				setHyperBodyMp(activeBuffs->getBuffSkillInfo(hyperBodyHp.get())->y);
+			if (hyper_body_mp.is_initialized()) {
+				set_hyper_body_mp(active_buffs->get_buff_skill_info(hyper_body_hp.get())->y);
 			}
 
-			setHp(getHp());
-			setMp(getMp());
+			set_hp(get_hp());
+			set_mp(get_mp());
 			break;
 		}
 		default:
 			// Hacking, one assumes
 			break;
 	}
-	if (!isReset) {
-		setAp(getAp() - mod);
+	if (!is_reset) {
+		set_ap(get_ap() - mod);
 	}
-	updateBonuses();
+	update_bonuses();
 }
 
-auto PlayerStats::randHp() -> health_t {
-	return Randomizer::rand<health_t>(Stats::BaseHp::Variation); // Max HP range per class (e.g. Beginner is 8-12)
+auto player_stats::rand_hp() -> game_health {
+	return randomizer::rand<game_health>(stats::base_hp::variation); // Max HP range per class (e.g. Beginner is 8-12)
 }
 
-auto PlayerStats::randMp() -> health_t {
-	return Randomizer::rand<health_t>(Stats::BaseMp::Variation); // Max MP range per class (e.g. Beginner is 6-8)
+auto player_stats::rand_mp() -> game_health {
+	return randomizer::rand<game_health>(stats::base_mp::variation); // Max MP range per class (e.g. Beginner is 6-8)
 }
 
-auto PlayerStats::getX(skill_id_t skillId) -> int16_t {
-	return m_player->getSkills()->getSkillInfo(skillId)->x;
+auto player_stats::get_x(game_skill_id skill_id) -> int16_t {
+	return m_player->get_skills()->get_skill_info(skill_id)->x;
 }
 
-auto PlayerStats::getY(skill_id_t skillId) -> int16_t {
-	return m_player->getSkills()->getSkillInfo(skillId)->y;
+auto player_stats::get_y(game_skill_id skill_id) -> int16_t {
+	return m_player->get_skills()->get_skill_info(skill_id)->y;
 }
 
-auto PlayerStats::apResetHp(bool isReset, bool isSubtract, int16_t val, int16_t sVal) -> int16_t {
-	return (isReset ? (isSubtract ? -(sVal + val + Stats::BaseHp::Variation) : val) : levelHp(val, sVal));
+auto player_stats::ap_reset_hp(bool is_reset, bool is_subtract, int16_t val, int16_t s_val) -> int16_t {
+	return (is_reset ? (is_subtract ? -(s_val + val + stats::base_hp::variation) : val) : level_hp(val, s_val));
 }
 
-auto PlayerStats::apResetMp(bool isReset, bool isSubtract, int16_t val, int16_t sVal) -> int16_t {
-	return (isReset ? (isSubtract ? -(sVal + val + Stats::BaseMp::Variation) : val) : levelMp(val, sVal));
+auto player_stats::ap_reset_mp(bool is_reset, bool is_subtract, int16_t val, int16_t s_val) -> int16_t {
+	return (is_reset ? (is_subtract ? -(s_val + val + stats::base_mp::variation) : val) : level_mp(val, s_val));
 }
 
-auto PlayerStats::levelHp(health_t val, health_t bonus) -> health_t {
-	return randHp() + val + bonus;
+auto player_stats::level_hp(game_health val, game_health bonus) -> game_health {
+	return rand_hp() + val + bonus;
 }
 
-auto PlayerStats::levelMp(health_t val, health_t bonus) -> health_t {
-	return randMp() + val + bonus;
+auto player_stats::level_mp(game_health val, game_health bonus) -> game_health {
+	return rand_mp() + val + bonus;
 }
 
-auto PlayerStats::getExp(player_level_t level) -> experience_t {
-	return Stats::PlayerExp[level - 1];
+auto player_stats::get_exp(game_player_level level) -> game_experience {
+	return stats::player_exp[level - 1];
 }
 
 }

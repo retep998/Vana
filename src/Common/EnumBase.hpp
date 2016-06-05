@@ -24,50 +24,50 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <tuple>
 #include <vector>
 
-namespace Vana {
-	struct InvalidEnumException : public std::runtime_error {
-		explicit InvalidEnumException(const std::string &message) :
+namespace vana {
+	struct invalid_enum_exception : public std::runtime_error {
+		explicit invalid_enum_exception(const std::string &message) :
 			std::runtime_error{message.c_str()}
 		{
 		}
 
-		explicit InvalidEnumException(const char *message = nullptr) :
+		explicit invalid_enum_exception(const char *message = nullptr) :
 			std::runtime_error{message}
 		{
 		}
 	};
 
 	template <typename TEnum, typename TUnderlying>
-	struct EnumCaster {
-		static auto tryCastFromUnderlying(TUnderlying value, TEnum &out) -> Result {
-			static_assert(false, "tryCastFromUnderlying is not appropriately specialized for those types");
-			throw std::logic_error{"tryCastFromUnderlying is not appropriately specialized for those types"};
+	struct enum_caster {
+		static auto try_cast_from_underlying(TUnderlying value, TEnum &out) -> result {
+			static_assert(false, "try_cast_from_underlying is not appropriately specialized for those types");
+			throw std::logic_error{"try_cast_from_underlying is not appropriately specialized for those types"};
 		}
-		static auto castFromUnderlying(TUnderlying value) -> TEnum {
-			static_assert(false, "castFromUnderlying is not appropriately specialized for those types");
-			throw std::logic_error{"castFromUnderlying is not appropriately specialized for those types"};
+		static auto cast_from_underlying(TUnderlying value) -> TEnum {
+			static_assert(false, "cast_from_underlying is not appropriately specialized for those types");
+			throw std::logic_error{"cast_from_underlying is not appropriately specialized for those types"};
 		}
-		static auto tryCastToUnderlying(TEnum value, TUnderlying &out) -> Result {
-			static_assert(false, "tryCastToUnderlying is not appropriately specialized for those types");
-			throw std::logic_error{"tryCastToUnderlying is not appropriately specialized for those types"};
+		static auto try_cast_to_underlying(TEnum value, TUnderlying &out) -> result {
+			static_assert(false, "try_cast_to_underlying is not appropriately specialized for those types");
+			throw std::logic_error{"try_cast_to_underlying is not appropriately specialized for those types"};
 		}
-		static auto castToUnderlying(TEnum value) -> TUnderlying {
-			static_assert(false, "castToUnderlying is not appropriately specialized for those types");
-			throw std::logic_error{"castToUnderlying is not appropriately specialized for those types"};
+		static auto cast_to_underlying(TEnum value) -> TUnderlying {
+			static_assert(false, "cast_to_underlying is not appropriately specialized for those types");
+			throw std::logic_error{"cast_to_underlying is not appropriately specialized for those types"};
 		}
 	};
 
 	template <typename TEnum>
-	struct EnumStringifier {
-		auto toString(TEnum value) -> std::string {
-			static_assert(false, "toString is not appropriately specialized for that type");
-			throw std::logic_error{"toString is not appropriately specialized for that type"};
+	struct enum_stringifier {
+		auto to_string(TEnum value) -> std::string {
+			static_assert(false, "to_string is not appropriately specialized for that type");
+			throw std::logic_error{"to_string is not appropriately specialized for that type"};
 		}
-		auto tryGetFromString(const std::string &value, TEnum &out) -> Result {
+		auto try_get_from_string(const std::string &value, TEnum &out) -> result {
 			static_assert(false, "tryCastFromString is not appropriately specialized for that type");
 			throw std::logic_error{"tryCastFromString is not appropriately specialized for that type"};
 		}
-		auto getFromString(const std::string &value) -> TEnum {
+		auto get_from_string(const std::string &value) -> TEnum {
 			static_assert(false, "castFromString is not appropriately specialized for that type");
 			throw std::logic_error{"castFromString is not appropriately specialized for that type"};
 		}
@@ -113,48 +113,48 @@ namespace Vana {
 	DISPATCH(ENUM_CLASS_IMPL_, __VA_ARGS__)
 
 #define ENUM_CLASS_CAST_IMPL_3(FullyQualifiedTypeName, UnderlyingType, List) \
-	namespace Vana { \
+	namespace vana { \
 		template <> \
-		struct EnumCaster<FullyQualifiedTypeName, UnderlyingType> { \
-			static auto tryCastFromUnderlying(UnderlyingType value, FullyQualifiedTypeName &out) -> Result { \
+		struct enum_caster<FullyQualifiedTypeName, UnderlyingType> { \
+			static auto try_cast_from_underlying(UnderlyingType value, FullyQualifiedTypeName &out) -> result { \
 				out = static_cast<FullyQualifiedTypeName>(value); \
 				switch (out) { \
 					DEFER(List)(FullyQualifiedTypeName, CASE_VALUE_IMPL) \
-						return Result::Successful; \
+						return result::successful; \
 					default: \
-						return Result::Failure; \
+						return result::failure; \
 				} \
 			} \
-			static auto castFromUnderlying(UnderlyingType value) -> FullyQualifiedTypeName { \
+			static auto cast_from_underlying(UnderlyingType value) -> FullyQualifiedTypeName { \
 				FullyQualifiedTypeName ret; \
-				if (tryCastFromUnderlying(value, ret) != Result::Successful) { \
-					throw InvalidEnumException{#FullyQualifiedTypeName}; \
+				if (try_cast_from_underlying(value, ret) != result::successful) { \
+					throw invalid_enum_exception{#FullyQualifiedTypeName}; \
 				} \
 				return ret; \
 			} \
-			static auto tryCastToUnderlying(FullyQualifiedTypeName value, UnderlyingType &out) -> Result { \
+			static auto try_cast_to_underlying(FullyQualifiedTypeName value, UnderlyingType &out) -> result { \
 				out = static_cast<UnderlyingType>(value); \
-				return Result::Successful; \
+				return result::successful; \
 			} \
-			static auto castToUnderlying(FullyQualifiedTypeName value) -> UnderlyingType { \
+			static auto cast_to_underlying(FullyQualifiedTypeName value) -> UnderlyingType { \
 				UnderlyingType ret; \
-				if (tryCastToUnderlying(value, ret) != Result::Successful) { \
-					throw InvalidEnumException{#FullyQualifiedTypeName}; \
+				if (try_cast_to_underlying(value, ret) != result::successful) { \
+					throw invalid_enum_exception{#FullyQualifiedTypeName}; \
 				} \
 				return ret; \
 			} \
 		}; \
 		template <> \
-		struct EnumStringifier<FullyQualifiedTypeName> { \
+		struct enum_stringifier<FullyQualifiedTypeName> { \
 		private: \
 			std::vector<std::tuple<FullyQualifiedTypeName, std::string>> s_strings; \
 		public: \
-			EnumStringifier() { \
+			enum_stringifier() { \
 				s_strings = { \
 					DEFER(List)(FullyQualifiedTypeName, CAST_STRING_IMPL) \
 				}; \
 			} \
-			auto toString(FullyQualifiedTypeName value) -> std::string { \
+			auto to_string(FullyQualifiedTypeName value) -> std::string { \
 				auto iter = std::find_if( \
 					std::begin(s_strings), \
 					std::end(s_strings), \
@@ -164,21 +164,21 @@ namespace Vana {
 				if (iter == std::end(s_strings)) return ""; \
 				return std::get<1>(*iter); \
 			} \
-			auto tryGetFromString(const std::string &value, FullyQualifiedTypeName &out) -> Result { \
+			auto try_get_from_string(const std::string &value, FullyQualifiedTypeName &out) -> result { \
 				auto iter = std::find_if( \
 					std::begin(s_strings), \
 					std::end(s_strings), \
 					[&value](const std::tuple<FullyQualifiedTypeName, std::string> &test) -> bool { \
 						return std::get<1>(test) == value; \
 					}); \
-				if (iter == std::end(s_strings)) return Result::Failure; \
+				if (iter == std::end(s_strings)) return result::failure; \
 				out = std::get<0>(*iter); \
-				return Result::Successful; \
+				return result::successful; \
 			} \
-			auto getFromString(const std::string &value) -> FullyQualifiedTypeName { \
+			auto get_from_string(const std::string &value) -> FullyQualifiedTypeName { \
 				FullyQualifiedTypeName out; \
-				if (tryGetFromString(value, out) != Result::Successful) { \
-					throw InvalidEnumException{#FullyQualifiedTypeName}; \
+				if (try_get_from_string(value, out) != result::successful) { \
+					throw invalid_enum_exception{#FullyQualifiedTypeName}; \
 				} \
 				return out; \
 			} \

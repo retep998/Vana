@@ -19,20 +19,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	namespace Maps {
-		enum : map_id_t {
-			GmMap = 180000000,
-			OriginOfClockTower = 220080001,
-			SorcerersRoom = 270020211,
-			NoMap = 999999999
+namespace vana {
+	namespace maps {
+		enum : game_map_id {
+			gm_map = 180000000,
+			origin_of_clock_tower = 220080001,
+			sorcerers_room = 270020211,
+			no_map = 999999999
 		};
 	}
 
-	namespace ShipKind {
+	namespace ship_kind {
 		enum : int8_t {
-			Regular = 0x00,
-			Balrog = 0x01,
+			regular = 0x00,
+			balrog = 0x01,
 		};
 	}
 }

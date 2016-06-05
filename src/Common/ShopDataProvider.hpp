@@ -25,21 +25,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-namespace Vana {
-	class ShopDataProvider {
+namespace vana {
+	class shop_data_provider {
 	public:
-		auto loadData() -> void;
+		auto load_data() -> void;
 
-		auto isShop(shop_id_t id) const -> bool;
-		auto getShop(shop_id_t id) const -> ShopData;
-		auto getShopItem(shop_id_t shopId, uint16_t shopIndex) const -> const ShopItemInfo * const;
-		auto getRechargeCost(shop_id_t shopId, item_id_t itemId, slot_qty_t amount) const -> mesos_t;
+		auto is_shop(game_shop_id id) const -> bool;
+		auto get_shop(game_shop_id id) const -> shop_data;
+		auto get_shop_item(game_shop_id shop_id, uint16_t shop_index) const -> const shop_item_info * const;
+		auto get_recharge_cost(game_shop_id shop_id, game_item_id item_id, game_slot_qty amount) const -> game_mesos;
 	private:
-		auto loadShops() -> void;
-		auto loadUserShops() -> void;
-		auto loadRechargeTiers() -> void;
+		auto load_shops() -> void;
+		auto load_user_shops() -> void;
+		auto load_recharge_tiers() -> void;
 
-		hash_map_t<shop_id_t, ShopInfo> m_shops;
-		hash_map_t<int8_t, ord_map_t<item_id_t, double>> m_rechargeCosts;
+		hash_map<game_shop_id, shop_info> m_shops;
+		hash_map<int8_t, ord_map<game_item_id, double>> m_recharge_costs;
 	};
 }

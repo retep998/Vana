@@ -24,57 +24,57 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-namespace Vana {
-	class PacketBuilder;
+namespace vana {
+	class packet_builder;
 
-	namespace ChannelServer {
-		class Instance;
-		class Player;
+	namespace channel_server {
+		class instance;
+		class player;
 
-		class Party {
-			NONCOPYABLE(Party);
-			NO_DEFAULT_CONSTRUCTOR(Party);
+		class party {
+			NONCOPYABLE(party);
+			NO_DEFAULT_CONSTRUCTOR(party);
 		public:
-			Party(party_id_t partyId);
+			party(game_party_id party_id);
 
-			auto setLeader(player_id_t playerId, bool showPacket = false) -> void;
-			auto setMember(player_id_t playerId, ref_ptr_t<Player> player) -> void;
-			auto setInstance(Instance *instance) -> void { m_instance = instance; }
-			auto isLeader(player_id_t playerId) const -> bool { return playerId == m_leaderId; }
-			auto getMembersCount() const -> int8_t { return static_cast<int8_t>(m_members.size()); }
-			auto getId() const -> party_id_t { return m_partyId; }
-			auto getLeaderId() const -> player_id_t { return m_leaderId; }
-			auto getMember(player_id_t id) -> ref_ptr_t<Player> { return m_members.find(id) != std::end(m_members) ? m_members[id] : nullptr; }
-			auto getLeader() -> ref_ptr_t<Player> { return m_members[m_leaderId]; }
-			auto getInstance() const -> Instance * { return m_instance; }
+			auto set_leader(game_player_id player_id, bool show_packet = false) -> void;
+			auto set_member(game_player_id player_id, ref_ptr<player> player) -> void;
+			auto set_instance(instance *inst) -> void { m_instance = inst; }
+			auto is_leader(game_player_id player_id) const -> bool { return player_id == m_leader_id; }
+			auto get_members_count() const -> int8_t { return static_cast<int8_t>(m_members.size()); }
+			auto get_id() const -> game_party_id { return m_party_id; }
+			auto get_leader_id() const -> game_player_id { return m_leader_id; }
+			auto get_member(game_player_id id) -> ref_ptr<player> { return m_members.find(id) != std::end(m_members) ? m_members[id] : nullptr; }
+			auto get_leader() -> ref_ptr<player> { return m_members[m_leader_id]; }
+			auto get_instance() const -> instance * { return m_instance; }
 
 			// More complicated specific functions
-			auto addMember(ref_ptr_t<Player> player, bool first = false) -> void;
-			auto addMember(player_id_t id, const string_t &name, bool first = false) -> void;
-			auto deleteMember(ref_ptr_t<Player> player, bool kicked) -> void;
-			auto deleteMember(player_id_t id, const string_t &name, bool kicked) -> void;
+			auto add_member(ref_ptr<player> player, bool first = false) -> void;
+			auto add_member(game_player_id id, const string &name, bool first = false) -> void;
+			auto delete_member(ref_ptr<player> player, bool kicked) -> void;
+			auto delete_member(game_player_id id, const string &name, bool kicked) -> void;
 			auto disband() -> void;
-			auto showHpBar(ref_ptr_t<Player> player) -> void;
-			auto receiveHpBar(ref_ptr_t<Player> player) -> void;
-			auto silentUpdate() -> void;
-			auto runFunction(function_t<void(ref_ptr_t<Player>)> func) -> void;
+			auto show_hp_bar(ref_ptr<player> player) -> void;
+			auto receive_hp_bar(ref_ptr<player> player) -> void;
+			auto silent_update() -> void;
+			auto run_function(function<void(ref_ptr<player>)> func) -> void;
 
-			auto warpAllMembers(map_id_t mapId, const string_t &portalName = "") -> void;
-			auto isWithinLevelRange(player_level_t lowBound, player_level_t highBound) -> bool;
-			auto checkFootholds(int8_t memberCount, const vector_t<vector_t<foothold_id_t>> &footholds) -> Result;
-			auto verifyFootholds(const vector_t<vector_t<foothold_id_t>> &footholds) -> Result;
-			auto getMemberCountOnMap(map_id_t mapId) -> int8_t;
-			auto getMemberByIndex(uint8_t oneBasedIndex) -> ref_ptr_t<Player>;
-			auto getZeroBasedIndexByMember(ref_ptr_t<Player> player) -> int8_t;
-			auto getAllPlayerIds() -> vector_t<player_id_t>;
-			auto getPartyMembers(map_id_t mapId = -1) -> vector_t<ref_ptr_t<Player>>;
+			auto warp_all_members(game_map_id map_id, const string &portal_name = "") -> void;
+			auto is_within_level_range(game_player_level low_bound, game_player_level high_bound) -> bool;
+			auto check_footholds(int8_t member_count, const vector<vector<game_foothold_id>> &footholds) -> result;
+			auto verify_footholds(const vector<vector<game_foothold_id>> &footholds) -> result;
+			auto get_member_count_on_map(game_map_id map_id) -> int8_t;
+			auto get_member_by_index(uint8_t one_based_index) -> ref_ptr<player>;
+			auto get_zero_based_index_by_member(ref_ptr<player> player) -> int8_t;
+			auto get_all_player_ids() -> vector<game_player_id>;
+			auto get_party_members(game_map_id map_id = -1) -> vector<ref_ptr<player>>;
 
-			auto getMembers() const -> const ord_map_t<player_id_t, ref_ptr_t<Player>, std::greater<player_id_t>> & { return m_members; }
+			auto get_members() const -> const ord_map<game_player_id, ref_ptr<player>, std::greater<game_player_id>> & { return m_members; }
 		private:
-			player_id_t m_leaderId = 0;
-			party_id_t m_partyId = 0;
-			Instance *m_instance = nullptr;
-			ord_map_t<player_id_t, ref_ptr_t<Player>, std::greater<player_id_t>> m_members;
+			game_player_id m_leader_id = 0;
+			game_party_id m_party_id = 0;
+			instance *m_instance = nullptr;
+			ord_map<game_player_id, ref_ptr<player>, std::greater<game_player_id>> m_members;
 		};
 	}
 }

@@ -31,17 +31,17 @@ extern "C" {
 #include <string>
 #include <vector>
 
-namespace Vana {
-	class LuaEnvironment;
+namespace vana {
+	class lua_environment;
 
 	template <typename T>
-	struct LuaSerialize {
-		auto read(LuaEnvironment &config, int stackIndex) -> T {
+	struct lua_serialize {
+		auto read(lua_environment &config, int stack_index) -> T {
 			static_assert(false, "index read of T is not appropriately specialized for that type");
 			throw std::logic_error{"index read of T is not appropriately specialized for that type"};
 		}
 
-		auto read(LuaEnvironment &config, const string_t &prefix) -> T {
+		auto read(lua_environment &config, const string &prefix) -> T {
 			static_assert(false, "string prefix read of T is not appropriately specialized for that type");
 			throw std::logic_error{"string prefix read of T is not appropriately specialized for that type"};
 		}
@@ -50,751 +50,751 @@ namespace Vana {
 	// TODO FIXME lua
 	// Lua 5.2 doesn't support 64-bit integers out of the box, it needs special compilation and #defines to make it right
 	// Lua 5.3 tentatively looks like 64-bit integer will be the default integer size, so at that point, I can update this
-	class LuaEnvironment {
-		NONCOPYABLE(LuaEnvironment);
-		NO_DEFAULT_CONSTRUCTOR(LuaEnvironment);
+	class lua_environment {
+		NONCOPYABLE(lua_environment);
+		NO_DEFAULT_CONSTRUCTOR(lua_environment);
 	public:
-		LuaEnvironment(const string_t &filename);
-		~LuaEnvironment();
+		lua_environment(const string &filename);
+		~lua_environment();
 
-		static auto getEnvironment(lua_State *luaVm) -> LuaEnvironment &;
+		static auto get_environment(lua_State *lua_vm) -> lua_environment &;
 
-		auto run() -> Result;
-		auto error(const string_t &text) -> void;
+		auto run() -> result;
+		auto error(const string &text) -> void;
 
-		auto exists(const string_t &key) -> bool;
-		auto exists(lua_State *luaVm, const string_t &key) -> bool;
-		auto is(const string_t &key, LuaType type) -> bool;
-		auto is(lua_State *luaVm, const string_t &key, LuaType type) -> bool;
-		auto is(int index, LuaType type) -> bool;
-		auto is(lua_State *luaVm, int index, LuaType type) -> bool;
-		auto isAny(const string_t &key, init_list_t<LuaType> types) -> bool;
-		auto isAny(lua_State *luaVm, const string_t &key, init_list_t<LuaType> types) -> bool;
-		auto isAny(int index, init_list_t<LuaType> types) -> bool;
-		auto isAny(lua_State *luaVm, int index, init_list_t<LuaType> types) -> bool;
-		auto typeOf(int index) -> LuaType;
-		auto typeOf(lua_State *luaVm, int index) -> LuaType;
+		auto exists(const string &key) -> bool;
+		auto exists(lua_State *lua_vm, const string &key) -> bool;
+		auto is(const string &key, lua::lua_type type) -> bool;
+		auto is(lua_State *lua_vm, const string &key, lua::lua_type type) -> bool;
+		auto is(int index, lua::lua_type type) -> bool;
+		auto is(lua_State *lua_vm, int index, lua::lua_type type) -> bool;
+		auto is_any_of(const string &key, init_list<lua::lua_type> types) -> bool;
+		auto is_any_of(lua_State *lua_vm, const string &key, init_list<lua::lua_type> types) -> bool;
+		auto is_any_of(int index, init_list<lua::lua_type> types) -> bool;
+		auto is_any_of(lua_State *lua_vm, int index, init_list<lua::lua_type> types) -> bool;
+		auto type_of(int index) -> lua::lua_type;
+		auto type_of(lua_State *lua_vm, int index) -> lua::lua_type;
 		auto pop(int count = 1) -> void;
-		auto pop(lua_State *luaVm, int count = 1) -> void;
+		auto pop(lua_State *lua_vm, int count = 1) -> void;
 		auto count() -> int;
-		auto count(lua_State *luaVm) -> int;
-		auto validateValue(LuaType expectedType, const LuaVariant &v, const string_t &key, const string_t &prefix, bool nilIsValid = false) -> LuaType;
-		auto validateKey(LuaType expectedType, const LuaVariant &v, const string_t &prefix) -> void;
-		auto validateObject(LuaType expectedType, const LuaVariant &v, const string_t &prefix) -> void;
-		auto required(bool present, const string_t &key, const string_t &prefix) -> void;
+		auto count(lua_State *lua_vm) -> int;
+		auto validate_value(lua::lua_type expected_type, const lua_variant &v, const string &key, const string &prefix, bool nil_is_valid = false) -> lua::lua_type;
+		auto validate_key(lua::lua_type expected_type, const lua_variant &v, const string &prefix) -> void;
+		auto validate_object(lua::lua_type expected_type, const lua_variant &v, const string &prefix) -> void;
+		auto required(bool present, const string &key, const string &prefix) -> void;
 
-		auto yield(lua_return_t numberOfReturnResultsPassedToResume) -> lua_return_t;
-		auto pushNil() -> LuaEnvironment &;
-		auto pushNil(lua_State *luaVm) -> LuaEnvironment &;
+		auto yield(lua::lua_return quantity_return_results_passed_to_resume) -> lua::lua_return;
+		auto push_nil() -> lua_environment &;
+		auto push_nil(lua_State *lua_vm) -> lua_environment &;
 
-		auto getScriptName() -> string_t;
-		auto getScriptPath() -> vector_t<string_t>;
+		auto get_script_name() -> string;
+		auto get_script_path() -> vector<string>;
 
 		template <typename T>
-		auto set(const string_t &key, const T &value) -> LuaEnvironment &;
+		auto set(const string &key, const T &value) -> lua_environment &;
 		template <typename T>
-		auto push(const T &value) -> LuaEnvironment &;
+		auto push(const T &value) -> lua_environment &;
 		template <typename T>
-		auto get(const string_t &key) -> T;
+		auto get(const string &key) -> T;
 		template <typename T>
 		auto get(int index) -> T;
 		template <typename T>
-		auto get(const string_t &key, T defaultValue) -> T;
+		auto get(const string &key, T default_value) -> T;
 		template <typename T>
-		auto get(int index, T defaultValue) -> T;
+		auto get(int index, T default_value) -> T;
 
 		template <typename T>
-		auto set(lua_State *luaVm, const string_t &key, const T &value) -> LuaEnvironment &;
+		auto set(lua_State *lua_vm, const string &key, const T &value) -> lua_environment &;
 		template <typename T>
-		auto push(lua_State *luaVm, const T &value) -> LuaEnvironment &;
+		auto push(lua_State *lua_vm, const T &value) -> lua_environment &;
 		template <typename T>
-		auto get(lua_State *luaVm, const string_t &key) -> T;
+		auto get(lua_State *lua_vm, const string &key) -> T;
 		template <typename T>
-		auto get(lua_State *luaVm, int index) -> T;
+		auto get(lua_State *lua_vm, int index) -> T;
 		template <typename T>
-		auto get(lua_State *luaVm, const string_t &key, T defaultValue) -> T;
+		auto get(lua_State *lua_vm, const string &key, T default_value) -> T;
 		template <typename T>
-		auto get(lua_State *luaVm, int index, T defaultValue) -> T;
+		auto get(lua_State *lua_vm, int index, T default_value) -> T;
 
 		template <typename ... TArgs>
-		auto call(const string_t &func, TArgs ... args) -> Result;
+		auto call(const string &func, TArgs ... args) -> result;
 		template <typename ... TArgs>
-		auto call(int numberOfReturnResults, const string_t &func, TArgs ... args) -> Result;
+		auto call(int quantity_return_results, const string &func, TArgs ... args) -> result;
 		template <typename ... TArgs>
-		auto call(lua_State *luaVm, const string_t &func, TArgs ... args) -> Result;
+		auto call(lua_State *lua_vm, const string &func, TArgs ... args) -> result;
 		template <typename ... TArgs>
-		auto call(lua_State *luaVm, int numberOfReturnResults, const string_t &func, TArgs ... args) -> Result;
+		auto call(lua_State *lua_vm, int quantity_return_results, const string &func, TArgs ... args) -> result;
 	protected:
-		LuaEnvironment(const string_t &filename, bool useThread);
+		lua_environment(const string &filename, bool use_thread);
 
-		virtual auto handleError(const string_t &filename, const string_t &error) -> void;
-		virtual auto handleFileNotFound(const string_t &filename) -> void;
-		virtual auto handleKeyNotFound(const string_t &filename, const string_t &key) -> void;
-		virtual auto handleThreadCompletion() -> void;
-		auto printError(const string_t &error) const -> void;
-		auto expose(const string_t &name, lua_function_t func) -> void;
-		auto resume(lua_return_t pushedArgCount) -> Result;
-		auto requireStandardLib(const string_t &localName, lua_function_t func) -> void;
+		virtual auto handle_error(const string &filename, const string &error) -> void;
+		virtual auto handle_file_not_found(const string &filename) -> void;
+		virtual auto handle_key_not_found(const string &filename, const string &key) -> void;
+		virtual auto handle_thread_completion() -> void;
+		auto print_error(const string &error) const -> void;
+		auto expose(const string &name, lua::lua_function func) -> void;
+		auto resume(lua::lua_return pushed_arg_count) -> result;
+		auto require_standard_lib(const string &local_name, lua::lua_function func) -> void;
 
 		template <typename T>
-		auto pushThread(const T &value) -> void;
+		auto push_thread(const T &value) -> void;
 	private:
-		auto loadFile(const string_t &filename) -> void;
-		auto keyMustExist(const string_t &key) -> void;
+		auto load_file(const string &filename) -> void;
+		auto key_must_exist(const string &key) -> void;
 		template <typename THead, typename ... TTail>
-		auto callImpl(lua_State *luaVm, const THead &arg, const TTail & ... rest) -> void;
-		auto callImpl(lua_State *luaVm) -> void;
+		auto call_impl(lua_State *lua_vm, const THead &arg, const TTail & ... rest) -> void;
+		auto call_impl(lua_State *lua_vm) -> void;
 
 		// For these Impl functions, they aren't specialized for anything except primitives/string
 		// The others are overloads - this allows the dispatch mechanism to allow templated types
-		// Phrased differently, if your only argument is TElement and TElement is vector_t<something>, how do you know you can iterate it?
+		// Phrased differently, if your only argument is TElement and TElement is vector<something>, how do you know you can iterate it?
 
-		// Begin pushImpl
+		// Begin push_impl
 		template <typename T>
-		auto pushImpl(lua_State *luaVm, const T &value) -> void;
+		auto push_impl(lua_State *lua_vm, const T &value) -> void;
 		template <>
-		auto pushImpl<bool>(lua_State *luaVm, const bool &value) -> void;
+		auto push_impl<bool>(lua_State *lua_vm, const bool &value) -> void;
 		template <>
-		auto pushImpl<double>(lua_State *luaVm, const double &value) -> void;
+		auto push_impl<double>(lua_State *lua_vm, const double &value) -> void;
 		template <>
-		auto pushImpl<string_t>(lua_State *luaVm, const string_t &value) -> void;
+		auto push_impl<string>(lua_State *lua_vm, const string &value) -> void;
 		template <>
-		auto pushImpl<int8_t>(lua_State *luaVm, const int8_t &value) -> void;
+		auto push_impl<int8_t>(lua_State *lua_vm, const int8_t &value) -> void;
 		template <>
-		auto pushImpl<int16_t>(lua_State *luaVm, const int16_t &value) -> void;
+		auto push_impl<int16_t>(lua_State *lua_vm, const int16_t &value) -> void;
 		template <>
-		auto pushImpl<int32_t>(lua_State *luaVm, const int32_t &value) -> void;
+		auto push_impl<int32_t>(lua_State *lua_vm, const int32_t &value) -> void;
 		template <>
-		auto pushImpl<uint8_t>(lua_State *luaVm, const uint8_t &value) -> void;
+		auto push_impl<uint8_t>(lua_State *lua_vm, const uint8_t &value) -> void;
 		template <>
-		auto pushImpl<uint16_t>(lua_State *luaVm, const uint16_t &value) -> void;
+		auto push_impl<uint16_t>(lua_State *lua_vm, const uint16_t &value) -> void;
 		template <>
-		auto pushImpl<uint32_t>(lua_State *luaVm, const uint32_t &value) -> void;
+		auto push_impl<uint32_t>(lua_State *lua_vm, const uint32_t &value) -> void;
 		template <>
-		auto pushImpl<milliseconds_t>(lua_State *luaVm, const milliseconds_t &value) -> void;
+		auto push_impl<milliseconds>(lua_State *lua_vm, const milliseconds &value) -> void;
 		template <>
-		auto pushImpl<seconds_t>(lua_State *luaVm, const seconds_t &value) -> void;
+		auto push_impl<seconds>(lua_State *lua_vm, const seconds &value) -> void;
 		template <>
-		auto pushImpl<minutes_t>(lua_State *luaVm, const minutes_t &value) -> void;
+		auto push_impl<minutes>(lua_State *lua_vm, const minutes &value) -> void;
 		template <>
-		auto pushImpl<hours_t>(lua_State *luaVm, const hours_t &value) -> void;
+		auto push_impl<hours>(lua_State *lua_vm, const hours &value) -> void;
 		template <>
-		auto pushImpl<LuaVariant>(lua_State *luaVm, const LuaVariant &value) -> void;
+		auto push_impl<lua_variant>(lua_State *lua_vm, const lua_variant &value) -> void;
 		template <typename TElement>
-		auto pushImpl(lua_State *luaVm, const vector_t<TElement> &value) -> void;
+		auto push_impl(lua_State *lua_vm, const vector<TElement> &value) -> void;
 		template <typename TKey, typename TElement, typename THash = std::hash<TKey>, typename TOperation = std::equal_to<TKey>>
-		auto pushImpl(lua_State *luaVm, const hash_map_t<TKey, TElement, THash, TOperation> &value) -> void;
+		auto push_impl(lua_State *lua_vm, const hash_map<TKey, TElement, THash, TOperation> &value) -> void;
 		template <typename TKey, typename TElement, typename TOperation = std::less<TKey>>
-		auto pushImpl(lua_State *luaVm, const ord_map_t<TKey, TElement, TOperation> &value) -> void;
-		// End pushImpl
+		auto push_impl(lua_State *lua_vm, const ord_map<TKey, TElement, TOperation> &value) -> void;
+		// End push_impl
 
-		// Begin getImpl key
+		// Begin get_impl key
 		template <typename T>
-		auto getImplDefault(lua_State *luaVm, const string_t &key) -> T;
+		auto get_impl_default(lua_State *lua_vm, const string &key) -> T;
 		template <typename T>
-		auto getImpl(lua_State *luaVm, const string_t &key, T *) -> T;
+		auto get_impl(lua_State *lua_vm, const string &key, T *) -> T;
 		template <>
-		auto getImpl<bool>(lua_State *luaVm, const string_t &key, bool *) -> bool;
+		auto get_impl<bool>(lua_State *lua_vm, const string &key, bool *) -> bool;
 		template <>
-		auto getImpl<double>(lua_State *luaVm, const string_t &key, double *) -> double;
+		auto get_impl<double>(lua_State *lua_vm, const string &key, double *) -> double;
 		template <>
-		auto getImpl<string_t>(lua_State *luaVm, const string_t &key, string_t *) -> string_t;
+		auto get_impl<string>(lua_State *lua_vm, const string &key, string *) -> string;
 		template <>
-		auto getImpl<int8_t>(lua_State *luaVm, const string_t &key, int8_t *) -> int8_t;
+		auto get_impl<int8_t>(lua_State *lua_vm, const string &key, int8_t *) -> int8_t;
 		template <>
-		auto getImpl<int16_t>(lua_State *luaVm, const string_t &key, int16_t *) -> int16_t;
+		auto get_impl<int16_t>(lua_State *lua_vm, const string &key, int16_t *) -> int16_t;
 		template <>
-		auto getImpl<int32_t>(lua_State *luaVm, const string_t &key, int32_t *) -> int32_t;
+		auto get_impl<int32_t>(lua_State *lua_vm, const string &key, int32_t *) -> int32_t;
 		template <>
-		auto getImpl<uint8_t>(lua_State *luaVm, const string_t &key, uint8_t *) -> uint8_t;
+		auto get_impl<uint8_t>(lua_State *lua_vm, const string &key, uint8_t *) -> uint8_t;
 		template <>
-		auto getImpl<uint16_t>(lua_State *luaVm, const string_t &key, uint16_t *) -> uint16_t;
+		auto get_impl<uint16_t>(lua_State *lua_vm, const string &key, uint16_t *) -> uint16_t;
 		template <>
-		auto getImpl<uint32_t>(lua_State *luaVm, const string_t &key, uint32_t *) -> uint32_t;
+		auto get_impl<uint32_t>(lua_State *lua_vm, const string &key, uint32_t *) -> uint32_t;
 		template <>
-		auto getImpl<milliseconds_t>(lua_State *luaVm, const string_t &key, milliseconds_t *) -> milliseconds_t;
+		auto get_impl<milliseconds>(lua_State *lua_vm, const string &key, milliseconds *) -> milliseconds;
 		template <>
-		auto getImpl<seconds_t>(lua_State *luaVm, const string_t &key, seconds_t *) -> seconds_t;
+		auto get_impl<seconds>(lua_State *lua_vm, const string &key, seconds *) -> seconds;
 		template <>
-		auto getImpl<minutes_t>(lua_State *luaVm, const string_t &key, minutes_t *) -> minutes_t;
+		auto get_impl<minutes>(lua_State *lua_vm, const string &key, minutes *) -> minutes;
 		template <>
-		auto getImpl<hours_t>(lua_State *luaVm, const string_t &key, hours_t *) -> hours_t;
+		auto get_impl<hours>(lua_State *lua_vm, const string &key, hours *) -> hours;
 		template <>
-		auto getImpl<LuaVariant>(lua_State *luaVm, const string_t &key, LuaVariant *) -> LuaVariant;
+		auto get_impl<lua_variant>(lua_State *lua_vm, const string &key, lua_variant *) -> lua_variant;
 		template <typename TElement>
-		auto getImpl(lua_State *luaVm, const string_t &key, vector_t<TElement> *) -> vector_t<TElement>;
+		auto get_impl(lua_State *lua_vm, const string &key, vector<TElement> *) -> vector<TElement>;
 		template <typename TKey, typename TElement, typename THash = std::hash<TKey>, typename TOperation = std::equal_to<TKey>>
-		auto getImpl(lua_State *luaVm, const string_t &key, hash_map_t<TKey, TElement, THash, TOperation> *) -> hash_map_t<TKey, TElement, THash, TOperation>;
+		auto get_impl(lua_State *lua_vm, const string &key, hash_map<TKey, TElement, THash, TOperation> *) -> hash_map<TKey, TElement, THash, TOperation>;
 		template <typename TKey, typename TElement, typename TOperation = std::less<TKey>>
-		auto getImpl(lua_State *luaVm, const string_t &key, ord_map_t<TKey, TElement, TOperation> *) -> ord_map_t<TKey, TElement, TOperation>;
-		// End getImpl key
+		auto get_impl(lua_State *lua_vm, const string &key, ord_map<TKey, TElement, TOperation> *) -> ord_map<TKey, TElement, TOperation>;
+		// End get_impl key
 
-		// Begin getImpl index
+		// Begin get_impl index
 		template <typename TInteger>
-		auto getInteger(lua_State *luaVm, int index) -> TInteger;
+		auto getInteger(lua_State *lua_vm, int index) -> TInteger;
 		template <typename T>
-		auto getImpl(lua_State *luaVm, int index, T *) -> T;
+		auto get_impl(lua_State *lua_vm, int index, T *) -> T;
 		template <>
-		auto getImpl<bool>(lua_State *luaVm, int index, bool *) -> bool;
+		auto get_impl<bool>(lua_State *lua_vm, int index, bool *) -> bool;
 		template <>
-		auto getImpl<double>(lua_State *luaVm, int index, double *) -> double;
+		auto get_impl<double>(lua_State *lua_vm, int index, double *) -> double;
 		template <>
-		auto getImpl<string_t>(lua_State *luaVm, int index, string_t *) -> string_t;
+		auto get_impl<string>(lua_State *lua_vm, int index, string *) -> string;
 		template <>
-		auto getImpl<int8_t>(lua_State *luaVm, int index, int8_t *) -> int8_t;
+		auto get_impl<int8_t>(lua_State *lua_vm, int index, int8_t *) -> int8_t;
 		template <>
-		auto getImpl<int16_t>(lua_State *luaVm, int index, int16_t *) -> int16_t;
+		auto get_impl<int16_t>(lua_State *lua_vm, int index, int16_t *) -> int16_t;
 		template <>
-		auto getImpl<int32_t>(lua_State *luaVm, int index, int32_t *) -> int32_t;
+		auto get_impl<int32_t>(lua_State *lua_vm, int index, int32_t *) -> int32_t;
 		template <>
-		auto getImpl<uint8_t>(lua_State *luaVm, int index, uint8_t *) -> uint8_t;
+		auto get_impl<uint8_t>(lua_State *lua_vm, int index, uint8_t *) -> uint8_t;
 		template <>
-		auto getImpl<uint16_t>(lua_State *luaVm, int index, uint16_t *) -> uint16_t;
+		auto get_impl<uint16_t>(lua_State *lua_vm, int index, uint16_t *) -> uint16_t;
 		template <>
-		auto getImpl<uint32_t>(lua_State *luaVm, int index, uint32_t *) -> uint32_t;
+		auto get_impl<uint32_t>(lua_State *lua_vm, int index, uint32_t *) -> uint32_t;
 		template <>
-		auto getImpl<milliseconds_t>(lua_State *luaVm, int index, milliseconds_t *) -> milliseconds_t;
+		auto get_impl<milliseconds>(lua_State *lua_vm, int index, milliseconds *) -> milliseconds;
 		template <>
-		auto getImpl<seconds_t>(lua_State *luaVm, int index, seconds_t *) -> seconds_t;
+		auto get_impl<seconds>(lua_State *lua_vm, int index, seconds *) -> seconds;
 		template <>
-		auto getImpl<minutes_t>(lua_State *luaVm, int index, minutes_t *) -> minutes_t;
+		auto get_impl<minutes>(lua_State *lua_vm, int index, minutes *) -> minutes;
 		template <>
-		auto getImpl<hours_t>(lua_State *luaVm, int index, hours_t *) -> hours_t;
+		auto get_impl<hours>(lua_State *lua_vm, int index, hours *) -> hours;
 		template <>
-		auto getImpl<LuaVariant>(lua_State *luaVm, int index, LuaVariant *) -> LuaVariant;
+		auto get_impl<lua_variant>(lua_State *lua_vm, int index, lua_variant *) -> lua_variant;
 		template <typename TElement>
-		auto getImpl(lua_State *luaVm, int index, vector_t<TElement> *) -> vector_t<TElement>;
+		auto get_impl(lua_State *lua_vm, int index, vector<TElement> *) -> vector<TElement>;
 		template <typename TKey, typename TElement, typename THash = std::hash<TKey>, typename TOperation = std::equal_to<TKey>>
-		auto getImpl(lua_State *luaVm, int index, hash_map_t<TKey, TElement, THash, TOperation> *) -> hash_map_t<TKey, TElement, THash, TOperation>;
+		auto get_impl(lua_State *lua_vm, int index, hash_map<TKey, TElement, THash, TOperation> *) -> hash_map<TKey, TElement, THash, TOperation>;
 		template <typename TKey, typename TElement, typename TOperation = std::less<TKey>>
-		auto getImpl(lua_State *luaVm, int index, ord_map_t<TKey, TElement, TOperation> *) -> ord_map_t<TKey, TElement, TOperation>;
-		// End getImpl index
+		auto get_impl(lua_State *lua_vm, int index, ord_map<TKey, TElement, TOperation> *) -> ord_map<TKey, TElement, TOperation>;
+		// End get_impl index
 
-		static ObjectPool<int32_t, LuaEnvironment *> s_environments;
+		static object_pool<int32_t, lua_environment *> s_environments;
 
-		lua_State *m_luaVm = nullptr;
-		lua_State *m_luaThread = nullptr;
-		string_t m_file;
-		int32_t m_environmentIdentifier;
+		lua_State *m_lua_vm = nullptr;
+		lua_State *m_lua_thread = nullptr;
+		string m_file;
+		int32_t m_environment_id;
 	};
 
 	template <typename T>
-	auto LuaEnvironment::set(const string_t &key, const T &value) -> LuaEnvironment & {
-		return set(m_luaVm, key, value);
+	auto lua_environment::set(const string &key, const T &value) -> lua_environment & {
+		return set(m_lua_vm, key, value);
 	}
 
 	template <typename T>
-	auto LuaEnvironment::set(lua_State *luaVm, const string_t &key, const T &value) -> LuaEnvironment & {
-		push(luaVm, value);
-		lua_setglobal(luaVm, key.c_str());
+	auto lua_environment::set(lua_State *lua_vm, const string &key, const T &value) -> lua_environment & {
+		push(lua_vm, value);
+		lua_setglobal(lua_vm, key.c_str());
 		return *this;
 	}
 
 	template <typename T>
-	auto LuaEnvironment::push(const T &value) -> LuaEnvironment & {
-		return push(m_luaVm, value);
+	auto lua_environment::push(const T &value) -> lua_environment & {
+		return push(m_lua_vm, value);
 	}
 
 	template <typename T>
-	auto LuaEnvironment::push(lua_State *luaVm, const T &value) -> LuaEnvironment & {
-		pushImpl(luaVm, value);
+	auto lua_environment::push(lua_State *lua_vm, const T &value) -> lua_environment & {
+		push_impl(lua_vm, value);
 		return *this;
 	}
 
 	template <typename T>
-	auto LuaEnvironment::get(const string_t &key) -> T {
-		return get<T>(m_luaVm, key);
+	auto lua_environment::get(const string &key) -> T {
+		return get<T>(m_lua_vm, key);
 	}
 
 	template <typename T>
-	auto LuaEnvironment::get(const string_t &key, T defaultValue) -> T {
-		if (!exists(m_luaVm, key)) {
-			return defaultValue;
+	auto lua_environment::get(const string &key, T default_value) -> T {
+		if (!exists(m_lua_vm, key)) {
+			return default_value;
 		}
-		return get<T>(m_luaVm, key);
+		return get<T>(m_lua_vm, key);
 	}
 
 	template <typename T>
-	auto LuaEnvironment::get(lua_State *luaVm, const string_t &key) -> T {
-		auto v = getImpl(luaVm, key, static_cast<T *>(nullptr));
+	auto lua_environment::get(lua_State *lua_vm, const string &key) -> T {
+		auto v = get_impl(lua_vm, key, static_cast<T *>(nullptr));
 		return v;
 	}
 
 	template <typename T>
-	auto LuaEnvironment::get(lua_State *luaVm, const string_t &key, T defaultValue) -> T {
-		if (!exists(luaVm, key)) {
-			return defaultValue;
+	auto lua_environment::get(lua_State *lua_vm, const string &key, T default_value) -> T {
+		if (!exists(lua_vm, key)) {
+			return default_value;
 		}
 
-		auto v = getImpl(luaVm, key, static_cast<T *>(nullptr));
+		auto v = get_impl(lua_vm, key, static_cast<T *>(nullptr));
 		return v;
 	}
 
 	template <typename T>
-	auto LuaEnvironment::get(int index) -> T {
-		return get<T>(m_luaVm, index);
+	auto lua_environment::get(int index) -> T {
+		return get<T>(m_lua_vm, index);
 	}
 
 	template <typename T>
-	auto LuaEnvironment::get(int index, T defaultValue) -> T {
-		if (is(index, LuaType::Nil) || is(index, LuaType::None)) {
-			return defaultValue;
+	auto lua_environment::get(int index, T default_value) -> T {
+		if (is(index, lua::lua_type::nil) || is(index, lua::lua_type::none)) {
+			return default_value;
 		}
-		return get<T>(m_luaVm, index);
+		return get<T>(m_lua_vm, index);
 	}
 
 	template <typename T>
-	auto LuaEnvironment::get(lua_State *luaVm, int index) -> T {
-		auto v = getImpl(luaVm, index, static_cast<T *>(nullptr));
+	auto lua_environment::get(lua_State *lua_vm, int index) -> T {
+		auto v = get_impl(lua_vm, index, static_cast<T *>(nullptr));
 		return v;
 	}
 
 	template <typename T>
-	auto LuaEnvironment::get(lua_State *luaVm, int index, T defaultValue) -> T {
-		if (is(luaVm, index, LuaType::Nil) || is(luaVm, index, LuaType::None)) {
-			return defaultValue;
+	auto lua_environment::get(lua_State *lua_vm, int index, T default_value) -> T {
+		if (is(lua_vm, index, lua::lua_type::nil) || is(lua_vm, index, lua::lua_type::none)) {
+			return default_value;
 		}
-		auto v = getImpl(luaVm, index, static_cast<T *>(nullptr));
+		auto v = get_impl(lua_vm, index, static_cast<T *>(nullptr));
 		return v;
 	}
 
 	template <typename ... TArgs>
-	auto LuaEnvironment::call(const string_t &func, TArgs ... args) -> Result {
-		return call(m_luaVm, func, args...);
+	auto lua_environment::call(const string &func, TArgs ... args) -> result {
+		return call(m_lua_vm, func, args...);
 	}
 
 	template <typename ... TArgs>
-	auto LuaEnvironment::call(int numberOfReturnResults, const string_t &func, TArgs ... args) -> Result {
-		return call(m_luaVm, numberOfReturnResults, func, args...);
+	auto lua_environment::call(int quantity_return_results, const string &func, TArgs ... args) -> result {
+		return call(m_lua_vm, quantity_return_results, func, args...);
 	}
 
 	template <typename ... TArgs>
-	auto LuaEnvironment::call(lua_State *luaVm, const string_t &func, TArgs ... args) -> Result {
-		return call(luaVm, 0, func, args...);
+	auto lua_environment::call(lua_State *lua_vm, const string &func, TArgs ... args) -> result {
+		return call(lua_vm, 0, func, args...);
 	}
 
 	template <typename ... TArgs>
-	auto LuaEnvironment::call(lua_State *luaVm, int numberOfReturnResults, const string_t &func, TArgs ... args) -> Result {
-		lua_getglobal(luaVm, func.c_str());
-		callImpl(luaVm, args...);
+	auto lua_environment::call(lua_State *lua_vm, int quantity_return_results, const string &func, TArgs ... args) -> result {
+		lua_getglobal(lua_vm, func.c_str());
+		call_impl(lua_vm, args...);
 
-		if (lua_pcall(luaVm, sizeof...(args), numberOfReturnResults, 0)) {
-			string_t error = lua_tostring(luaVm, -1);
-			handleError(m_file, error);
-			return Result::Failure;
+		if (lua_pcall(lua_vm, sizeof...(args), quantity_return_results, 0)) {
+			string error = lua_tostring(lua_vm, -1);
+			handle_error(m_file, error);
+			return result::failure;
 		}
 
-		return Result::Successful;
+		return result::successful;
 	}
 
 	template <typename THead, typename ... TTail>
-	auto LuaEnvironment::callImpl(lua_State *luaVm, const THead &arg, const TTail & ... rest) -> void {
-		push<THead>(luaVm, arg);
-		callImpl(luaVm, rest...);
+	auto lua_environment::call_impl(lua_State *lua_vm, const THead &arg, const TTail & ... rest) -> void {
+		push<THead>(lua_vm, arg);
+		call_impl(lua_vm, rest...);
 	}
 
 	inline
-	auto LuaEnvironment::callImpl(lua_State *luaVm) -> void {
+	auto lua_environment::call_impl(lua_State *lua_vm) -> void {
 		// Intentionally blank
 	}
 
 	template <typename T>
-	auto LuaEnvironment::pushThread(const T &value) -> void {
-		push(m_luaThread, value);
+	auto lua_environment::push_thread(const T &value) -> void {
+		push(m_lua_thread, value);
 	}
 
-	// Begin pushImpl
+	// Begin push_impl
 	template <typename T>
-	auto LuaEnvironment::pushImpl(lua_State *luaVm, const T &value) -> void {
+	auto lua_environment::push_impl(lua_State *lua_vm, const T &value) -> void {
 		static_assert(false, "T is not appropriately specialized for that type");
 		throw std::logic_error{"T is not appropriately specialized for that type"};
 	}
 
 	template <>
-	auto LuaEnvironment::pushImpl<bool>(lua_State *luaVm, const bool &value) -> void {
-		lua_pushboolean(luaVm, value);
+	auto lua_environment::push_impl<bool>(lua_State *lua_vm, const bool &value) -> void {
+		lua_pushboolean(lua_vm, value);
 	}
 
 	template <>
-	auto LuaEnvironment::pushImpl<double>(lua_State *luaVm, const double &value) -> void {
-		lua_pushnumber(luaVm, value);
+	auto lua_environment::push_impl<double>(lua_State *lua_vm, const double &value) -> void {
+		lua_pushnumber(lua_vm, value);
 	}
 
 	template <>
-	auto LuaEnvironment::pushImpl<string_t>(lua_State *luaVm, const string_t &value) -> void {
-		lua_pushstring(luaVm, value.c_str());
+	auto lua_environment::push_impl<string>(lua_State *lua_vm, const string &value) -> void {
+		lua_pushstring(lua_vm, value.c_str());
 	}
 
 	template <>
-	auto LuaEnvironment::pushImpl<int8_t>(lua_State *luaVm, const int8_t &value) -> void {
-		lua_pushinteger(luaVm, value);
+	auto lua_environment::push_impl<int8_t>(lua_State *lua_vm, const int8_t &value) -> void {
+		lua_pushinteger(lua_vm, value);
 	}
 
 	template <>
-	auto LuaEnvironment::pushImpl<int16_t>(lua_State *luaVm, const int16_t &value) -> void {
-		lua_pushinteger(luaVm, value);
+	auto lua_environment::push_impl<int16_t>(lua_State *lua_vm, const int16_t &value) -> void {
+		lua_pushinteger(lua_vm, value);
 	}
 
 	template <>
-	auto LuaEnvironment::pushImpl<int32_t>(lua_State *luaVm, const int32_t &value) -> void {
-		lua_pushinteger(luaVm, value);
+	auto lua_environment::push_impl<int32_t>(lua_State *lua_vm, const int32_t &value) -> void {
+		lua_pushinteger(lua_vm, value);
 	}
 
 	template <>
-	auto LuaEnvironment::pushImpl<uint8_t>(lua_State *luaVm, const uint8_t &value) -> void {
-		lua_pushinteger(luaVm, value);
+	auto lua_environment::push_impl<uint8_t>(lua_State *lua_vm, const uint8_t &value) -> void {
+		lua_pushinteger(lua_vm, value);
 	}
 
 	template <>
-	auto LuaEnvironment::pushImpl<uint16_t>(lua_State *luaVm, const uint16_t &value) -> void {
-		lua_pushinteger(luaVm, value);
+	auto lua_environment::push_impl<uint16_t>(lua_State *lua_vm, const uint16_t &value) -> void {
+		lua_pushinteger(lua_vm, value);
 	}
 
 	template <>
-	auto LuaEnvironment::pushImpl<uint32_t>(lua_State *luaVm, const uint32_t &value) -> void {
-		lua_pushinteger(luaVm, value);
+	auto lua_environment::push_impl<uint32_t>(lua_State *lua_vm, const uint32_t &value) -> void {
+		lua_pushinteger(lua_vm, value);
 	}
 
 	template <>
-	auto LuaEnvironment::pushImpl<milliseconds_t>(lua_State *luaVm, const milliseconds_t &value) -> void {
-		lua_pushinteger(luaVm, static_cast<int32_t>(value.count()));
+	auto lua_environment::push_impl<milliseconds>(lua_State *lua_vm, const milliseconds &value) -> void {
+		lua_pushinteger(lua_vm, static_cast<int32_t>(value.count()));
 	}
 
 	template <>
-	auto LuaEnvironment::pushImpl<seconds_t>(lua_State *luaVm, const seconds_t &value) -> void {
-		lua_pushinteger(luaVm, static_cast<int32_t>(value.count()));
+	auto lua_environment::push_impl<seconds>(lua_State *lua_vm, const seconds &value) -> void {
+		lua_pushinteger(lua_vm, static_cast<int32_t>(value.count()));
 	}
 
 	template <>
-	auto LuaEnvironment::pushImpl<minutes_t>(lua_State *luaVm, const minutes_t &value) -> void {
-		lua_pushinteger(luaVm, static_cast<int32_t>(value.count()));
+	auto lua_environment::push_impl<minutes>(lua_State *lua_vm, const minutes &value) -> void {
+		lua_pushinteger(lua_vm, static_cast<int32_t>(value.count()));
 	}
 
 	template <>
-	auto LuaEnvironment::pushImpl<hours_t>(lua_State *luaVm, const hours_t &value) -> void {
-		lua_pushinteger(luaVm, static_cast<int32_t>(value.count()));
+	auto lua_environment::push_impl<hours>(lua_State *lua_vm, const hours &value) -> void {
+		lua_pushinteger(lua_vm, static_cast<int32_t>(value.count()));
 	}
 
 	template <>
-	auto LuaEnvironment::pushImpl<LuaVariant>(lua_State *luaVm, const LuaVariant &value) -> void {
-		switch (value.getType()) {
-			case LuaType::Nil: pushNil(luaVm); break;
-			case LuaType::Bool: push<bool>(luaVm, value.as<bool>()); break;
-			case LuaType::String: push<string_t>(luaVm, value.as<string_t>()); break;
-			case LuaType::Number: push<double>(luaVm, value.as<double>()); break;
-			case LuaType::Table: push<hash_map_t<LuaVariant, LuaVariant>>(luaVm, value.as<hash_map_t<LuaVariant, LuaVariant>>()); break;
-			default: throw NotImplementedException{"LuaType"};
+	auto lua_environment::push_impl<lua_variant>(lua_State *lua_vm, const lua_variant &value) -> void {
+		switch (value.get_type()) {
+			case lua::lua_type::nil: push_nil(lua_vm); break;
+			case lua::lua_type::boolean: push<bool>(lua_vm, value.as<bool>()); break;
+			case lua::lua_type::string: push<string>(lua_vm, value.as<string>()); break;
+			case lua::lua_type::number: push<double>(lua_vm, value.as<double>()); break;
+			case lua::lua_type::table: push<hash_map<lua_variant, lua_variant>>(lua_vm, value.as<hash_map<lua_variant, lua_variant>>()); break;
+			default: throw not_implemented_exception{"lua::lua_type"};
 		}
 	}
 
 	template <typename TElement>
-	auto LuaEnvironment::pushImpl(lua_State *luaVm, const vector_t<TElement> &value) -> void {
-		lua_newtable(luaVm);
-		int top = lua_gettop(luaVm);
+	auto lua_environment::push_impl(lua_State *lua_vm, const vector<TElement> &value) -> void {
+		lua_newtable(lua_vm);
+		int top = lua_gettop(lua_vm);
 		for (size_t i = 0; i < value.size(); ++i) {
-			push<int>(luaVm, i + 1);
-			push<TElement>(luaVm, value[i]);
-			lua_settable(luaVm, top);
+			push<int>(lua_vm, i + 1);
+			push<TElement>(lua_vm, value[i]);
+			lua_settable(lua_vm, top);
 		}
 	}
 
 	template <typename TKey, typename TElement, typename THash, typename TOperation>
-	auto LuaEnvironment::pushImpl(lua_State *luaVm, const hash_map_t<TKey, TElement, THash, TOperation> &value) -> void {
-		lua_newtable(luaVm);
-		int top = lua_gettop(luaVm);
+	auto lua_environment::push_impl(lua_State *lua_vm, const hash_map<TKey, TElement, THash, TOperation> &value) -> void {
+		lua_newtable(lua_vm);
+		int top = lua_gettop(lua_vm);
 		for (const auto &kvp : value) {
-			push<TKey>(luaVm, kvp.first);
-			push<TElement>(luaVm, kvp.second);
-			lua_settable(luaVm, top);
+			push<TKey>(lua_vm, kvp.first);
+			push<TElement>(lua_vm, kvp.second);
+			lua_settable(lua_vm, top);
 		}
 	}
 
 	template <typename TKey, typename TElement, typename TOperation>
-	auto LuaEnvironment::pushImpl(lua_State *luaVm, const ord_map_t<TKey, TElement, TOperation> &value) -> void {
-		lua_newtable(luaVm);
-		int top = lua_gettop(luaVm);
+	auto lua_environment::push_impl(lua_State *lua_vm, const ord_map<TKey, TElement, TOperation> &value) -> void {
+		lua_newtable(lua_vm);
+		int top = lua_gettop(lua_vm);
 		for (const auto &kvp : value) {
-			push<TKey>(luaVm, kvp.first);
-			push<TElement>(luaVm, kvp.second);
-			lua_settable(luaVm, top);
+			push<TKey>(lua_vm, kvp.first);
+			push<TElement>(lua_vm, kvp.second);
+			lua_settable(lua_vm, top);
 		}
 	}
-	// End pushImpl
+	// End push_impl
 
-	// Begin getImpl key
+	// Begin get_impl key
 	template <typename T>
-	auto LuaEnvironment::getImplDefault(lua_State *luaVm, const string_t &key) -> T {
-		keyMustExist(key);
-		lua_getglobal(luaVm, key.c_str());
-		T val = get<T>(luaVm, -1);
-		lua_pop(luaVm, 1);
+	auto lua_environment::get_impl_default(lua_State *lua_vm, const string &key) -> T {
+		key_must_exist(key);
+		lua_getglobal(lua_vm, key.c_str());
+		T val = get<T>(lua_vm, -1);
+		lua_pop(lua_vm, 1);
 		return val;
 	}
 
 	template <typename T>
-	auto LuaEnvironment::getImpl(lua_State *luaVm, const string_t &key, T *) -> T {
-		LuaSerialize<T> x;
+	auto lua_environment::get_impl(lua_State *lua_vm, const string &key, T *) -> T {
+		lua_serialize<T> x;
 		return x.read(*this, key);
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<bool>(lua_State *luaVm, const string_t &key, bool *) -> bool {
-		return getImplDefault<bool>(luaVm, key);
+	auto lua_environment::get_impl<bool>(lua_State *lua_vm, const string &key, bool *) -> bool {
+		return get_impl_default<bool>(lua_vm, key);
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<double>(lua_State *luaVm, const string_t &key, double *) -> double {
-		return getImplDefault<double>(luaVm, key);
+	auto lua_environment::get_impl<double>(lua_State *lua_vm, const string &key, double *) -> double {
+		return get_impl_default<double>(lua_vm, key);
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<string_t>(lua_State *luaVm, const string_t &key, string_t *) -> string_t {
-		return getImplDefault<string_t>(luaVm, key);
+	auto lua_environment::get_impl<string>(lua_State *lua_vm, const string &key, string *) -> string {
+		return get_impl_default<string>(lua_vm, key);
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<int8_t>(lua_State *luaVm, const string_t &key, int8_t *) -> int8_t {
-		return getImplDefault<int8_t>(luaVm, key);
+	auto lua_environment::get_impl<int8_t>(lua_State *lua_vm, const string &key, int8_t *) -> int8_t {
+		return get_impl_default<int8_t>(lua_vm, key);
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<int16_t>(lua_State *luaVm, const string_t &key, int16_t *) -> int16_t {
-		return getImplDefault<int16_t>(luaVm, key);
+	auto lua_environment::get_impl<int16_t>(lua_State *lua_vm, const string &key, int16_t *) -> int16_t {
+		return get_impl_default<int16_t>(lua_vm, key);
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<int32_t>(lua_State *luaVm, const string_t &key, int32_t *) -> int32_t {
-		return getImplDefault<int32_t>(luaVm, key);
+	auto lua_environment::get_impl<int32_t>(lua_State *lua_vm, const string &key, int32_t *) -> int32_t {
+		return get_impl_default<int32_t>(lua_vm, key);
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<uint8_t>(lua_State *luaVm, const string_t &key, uint8_t *) -> uint8_t {
-		return getImplDefault<uint8_t>(luaVm, key);
+	auto lua_environment::get_impl<uint8_t>(lua_State *lua_vm, const string &key, uint8_t *) -> uint8_t {
+		return get_impl_default<uint8_t>(lua_vm, key);
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<uint16_t>(lua_State *luaVm, const string_t &key, uint16_t *) -> uint16_t {
-		return getImplDefault<uint16_t>(luaVm, key);
+	auto lua_environment::get_impl<uint16_t>(lua_State *lua_vm, const string &key, uint16_t *) -> uint16_t {
+		return get_impl_default<uint16_t>(lua_vm, key);
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<uint32_t>(lua_State *luaVm, const string_t &key, uint32_t *) -> uint32_t {
-		return getImplDefault<uint32_t>(luaVm, key);
+	auto lua_environment::get_impl<uint32_t>(lua_State *lua_vm, const string &key, uint32_t *) -> uint32_t {
+		return get_impl_default<uint32_t>(lua_vm, key);
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<milliseconds_t>(lua_State *luaVm, const string_t &key, milliseconds_t *) -> milliseconds_t {
-		return milliseconds_t{getImplDefault<int32_t>(luaVm, key)};
+	auto lua_environment::get_impl<milliseconds>(lua_State *lua_vm, const string &key, milliseconds *) -> milliseconds {
+		return milliseconds{get_impl_default<int32_t>(lua_vm, key)};
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<seconds_t>(lua_State *luaVm, const string_t &key, seconds_t *) -> seconds_t {
-		return seconds_t{getImplDefault<int32_t>(luaVm, key)};
+	auto lua_environment::get_impl<seconds>(lua_State *lua_vm, const string &key, seconds *) -> seconds {
+		return seconds{get_impl_default<int32_t>(lua_vm, key)};
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<minutes_t>(lua_State *luaVm, const string_t &key, minutes_t *) -> minutes_t {
-		return minutes_t{getImplDefault<int32_t>(luaVm, key)};
+	auto lua_environment::get_impl<minutes>(lua_State *lua_vm, const string &key, minutes *) -> minutes {
+		return minutes{get_impl_default<int32_t>(lua_vm, key)};
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<hours_t>(lua_State *luaVm, const string_t &key, hours_t *) -> hours_t {
-		return hours_t{getImplDefault<int32_t>(luaVm, key)};
+	auto lua_environment::get_impl<hours>(lua_State *lua_vm, const string &key, hours *) -> hours {
+		return hours{get_impl_default<int32_t>(lua_vm, key)};
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<LuaVariant>(lua_State *luaVm, const string_t &key, LuaVariant *) -> LuaVariant {
-		if (is(luaVm, key, LuaType::Number)) return LuaVariant{get<double>(luaVm, key)};
-		if (is(luaVm, key, LuaType::String)) return LuaVariant{get<string_t>(luaVm, key)};
-		if (is(luaVm, key, LuaType::Bool)) return LuaVariant{get<bool>(luaVm, key)};
-		if (is(luaVm, key, LuaType::Nil)) return LuaVariant{};
-		if (is(luaVm, key, LuaType::Table)) return LuaVariant{get<hash_map_t<LuaVariant, LuaVariant>>(luaVm, key)};
-		throw NotImplementedException{"LuaType"};
+	auto lua_environment::get_impl<lua_variant>(lua_State *lua_vm, const string &key, lua_variant *) -> lua_variant {
+		if (is(lua_vm, key, lua::lua_type::number)) return lua_variant{get<double>(lua_vm, key)};
+		if (is(lua_vm, key, lua::lua_type::string)) return lua_variant{get<string>(lua_vm, key)};
+		if (is(lua_vm, key, lua::lua_type::boolean)) return lua_variant{get<bool>(lua_vm, key)};
+		if (is(lua_vm, key, lua::lua_type::nil)) return lua_variant{};
+		if (is(lua_vm, key, lua::lua_type::table)) return lua_variant{get<hash_map<lua_variant, lua_variant>>(lua_vm, key)};
+		throw not_implemented_exception{"lua::lua_type"};
 	}
 
 	template <typename TElement>
-	auto LuaEnvironment::getImpl(lua_State *luaVm, const string_t &key, vector_t<TElement> *) -> vector_t<TElement> {
-		keyMustExist(key);
-		lua_getglobal(luaVm, key.c_str());
-		vector_t<TElement> val = get<vector_t<TElement>>(luaVm, -1);
-		lua_pop(luaVm, 1);
+	auto lua_environment::get_impl(lua_State *lua_vm, const string &key, vector<TElement> *) -> vector<TElement> {
+		key_must_exist(key);
+		lua_getglobal(lua_vm, key.c_str());
+		vector<TElement> val = get<vector<TElement>>(lua_vm, -1);
+		lua_pop(lua_vm, 1);
 		return val;
 	}
 
 	template <typename TKey, typename TElement, typename THash, typename TOperation>
-	auto LuaEnvironment::getImpl(lua_State *luaVm, const string_t &key, hash_map_t<TKey, TElement, THash, TOperation> *) -> hash_map_t<TKey, TElement, THash, TOperation> {
-		keyMustExist(key);
-		lua_getglobal(luaVm, key.c_str());
-		hash_map_t<TKey, TElement, THash, TOperation> val = get<hash_map_t<TKey, TElement, THash, TOperation>>(luaVm, -1);
-		lua_pop(luaVm, 1);
+	auto lua_environment::get_impl(lua_State *lua_vm, const string &key, hash_map<TKey, TElement, THash, TOperation> *) -> hash_map<TKey, TElement, THash, TOperation> {
+		key_must_exist(key);
+		lua_getglobal(lua_vm, key.c_str());
+		hash_map<TKey, TElement, THash, TOperation> val = get<hash_map<TKey, TElement, THash, TOperation>>(lua_vm, -1);
+		lua_pop(lua_vm, 1);
 		return val;
 	}
 
 	template <typename TKey, typename TElement, typename TOperation>
-	auto LuaEnvironment::getImpl(lua_State *luaVm, const string_t &key, ord_map_t<TKey, TElement, TOperation> *) -> ord_map_t<TKey, TElement, TOperation> {
-		keyMustExist(key);
-		lua_getglobal(luaVm, key.c_str());
-		ord_map_t<TKey, TElement, TOperation> val = get<ord_map_t<TKey, TElement, TOperation>>(luaVm, -1);
-		lua_pop(luaVm, 1);
+	auto lua_environment::get_impl(lua_State *lua_vm, const string &key, ord_map<TKey, TElement, TOperation> *) -> ord_map<TKey, TElement, TOperation> {
+		key_must_exist(key);
+		lua_getglobal(lua_vm, key.c_str());
+		ord_map<TKey, TElement, TOperation> val = get<ord_map<TKey, TElement, TOperation>>(lua_vm, -1);
+		lua_pop(lua_vm, 1);
 		return val;
 	}
-	// End getImpl key
+	// End get_impl key
 
-	// Begin getImpl index
+	// Begin get_impl index
 	template <typename TInteger>
-	auto LuaEnvironment::getInteger(lua_State *luaVm, int index) -> TInteger {
-		TInteger val = static_cast<TInteger>(lua_tointeger(luaVm, index));
+	auto lua_environment::getInteger(lua_State *lua_vm, int index) -> TInteger {
+		TInteger val = static_cast<TInteger>(lua_tointeger(lua_vm, index));
 		return val;
 	}
 
 	template <typename T>
-	auto LuaEnvironment::getImpl(lua_State *luaVm, int index, T *) -> T {
-		LuaSerialize<T> x;
+	auto lua_environment::get_impl(lua_State *lua_vm, int index, T *) -> T {
+		lua_serialize<T> x;
 		return x.read(*this, index);
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<bool>(lua_State *luaVm, int index, bool *) -> bool {
-		bool val = lua_toboolean(luaVm, index) != 0;
+	auto lua_environment::get_impl<bool>(lua_State *lua_vm, int index, bool *) -> bool {
+		bool val = lua_toboolean(lua_vm, index) != 0;
 		return val;
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<double>(lua_State *luaVm, int index, double *) -> double {
-		double val = lua_tonumber(luaVm, index);
+	auto lua_environment::get_impl<double>(lua_State *lua_vm, int index, double *) -> double {
+		double val = lua_tonumber(lua_vm, index);
 		return val;
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<string_t>(lua_State *luaVm, int index, string_t *) -> string_t {
-		string_t val = lua_tostring(luaVm, index);
+	auto lua_environment::get_impl<string>(lua_State *lua_vm, int index, string *) -> string {
+		string val = lua_tostring(lua_vm, index);
 		return val;
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<int8_t>(lua_State *luaVm, int index, int8_t *) -> int8_t {
-		return getInteger<int8_t>(luaVm, index);
+	auto lua_environment::get_impl<int8_t>(lua_State *lua_vm, int index, int8_t *) -> int8_t {
+		return getInteger<int8_t>(lua_vm, index);
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<int16_t>(lua_State *luaVm, int index, int16_t *) -> int16_t {
-		return getInteger<int16_t>(luaVm, index);
+	auto lua_environment::get_impl<int16_t>(lua_State *lua_vm, int index, int16_t *) -> int16_t {
+		return getInteger<int16_t>(lua_vm, index);
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<int32_t>(lua_State *luaVm, int index, int32_t *) -> int32_t {
-		return getInteger<int32_t>(luaVm, index);
+	auto lua_environment::get_impl<int32_t>(lua_State *lua_vm, int index, int32_t *) -> int32_t {
+		return getInteger<int32_t>(lua_vm, index);
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<uint8_t>(lua_State *luaVm, int index, uint8_t *) -> uint8_t {
-		return getInteger<uint8_t>(luaVm, index);
+	auto lua_environment::get_impl<uint8_t>(lua_State *lua_vm, int index, uint8_t *) -> uint8_t {
+		return getInteger<uint8_t>(lua_vm, index);
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<uint16_t>(lua_State *luaVm, int index, uint16_t *) -> uint16_t {
-		return getInteger<uint16_t>(luaVm, index);
+	auto lua_environment::get_impl<uint16_t>(lua_State *lua_vm, int index, uint16_t *) -> uint16_t {
+		return getInteger<uint16_t>(lua_vm, index);
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<uint32_t>(lua_State *luaVm, int index, uint32_t *) -> uint32_t {
-		return getInteger<uint32_t>(luaVm, index);
+	auto lua_environment::get_impl<uint32_t>(lua_State *lua_vm, int index, uint32_t *) -> uint32_t {
+		return getInteger<uint32_t>(lua_vm, index);
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<milliseconds_t>(lua_State *luaVm, int index, milliseconds_t *) -> milliseconds_t {
-		return milliseconds_t{getInteger<int32_t>(luaVm, index)};
+	auto lua_environment::get_impl<milliseconds>(lua_State *lua_vm, int index, milliseconds *) -> milliseconds {
+		return milliseconds{getInteger<int32_t>(lua_vm, index)};
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<seconds_t>(lua_State *luaVm, int index, seconds_t *) -> seconds_t {
-		return seconds_t{getInteger<int32_t>(luaVm, index)};
+	auto lua_environment::get_impl<seconds>(lua_State *lua_vm, int index, seconds *) -> seconds {
+		return seconds{getInteger<int32_t>(lua_vm, index)};
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<minutes_t>(lua_State *luaVm, int index, minutes_t *) -> minutes_t {
-		return minutes_t{getInteger<int32_t>(luaVm, index)};
+	auto lua_environment::get_impl<minutes>(lua_State *lua_vm, int index, minutes *) -> minutes {
+		return minutes{getInteger<int32_t>(lua_vm, index)};
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<hours_t>(lua_State *luaVm, int index, hours_t *) -> hours_t {
-		return hours_t{getInteger<int32_t>(luaVm, index)};
+	auto lua_environment::get_impl<hours>(lua_State *lua_vm, int index, hours *) -> hours {
+		return hours{getInteger<int32_t>(lua_vm, index)};
 	}
 
 	template <>
-	auto LuaEnvironment::getImpl<LuaVariant>(lua_State *luaVm, int index, LuaVariant *) -> LuaVariant {
-		if (is(luaVm, index, LuaType::Number)) return LuaVariant{get<double>(luaVm, index)};
-		if (is(luaVm, index, LuaType::String)) return LuaVariant{get<string_t>(luaVm, index)};
-		if (is(luaVm, index, LuaType::Bool)) return LuaVariant{get<bool>(luaVm, index)};
-		if (is(luaVm, index, LuaType::Nil)) return LuaVariant{};
-		if (is(luaVm, index, LuaType::Table)) return LuaVariant{get<hash_map_t<LuaVariant, LuaVariant>>(luaVm, index)};
-		throw NotImplementedException{"LuaType"};
+	auto lua_environment::get_impl<lua_variant>(lua_State *lua_vm, int index, lua_variant *) -> lua_variant {
+		if (is(lua_vm, index, lua::lua_type::number)) return lua_variant{get<double>(lua_vm, index)};
+		if (is(lua_vm, index, lua::lua_type::string)) return lua_variant{get<string>(lua_vm, index)};
+		if (is(lua_vm, index, lua::lua_type::boolean)) return lua_variant{get<bool>(lua_vm, index)};
+		if (is(lua_vm, index, lua::lua_type::nil)) return lua_variant{};
+		if (is(lua_vm, index, lua::lua_type::table)) return lua_variant{get<hash_map<lua_variant, lua_variant>>(lua_vm, index)};
+		throw not_implemented_exception{"lua::lua_type"};
 	}
 
 	template <typename TElement>
-	auto LuaEnvironment::getImpl(lua_State *luaVm, int index, vector_t<TElement> *) -> vector_t<TElement> {
-		vector_t<TElement> val;
+	auto lua_environment::get_impl(lua_State *lua_vm, int index, vector<TElement> *) -> vector<TElement> {
+		vector<TElement> val;
 		// Adjust index for the name
-		lua_pushvalue(luaVm, index);
+		lua_pushvalue(lua_vm, index);
 
-		pushNil(luaVm);
-		while (lua_next(luaVm, -2)) {
+		push_nil(lua_vm);
+		while (lua_next(lua_vm, -2)) {
 			// We don't have to account for string conversions here, it's only important for keys
 
-			val.push_back(get<TElement>(luaVm, -1));
+			val.push_back(get<TElement>(lua_vm, -1));
 
-			lua_pop(luaVm, 1);
+			lua_pop(lua_vm, 1);
 		}
 
-		lua_pop(luaVm, 1);
+		lua_pop(lua_vm, 1);
 
 		return val;
 	}
 
 	template <typename TKey, typename TElement, typename THash, typename TOperation>
-	auto LuaEnvironment::getImpl(lua_State *luaVm, int index, hash_map_t<TKey, TElement, THash, TOperation> *) -> hash_map_t<TKey, TElement, THash, TOperation> {
-		hash_map_t<TKey, TElement, THash, TOperation> val;
+	auto lua_environment::get_impl(lua_State *lua_vm, int index, hash_map<TKey, TElement, THash, TOperation> *) -> hash_map<TKey, TElement, THash, TOperation> {
+		hash_map<TKey, TElement, THash, TOperation> val;
 		// Adjust index for the name
-		lua_pushvalue(luaVm, index);
+		lua_pushvalue(lua_vm, index);
 
-		pushNil(luaVm);
-		while (lua_next(luaVm, -2)) {
+		push_nil(lua_vm);
+		while (lua_next(lua_vm, -2)) {
 			// We have to account for string conversions here, but it's only important for keys
-			lua_pushvalue(luaVm, -2);
+			lua_pushvalue(lua_vm, -2);
 
-			auto key = get<TKey>(luaVm, -1);
-			auto value = get<TElement>(luaVm, -2);
+			auto key = get<TKey>(lua_vm, -1);
+			auto value = get<TElement>(lua_vm, -2);
 			val[key] = value;
 
-			lua_pop(luaVm, 2);
+			lua_pop(lua_vm, 2);
 		}
 
-		lua_pop(luaVm, 1);
+		lua_pop(lua_vm, 1);
 
 		return val;
 	}
 
 	template <typename TKey, typename TElement, typename TOperation>
-	auto LuaEnvironment::getImpl(lua_State *luaVm, int index, ord_map_t<TKey, TElement, TOperation> *) -> ord_map_t<TKey, TElement, TOperation> {
-		ord_map_t<TKey, TElement, TOperation> val;
+	auto lua_environment::get_impl(lua_State *lua_vm, int index, ord_map<TKey, TElement, TOperation> *) -> ord_map<TKey, TElement, TOperation> {
+		ord_map<TKey, TElement, TOperation> val;
 		// Adjust index for the name
-		lua_pushvalue(luaVm, index);
+		lua_pushvalue(lua_vm, index);
 
-		pushNil(luaVm);
-		while (lua_next(luaVm, -2)) {
+		push_nil(lua_vm);
+		while (lua_next(lua_vm, -2)) {
 			// We have to account for string conversions here, but it's only important for keys
-			lua_pushvalue(luaVm, -2);
+			lua_pushvalue(lua_vm, -2);
 
-			auto key = get<TKey>(luaVm, -1);
-			auto value = get<TElement>(luaVm, -2);
+			auto key = get<TKey>(lua_vm, -1);
+			auto value = get<TElement>(lua_vm, -2);
 			val[key] = value;
 
-			lua_pop(luaVm, 2);
+			lua_pop(lua_vm, 2);
 		}
 
-		lua_pop(luaVm, 1);
+		lua_pop(lua_vm, 1);
 
 		return val;
 	}
-	// End getImpl index
+	// End get_impl index
 }

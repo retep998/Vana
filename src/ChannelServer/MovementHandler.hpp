@@ -17,15 +17,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-namespace Vana {
-	class PacketReader;
-	struct Point;
+namespace vana {
+	class packet_reader;
+	struct point;
 
-	namespace ChannelServer {
-		class MovableLife;
+	namespace channel_server {
+		class movable_life;
 
-		namespace MovementHandler {
-			auto parseMovement(MovableLife *life, PacketReader &reader) -> Point;
+		namespace movement_handler {
+			auto parse_movement(movable_life *life, packet_reader &reader) -> point;
 		}
 	}
 }

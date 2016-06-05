@@ -25,39 +25,39 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <botan/lookup.h>
 #include <botan/pipe.h>
 
-namespace Vana {
+namespace vana {
 
-auto PacketTransformer::testPacket(unsigned char *header) -> ValidityResult {
+auto packet_transformer::test_packet(unsigned char *header) -> validity_result {
 	uint16_t version = 0;
-	uint16_t pSize = 0;
-	getVersionAndSize(header, version, pSize);
+	uint16_t p_size = 0;
+	get_version_and_size(header, version, p_size);
 	// All packets are at least a header
-	return version == MapleVersion::Version && pSize >= sizeof(header_t) ?
-		ValidityResult::Valid :
-		ValidityResult::Invalid;
+	return version == maple_version::version && p_size >= sizeof(packet_header) ?
+		validity_result::valid :
+		validity_result::invalid;
 }
 
-auto PacketTransformer::getPacketLength(unsigned char *header) -> uint16_t {
+auto packet_transformer::get_packet_length(unsigned char *header) -> uint16_t {
 	uint16_t version = 0;
-	uint16_t pSize = 0;
-	getVersionAndSize(header, version, pSize);
-	return pSize;
+	uint16_t p_size = 0;
+	get_version_and_size(header, version, p_size);
+	return p_size;
 }
 
-auto PacketTransformer::setPacketHeader(unsigned char *header, uint16_t realPacketSize) -> void {
-	*reinterpret_cast<uint16_t *>(header) = MapleVersion::Version;
-	*reinterpret_cast<uint16_t *>(header + sizeof(uint16_t)) = realPacketSize;
+auto packet_transformer::set_packet_header(unsigned char *header, uint16_t real_packet_size) -> void {
+	*reinterpret_cast<uint16_t *>(header) = maple_version::version;
+	*reinterpret_cast<uint16_t *>(header + sizeof(uint16_t)) = real_packet_size;
 }
 
-auto PacketTransformer::encryptPacket(unsigned char *packetData, int32_t realPacketSize, uint16_t headerSize) -> void {
+auto packet_transformer::encrypt_packet(unsigned char *packet_data, int32_t real_packet_size, uint16_t header_size) -> void {
 	// Intentionally blank
 }
 
-auto PacketTransformer::decryptPacket(unsigned char *packetData, int32_t realPacketSize, uint16_t headerSize) -> void {
+auto packet_transformer::decrypt_packet(unsigned char *packet_data, int32_t real_packet_size, uint16_t header_size) -> void {
 	// Intentionally blank
 }
 
-auto PacketTransformer::getVersionAndSize(unsigned char *header, uint16_t &version, uint16_t &size) -> void {
+auto packet_transformer::get_version_and_size(unsigned char *header, uint16_t &version, uint16_t &size) -> void {
 	version = *reinterpret_cast<uint16_t *>(header);
 	size = *reinterpret_cast<uint16_t *>(header + sizeof(uint16_t));
 }

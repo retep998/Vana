@@ -23,54 +23,54 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <soci.h>
 #include <string>
 
-namespace Vana {
-	class Item;
+namespace vana {
+	class item;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		class Pet : public MovableLife {
-			NONCOPYABLE(Pet);
-			NO_DEFAULT_CONSTRUCTOR(Pet);
+		class pet : public movable_life {
+			NONCOPYABLE(pet);
+			NO_DEFAULT_CONSTRUCTOR(pet);
 		public:
-			Pet(Player *player, Item *item);
-			Pet(Player *player, Item *item, const soci::row &row);
+			pet(player *player, item *item);
+			pet(player *player, item *item, const soci::row &row);
 
 			auto summon(int8_t index) -> void { m_index = index; }
 			auto desummon() -> void { m_index.reset(); }
-			auto setInventorySlot(int8_t slot) -> void { m_inventorySlot = slot; }
-			auto setName(const string_t &name) -> void;
-			auto modifyFullness(int8_t offset, bool sendPacket = true) -> void;
-			auto addCloseness(int16_t amount) -> void;
+			auto set_inventory_slot(int8_t slot) -> void { m_inventory_slot = slot; }
+			auto set_name(const string &name) -> void;
+			auto modify_fullness(int8_t offset, bool send_packet = true) -> void;
+			auto add_closeness(int16_t amount) -> void;
 
-			auto getIndex() const -> opt_int8_t { return m_index; }
-			auto getLevel() const -> int8_t { return m_level; }
-			auto getInventorySlot() const -> int8_t { return m_inventorySlot; }
-			auto getFullness() const -> int8_t { return m_fullness; }
-			auto getCloseness() const -> int16_t { return m_closeness; }
-			auto getItemId() const -> item_id_t { return m_itemId; }
-			auto getId() const -> pet_id_t { return m_id; }
-			auto isSummoned() const -> bool { return m_index.is_initialized(); }
-			auto getName() -> string_t { return m_name; }
-			auto getPos() const -> Point override { return Point{m_pos.x, m_pos.y - 1}; }
-			auto hasNameTag() const -> bool;
-			auto hasQuoteItem() const -> bool;
+			auto get_index() const -> opt_int8_t { return m_index; }
+			auto get_level() const -> int8_t { return m_level; }
+			auto get_inventory_slot() const -> int8_t { return m_inventory_slot; }
+			auto get_fullness() const -> int8_t { return m_fullness; }
+			auto get_closeness() const -> int16_t { return m_closeness; }
+			auto get_item_id() const -> game_item_id { return m_item_id; }
+			auto get_id() const -> game_pet_id { return m_id; }
+			auto is_summoned() const -> bool { return m_index.is_initialized(); }
+			auto get_name() -> string { return m_name; }
+			auto get_pos() const -> point override { return point{m_pos.x, m_pos.y - 1}; }
+			auto has_name_tag() const -> bool;
+			auto has_quote_item() const -> bool;
 
-			auto startTimer() -> void;
+			auto start_timer() -> void;
 		private:
-			auto initializePet(const soci::row &row) -> void;
-			auto levelUp() -> void;
+			auto initialize_pet(const soci::row &row) -> void;
+			auto level_up() -> void;
 
 			opt_int8_t m_index;
 			int8_t m_level = 1;
-			int8_t m_fullness = Stats::MaxFullness;
-			int8_t m_inventorySlot = 0;
+			int8_t m_fullness = stats::max_fullness;
+			int8_t m_inventory_slot = 0;
 			int16_t m_closeness = 0;
-			item_id_t m_itemId = 0;
-			pet_id_t m_id = 0;
-			Item *m_item = nullptr;
-			Player *m_player = nullptr;
-			string_t m_name;
+			game_item_id m_item_id = 0;
+			game_pet_id m_id = 0;
+			item *m_item = nullptr;
+			player *m_player = nullptr;
+			string m_name;
 		};
 	}
 }

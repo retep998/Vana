@@ -23,63 +23,63 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer/WorldServer.hpp"
 #include "WorldServer/WorldServerAcceptedSession.hpp"
 
-namespace Vana {
-namespace WorldServer {
+namespace vana {
+namespace world_server {
 
-auto Channels::registerChannel(ref_ptr_t<WorldServerAcceptedSession> session, channel_id_t channelId, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void {
-	ref_ptr_t<Channel> chan = make_ref_ptr<Channel>(session, channelId, port);
-	chan->setExternalIpInformation(channelIp, extIp);
-	m_channels[channelId] = chan;
+auto channels::register_channel(ref_ptr<world_server_accepted_session> session, game_channel_id channel_id, const ip &channel_ip, const ip_matrix &ext_ip, connection_port port) -> void {
+	ref_ptr<channel> chan = make_ref_ptr<channel>(session, channel_id, port);
+	chan->set_external_ip_information(channel_ip, ext_ip);
+	m_channels[channel_id] = chan;
 }
 
-auto Channels::removeChannel(channel_id_t channel) -> void {
+auto channels::remove_channel(game_channel_id channel) -> void {
 	m_channels.erase(channel);
 }
 
-auto Channels::getChannel(channel_id_t num) -> Channel * {
+auto channels::get_channel(game_channel_id num) -> channel * {
 	auto kvp = m_channels.find(num);
 	return kvp != std::end(m_channels) ? kvp->second.get() : nullptr;
 }
 
-auto Channels::send(channel_id_t channelId, const PacketBuilder &builder) -> void {
-	if (Channel *channel = getChannel(channelId)) {
+auto channels::send(game_channel_id channel_id, const packet_builder &builder) -> void {
+	if (channel *channel = get_channel(channel_id)) {
 		channel->send(builder);
 	}
 }
 
-auto Channels::send(const vector_t<channel_id_t> &channels, const PacketBuilder &builder) -> void {
-	for (const auto &channelId : channels) {
-		send(channelId, builder);
+auto channels::send(const vector<game_channel_id> &channels, const packet_builder &builder) -> void {
+	for (const auto &channel_id : channels) {
+		send(channel_id, builder);
 	}
 }
 
-auto Channels::send(const PacketBuilder &builder) -> void {
+auto channels::send(const packet_builder &builder) -> void {
 	for (const auto &kvp : m_channels) {
 		send(kvp.first, builder);
 	}
 }
 
-auto Channels::increasePopulation(channel_id_t channel) -> void {
-	WorldServer::getInstance().sendLogin(Packets::updateChannelPop(channel, getChannel(channel)->increasePlayers()));
+auto channels::increase_population(game_channel_id channel) -> void {
+	world_server::get_instance().send_login(packets::update_channel_pop(channel, get_channel(channel)->increase_players()));
 }
 
-auto Channels::decreasePopulation(channel_id_t channel) -> void {
-	WorldServer::getInstance().sendLogin(Packets::updateChannelPop(channel, getChannel(channel)->decreasePlayers()));
+auto channels::decrease_population(game_channel_id channel) -> void {
+	world_server::get_instance().send_login(packets::update_channel_pop(channel, get_channel(channel)->decrease_players()));
 }
 
-auto Channels::getFirstAvailableChannelId() -> channel_id_t {
-	channel_id_t channelId = -1;
-	channel_id_t max = WorldServer::getInstance().getConfig().maxChannels;
-	for (channel_id_t i = 0; i < max; ++i) {
+auto channels::get_first_available_channel_id() -> game_channel_id {
+	game_channel_id channel_id = -1;
+	game_channel_id max = world_server::get_instance().get_config().max_channels;
+	for (game_channel_id i = 0; i < max; ++i) {
 		if (m_channels.find(i) == std::end(m_channels)) {
-			channelId = i;
+			channel_id = i;
 			break;
 		}
 	}
-	return channelId;
+	return channel_id;
 }
 
-auto Channels::disconnect() -> void {
+auto channels::disconnect() -> void {
 	auto copy = m_channels;
 	for (const auto &kvp : copy) {
 		if (auto ref = kvp.second.get()) {

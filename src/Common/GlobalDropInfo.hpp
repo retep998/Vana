@@ -19,16 +19,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct GlobalDropInfo {
-		bool isMesos = false;
-		item_id_t itemId = 0;
-		int32_t minAmount = 0;
-		int32_t maxAmount = 0;
-		player_level_t minLevel = 0;
-		player_level_t maxLevel = 0;
+namespace vana {
+	struct global_drop_info {
+		bool is_mesos = false;
+		game_item_id item_id = 0;
+		int32_t min_amount = 0;
+		int32_t max_amount = 0;
+		game_player_level min_level = 0;
+		game_player_level max_level = 0;
 		int8_t continent = -1;
-		quest_id_t questId = 0;
+		game_quest_id quest_id = 0;
 		uint32_t chance = 0;
 	};
 }

@@ -20,14 +20,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Point.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	namespace ChannelServer {
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class player;
 	}
 
-	struct SeatInfo {
-		seat_id_t id = 0;
-		ref_ptr_t<ChannelServer::Player> occupant = nullptr;
-		Point pos;
+	struct seat_info {
+		game_seat_id id = 0;
+		ref_ptr<channel_server::player> occupant = nullptr;
+		point pos;
 	};
 }

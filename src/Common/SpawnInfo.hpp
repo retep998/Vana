@@ -21,35 +21,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	struct SpawnInfo {
-		auto setSpawnInfo(const SpawnInfo &rhs) -> void {
+namespace vana {
+	struct spawn_info {
+		auto set_spawn_info(const spawn_info &rhs) -> void {
 			id = rhs.id;
 			time = rhs.time;
 			foothold = rhs.foothold;
 			pos = rhs.pos;
-			facesLeft = rhs.facesLeft;
+			faces_left = rhs.faces_left;
 			spawned = rhs.spawned;
 		}
 
-		bool facesLeft = false;
+		bool faces_left = false;
 		bool spawned = false;
 		int32_t id = 0;
 		int32_t time = 0;
-		foothold_id_t foothold = 0;
-		Point pos;
+		game_foothold_id foothold = 0;
+		point pos;
 	};
 
-	struct NpcSpawnInfo : public SpawnInfo {
-		coord_t rx0 = 0;
-		coord_t rx1 = 0;
+	struct npc_spawn_info : public spawn_info {
+		game_coord rx0 = 0;
+		game_coord rx1 = 0;
 	};
 
-	struct MobSpawnInfo : public SpawnInfo {
-		mob_id_t link = 0;
+	struct mob_spawn_info : public spawn_info {
+		game_mob_id link = 0;
 	};
 
-	struct ReactorSpawnInfo : public SpawnInfo {
-		string_t name;
+	struct reactor_spawn_info : public spawn_info {
+		string name;
 	};
 }

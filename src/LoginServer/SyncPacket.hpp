@@ -20,13 +20,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/PacketBuilder.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	namespace LoginServer {
-		namespace Packets {
-			namespace Interserver {
-				namespace Player {
-					PACKET(characterCreated, player_id_t playerId);
-					PACKET(characterDeleted, player_id_t playerId);
+namespace vana {
+	namespace login_server {
+		namespace packets {
+			namespace interserver {
+				namespace player {
+					PACKET(character_created, game_player_id player_id);
+					PACKET(character_deleted, game_player_id player_id);
 				}
 			}
 		}

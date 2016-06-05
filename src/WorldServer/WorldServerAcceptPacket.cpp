@@ -29,26 +29,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <map>
 
-namespace Vana {
-namespace WorldServer {
-namespace Packets {
-namespace Interserver {
+namespace vana {
+namespace world_server {
+namespace packets {
+namespace interserver {
 
-PACKET_IMPL(connect, channel_id_t channel, port_t port) {
-	PacketBuilder builder;
+PACKET_IMPL(connect, game_channel_id channel, connection_port port) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_CHANNEL_CONNECT)
-		.add<channel_id_t>(channel)
-		.add<port_t>(port)
-		.add<WorldConfig>(WorldServer::getInstance().getConfig());
+		.add<packet_header>(IMSG_CHANNEL_CONNECT)
+		.add<game_channel_id>(channel)
+		.add<connection_port>(port)
+		.add<world_config>(world_server::get_instance().get_config());
 	return builder;
 }
 
-PACKET_IMPL(rehashConfig, const WorldConfig &config) {
-	PacketBuilder builder;
+PACKET_IMPL(rehash_config, const world_config &config) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_REHASH_CONFIG)
-		.add<WorldConfig>(config);
+		.add<packet_header>(IMSG_REHASH_CONFIG)
+		.add<world_config>(config);
 	return builder;
 }
 

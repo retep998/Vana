@@ -23,12 +23,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <vector>
 
-namespace Vana {
-	namespace WorldServer {
-		namespace Packets {
-			PACKET(registerChannel, channel_id_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port);
-			PACKET(updateChannelPop, channel_id_t channel, int32_t population);
-			PACKET(removeChannel, channel_id_t channel);
+namespace vana {
+	namespace world_server {
+		namespace packets {
+			PACKET(register_channel, game_channel_id channel, const ip &channel_ip, const ip_matrix &ext_ip, connection_port port);
+			PACKET(update_channel_pop, game_channel_id channel, int32_t population);
+			PACKET(remove_channel, game_channel_id channel);
 		}
 	}
 }

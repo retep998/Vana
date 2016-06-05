@@ -56,158 +56,158 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/SummonHandler.hpp"
 #include <functional>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto PlayerHandler::handleDoorUse(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	player_id_t doorPlayerId = reader.get<player_id_t>();
-	bool toTown = !reader.get<bool>();
-	auto doorHolder = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(doorPlayerId);
-	if (doorHolder == nullptr || (doorHolder->getParty() != player->getParty() && doorHolder != player)) {
+auto player_handler::handle_door_use(ref_ptr<player> player, packet_reader &reader) -> void {
+	game_player_id door_player_id = reader.get<game_player_id>();
+	bool to_town = !reader.get<bool>();
+	auto door_holder = channel_server::get_instance().get_player_data_provider().get_player(door_player_id);
+	if (door_holder == nullptr || (door_holder->get_party() != player->get_party() && door_holder != player)) {
 		// Hacking or lag
 		return;
 	}
-	ref_ptr_t<MysticDoor> door = doorHolder->getSkills()->getMysticDoor();
+	ref_ptr<mystic_door> door = door_holder->get_skills()->get_mystic_door();
 	if (door == nullptr) {
 		// Hacking or lag
 		return;
 	}
 
-	if (player->getMapId() != door->getMapId() && player->getMapId() != door->getTownId()) {
+	if (player->get_map_id() != door->get_map_id() && player->get_map_id() != door->get_town_id()) {
 		// Hacking
 		return;
 	}
 
-	if ((player->getMapId() == door->getTownId()) == toTown) {
+	if ((player->get_map_id() == door->get_town_id()) == to_town) {
 		// Hacking
 		return;
 	}
 
-	if (toTown) {
-		player->setMap(door->getTownId(), door->getPortalId(), door->getTownPos());
+	if (to_town) {
+		player->set_map(door->get_town_id(), door->get_portal_id(), door->get_town_pos());
 	}
 	else {
-		player->setMap(door->getMapId(), MysticDoor::PortalId, door->getMapPos());
+		player->set_map(door->get_map_id(), mystic_door::portal_id, door->get_map_pos());
 	}
 }
 
-auto PlayerHandler::handleDamage(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	const int8_t BumpDamage = -1;
-	const int8_t MapDamage = -2;
+auto player_handler::handle_damage(ref_ptr<player> player, packet_reader &reader) -> void {
+	const int8_t bump_damage = -1;
+	const int8_t map_damage = -2;
 
-	reader.skip<tick_count_t>();
+	reader.skip<game_tick_count>();
 	int8_t type = reader.get<int8_t>();
 	reader.skip<uint8_t>(); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
-	damage_t damage = reader.get<damage_t>();
-	bool damageApplied = false;
-	bool deadlyAttack = false;
+	game_damage damage = reader.get<game_damage>();
+	bool damage_applied = false;
+	bool deadly_attack = false;
 	uint8_t hit = 0;
 	uint8_t stance = 0;
-	mob_skill_id_t disease = 0;
-	mob_skill_level_t level = 0;
-	health_t mpBurn = 0;
-	map_object_t mapMobId = 0;
-	mob_id_t mobId = 0;
-	skill_id_t noDamageId = 0;
-	ReturnDamageData pgmr;
+	game_mob_skill_id disease = 0;
+	game_mob_skill_level level = 0;
+	game_health mp_burn = 0;
+	game_map_object map_mob_id = 0;
+	game_mob_id mob_id = 0;
+	game_skill_id no_damage_id = 0;
+	return_damage_data pgmr;
 
-	if (type != MapDamage) {
-		mobId = reader.get<mob_id_t>();
-		mapMobId = reader.get<map_object_t>();
-		auto mob = player->getMap()->getMob(mapMobId);
-		if (mob != nullptr && mob->getMobId() != mobId) {
+	if (type != map_damage) {
+		mob_id = reader.get<game_mob_id>();
+		map_mob_id = reader.get<game_map_object>();
+		auto mob = player->get_map()->get_mob(map_mob_id);
+		if (mob != nullptr && mob->get_mob_id() != mob_id) {
 			// Hacking
 			return;
 		}
-		if (type != BumpDamage) {
+		if (type != bump_damage) {
 			if (mob == nullptr) {
 				// TODO FIXME: Restructure so the attack works fine even if the mob dies?
 				return;
 			}
 
-			auto attack = ChannelServer::getInstance().getMobDataProvider().getMobAttack(mob->getMobIdOrLink(), type);
+			auto attack = channel_server::get_instance().get_mob_data_provider().get_mob_attack(mob->get_mob_id_or_link(), type);
 			if (attack == nullptr) {
 				// Hacking
 				return;
 			}
 			disease = attack->disease;
 			level = attack->level;
-			mpBurn = attack->mpBurn;
-			deadlyAttack = attack->deadlyAttack;
+			mp_burn = attack->mp_burn;
+			deadly_attack = attack->deadly_attack;
 		}
 
 		hit = reader.get<uint8_t>(); // Knock direction
 		pgmr.reduction = reader.get<uint8_t>();
 		reader.unk<uint8_t>(); // I think reduction is a short, but it's a byte in the S -> C packet, so..
 		if (pgmr.reduction != 0) {
-			pgmr.isPhysical = reader.get<bool>();
-			pgmr.mapMobId = reader.get<map_object_t>();
-			if (pgmr.mapMobId != mapMobId) {
+			pgmr.is_physical = reader.get<bool>();
+			pgmr.map_mob_id = reader.get<game_map_object>();
+			if (pgmr.map_mob_id != map_mob_id) {
 				// Hacking
 				return;
 			}
 			reader.skip<int8_t>(); // 0x06 for Power Guard, 0x00 for Mana Reflection?
-			reader.skip<Point>(); // Mob position garbage
-			pgmr.pos = reader.get<Point>();
+			reader.skip<point>(); // Mob position garbage
+			pgmr.pos = reader.get<point>();
 			pgmr.damage = damage;
-			if (pgmr.isPhysical) {
+			if (pgmr.is_physical) {
 				// Only Power Guard decreases damage
 				damage = (damage - (damage * pgmr.reduction / 100));
 			}
-			mob->applyDamage(player->getId(), (pgmr.damage * pgmr.reduction / 100));
+			mob->apply_damage(player->get_id(), (pgmr.damage * pgmr.reduction / 100));
 		}
 	}
 
-	if (type == MapDamage) {
-		level = reader.get<mob_skill_level_t>();
-		disease = reader.get<mob_skill_id_t>();
+	if (type == map_damage) {
+		level = reader.get<game_mob_skill_level>();
+		disease = reader.get<game_mob_skill_id>();
 	}
 	else {
 		stance = reader.get<int8_t>(); // Power Stance
-		auto powerStance = player->getActiveBuffs()->getPowerStanceSource();
-		if (stance > 0 && !powerStance.is_initialized()) {
+		auto power_stance = player->get_active_buffs()->get_power_stance_source();
+		if (stance > 0 && !power_stance.is_initialized()) {
 			// Hacking
 			return;
 		}
 	}
 
 	if (damage == -1) {
-		if (!player->getSkills()->hasNoDamageSkill()) {
+		if (!player->get_skills()->has_no_damage_skill()) {
 			// Hacking
 			return;
 		}
-		noDamageId = player->getSkills()->getNoDamageSkill();
+		no_damage_id = player->get_skills()->get_no_damage_skill();
 	}
 
 	if (disease > 0 && damage != 0) {
 		// Fake/Guardian don't prevent disease
-		Buffs::addBuff(player, disease, level, milliseconds_t{0});
+		buffs::add_buff(player, disease, level, milliseconds{0});
 	}
 
-	health_t mp = player->getStats()->getMp();
-	health_t hp = player->getStats()->getHp();
+	game_health mp = player->get_stats()->get_mp();
+	game_health hp = player->get_stats()->get_hp();
 
-	auto deadlyAttackFunc = [&player, &mp](bool setHp) {
+	auto deadly_attack_func = [&player, &mp](bool set_hp) {
 		if (mp > 0) {
-			player->getStats()->setMp(1);
+			player->get_stats()->set_mp(1);
 		}
-		if (setHp) {
-			player->getStats()->setHp(1);
+		if (set_hp) {
+			player->get_stats()->set_hp(1);
 		}
 	};
 
-	if (damage > 0 && !player->hasGmBenefits()) {
-		auto mesoGuard = player->getActiveBuffs()->getMesoGuardSource();
-		if (mesoGuard.is_initialized() && player->getInventory()->getMesos() > 0) {
-			auto &source = mesoGuard.get();
-			int16_t mesoRate = player->getActiveBuffs()->getBuffSkillInfo(source)->x; // Meso Guard meso %
-			int16_t mesoLoss = static_cast<int16_t>(mesoRate * damage / 2 / 100);
-			mesos_t mesos = player->getInventory()->getMesos();
-			mesos_t newMesos = mesos - mesoLoss;
+	if (damage > 0 && !player->has_gm_benefits()) {
+		auto meso_guard = player->get_active_buffs()->get_meso_guard_source();
+		if (meso_guard.is_initialized() && player->get_inventory()->get_mesos() > 0) {
+			auto &source = meso_guard.get();
+			int16_t meso_rate = player->get_active_buffs()->get_buff_skill_info(source)->x; // Meso guard meso %
+			int16_t meso_loss = static_cast<int16_t>(meso_rate * damage / 2 / 100);
+			game_mesos mesos = player->get_inventory()->get_mesos();
+			game_mesos new_mesos = mesos - meso_loss;
 
-			if (newMesos < 0) {
+			if (new_mesos < 0) {
 				// Special damage calculation for not having enough mesos
-				double reduction = 2.0 - static_cast<double>(mesos / mesoLoss) / 2.0;
+				double reduction = 2.0 - static_cast<double>(mesos / meso_loss) / 2.0;
 				damage = static_cast<uint16_t>(damage / reduction);
 				// This puts us pretty close to the damage observed clientside, needs improvement
 				// TODO FIXME formula
@@ -217,220 +217,220 @@ auto PlayerHandler::handleDamage(ref_ptr_t<Player> player, PacketReader &reader)
 				// Usually displays 1 below the actual damage but is sometimes accurate - no clue why
 			}
 
-			player->getInventory()->setMesos(newMesos);
-			player->getStats()->damageHp(static_cast<uint16_t>(damage));
+			player->get_inventory()->set_mesos(new_mesos);
+			player->get_stats()->damage_hp(static_cast<uint16_t>(damage));
 
-			if (deadlyAttack) {
-				deadlyAttackFunc(false);
+			if (deadly_attack) {
+				deadly_attack_func(false);
 			}
-			else if (mpBurn > 0) {
-				player->getStats()->damageMp(mpBurn);
+			else if (mp_burn > 0) {
+				player->get_stats()->damage_mp(mp_burn);
 			}
-			damageApplied = true;
+			damage_applied = true;
 
-			player->sendMap(Packets::Skills::showSkillEffect(player->getId(), source.getSkillId()));
+			player->send_map(packets::skills::show_skill_effect(player->get_id(), source.get_skill_id()));
 		}
 
-		auto magicGuard = player->getActiveBuffs()->getMagicGuardSource();
-		if (magicGuard.is_initialized()) {
-			if (deadlyAttack) {
-				deadlyAttackFunc(true);
+		auto magic_guard = player->get_active_buffs()->get_magic_guard_source();
+		if (magic_guard.is_initialized()) {
+			if (deadly_attack) {
+				deadly_attack_func(true);
 			}
-			else if (mpBurn > 0) {
-				player->getStats()->damageMp(mpBurn);
-				player->getStats()->damageHp(static_cast<uint16_t>(damage));
+			else if (mp_burn > 0) {
+				player->get_stats()->damage_mp(mp_burn);
+				player->get_stats()->damage_hp(static_cast<uint16_t>(damage));
 			}
 			else {
-				int16_t reduc = player->getActiveBuffs()->getBuffSkillInfo(magicGuard.get())->x;
-				int32_t mpDamage = (damage * reduc) / 100;
-				int32_t hpDamage = damage - mpDamage;
+				int16_t reduc = player->get_active_buffs()->get_buff_skill_info(magic_guard.get())->x;
+				int32_t mp_damage = (damage * reduc) / 100;
+				int32_t hp_damage = damage - mp_damage;
 
-				if (mpDamage < mp || player->getActiveBuffs()->hasInfinity()) {
-					player->getStats()->damageMp(mpDamage);
-					player->getStats()->damageHp(hpDamage);
+				if (mp_damage < mp || player->get_active_buffs()->has_infinity()) {
+					player->get_stats()->damage_mp(mp_damage);
+					player->get_stats()->damage_hp(hp_damage);
 				}
-				else if (mpDamage >= mp) {
-					player->getStats()->setMp(0);
-					player->getStats()->damageHp(hpDamage + (mpDamage - mp));
+				else if (mp_damage >= mp) {
+					player->get_stats()->set_mp(0);
+					player->get_stats()->damage_hp(hp_damage + (mp_damage - mp));
 				}
 			}
-			damageApplied = true;
+			damage_applied = true;
 		}
 
-		if (player->getSkills()->hasAchilles()) {
-			skill_id_t skillId = player->getSkills()->getAchilles();
-			double red = (2.0 - player->getSkills()->getSkillInfo(skillId)->x / 1000.0);
+		if (player->get_skills()->has_achilles()) {
+			game_skill_id skill_id = player->get_skills()->get_achilles();
+			double red = (2.0 - player->get_skills()->get_skill_info(skill_id)->x / 1000.0);
 
-			player->getStats()->damageHp(static_cast<uint16_t>(damage / red));
+			player->get_stats()->damage_hp(static_cast<uint16_t>(damage / red));
 
-			if (deadlyAttack) {
-				deadlyAttackFunc(false);
+			if (deadly_attack) {
+				deadly_attack_func(false);
 			}
-			else if (mpBurn > 0) {
-				player->getStats()->damageMp(mpBurn);
+			else if (mp_burn > 0) {
+				player->get_stats()->damage_mp(mp_burn);
 			}
 
-			damageApplied = true;
+			damage_applied = true;
 		}
 
-		if (!damageApplied) {
-			if (deadlyAttack) {
-				deadlyAttackFunc(true);
+		if (!damage_applied) {
+			if (deadly_attack) {
+				deadly_attack_func(true);
 			}
 			else {
-				player->getStats()->damageHp(static_cast<uint16_t>(damage));
+				player->get_stats()->damage_hp(static_cast<uint16_t>(damage));
 			}
 
-			if (mpBurn > 0) {
-				player->getStats()->damageMp(mpBurn);
+			if (mp_burn > 0) {
+				player->get_stats()->damage_mp(mp_burn);
 			}
 		}
 
-		player->getActiveBuffs()->takeDamage(damage);
+		player->get_active_buffs()->take_damage(damage);
 	}
-	player->sendMap(Packets::Players::damagePlayer(player->getId(), damage, mobId, hit, type, stance, noDamageId, pgmr));
+	player->send_map(packets::players::damage_player(player->get_id(), damage, mob_id, hit, type, stance, no_damage_id, pgmr));
 }
 
-auto PlayerHandler::handleFacialExpression(ref_ptr_t<Player> player, PacketReader &reader) -> void {
+auto player_handler::handle_facial_expression(ref_ptr<player> player, packet_reader &reader) -> void {
 	int32_t face = reader.get<int32_t>();
-	player->sendMap(Packets::Players::faceExpression(player->getId(), face));
+	player->send_map(packets::players::face_expression(player->get_id(), face));
 }
 
-auto PlayerHandler::handleGetInfo(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	reader.skip<tick_count_t>();
-	player_id_t playerId = reader.get<player_id_t>();
-	if (auto info = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId)) {
-		player->send(Packets::Players::showInfo(info, reader.get<bool>()));
+auto player_handler::handle_get_info(ref_ptr<player> player, packet_reader &reader) -> void {
+	reader.skip<game_tick_count>();
+	game_player_id player_id = reader.get<game_player_id>();
+	if (auto info = channel_server::get_instance().get_player_data_provider().get_player(player_id)) {
+		player->send(packets::players::show_info(info, reader.get<bool>()));
 	}
 }
 
-auto PlayerHandler::handleHeal(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	reader.skip<tick_count_t>();
-	health_t hp = reader.get<health_t>();
-	health_t mp = reader.get<health_t>();
-	if (player->getStats()->isDead() || hp > 400 || mp > 1000 || (hp > 0 && mp > 0)) {
+auto player_handler::handle_heal(ref_ptr<player> player, packet_reader &reader) -> void {
+	reader.skip<game_tick_count>();
+	game_health hp = reader.get<game_health>();
+	game_health mp = reader.get<game_health>();
+	if (player->get_stats()->is_dead() || hp > 400 || mp > 1000 || (hp > 0 && mp > 0)) {
 		// Hacking
 		return;
 	}
-	player->getStats()->modifyHp(hp);
-	player->getStats()->modifyMp(mp);
+	player->get_stats()->modify_hp(hp);
+	player->get_stats()->modify_mp(mp);
 }
 
-auto PlayerHandler::handleMoving(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	if (reader.get<uint8_t>() != player->getPortalCount()) {
+auto player_handler::handle_moving(ref_ptr<player> player, packet_reader &reader) -> void {
+	if (reader.get<uint8_t>() != player->get_portal_count()) {
 		// Portal count doesn't match, usually an indication of hacking
 		return;
 	}
 	reader.reset(11);
-	MovementHandler::parseMovement(player.get(), reader);
+	movement_handler::parse_movement(player.get(), reader);
 	reader.reset(11);
-	player->sendMap(Packets::Players::showMoving(player->getId(), reader.getBuffer(), reader.getBufferLength()));
+	player->send_map(packets::players::show_moving(player->get_id(), reader.get_buffer(), reader.get_buffer_length()));
 
-	if (player->getFoothold() == 0 && !player->isUsingGmHide()) {
+	if (player->get_foothold() == 0 && !player->is_using_gm_hide()) {
 		// Player is floating in the air
 		// GMs might be legitimately in this state (due to GM fly)
 		// We shouldn't mess with them because they have the tools to get out of falling off the map anyway
-		map_id_t mapId = player->getMapId();
-		Point playerPos = player->getPos();
-		Map *map = Maps::getMap(mapId);
+		game_map_id map_id = player->get_map_id();
+		point player_pos = player->get_pos();
+		map *map = maps::get_map(map_id);
 
-		Point floor;
-		if (map->findFloor(playerPos, floor) == SearchResult::NotFound) {
+		point floor;
+		if (map->find_floor(player_pos, floor) == search_result::not_found) {
 			// There are no footholds below the player
-			int8_t count = player->getFallCounter();
+			int8_t count = player->get_fall_counter();
 			if (count > 3) {
-				player->setMap(mapId);
+				player->set_map(map_id);
 			}
 			else {
-				player->setFallCounter(++count);
+				player->set_fall_counter(++count);
 			}
 		}
 	}
-	else if (player->getFallCounter() > 0) {
-		player->setFallCounter(0);
+	else if (player->get_fall_counter() > 0) {
+		player->set_fall_counter(0);
 	}
 }
 
-auto PlayerHandler::handleSpecialSkills(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	skill_id_t skillId = reader.get<skill_id_t>();
-	switch (skillId) {
-		case Vana::Skills::Hero::MonsterMagnet:
-		case Vana::Skills::Paladin::MonsterMagnet:
-		case Vana::Skills::DarkKnight::MonsterMagnet:
-		case Vana::Skills::Marksman::PiercingArrow:
-		case Vana::Skills::FpArchMage::BigBang:
-		case Vana::Skills::IlArchMage::BigBang:
-		case Vana::Skills::Bishop::BigBang: {
-			ChargeOrStationarySkillData info;
-			info.skillId = skillId;
-			info.level = reader.get<skill_level_t>();
+auto player_handler::handle_special_skills(ref_ptr<player> player, packet_reader &reader) -> void {
+	game_skill_id skill_id = reader.get<game_skill_id>();
+	switch (skill_id) {
+		case vana::skills::hero::monster_magnet:
+		case vana::skills::paladin::monster_magnet:
+		case vana::skills::dark_knight::monster_magnet:
+		case vana::skills::marksman::piercing_arrow:
+		case vana::skills::fp_arch_mage::big_bang:
+		case vana::skills::il_arch_mage::big_bang:
+		case vana::skills::bishop::big_bang: {
+			charge_or_stationary_skill_data info;
+			info.skill_id = skill_id;
+			info.level = reader.get<game_skill_level>();
 			info.direction = reader.get<uint8_t>();
-			info.weaponSpeed = reader.get<uint8_t>();
-			player->setChargeOrStationarySkill(info);
-			player->sendMap(Packets::Skills::endChargeOrStationarySkill(player->getId(), info));
+			info.weapon_speed = reader.get<uint8_t>();
+			player->set_charge_or_stationary_skill(info);
+			player->send_map(packets::skills::end_charge_or_stationary_skill(player->get_id(), info));
 			break;
 		}
-		case Vana::Skills::ChiefBandit::Chakra: {
-			stat_t dex = player->getStats()->getDex(true);
-			stat_t luk = player->getStats()->getLuk(true);
-			int16_t recovery = player->getSkills()->getSkillInfo(skillId)->y;
+		case vana::skills::chief_bandit::chakra: {
+			game_stat dex = player->get_stats()->get_dex(true);
+			game_stat luk = player->get_stats()->get_luk(true);
+			int16_t recovery = player->get_skills()->get_skill_info(skill_id)->y;
 			int16_t maximum = (luk * 66 / 10 + dex) * 2 / 10 * (recovery / 100 + 1);
 			int16_t minimum = (luk * 33 / 10 + dex) * 2 / 10 * (recovery / 100 + 1);
 			// Maximum = (luk * 6.6 + dex) * 0.2 * (recovery% / 100 + 1)
 			// Minimum = (luk * 3.3 + dex) * 0.2 * (recovery% / 100 + 1)
 			// I used 66 / 10 and 2 / 10 respectively to get 6.6 and 0.2 without using floating points
-			player->getStats()->modifyHp(Randomizer::rand<int16_t>(maximum, minimum));
+			player->get_stats()->modify_hp(randomizer::rand<int16_t>(maximum, minimum));
 			break;
 		}
 	}
 }
 
-auto PlayerHandler::handleMonsterBook(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	item_id_t cardId = reader.get<item_id_t>();
-	if (cardId != 0 && player->getMonsterBook()->getCard(cardId) == 0) {
+auto player_handler::handle_monster_book(ref_ptr<player> player, packet_reader &reader) -> void {
+	game_item_id card_id = reader.get<game_item_id>();
+	if (card_id != 0 && player->get_monster_book()->get_card(card_id) == 0) {
 		// Hacking
 		return;
 	}
-	mob_id_t newCover = 0;
-	if (cardId != 0) {
-		optional_t<mob_id_t> mobCoverId =
-			ChannelServer::getInstance().getItemDataProvider().getMobId(cardId);
+	game_mob_id new_cover = 0;
+	if (card_id != 0) {
+		optional<game_mob_id> mob_cover_id =
+			channel_server::get_instance().get_item_data_provider().get_mob_id(card_id);
 
-		if (mobCoverId.is_initialized()) {
-			newCover = mobCoverId.get();
+		if (mob_cover_id.is_initialized()) {
+			new_cover = mob_cover_id.get();
 		}
 		else {
 			// Hacking?
-			newCover = 0;
+			new_cover = 0;
 		}
 	}
-	player->getMonsterBook()->setCover(newCover);
-	player->send(Packets::MonsterBook::changeCover(cardId));
+	player->get_monster_book()->set_cover(new_cover);
+	player->send(packets::monster_book::change_cover(card_id));
 }
 
-auto PlayerHandler::handleAdminMessenger(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	if (!player->isAdmin()) {
+auto player_handler::handle_admin_messenger(ref_ptr<player> player_value, packet_reader &reader) -> void {
+	if (!player_value->is_admin()) {
 		// Hacking
 		return;
 	}
-	ref_ptr_t<Player> receiver = nullptr;
-	bool hasTarget = reader.get<int8_t>() == 2;
+	ref_ptr<player> receiver = nullptr;
+	bool has_target = reader.get<int8_t>() == 2;
 	int8_t sort = reader.get<int8_t>();
-	bool useWhisper = reader.get<bool>();
+	bool use_whisper = reader.get<bool>();
 	int8_t type = reader.get<int8_t>();
-	player_id_t characterId = reader.get<player_id_t>();
+	game_player_id character_id = reader.get<game_player_id>();
 
-	if (player->getId() != characterId) {
+	if (player_value->get_id() != character_id) {
 		return;
 	}
 
-	string_t line1 = reader.get<string_t>();
-	string_t line2 = reader.get<string_t>();
-	string_t line3 = reader.get<string_t>();
-	string_t line4 = reader.get<string_t>();
-	string_t line5 = reader.get<string_t>();
-	if (hasTarget) {
-		receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(reader.get<string_t>());
+	string line1 = reader.get<string>();
+	string line2 = reader.get<string>();
+	string line3 = reader.get<string>();
+	string line4 = reader.get<string>();
+	string line5 = reader.get<string>();
+	if (has_target) {
+		receiver = channel_server::get_instance().get_player_data_provider().get_player(reader.get<string>());
 	}
 
 	int32_t time = 15;
@@ -439,27 +439,27 @@ auto PlayerHandler::handleAdminMessenger(ref_ptr_t<Player> player, PacketReader 
 		case 2: time = 60; break;
 	}
 
-	ChannelServer::getInstance().getMapleTvs().addMessage(player, receiver, line1, line2, line3, line4, line5, 5075000 + type, time);
+	channel_server::get_instance().get_maple_tvs().add_message(player_value, receiver, line1, line2, line3, line4, line5, 5075000 + type, time);
 	if (sort == 1) {
-		out_stream_t output;
-		output << player->getMedalName() << " : " << line1 << line2 << line3 << line4 << line5;
+		out_stream output;
+		output << player_value->get_medal_name() << " : " << line1 << line2 << line3 << line4 << line5;
 
-		auto &builder = Packets::Inventory::showSuperMegaphone(output.str(), useWhisper);
-		ChannelServer::getInstance().sendWorld(
-			Vana::Packets::prepend(builder, [](PacketBuilder &header) {
-				header.add<header_t>(IMSG_TO_ALL_PLAYERS);
+		auto &builder = packets::inventory::show_super_megaphone(output.str(), use_whisper);
+		channel_server::get_instance().send_world(
+			vana::packets::prepend(builder, [](packet_builder &header) {
+				header.add<packet_header>(IMSG_TO_ALL_PLAYERS);
 			}));
 	}
 }
 
-auto PlayerHandler::useBombSkill(ref_ptr_t<Player> player, PacketReader &reader) -> void {
+auto player_handler::use_bomb_skill(ref_ptr<player> player, packet_reader &reader) -> void {
 	// TODO FIXME packet
-	// Ignore this position in favor of player->getPos()?
-	WidePoint playerPos = reader.get<WidePoint>();
-	charge_time_t charge = reader.get<charge_time_t>();
-	skill_id_t skillId = reader.get<skill_id_t>();
+	// Ignore this position in favor of player->get_pos()?
+	wide_point player_pos = reader.get<wide_point>();
+	game_charge_time charge = reader.get<game_charge_time>();
+	game_skill_id skill_id = reader.get<game_skill_id>();
 
-	if (player->getSkills()->getSkillLevel(skillId) == 0) {
+	if (player->get_skills()->get_skill_level(skill_id) == 0) {
 		// Hacking
 		return;
 	}
@@ -468,63 +468,69 @@ auto PlayerHandler::useBombSkill(ref_ptr_t<Player> player, PacketReader &reader)
 		return;
 	}
 
-	player->sendMap(Packets::Players::useBombAttack(player->getId(), charge, skillId, playerPos));
+	player->send_map(packets::players::use_bomb_attack(player->get_id(), charge, skill_id, player_pos));
 }
 
-auto PlayerHandler::useMeleeAttack(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	AttackData attack = compileAttack(player, reader, SkillType::Melee);
-	if (attack.portals != player->getPortalCount()) {
+auto player_handler::use_melee_attack(ref_ptr<player> player, packet_reader &reader) -> void {
+	attack_data attack = compile_attack(player, reader, skill_type::melee);
+	if (attack.portals != player->get_portal_count()) {
 		// Usually evidence of hacking
 		return;
 	}
-	skill_id_t masteryId = player->getSkills()->getMastery();
-	int8_t damagedTargets = 0;
-	skill_id_t skillId = attack.skillId;
-	skill_level_t level = attack.skillLevel;
+	game_skill_id mastery_id = player->get_skills()->get_mastery();
+	int8_t damaged_targets = 0;
+	game_skill_id skill_id = attack.skill_id;
+	game_skill_level level = attack.skill_level;
 
-	if (skillId != Vana::Skills::All::RegularAttack) {
-		if (Skills::useAttackSkill(player, skillId) == Result::Failure) {
+	if (skill_id != vana::skills::all::regular_attack) {
+		if (skills::use_attack_skill(player, skill_id) == result::failure) {
 			// Most likely hacking, could feasibly be lag
 			return;
 		}
 	}
 
-	player->sendMap(Packets::Players::useMeleeAttack(player->getId(), masteryId, player->getSkills()->getSkillLevel(masteryId), attack));
+	player->send_map(packets::players::use_melee_attack(player->get_id(), mastery_id, player->get_skills()->get_skill_level(mastery_id), attack));
 
-	map_id_t map = player->getMapId();
-	auto pickpocket = player->getActiveBuffs()->getPickpocketSource();
-	bool ppok = !attack.isMesoExplosion && pickpocket.is_initialized();
-	Point origin;
-	vector_t<damage_t> ppDamages;
+	game_map_id map_id = player->get_map_id();
+	map *map = maps::get_map(map_id);
+	if (map != player->get_map()) {
+		// Hacking or something
+		return;
+	}
+
+	auto pickpocket = player->get_active_buffs()->get_pickpocket_source();
+	bool ppok = !attack.is_meso_explosion && pickpocket.is_initialized();
+	point origin;
+	vector<game_damage> pp_damages;
 	auto picking = !pickpocket.is_initialized() ?
 		nullptr :
-		player->getActiveBuffs()->getBuffSkillInfo(pickpocket.get());
-	bool reflectApplied = player->hasGmBenefits();
+		player->get_active_buffs()->get_buff_skill_info(pickpocket.get());
+	bool reflect_applied = player->has_gm_benefits();
 
 	for (const auto &target : attack.damages) {
-		damage_t targetTotal = 0;
-		int8_t connectedHits = 0;
-		auto mob = Maps::getMap(map)->getMob(target.first);
+		game_damage target_total = 0;
+		int8_t connected_hits = 0;
+		auto mob = map->get_mob(target.first);
 		if (mob == nullptr) {
 			continue;
 		}
-		if (mob->hasWeaponReflection() && !reflectApplied) {
-			auto &reflect = mob->getWeaponReflection().get();
-			int32_t amount = Randomizer::range<int32_t>(reflect.val, reflect.reflection);
-			player->getStats()->modifyHp(-amount);
-			reflectApplied = true;
+		if (mob->has_weapon_reflection() && !reflect_applied) {
+			auto &reflect = mob->get_weapon_reflection().get();
+			int32_t amount = randomizer::range<int32_t>(reflect.val, reflect.reflection);
+			player->get_stats()->modify_hp(-amount);
+			reflect_applied = true;
 		}
 
-		origin = mob->getPos(); // Info for pickpocket before mob is set to nullptr (in the case that mob dies)
+		origin = mob->get_pos(); // Info for pickpocket before mob is set to nullptr (in the case that mob dies)
 		for (const auto &hit : target.second) {
-			damage_t damage = hit;
+			game_damage damage = hit;
 			if (damage != 0) {
-				connectedHits++;
-				targetTotal += damage;
+				connected_hits++;
+				target_total += damage;
 			}
-			if (ppok && Randomizer::percentage<uint16_t>() < picking->prop) {
+			if (ppok && randomizer::percentage<uint16_t>() < picking->prop) {
 				 // Make sure this is a melee attack and not meso explosion, plus pickpocket being active
-				ppDamages.push_back(damage);
+				pp_damages.push_back(damage);
 			}
 			if (mob == nullptr) {
 				if (ppok) {
@@ -533,546 +539,545 @@ auto PlayerHandler::useMeleeAttack(ref_ptr_t<Player> player, PacketReader &reade
 				}
 				break;
 			}
-			if (skillId == Vana::Skills::Paladin::HeavensHammer) {
-				damage = (mob->isBoss() ? Stats::MaxDamage : (mob->getHp() - 1)); // If a Paladin wants to prove that it does something else, feel free
+			if (skill_id == vana::skills::paladin::heavens_hammer) {
+				damage = (mob->is_boss() ? stats::max_damage : (mob->get_hp() - 1));
 			}
-			else if (skillId == Vana::Skills::Bandit::Steal && !mob->isBoss()) {
-				DropHandler::doDrops(player->getId(), map, mob->getLevel(), mob->getMobId(), mob->getPos(), false, false, mob->getTauntEffect(), true);
+			else if (skill_id == vana::skills::bandit::steal && !mob->is_boss()) {
+				drop_handler::do_drops(player->get_id(), map_id, mob->get_level(), mob->get_mob_id(), mob->get_pos(), false, false, mob->get_taunt_effect(), true);
 			}
-			int32_t tempHp = mob->getHp();
-			mob->applyDamage(player->getId(), damage);
-			if (tempHp <= damage) {
+			int32_t temp_hp = mob->get_hp();
+			mob->apply_damage(player->get_id(), damage);
+			if (temp_hp <= damage) {
 				// Mob was killed, so set the Mob pointer to 0
 				mob = nullptr;
 			}
 		}
-		if (targetTotal > 0) {
-			if (mob != nullptr && mob->getHp() > 0) {
-				MobHandler::handleMobStatus(player->getId(), mob, skillId, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedHits); // Mob status handler (freeze, stun, etc)
-				if (mob->getHp() < mob->getSelfDestructHp()) {
+		if (target_total > 0) {
+			if (mob != nullptr && mob->get_hp() > 0) {
+				mob_handler::handle_mob_status(player->get_id(), mob, skill_id, level, player->get_inventory()->get_equipped_id(equip_slots::weapon), connected_hits);
+				if (mob->get_hp() < mob->get_self_destruct_hp()) {
 					mob->explode();
 				}
 			}
-			damagedTargets++;
+			damaged_targets++;
 		}
-		uint8_t ppSize = static_cast<uint8_t>(ppDamages.size());
-		for (uint8_t pickpocket = 0; pickpocket < ppSize; ++pickpocket) {
+		uint8_t pp_size = static_cast<uint8_t>(pp_damages.size());
+		for (uint8_t pickpocket = 0; pickpocket < pp_size; ++pickpocket) {
 			// Drop stuff for Pickpocket
-			Point ppPos = origin;
-			ppPos.x += (ppSize % 2 == 0 ? 5 : 0) + (ppSize / 2) - 20 * ((ppSize / 2) - pickpocket);
+			point pp_pos = origin;
+			pp_pos.x += (pp_size % 2 == 0 ? 5 : 0) + (pp_size / 2) - 20 * ((pp_size / 2) - pickpocket);
 
-			int32_t ppMesos = (ppDamages[pickpocket] * picking->x) / 10000; // TODO FIXME formula
-			Drop *ppDrop = new Drop{player->getMapId(), ppMesos, ppPos, player->getId(), true};
-			ppDrop->setTime(100);
-			Vana::Timer::Timer::create(
-				[ppDrop, origin](const time_point_t &now) {
-					ppDrop->doDrop(origin);
+			int32_t pp_mesos = (pp_damages[pickpocket] * picking->x) / 10000; // TODO FIXME formula
+			drop *pp_drop = new drop{player->get_map_id(), pp_mesos, pp_pos, player->get_id(), true};
+			pp_drop->set_time(100);
+			vana::timer::timer::create(
+				[pp_drop, origin](const time_point &now) {
+					pp_drop->do_drop(origin);
 				},
-				Vana::Timer::Id{
-					TimerType::PickpocketTimer,
-					player->getId(),
-					player->getActiveBuffs()->getPickpocketCounter()
+				vana::timer::id{
+					timer_type::pickpocket_timer,
+					player->get_id(),
+					player->get_active_buffs()->get_pickpocket_counter()
 				},
 				nullptr,
-				milliseconds_t{175 * pickpocket});
+				milliseconds{175 * pickpocket});
 		}
-		ppDamages.clear();
+		pp_damages.clear();
 	}
 
-	if (player->getSkills()->hasEnergyCharge()) {
-		player->getActiveBuffs()->increaseEnergyChargeLevel(damagedTargets);
+	if (player->get_skills()->has_energy_charge()) {
+		player->get_active_buffs()->increase_energy_charge_level(damaged_targets);
 	}
 
-	if (player->getSkills()->hasDarkSightInterruptionSkill()) {
-		auto source = player->getActiveBuffs()->getDarkSightSource();
+	if (player->get_skills()->has_dark_sight_interruption_skill()) {
+		auto source = player->get_active_buffs()->get_dark_sight_source();
 		if (source.is_initialized()) {
-			Skills::stopSkill(player, source.get());
+			skills::stop_skill(player, source.get());
 		}
 	}
 
-	switch (skillId) {
-		case Vana::Skills::ChiefBandit::MesoExplosion: {
+	switch (skill_id) {
+		case vana::skills::chief_bandit::meso_explosion: {
 			uint8_t items = reader.get<int8_t>();
-			Map *map = player->getMap();
 			for (uint8_t i = 0; i < items; i++) {
-				map_object_t objId = reader.get<map_object_t>();
+				game_map_object obj_id = reader.get<game_map_object>();
 				reader.unk<uint8_t>();
-				if (Drop *drop = map->getDrop(objId)) {
-					if (!drop->isMesos()) {
+				if (drop *drop = map->get_drop(obj_id)) {
+					if (!drop->is_mesos()) {
 						// Hacking
 						return;
 					}
-					map->send(Packets::Drops::explodeDrop(drop->getId()));
-					map->removeDrop(drop->getId());
+					map->send(packets::drops::explode_drop(drop->get_id()));
+					map->remove_drop(drop->get_id());
 					delete drop;
 				}
 			}
 			break;
 		}
-		case Vana::Skills::Marauder::EnergyDrain:
-		case Vana::Skills::ThunderBreaker::EnergyDrain: {
-			int32_t hpRecover = static_cast<int32_t>(attack.totalDamage * player->getSkills()->getSkillInfo(skillId)->x / 100);
-			if (hpRecover > player->getStats()->getMaxHp()) {
-				player->getStats()->setHp(player->getStats()->getMaxHp());
+		case vana::skills::marauder::energy_drain:
+		case vana::skills::thunder_breaker::energy_drain: {
+			int32_t hp_recover = static_cast<int32_t>(attack.total_damage * player->get_skills()->get_skill_info(skill_id)->x / 100);
+			if (hp_recover > player->get_stats()->get_max_hp()) {
+				player->get_stats()->set_hp(player->get_stats()->get_max_hp());
 			}
 			else {
-				player->getStats()->modifyHp(static_cast<int16_t>(hpRecover));
+				player->get_stats()->modify_hp(static_cast<int16_t>(hp_recover));
 			}
 			break;
 		}
-		case Vana::Skills::Crusader::SwordPanic: // Crusader finishers
-		case Vana::Skills::Crusader::SwordComa:
-		case Vana::Skills::Crusader::AxePanic:
-		case Vana::Skills::Crusader::AxeComa:
-		case Vana::Skills::DawnWarrior::Panic:
-		case Vana::Skills::DawnWarrior::Coma:
-			player->getActiveBuffs()->resetCombo();
+		case vana::skills::crusader::sword_panic: // Crusader finishers
+		case vana::skills::crusader::sword_coma:
+		case vana::skills::crusader::axe_panic:
+		case vana::skills::crusader::axe_coma:
+		case vana::skills::dawn_warrior::panic:
+		case vana::skills::dawn_warrior::coma:
+			player->get_active_buffs()->reset_combo();
 			break;
-		case Vana::Skills::NightWalker::PoisonBomb: {
-			auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
-			Mist *mist = new Mist{player->getMapId(), player, skill->buffTime, skill->dimensions.move(attack.projectilePos), skillId, level, true};
+		case vana::skills::night_walker::poison_bomb: {
+			auto skill = channel_server::get_instance().get_skill_data_provider().get_skill(skill_id, level);
+			mist *mist_value = new mist{player->get_map_id(), player, skill->buff_time, skill->dimensions.move(attack.projectile_pos), skill_id, level, true};
 			break;
 		}
-		case Vana::Skills::Crusader::Shout:
-		case Vana::Skills::Gm::SuperDragonRoar:
-		case Vana::Skills::SuperGm::SuperDragonRoar:
+		case vana::skills::crusader::shout:
+		case vana::skills::gm::super_dragon_roar:
+		case vana::skills::super_gm::super_dragon_roar:
 			break;
-		case Vana::Skills::DragonKnight::DragonRoar: {
-			int16_t xProperty = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level)->x;
-			uint16_t reduction = (player->getStats()->getMaxHp() / 100) * xProperty;
-			if (reduction < player->getStats()->getHp()) {
-				player->getStats()->damageHp(reduction);
+		case vana::skills::dragon_knight::dragon_roar: {
+			int16_t x_property = channel_server::get_instance().get_skill_data_provider().get_skill(skill_id, level)->x;
+			uint16_t reduction = (player->get_stats()->get_max_hp() / 100) * x_property;
+			if (reduction < player->get_stats()->get_hp()) {
+				player->get_stats()->damage_hp(reduction);
 			}
 			else {
 				// Hacking
 				return;
 			}
-			Buffs::addBuff(player, Vana::Skills::DragonKnight::DragonRoar, level, 0);
+			buffs::add_buff(player, vana::skills::dragon_knight::dragon_roar, level, 0);
 			break;
 		}
-		case Vana::Skills::DragonKnight::Sacrifice: {
-			if (attack.totalDamage > 0) {
-				int16_t xProperty = player->getSkills()->getSkillInfo(skillId)->x;
-				int32_t hpDamage = static_cast<int32_t>(attack.totalDamage * xProperty / 100);
-				if (hpDamage >= player->getStats()->getHp()) {
-					hpDamage = player->getStats()->getHp() - 1;
+		case vana::skills::dragon_knight::sacrifice: {
+			if (attack.total_damage > 0) {
+				int16_t x_property = player->get_skills()->get_skill_info(skill_id)->x;
+				int32_t hp_damage = static_cast<int32_t>(attack.total_damage * x_property / 100);
+				if (hp_damage >= player->get_stats()->get_hp()) {
+					hp_damage = player->get_stats()->get_hp() - 1;
 				}
-				if (hpDamage > 0) {
-					player->getStats()->damageHp(hpDamage);
+				if (hp_damage > 0) {
+					player->get_stats()->damage_hp(hp_damage);
 				}
 			}
 			break;
 		}
-		case Vana::Skills::WhiteKnight::ChargeBlow: {
-			skill_level_t skillLevel = player->getSkills()->getSkillLevel(Vana::Skills::Paladin::AdvancedCharge);
-			int16_t xProperty = 0;
-			if (skillLevel > 0) {
-				xProperty = ChannelServer::getInstance().getSkillDataProvider().getSkill(Vana::Skills::Paladin::AdvancedCharge, skillLevel)->x;
+		case vana::skills::white_knight::charge_blow: {
+			game_skill_level skill_level = player->get_skills()->get_skill_level(vana::skills::paladin::advanced_charge);
+			int16_t x_property = 0;
+			if (skill_level > 0) {
+				x_property = channel_server::get_instance().get_skill_data_provider().get_skill(vana::skills::paladin::advanced_charge, skill_level)->x;
 			}
-			if ((xProperty != 100) && (xProperty == 0 || Randomizer::percentage<int16_t>() > (xProperty - 1))) {
-				player->getActiveBuffs()->stopCharge();
+			if ((x_property != 100) && (x_property == 0 || randomizer::percentage<int16_t>() > (x_property - 1))) {
+				player->get_active_buffs()->stop_charge();
 			}
 			break;
 		}
 		default:
-			if (attack.totalDamage > 0) {
-				player->getActiveBuffs()->addCombo();
+			if (attack.total_damage > 0) {
+				player->get_active_buffs()->add_combo();
 			}
 	}
 }
 
-auto PlayerHandler::useRangedAttack(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	AttackData attack = compileAttack(player, reader, SkillType::Ranged);
-	if (attack.portals != player->getPortalCount()) {
+auto player_handler::use_ranged_attack(ref_ptr<player> player, packet_reader &reader) -> void {
+	attack_data attack = compile_attack(player, reader, skill_type::ranged);
+	if (attack.portals != player->get_portal_count()) {
 		// Usually evidence of hacking
 		return;
 	}
-	skill_id_t masteryId = player->getSkills()->getMastery();
-	skill_id_t skillId = attack.skillId;
-	skill_level_t level = attack.skillLevel;
-	int8_t damagedTargets = 0;
+	game_skill_id mastery_id = player->get_skills()->get_mastery();
+	game_skill_id skill_id = attack.skill_id;
+	game_skill_level level = attack.skill_level;
+	int8_t damaged_targets = 0;
 
-	if (Skills::useAttackSkillRanged(player, skillId, attack.starPos, attack.cashStarPos, attack.starId) == Result::Failure) {
+	if (skills::use_attack_skill_ranged(player, skill_id, attack.star_pos, attack.cash_star_pos, attack.star_id) == result::failure) {
 		// Most likely hacking, could feasibly be lag
 		return;
 	}
 
-	player->sendMap(Packets::Players::useRangedAttack(player->getId(), masteryId, player->getSkills()->getSkillLevel(masteryId), attack));
+	player->send_map(packets::players::use_ranged_attack(player->get_id(), mastery_id, player->get_skills()->get_skill_level(mastery_id), attack));
 
-	switch (skillId) {
-		case Vana::Skills::Bowmaster::Hurricane:
-		case Vana::Skills::WindArcher::Hurricane:
-		case Vana::Skills::Corsair::RapidFire:
-			if (!player->hasChargeOrStationarySkill()) {
-				ChargeOrStationarySkillData info;
-				info.skillId = skillId;
+	switch (skill_id) {
+		case vana::skills::bowmaster::hurricane:
+		case vana::skills::wind_archer::hurricane:
+		case vana::skills::corsair::rapid_fire:
+			if (!player->has_charge_or_stationary_skill()) {
+				charge_or_stationary_skill_data info;
+				info.skill_id = skill_id;
 				info.direction = attack.animation;
-				info.weaponSpeed = attack.weaponSpeed;
+				info.weapon_speed = attack.weapon_speed;
 				info.level = level;
-				player->setChargeOrStationarySkill(info);
-				player->sendMap(Packets::Skills::endChargeOrStationarySkill(player->getId(), info));
+				player->set_charge_or_stationary_skill(info);
+				player->send_map(packets::skills::end_charge_or_stationary_skill(player->get_id(), info));
 			}
 			break;
 	}
 
-	int32_t maxHp = 0;
-	damage_t firstHit = 0;
-	bool reflectApplied = player->hasGmBenefits();
+	int32_t max_hp = 0;
+	game_damage first_hit = 0;
+	bool reflect_applied = player->has_gm_benefits();
 	for (const auto &target : attack.damages) {
-		map_object_t mapMobId = target.first;
-		auto mob = player->getMap()->getMob(mapMobId);
+		game_map_object map_mob_id = target.first;
+		auto mob = player->get_map()->get_mob(map_mob_id);
 		if (mob == nullptr) {
 			continue;
 		}
-		if (mob->hasWeaponReflection() && !reflectApplied) {
-			auto &reflect = mob->getWeaponReflection().get();
-			int32_t amount = Randomizer::range<int32_t>(reflect.val, reflect.reflection);
-			player->getStats()->modifyHp(-amount);
-			reflectApplied = true;
+		if (mob->has_weapon_reflection() && !reflect_applied) {
+			auto &reflect = mob->get_weapon_reflection().get();
+			int32_t amount = randomizer::range<int32_t>(reflect.val, reflect.reflection);
+			player->get_stats()->modify_hp(-amount);
+			reflect_applied = true;
 		}
-		damage_t targetTotal = 0;
-		int8_t connectedHits = 0;
+		game_damage target_total = 0;
+		int8_t connected_hits = 0;
 
 		for (const auto &hit : target.second) {
-			damage_t damage = hit;
+			game_damage damage = hit;
 
 			if (damage != 0) {
-				connectedHits++;
-				targetTotal += damage;
+				connected_hits++;
+				target_total += damage;
 			}
-			if (firstHit == 0) {
-				firstHit = damage;
+			if (first_hit == 0) {
+				first_hit = damage;
 			}
 			if (mob == nullptr) {
 				continue;
 			}
-			maxHp = mob->getMaxHp();
-			if (skillId == Vana::Skills::Ranger::MortalBlow || skillId == Vana::Skills::Sniper::MortalBlow) {
-				auto sk = player->getSkills()->getSkillInfo(skillId);
-				int32_t hpPercentage = maxHp * sk->x / 100; // Percentage of HP required for Mortal Blow activation
-				if (mob->getHp() < hpPercentage && Randomizer::percentage<int16_t>() < sk->y) {
-					damage = mob->getHp();
+			max_hp = mob->get_max_hp();
+			if (skill_id == vana::skills::ranger::mortal_blow || skill_id == vana::skills::sniper::mortal_blow) {
+				auto sk = player->get_skills()->get_skill_info(skill_id);
+				int32_t hp_percentage = max_hp * sk->x / 100; // Percentage of HP required for Mortal Blow activation
+				if (mob->get_hp() < hp_percentage && randomizer::percentage<int16_t>() < sk->y) {
+					damage = mob->get_hp();
 				}
 			}
 
-			int32_t tempHp = mob->getHp();
-			mob->applyDamage(player->getId(), damage);
-			if (tempHp <= damage) {
+			int32_t temp_hp = mob->get_hp();
+			mob->apply_damage(player->get_id(), damage);
+			if (temp_hp <= damage) {
 				mob = nullptr;
 			}
-			else if (skillId == Vana::Skills::Outlaw::HomingBeacon || skillId == Vana::Skills::Corsair::Bullseye) {
-				Buffs::addBuff(player, skillId, level, 0, mapMobId);
+			else if (skill_id == vana::skills::outlaw::homing_beacon || skill_id == vana::skills::corsair::bullseye) {
+				buffs::add_buff(player, skill_id, level, 0, map_mob_id);
 			}
 		}
-		if (targetTotal > 0) {
-			if (mob != nullptr && mob->getHp() > 0) {
-				MobHandler::handleMobStatus(player->getId(), mob, skillId, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedHits, firstHit); // Mob status handler (freeze, stun, etc)
-				if (mob->getHp() < mob->getSelfDestructHp()) {
+		if (target_total > 0) {
+			if (mob != nullptr && mob->get_hp() > 0) {
+				mob_handler::handle_mob_status(player->get_id(), mob, skill_id, level, player->get_inventory()->get_equipped_id(equip_slots::weapon), connected_hits, first_hit);
+				if (mob->get_hp() < mob->get_self_destruct_hp()) {
 					mob->explode();
 				}
 			}
-			damagedTargets++;
+			damaged_targets++;
 		}
 	}
 
-	if (player->getSkills()->hasEnergyCharge()) {
-		player->getActiveBuffs()->increaseEnergyChargeLevel(damagedTargets);
+	if (player->get_skills()->has_energy_charge()) {
+		player->get_active_buffs()->increase_energy_charge_level(damaged_targets);
 	}
 
-	if (player->getSkills()->hasDarkSightInterruptionSkill()) {
-		auto source = player->getActiveBuffs()->getDarkSightSource();
+	if (player->get_skills()->has_dark_sight_interruption_skill()) {
+		auto source = player->get_active_buffs()->get_dark_sight_source();
 		if (source.is_initialized()) {
-			Skills::stopSkill(player, source.get());
+			skills::stop_skill(player, source.get());
 		}
 	}
 
-	switch (skillId) {
-		case Vana::Skills::NightWalker::Vampire:
-		case Vana::Skills::Assassin::Drain: {
-			int16_t xProperty = player->getSkills()->getSkillInfo(skillId)->x;
-			int32_t hpRecover = static_cast<int32_t>(attack.totalDamage * xProperty / 100);
-			health_t playerMaxHp = player->getStats()->getMaxHp();
-			if (hpRecover > maxHp) {
-				hpRecover = maxHp;
+	switch (skill_id) {
+		case vana::skills::night_walker::vampire:
+		case vana::skills::assassin::drain: {
+			int16_t x_property = player->get_skills()->get_skill_info(skill_id)->x;
+			int32_t hp_recover = static_cast<int32_t>(attack.total_damage * x_property / 100);
+			game_health player_max_hp = player->get_stats()->get_max_hp();
+			if (hp_recover > max_hp) {
+				hp_recover = max_hp;
 			}
-			if (hpRecover > (playerMaxHp / 2)) {
-				hpRecover = playerMaxHp / 2;
+			if (hp_recover > (player_max_hp / 2)) {
+				hp_recover = player_max_hp / 2;
 			}
-			if (hpRecover > playerMaxHp) {
-				player->getStats()->setHp(playerMaxHp);
+			if (hp_recover > player_max_hp) {
+				player->get_stats()->set_hp(player_max_hp);
 			}
 			else {
-				player->getStats()->modifyHp(hpRecover);
+				player->get_stats()->modify_hp(hp_recover);
 			}
 			break;
 		}
-		case Vana::Skills::DawnWarrior::SoulBlade:
-			if (attack.totalDamage > 0) {
-				player->getActiveBuffs()->addCombo();
+		case vana::skills::dawn_warrior::soul_blade:
+			if (attack.total_damage > 0) {
+				player->get_active_buffs()->add_combo();
 			}
 			break;
 	}
 }
 
-auto PlayerHandler::useSpellAttack(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	const AttackData &attack = compileAttack(player, reader, SkillType::Magic);
-	if (attack.portals != player->getPortalCount()) {
+auto player_handler::use_spell_attack(ref_ptr<player> player, packet_reader &reader) -> void {
+	const attack_data &attack = compile_attack(player, reader, skill_type::magic);
+	if (attack.portals != player->get_portal_count()) {
 		// Usually evidence of hacking
 		return;
 	}
 
-	skill_id_t skillId = attack.skillId;
-	skill_level_t level = attack.skillLevel;
+	game_skill_id skill_id = attack.skill_id;
+	game_skill_level level = attack.skill_level;
 
-	if (!attack.isHeal) {
+	if (!attack.is_heal) {
 		// Heal is sent as both an attack and as a used skill - it's only sometimes an attack
-		if (Skills::useAttackSkill(player, skillId) == Result::Failure) {
-			// Most likely hacking, could feasilby be lag
+		if (skills::use_attack_skill(player, skill_id) == result::failure) {
+			// Most likely hacking, could feasibly be lag
 			return;
 		}
 	}
 
-	player->sendMap(Packets::Players::useSpellAttack(player->getId(), attack));
+	player->send_map(packets::players::use_spell_attack(player->get_id(), attack));
 
-	MpEaterData eater;
-	eater.skillId = player->getSkills()->getMpEater();
-	eater.level = player->getSkills()->getSkillLevel(eater.skillId);
+	mp_eater_data eater;
+	eater.skill_id = player->get_skills()->get_mp_eater();
+	eater.level = player->get_skills()->get_skill_level(eater.skill_id);
 	if (eater.level > 0) {
-		auto skillInfo = ChannelServer::getInstance().getSkillDataProvider().getSkill(eater.skillId, eater.level);
-		eater.prop = skillInfo->prop;
-		eater.x = skillInfo->x;
+		auto skill_info = channel_server::get_instance().get_skill_data_provider().get_skill(eater.skill_id, eater.level);
+		eater.prop = skill_info->prop;
+		eater.x = skill_info->x;
 	}
 
-	bool reflectApplied = player->hasGmBenefits();
+	bool reflect_applied = player->has_gm_benefits();
 	for (const auto &target : attack.damages) {
-		damage_t targetTotal = 0;
-		map_object_t mapMobId = target.first;
-		int8_t connectedHits = 0;
-		auto mob = player->getMap()->getMob(mapMobId);
+		game_damage target_total = 0;
+		game_map_object map_mob_id = target.first;
+		int8_t connected_hits = 0;
+		auto mob = player->get_map()->get_mob(map_mob_id);
 		if (mob == nullptr) {
 			continue;
 		}
-		if (attack.isHeal && !mob->isUndead()) {
+		if (attack.is_heal && !mob->is_undead()) {
 			// Hacking
 			return;
 		}
-		if (mob->hasMagicReflection() && !reflectApplied) {
-			auto &reflect = mob->getMagicReflection().get();
-			int32_t amount = Randomizer::range<int32_t>(reflect.val, reflect.reflection);
-			player->getStats()->modifyHp(-amount);
-			reflectApplied = true;
+		if (mob->has_magic_reflection() && !reflect_applied) {
+			auto &reflect = mob->get_magic_reflection().get();
+			int32_t amount = randomizer::range<int32_t>(reflect.val, reflect.reflection);
+			player->get_stats()->modify_hp(-amount);
+			reflect_applied = true;
 		}
 
 		for (const auto &hit : target.second) {
-			damage_t damage = hit;
+			game_damage damage = hit;
 			if (damage != 0) {
-				connectedHits++;
-				targetTotal += damage;
+				connected_hits++;
+				target_total += damage;
 			}
 			if (damage != 0 && eater.level != 0 && !eater.used) {
 				// MP Eater
-				mob->mpEat(player, &eater);
+				mob->mp_eat(player, &eater);
 			}
-			int32_t tempHp = mob->getHp();
-			mob->applyDamage(player->getId(), damage);
-			if (tempHp <= damage) {
+			int32_t temp_hp = mob->get_hp();
+			mob->apply_damage(player->get_id(), damage);
+			if (temp_hp <= damage) {
 				// Mob was killed, so set the Mob pointer to 0
 				mob = nullptr;
 				break;
 			}
 		}
-		if (mob != nullptr && targetTotal > 0 && mob->getHp() > 0) {
-			MobHandler::handleMobStatus(player->getId(), mob, skillId, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedHits); // Mob status handler (freeze, stun, etc)
-			if (mob->getHp() < mob->getSelfDestructHp()) {
+		if (mob != nullptr && target_total > 0 && mob->get_hp() > 0) {
+			mob_handler::handle_mob_status(player->get_id(), mob, skill_id, level, player->get_inventory()->get_equipped_id(equip_slots::weapon), connected_hits);
+			if (mob->get_hp() < mob->get_self_destruct_hp()) {
 				mob->explode();
 			}
 		}
 	}
 
-	switch (skillId) {
-		case Vana::Skills::FpMage::PoisonMist:
-		case Vana::Skills::BlazeWizard::FlameGear: {
-			auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
-			Mist *mist = new Mist{player->getMapId(), player, skill->buffTime, skill->dimensions.move(player->getPos()), skillId, level, true};
+	switch (skill_id) {
+		case vana::skills::fp_mage::poison_mist:
+		case vana::skills::blaze_wizard::flame_gear: {
+			auto skill = channel_server::get_instance().get_skill_data_provider().get_skill(skill_id, level);
+			mist *value = new mist{player->get_map_id(), player, skill->buff_time, skill->dimensions.move(player->get_pos()), skill_id, level, true};
 			break;
 		}
 	}
 }
 
-auto PlayerHandler::useEnergyChargeAttack(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	AttackData attack = compileAttack(player, reader, SkillType::EnergyCharge);
-	skill_id_t masteryId = player->getSkills()->getMastery();
-	player->sendMap(Packets::Players::useEnergyChargeAttack(player->getId(), masteryId, player->getSkills()->getSkillLevel(masteryId), attack));
+auto player_handler::use_energy_charge_attack(ref_ptr<player> player, packet_reader &reader) -> void {
+	attack_data attack = compile_attack(player, reader, skill_type::energy_charge);
+	game_skill_id mastery_id = player->get_skills()->get_mastery();
+	player->send_map(packets::players::use_energy_charge_attack(player->get_id(), mastery_id, player->get_skills()->get_skill_level(mastery_id), attack));
 
-	skill_id_t skillId = attack.skillId;
-	skill_level_t level = attack.skillLevel;
-	bool reflectApplied = player->hasGmBenefits();
+	game_skill_id skill_id = attack.skill_id;
+	game_skill_level level = attack.skill_level;
+	bool reflect_applied = player->has_gm_benefits();
 
 	for (const auto &target : attack.damages) {
-		damage_t targetTotal = 0;
-		map_object_t mapMobId = target.first;
-		int8_t connectedHits = 0;
-		auto mob = player->getMap()->getMob(mapMobId);
+		game_damage target_total = 0;
+		game_map_object map_mob_id = target.first;
+		int8_t connected_hits = 0;
+		auto mob = player->get_map()->get_mob(map_mob_id);
 		if (mob == nullptr) {
 			continue;
 		}
-		if (mob->hasWeaponReflection() && !reflectApplied) {
-			auto &reflect = mob->getWeaponReflection().get();
-			int32_t amount = Randomizer::range<int32_t>(reflect.val, reflect.reflection);
-			player->getStats()->modifyHp(-amount);
-			reflectApplied = true;
+		if (mob->has_weapon_reflection() && !reflect_applied) {
+			auto &reflect = mob->get_weapon_reflection().get();
+			int32_t amount = randomizer::range<int32_t>(reflect.val, reflect.reflection);
+			player->get_stats()->modify_hp(-amount);
+			reflect_applied = true;
 		}
 
 		for (const auto &hit : target.second) {
-			damage_t damage = hit;
+			game_damage damage = hit;
 			if (damage != 0) {
-				connectedHits++;
-				targetTotal += damage;
+				connected_hits++;
+				target_total += damage;
 			}
-			int32_t tempHp = mob->getHp();
-			mob->applyDamage(player->getId(), damage);
-			if (tempHp <= damage) {
+			int32_t temp_hp = mob->get_hp();
+			mob->apply_damage(player->get_id(), damage);
+			if (temp_hp <= damage) {
 				// Mob was killed, so set the Mob pointer to 0
 				mob = nullptr;
 				break;
 			}
 		}
-		if (mob != nullptr && targetTotal > 0 && mob->getHp() > 0) {
-			MobHandler::handleMobStatus(player->getId(), mob, skillId, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedHits); // Mob status handler (freeze, stun, etc)
-			if (mob->getHp() < mob->getSelfDestructHp()) {
+		if (mob != nullptr && target_total > 0 && mob->get_hp() > 0) {
+			mob_handler::handle_mob_status(player->get_id(), mob, skill_id, level, player->get_inventory()->get_equipped_id(equip_slots::weapon), connected_hits);
+			if (mob->get_hp() < mob->get_self_destruct_hp()) {
 				mob->explode();
 			}
 		}
 	}
 }
 
-auto PlayerHandler::useSummonAttack(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	AttackData attack = compileAttack(player, reader, SkillType::Summon);
-	Summon *summon = player->getSummons()->getSummon(attack.summonId);
+auto player_handler::use_summon_attack(ref_ptr<player> player, packet_reader &reader) -> void {
+	attack_data attack = compile_attack(player, reader, skill_type::summon);
+	summon *summon = player->get_summons()->get_summon(attack.summon_id);
 	if (summon == nullptr) {
 		// Hacking or some other form of tomfoolery
 		return;
 	}
-	player->sendMap(Packets::Players::useSummonAttack(player->getId(), attack));
+	player->send_map(packets::players::use_summon_attack(player->get_id(), attack));
 	for (const auto &target : attack.damages) {
-		damage_t targetTotal = 0;
-		map_object_t mapMobId = target.first;
-		int8_t connectedHits = 0;
-		auto mob = player->getMap()->getMob(mapMobId);
+		game_damage target_total = 0;
+		game_map_object map_mob_id = target.first;
+		int8_t connected_hits = 0;
+		auto mob = player->get_map()->get_mob(map_mob_id);
 		if (mob == nullptr) {
 			continue;
 		}
 		for (const auto &hit : target.second) {
-			damage_t damage = hit;
+			game_damage damage = hit;
 			if (damage != 0) {
-				connectedHits++;
-				targetTotal += damage;
+				connected_hits++;
+				target_total += damage;
 			}
-			int32_t tempHp = mob->getHp();
-			mob->applyDamage(player->getId(), damage);
-			if (tempHp <= damage) {
+			int32_t temp_hp = mob->get_hp();
+			mob->apply_damage(player->get_id(), damage);
+			if (temp_hp <= damage) {
 				// Mob was killed, so set the Mob pointer to 0
 				mob = nullptr;
 				break;
 			}
 		}
-		if (mob != nullptr && targetTotal > 0 && mob->getHp() > 0) {
-			MobHandler::handleMobStatus(player->getId(), mob, summon->getSkillId(), summon->getSkillLevel(), player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedHits);
-			if (mob->getHp() < mob->getSelfDestructHp()) {
+		if (mob != nullptr && target_total > 0 && mob->get_hp() > 0) {
+			mob_handler::handle_mob_status(player->get_id(), mob, summon->get_skill_id(), summon->get_skill_level(), player->get_inventory()->get_equipped_id(equip_slots::weapon), connected_hits);
+			if (mob->get_hp() < mob->get_self_destruct_hp()) {
 				mob->explode();
 			}
 		}
 	}
 
-	if (summon->getSkillId() == Vana::Skills::Outlaw::Gaviota) {
-		SummonHandler::removeSummon(player, attack.summonId, false, SummonMessages::None, false);
+	if (summon->get_skill_id() == vana::skills::outlaw::gaviota) {
+		summon_handler::remove_summon(player, attack.summon_id, false, summon_messages::none, false);
 	}
 }
 
-auto PlayerHandler::compileAttack(ref_ptr_t<Player> player, PacketReader &reader, SkillType skillType) -> AttackData {
-	AttackData attack;
+auto player_handler::compile_attack(ref_ptr<player> player, packet_reader &reader, skill_type skill_type) -> attack_data {
+	attack_data attack;
 	int8_t targets = 0;
 	int8_t hits = 0;
-	skill_id_t skillId = 0;
-	bool mesoExplosion = false;
-	bool shadowMeso = false;
+	game_skill_id skill_id = 0;
+	bool meso_explosion = false;
+	bool shadow_meso = false;
 
-	if (skillType != SkillType::Summon) {
+	if (skill_type != skill_type::summon) {
 		attack.portals = reader.get<uint8_t>();
-		uint8_t tByte = reader.get<uint8_t>();
-		skillId = reader.get<skill_id_t>();
-		targets = tByte / 0x10;
-		hits = tByte % 0x10;
+		uint8_t t_byte = reader.get<uint8_t>();
+		skill_id = reader.get<game_skill_id>();
+		targets = t_byte / 0x10;
+		hits = t_byte % 0x10;
 
-		if (skillId != Vana::Skills::All::RegularAttack) {
-			attack.skillLevel = player->getSkills()->getSkillLevel(skillId);
+		if (skill_id != vana::skills::all::regular_attack) {
+			attack.skill_level = player->get_skills()->get_skill_level(skill_id);
 		}
 
-		reader.skip<checksum_t>(); // Unk, strange constant that doesn't seem to change
+		reader.skip<game_checksum>(); // Unk, strange constant that doesn't seem to change
 		// Things atttemped: Map changes, character changes, job changes, skill changes, position changes, hitting enemies
 		// It appears as 0xF9B16E60 which is 4189154912 unsigned, -105812384 signed, doesn't seem to be a size, probably a CRC
-		reader.skip<checksum_t>();
+		reader.skip<game_checksum>();
 
-		switch (skillId) {
-			case Vana::Skills::Hermit::ShadowMeso:
-				attack.isShadowMeso = true;
-				shadowMeso = true;
+		switch (skill_id) {
+			case vana::skills::hermit::shadow_meso:
+				attack.is_shadow_meso = true;
+				shadow_meso = true;
 				break;
-			case Vana::Skills::ChiefBandit::MesoExplosion:
-				attack.isMesoExplosion = true;
-				mesoExplosion = true;
+			case vana::skills::chief_bandit::meso_explosion:
+				attack.is_meso_explosion = true;
+				meso_explosion = true;
 				break;
-			case Vana::Skills::Cleric::Heal:
-				attack.isHeal = true;
+			case vana::skills::cleric::heal:
+				attack.is_heal = true;
 				break;
-			case Vana::Skills::Gunslinger::Grenade:
-			case Vana::Skills::Brawler::CorkscrewBlow:
-			case Vana::Skills::ThunderBreaker::CorkscrewBlow:
-			case Vana::Skills::Bowmaster::Hurricane:
-			case Vana::Skills::WindArcher::Hurricane:
-			case Vana::Skills::Marksman::PiercingArrow:
-			case Vana::Skills::NightWalker::PoisonBomb:
-			case Vana::Skills::Corsair::RapidFire:
-			case Vana::Skills::FpArchMage::BigBang:
-			case Vana::Skills::IlArchMage::BigBang:
-			case Vana::Skills::Bishop::BigBang:
-				attack.isChargeSkill = true;
-				attack.charge = reader.get<charge_time_t>();
+			case vana::skills::gunslinger::grenade:
+			case vana::skills::brawler::corkscrew_blow:
+			case vana::skills::thunder_breaker::corkscrew_blow:
+			case vana::skills::bowmaster::hurricane:
+			case vana::skills::wind_archer::hurricane:
+			case vana::skills::marksman::piercing_arrow:
+			case vana::skills::night_walker::poison_bomb:
+			case vana::skills::corsair::rapid_fire:
+			case vana::skills::fp_arch_mage::big_bang:
+			case vana::skills::il_arch_mage::big_bang:
+			case vana::skills::bishop::big_bang:
+				attack.is_charge_skill = true;
+				attack.charge = reader.get<game_charge_time>();
 				break;
 		}
 
 		attack.display = reader.get<uint8_t>();
 		attack.animation = reader.get<uint8_t>();
-		attack.weaponClass = reader.get<uint8_t>();
-		attack.weaponSpeed = reader.get<uint8_t>();
-		attack.ticks = reader.get<tick_count_t>();
+		attack.weapon_class = reader.get<uint8_t>();
+		attack.weapon_speed = reader.get<uint8_t>();
+		attack.ticks = reader.get<game_tick_count>();
 	}
 	else {
-		attack.summonId = reader.get<summon_id_t>(); // Summon ID, not to be confused with summon skill ID
-		attack.ticks = reader.get<tick_count_t>();
+		attack.summon_id = reader.get<game_summon_id>(); // game_summon_id, not to be confused with summon game_skill_id
+		attack.ticks = reader.get<game_tick_count>();
 		attack.animation = reader.get<uint8_t>();
 		targets = reader.get<int8_t>();
 		hits = 1;
 	}
 
-	if (skillType == SkillType::Ranged) {
-		inventory_slot_t starSlot = reader.get<inventory_slot_t>();
-		inventory_slot_t csStar = reader.get<inventory_slot_t>();
-		attack.starPos = starSlot;
-		attack.cashStarPos = csStar;
+	if (skill_type == skill_type::ranged) {
+		game_inventory_slot star_slot = reader.get<game_inventory_slot>();
+		game_inventory_slot cs_star = reader.get<game_inventory_slot>();
+		attack.star_pos = star_slot;
+		attack.cash_star_pos = cs_star;
 		reader.unk<uint8_t>(); // 0x00 = AoE?
-		if (!shadowMeso) {
-			if (player->getActiveBuffs()->hasShadowStars() && skillId != Vana::Skills::NightLord::Taunt) {
-				attack.starId = reader.get<int32_t>();
+		if (!shadow_meso) {
+			if (player->get_active_buffs()->has_shadow_stars() && skill_id != vana::skills::night_lord::taunt) {
+				attack.star_id = reader.get<int32_t>();
 			}
-			else if (csStar > 0) {
-				if (Item *item = player->getInventory()->getItem(Inventories::CashInventory, csStar)) {
-					attack.starId = item->getId();
+			else if (cs_star > 0) {
+				if (item *item = player->get_inventory()->get_item(inventories::cash, cs_star)) {
+					attack.star_id = item->get_id();
 				}
 			}
-			else if (starSlot > 0) {
-				if (Item *item = player->getInventory()->getItem(Inventories::UseInventory, starSlot)) {
-					attack.starId = item->getId();
+			else if (star_slot > 0) {
+				if (item *item = player->get_inventory()->get_item(inventories::use, star_slot)) {
+					attack.star_id = item->get_id();
 				}
 			}
 		}
@@ -1080,36 +1085,36 @@ auto PlayerHandler::compileAttack(ref_ptr_t<Player> player, PacketReader &reader
 
 	attack.targets = targets;
 	attack.hits = hits;
-	attack.skillId = skillId;
+	attack.skill_id = skill_id;
 
 	for (int8_t i = 0; i < targets; ++i) {
-		map_object_t mapMobId = reader.get<map_object_t>();
+		game_map_object map_mob_id = reader.get<game_map_object>();
 		reader.unk<uint32_t>(); // Always 0x06, <two bytes of some kind>, 0x01
-		reader.skip<Point>(); // Mob pos
-		reader.skip<Point>(); // Damage pos
-		if (!mesoExplosion) {
+		reader.skip<point>(); // Mob pos
+		reader.skip<point>(); // Damage pos
+		if (!meso_explosion) {
 			reader.skip<uint16_t>(); // Distance, I think
 		}
 		else {
 			hits = reader.get<int8_t>(); // Hits for Meso Explosion
 		}
 		for (int8_t k = 0; k < hits; ++k) {
-			damage_t damage = reader.get<damage_t>();
-			attack.damages[mapMobId].push_back(damage);
-			attack.totalDamage += damage;
+			game_damage damage = reader.get<game_damage>();
+			attack.damages[map_mob_id].push_back(damage);
+			attack.total_damage += damage;
 		}
-		if (skillType != SkillType::Summon) {
-			reader.skip<checksum_t>();
+		if (skill_type != skill_type::summon) {
+			reader.skip<game_checksum>();
 		}
 	}
 
-	if (skillType == SkillType::Ranged) {
-		attack.projectilePos = reader.get<Point>();
+	if (skill_type == skill_type::ranged) {
+		attack.projectile_pos = reader.get<point>();
 	}
-	attack.playerPos = reader.get<Point>();
+	attack.player_pos = reader.get<point>();
 
-	if (skillId == Vana::Skills::NightWalker::PoisonBomb) {
-		attack.projectilePos = reader.get<Point>();
+	if (skill_id == vana::skills::night_walker::poison_bomb) {
+		attack.projectile_pos = reader.get<point>();
 	}
 	return attack;
 }

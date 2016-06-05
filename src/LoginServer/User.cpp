@@ -28,64 +28,64 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
-namespace Vana {
-namespace LoginServer {
+namespace vana {
+namespace login_server {
 
-auto User::handle(PacketReader &reader) -> Result {
+auto user::handle(packet_reader &reader) -> result {
 	try {
-		switch (reader.get<header_t>()) {
-			case CMSG_ACCOUNT_GENDER: Login::setGender(shared_from_this(), reader); break;
-			case CMSG_AUTHENTICATION: Login::loginUser(shared_from_this(), reader); break;
-			case CMSG_CHANNEL_CONNECT: Characters::connectGame(shared_from_this(), reader); break;
-			case CMSG_CLIENT_ERROR: LoginServer::getInstance().log(LogType::ClientError, reader.get<string_t>()); break;
-			case CMSG_CLIENT_STARTED: LoginServer::getInstance().log(LogType::Info, [&](out_stream_t &log) { log << "Client connected and started from " << getIp().get(Ip{0}); }); break;
-			case CMSG_LOGIN_RETURN: send(Packets::relogResponse()); break;
-			case CMSG_PIN: Login::handleLogin(shared_from_this(), reader); break;
-			case CMSG_PLAYER_CREATE: Characters::createCharacter(shared_from_this(), reader); break;
-			case CMSG_PLAYER_DELETE: Characters::deleteCharacter(shared_from_this(), reader); break;
-			case CMSG_PLAYER_GLOBAL_LIST: Characters::showAllCharacters(shared_from_this()); break;
-			case CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT: Characters::connectGameWorldFromViewAllCharacters(shared_from_this(), reader); break;
-			case CMSG_PLAYER_LIST: LoginServer::getInstance().getWorlds().channelSelect(shared_from_this(), reader); break;
-			case CMSG_PLAYER_NAME_CHECK: Characters::checkCharacterName(shared_from_this(), reader); break;
-			case CMSG_REGISTER_PIN: Login::registerPin(shared_from_this(), reader); break;
+		switch (reader.get<packet_header>()) {
+			case CMSG_ACCOUNT_GENDER: login::set_gender(shared_from_this(), reader); break;
+			case CMSG_AUTHENTICATION: login::login_user(shared_from_this(), reader); break;
+			case CMSG_CHANNEL_CONNECT: characters::connect_game(shared_from_this(), reader); break;
+			case CMSG_CLIENT_ERROR: login_server::get_instance().log(log_type::client_error, reader.get<string>()); break;
+			case CMSG_CLIENT_STARTED: login_server::get_instance().log(log_type::info, [&](out_stream &log) { log << "client connected and started from " << get_ip().get(ip{0}); }); break;
+			case CMSG_LOGIN_RETURN: send(packets::relog_response()); break;
+			case CMSG_PIN: login::handle_login(shared_from_this(), reader); break;
+			case CMSG_PLAYER_CREATE: characters::create_character(shared_from_this(), reader); break;
+			case CMSG_PLAYER_DELETE: characters::delete_character(shared_from_this(), reader); break;
+			case CMSG_PLAYER_GLOBAL_LIST: characters::show_all_characters(shared_from_this()); break;
+			case CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT: characters::connect_game_world_from_view_all_characters(shared_from_this(), reader); break;
+			case CMSG_PLAYER_LIST: login_server::get_instance().get_worlds().channel_select(shared_from_this(), reader); break;
+			case CMSG_PLAYER_NAME_CHECK: characters::check_character_name(shared_from_this(), reader); break;
+			case CMSG_REGISTER_PIN: login::register_pin(shared_from_this(), reader); break;
 			case CMSG_WORLD_LIST:
-			case CMSG_WORLD_LIST_REFRESH: LoginServer::getInstance().getWorlds().showWorld(shared_from_this()); break;
-			case CMSG_WORLD_STATUS: LoginServer::getInstance().getWorlds().selectWorld(shared_from_this(), reader); break;
+			case CMSG_WORLD_LIST_REFRESH: login_server::get_instance().get_worlds().show_world(shared_from_this()); break;
+			case CMSG_WORLD_STATUS: login_server::get_instance().get_worlds().select_world(shared_from_this(), reader); break;
 		}
 	}
-	catch (const PacketContentException &e) {
+	catch (const packet_content_exception &e) {
 		// Packet data didn't match the packet length somewhere
 		// This isn't always evidence of tampering with packets
 		// We may not process the structure properly
 
 		reader.reset();
-		LoginServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &log) {
-			log << "User ID: " << getAccountId()
+		login_server::get_instance().log(log_type::malformed_packet, [&](out_stream &log) {
+			log << "User ID: " << get_account_id()
 				<< "; Packet: " << reader
 				<< "; Error: " << e.what();
 		});
-		return Result::Failure;
+		return result::failure;
 	}
 
-	return Result::Successful;
+	return result::successful;
 }
 
-auto User::onDisconnect() -> void {
-	setOnline(false);
-	LoginServer::getInstance().finalizeUser(shared_from_this());
+auto user::on_disconnect() -> void {
+	set_online(false);
+	login_server::get_instance().finalize_user(shared_from_this());
 }
 
-auto User::setOnline(bool online) -> void {
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
+auto user::set_online(bool online) -> void {
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
 	sql.once
-		<< "UPDATE " << db.makeTable("accounts") << " u "
+		<< "UPDATE " << db.make_table("accounts") << " u "
 		<< "SET "
 		<< "	u.online = :online,"
 		<< "	u.last_login = NOW() "
 		<< "WHERE u.account_id = :id",
 		soci::use((online ? 1 : 0), "online"),
-		soci::use(m_accountId, "id");
+		soci::use(m_account_id, "id");
 }
 
 }

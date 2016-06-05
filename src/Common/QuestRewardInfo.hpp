@@ -19,18 +19,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct QuestRewardInfo {
-		bool isMesos = false;
-		bool isItem = false;
-		bool isExp = false;
-		bool isFame = false;
-		bool isSkill = false;
-		bool isBuff = false;
-		bool masterLevelOnly = false;
-		gender_id_t gender = 0;
+namespace vana {
+	struct quest_reward_info {
+		bool is_mesos = false;
+		bool is_item = false;
+		bool is_exp = false;
+		bool is_fame = false;
+		bool is_skill = false;
+		bool is_buff = false;
+		bool master_level_only = false;
+		game_gender_id gender = 0;
 		int16_t count = 0;
-		int16_t masterLevel = 0;
+		int16_t master_level = 0;
 		int32_t prop = 0;
 		int32_t id = 0;
 	};

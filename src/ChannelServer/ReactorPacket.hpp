@@ -20,15 +20,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/PacketBuilder.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	namespace ChannelServer {
-		class Player;
-		class Reactor;
+namespace vana {
+	namespace channel_server {
+		class player;
+		class reactor;
 
-		namespace Packets {
-			PACKET(spawnReactor, Reactor *reactor);
-			PACKET(triggerReactor, Reactor *reactor);
-			PACKET(destroyReactor, Reactor *reactor);
+		namespace packets {
+			PACKET(spawn_reactor, reactor *reactor);
+			PACKET(trigger_reactor, reactor *reactor);
+			PACKET(destroy_reactor, reactor *reactor);
 		}
 	}
 }

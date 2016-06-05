@@ -27,253 +27,253 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/SyncPacket.hpp"
 #include <algorithm>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-PlayerBuddyList::PlayerBuddyList(Player *player) :
+player_buddy_list::player_buddy_list(player *player) :
 	m_player{player}
 {
 	load();
 }
 
-auto PlayerBuddyList::load() -> void {
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
+auto player_buddy_list::load() -> void {
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT bl.id, bl.buddy_character_id, bl.name AS name_cache, c.name, bl.group_name, CASE WHEN c.online = 1 THEN u.online ELSE 0 END AS `online` "
-		<< "FROM " << db.makeTable("buddylist") << " bl "
-		<< "LEFT JOIN " << db.makeTable("characters") << " c ON bl.buddy_character_id = c.character_id "
-		<< "LEFT JOIN " << db.makeTable("accounts") << " u ON c.account_id = u.account_id "
+		<< "FROM " << db.make_table("buddylist") << " bl "
+		<< "LEFT JOIN " << db.make_table("characters") << " c ON bl.buddy_character_id = c.character_id "
+		<< "LEFT JOIN " << db.make_table("accounts") << " u ON c.account_id = u.account_id "
 		<< "WHERE bl.character_id = :char",
-		soci::use(m_player->getId(), "char"));
+		soci::use(m_player->get_id(), "char"));
 
 	for (const auto &row : rs) {
-		addBuddy(db, row);
+		add_buddy(db, row);
 	}
 
 	rs = (sql.prepare
 		<< "SELECT p.* "
-		<< "FROM " << db.makeTable("buddylist_pending") << " p "
-		<< "LEFT JOIN " << db.makeTable("characters") << " c ON c.character_id = p.inviter_character_id "
+		<< "FROM " << db.make_table("buddylist_pending") << " p "
+		<< "LEFT JOIN " << db.make_table("characters") << " c ON c.character_id = p.inviter_character_id "
 		<< "WHERE c.world_id = :world AND p.character_id = :char ",
-		soci::use(m_player->getId(), "char"),
-		soci::use(ChannelServer::getInstance().getWorldId(), "world"));
+		soci::use(m_player->get_id(), "char"),
+		soci::use(channel_server::get_instance().get_world_id(), "world"));
 
-	BuddyInvite invite;
+	buddy_invite invite;
 	for (const auto &row : rs) {
-		invite = BuddyInvite{};
-		invite.id = row.get<player_id_t>("inviter_character_id");
-		invite.name = row.get<string_t>("inviter_name");
-		m_pendingBuddies.push_back(invite);
+		invite = buddy_invite{};
+		invite.id = row.get<game_player_id>("inviter_character_id");
+		invite.name = row.get<string>("inviter_name");
+		m_pending_buddies.push_back(invite);
 	}
 }
 
-auto PlayerBuddyList::addBuddy(const string_t &name, const string_t &group, bool invite) -> uint8_t {
-	if (listSize() >= m_player->getBuddyListSize()) {
+auto player_buddy_list::add_buddy(const string &name, const string &group, bool invite) -> uint8_t {
+	if (list_size() >= m_player->get_buddy_list_size()) {
 		// Buddy list full
-		return Packets::Buddy::Errors::BuddyListFull;
+		return packets::buddy::errors::buddy_list_full;
 	}
 
-	if (!ext::in_range_inclusive<size_t>(name.size(), Characters::MinNameSize, Characters::MaxNameSize) || group.size() > Buddies::MaxGroupNameSize) {
+	if (!ext::in_range_inclusive<size_t>(name.size(), characters::min_name_size, characters::max_name_size) || group.size() > buddies::max_group_name_size) {
 		// Invalid name or group length
-		return Packets::Buddy::Errors::UserDoesNotExist;
+		return packets::buddy::errors::user_does_not_exist;
 	}
 
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
 	soci::row row;
 
 	sql.once
 		<< "SELECT c.character_id, c.name, u.gm_level, u.admin, c.buddylist_size AS buddylist_limit, ("
 		<< "	SELECT COUNT(b.id) "
-		<< "	FROM " << db.makeTable("buddylist") << " b "
+		<< "	FROM " << db.make_table("buddylist") << " b "
 		<< "	WHERE b.character_id = c.character_id"
 		<< ") AS buddylist_size "
-		<< "FROM " << db.makeTable("characters") << " c "
-		<< "INNER JOIN " << db.makeTable("accounts") << " u ON c.account_id = u.account_id "
+		<< "FROM " << db.make_table("characters") << " c "
+		<< "INNER JOIN " << db.make_table("accounts") << " u ON c.account_id = u.account_id "
 		<< "WHERE c.name = :name AND c.world_id = :world ",
 		soci::use(name, "name"),
-		soci::use(ChannelServer::getInstance().getWorldId(), "world"),
+		soci::use(channel_server::get_instance().get_world_id(), "world"),
 		soci::into(row);
 
 	if (!sql.got_data()) {
 		// Name does not exist
-		return Packets::Buddy::Errors::UserDoesNotExist;
+		return packets::buddy::errors::user_does_not_exist;
 	}
 
-	if (row.get<int32_t>("gm_level") > 0 && !m_player->isGm()) {
+	if (row.get<int32_t>("gm_level") > 0 && !m_player->is_gm()) {
 		// GM cannot be in buddy list unless the player is a GM
-		return Packets::Buddy::Errors::NoGms;
+		return packets::buddy::errors::no_gms;
 	}
 
-	if (row.get<bool>("admin") && !m_player->isAdmin()) {
-		return Packets::Buddy::Errors::NoGms;
+	if (row.get<bool>("admin") && !m_player->is_admin()) {
+		return packets::buddy::errors::no_gms;
 	}
 
 	if (row.get<int64_t>("buddylist_size") >= row.get<int32_t>("buddylist_limit")) {
 		// Opposite-end buddy list full
-		return Packets::Buddy::Errors::TargetListFull;
+		return packets::buddy::errors::target_list_full;
 	}
 
-	player_id_t charId = row.get<player_id_t>("character_id");
+	game_player_id char_id = row.get<game_player_id>("character_id");
 
-	if (m_buddies.find(charId) != std::end(m_buddies)) {
-		if (m_buddies[charId]->groupName == group) {
+	if (m_buddies.find(char_id) != std::end(m_buddies)) {
+		if (m_buddies[char_id]->group_name == group) {
 			// Already in buddy list
-			return Packets::Buddy::Errors::AlreadyInList;
+			return packets::buddy::errors::already_in_list;
 		}
 		else {
 			sql.once
-				<< "UPDATE " << db.makeTable("buddylist") << " "
+				<< "UPDATE " << db.make_table("buddylist") << " "
 				<< "SET group_name = :name "
 				<< "WHERE buddy_character_id = :buddy AND character_id = :owner ",
 				soci::use(group, "name"),
-				soci::use(charId, "buddy"),
-				soci::use(m_player->getId(), "owner");
+				soci::use(char_id, "buddy"),
+				soci::use(m_player->get_id(), "owner");
 
-			m_buddies[charId]->groupName = group;
+			m_buddies[char_id]->group_name = group;
 		}
 	}
 	else {
 		sql.once
-			<< "INSERT INTO " << db.makeTable("buddylist") << " (character_id, buddy_character_id, name, group_name) "
+			<< "INSERT INTO " << db.make_table("buddylist") << " (character_id, buddy_character_id, name, group_name) "
 			<< "VALUES (:owner, :buddy, :name, :group)",
 			soci::use(name, "name"),
 			soci::use(group, "group"),
-			soci::use(charId, "buddy"),
-			soci::use(m_player->getId(), "owner");
+			soci::use(char_id, "buddy"),
+			soci::use(m_player->get_id(), "owner");
 
-		int32_t rowId = db.getLastId<int32_t>();
+		int32_t row_id = db.get_last_id<int32_t>();
 
 		sql.once
 			<< "SELECT bl.id, bl.buddy_character_id, bl.name AS name_cache, c.name, bl.group_name, CASE WHEN c.online = 1 THEN u.online ELSE 0 END AS `online` "
-			<< "FROM " << db.makeTable("buddylist") << " bl "
-			<< "LEFT JOIN " << db.makeTable("characters") << " c ON bl.buddy_character_id = c.character_id "
-			<< "LEFT JOIN " << db.makeTable("accounts") << " u ON c.account_id = u.account_id "
+			<< "FROM " << db.make_table("buddylist") << " bl "
+			<< "LEFT JOIN " << db.make_table("characters") << " c ON bl.buddy_character_id = c.character_id "
+			<< "LEFT JOIN " << db.make_table("accounts") << " u ON c.account_id = u.account_id "
 			<< "WHERE bl.id = :row",
-			soci::use(rowId, "row"),
+			soci::use(row_id, "row"),
 			soci::into(row);
 
-		addBuddy(db, row);
+		add_buddy(db, row);
 
 		sql.once
 			<< "SELECT id "
-			<< "FROM " << db.makeTable("buddylist") << " "
+			<< "FROM " << db.make_table("buddylist") << " "
 			<< "WHERE character_id = :char AND buddy_character_id = :buddy",
-			soci::use(charId, "char"),
-			soci::use(m_player->getId(), "buddy"),
-			soci::into(rowId);
+			soci::use(char_id, "char"),
+			soci::use(m_player->get_id(), "buddy"),
+			soci::into(row_id);
 
 		if (!sql.got_data()) {
 			if (invite) {
-				ChannelServer::getInstance().sendWorld(Packets::Interserver::Buddy::buddyInvite(m_player->getId(), charId));
+				channel_server::get_instance().send_world(packets::interserver::buddy::buddy_invite(m_player->get_id(), char_id));
 			}
 		}
 		else {
-			ChannelServer::getInstance().sendWorld(Packets::Interserver::Buddy::readdBuddy(m_player->getId(), charId));
+			channel_server::get_instance().send_world(packets::interserver::buddy::readd_buddy(m_player->get_id(), char_id));
 		}
 	}
 
-	m_player->send(Packets::Buddy::update(ref_ptr_t<Player>{m_player}, Packets::Buddy::ActionTypes::Add));
-	return Packets::Buddy::Errors::None;
+	m_player->send(packets::buddy::update(ref_ptr<player>{m_player}, packets::buddy::action_types::add));
+	return packets::buddy::errors::none;
 }
 
-auto PlayerBuddyList::removeBuddy(player_id_t charId) -> void {
-	if (m_pendingBuddies.size() != 0 && m_sentRequest) {
-		BuddyInvite invite = m_pendingBuddies.front();
-		if (invite.id == charId) {
-			removePendingBuddy(charId, false);
+auto player_buddy_list::remove_buddy(game_player_id char_id) -> void {
+	if (m_pending_buddies.size() != 0 && m_sent_request) {
+		buddy_invite invite = m_pending_buddies.front();
+		if (invite.id == char_id) {
+			remove_pending_buddy(char_id, false);
 		}
 		return;
 	}
 
-	if (m_buddies.find(charId) == std::end(m_buddies)) {
+	if (m_buddies.find(char_id) == std::end(m_buddies)) {
 		// Hacking
 		return;
 	}
 
-	ChannelServer::getInstance().sendWorld(Packets::Interserver::Buddy::removeBuddy(m_player->getId(), charId));
-	m_buddies.erase(charId);
+	channel_server::get_instance().send_world(packets::interserver::buddy::remove_buddy(m_player->get_id(), char_id));
+	m_buddies.erase(char_id);
 
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
 	sql.once
-		<< "DELETE FROM " << db.makeTable("buddylist") << " "
+		<< "DELETE FROM " << db.make_table("buddylist") << " "
 		<< "WHERE character_id = :char AND buddy_character_id = :buddy",
-		soci::use(m_player->getId(), "char"),
-		soci::use(charId, "buddy");
+		soci::use(m_player->get_id(), "char"),
+		soci::use(char_id, "buddy");
 
-	m_player->send(Packets::Buddy::update(ref_ptr_t<Player>{m_player}, Packets::Buddy::ActionTypes::Remove));
+	m_player->send(packets::buddy::update(ref_ptr<player>{m_player}, packets::buddy::action_types::remove));
 }
 
-auto PlayerBuddyList::addBuddy(Database &db, const soci::row &row) -> void {
-	player_id_t charId = row.get<player_id_t>("buddy_character_id");
-	int32_t rowId = row.get<int32_t>("id");
-	opt_string_t name = row.get<opt_string_t>("name");
-	opt_string_t group = row.get<opt_string_t>("group_name");
-	string_t cache = row.get<string_t>("name_cache");
+auto player_buddy_list::add_buddy(database &db, const soci::row &row) -> void {
+	game_player_id char_id = row.get<game_player_id>("buddy_character_id");
+	int32_t row_id = row.get<int32_t>("id");
+	opt_string name = row.get<opt_string>("name");
+	opt_string group = row.get<opt_string>("group_name");
+	string cache = row.get<string>("name_cache");
 
-	auto &sql = db.getSession();
+	auto &sql = db.get_session();
 	if (name.is_initialized() && name.get() != cache) {
 		// Outdated name cache, i.e. character renamed
 		sql.once
-			<< "UPDATE " << db.makeTable("buddylist") << " "
+			<< "UPDATE " << db.make_table("buddylist") << " "
 			<< "SET name = :name "
 			<< "WHERE id = :id ",
 			soci::use(name.get(), "name"),
-			soci::use(rowId, "id");
+			soci::use(row_id, "id");
 	}
 
-	ref_ptr_t<Buddy> buddy = make_ref_ptr<Buddy>();
-	buddy->charId = charId;
+	ref_ptr<buddy> value = make_ref_ptr<buddy>();
+	value->char_id = char_id;
 
 	// Note that the cache is for displaying the character name when the character in question is deleted
-	buddy->name = name.get(cache);
+	value->name = name.get(cache);
 
 	if (!group.is_initialized()) {
-		buddy->groupName = "Default Group";
+		value->group_name = "default group";
 		sql.once
-			<< "UPDATE " << db.makeTable("buddylist") << " "
+			<< "UPDATE " << db.make_table("buddylist") << " "
 			<< "SET group_name = :name "
 			<< "WHERE buddy_character_id = :buddy AND character_id = :owner ",
-			soci::use(buddy->groupName, "name"),
-			soci::use(charId, "buddy"),
-			soci::use(m_player->getId(), "owner");
+			soci::use(value->group_name, "name"),
+			soci::use(char_id, "buddy"),
+			soci::use(m_player->get_id(), "owner");
 	}
 	else {
-		buddy->groupName = group.get();
+		value->group_name = group.get();
 	}
 
 	sql.once
 		<< "SELECT id "
-		<< "FROM " << db.makeTable("buddylist") << " "
+		<< "FROM " << db.make_table("buddylist") << " "
 		<< "WHERE character_id = :char AND buddy_character_id = :buddy ",
-		soci::use(charId, "char"),
-		soci::use(m_player->getId(), "buddy"),
-		soci::into(rowId);
+		soci::use(char_id, "char"),
+		soci::use(m_player->get_id(), "buddy"),
+		soci::into(row_id);
 
 	if (sql.got_data()) {
-		buddy->oppositeStatus = Packets::Buddy::OppositeStatus::Registered;
+		value->opposite_status = packets::buddy::opposite_status::registered;
 	}
 	else {
-		buddy->oppositeStatus = Packets::Buddy::OppositeStatus::Unregistered;
+		value->opposite_status = packets::buddy::opposite_status::unregistered;
 	}
 
-	m_buddies[charId] = buddy;
+	m_buddies[char_id] = value;
 }
 
-auto PlayerBuddyList::addBuddies(PacketBuilder &builder) -> void {
-	auto &provider = ChannelServer::getInstance().getPlayerDataProvider();
+auto player_buddy_list::add_buddies(packet_builder &builder) -> void {
+	auto &provider = channel_server::get_instance().get_player_data_provider();
 	for (const auto &kvp : m_buddies) {
-		const ref_ptr_t<Buddy> &buddy = kvp.second;
-		auto data = provider.getPlayerData(buddy->charId);
+		const ref_ptr<buddy> &buddy = kvp.second;
+		auto data = provider.get_player_data(buddy->char_id);
 
-		builder.add<int32_t>(buddy->charId);
-		builder.add<string_t>(buddy->name, 13);
-		builder.add<uint8_t>(buddy->oppositeStatus);
+		builder.add<int32_t>(buddy->char_id);
+		builder.add<string>(buddy->name, 13);
+		builder.add<uint8_t>(buddy->opposite_status);
 
-		if (buddy->oppositeStatus == Packets::Buddy::OppositeStatus::Unregistered) {
+		if (buddy->opposite_status == packets::buddy::opposite_status::unregistered) {
 			builder.add<int16_t>(0x00);
 			builder.add<uint8_t>(0xF0);
 			builder.add<uint8_t>(0xB2);
@@ -285,7 +285,7 @@ auto PlayerBuddyList::addBuddies(PacketBuilder &builder) -> void {
 			builder.add<int32_t>(data->channel.get(-1));
 		}
 
-		builder.add<string_t>(buddy->groupName, 13);
+		builder.add<string>(buddy->group_name, 13);
 		builder.add<int8_t>(0x00);
 		builder.add<int8_t>(20); // Seems to be the amount of buddy slots for the character...
 		builder.add<uint8_t>(0xFD);
@@ -293,67 +293,67 @@ auto PlayerBuddyList::addBuddies(PacketBuilder &builder) -> void {
 	}
 }
 
-auto PlayerBuddyList::checkForPendingBuddy() -> void {
-	if (m_pendingBuddies.size() == 0 || m_sentRequest) {
+auto player_buddy_list::check_for_pending_buddy() -> void {
+	if (m_pending_buddies.size() == 0 || m_sent_request) {
 		// No buddies pending or request sent (didn't receive answer yet)
 		return;
 	}
 
-	m_player->send(Packets::Buddy::invitation(m_pendingBuddies.front()));
-	m_sentRequest = true;
+	m_player->send(packets::buddy::invitation(m_pending_buddies.front()));
+	m_sent_request = true;
 }
 
-auto PlayerBuddyList::buddyAccepted(player_id_t buddyId) -> void {
-	m_buddies[buddyId]->oppositeStatus = Packets::Buddy::OppositeStatus::Registered;
-	m_player->send(Packets::Buddy::update(ref_ptr_t<Player>{m_player}, Packets::Buddy::ActionTypes::Add));
+auto player_buddy_list::buddy_accepted(game_player_id buddy_id) -> void {
+	m_buddies[buddy_id]->opposite_status = packets::buddy::opposite_status::registered;
+	m_player->send(packets::buddy::update(ref_ptr<player>{m_player}, packets::buddy::action_types::add));
 }
 
-auto PlayerBuddyList::removePendingBuddy(player_id_t id, bool accepted) -> void {
-	if (m_pendingBuddies.size() == 0 || !m_sentRequest) {
+auto player_buddy_list::remove_pending_buddy(game_player_id id, bool accepted) -> void {
+	if (m_pending_buddies.size() == 0 || !m_sent_request) {
 		// Hacking
 		return;
 	}
 
-	BuddyInvite invite = m_pendingBuddies.front();
+	buddy_invite invite = m_pending_buddies.front();
 	if (invite.id != id) {
 		// Hacking
-		ChannelServer::getInstance().log(LogType::Warning, [&](out_stream_t &log) {
+		channel_server::get_instance().log(log_type::warning, [&](out_stream &log) {
 			log << "Player tried to accept a player with player ID " << id
 				<< " but the sent player ID was " << invite.id
-				<< ". Player: " << m_player->getName();
+				<< ". Player: " << m_player->get_name();
 		});
 		return;
 	}
 
 	if (accepted) {
-		int8_t error = addBuddy(invite.name, "Default Group", false);
-		if (error != Packets::Buddy::Errors::None) {
-			m_player->send(Packets::Buddy::error(error));
+		int8_t error = add_buddy(invite.name, "default group", false);
+		if (error != packets::buddy::errors::none) {
+			m_player->send(packets::buddy::error(error));
 		}
 
-		auto &db = Database::getCharDb();
-		auto &sql = db.getSession();
+		auto &db = database::get_char_db();
+		auto &sql = db.get_session();
 		sql.once
-			<< "DELETE FROM " << db.makeTable("buddylist_pending") << " "
+			<< "DELETE FROM " << db.make_table("buddylist_pending") << " "
 			<< "WHERE character_id = :char AND inviter_character_id = :buddy",
-			soci::use(m_player->getId(), "char"),
+			soci::use(m_player->get_id(), "char"),
 			soci::use(id, "buddy");
 
-		ChannelServer::getInstance().sendWorld(Packets::Interserver::Buddy::acceptBuddyInvite(m_player->getId(), id));
+		channel_server::get_instance().send_world(packets::interserver::buddy::accept_buddy_invite(m_player->get_id(), id));
 	}
 
-	m_player->send(Packets::Buddy::update(ref_ptr_t<Player>{m_player}, Packets::Buddy::ActionTypes::First));
+	m_player->send(packets::buddy::update(ref_ptr<player>{m_player}, packets::buddy::action_types::first));
 
-	m_pendingBuddies.pop_front();
-	m_sentRequest = false;
-	checkForPendingBuddy();
+	m_pending_buddies.pop_front();
+	m_sent_request = false;
+	check_for_pending_buddy();
 }
 
-auto PlayerBuddyList::getBuddyIds() -> vector_t<player_id_t> {
-	vector_t<player_id_t> ids;
+auto player_buddy_list::get_buddy_ids() -> vector<game_player_id> {
+	vector<game_player_id> ids;
 	for (const auto &kvp : m_buddies) {
-		if (kvp.second->oppositeStatus == Packets::Buddy::OppositeStatus::Registered) {
-			ids.push_back(kvp.second->charId);
+		if (kvp.second->opposite_status == packets::buddy::opposite_status::registered) {
+			ids.push_back(kvp.second->char_id);
 		}
 	}
 

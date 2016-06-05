@@ -25,131 +25,131 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-	class Database;
-	class EquipDataProvider;
+namespace vana {
+	class database;
+	class equip_data_provider;
 	class soci::row;
 
-	class Item {
+	class item {
 	public:
-		Item() = default;
-		Item(const soci::row &row);
-		Item(item_id_t itemId, slot_qty_t amount);
-		Item(const EquipDataProvider &provider, item_id_t equipId, Items::StatVariance variancePolicy, bool isGm);
-		Item(Item *item);
+		item() = default;
+		item(const soci::row &row);
+		item(game_item_id item_id, game_slot_qty amount);
+		item(const equip_data_provider &provider, game_item_id equip_id, items::stat_variance policy, bool is_gm);
+		item(item *item);
 
-		auto hasWarmSupport() const -> bool;
-		auto hasSlipPrevention() const -> bool;
-		auto hasLock() const -> bool;
-		auto hasKarma() const -> bool;
-		auto hasTradeBlock() const -> bool;
+		auto has_warm_support() const -> bool;
+		auto has_slip_prevention() const -> bool;
+		auto has_lock() const -> bool;
+		auto has_karma() const -> bool;
+		auto has_trade_block() const -> bool;
 
-		auto getSlots() const -> int8_t { return m_slots; }
-		auto getScrolls() const -> int8_t { return m_scrolls; }
-		auto getStr() const -> stat_t { return m_str; }
-		auto getDex() const -> stat_t { return m_dex; }
-		auto getInt() const -> stat_t { return m_int; }
-		auto getLuk() const -> stat_t { return m_luk; }
-		auto getHp() const -> health_t { return m_hp; }
-		auto getMp() const -> health_t { return m_mp; }
-		auto getWatk() const -> stat_t { return m_wAtk; }
-		auto getMatk() const -> stat_t { return m_mAtk; }
-		auto getWdef() const -> stat_t { return m_wDef; }
-		auto getMdef() const -> stat_t { return m_mDef; }
-		auto getAccuracy() const -> stat_t { return m_accuracy; }
-		auto getAvoid() const -> stat_t { return m_avoid; }
-		auto getHands() const -> stat_t { return m_hands; }
-		auto getSpeed() const -> stat_t { return m_speed; }
-		auto getJump() const -> stat_t { return m_jump; }
-		auto getAmount() const -> slot_qty_t { return m_amount; }
-		auto getFlags() const -> int16_t { return m_flags; }
-		auto getId() const -> item_id_t { return m_id; }
-		auto getHammers() const -> int32_t { return m_hammers; }
-		auto getPetId() const -> pet_id_t { return m_petId; }
-		auto getExpirationTime() const -> FileTime { return m_expiration; }
-		auto getName() const -> const string_t & { return m_name; }
+		auto get_slots() const -> int8_t { return m_slots; }
+		auto get_scrolls() const -> int8_t { return m_scrolls; }
+		auto get_str() const -> game_stat { return m_str; }
+		auto get_dex() const -> game_stat { return m_dex; }
+		auto get_int() const -> game_stat { return m_int; }
+		auto get_luk() const -> game_stat { return m_luk; }
+		auto get_hp() const -> game_health { return m_hp; }
+		auto get_mp() const -> game_health { return m_mp; }
+		auto get_watk() const -> game_stat { return m_watk; }
+		auto get_matk() const -> game_stat { return m_matk; }
+		auto get_wdef() const -> game_stat { return m_wdef; }
+		auto get_mdef() const -> game_stat { return m_mdef; }
+		auto get_accuracy() const -> game_stat { return m_accuracy; }
+		auto get_avoid() const -> game_stat { return m_avoid; }
+		auto get_hands() const -> game_stat { return m_hands; }
+		auto get_speed() const -> game_stat { return m_speed; }
+		auto get_jump() const -> game_stat { return m_jump; }
+		auto get_amount() const -> game_slot_qty { return m_amount; }
+		auto get_flags() const -> int16_t { return m_flags; }
+		auto get_id() const -> game_item_id { return m_id; }
+		auto get_hammers() const -> int32_t { return m_hammers; }
+		auto get_pet_id() const -> game_pet_id { return m_pet_id; }
+		auto get_expiration_time() const -> file_time { return m_expiration; }
+		auto get_name() const -> const string & { return m_name; }
 
-		auto setPreventSlip(bool prevent) -> void;
-		auto setWarmSupport(bool warm) -> void;
-		auto setLock(bool lock) -> void;
-		auto setKarma(bool karma) -> void;
-		auto setTradeBlock(bool block) -> void;
+		auto set_prevent_slip(bool prevent) -> void;
+		auto set_warm_support(bool warm) -> void;
+		auto set_lock(bool lock) -> void;
+		auto set_karma(bool karma) -> void;
+		auto set_trade_block(bool block) -> void;
 
-		auto databaseInsert(Database &db, const ItemDbInformation &info) -> void;
-		auto setSlots(int8_t slots) -> void;
-		auto setStr(stat_t strength) -> void;
-		auto setDex(stat_t dexterity) -> void;
-		auto setInt(stat_t intelligence) -> void;
-		auto setLuk(stat_t luck) -> void;
-		auto setHp(health_t hp) -> void;
-		auto setMp(health_t mp) -> void;
-		auto setWatk(stat_t wAtk) -> void;
-		auto setWdef(stat_t wDef) -> void;
-		auto setMatk(stat_t mAtk) -> void;
-		auto setMdef(stat_t mDef) -> void;
-		auto setAccuracy(stat_t acc) -> void;
-		auto setAvoid(stat_t avoid) -> void;
-		auto setHands(stat_t hands) -> void;
-		auto setJump(stat_t jump) -> void;
-		auto setSpeed(stat_t speed) -> void;
-		auto setAmount(slot_qty_t amount) -> void;
-		auto setName(const string_t &name) -> void;
-		auto setPetId(pet_id_t petId) -> void;
-		auto addStr(stat_t strength) -> void;
-		auto addDex(stat_t dexterity) -> void;
-		auto addInt(stat_t intelligence) -> void;
-		auto addLuk(stat_t luck) -> void;
-		auto addHp(health_t hp) -> void;
-		auto addMp(health_t mp) -> void;
-		auto addWatk(stat_t wAtk) -> void;
-		auto addWdef(stat_t wDef) -> void;
-		auto addMatk(stat_t mAtk) -> void;
-		auto addMdef(stat_t mDef) -> void;
-		auto addAccuracy(stat_t acc) -> void;
-		auto addAvoid(stat_t avoid) -> void;
-		auto addHands(stat_t hands) -> void;
-		auto addJump(stat_t jump) -> void;
-		auto addSpeed(stat_t speed) -> void;
-		auto incAmount(slot_qty_t mod) -> void { m_amount += mod; }
-		auto decAmount(slot_qty_t mod) -> void { m_amount -= mod; }
-		auto incHammers() -> void { m_hammers++; }
-		auto incSlots(int8_t inc = 1) -> void { m_slots += inc; }
-		auto decSlots(int8_t dec = 1) -> void { m_slots -= dec; }
-		auto incScrolls() -> void { m_scrolls++; }
+		auto database_insert(database &db, const item_db_info &info) -> void;
+		auto set_slots(int8_t slots) -> void;
+		auto set_str(game_stat strength) -> void;
+		auto set_dex(game_stat dexterity) -> void;
+		auto set_int(game_stat intelligence) -> void;
+		auto set_luk(game_stat luck) -> void;
+		auto set_hp(game_health hp) -> void;
+		auto set_mp(game_health mp) -> void;
+		auto set_watk(game_stat watk) -> void;
+		auto set_wdef(game_stat wdef) -> void;
+		auto set_matk(game_stat matk) -> void;
+		auto set_mdef(game_stat mdef) -> void;
+		auto set_accuracy(game_stat acc) -> void;
+		auto set_avoid(game_stat avoid) -> void;
+		auto set_hands(game_stat hands) -> void;
+		auto set_jump(game_stat jump) -> void;
+		auto set_speed(game_stat speed) -> void;
+		auto set_amount(game_slot_qty amount) -> void;
+		auto set_name(const string &name) -> void;
+		auto set_pet_id(game_pet_id pet_id) -> void;
+		auto add_str(game_stat strength) -> void;
+		auto add_dex(game_stat dexterity) -> void;
+		auto add_int(game_stat intelligence) -> void;
+		auto add_luk(game_stat luck) -> void;
+		auto add_hp(game_health hp) -> void;
+		auto add_mp(game_health mp) -> void;
+		auto add_watk(game_stat watk) -> void;
+		auto add_wdef(game_stat wdef) -> void;
+		auto add_matk(game_stat matk) -> void;
+		auto add_mdef(game_stat mdef) -> void;
+		auto add_accuracy(game_stat acc) -> void;
+		auto add_avoid(game_stat avoid) -> void;
+		auto add_hands(game_stat hands) -> void;
+		auto add_jump(game_stat jump) -> void;
+		auto add_speed(game_stat speed) -> void;
+		auto inc_amount(game_slot_qty mod) -> void { m_amount += mod; }
+		auto dec_amount(game_slot_qty mod) -> void { m_amount -= mod; }
+		auto inc_hammers() -> void { m_hammers++; }
+		auto inc_slots(int8_t inc = 1) -> void { m_slots += inc; }
+		auto dec_slots(int8_t dec = 1) -> void { m_slots -= dec; }
+		auto inc_scrolls() -> void { m_scrolls++; }
 
-		static auto databaseInsert(Database &db, const vector_t<ItemDbRecord> &items) -> void;
+		static auto database_insert(database &db, const vector<item_db_record> &items) -> void;
 
-		const static string_t Inventory;
-		const static string_t Storage;
+		const static string inventory;
+		const static string storage;
 	private:
-		auto testStat(int16_t stat, int16_t max) -> int16_t;
-		auto modifyFlags(bool add, int16_t flags) -> void;
-		auto testFlags(int16_t flags) const -> bool;
-		auto initializeItem(const soci::row &row) -> void;
+		auto test_stat(int16_t stat, int16_t max) -> int16_t;
+		auto modify_flags(bool add, int16_t flags) -> void;
+		auto test_flags(int16_t flags) const -> bool;
+		auto initialize_item(const soci::row &row) -> void;
 
 		int8_t m_slots = 0;
 		int8_t m_scrolls = 0;
-		stat_t m_str = 0;
-		stat_t m_dex = 0;
-		stat_t m_int = 0;
-		stat_t m_luk = 0;
-		health_t m_hp = 0;
-		health_t m_mp = 0;
-		stat_t m_wAtk = 0;
-		stat_t m_mAtk = 0;
-		stat_t m_wDef = 0;
-		stat_t m_mDef = 0;
-		stat_t m_accuracy = 0;
-		stat_t m_avoid = 0;
-		stat_t m_hands = 0;
-		stat_t m_jump = 0;
-		stat_t m_speed = 0;
+		game_stat m_str = 0;
+		game_stat m_dex = 0;
+		game_stat m_int = 0;
+		game_stat m_luk = 0;
+		game_health m_hp = 0;
+		game_health m_mp = 0;
+		game_stat m_watk = 0;
+		game_stat m_matk = 0;
+		game_stat m_wdef = 0;
+		game_stat m_mdef = 0;
+		game_stat m_accuracy = 0;
+		game_stat m_avoid = 0;
+		game_stat m_hands = 0;
+		game_stat m_jump = 0;
+		game_stat m_speed = 0;
 		int16_t m_flags = 0;
-		slot_qty_t m_amount = 0;
-		item_id_t m_id = 0;
+		game_slot_qty m_amount = 0;
+		game_item_id m_id = 0;
 		int32_t m_hammers = 0;
-		pet_id_t m_petId = 0;
-		FileTime m_expiration = Items::NoExpiration;
-		string_t m_name;
+		game_pet_id m_pet_id = 0;
+		file_time m_expiration = items::no_expiration;
+		string m_name;
 	};
 }

@@ -19,11 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct SkillbookInfo {
-		skill_id_t skillId = 0;
-		skill_level_t reqLevel = 0;
-		skill_level_t maxLevel = 0;
+namespace vana {
+	struct skillbook_info {
+		game_skill_id skill_id = 0;
+		game_skill_level req_level = 0;
+		game_skill_level max_level = 0;
 		int8_t chance = 0;
 	};
 }

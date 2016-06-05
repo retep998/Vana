@@ -20,48 +20,48 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/ConfigFile.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct PingConfig {
+namespace vana {
+	struct ping_config {
 		bool enable = true;
-		milliseconds_t initialDelay = milliseconds_t{60000};
-		milliseconds_t interval = milliseconds_t{30000};
-		int32_t timeoutPingCount = 4;
+		milliseconds initial_delay = milliseconds{60000};
+		milliseconds interval = milliseconds{30000};
+		int32_t timeout_ping_count = 4;
 	};
 
 	template <>
-	struct LuaSerialize<PingConfig> {
-		auto read(LuaEnvironment &config, const string_t &prefix) -> PingConfig {
-			PingConfig ret;
+	struct lua_serialize<ping_config> {
+		auto read(lua_environment &config, const string &prefix) -> ping_config {
+			ping_config ret;
 
-			LuaVariant obj = config.get<LuaVariant>(prefix);
-			config.validateObject(LuaType::Table, obj, prefix);
+			lua_variant obj = config.get<lua_variant>(prefix);
+			config.validate_object(lua::lua_type::table, obj, prefix);
 
-			auto map = obj.as<hash_map_t<LuaVariant, LuaVariant>>();
-			bool hasEnabled = false;
+			auto map = obj.as<hash_map<lua_variant, lua_variant>>();
+			bool has_enabled = false;
 			for (const auto &kvp : map) {
-				config.validateKey(LuaType::String, kvp.first, prefix);
+				config.validate_key(lua::lua_type::string, kvp.first, prefix);
 
-				string_t key = kvp.first.as<string_t>();
+				string key = kvp.first.as<string>();
 				if (key == "enabled") {
-					hasEnabled = true;
-					config.validateValue(LuaType::Bool, kvp.second, key, prefix);
+					has_enabled = true;
+					config.validate_value(lua::lua_type::boolean, kvp.second, key, prefix);
 					ret.enable = kvp.second.as<bool>();
 				}
 				else if (key == "initial_delay") {
-					if (config.validateValue(LuaType::Number, kvp.second, key, prefix, true) == LuaType::Nil) continue;
-					ret.initialDelay = milliseconds_t{kvp.second.as<int32_t>()};
+					if (config.validate_value(lua::lua_type::number, kvp.second, key, prefix, true) == lua::lua_type::nil) continue;
+					ret.initial_delay = milliseconds{kvp.second.as<int32_t>()};
 				}
 				else if (key == "interval") {
-					if (config.validateValue(LuaType::Number, kvp.second, key, prefix, true) == LuaType::Nil) continue;
-					ret.interval = milliseconds_t{kvp.second.as<int32_t>()};
+					if (config.validate_value(lua::lua_type::number, kvp.second, key, prefix, true) == lua::lua_type::nil) continue;
+					ret.interval = milliseconds{kvp.second.as<int32_t>()};
 				}
 				else if (key == "timeout_ping_count") {
-					if (config.validateValue(LuaType::Number, kvp.second, key, prefix, true) == LuaType::Nil) continue;
-					ret.timeoutPingCount = kvp.second.as<int32_t>();
+					if (config.validate_value(lua::lua_type::number, kvp.second, key, prefix, true) == lua::lua_type::nil) continue;
+					ret.timeout_ping_count = kvp.second.as<int32_t>();
 				}
 			}
 
-			config.required(hasEnabled, "enabled", prefix);
+			config.required(has_enabled, "enabled", prefix);
 
 			return ret;
 		}

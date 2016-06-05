@@ -27,51 +27,51 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServer/Worlds.hpp"
 #include <iostream>
 
-namespace Vana {
-namespace LoginServer {
+namespace vana {
+namespace login_server {
 
-auto LoginServerAcceptHandler::registerChannel(ref_ptr_t<LoginServerAcceptedSession> session, PacketReader &reader) -> void {
-	channel_id_t channel = reader.get<channel_id_t>();
-	Channel *chan = new Channel{};
-	const Ip &ip = reader.get<Ip>();
-	optional_t<world_id_t> worldId = session->getWorldId();
-	if (!worldId.is_initialized()) {
-		throw CodePathInvalidException{"!worldId.is_initialized()"};
+auto login_server_accept_handler::register_channel(ref_ptr<login_server_accepted_session> session, packet_reader &reader) -> void {
+	game_channel_id chan_id = reader.get<game_channel_id>();
+	auto chan = new vana::login_server::channel{};
+	const ip &ip_value = reader.get<ip>();
+	optional<game_world_id> world_id = session->get_world_id();
+	if (!world_id.is_initialized()) {
+		throw codepath_invalid_exception{"!world_id.is_initialized()"};
 	}
 
-	chan->setExternalIpInformation(ip, reader.get<vector_t<ExternalIp>>());
-	chan->setPort(reader.get<port_t>());
-	LoginServer::getInstance().getWorlds().getWorld(worldId.get())->addChannel(channel, chan);
-	LoginServer::getInstance().log(LogType::ServerConnect, [&](out_stream_t &log) {
-		log << "World " << static_cast<int32_t>(worldId.get()) << "; Channel " << static_cast<int32_t>(channel);
+	chan->set_external_ip_information(ip_value, reader.get<vector<external_ip>>());
+	chan->set_port(reader.get<connection_port>());
+	login_server::get_instance().get_worlds().get_world(world_id.get())->add_channel(chan_id, chan);
+	login_server::get_instance().log(log_type::server_connect, [&](out_stream &log) {
+		log << "World " << static_cast<int32_t>(world_id.get()) << "; Channel " << static_cast<int32_t>(chan_id);
 	});
 }
 
-auto LoginServerAcceptHandler::updateChannelPop(ref_ptr_t<LoginServerAcceptedSession> session, PacketReader &reader) -> void {
-	channel_id_t channel = reader.get<channel_id_t>();
+auto login_server_accept_handler::update_channel_pop(ref_ptr<login_server_accepted_session> session, packet_reader &reader) -> void {
+	game_channel_id chan_id = reader.get<game_channel_id>();
 	int32_t population = reader.get<int32_t>();
-	optional_t<world_id_t> worldId = session->getWorldId();
-	if (!worldId.is_initialized()) {
-		throw CodePathInvalidException{"!worldId.is_initialized()"};
+	optional<game_world_id> world_id = session->get_world_id();
+	if (!world_id.is_initialized()) {
+		throw codepath_invalid_exception{"!world_id.is_initialized()"};
 	}
 
-	auto &worlds = LoginServer::getInstance().getWorlds();
-	World *world = worlds.getWorld(worldId.get());
-	world->getChannel(channel)->setPopulation(population);
-	worlds.calculatePlayerLoad(world);
+	auto &worlds = login_server::get_instance().get_worlds();
+	world *world_value = worlds.get_world(world_id.get());
+	world_value->get_channel(chan_id)->set_population(population);
+	worlds.calculate_player_load(world_value);
 }
 
-auto LoginServerAcceptHandler::removeChannel(ref_ptr_t<LoginServerAcceptedSession> session, PacketReader &reader) -> void {
-	channel_id_t channel = reader.get<channel_id_t>();
+auto login_server_accept_handler::remove_channel(ref_ptr<login_server_accepted_session> session, packet_reader &reader) -> void {
+	game_channel_id chan_id = reader.get<game_channel_id>();
 
-	optional_t<world_id_t> worldId = session->getWorldId();
-	if (!worldId.is_initialized()) {
-		throw CodePathInvalidException{"!worldId.is_initialized()"};
+	optional<game_world_id> world_id = session->get_world_id();
+	if (!world_id.is_initialized()) {
+		throw codepath_invalid_exception{"!world_id.is_initialized()"};
 	}
 
-	LoginServer::getInstance().getWorlds().getWorld(worldId.get())->removeChannel(channel);
-	LoginServer::getInstance().log(LogType::ServerDisconnect, [&](out_stream_t &log) {
-		log << "World " << static_cast<int32_t>(worldId.get()) << "; Channel " << static_cast<int32_t>(channel);
+	login_server::get_instance().get_worlds().get_world(world_id.get())->remove_channel(chan_id);
+	login_server::get_instance().log(log_type::server_disconnect, [&](out_stream &log) {
+		log << "World " << static_cast<int32_t>(world_id.get()) << "; Channel " << static_cast<int32_t>(chan_id);
 	});
 }
 

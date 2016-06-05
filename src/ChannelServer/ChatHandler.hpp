@@ -19,17 +19,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class PacketReader;
+namespace vana {
+	class packet_reader;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		namespace ChatHandler {
-			auto initializeCommands() -> void;
-			auto handleChat(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto handleCommand(ref_ptr_t<Player> player, const chat_t &message) -> HandleResult;
-			auto handleGroupChat(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+		namespace chat_handler {
+			auto initialize_commands() -> void;
+			auto handle_chat(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_command(ref_ptr<player> player, const game_chat &message) -> handle_result;
+			auto handle_group_chat(ref_ptr<player> player, packet_reader &reader) -> void;
 		}
 	}
 }

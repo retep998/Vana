@@ -21,26 +21,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	namespace ChannelServer {
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class player;
 
-		namespace Packets {
-			namespace Gm {
-				namespace HiredMerchantModes {
+		namespace packets {
+			namespace gm {
+				namespace hired_merchant_modes {
 					enum {
-						Map = 0x00,
-						Channel = 0x01,
+						map = 0x00,
+						channel = 0x01,
 					};
 				}
 
-				PACKET(beginHide);
-				PACKET(endHide);
+				PACKET(begin_hide);
+				PACKET(end_hide);
 				PACKET(warning, bool succeed);
 				PACKET(block);
-				PACKET(invalidCharacterName);
-				PACKET(hiredMerchantPlace, int8_t mode, int32_t id);
-				PACKET(setGetVarResult, const string_t &name, const string_t &variable, const string_t &value);
+				PACKET(invalid_character_name);
+				PACKET(hired_merchant_place, int8_t mode, int32_t id);
+				PACKET(set_get_var_result, const string &name, const string &variable, const string &value);
 			}
 		}
 	}

@@ -24,34 +24,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-	struct RatesConfig;
+namespace vana {
+	struct rates_config;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		namespace Packets {
-			namespace Interserver {
-				namespace Config {
-					PACKET(scrollingHeader, const string_t &message);
-					PACKET(resetRates, int32_t flags);
-					PACKET(modifyRates, const RatesConfig &rates);
+		namespace packets {
+			namespace interserver {
+				namespace config {
+					PACKET(scrolling_header, const string &message);
+					PACKET(reset_rates, int32_t flags);
+					PACKET(modify_rates, const rates_config &rates);
 				}
-				namespace Player {
-					PACKET(changeChannel, ref_ptr_t<Vana::ChannelServer::Player> info, channel_id_t channel);
-					PACKET(connectableEstablished, player_id_t playerId);
-					PACKET(connect, const PlayerData &player, bool firstConnect);
-					PACKET(disconnect, player_id_t playerId);
-					PACKET(updatePlayer, const PlayerData &player, update_bits_t flags);
+				namespace player {
+					PACKET(change_channel, ref_ptr<vana::channel_server::player> info, game_channel_id channel);
+					PACKET(connectable_established, game_player_id player_id);
+					PACKET(connect, const player_data &player, bool first_connect);
+					PACKET(disconnect, game_player_id player_id);
+					PACKET(update_player, const player_data &player, protocol_update_bits flags);
 				}
-				namespace Party {
-					PACKET(sync, int8_t type, player_id_t playerId, int32_t target = 0);
+				namespace party {
+					PACKET(sync, int8_t type, game_player_id player_id, int32_t target = 0);
 				}
-				namespace Buddy {
-					PACKET(buddyInvite, player_id_t inviterId, player_id_t inviteeId);
-					PACKET(acceptBuddyInvite, player_id_t inviteeId, player_id_t inviterId);
-					PACKET(removeBuddy, player_id_t listOwnerId, player_id_t removalId);
-					PACKET(readdBuddy, player_id_t listOwnerId, player_id_t buddyId);
+				namespace buddy {
+					PACKET(buddy_invite, game_player_id inviter_id, game_player_id invitee_id);
+					PACKET(accept_buddy_invite, game_player_id invitee_id, game_player_id inviter_id);
+					PACKET(remove_buddy, game_player_id list_owner_id, game_player_id removal_id);
+					PACKET(readd_buddy, game_player_id list_owner_id, game_player_id buddy_id);
 				}
 			}
 		}

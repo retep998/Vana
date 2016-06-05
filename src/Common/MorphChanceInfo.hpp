@@ -19,9 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct MorphChanceInfo {
+namespace vana {
+	struct morph_chance_info {
 		int8_t chance = 100;
-		morph_id_t morph = 0;
+		game_morph_id morph = 0;
 	};
 }

@@ -21,8 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-	namespace MySqlQueryParser {
-		auto parseQueries(const string_t &filename) -> vector_t<string_t>;
+namespace vana {
+	namespace mysql_query_parser {
+		auto parse_queries(const string &filename) -> vector<string>;
 	};
 }

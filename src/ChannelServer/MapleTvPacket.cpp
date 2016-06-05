@@ -22,35 +22,36 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Player.hpp"
 #include "ChannelServer/SmsgHeader.hpp"
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
-namespace MapleTv {
+namespace vana {
+namespace channel_server {
+namespace packets {
+namespace maple_tv {
 
-PACKET_IMPL(showMessage, const MapleTvMessage &message, seconds_t timeLeft) {
-	PacketBuilder builder;
+PACKET_IMPL(show_message, const maple_tv_message &message, seconds time_left) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MAPLETV_ON)
-		.add<int8_t>(message.hasReceiver ? 3 : 1)
-		.add<int8_t>(static_cast<int8_t>(message.megaphoneId - 5075000))
-		.addBuffer(message.sendDisplay)
-		.add<string_t>(message.sendName)
-		.add<string_t>(message.hasReceiver ? message.recvName : "")
-		.add<string_t>(message.msg1)
-		.add<string_t>(message.msg2)
-		.add<string_t>(message.msg3)
-		.add<string_t>(message.msg4)
-		.add<string_t>(message.msg5)
-		.add<int32_t>(timeLeft.count() == 0 ? message.time : static_cast<int32_t>(timeLeft.count()));
-	if (message.hasReceiver) {
-		builder.addBuffer(message.recvDisplay);
+		.add<packet_header>(SMSG_MAPLETV_ON)
+		.add<int8_t>(message.has_receiver ? 3 : 1)
+		.add<int8_t>(static_cast<int8_t>(message.megaphone_id - 5075000))
+		.add_buffer(message.send_display)
+		.add<string>(message.send_name)
+		.add<string>(message.has_receiver ? message.recv_name : "")
+		.add<string>(message.msg1)
+		.add<string>(message.msg2)
+		.add<string>(message.msg3)
+		.add<string>(message.msg4)
+		.add<string>(message.msg5)
+		.add<int32_t>(time_left.count() == 0 ? message.time : static_cast<int32_t>(time_left.count()));
+
+	if (message.has_receiver) {
+		builder.add_buffer(message.recv_display);
 	}
 	return builder;
 }
 
-PACKET_IMPL(endDisplay) {
-	PacketBuilder builder;
-	builder.add<header_t>(SMSG_MAPLETV_OFF);
+PACKET_IMPL(end_display) {
+	packet_builder builder;
+	builder.add<packet_header>(SMSG_MAPLETV_OFF);
 	return builder;
 }
 

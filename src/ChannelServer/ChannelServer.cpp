@@ -32,321 +32,321 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/SyncPacket.hpp"
 #include "ChannelServer/WorldServerPacket.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-ChannelServer::ChannelServer() :
-	AbstractServer{ServerType::Channel},
-	m_worldIp{0}
+channel_server::channel_server() :
+	abstract_server{server_type::channel},
+	m_world_ip{0}
 {
 }
 
-auto ChannelServer::listen() -> void {
-	m_sessionPool.initialize(1);
+auto channel_server::listen() -> void {
+	m_session_pool.initialize(1);
 
-	auto &config = getInterServerConfig();
-	getConnectionManager().listen(
-		ConnectionListenerConfig{
-			config.clientPing,
-			config.clientEncryption,
-			ConnectionType::EndUser,
-			MapleVersion::ChannelSubversion,
+	auto &config = get_inter_server_config();
+	get_connection_manager().listen(
+		connection_listener_config{
+			config.client_ping,
+			config.client_encryption,
+			connection_type::end_user,
+			maple_version::channel_subversion,
 			m_port,
-			Ip::Type::Ipv4
+			ip::type::ipv4
 		},
-		[&] { return make_ref_ptr<Player>(); }
+		[&] { return make_ref_ptr<player>(); }
 	);
 
-	Initializing::setUsersOffline(this, getOnlineId());
+	initializing::set_users_offline(this, get_online_id());
 }
 
-auto ChannelServer::finalizePlayer(ref_ptr_t<Player> session) -> void {
-	m_sessionPool.store(session);
+auto channel_server::finalize_player(ref_ptr<player> session) -> void {
+	m_session_pool.store(session);
 }
 
-auto ChannelServer::shutdown() -> void {
+auto channel_server::shutdown() -> void {
 	// If we don't do this and the connection disconnects, it will try to call shutdown() again
-	m_channelId = -1;
-	AbstractServer::shutdown();
+	m_channel_id = -1;
+	abstract_server::shutdown();
 }
 
-auto ChannelServer::loadData() -> Result {
-	if (Initializing::checkSchemaVersion(this) == Result::Failure) {
-		return Result::Failure;
+auto channel_server::load_data() -> result {
+	if (initializing::check_schema_version(this) == result::failure) {
+		return result::failure;
 	}
-	if (Initializing::checkMcdbVersion(this) == Result::Failure) {
-		return Result::Failure;
+	if (initializing::check_mcdb_version(this) == result::failure) {
+		return result::failure;
 	}
 
-	m_buffDataProvider.loadData();
-	m_validCharDataProvider.loadData();
-	m_equipDataProvider.loadData();
-	m_curseDataProvider.loadData();
-	m_npcDataProvider.loadData();
-	m_dropDataProvider.loadData();
-	m_beautyDataProvider.loadData();
-	m_mobDataProvider.loadData();
-	m_scriptDataProvider.loadData();
-	m_skillDataProvider.loadData();
-	m_reactorDataProvider.loadData();
-	m_shopDataProvider.loadData();
-	m_questDataProvider.loadData();
-	m_itemDataProvider.loadData(m_buffDataProvider);
-	m_mapDataProvider.loadData();
-	m_eventDataProvider.loadData();
+	m_buff_data_provider.load_data();
+	m_valid_char_data_provider.load_data();
+	m_equip_data_provider.load_data();
+	m_curse_data_provider.load_data();
+	m_npc_data_provider.load_data();
+	m_drop_data_provider.load_data();
+	m_beauty_data_provider.load_data();
+	m_mob_data_provider.load_data();
+	m_script_data_provider.load_data();
+	m_skill_data_provider.load_data();
+	m_reactor_data_provider.load_data();
+	m_shop_data_provider.load_data();
+	m_quest_data_provider.load_data();
+	m_item_data_provider.load_data(m_buff_data_provider);
+	m_map_data_provider.load_data();
+	m_event_data_provider.load_data();
 
-	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Commands... ";
-	ChatHandler::initializeCommands();
+	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Commands... ";
+	chat_handler::initialize_commands();
 	std::cout << "DONE" << std::endl;
 
-	auto &config = getInterServerConfig();
-	auto result = getConnectionManager().connect(
-		config.loginIp,
-		config.loginPort,
-		config.serverPing,
-		ServerType::Channel,
+	auto &config = get_inter_server_config();
+	auto result = get_connection_manager().connect(
+		config.login_ip,
+		config.login_port,
+		config.server_ping,
+		server_type::channel,
 		[&] {
-			return make_ref_ptr<LoginServerSession>();
+			return make_ref_ptr<login_server_session>();
 		});
 
-	if (result.first == Result::Failure) {
-		return Result::Failure;
+	if (result.first == result::failure) {
+		return result::failure;
 	}
 
-	sendAuth(result.second);
-	return Result::Successful;
+	send_auth(result.second);
+	return result::successful;
 }
 
-auto ChannelServer::reloadData(const string_t &args) -> void {
+auto channel_server::reload_data(const string &args) -> void {
 	if (args == "all") {
-		m_itemDataProvider.loadData(m_buffDataProvider);
-		m_dropDataProvider.loadData();
-		m_shopDataProvider.loadData();
-		m_mobDataProvider.loadData();
-		m_beautyDataProvider.loadData();
-		m_scriptDataProvider.loadData();
-		m_skillDataProvider.loadData();
-		m_reactorDataProvider.loadData();
-		m_questDataProvider.loadData();
+		m_item_data_provider.load_data(m_buff_data_provider);
+		m_drop_data_provider.load_data();
+		m_shop_data_provider.load_data();
+		m_mob_data_provider.load_data();
+		m_beauty_data_provider.load_data();
+		m_script_data_provider.load_data();
+		m_skill_data_provider.load_data();
+		m_reactor_data_provider.load_data();
+		m_quest_data_provider.load_data();
 	}
-	else if (args == "items") m_itemDataProvider.loadData(m_buffDataProvider);
-	else if (args == "drops") m_dropDataProvider.loadData();
-	else if (args == "shops") m_shopDataProvider.loadData();
-	else if (args == "mobs") m_mobDataProvider.loadData();
-	else if (args == "beauty") m_beautyDataProvider.loadData();
-	else if (args == "scripts") m_scriptDataProvider.loadData();
-	else if (args == "skills") m_skillDataProvider.loadData();
-	else if (args == "reactors") m_reactorDataProvider.loadData();
-	else if (args == "quest") m_questDataProvider.loadData();
+	else if (args == "items") m_item_data_provider.load_data(m_buff_data_provider);
+	else if (args == "drops") m_drop_data_provider.load_data();
+	else if (args == "shops") m_shop_data_provider.load_data();
+	else if (args == "mobs") m_mob_data_provider.load_data();
+	else if (args == "beauty") m_beauty_data_provider.load_data();
+	else if (args == "scripts") m_script_data_provider.load_data();
+	else if (args == "skills") m_skill_data_provider.load_data();
+	else if (args == "reactors") m_reactor_data_provider.load_data();
+	else if (args == "quest") m_quest_data_provider.load_data();
 }
 
-auto ChannelServer::makeLogIdentifier() const -> opt_string_t {
-	return buildLogIdentifier([&](out_stream_t &id) {
-		id << "World: " << static_cast<int32_t>(m_worldId) << "; ID: " << static_cast<int32_t>(m_channelId);
+auto channel_server::make_log_identifier() const -> opt_string {
+	return build_log_identifier([&](out_stream &id) {
+		id << "World: " << static_cast<int32_t>(m_world_id) << "; ID: " << static_cast<int32_t>(m_channel_id);
 	});
 }
 
-auto ChannelServer::getLogPrefix() const -> string_t {
+auto channel_server::get_log_prefix() const -> string {
 	return "channel";
 }
 
-auto ChannelServer::connectToWorld(world_id_t worldId, port_t port, const Ip &ip) -> Result {
-	m_worldId = worldId;
-	m_worldPort = port;
-	m_worldIp = ip;
+auto channel_server::connect_to_world(game_world_id world_id, connection_port port, const ip &ip) -> result {
+	m_world_id = world_id;
+	m_world_port = port;
+	m_world_ip = ip;
 
-	auto &config = getInterServerConfig();
-	auto result = getConnectionManager().connect(
+	auto &config = get_inter_server_config();
+	auto result = get_connection_manager().connect(
 		ip,
 		port,
-		config.serverPing,
-		ServerType::Channel,
+		config.server_ping,
+		server_type::channel,
 		[&] {
-			return make_ref_ptr<WorldServerSession>();
+			return make_ref_ptr<world_server_session>();
 		});
 
-	if (result.first == Result::Failure) {
-		return Result::Failure;
+	if (result.first == result::failure) {
+		return result::failure;
 	}
 
-	sendAuth(result.second);
-	return Result::Successful;
+	send_auth(result.second);
+	return result::successful;
 }
 
-auto ChannelServer::onConnectToLogin(ref_ptr_t<LoginServerSession> session) -> void {
-	m_loginConnection = session;
+auto channel_server::on_connect_to_login(ref_ptr<login_server_session> session) -> void {
+	m_login_connection = session;
 }
 
-auto ChannelServer::onDisconnectFromLogin() -> void {
-	m_loginConnection.reset();
+auto channel_server::on_disconnect_from_login() -> void {
+	m_login_connection.reset();
 }
 
-auto ChannelServer::onConnectToWorld(ref_ptr_t<WorldServerSession> session) -> void {
-	m_worldConnection = session;
+auto channel_server::on_connect_to_world(ref_ptr<world_server_session> session) -> void {
+	m_world_connection = session;
 }
 
-auto ChannelServer::onDisconnectFromWorld() -> void {
-	m_worldConnection.reset();
+auto channel_server::on_disconnect_from_world() -> void {
+	m_world_connection.reset();
 
-	if (isConnected()) {
-		log(LogType::ServerDisconnect, "Disconnected from the WorldServer. Shutting down...");
-		m_playerDataProvider.disconnect();
-		ExitCodes::exit(ExitCodes::ServerDisconnection);
+	if (is_connected()) {
+		log(log_type::server_disconnect, "Disconnected from the WorldServer. Shutting down...");
+		m_player_data_provider.disconnect();
+		exit(exit_code::server_disconnection);
 	}
 }
 
-auto ChannelServer::establishedWorldConnection(channel_id_t channelId, port_t port, const WorldConfig &config) -> void {
-	m_channelId = channelId;
+auto channel_server::established_world_connection(game_channel_id channel_id, connection_port port, const world_config &config) -> void {
+	m_channel_id = channel_id;
 
-	log(LogType::ServerConnect, [&](out_stream_t &str) {
-		str << "Handling channel " << static_cast<int32_t>(channelId) << " on port " << port;
+	log(log_type::server_connect, [&](out_stream &str) {
+		str << "Handling channel " << static_cast<int32_t>(channel_id) << " on port " << port;
 	});
 
 	m_port = port;
 	m_config = config;
-	Map::setMapUnloadTime(config.mapUnloadTime);
+	map::set_map_unload_time(config.map_unload_time);
 	listen();
-	displayLaunchTime();
+	display_launch_time();
 }
 
-auto ChannelServer::getConfig() const -> const WorldConfig & {
+auto channel_server::get_config() const -> const world_config & {
 	return m_config;
 }
 
-auto ChannelServer::getValidCharDataProvider() const -> const ValidCharDataProvider & {
-	return m_validCharDataProvider;
+auto channel_server::get_valid_char_data_provider() const -> const valid_char_data_provider & {
+	return m_valid_char_data_provider;
 }
 
-auto ChannelServer::getEquipDataProvider() const -> const EquipDataProvider & {
-	return m_equipDataProvider;
+auto channel_server::get_equip_data_provider() const -> const equip_data_provider & {
+	return m_equip_data_provider;
 }
 
-auto ChannelServer::getCurseDataProvider() const -> const CurseDataProvider & {
-	return m_curseDataProvider;
+auto channel_server::get_curse_data_provider() const -> const curse_data_provider & {
+	return m_curse_data_provider;
 }
 
-auto ChannelServer::getNpcDataProvider() const -> const NpcDataProvider & {
-	return m_npcDataProvider;
+auto channel_server::get_npc_data_provider() const -> const npc_data_provider & {
+	return m_npc_data_provider;
 }
 
-auto ChannelServer::getMobDataProvider() const -> const MobDataProvider & {
-	return m_mobDataProvider;
+auto channel_server::get_mob_data_provider() const -> const mob_data_provider & {
+	return m_mob_data_provider;
 }
 
-auto ChannelServer::getBeautyDataProvider() const -> const BeautyDataProvider & {
-	return m_beautyDataProvider;
+auto channel_server::get_beauty_data_provider() const -> const beauty_data_provider & {
+	return m_beauty_data_provider;
 }
 
-auto ChannelServer::getDropDataProvider() const -> const DropDataProvider & {
-	return m_dropDataProvider;
+auto channel_server::get_drop_data_provider() const -> const drop_data_provider & {
+	return m_drop_data_provider;
 }
 
-auto ChannelServer::getSkillDataProvider() const -> const SkillDataProvider & {
-	return m_skillDataProvider;
+auto channel_server::get_skill_data_provider() const -> const skill_data_provider & {
+	return m_skill_data_provider;
 }
 
-auto ChannelServer::getShopDataProvider() const -> const ShopDataProvider & {
-	return m_shopDataProvider;
+auto channel_server::get_shop_data_provider() const -> const shop_data_provider & {
+	return m_shop_data_provider;
 }
 
-auto ChannelServer::getScriptDataProvider() const -> const ScriptDataProvider & {
-	return m_scriptDataProvider;
+auto channel_server::get_script_data_provider() const -> const script_data_provider & {
+	return m_script_data_provider;
 }
 
-auto ChannelServer::getReactorDataProvider() const -> const ReactorDataProvider & {
-	return m_reactorDataProvider;
+auto channel_server::get_reactor_data_provider() const -> const reactor_data_provider & {
+	return m_reactor_data_provider;
 }
 
-auto ChannelServer::getItemDataProvider() const -> const ItemDataProvider & {
-	return m_itemDataProvider;
+auto channel_server::get_item_data_provider() const -> const item_data_provider & {
+	return m_item_data_provider;
 }
 
-auto ChannelServer::getQuestDataProvider() const -> const QuestDataProvider & {
-	return m_questDataProvider;
+auto channel_server::get_quest_data_provider() const -> const quest_data_provider & {
+	return m_quest_data_provider;
 }
 
-auto ChannelServer::getBuffDataProvider() const -> const BuffDataProvider & {
-	return m_buffDataProvider;
+auto channel_server::get_buff_data_provider() const -> const buff_data_provider & {
+	return m_buff_data_provider;
 }
 
-auto ChannelServer::getEventDataProvider() const -> const EventDataProvider & {
-	return m_eventDataProvider;
+auto channel_server::get_event_data_provider() const -> const event_data_provider & {
+	return m_event_data_provider;
 }
 
-auto ChannelServer::getMapDataProvider() const -> const MapDataProvider & {
-	return m_mapDataProvider;
+auto channel_server::get_map_data_provider() const -> const map_data_provider & {
+	return m_map_data_provider;
 }
 
-auto ChannelServer::getPlayerDataProvider() -> PlayerDataProvider & {
-	return m_playerDataProvider;
+auto channel_server::get_player_data_provider() -> player_data_provider & {
+	return m_player_data_provider;
 }
 
-auto ChannelServer::getTrades() -> Trades & {
+auto channel_server::get_trades() -> trades & {
 	return m_trades;
 }
 
-auto ChannelServer::getMapleTvs() -> MapleTvs & {
-	return m_mapleTvs;
+auto channel_server::get_maple_tvs() -> maple_tvs & {
+	return m_maple_tvs;
 }
 
-auto ChannelServer::getInstances() -> Instances & {
+auto channel_server::get_instances() -> instances & {
 	return m_instances;
 }
 
-auto ChannelServer::getMap(int32_t mapId) -> Map * {
-	return m_mapDataProvider.getMap(mapId);
+auto channel_server::get_map(int32_t map_id) -> map * {
+	return m_map_data_provider.get_map(map_id);
 }
 
-auto ChannelServer::unloadMap(int32_t mapId) -> void {
-	return m_mapDataProvider.unloadMap(mapId);
+auto channel_server::unload_map(int32_t map_id) -> void {
+	return m_map_data_provider.unload_map(map_id);
 }
 
-auto ChannelServer::isConnected() const -> bool {
-	return m_channelId != -1;
+auto channel_server::is_connected() const -> bool {
+	return m_channel_id != -1;
 }
 
-auto ChannelServer::getWorldId() const -> world_id_t {
-	return m_worldId;
+auto channel_server::get_world_id() const -> game_world_id {
+	return m_world_id;
 }
 
-auto ChannelServer::getChannelId() const -> channel_id_t {
-	return m_channelId;
+auto channel_server::get_channel_id() const -> game_channel_id {
+	return m_channel_id;
 }
 
-auto ChannelServer::getOnlineId() const -> int32_t {
-	return 20000 + static_cast<int32_t>(m_worldId) * 100 + m_channelId;
+auto channel_server::get_online_id() const -> int32_t {
+	return 20000 + static_cast<int32_t>(m_world_id) * 100 + m_channel_id;
 }
 
-auto ChannelServer::sendWorld(const PacketBuilder &builder) -> void {
-	m_worldConnection->send(builder);
+auto channel_server::send_world(const packet_builder &builder) -> void {
+	m_world_connection->send(builder);
 }
 
-auto ChannelServer::setScrollingHeader(const string_t &message) -> void {
-	if (m_config.scrollingHeader != message) {
-		m_config.scrollingHeader = message;
-		m_playerDataProvider.send(Packets::showScrollingHeader(message));
+auto channel_server::set_scrolling_header(const string &message) -> void {
+	if (m_config.scrolling_header != message) {
+		m_config.scrolling_header = message;
+		m_player_data_provider.send(packets::show_scrolling_header(message));
 	}
 }
 
-auto ChannelServer::modifyRate(int32_t rateType, int32_t newValue) -> void {
-	RatesConfig currentRates = m_config.rates;
-	if (rateType & RatesConfig::Types::mobExpRate) currentRates.mobExpRate = newValue;
-	if (rateType & RatesConfig::Types::questExpRate) currentRates.questExpRate = newValue;
-	if (rateType & RatesConfig::Types::dropRate) currentRates.dropRate = newValue;
-	if (rateType & RatesConfig::Types::dropMeso) currentRates.dropMeso = newValue;
-	if (rateType & RatesConfig::Types::globalDropRate) currentRates.globalDropRate = newValue;
-	if (rateType & RatesConfig::Types::globalDropMeso) currentRates.globalDropMeso = newValue;
-	sendWorld(Packets::Interserver::Config::modifyRates(currentRates));
+auto channel_server::modify_rate(int32_t rate_type, int32_t new_value) -> void {
+	rates_config current_rates = m_config.rates;
+	if (rate_type & rates_config::types::mob_exp_rate) current_rates.mob_exp_rate = new_value;
+	if (rate_type & rates_config::types::quest_exp_rate) current_rates.quest_exp_rate = new_value;
+	if (rate_type & rates_config::types::drop_rate) current_rates.drop_rate = new_value;
+	if (rate_type & rates_config::types::drop_meso) current_rates.drop_meso = new_value;
+	if (rate_type & rates_config::types::global_drop_rate) current_rates.global_drop_rate = new_value;
+	if (rate_type & rates_config::types::global_drop_meso) current_rates.global_drop_meso = new_value;
+	send_world(packets::interserver::config::modify_rates(current_rates));
 }
 
-auto ChannelServer::setRates(const RatesConfig &rates) -> void {
+auto channel_server::set_rates(const rates_config &rates) -> void {
 	m_config.rates = rates;
 }
 
-auto ChannelServer::setConfig(const WorldConfig &config) -> void {
-	setScrollingHeader(config.scrollingHeader);
-	if (config.mapUnloadTime != m_config.mapUnloadTime) {
-		Map::setMapUnloadTime(config.mapUnloadTime);
+auto channel_server::set_config(const world_config &config) -> void {
+	set_scrolling_header(config.scrolling_header);
+	if (config.map_unload_time != m_config.map_unload_time) {
+		map::set_map_unload_time(config.map_unload_time);
 	}
 	m_config = config;
 }

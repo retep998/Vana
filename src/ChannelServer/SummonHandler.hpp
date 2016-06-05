@@ -20,35 +20,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	class BuffInfo;
-	class PacketReader;
-	struct SkillLevelInfo;
-	template <typename T> class IdPool;
+namespace vana {
+	class buff_info;
+	class packet_reader;
+	struct skill_level_info;
+	template <typename TIdentifier> class id_pool;
 
-	namespace ChannelServer {
-		class Player;
-		struct BuffPacketValues;
+	namespace channel_server {
+		class player;
+		struct buff_packet_values;
 
-		namespace SummonMessages {
-			enum Messages : int8_t {
-				OutOfTime = 0x00,
-				Disappearing = 0x03,
-				None = 0x04
+		namespace summon_messages {
+			enum messages : int8_t {
+				out_of_time = 0x00,
+				disappearing = 0x03,
+				none = 0x04
 			};
 		}
 
-		namespace SummonHandler {
-			extern IdPool<summon_id_t> summonIds;
-			auto useSummon(ref_ptr_t<Player> player, skill_id_t skillId, skill_level_t level) -> void;
-			auto removeSummon(ref_ptr_t<Player> player, summon_id_t summonId, bool packetOnly, int8_t showMessage, bool fromTimer = false) -> void;
-			auto showSummon(ref_ptr_t<Player> player) -> void;
-			auto showSummons(ref_ptr_t<Player> fromPlayer, ref_ptr_t<Player> toPlayer) -> void;
-			auto moveSummon(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto damageSummon(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto makeBuff(ref_ptr_t<Player> player, item_id_t itemId) -> BuffInfo;
-			auto makeActiveBuff(ref_ptr_t<Player> player, const BuffInfo &data, item_id_t itemId, const SkillLevelInfo *skillInfo) -> BuffPacketValues;
-			auto summonSkill(ref_ptr_t<Player> player, PacketReader &reader) -> void;
+		namespace summon_handler {
+			extern id_pool<game_summon_id> g_summon_ids;
+			auto use_summon(ref_ptr<player> player, game_skill_id skill_id, game_skill_level level) -> void;
+			auto remove_summon(ref_ptr<player> player, game_summon_id summon_id, bool packet_only, int8_t show_message, bool from_timer = false) -> void;
+			auto show_summon(ref_ptr<player> player) -> void;
+			auto show_summons(ref_ptr<player> from_player, ref_ptr<player> to_player) -> void;
+			auto move_summon(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto damage_summon(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto make_buff(ref_ptr<player> player, game_item_id item_id) -> buff_info;
+			auto make_active_buff(ref_ptr<player> player, const buff_info &data, game_item_id item_id, const skill_level_info *skill_info) -> buff_packet_values;
+			auto summon_skill(ref_ptr<player> player, packet_reader &reader) -> void;
 		}
 	}
 }

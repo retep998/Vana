@@ -24,8 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <random>
 #include <type_traits>
 
-namespace Vana {
-	class Randomizer {
+namespace vana {
+	class randomizer {
 	public:
 		template <typename TNumber>
 		static auto rand() -> TNumber {
@@ -116,8 +116,8 @@ namespace Vana {
 		class _impl {
 		public:
 			_impl() {
-				std::random_device seedingEngine;
-				m_engine.seed(seedingEngine());
+				std::random_device seeding_engine;
+				m_engine.seed(seeding_engine());
 			}
 
 			template <typename TNumber>

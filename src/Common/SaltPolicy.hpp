@@ -19,13 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	enum class SaltPolicy {
-		Append,
-		Prepend,
-		ChopDistribute,
-		ChopCrossDistribute,
-		Intersperse,
+namespace vana {
+	enum class salt_policy {
+		append,
+		prepend,
+		chop_distribute,
+		chop_cross_distribute,
+		intersperse,
 		// If more constants are added, please add them to ConfigFile.cpp as well
 	};
 }

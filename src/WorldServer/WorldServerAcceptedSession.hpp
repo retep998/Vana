@@ -20,22 +20,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/ServerAcceptedSession.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class PacketReader;
+namespace vana {
+	class packet_reader;
 
-	namespace WorldServer {
-		class WorldServerAcceptedSession final : public ServerAcceptedSession, public enable_shared<WorldServerAcceptedSession> {
-			NONCOPYABLE(WorldServerAcceptedSession);
+	namespace world_server {
+		class world_server_accepted_session final : public server_accepted_session, public enable_shared<world_server_accepted_session> {
+			NONCOPYABLE(world_server_accepted_session);
 		public:
-			WorldServerAcceptedSession(AbstractServer &server);
+			world_server_accepted_session(abstract_server &server);
 
-			auto getChannel() const -> channel_id_t;
+			auto get_channel() const -> game_channel_id;
 		protected:
-			auto handle(PacketReader &reader) -> Result override;
-			auto authenticated(ServerType type) -> void override;
-			auto onDisconnect() -> void override;
+			auto handle(packet_reader &reader) -> result override;
+			auto authenticated(server_type type) -> void override;
+			auto on_disconnect() -> void override;
 		private:
-			channel_id_t m_channel = 0;
+			game_channel_id m_channel = 0;
 		};
 	}
 }

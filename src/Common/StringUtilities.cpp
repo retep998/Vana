@@ -21,9 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-namespace Vana {
+namespace vana {
+namespace utilities {
+namespace str {
 
-auto StringUtilities::noCaseCompare(const string_t &s1, const string_t &s2) -> int32_t {
+auto no_case_compare(const string &s1, const string &s2) -> int32_t {
 	size_t l1 = s1.size();
 	size_t l2 = s2.size();
 	auto iter1 = std::begin(s1);
@@ -46,34 +48,34 @@ auto StringUtilities::noCaseCompare(const string_t &s1, const string_t &s2) -> i
 	return (l1 < l2) ? -1 : 1;
 }
 
-auto StringUtilities::runFlags(const opt_string_t &flags, function_t<void (const string_t &)> func) -> void {
+auto run_flags(const opt_string &flags, function<void (const string &)> func) -> void {
 	if (flags.is_initialized()) {
-		runFlags(flags.get(), func);
+		run_flags(flags.get(), func);
 	}
 }
 
-auto StringUtilities::runFlags(const string_t &flags, function_t<void (const string_t &)> func) -> void {
+auto run_flags(const string &flags, function<void (const string &)> func) -> void {
 	if (!flags.empty()) {
-		MiscUtilities::tokenizer tokens{flags, ","};
+		utilities::misc::tokenizer tokens{flags, ","};
 		for (const auto &token : tokens) {
 			func(token);
 		}
 	}
 }
 
-auto StringUtilities::runEnum(const opt_string_t &enumText, function_t<void (const string_t &)> func) -> void {
-	if (enumText.is_initialized()) {
-		runEnum(enumText.get(), func);
+auto run_enum(const opt_string &enum_text, function<void (const string &)> func) -> void {
+	if (enum_text.is_initialized()) {
+		run_enum(enum_text.get(), func);
 	}
 }
 
-auto StringUtilities::runEnum(const string_t &enumText, function_t<void (const string_t &)> func) -> void {
-	if (!enumText.empty()) {
-		func(enumText);
+auto run_enum(const string &enum_text, function<void (const string &)> func) -> void {
+	if (!enum_text.empty()) {
+		func(enum_text);
 	}
 }
 
-auto StringUtilities::atoli(const char *str) -> int64_t {
+auto atoli(const char *str) -> int64_t {
 	int64_t result = 0;
 	while (*str >= '0' && *str <= '9') {
 		result = (result * 10) + (*str++ - '0');
@@ -81,24 +83,24 @@ auto StringUtilities::atoli(const char *str) -> int64_t {
 	return result;
 }
 
-auto StringUtilities::replace(const string_t &input, const string_t &what, const string_t &replacement) -> string_t {
-	string_t ret = input;
-	size_t searchLen = what.length();
-	size_t foundPos = ret.find(what);
-	while (foundPos != string_t::npos) {
-		ret.replace(foundPos, searchLen, replacement);
-		foundPos = ret.find(what); // Search the next one
+auto replace(const string &input, const string &what, const string &replacement) -> string {
+	string ret = input;
+	size_t search_len = what.length();
+	size_t found_pos = ret.find(what);
+	while (found_pos != string::npos) {
+		ret.replace(found_pos, search_len, replacement);
+		found_pos = ret.find(what); // Search the next one
 	}
 	return ret;
 }
 
-auto StringUtilities::bytesToHex(const unsigned char *input, size_t inputSize, bool uppercase) -> string_t {
-	string_t ret;
-	if (inputSize > 0) {
-		out_stream_t out;
-		size_t bufLen = inputSize - 1;
+auto bytes_to_hex(const unsigned char *input, size_t input_size, bool uppercase) -> string {
+	string ret;
+	if (input_size > 0) {
+		out_stream out;
+		size_t buffer_len = input_size - 1;
 
-		for (size_t i = 0; i <= bufLen; i++) {
+		for (size_t i = 0; i <= buffer_len; i++) {
 			out << std::hex;
 			if (uppercase) {
 				out << std::uppercase;
@@ -107,7 +109,7 @@ auto StringUtilities::bytesToHex(const unsigned char *input, size_t inputSize, b
 				out << std::nouppercase;
 			}
 			out << std::setw(2) << std::setfill('0') << static_cast<int16_t>(input[i]);
-			if (i < bufLen) {
+			if (i < buffer_len) {
 				out << " ";
 			}
 		}
@@ -117,11 +119,11 @@ auto StringUtilities::bytesToHex(const unsigned char *input, size_t inputSize, b
 	return ret;
 }
 
-auto StringUtilities::split(string_t input, const string_t &delimiter) -> vector_t<string_t> {
-	vector_t<string_t> ret;
+auto split(string input, const string &delimiter) -> vector<string> {
+	vector<string> ret;
 	size_t pos = 0;
-	string_t token;
-	while ((pos = input.find(delimiter)) != string_t::npos) {
+	string token;
+	while ((pos = input.find(delimiter)) != string::npos) {
 		token = input.substr(0, pos);
 		ret.push_back(token);
 		input.erase(0, pos + delimiter.length());
@@ -130,4 +132,6 @@ auto StringUtilities::split(string_t input, const string_t &delimiter) -> vector
 	return ret;
 }
 
+}
+}
 }

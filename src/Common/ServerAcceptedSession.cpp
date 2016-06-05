@@ -24,69 +24,69 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <asio.hpp>
 #include <iostream>
 
-namespace Vana {
+namespace vana {
 
-ServerAcceptedSession::ServerAcceptedSession(AbstractServer &server) :
+server_accepted_session::server_accepted_session(abstract_server &server) :
 	m_server{server}
 {
 }
 
-auto ServerAcceptedSession::handle(PacketReader &reader) -> Result {
-	if (reader.get<header_t>() == IMSG_PASSWORD) {
-		if (reader.get<string_t>() == m_server.getInterPassword()) {
-			m_isAuthenticated = true;
+auto server_accepted_session::handle(packet_reader &reader) -> result {
+	if (reader.get<packet_header>() == IMSG_PASSWORD) {
+		if (reader.get<string>() == m_server.get_inter_password()) {
+			m_is_authenticated = true;
 
-			setExternalIpInformation(m_session->getIp(), reader.get<vector_t<ExternalIp>>());
+			set_external_ip_information(m_session->get_ip(), reader.get<vector<external_ip>>());
 
-			ServerType type = static_cast<ServerType>(reader.get<server_type_t>());
+			server_type type = static_cast<server_type>(reader.get<server_type_underlying>());
 			m_type = type;
 			authenticated(type);
 		}
 		else {
-			m_server.log(LogType::ServerAuthFailure, [&](out_stream_t &log) {
-				log << "IP: " << m_session->getIp();
+			m_server.log(log_type::server_auth_failure, [&](out_stream &log) {
+				log << "i_p: " << m_session->get_ip();
 			});
 			m_session->disconnect();
-			return Result::Failure;
+			return result::failure;
 		}
 	}
-	else if (!m_isAuthenticated) {
+	else if (!m_is_authenticated) {
 		m_session->disconnect();
-		return Result::Failure;
+		return result::failure;
 	}
 	reader.reset();
-	return Result::Successful;
+	return result::successful;
 }
 
-auto ServerAcceptedSession::authenticated(ServerType type) -> void {
+auto server_accepted_session::authenticated(server_type type) -> void {
 	// Intentionally blank
 }
 
-auto ServerAcceptedSession::getType() const -> ServerType {
+auto server_accepted_session::get_type() const -> server_type {
 	return m_type;
 }
 
-auto ServerAcceptedSession::isAuthenticated() const -> bool {
-	return m_isAuthenticated;
+auto server_accepted_session::is_authenticated() const -> bool {
+	return m_is_authenticated;
 }
 
-auto ServerAcceptedSession::getExternalIps() const -> const IpMatrix & {
-	return m_resolver.getExternalIps();
+auto server_accepted_session::get_external_ips() const -> const ip_matrix & {
+	return m_resolver.get_external_ips();
 }
 
-auto ServerAcceptedSession::matchSubnet(const Ip &test) const -> Ip {
-	return m_resolver.matchIpToSubnet(test);
+auto server_accepted_session::match_subnet(const ip &test) const -> ip {
+	return m_resolver.match_ip_to_subnet(test);
 }
 
-auto ServerAcceptedSession::setExternalIpInformation(const Ip &defaultIp, const IpMatrix &matrix) -> void {
-	m_resolver.setExternalIpInformation(defaultIp, matrix);
+auto server_accepted_session::set_external_ip_information(const ip &default_ip, const ip_matrix &matrix) -> void {
+	m_resolver.set_external_ip_information(default_ip, matrix);
 }
 
-auto ServerAcceptedSession::onConnect() -> void {
+auto server_accepted_session::on_connect() -> void {
 	// Intentionally blank
 }
 
-auto ServerAcceptedSession::onDisconnect() -> void {
+auto server_accepted_session::on_disconnect() -> void {
 	// Intentionally blank
 }
 

@@ -20,39 +20,40 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/GameConstants.hpp"
 #include "ChannelServer/Player.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-PlayerMounts::PlayerMounts(Player *player) :
+player_mounts::player_mounts(player *player) :
 	m_player{player}
 {
 	load();
 }
 
-auto PlayerMounts::save() -> void {
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
-	player_id_t charId = m_player->getId();
-	item_id_t itemId = 0;
+auto player_mounts::save() -> void {
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
+	game_player_id char_id = m_player->get_id();
+	game_item_id item_id = 0;
 	int16_t exp = 0;
 	uint8_t tiredness = 0;
 	uint8_t level = 0;
 
-	sql.once << "DELETE FROM " << db.makeTable("mounts") << " WHERE character_id = :char", soci::use(charId, "char");
+	sql.once << "DELETE FROM " << db.make_table("mounts") << " WHERE character_id = :char",
+		soci::use(char_id, "char");
 
 	if (m_mounts.size() > 0) {
 		soci::statement st = (sql.prepare
-			<< "INSERT INTO " << db.makeTable("mounts") << " "
+			<< "INSERT INTO " << db.make_table("mounts") << " "
 			<< "VALUES (:char, :item, :exp, :level, :tiredness) ",
-			soci::use(charId, "char"),
-			soci::use(itemId, "item"),
+			soci::use(char_id, "char"),
+			soci::use(item_id, "item"),
 			soci::use(exp, "exp"),
 			soci::use(level, "level"),
 			soci::use(tiredness, "tiredness"));
 
 		for (const auto &kvp : m_mounts) {
-			const MountData &c = kvp.second;
-			itemId = kvp.first;
+			const mount_data &c = kvp.second;
+			item_id = kvp.first;
 			exp = c.exp;
 			level = c.level;
 			tiredness = c.tiredness;
@@ -61,95 +62,96 @@ auto PlayerMounts::save() -> void {
 	}
 }
 
-auto PlayerMounts::load() -> void {
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
-	player_id_t charId = m_player->getId();
+auto player_mounts::load() -> void {
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
+	game_player_id char_id = m_player->get_id();
 
-	soci::rowset<> rs = (sql.prepare << "SELECT m.* FROM " << db.makeTable("mounts") << " m WHERE m.character_id = :char ", soci::use(charId, "char"));
+	soci::rowset<> rs = (sql.prepare << "SELECT m.* FROM " << db.make_table("mounts") << " m WHERE m.character_id = :char ",
+		soci::use(char_id, "char"));
 
 	for (const auto &row : rs) {
-		MountData c;
+		mount_data c;
 		c.exp = row.get<int16_t>("exp");
 		c.level = row.get<int8_t>("level");
 		c.tiredness = row.get<int8_t>("tiredness");
-		m_mounts[row.get<item_id_t>("mount_id")] = c;
+		m_mounts[row.get<game_item_id>("mount_id")] = c;
 	}
 }
 
-auto PlayerMounts::getCurrentExp() -> int16_t {
-	return m_currentMount != 0 ? m_mounts[m_currentMount].exp : 0;
+auto player_mounts::get_current_exp() -> int16_t {
+	return m_current_mount != 0 ? m_mounts[m_current_mount].exp : 0;
 }
 
-auto PlayerMounts::getCurrentLevel() -> int8_t {
-	return m_currentMount != 0 ? m_mounts[m_currentMount].level : 0;
+auto player_mounts::get_current_level() -> int8_t {
+	return m_current_mount != 0 ? m_mounts[m_current_mount].level : 0;
 }
 
-auto PlayerMounts::getCurrentTiredness() -> int8_t {
-	return m_currentMount != 0 ? m_mounts[m_currentMount].tiredness : 0;
+auto player_mounts::get_current_tiredness() -> int8_t {
+	return m_current_mount != 0 ? m_mounts[m_current_mount].tiredness : 0;
 }
 
-auto PlayerMounts::getMountExp(item_id_t id) -> int16_t {
+auto player_mounts::get_mount_exp(game_item_id id) -> int16_t {
 	return m_mounts.find(id) != std::end(m_mounts) ? m_mounts[id].exp : 0;
 }
 
-auto PlayerMounts::getMountLevel(item_id_t id) -> int8_t {
+auto player_mounts::get_mount_level(game_item_id id) -> int8_t {
 	return m_mounts.find(id) != std::end(m_mounts) ? m_mounts[id].level : 0;
 }
 
-auto PlayerMounts::getMountTiredness(item_id_t id) -> int8_t {
+auto player_mounts::get_mount_tiredness(game_item_id id) -> int8_t {
 	return m_mounts.find(id) != std::end(m_mounts) ? m_mounts[id].tiredness : 0;
 }
 
-auto PlayerMounts::addMount(item_id_t id) -> void {
-	MountData c;
+auto player_mounts::add_mount(game_item_id id) -> void {
+	mount_data c;
 	c.exp = 0;
 	c.level = 1;
 	c.tiredness = 0;
 	m_mounts[id] = c;
 }
 
-auto PlayerMounts::setCurrentExp(int16_t exp) -> void {
-	if (m_currentMount != 0) {
-		MountData c = m_mounts[m_currentMount];
+auto player_mounts::set_current_exp(int16_t exp) -> void {
+	if (m_current_mount != 0) {
+		mount_data c = m_mounts[m_current_mount];
 		c.exp = exp;
-		m_mounts[m_currentMount] = c;
+		m_mounts[m_current_mount] = c;
 	}
 }
 
-auto PlayerMounts::setCurrentLevel(int8_t level) -> void {
-	if (m_currentMount != 0) {
-		MountData c = m_mounts[m_currentMount];
+auto player_mounts::set_current_level(int8_t level) -> void {
+	if (m_current_mount != 0) {
+		mount_data c = m_mounts[m_current_mount];
 		c.level = level;
-		m_mounts[m_currentMount] = c;
+		m_mounts[m_current_mount] = c;
 	}
 }
 
-auto PlayerMounts::setCurrentTiredness(int8_t tiredness) -> void {
-	if (m_currentMount != 0) {
-		MountData c = m_mounts[m_currentMount];
+auto player_mounts::set_current_tiredness(int8_t tiredness) -> void {
+	if (m_current_mount != 0) {
+		mount_data c = m_mounts[m_current_mount];
 		c.tiredness = tiredness;
-		m_mounts[m_currentMount] = c;
+		m_mounts[m_current_mount] = c;
 	}
 }
 
-auto PlayerMounts::mountInfoPacket(PacketBuilder &builder) -> void {
-	if (getCurrentMount() > 0 && m_player->getInventory()->getEquippedId(EquipSlots::Saddle) != 0) {
+auto player_mounts::mount_info_packet(packet_builder &builder) -> void {
+	if (get_current_mount() > 0 && m_player->get_inventory()->get_equipped_id(equip_slots::saddle) != 0) {
 		builder.add<bool>(true);
-		builder.add<int32_t>(getCurrentLevel());
-		builder.add<int32_t>(getCurrentExp());
-		builder.add<int32_t>(getCurrentTiredness());
+		builder.add<int32_t>(get_current_level());
+		builder.add<int32_t>(get_current_exp());
+		builder.add<int32_t>(get_current_tiredness());
 	}
 	else {
 		builder.add<bool>(false);
 	}
 }
 
-auto PlayerMounts::mountInfoMapSpawnPacket(PacketBuilder &builder) -> void {
-	if (getCurrentMount() > 0 && m_player->getInventory()->getEquippedId(EquipSlots::Saddle) != 0) {
-		builder.add<int32_t>(getCurrentLevel());
-		builder.add<int32_t>(getCurrentExp());
-		builder.add<int32_t>(getCurrentTiredness());
+auto player_mounts::mount_info_map_spawn_packet(packet_builder &builder) -> void {
+	if (get_current_mount() > 0 && m_player->get_inventory()->get_equipped_id(equip_slots::saddle) != 0) {
+		builder.add<int32_t>(get_current_level());
+		builder.add<int32_t>(get_current_exp());
+		builder.add<int32_t>(get_current_tiredness());
 	}
 	else {
 		builder.add<int32_t>(0);

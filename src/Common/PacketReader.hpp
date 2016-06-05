@@ -25,17 +25,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-	DEFAULT_EXCEPTION(PacketContentException, std::runtime_error);
+namespace vana {
+	DEFAULT_EXCEPTION(packet_content_exception, std::runtime_error);
 
 	#ifdef DEBUG
-	DEFAULT_EXCEPTION(PacketDebugException, std::runtime_error);
+	DEFAULT_EXCEPTION(packet_debug_exception, std::runtime_error);
 	#endif
 
-	class PacketReader {
+	class packet_reader {
 	public:
-		PacketReader() = default;
-		PacketReader(unsigned char *buffer, size_t length);
+		packet_reader() = default;
+		packet_reader(unsigned char *buffer, size_t length);
 
 		template <typename TValue>
 		auto get() -> TValue;
@@ -46,71 +46,71 @@ namespace Vana {
 		template <typename TValue>
 		auto peek() -> TValue;
 		template <typename TValue>
-		auto skip() -> PacketReader &;
+		auto skip() -> packet_reader &;
 
-		auto skip(int32_t len) -> PacketReader &;
-		auto getBuffer() const -> unsigned char *;
-		auto getBufferLength() const -> size_t;
-		auto getConsumedLength() const -> size_t;
-		auto reset(int32_t len = 0) -> PacketReader &;
-		auto toString() const -> string_t;
+		auto skip(int32_t len) -> packet_reader &;
+		auto get_buffer() const -> unsigned char *;
+		auto get_buffer_length() const -> size_t;
+		auto get_consumed_length() const -> size_t;
+		auto reset(int32_t len = 0) -> packet_reader &;
+		auto to_string() const -> string;
 	private:
-		friend auto operator <<(std::ostream &out, const PacketReader &reader) -> std::ostream &;
-		auto getSize() const -> size_t { return m_length; }
+		friend auto operator <<(::std::ostream &out, const packet_reader &reader) -> std::ostream &;
+		auto get_size() const -> size_t { return m_length; }
 
 		template <typename TValue>
-		auto skipImpl(TValue *) -> void;
+		auto skip_impl(TValue *) -> void;
 		template <>
-		auto skipImpl<bool>(bool *) -> void;
+		auto skip_impl<bool>(bool *) -> void;
 		template <>
-		auto skipImpl<string_t>(string_t *) -> void;
+		auto skip_impl<string>(string *) -> void;
 		template <typename TElement>
-		auto skipImpl(vector_t<TElement> *) -> void;
+		auto skip_impl(vector<TElement> *) -> void;
 
 		template <typename TValue>
-		auto getImpl(TValue *) -> TValue;
+		auto get_impl(TValue *) -> TValue;
 		template <typename TValue>
-		auto getSizedImpl(size_t size, TValue *) -> TValue;
+		auto get_sized_impl(size_t size, TValue *) -> TValue;
 
 		template <typename TValue>
-		auto getImplDefault() -> TValue;
+		auto get_impl_default() -> TValue;
 		template <>
-		auto getImpl<bool>(bool *) -> bool;
+		auto get_impl<bool>(bool *) -> bool;
 		template <>
-		auto getImpl<double>(double *) -> double;
+		auto get_impl<double>(double *) -> double;
 		template <>
-		auto getImpl<string_t>(string_t *) -> string_t;
+		auto get_impl<string>(string *) -> string;
 		template <>
-		auto getImpl<int8_t>(int8_t *) -> int8_t;
+		auto get_impl<int8_t>(int8_t *) -> int8_t;
 		template <>
-		auto getImpl<int16_t>(int16_t *) -> int16_t;
+		auto get_impl<int16_t>(int16_t *) -> int16_t;
 		template <>
-		auto getImpl<int32_t>(int32_t *) -> int32_t;
+		auto get_impl<int32_t>(int32_t *) -> int32_t;
 		template <>
-		auto getImpl<int64_t>(int64_t *) -> int64_t;
+		auto get_impl<int64_t>(int64_t *) -> int64_t;
 		template <>
-		auto getImpl<uint8_t>(uint8_t *) -> uint8_t;
+		auto get_impl<uint8_t>(uint8_t *) -> uint8_t;
 		template <>
-		auto getImpl<uint16_t>(uint16_t *) -> uint16_t;
+		auto get_impl<uint16_t>(uint16_t *) -> uint16_t;
 		template <>
-		auto getImpl<uint32_t>(uint32_t *) -> uint32_t;
+		auto get_impl<uint32_t>(uint32_t *) -> uint32_t;
 		template <>
-		auto getImpl<uint64_t>(uint64_t *) -> uint64_t;
+		auto get_impl<uint64_t>(uint64_t *) -> uint64_t;
 		template <>
-		auto getImpl<milliseconds_t>(milliseconds_t *) -> milliseconds_t;
+		auto get_impl<milliseconds>(milliseconds *) -> milliseconds;
 		template <>
-		auto getImpl<seconds_t>(seconds_t *) -> seconds_t;
+		auto get_impl<seconds>(seconds *) -> seconds;
 		template <>
-		auto getImpl<minutes_t>(minutes_t *) -> minutes_t;
+		auto get_impl<minutes>(minutes *) -> minutes;
 		template <>
-		auto getImpl<hours_t>(hours_t *) -> hours_t;
+		auto get_impl<hours>(hours *) -> hours;
 		template <typename TElement>
-		auto getImpl(vector_t<TElement> *) -> vector_t<TElement>;
+		auto get_impl(vector<TElement> *) -> vector<TElement>;
 
 		template <>
-		auto getSizedImpl<string_t>(size_t size, string_t *) -> string_t;
+		auto get_sized_impl<string>(size_t size, string *) -> string;
 		template <typename TElement>
-		auto getSizedImpl(size_t size, vector_t<TElement> *) -> vector_t<TElement>;
+		auto get_sized_impl(size_t size, vector<TElement> *) -> vector<TElement>;
 
 		unsigned char *m_buffer = nullptr;
 		size_t m_length = 0;
@@ -118,75 +118,75 @@ namespace Vana {
 	};
 
 	template <typename TValue>
-	auto PacketReader::get() -> TValue {
-		auto v = getImpl(static_cast<TValue *>(nullptr));
+	auto packet_reader::get() -> TValue {
+		auto v = get_impl(static_cast<TValue *>(nullptr));
 		return v;
 	}
 
 	template <typename TValue>
-	auto PacketReader::unk() -> TValue {
-		auto v = getImpl(static_cast<TValue *>(nullptr));
+	auto packet_reader::unk() -> TValue {
+		auto v = get_impl(static_cast<TValue *>(nullptr));
 		return v;
 	}
 
 	template <typename TValue>
-	auto PacketReader::get(size_t size) -> TValue {
-		auto v = getSizedImpl(size, static_cast<TValue *>(nullptr));
+	auto packet_reader::get(size_t size) -> TValue {
+		auto v = get_sized_impl(size, static_cast<TValue *>(nullptr));
 		return v;
 	}
 
 	template <typename TValue>
-	auto PacketReader::peek() -> TValue {
-		size_t pos = getConsumedLength();
+	auto packet_reader::peek() -> TValue {
+		size_t pos = get_consumed_length();
 		auto val = get<TValue>();
 		m_pos = pos;
 		return val;
 	}
 
 	template <typename TValue>
-	auto PacketReader::skip() -> PacketReader & {
-		skipImpl(static_cast<TValue *>(nullptr));
+	auto packet_reader::skip() -> packet_reader & {
+		skip_impl(static_cast<TValue *>(nullptr));
 		return *this;
 	}
 
 	template <typename TValue>
-	auto PacketReader::skipImpl(TValue *) -> void {
+	auto packet_reader::skip_impl(TValue *) -> void {
 		m_pos += sizeof(TValue);
 	}
 
 	template <>
-	auto PacketReader::skipImpl<bool>(bool *) -> void {
+	auto packet_reader::skip_impl<bool>(bool *) -> void {
 		m_pos += 1;
 	}
 
 	template <>
-	auto PacketReader::skipImpl<string_t>(string_t *) -> void {
+	auto packet_reader::skip_impl<string>(string *) -> void {
 		size_t length = get<uint16_t>();
 		m_pos += length;
 	}
 
 	template <typename TElement>
-	auto PacketReader::skipImpl(vector_t<TElement> *) -> void {
+	auto packet_reader::skip_impl(vector<TElement> *) -> void {
 		size_t length = get<uint32_t>();
 		m_pos += length * sizeof(TElement);
 	}
 
 	template <typename TValue>
-	auto PacketReader::getImpl(TValue *) -> TValue {
-		PacketSerialize<TValue> x;
+	auto packet_reader::get_impl(TValue *) -> TValue {
+		packet_serialize<TValue> x;
 		return x.read(*this);
 	}
 
 	template <typename TValue>
-	auto PacketReader::getSizedImpl(size_t size, TValue *) -> TValue {
+	auto packet_reader::get_sized_impl(size_t size, TValue *) -> TValue {
 		static_assert(false, "T is not appropriately specialized for that type");
 		throw std::logic_error{"T is not appropriately specialized for that type"};
 	}
 
 	template <typename TValue>
-	auto PacketReader::getImplDefault() -> TValue {
-		if (sizeof(TValue) > getBufferLength()) {
-			throw PacketContentException{"Packet data longer than buffer allows"};
+	auto packet_reader::get_impl_default() -> TValue {
+		if (sizeof(TValue) > get_buffer_length()) {
+			throw packet_content_exception{"Packet data longer than buffer allows"};
 		}
 		TValue val = *reinterpret_cast<TValue *>(m_buffer + m_pos);
 		m_pos += sizeof(TValue);
@@ -194,107 +194,107 @@ namespace Vana {
 	}
 
 	template <>
-	auto PacketReader::getImpl<bool>(bool *) -> bool {
+	auto packet_reader::get_impl<bool>(bool *) -> bool {
 	#ifdef DEBUG
 		// Address programming errors in debug
-		int8_t byte = getImplDefault<int8_t>();
-		if (byte != 0 && byte != 1) throw PacketDebugException{"Packet data inconsistent with bool type"};
+		int8_t byte = get_impl_default<int8_t>();
+		if (byte != 0 && byte != 1) throw packet_debug_exception{"Packet data inconsistent with bool type"};
 		return byte != 0;
 	#else
-		return getImplDefault<int8_t>() != 0;
+		return get_impl_default<int8_t>() != 0;
 	#endif
 	}
 
 	template <>
-	auto PacketReader::getImpl<double>(double *) -> double {
-		return getImplDefault<double>();
+	auto packet_reader::get_impl<double>(double *) -> double {
+		return get_impl_default<double>();
 	}
 
 	template <>
-	auto PacketReader::getImpl<int8_t>(int8_t *) -> int8_t {
-		return getImplDefault<int8_t>();
+	auto packet_reader::get_impl<int8_t>(int8_t *) -> int8_t {
+		return get_impl_default<int8_t>();
 	}
 
 	template <>
-	auto PacketReader::getImpl<int16_t>(int16_t *) -> int16_t {
-		return getImplDefault<int16_t>();
+	auto packet_reader::get_impl<int16_t>(int16_t *) -> int16_t {
+		return get_impl_default<int16_t>();
 	}
 
 	template <>
-	auto PacketReader::getImpl<int32_t>(int32_t *) -> int32_t {
-		return getImplDefault<int32_t>();
+	auto packet_reader::get_impl<int32_t>(int32_t *) -> int32_t {
+		return get_impl_default<int32_t>();
 	}
 
 	template <>
-	auto PacketReader::getImpl<int64_t>(int64_t *) -> int64_t {
-		return getImplDefault<int64_t>();
+	auto packet_reader::get_impl<int64_t>(int64_t *) -> int64_t {
+		return get_impl_default<int64_t>();
 	}
 
 	template <>
-	auto PacketReader::getImpl<uint8_t>(uint8_t *) -> uint8_t {
-		return getImplDefault<uint8_t>();
+	auto packet_reader::get_impl<uint8_t>(uint8_t *) -> uint8_t {
+		return get_impl_default<uint8_t>();
 	}
 
 	template <>
-	auto PacketReader::getImpl<uint16_t>(uint16_t *) -> uint16_t {
-		return getImplDefault<uint16_t>();
+	auto packet_reader::get_impl<uint16_t>(uint16_t *) -> uint16_t {
+		return get_impl_default<uint16_t>();
 	}
 
 	template <>
-	auto PacketReader::getImpl<uint32_t>(uint32_t *) -> uint32_t {
-		return getImplDefault<uint32_t>();
+	auto packet_reader::get_impl<uint32_t>(uint32_t *) -> uint32_t {
+		return get_impl_default<uint32_t>();
 	}
 
 	template <>
-	auto PacketReader::getImpl<uint64_t>(uint64_t *) -> uint64_t {
-		return getImplDefault<uint64_t>();
+	auto packet_reader::get_impl<uint64_t>(uint64_t *) -> uint64_t {
+		return get_impl_default<uint64_t>();
 	}
 
 	template <>
-	auto PacketReader::getImpl<milliseconds_t>(milliseconds_t *) -> milliseconds_t {
-		return milliseconds_t{getImplDefault<int32_t>()};
+	auto packet_reader::get_impl<milliseconds>(milliseconds *) -> milliseconds {
+		return milliseconds{get_impl_default<int32_t>()};
 	}
 
 	template <>
-	auto PacketReader::getImpl<seconds_t>(seconds_t *) -> seconds_t {
-		return seconds_t{getImplDefault<int32_t>()};
+	auto packet_reader::get_impl<seconds>(seconds *) -> seconds {
+		return seconds{get_impl_default<int32_t>()};
 	}
 
 	template <>
-	auto PacketReader::getImpl<minutes_t>(minutes_t *) -> minutes_t {
-		return minutes_t{getImplDefault<int32_t>()};
+	auto packet_reader::get_impl<minutes>(minutes *) -> minutes {
+		return minutes{get_impl_default<int32_t>()};
 	}
 
 	template <>
-	auto PacketReader::getImpl<hours_t>(hours_t *) -> hours_t {
-		return hours_t{getImplDefault<int32_t>()};
+	auto packet_reader::get_impl<hours>(hours *) -> hours {
+		return hours{get_impl_default<int32_t>()};
 	}
 
 	template <>
-	auto PacketReader::getImpl<string_t>(string_t *) -> string_t {
-		size_t size = getImplDefault<uint16_t>();
-		return get<string_t>(size);
+	auto packet_reader::get_impl<string>(string *) -> string {
+		size_t size = get_impl_default<uint16_t>();
+		return get<string>(size);
 	}
 
 	template <typename TElement>
-	auto PacketReader::getImpl(vector_t<TElement> *) -> vector_t<TElement> {
-		size_t size = getImplDefault<uint32_t>();
-		return get<vector_t<TElement>>(size);
+	auto packet_reader::get_impl(vector<TElement> *) -> vector<TElement> {
+		size_t size = get_impl_default<uint32_t>();
+		return get<vector<TElement>>(size);
 	}
 
 	template <>
-	auto PacketReader::getSizedImpl<string_t>(size_t size, string_t *) -> string_t {
-		if (size > getBufferLength()) {
-			throw PacketContentException{"Packet string longer than buffer allows"};
+	auto packet_reader::get_sized_impl<string>(size_t size, string *) -> string {
+		if (size > get_buffer_length()) {
+			throw packet_content_exception{"Packet string longer than buffer allows"};
 		}
-		string_t s{reinterpret_cast<char *>(m_buffer + m_pos), size};
+		string s{reinterpret_cast<char *>(m_buffer + m_pos), size};
 		m_pos += size;
 		return s;
 	}
 
 	template <typename TElement>
-	auto PacketReader::getSizedImpl(size_t size, vector_t<TElement> *) -> vector_t<TElement> {
-		vector_t<TElement> vec;
+	auto packet_reader::get_sized_impl(size_t size, vector<TElement> *) -> vector<TElement> {
+		vector<TElement> vec;
 		for (size_t i = 0; i < size; i++) {
 			vec.push_back(get<TElement>());
 		}
@@ -302,8 +302,8 @@ namespace Vana {
 	}
 
 	inline
-	auto operator <<(std::ostream &out, const PacketReader &reader) -> std::ostream & {
-		out << reader.toString();
+	auto operator <<(std::ostream &out, const packet_reader &reader) -> std::ostream & {
+		out << reader.to_string();
 		return out;
 	}
 }

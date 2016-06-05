@@ -22,61 +22,61 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <memory>
 #include <string>
 
-namespace Vana {
+namespace vana {
 	namespace soci = ::soci;
-	struct DbConfig;
+	struct db_config;
 
-	class Database {
+	class database {
 	public:
-		Database(const DbConfig &conf, bool includeDatabase);
+		database(const db_config &conf, bool include_database);
 
-		static auto getCharDb() -> Database &;
-		static auto getDataDb() -> Database &;
-		static auto initCharDb() -> Database &;
+		static auto get_char_db() -> database &;
+		static auto get_data_db() -> database &;
+		static auto init_char_db() -> database &;
 
-		auto getSession() -> soci::session &;
-		auto getSchema() const -> string_t;
-		auto getTablePrefix() const -> string_t;
-		auto makeTable(const string_t &table) const -> string_t;
+		auto get_session() -> soci::session &;
+		auto get_schema() const -> string;
+		auto get_table_prefix() const -> string;
+		auto make_table(const string &table) const -> string;
 		template <typename TIdentifier>
-		auto getLastId() -> TIdentifier;
-		auto tableExists(const string_t &table) -> bool;
+		auto get_last_id() -> TIdentifier;
+		auto table_exists(const string &table) -> bool;
 
-		static auto schemaExists(soci::session &sql, const string_t &schema) -> bool;
-		static auto tableExists(soci::session &sql, const string_t &schema, const string_t &table) -> bool;
+		static auto schema_exists(soci::session &sql, const string &schema) -> bool;
+		static auto table_exists(soci::session &sql, const string &schema, const string &table) -> bool;
 	private:
-		owned_ptr_t<soci::session> m_session;
-		string_t m_schema;
-		string_t m_tablePrefix;
+		owned_ptr<soci::session> m_session;
+		string m_schema;
+		string m_table_prefix;
 
-		static auto connectCharDb() -> void;
-		static auto connectDataDb() -> void;
-		static auto buildConnectionString(const DbConfig &conf, bool includeDatabase) -> string_t;
+		static auto connect_char_db() -> void;
+		static auto connect_data_db() -> void;
+		static auto build_connection_string(const db_config &conf, bool include_database) -> string;
 
-		static thread_local owned_ptr_t<Database> m_chardb;
-		static thread_local owned_ptr_t<Database> m_datadb;
+		static thread_local owned_ptr<database> m_chardb;
+		static thread_local owned_ptr<database> m_datadb;
 	};
 
 	inline
-	auto Database::getCharDb() -> Database & {
+	auto database::get_char_db() -> database & {
 		if (m_chardb == nullptr) {
-			connectCharDb();
+			connect_char_db();
 		}
 		return *m_chardb;
 	}
 
 	inline
-	auto Database::getDataDb() -> Database & {
+	auto database::get_data_db() -> database & {
 		if (m_datadb == nullptr) {
-			connectDataDb();
+			connect_data_db();
 		}
 		return *m_datadb;
 	}
 
 	template <typename TIdentifier>
-	auto Database::getLastId() -> TIdentifier {
+	auto database::get_last_id() -> TIdentifier {
 		TIdentifier val;
-		getSession().once << "SELECT LAST_INSERT_ID()", soci::into(val);
+		get_session().once << "SELECT LAST_INSERT_ID()", soci::into(val);
 		return val;
 	}
 }

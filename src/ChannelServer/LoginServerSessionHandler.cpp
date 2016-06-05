@@ -23,23 +23,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <limits>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto LoginServerSessionHandler::connect(ref_ptr_t<LoginServerSession> session, PacketReader &reader) -> void {
-	world_id_t worldId = reader.get<world_id_t>();
-	bool showLogAndExit = true;
-	if (worldId != -1) {
-		Ip ip = reader.get<Ip>();
-		port_t port = reader.get<port_t>();
-		if (Result::Successful == ChannelServer::getInstance().connectToWorld(worldId, port, ip)) {
-			showLogAndExit = false;
+auto login_server_session_handler::connect(ref_ptr<login_server_session> session, packet_reader &reader) -> void {
+	game_world_id world_id = reader.get<game_world_id>();
+	bool show_log_and_exit = true;
+	if (world_id != -1) {
+		ip value = reader.get<ip>();
+		connection_port port = reader.get<connection_port>();
+		if (result::successful == channel_server::get_instance().connect_to_world(world_id, port, value)) {
+			show_log_and_exit = false;
 		}
 	}
 
-	if (showLogAndExit) {
-		ChannelServer::getInstance().log(LogType::CriticalError, "No world server to connect");
-		ExitCodes::exit(ExitCodes::ServerConnectionError);
+	if (show_log_and_exit) {
+		channel_server::get_instance().log(log_type::critical_error, "No world server to connect");
+		exit(exit_code::server_connection_error);
 	}
 }
 

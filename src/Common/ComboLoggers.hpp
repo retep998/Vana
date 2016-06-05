@@ -22,46 +22,46 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <memory>
 #include <string>
 
-namespace Vana {
+namespace vana {
 	template <typename TLogger1, typename TLogger2>
-	class DuoLogger : public Logger {
+	class duo_logger : public base_logger {
 	public:
-		DuoLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize = 10) {
-			m_logger1 = make_owned_ptr<TLogger1>(filename, format, timeFormat, serverType, bufferSize);
-			m_logger2 = make_owned_ptr<TLogger2>(filename, format, timeFormat, serverType, bufferSize);
+		duo_logger(const string &filename, const string &format, const string &time_format, server_type type, size_t buffer_size = 10) {
+			m_logger1 = make_owned_ptr<TLogger1>(filename, format, time_format, type, buffer_size);
+			m_logger2 = make_owned_ptr<TLogger2>(filename, format, time_format, type, buffer_size);
 		}
 
-		auto log(LogType type, const opt_string_t &identifier, const string_t &message) -> void override {
-			getLogger1()->log(type, identifier, message);
-			getLogger2()->log(type, identifier, message);
+		auto log(log_type type, const opt_string &identifier, const string &message) -> void override {
+			get_logger1()->log(type, identifier, message);
+			get_logger2()->log(type, identifier, message);
 		}
 	private:
-		auto getLogger1() const -> TLogger1 * { return m_logger1.get(); }
-		auto getLogger2() const -> TLogger2 * { return m_logger2.get(); }
-		owned_ptr_t<TLogger1> m_logger1;
-		owned_ptr_t<TLogger2> m_logger2;
+		auto get_logger1() const -> TLogger1 * { return m_logger1.get(); }
+		auto get_logger2() const -> TLogger2 * { return m_logger2.get(); }
+		owned_ptr<TLogger1> m_logger1;
+		owned_ptr<TLogger2> m_logger2;
 	};
 
 	template <typename TLogger1, typename TLogger2, typename TLogger3>
-	class TriLogger : public Logger {
+	class tri_logger : public base_logger {
 	public:
-		TriLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize = 10) {
-			m_logger1 = make_owned_ptr<TLogger1>(filename, format, timeFormat, serverType, bufferSize);
-			m_logger2 = make_owned_ptr<TLogger2>(filename, format, timeFormat, serverType, bufferSize);
-			m_logger3 = make_owned_ptr<TLogger3>(filename, format, timeFormat, serverType, bufferSize);
+		tri_logger(const string &filename, const string &format, const string &time_format, server_type type, size_t buffer_size = 10) {
+			m_logger1 = make_owned_ptr<TLogger1>(filename, format, time_format, type, buffer_size);
+			m_logger2 = make_owned_ptr<TLogger2>(filename, format, time_format, type, buffer_size);
+			m_logger3 = make_owned_ptr<TLogger3>(filename, format, time_format, type, buffer_size);
 		}
 
-		auto log(LogType type, const opt_string_t &identifier, const string_t &message) -> void override {
-			getLogger1()->log(type, identifier, message);
-			getLogger2()->log(type, identifier, message);
-			getLogger3()->log(type, identifier, message);
+		auto log(log_type type, const opt_string &identifier, const string &message) -> void override {
+			get_logger1()->log(type, identifier, message);
+			get_logger2()->log(type, identifier, message);
+			get_logger3()->log(type, identifier, message);
 		}
 	private:
-		auto getLogger1() const -> TLogger1 * { return m_logger1.get(); }
-		auto getLogger2() const -> TLogger2 * { return m_logger2.get(); }
-		auto getLogger3() const -> TLogger3 * { return m_logger3.get(); }
-		owned_ptr_t<TLogger1> m_logger1;
-		owned_ptr_t<TLogger2> m_logger2;
-		owned_ptr_t<TLogger3> m_logger3;
+		auto get_logger1() const -> TLogger1 * { return m_logger1.get(); }
+		auto get_logger2() const -> TLogger2 * { return m_logger2.get(); }
+		auto get_logger3() const -> TLogger3 * { return m_logger3.get(); }
+		owned_ptr<TLogger1> m_logger1;
+		owned_ptr<TLogger2> m_logger2;
+		owned_ptr<TLogger3> m_logger3;
 	};
 }

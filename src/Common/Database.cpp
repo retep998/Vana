@@ -20,57 +20,57 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/DbConfig.hpp"
 #include <soci-mysql.h>
 
-namespace Vana {
+namespace vana {
 
-thread_local owned_ptr_t<Database> Database::m_chardb{nullptr};
-thread_local owned_ptr_t<Database> Database::m_datadb{nullptr};
+thread_local owned_ptr<database> database::m_chardb{nullptr};
+thread_local owned_ptr<database> database::m_datadb{nullptr};
 
-auto Database::initCharDb() -> Database & {
-	if (m_chardb != nullptr) throw std::logic_error{"Must not call initCharDb after the database is already initialized"};
+auto database::init_char_db() -> database & {
+	if (m_chardb != nullptr) throw std::logic_error{"Must not call init_char_db after the database is already initialized"};
 
-	auto config = ConfigFile::getDatabaseConfig();
+	auto config = config_file::get_database_config();
 	config->run();
-	DbConfig conf = config->get<DbConfig>("chardb");
-	m_chardb = make_owned_ptr<Database>(conf, false);
-	auto &sql = m_chardb->getSession();
+	db_config conf = config->get<db_config>("chardb");
+	m_chardb = make_owned_ptr<database>(conf, false);
+	auto &sql = m_chardb->get_session();
 
-	if (!schemaExists(sql, conf.database)) {
+	if (!schema_exists(sql, conf.database)) {
 		sql.once << "CREATE DATABASE " << conf.database;
 	}
 
 	m_chardb.release();
-	return getCharDb();
+	return get_char_db();
 }
 
-Database::Database(const DbConfig &conf, bool includeDatabase) {
-	m_session = make_owned_ptr<soci::session>(soci::mysql, buildConnectionString(conf, includeDatabase));
+database::database(const db_config &conf, bool include_database) {
+	m_session = make_owned_ptr<soci::session>(soci::mysql, build_connection_string(conf, include_database));
 	m_session->reconnect();
 	m_schema = conf.database;
-	m_tablePrefix = conf.tablePrefix;
+	m_table_prefix = conf.table_prefix;
 }
 
-auto Database::getSession() -> soci::session & {
+auto database::get_session() -> soci::session & {
 	return *m_session;
 }
 
-auto Database::getSchema() const -> string_t {
+auto database::get_schema() const -> string {
 	return m_schema;
 }
 
-auto Database::getTablePrefix() const -> string_t {
-	return m_tablePrefix;
+auto database::get_table_prefix() const -> string {
+	return m_table_prefix;
 }
 
-auto Database::makeTable(const string_t &table) const -> string_t {
-	return m_tablePrefix + table;
+auto database::make_table(const string &table) const -> string {
+	return m_table_prefix + table;
 }
 
-auto Database::tableExists(const string_t &table) -> bool {
-	return tableExists(getSession(), m_schema, makeTable(table));
+auto database::table_exists(const string &table) -> bool {
+	return table_exists(get_session(), m_schema, make_table(table));
 }
 
-auto Database::schemaExists(soci::session &sql, const string_t &schema) -> bool {
-	opt_string_t database;
+auto database::schema_exists(soci::session &sql, const string &schema) -> bool {
+	opt_string database;
 	sql.once
 		<< "SELECT SCHEMA_NAME "
 		<< "FROM INFORMATION_SCHEMA.SCHEMATA "
@@ -81,8 +81,8 @@ auto Database::schemaExists(soci::session &sql, const string_t &schema) -> bool 
 	return database.is_initialized();
 }
 
-auto Database::tableExists(soci::session &sql, const string_t &schema, const string_t &table) -> bool {
-	opt_string_t databaseTable;
+auto database::table_exists(soci::session &sql, const string &schema, const string &table) -> bool {
+	opt_string database_table;
 	sql.once
 		<< "SELECT TABLE_NAME "
 		<< "FROM INFORMATION_SCHEMA.TABLES "
@@ -90,28 +90,28 @@ auto Database::tableExists(soci::session &sql, const string_t &schema, const str
 		<< "LIMIT 1",
 		soci::use(schema, "schema"),
 		soci::use(table, "table"),
-		soci::into(databaseTable);
-	return databaseTable.is_initialized();
+		soci::into(database_table);
+	return database_table.is_initialized();
 }
 
-auto Database::connectCharDb() -> void {
-	auto config = ConfigFile::getDatabaseConfig();
+auto database::connect_char_db() -> void {
+	auto config = config_file::get_database_config();
 	config->run();
-	DbConfig conf = config->get<DbConfig>("chardb");
-	m_chardb = make_owned_ptr<Database>(conf, true);
+	db_config conf = config->get<db_config>("chardb");
+	m_chardb = make_owned_ptr<database>(conf, true);
 }
 
-auto Database::connectDataDb() -> void {
-	auto config = ConfigFile::getDatabaseConfig();
+auto database::connect_data_db() -> void {
+	auto config = config_file::get_database_config();
 	config->run();
-	DbConfig conf = config->get<DbConfig>("datadb");
-	m_datadb = make_owned_ptr<Database>(conf, true);
+	db_config conf = config->get<db_config>("datadb");
+	m_datadb = make_owned_ptr<database>(conf, true);
 }
 
-auto Database::buildConnectionString(const DbConfig &conf, bool includeDatabase) -> string_t {
-	out_stream_t str;
+auto database::build_connection_string(const db_config &conf, bool include_database) -> string {
+	out_stream str;
 
-	if (includeDatabase) {
+	if (include_database) {
 		str << "dbname=" << conf.database << " ";
 	}
 

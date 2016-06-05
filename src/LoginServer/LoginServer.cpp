@@ -32,172 +32,172 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <sstream>
 
-namespace Vana {
-namespace LoginServer {
+namespace vana {
+namespace login_server {
 
-LoginServer::LoginServer() :
-	AbstractServer{ServerType::Login}
+login_server::login_server() :
+	abstract_server{server_type::login}
 {
 }
 
-auto LoginServer::listen() -> void {
-	auto &config = getInterServerConfig();
+auto login_server::listen() -> void {
+	auto &config = get_inter_server_config();
 
-	m_userPool.initialize(1);
-	m_sessionPool.initialize(2);
+	m_user_pool.initialize(1);
+	m_session_pool.initialize(2);
 
-	getConnectionManager().listen(
-		ConnectionListenerConfig{
-			config.clientPing,
-			config.clientEncryption,
-			ConnectionType::EndUser,
-			MapleVersion::LoginSubversion,
+	get_connection_manager().listen(
+		connection_listener_config{
+			config.client_ping,
+			config.client_encryption,
+			connection_type::end_user,
+			maple_version::login_subversion,
 			m_port,
-			Ip::Type::Ipv4
+			ip::type::ipv4
 		},
-		[&] { return make_ref_ptr<User>(); }
+		[&] { return make_ref_ptr<user>(); }
 	);
 
-	getConnectionManager().listen(
-		ConnectionListenerConfig{
-			config.serverPing,
+	get_connection_manager().listen(
+		connection_listener_config{
+			config.server_ping,
 			true,
-			ConnectionType::Unknown,
-			MapleVersion::LoginSubversion,
-			config.loginPort,
-			Ip::Type::Ipv4
+			connection_type::unknown,
+			maple_version::login_subversion,
+			config.login_port,
+			ip::type::ipv4
 		},
-		[&] { return make_ref_ptr<LoginServerAcceptedSession>(*this); }
+		[&] { return make_ref_ptr<login_server_accepted_session>(*this); }
 	);
 }
 
-auto LoginServer::finalizeUser(ref_ptr_t<User> user) -> void {
-	m_userPool.store(user);
+auto login_server::finalize_user(ref_ptr<user> user_value) -> void {
+	m_user_pool.store(user_value);
 }
 
-auto LoginServer::finalizeServerSession(ref_ptr_t<LoginServerAcceptedSession> session) -> void {
-	m_sessionPool.store(session);
+auto login_server::finalize_server_session(ref_ptr<login_server_accepted_session> session) -> void {
+	m_session_pool.store(session);
 }
 
-auto LoginServer::loadData() -> Result {
-	if (Initializing::checkSchemaVersion(this, true) == Result::Failure) {
-		return Result::Failure;
+auto login_server::load_data() -> result {
+	if (initializing::check_schema_version(this, true) == result::failure) {
+		return result::failure;
 	}
-	if (Initializing::checkMcdbVersion(this) == Result::Failure) {
-		return Result::Failure;
+	if (initializing::check_mcdb_version(this) == result::failure) {
+		return result::failure;
 	}
-	Initializing::setUsersOffline(this, 1);
+	initializing::set_users_offline(this, 1);
 
-	m_validCharDataProvider.loadData();
-	m_equipDataProvider.loadData();
-	m_curseDataProvider.loadData();
+	m_valid_char_data_provider.load_data();
+	m_equip_data_provider.load_data();
+	m_curse_data_provider.load_data();
 
-	RankingCalculator::setTimer();
-	displayLaunchTime();
+	ranking_calculator::set_timer();
+	display_launch_time();
 
-	return Result::Successful;
+	return result::successful;
 }
 
-auto LoginServer::loadConfig() -> Result {
-	auto config = ConfigFile::getLoginServerConfig();
+auto login_server::load_config() -> result {
+	auto config = config_file::get_login_config();
 	config->run();
-	m_pinEnabled = config->get<bool>("pin");
-	m_port = config->get<port_t>("port");
-	m_maxInvalidLogins = config->get<int32_t>("invalid_login_threshold");
+	m_pin_enabled = config->get<bool>("pin");
+	m_port = config->get<connection_port>("port");
+	m_max_invalid_logins = config->get<int32_t>("invalid_login_threshold");
 
-	auto salting = ConfigFile::getSaltingConfig();
+	auto salting = config_file::get_salting_config();
 	salting->run();
 
-	auto saltingConf = salting->get<SaltingConfig>("");
-	m_accountSaltingPolicy = saltingConf.account;
-	m_accountSaltSize = saltingConf.accountSaltSize;
+	auto salting_conf = salting->get<salting_config>("");
+	m_account_salting_policy = salting_conf.account;
+	m_account_salt_size = salting_conf.account_salt_size;
 
-	loadWorlds();
+	load_worlds();
 
-	return Result::Successful;
+	return result::successful;
 }
 
-auto LoginServer::initComplete() -> void {
+auto login_server::init_complete() -> void {
 	listen();
 }
 
-auto LoginServer::makeLogIdentifier() const -> opt_string_t {
+auto login_server::make_log_identifier() const -> opt_string {
 	// Login needs no special identifier; there's only one
-	return opt_string_t{};
+	return opt_string{};
 }
 
-auto LoginServer::getLogPrefix() const -> string_t {
+auto login_server::get_log_prefix() const -> string {
 	return "login";
 }
 
-auto LoginServer::getPinEnabled() const -> bool {
-	return m_pinEnabled;
+auto login_server::get_pin_enabled() const -> bool {
+	return m_pin_enabled;
 }
 
-auto LoginServer::rehashConfig() -> void {
-	loadWorlds();
-	m_worlds.runFunction([](World *world) -> bool {
-		if (world != nullptr && world->isConnected()) {
+auto login_server::rehash_config() -> void {
+	load_worlds();
+	m_worlds.run_function([](world *world_value) -> bool {
+		if (world_value != nullptr && world_value->is_connected()) {
 			// We only need to inform worlds that are actually connected
 			// Otherwise they'll get the modified config when they connect
-			world->send(Packets::Interserver::rehashConfig(world));
+			world_value->send(packets::interserver::rehash_config(world_value));
 		}
 		return false;
 	});
 }
 
-auto LoginServer::getInvalidLoginThreshold() const -> int32_t {
-	return m_maxInvalidLogins;
+auto login_server::get_invalid_login_threshold() const -> int32_t {
+	return m_max_invalid_logins;
 }
 
-auto LoginServer::getValidCharDataProvider() const -> const ValidCharDataProvider & {
-	return m_validCharDataProvider;
+auto login_server::get_valid_char_data_provider() const -> const valid_char_data_provider & {
+	return m_valid_char_data_provider;
 }
 
-auto LoginServer::getEquipDataProvider() const -> const EquipDataProvider & {
-	return m_equipDataProvider;
+auto login_server::get_equip_data_provider() const -> const equip_data_provider & {
+	return m_equip_data_provider;
 }
 
-auto LoginServer::getCurseDataProvider() const -> const CurseDataProvider & {
-	return m_curseDataProvider;
+auto login_server::get_curse_data_provider() const -> const curse_data_provider & {
+	return m_curse_data_provider;
 }
 
-auto LoginServer::getWorlds() -> Worlds & {
+auto login_server::get_worlds() -> worlds & {
 	return m_worlds;
 }
 
-auto LoginServer::getCharacterAccountSaltSize() const -> const SaltSizeConfig & {
-	return m_accountSaltSize;
+auto login_server::get_character_account_salt_size() const -> const salt_size_config & {
+	return m_account_salt_size;
 }
 
-auto LoginServer::getCharacterAccountSaltingPolicy() const -> const SaltConfig & {
-	return m_accountSaltingPolicy;
+auto login_server::get_character_account_salting_policy() const -> const salt_config & {
+	return m_account_salting_policy;
 }
 
-auto LoginServer::loadWorlds() -> void {
-	auto config = ConfigFile::getWorldsConfig();
+auto login_server::load_worlds() -> void {
+	auto config = config_file::get_worlds_config();
 	config->run();
 
-	LuaVariant worldsConfig = config->get<LuaVariant>("worlds");
-	if (!worldsConfig.is(LuaType::Table)) {
+	lua_variant worlds_config = config->get<lua_variant>("worlds");
+	if (!worlds_config.is(lua::lua_type::table)) {
 		config->error("worlds must be a table");
 	}
 
-	auto &map = worldsConfig.as<ord_map_t<int32_t, LuaVariant>>();
-	for (const auto &world : map) {
-		auto worldConfig = world.second.into<WorldConfig>(*config, "worlds." + std::to_string(world.first));
+	auto &map = worlds_config.as<ord_map<int32_t, lua_variant>>();
+	for (const auto &world_conf : map) {
+		auto current_config = world_conf.second.into<world_config>(*config, "worlds." + std::to_string(world_conf.first));
 
-		World *world = m_worlds.getWorld(worldConfig.id);
-		bool added = (world == nullptr);
+		world *world_value = m_worlds.get_world(current_config.id);
+		bool added = (world_value == nullptr);
 		if (added) {
-			world = new World{};
+			world_value = new world{};
 		}
 
-		world->setConfiguration(worldConfig);
+		world_value->set_configuration(current_config);
 		if (added) {
-			world->setId(worldConfig.id);
-			world->setPort(worldConfig.basePort);
-			m_worlds.addWorld(world);
+			world_value->set_id(current_config.id);
+			world_value->set_port(current_config.base_port);
+			m_worlds.add_world(world_value);
 		}
 	}
 }

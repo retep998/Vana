@@ -18,20 +18,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InventoryPacketHelper.hpp"
 #include "Common/MapConstants.hpp"
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
-namespace Helpers {
+namespace vana {
+namespace channel_server {
+namespace packets {
+namespace helpers {
 
-PACKET_IMPL(fillRockPacket, const vector_t<map_id_t> &vec, size_t maxSize) {
-	PacketBuilder builder;
+PACKET_IMPL(fill_rock_packet, const vector<game_map_id> &vec, size_t max_size) {
+	packet_builder builder;
 	size_t remaining = 1;
 	while (remaining <= vec.size()) {
-		builder.add<map_id_t>(vec[remaining - 1]);
+		builder.add<game_map_id>(vec[remaining - 1]);
 		remaining++;
 	}
-	while (remaining <= maxSize) {
-		builder.add<map_id_t>(Vana::Maps::NoMap);
+	while (remaining <= max_size) {
+		builder.add<game_map_id>(vana::maps::no_map);
 		remaining++;
 	}
 	return builder;

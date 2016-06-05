@@ -21,26 +21,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/PacketReader.hpp"
 #include <stdexcept>
 
-namespace Vana {
+namespace vana {
 
-ExternalIp::ExternalIp(const string_t &addr, uint32_t ipv4SubnetMask) :
-	Ip{addr, Ip::Type::Ipv4},
-	m_ipv4SubnetMask{ipv4SubnetMask}
+external_ip::external_ip(const string &addr, uint32_t ipv4_subnet_mask) :
+	ip{addr, ip::type::ipv4},
+	m_ipv4_subnet_mask{ipv4_subnet_mask}
 {
 }
 
-ExternalIp::ExternalIp(uint32_t ipv4, uint32_t ipv4SubnetMask) :
-	Ip{ipv4},
-	m_ipv4SubnetMask{ipv4SubnetMask}
+external_ip::external_ip(uint32_t ipv4, uint32_t ipv4_subnet_mask) :
+	ip{ipv4},
+	m_ipv4_subnet_mask{ipv4_subnet_mask}
 {
 }
 
-auto ExternalIp::tryMatchIpToSubnet(const Ip &test, Ip &result) const -> bool {
+auto external_ip::try_match_ip_to_subnet(const ip &test, ip &result) const -> bool {
 	if (test.m_type != m_type) throw std::invalid_argument{"IP type must match the external IP type"};
 
-	if (m_type == Ip::Type::Ipv4) {
-		if ((m_ipv4 & m_ipv4SubnetMask) == (test.m_ipv4 & m_ipv4SubnetMask)) {
-			result = Ip(m_ipv4);
+	if (m_type == ip::type::ipv4) {
+		if ((m_ipv4 & m_ipv4_subnet_mask) == (test.m_ipv4 & m_ipv4_subnet_mask)) {
+			result = ip(m_ipv4);
 			return true;
 		}
 		return false;

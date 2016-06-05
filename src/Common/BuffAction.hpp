@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	enum class BuffAction {
-		None,
-		Heal,
-		Hurt,
+namespace vana {
+	enum class buff_action {
+		none,
+		heal,
+		hurt,
 	};
 }

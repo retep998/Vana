@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
+namespace vana {
 
 // Inter-server communication does not separate send and recv because the server does both
-enum AnyConnection : header_t {
+enum any_connection : packet_header {
 	IMSG_PASSWORD = 0xff,
 	IMSG_REHASH_CONFIG,
 	IMSG_TO_LOGIN,
@@ -36,19 +36,19 @@ enum AnyConnection : header_t {
 	IMSG_SYNC,
 };
 
-enum LoginWorld : header_t {
+enum login_world : packet_header {
 	IMSG_WORLD_CONNECT = 0x1000,
 	IMSG_REGISTER_CHANNEL,
 	IMSG_UPDATE_CHANNEL_POP,
 	IMSG_REMOVE_CHANNEL,
 };
 
-enum LoginChannel : header_t {
+enum login_channel : packet_header {
 	IMSG_LOGIN_CHANNEL_CONNECT = 0x2000,
 	IMSG_CALCULATE_RANKING,
 };
 
-enum WorldChannel : header_t {
+enum world_channel : packet_header {
 	IMSG_CHANNEL_CONNECT = 0x3000,
 	IMSG_TO_PLAYER,
 	IMSG_TO_PLAYER_LIST,

@@ -19,9 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	enum class SaltSizePolicy {
-		Static,
-		Random,
+namespace vana {
+	enum class salt_size_policy {
+		fixed,
+		random,
 	};
 }

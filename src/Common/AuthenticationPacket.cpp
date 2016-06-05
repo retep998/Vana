@@ -20,15 +20,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/PacketBuilder.hpp"
 #include <algorithm>
 
-namespace Vana {
-namespace Packets {
+namespace vana {
+namespace packets {
 
-PACKET_IMPL(sendPassword, ServerType serverType, const string_t &pass, const IpMatrix &extIp) {
-	PacketBuilder builder;
-	builder.add<header_t>(IMSG_PASSWORD);
-	builder.add<string_t>(pass);
-	builder.add<vector_t<ExternalIp>>(extIp);
-	builder.add<server_type_t>(static_cast<server_type_t>(serverType));
+PACKET_IMPL(send_password, server_type server_type, const string &pass, const ip_matrix &ext_ip) {
+	packet_builder builder;
+	builder.add<packet_header>(IMSG_PASSWORD);
+	builder.add<string>(pass);
+	builder.add<vector<external_ip>>(ext_ip);
+	builder.add<server_type_underlying>(static_cast<server_type_underlying>(server_type));
 	return builder;
 }
 

@@ -40,32 +40,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/WorldServerPacket.hpp"
 #include <string>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-namespace CommandOpcodes {
-	enum Opcodes : int8_t {
-		FindPlayer = 0x05,
-		Whisper = 0x06
+namespace command_opcodes {
+	enum opcodes : int8_t {
+		find_player = 0x05,
+		whisper = 0x06
 	};
 }
 
-namespace AdminOpcodes {
-	enum Opcodes : int8_t {
-		CreateItem = 0x00,
-		DestroyFirstItem = 0x01,
-		GiveExp = 0x02,
-		Ban = 0x03,
-		Block = 0x04,
-		VarSetGet = 0x09,
-		Hide = 0x10,
-		ShowMessageMap = 0x11,
-		Send = 0x12,
-		Summon = 0x17,
-		Snow = 0x1C,
-		Warn = 0x1D,
-		Log = 0x1E,
-		SetObjState = 0x22
+namespace admin_opcodes {
+	enum opcodes : int8_t {
+		create_item = 0x00,
+		destroy_first_item = 0x01,
+		give_exp = 0x02,
+		ban = 0x03,
+		block = 0x04,
+		var_set_get = 0x09,
+		hide = 0x10,
+		show_message_map = 0x11,
+		send = 0x12,
+		summon = 0x17,
+		snow = 0x1C,
+		warn = 0x1D,
+		log = 0x1E,
+		set_obj_state = 0x22,
 	};
 	/*
 		Opcode syntax:
@@ -84,165 +84,165 @@ namespace AdminOpcodes {
 	*/
 }
 
-auto CommandHandler::handleCommand(ref_ptr_t<Player> player, PacketReader &reader) -> void {
+auto command_handler::handle_command(ref_ptr<player> player, packet_reader &reader) -> void {
 	int8_t type = reader.get<int8_t>();
-	chat_t name = reader.get<chat_t>();
-	auto receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(name);
+	game_chat name = reader.get<game_chat>();
+	auto receiver = channel_server::get_instance().get_player_data_provider().get_player(name);
 	// If this player doesn't exist, connect to the world server to see if they're on any other channel
 	switch (type) {
-		case CommandOpcodes::FindPlayer: {
+		case command_opcodes::find_player: {
 			bool found = false;
 			if (receiver != nullptr) {
-				if (!receiver->isUsingGmHide() || player->isGm() || player->isAdmin()) {
-					player->send(Packets::Players::findPlayer(receiver->getName(), receiver->getMapId()));
+				if (!receiver->is_using_gm_hide() || player->is_gm() || player->is_admin()) {
+					player->send(packets::players::find_player(receiver->get_name(), receiver->get_map_id()));
 					found = true;
 				}
 			}
 			else {
-				auto targetData = ChannelServer::getInstance().getPlayerDataProvider().getPlayerDataByName(name);
-				if (targetData != nullptr && targetData->channel.is_initialized()) {
-					player->send(Packets::Players::findPlayer(targetData->name, targetData->channel.get(), 1, true));
+				auto target_data = channel_server::get_instance().get_player_data_provider().get_player_data_by_name(name);
+				if (target_data != nullptr && target_data->channel.is_initialized()) {
+					player->send(packets::players::find_player(target_data->name, target_data->channel.get(), 1, true));
 					found = true;
 				}
 			}
 			if (!found) {
-				player->send(Packets::Players::findPlayer(name, opt_int32_t{}, 0));
+				player->send(packets::players::find_player(name, opt_int32_t{}, 0));
 			}
 			break;
 		}
-		case CommandOpcodes::Whisper: {
-			chat_t chat = reader.get<chat_t>();
+		case command_opcodes::whisper: {
+			game_chat chat = reader.get<game_chat>();
 			bool found = false;
 			if (receiver != nullptr) {
-				receiver->send(Packets::Players::whisperPlayer(player->getName(), ChannelServer::getInstance().getChannelId(), chat));
-				player->send(Packets::Players::findPlayer(receiver->getName(), opt_int32_t{}, 1));
+				receiver->send(packets::players::whisper_player(player->get_name(), channel_server::get_instance().get_channel_id(), chat));
+				player->send(packets::players::find_player(receiver->get_name(), opt_int32_t{}, 1));
 				found = true;
 			}
 			else {
-				auto targetData = ChannelServer::getInstance().getPlayerDataProvider().getPlayerDataByName(name);
-				if (targetData != nullptr && targetData->channel.is_initialized()) {
-					player->send(Packets::Players::findPlayer(targetData->name, opt_int32_t{}, 1));
-					ChannelServer::getInstance().sendWorld(
-						Vana::Packets::prepend(Packets::Players::whisperPlayer(player->getName(), ChannelServer::getInstance().getChannelId(), chat), [targetData](PacketBuilder &builder) {
-							builder.add<header_t>(IMSG_TO_CHANNEL);
-							builder.add<channel_id_t>(targetData->channel.get());
-							builder.add<header_t>(IMSG_TO_PLAYER);
-							builder.add<player_id_t>(targetData->id);
+				auto target_data = channel_server::get_instance().get_player_data_provider().get_player_data_by_name(name);
+				if (target_data != nullptr && target_data->channel.is_initialized()) {
+					player->send(packets::players::find_player(target_data->name, opt_int32_t{}, 1));
+					channel_server::get_instance().send_world(
+						vana::packets::prepend(packets::players::whisper_player(player->get_name(), channel_server::get_instance().get_channel_id(), chat), [target_data](packet_builder &builder) {
+							builder.add<packet_header>(IMSG_TO_CHANNEL);
+							builder.add<game_channel_id>(target_data->channel.get());
+							builder.add<packet_header>(IMSG_TO_PLAYER);
+							builder.add<game_player_id>(target_data->id);
 						}));
 					found = true;
 				}
 			}
 			if (!found) {
-				player->send(Packets::Players::findPlayer(name, opt_int32_t{}, 0));
+				player->send(packets::players::find_player(name, opt_int32_t{}, 0));
 			}
 			break;
 		}
 	}
 }
 
-auto CommandHandler::handleAdminCommand(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	if (!player->isAdmin()) {
+auto command_handler::handle_admin_command(ref_ptr<player> player, packet_reader &reader) -> void {
+	if (!player->is_admin()) {
 		// Hacking
 		return;
 	}
 
 	int8_t type = reader.get<int8_t>();
 	switch (type) {
-		case AdminOpcodes::Hide: {
+		case admin_opcodes::hide: {
 			bool hide = reader.get<bool>();
 			if (hide) {
-				auto result = Buffs::addBuff(
+				auto result = buffs::add_buff(
 					player,
-					Vana::Skills::SuperGm::Hide,
+					vana::skills::super_gm::hide,
 					1,
 					0);
 
-				if (result == Result::Successful) {
-					player->send(Packets::Gm::beginHide());
-					player->getMap()->gmHideChange(player);
+				if (result == result::successful) {
+					player->send(packets::gm::begin_hide());
+					player->get_map()->gm_hide_change(player);
 				}
 			}
 			else {
-				Skills::stopSkill(
+				skills::stop_skill(
 					player,
-					BuffSource::fromSkill(
-						Vana::Skills::SuperGm::Hide,
+					buff_source::from_skill(
+						vana::skills::super_gm::hide,
 						1));
 			}
 			break;
 		}
-		case AdminOpcodes::Send: {
-			chat_t name = reader.get<chat_t>();
-			map_id_t mapId = reader.get<map_id_t>();
+		case admin_opcodes::send: {
+			game_chat name = reader.get<game_chat>();
+			game_map_id map_id = reader.get<game_map_id>();
 
-			if (auto receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(name)) {
-				receiver->setMap(mapId);
+			if (auto receiver = channel_server::get_instance().get_player_data_provider().get_player(name)) {
+				receiver->set_map(map_id);
 			}
 			else {
-				player->send(Packets::Gm::invalidCharacterName());
+				player->send(packets::gm::invalid_character_name());
 			}
 
 			break;
 		}
-		case AdminOpcodes::Summon: {
-			mob_id_t mobId = reader.get<mob_id_t>();
+		case admin_opcodes::summon: {
+			game_mob_id mob_id = reader.get<game_mob_id>();
 			int32_t count = reader.get<int32_t>();
-			if (ChannelServer::getInstance().getMobDataProvider().mobExists(mobId)) {
+			if (channel_server::get_instance().get_mob_data_provider().mob_exists(mob_id)) {
 				count = ext::constrain_range(count, 1, 1000);
 				for (int32_t i = 0; i < count; ++i) {
-					player->getMap()->spawnMob(mobId, player->getPos());
+					player->get_map()->spawn_mob(mob_id, player->get_pos());
 				}
 			}
 			else {
-				ChatHandlerFunctions::showError(player, "Invalid mob: " + std::to_string(mobId));
+				chat_handler_functions::show_error(player, "invalid mob: " + std::to_string(mob_id));
 			}
 			break;
 		}
-		case AdminOpcodes::CreateItem: {
-			item_id_t itemId = reader.get<item_id_t>();
-			Inventory::addNewItem(player, itemId, 1);
+		case admin_opcodes::create_item: {
+			game_item_id item_id = reader.get<game_item_id>();
+			inventory::add_new_item(player, item_id, 1);
 			break;
 		}
-		case AdminOpcodes::DestroyFirstItem: {
-			inventory_t inv = reader.get<inventory_t>();
-			if (!GameLogicUtilities::isValidInventory(inv)) {
+		case admin_opcodes::destroy_first_item: {
+			game_inventory inv = reader.get<game_inventory>();
+			if (!game_logic_utilities::is_valid_inventory(inv)) {
 				return;
 			}
-			inventory_slot_count_t slots = player->getInventory()->getMaxSlots(inv);
-			for (inventory_slot_count_t i = 0; i < slots; ++i) {
-				if (Item *item = player->getInventory()->getItem(inv, i)) {
-					Inventory::takeItemSlot(player, inv, i, player->getInventory()->getItemAmountBySlot(inv, i));
+			game_inventory_slot_count slots = player->get_inventory()->get_max_slots(inv);
+			for (game_inventory_slot_count i = 0; i < slots; ++i) {
+				if (item *item = player->get_inventory()->get_item(inv, i)) {
+					inventory::take_item_slot(player, inv, i, player->get_inventory()->get_item_amount_by_slot(inv, i));
 					break;
 				}
 			}
 			break;
 		}
-		case AdminOpcodes::GiveExp: {
-			experience_t amount = reader.get<experience_t>();
-			player->getStats()->giveExp(amount);
+		case admin_opcodes::give_exp: {
+			game_experience amount = reader.get<game_experience>();
+			player->get_stats()->give_exp(amount);
 			break;
 		}
-		case AdminOpcodes::Ban: {
-			chat_t victim = reader.get<chat_t>();
-			if (auto receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(victim)) {
+		case admin_opcodes::ban: {
+			game_chat victim = reader.get<game_chat>();
+			if (auto receiver = channel_server::get_instance().get_player_data_provider().get_player(victim)) {
 				receiver->disconnect();
 			}
 			else {
-				player->send(Packets::Gm::invalidCharacterName());
+				player->send(packets::gm::invalid_character_name());
 			}
 			break;
 		}
-		case AdminOpcodes::Block: {
-			chat_t victim = reader.get<chat_t>();
+		case admin_opcodes::block: {
+			game_chat victim = reader.get<game_chat>();
 			int8_t reason = reader.get<int8_t>();
 			int32_t length = reader.get<int32_t>();
-			chat_t reasonMessage = reader.get<chat_t>();
-			if (auto receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(victim)) {
-				auto &db = Database::getCharDb();
-				auto &sql = db.getSession();
+			game_chat reason_message = reader.get<game_chat>();
+			if (auto receiver = channel_server::get_instance().get_player_data_provider().get_player(victim)) {
+				auto &db = database::get_char_db();
+				auto &sql = db.get_session();
 				sql.once
-					<< "UPDATE " << db.makeTable("accounts") << " u "
-					<< "INNER JOIN " << db.makeTable("characters") << " c ON u.account_id = c.account_id "
+					<< "UPDATE " << db.make_table("accounts") << " u "
+					<< "INNER JOIN " << db.make_table("characters") << " c ON u.account_id = c.account_id "
 					<< "SET "
 					<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL :expire DAY),"
 					<< "	u.ban_reason = :reason,"
@@ -251,50 +251,50 @@ auto CommandHandler::handleAdminCommand(ref_ptr_t<Player> player, PacketReader &
 					soci::use(victim, "name"),
 					soci::use(length, "expire"),
 					soci::use(reason, "reason"),
-					soci::use(reasonMessage, "reasonMessage");
+					soci::use(reason_message, "reason_message");
 
-				player->send(Packets::Gm::block());
-				chat_t banMessage = victim + " has been banned" + ChatHandlerFunctions::getBanString(reason);
-				ChannelServer::getInstance().getPlayerDataProvider().send(Packets::Player::showMessage(banMessage, Packets::Player::NoticeTypes::Notice));
+				player->send(packets::gm::block());
+				game_chat ban_message = victim + " has been banned" + chat_handler_functions::get_ban_string(reason);
+				channel_server::get_instance().get_player_data_provider().send(packets::player::show_message(ban_message, packets::player::notice_types::notice));
 			}
 			else {
-				player->send(Packets::Gm::invalidCharacterName());
+				player->send(packets::gm::invalid_character_name());
 			}
 			break;
 		}
-		case AdminOpcodes::ShowMessageMap:
-			player->send(Packets::Player::showMessage(player->getMap()->getPlayerNames(), Packets::Player::NoticeTypes::Notice));
+		case admin_opcodes::show_message_map:
+			player->send(packets::player::show_message(player->get_map()->get_player_names(), packets::player::notice_types::notice));
 			break;
-		case AdminOpcodes::Snow:
-			player->getMap()->createWeather(player, true, reader.get<int32_t>(), Items::SnowySnow, "");
+		case admin_opcodes::snow:
+			player->get_map()->create_weather(player, true, reader.get<int32_t>(), items::snowy_snow, "");
 			break;
-		case AdminOpcodes::VarSetGet: {
+		case admin_opcodes::var_set_get: {
 			int8_t type = reader.get<int8_t>();
-			chat_t playerName = reader.get<chat_t>();
-			if (auto victim = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerName)) {
-				chat_t variableName = reader.get<chat_t>();
+			game_chat player_name = reader.get<game_chat>();
+			if (auto victim = channel_server::get_instance().get_player_data_provider().get_player(player_name)) {
+				game_chat variable_name = reader.get<game_chat>();
 				if (type == 0x0a) {
-					chat_t variableValue = reader.get<chat_t>();
-					victim->getVariables()->setVariable(variableName, variableValue);
+					game_chat variable_value = reader.get<game_chat>();
+					victim->get_variables()->set_variable(variable_name, variable_value);
 				}
 				else {
-					player->send(Packets::Gm::setGetVarResult(playerName, variableName, victim->getVariables()->getVariable(variableName)));
+					player->send(packets::gm::set_get_var_result(player_name, variable_name, victim->get_variables()->get_variable(variable_name)));
 				}
 			}
 			else {
-				player->send(Packets::Gm::invalidCharacterName());
+				player->send(packets::gm::invalid_character_name());
 			}
 			break;
 		}
-		case AdminOpcodes::Warn: {
-			chat_t victim = reader.get<chat_t>();
-			chat_t message = reader.get<chat_t>();
-			if (auto receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(victim)) {
-				receiver->send(Packets::Player::showMessage(message, Packets::Player::NoticeTypes::Box));
-				player->send(Packets::Gm::warning(true));
+		case admin_opcodes::warn: {
+			game_chat victim = reader.get<game_chat>();
+			game_chat message = reader.get<game_chat>();
+			if (auto receiver = channel_server::get_instance().get_player_data_provider().get_player(victim)) {
+				receiver->send(packets::player::show_message(message, packets::player::notice_types::box));
+				player->send(packets::gm::warning(true));
 			}
 			else {
-				player->send(Packets::Gm::warning(false));
+				player->send(packets::gm::warning(false));
 			}
 			break;
 		}

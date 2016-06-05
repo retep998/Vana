@@ -19,19 +19,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ChannelServer/ChatHandlerFunctions.hpp"
 
-namespace Vana {
-	namespace ChannelServer {
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class player;
 
-		namespace InfoFunctions {
-			auto help(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto lookup(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto pos(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto online(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto variable(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto questData(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto questKills(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto gmLevel(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+		namespace info_functions {
+			auto help(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto lookup(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto pos(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto online(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto variable(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto quest_data(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto quest_kills(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto gm_level(ref_ptr<player> player, const game_chat &args) -> chat_result;
 		}
 	}
 }

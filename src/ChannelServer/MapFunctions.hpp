@@ -19,28 +19,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ChannelServer/ChatHandlerFunctions.hpp"
 
-namespace Vana {
-	namespace ChannelServer {
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class player;
 
-		namespace MapFunctions {
-			auto eventInstruction(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto instruction(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto timer(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto killMob(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto getMobHp(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto listMobs(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto listPortals(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto listReactors(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto listPlayers(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto listNpcs(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto mapDimensions(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto zakum(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto horntail(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto music(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto summon(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto clearDrops(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
-			auto killAllMobs(ref_ptr_t<Player> player, const chat_t &args) -> ChatResult;
+		namespace map_functions {
+			auto event_instruction(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto instruction(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto timer(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto kill_mob(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto get_mob_hp(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto list_mobs(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto list_portals(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto list_reactors(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto list_players(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto list_npcs(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto map_dimensions(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto zakum(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto horntail(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto music(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto summon(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto clear_drops(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto kill_all_mobs(ref_ptr<player> player, const game_chat &args) -> chat_result;
 		}
 	}
 }

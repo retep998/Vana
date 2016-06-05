@@ -23,93 +23,93 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/SmsgHeader.hpp"
 #include "ChannelServer/Summon.hpp"
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
+namespace vana {
+namespace channel_server {
+namespace packets {
 
-SPLIT_PACKET_IMPL(showSummon, player_id_t playerId, Summon *summon, bool isMapEntry) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(show_summon, game_player_id player_id, summon *summon, bool is_map_entry) {
+	split_packet_builder builder;
 	builder.player
-		.add<header_t>(SMSG_SUMMON_SPAWN)
-		.add<player_id_t>(playerId)
-		.add<summon_id_t>(summon->getId())
-		.add<skill_id_t>(summon->getSkillId())
-		.add<skill_level_t>(summon->getSkillLevel())
-		.add<Point>(summon->getPos())
-		.add<int8_t>(summon->getStance())
-		.add<foothold_id_t>(summon->getFoothold())
-		.add<int8_t>(summon->getMovementType())
-		.add<int8_t>(summon->getActionType())
-		.add<bool>(isMapEntry);
+		.add<packet_header>(SMSG_SUMMON_SPAWN)
+		.add<game_player_id>(player_id)
+		.add<game_summon_id>(summon->get_id())
+		.add<game_skill_id>(summon->get_skill_id())
+		.add<game_skill_level>(summon->get_skill_level())
+		.add<point>(summon->get_pos())
+		.add<int8_t>(summon->get_stance())
+		.add<game_foothold_id>(summon->get_foothold())
+		.add<int8_t>(summon->get_movement_type())
+		.add<int8_t>(summon->get_action_type())
+		.add<bool>(is_map_entry);
 
-	builder.map.addBuffer(builder.player);
+	builder.map.add_buffer(builder.player);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(moveSummon, player_id_t playerId, Summon *summon, const Point &startPos, unsigned char *buf, int32_t bufLen) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(move_summon, game_player_id player_id, summon *summon, const point &start_pos, unsigned char *buf, int32_t buf_len) {
+	split_packet_builder builder;
 	builder.player
-		.add<header_t>(SMSG_SUMMON_MOVEMENT)
-		.add<player_id_t>(playerId)
-		.add<summon_id_t>(summon->getId())
-		.add<Point>(startPos)
-		.addBuffer(buf, bufLen);
+		.add<packet_header>(SMSG_SUMMON_MOVEMENT)
+		.add<game_player_id>(player_id)
+		.add<game_summon_id>(summon->get_id())
+		.add<point>(start_pos)
+		.add_buffer(buf, buf_len);
 
-	builder.map.addBuffer(builder.player);
+	builder.map.add_buffer(builder.player);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(removeSummon, player_id_t playerId, Summon *summon, int8_t message) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(remove_summon, game_player_id player_id, summon *summon, int8_t message) {
+	split_packet_builder builder;
 	builder.player
-		.add<header_t>(SMSG_SUMMON_DESPAWN)
-		.add<player_id_t>(playerId)
-		.add<summon_id_t>(summon->getId())
+		.add<packet_header>(SMSG_SUMMON_DESPAWN)
+		.add<game_player_id>(player_id)
+		.add<game_summon_id>(summon->get_id())
 		.add<int8_t>(message);
 
-	builder.map.addBuffer(builder.player);
+	builder.map.add_buffer(builder.player);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(damageSummon, player_id_t playerId, summon_id_t summonId, int8_t unk, damage_t damage, map_object_t mobId) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(damage_summon, game_player_id player_id, game_summon_id summon_id, int8_t unk, game_damage damage, game_map_object mob_id) {
+	split_packet_builder builder;
 	builder.player
-		.add<header_t>(SMSG_SUMMON_DAMAGE)
-		.add<player_id_t>(playerId)
-		.add<summon_id_t>(summonId)
+		.add<packet_header>(SMSG_SUMMON_DAMAGE)
+		.add<game_player_id>(player_id)
+		.add<game_summon_id>(summon_id)
 		.add<int8_t>(unk)
-		.add<damage_t>(damage)
-		.add<map_object_t>(mobId)
+		.add<game_damage>(damage)
+		.add<game_map_object>(mob_id)
 		.unk<int8_t>();
 
-	builder.map.addBuffer(builder.player);
+	builder.map.add_buffer(builder.player);
 	return builder;
 }
 
-PACKET_IMPL(summonSkill, player_id_t playerId, skill_id_t skillId, uint8_t display, skill_level_t level) {
-	PacketBuilder builder;
+PACKET_IMPL(summon_skill, game_player_id player_id, game_skill_id skill_id, uint8_t display, game_skill_level level) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_SUMMON_SKILL)
-		.add<player_id_t>(playerId)
-		.add<skill_id_t>(skillId)
+		.add<packet_header>(SMSG_SUMMON_SKILL)
+		.add<game_player_id>(player_id)
+		.add<game_skill_id>(skill_id)
 		.add<uint8_t>(display);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(summonSkillEffect, player_id_t playerId, skill_id_t skillId, uint8_t display, skill_level_t level) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(summon_skill_effect, game_player_id player_id, game_skill_id skill_id, uint8_t display, game_skill_level level) {
+	split_packet_builder builder;
 	builder.player
-		.add<header_t>(SMSG_THEATRICS)
+		.add<packet_header>(SMSG_THEATRICS)
 		.add<int8_t>(2)
-		.add<skill_id_t>(skillId)
-		.add<skill_level_t>(level)
+		.add<game_skill_id>(skill_id)
+		.add<game_skill_level>(level)
 		.add<int8_t>(1);
 
 	builder.map
-		.add<header_t>(SMSG_SKILL_SHOW)
-		.add<player_id_t>(playerId)
+		.add<packet_header>(SMSG_SKILL_SHOW)
+		.add<game_player_id>(player_id)
 		.add<int8_t>(2)
-		.add<skill_id_t>(skillId)
+		.add<game_skill_id>(skill_id)
 		.add<uint8_t>(display)
 		.add<int8_t>(1);
 	return builder;

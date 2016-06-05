@@ -23,12 +23,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-namespace Vana {
-	struct ReturnDamageData {
-		bool isPhysical = true;
+namespace vana {
+	struct return_damage_data {
+		bool is_physical = true;
 		uint8_t reduction = 0;
-		damage_t damage = 0;
-		map_object_t mapMobId = 0;
-		Point pos;
+		game_damage damage = 0;
+		game_map_object map_mob_id = 0;
+		point pos;
 	};
 }

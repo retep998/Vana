@@ -17,26 +17,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Variables.hpp"
 
-namespace Vana {
+namespace vana {
 
-auto Variables::deleteVariable(const string_t &name) -> void {
+auto variables::delete_variable(const string &name) -> void {
 	auto kvp = m_variables.find(name);
 	if (kvp != std::end(m_variables)) {
 		m_variables.erase(kvp);
 	}
 }
 
-auto Variables::setVariable(const string_t &name, const string_t &val) -> void {
+auto variables::set_variable(const string &name, const string &val) -> void {
 	m_variables[name] = val;
 }
 
-auto Variables::getVariable(const string_t &name) const -> string_t {
+auto variables::get_variable(const string &name) const -> string {
 	auto kvp = m_variables.find(name);
 	return kvp != std::end(m_variables) ? kvp->second : "";
 }
 
-auto Variables::operator[](const string_t &key) const -> string_t {
-	return getVariable(key);
+auto variables::operator[](const string &key) const -> string {
+	return get_variable(key);
 }
 
 }

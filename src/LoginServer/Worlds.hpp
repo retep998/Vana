@@ -22,37 +22,37 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <map>
 #include <string>
 
-namespace Vana {
-	class PacketBuilder;
-	class PacketReader;
+namespace vana {
+	class packet_builder;
+	class packet_reader;
 
-	namespace LoginServer {
-		class Channel;
-		class LoginServerAcceptedSession;
-		class User;
-		class World;
+	namespace login_server {
+		class channel;
+		class login_server_accepted_session;
+		class user;
+		class world;
 
-		class Worlds {
+		class worlds {
 		public:
-			auto channelSelect(ref_ptr_t<User> user, PacketReader &reader) -> void;
-			auto selectWorld(ref_ptr_t<User> user, PacketReader &reader) -> void;
-			auto showWorld(ref_ptr_t<User> user) -> void;
-			auto send(world_id_t id, const PacketBuilder &builder) -> void;
-			auto send(const vector_t<world_id_t> &worlds, const PacketBuilder &builder) -> void;
-			auto send(const PacketBuilder &builder) -> void;
+			auto channel_select(ref_ptr<user> user_value, packet_reader &reader) -> void;
+			auto select_world(ref_ptr<user> user_value, packet_reader &reader) -> void;
+			auto show_world(ref_ptr<user> user_value) -> void;
+			auto send(game_world_id id, const packet_builder &builder) -> void;
+			auto send(const vector<game_world_id> &worlds, const packet_builder &builder) -> void;
+			auto send(const packet_builder &builder) -> void;
 
-			auto addWorld(World *world) -> void;
-			auto calculatePlayerLoad(World *world) -> void;
-			auto runFunction(function_t<bool (World *)> func) -> void;
-			auto setEventMessages(const string_t &message) -> void;
+			auto add_world(world *world_value) -> void;
+			auto calculate_player_load(world *world_value) -> void;
+			auto run_function(function<bool (world *)> func) -> void;
+			auto set_event_messages(const string &message) -> void;
 
-			auto getWorld(world_id_t id) -> World *;
+			auto get_world(game_world_id id) -> world *;
 
 			// Inter-server
-			auto addWorldServer(ref_ptr_t<LoginServerAcceptedSession> session) -> optional_t<world_id_t>;
-			auto addChannelServer(ref_ptr_t<LoginServerAcceptedSession> session) -> optional_t<world_id_t>;
+			auto add_world_server(ref_ptr<login_server_accepted_session> session) -> optional<game_world_id>;
+			auto add_channel_server(ref_ptr<login_server_accepted_session> session) -> optional<game_world_id>;
 		private:
-			ord_map_t<world_id_t, World *> m_worlds;
+			ord_map<game_world_id, world *> m_worlds;
 		};
 	}
 }

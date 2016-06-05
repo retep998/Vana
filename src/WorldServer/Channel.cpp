@@ -19,37 +19,37 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/PacketBuilder.hpp"
 #include "WorldServer/WorldServerAcceptedSession.hpp"
 
-namespace Vana {
-namespace WorldServer {
+namespace vana {
+namespace world_server {
 
-Channel::Channel(ref_ptr_t<WorldServerAcceptedSession> session, channel_id_t id, port_t port) :
+channel::channel(ref_ptr<world_server_accepted_session> session, game_channel_id id, connection_port port) :
 	m_session{session},
 	m_id{id},
 	m_port{port}
 {
 }
 
-auto Channel::send(const PacketBuilder &builder) -> void {
+auto channel::send(const packet_builder &builder) -> void {
 	m_session->send(builder);
 }
 
-auto Channel::increasePlayers() -> int32_t {
+auto channel::increase_players() -> int32_t {
 	return ++m_players;
 }
 
-auto Channel::decreasePlayers() -> int32_t {
+auto channel::decrease_players() -> int32_t {
 	return --m_players;
 }
 
-auto Channel::getId() const -> channel_id_t {
+auto channel::get_id() const -> game_channel_id {
 	return m_id;
 }
 
-auto Channel::getPort() const -> port_t {
+auto channel::get_port() const -> connection_port {
 	return m_port;
 }
 
-auto Channel::disconnect() -> void {
+auto channel::disconnect() -> void {
 	m_session->disconnect();
 }
 

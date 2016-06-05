@@ -19,15 +19,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class PacketTransformer {
+namespace vana {
+	class packet_transformer {
 	public:
-		virtual auto testPacket(unsigned char *header) -> ValidityResult;
-		virtual auto getPacketLength(unsigned char *header) -> uint16_t;
-		virtual auto setPacketHeader(unsigned char *header, uint16_t realPacketSize) -> void;
-		virtual auto encryptPacket(unsigned char *packetData, int32_t realPacketSize, uint16_t headerSize) -> void;
-		virtual auto decryptPacket(unsigned char *packetData, int32_t realPacketSize, uint16_t headerSize) -> void;
+		virtual auto test_packet(unsigned char *header) -> validity_result;
+		virtual auto get_packet_length(unsigned char *header) -> uint16_t;
+		virtual auto set_packet_header(unsigned char *header, uint16_t real_packet_size) -> void;
+		virtual auto encrypt_packet(unsigned char *packet_data, int32_t real_packet_size, uint16_t header_size) -> void;
+		virtual auto decrypt_packet(unsigned char *packet_data, int32_t real_packet_size, uint16_t header_size) -> void;
 	private:
-		auto getVersionAndSize(unsigned char *header, uint16_t &version, uint16_t &size) -> void;
+		auto get_version_and_size(unsigned char *header, uint16_t &version, uint16_t &size) -> void;
 	};
 }

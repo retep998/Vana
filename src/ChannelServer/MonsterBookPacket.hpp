@@ -21,13 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/SplitPacketBuilder.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	namespace ChannelServer {
-		namespace Packets {
-			namespace MonsterBook {
-				PACKET(addCard, item_id_t cardId, uint8_t level, bool full);
-				SPLIT_PACKET(addCardEffect, player_id_t playerId);
-				PACKET(changeCover, item_id_t cardId);
+namespace vana {
+	namespace channel_server {
+		namespace packets {
+			namespace monster_book {
+				PACKET(add_card, game_item_id card_id, uint8_t level, bool full);
+				SPLIT_PACKET(add_card_effect, game_player_id player_id);
+				PACKET(change_cover, game_item_id card_id);
 			}
 		}
 	}

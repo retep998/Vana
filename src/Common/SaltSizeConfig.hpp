@@ -26,30 +26,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-	struct SaltSizeConfig {
-		SaltSizePolicy policy = SaltSizePolicy::Static;
+namespace vana {
+	struct salt_size_config {
+		salt_size_policy policy = salt_size_policy::fixed;
 		int32_t size = 10;
 		int32_t min = -1;
 		int32_t max = -1;
 	};
 
 	template <>
-	struct LuaVariantInto<SaltSizeConfig> {
-		auto transform(LuaEnvironment &config, const LuaVariant &src, const string_t &prefix) -> SaltSizeConfig {
-			SaltSizeConfig ret;
+	struct lua_variant_into<salt_size_config> {
+		auto transform(lua_environment &config, const lua_variant &src, const string &prefix) -> salt_size_config {
+			salt_size_config ret;
 
-			if (!src.isAny({ LuaType::Number, LuaType::Table })) {
+			if (!src.is_any_of({ lua::lua_type::number, lua::lua_type::table })) {
 				config.error(prefix + " must be a valid Lua number or a table");
 			}
 
-			if (src.is(LuaType::Number)) {
+			if (src.is(lua::lua_type::number)) {
 				int32_t size = src.as<int32_t>();
 				if (size < 0) {
 					config.error(prefix + " must be a non-negative number");
 				}
 				if (size == 0) {
-					ret.policy = SaltSizePolicy::Random;
+					ret.policy = salt_size_policy::random;
 					ret.min = 10;
 					ret.max = 30;
 					ret.size = -1;
@@ -59,28 +59,28 @@ namespace Vana {
 				}
 			}
 			else {
-				ret.policy = SaltSizePolicy::Random;
-				auto values = src.as<hash_map_t<LuaVariant, LuaVariant>>();
-				bool hasMin = false;
-				bool hasMax = false;
+				ret.policy = salt_size_policy::random;
+				auto values = src.as<hash_map<lua_variant, lua_variant>>();
+				bool has_min = false;
+				bool has_max = false;
 				for (const auto &kvp : values) {
-					config.validateKey(LuaType::String, kvp.first, prefix);
+					config.validate_key(lua::lua_type::string, kvp.first, prefix);
 
-					string_t key = kvp.first.as<string_t>();
+					string key = kvp.first.as<string>();
 					if (key == "min") {
-						hasMin = true;
-						config.validateValue(LuaType::Number, kvp.second, key, prefix);
+						has_min = true;
+						config.validate_value(lua::lua_type::number, kvp.second, key, prefix);
 						ret.min = kvp.second.as<int32_t>();
 					}
 					else if (key == "max") {
-						hasMax = true;
-						config.validateValue(LuaType::Number, kvp.second, key, prefix);
+						has_max = true;
+						config.validate_value(lua::lua_type::number, kvp.second, key, prefix);
 						ret.max = kvp.second.as<int32_t>();
 					}
 				}
 
-				config.required(hasMin, "min", prefix);
-				config.required(hasMax, "max", prefix);
+				config.required(has_min, "min", prefix);
+				config.required(has_max, "max", prefix);
 				if (ret.min <= 0) {
 					config.error(prefix + ".min must be a positive number");
 				}

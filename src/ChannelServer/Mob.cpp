@@ -39,193 +39,193 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 #include <initializer_list>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-Mob::Mob(map_object_t mapMobId, map_id_t mapId, mob_id_t mobId, view_ptr_t<Mob> owner, const Point &pos, int32_t spawnId, bool facesLeft, foothold_id_t foothold, MobControlStatus controlStatus) :
-	MovableLife{foothold, pos, facesLeft ? 1 : 2},
-	m_mapMobId{mapMobId},
-	m_mapId{mapId},
-	m_spawnId{spawnId},
-	m_mobId{mobId},
+mob::mob(game_map_object map_mob_id, game_map_id map_id, game_mob_id mob_id, view_ptr<mob> owner, const point &pos, int32_t spawn_id, bool faces_left, game_foothold_id foothold, mob_control_status control_status) :
+	movable_life{foothold, pos, faces_left ? 1 : 2},
+	m_map_mob_id{map_mob_id},
+	m_map_id{map_id},
+	m_spawn_id{spawn_id},
+	m_mob_id{mob_id},
 	m_owner{owner},
-	m_info{ChannelServer::getInstance().getMobDataProvider().getMobInfo(mobId)},
-	m_controlStatus{controlStatus}
+	m_info{channel_server::get_instance().get_mob_data_provider().get_mob_info(mob_id)},
+	m_control_status{control_status}
 {
-	m_hp = getMaxHp();
-	m_mp = getMaxMp();
-	if (!canFly()) {
-		m_originFoothold = foothold;
+	m_hp = get_max_hp();
+	m_mp = get_max_mp();
+	if (!can_fly()) {
+		m_origin_foothold = foothold;
 	}
 
-	m_totalHealth = m_hp;
+	m_total_health = m_hp;
 
-	m_status = StatusEffects::Mob::Empty;
-	StatusInfo empty{StatusEffects::Mob::Empty, 0, 0, seconds_t{0}};
+	m_status = status_effects::mob::empty;
+	status_info empty{status_effects::mob::empty, 0, 0, seconds{0}};
 	m_statuses[empty.status] = empty;
 
-	if (m_info->hpRecovery > 0 || m_info->mpRecovery > 0) {
-		int32_t hpRecovery = m_info->hpRecovery;
-		int32_t mpRecovery = m_info->mpRecovery;
-		Vana::Timer::Timer::create(
-			[this, hpRecovery, mpRecovery](const time_point_t &now) { this->naturalHeal(hpRecovery, mpRecovery); },
-			Vana::Timer::Id{TimerType::MobHealTimer},
-			getTimers(), seconds_t{1}, seconds_t{10});
+	if (m_info->hp_recovery > 0 || m_info->mp_recovery > 0) {
+		int32_t hp_recovery = m_info->hp_recovery;
+		int32_t mp_recovery = m_info->mp_recovery;
+		vana::timer::timer::create(
+			[this, hp_recovery, mp_recovery](const time_point &now) { this->natural_heal(hp_recovery, mp_recovery); },
+			vana::timer::id{timer_type::mob_heal_timer},
+			get_timers(), seconds{1}, seconds{10});
 	}
-	if (m_info->removeAfter > 0) {
-		Vana::Timer::Timer::create(
-			[this](const time_point_t &now) { this->kill(); },
-			Vana::Timer::Id{TimerType::MobRemoveTimer, m_mapMobId},
-			getTimers(), seconds_t{m_info->removeAfter});
+	if (m_info->remove_after > 0) {
+		vana::timer::timer::create(
+			[this](const time_point &now) { this->kill(); },
+			vana::timer::id{timer_type::mob_remove_timer, m_map_mob_id},
+			get_timers(), seconds{m_info->remove_after});
 	}
 }
 
-auto Mob::naturalHeal(int32_t hpHeal, int32_t mpHeal) -> void {
-	if (hpHeal > 0 && getHp() < getMaxHp()) {
-		int32_t hp = getHp() + hpHeal;
-		int32_t spongeHp = hpHeal;
-		if (hp < 0 || hp > getMaxHp()) {
-			spongeHp = getMaxHp() - getHp();
-			hp = getMaxHp();
+auto mob::natural_heal(int32_t hp_heal, int32_t mp_heal) -> void {
+	if (hp_heal > 0 && get_hp() < get_max_hp()) {
+		int32_t hp = get_hp() + hp_heal;
+		int32_t sponge_hp = hp_heal;
+		if (hp < 0 || hp > get_max_hp()) {
+			sponge_hp = get_max_hp() - get_hp();
+			hp = get_max_hp();
 		}
 		m_hp = hp;
-		m_totalHealth += spongeHp;
+		m_total_health += sponge_hp;
 		if (auto sponge = m_sponge.lock()) {
-			sponge->m_hp += spongeHp;
+			sponge->m_hp += sponge_hp;
 		}
 	}
-	if (mpHeal > 0 && m_mp < getMaxMp()) {
-		int32_t mp = getMp() + mpHeal;
-		if (mp < 0 || mp > getMaxMp()) {
-			mp = getMaxMp();
+	if (mp_heal > 0 && m_mp < get_max_mp()) {
+		int32_t mp = get_mp() + mp_heal;
+		if (mp < 0 || mp > get_max_mp()) {
+			mp = get_max_mp();
 		}
 		m_mp = mp;
 	}
 }
 
-auto Mob::applyDamage(player_id_t playerId, damage_t damage, bool poison) -> void {
+auto mob::apply_damage(game_player_id player_id, game_damage damage, bool poison) -> void {
 	damage = std::max(damage, 0);
 	if (damage > m_hp) {
 		damage = m_hp - poison; // Keep HP from hitting 0 for poison and from going below 0
 	}
 
-	m_damages[playerId] += damage;
+	m_damages[player_id] += damage;
 	m_hp -= damage;
 
 	if (!poison) {
 		// HP bar packet does nothing for showing damage when poison is damaging for whatever reason
-		auto player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId);
-		Map *map = getMap();
+		auto player = channel_server::get_instance().get_player_data_provider().get_player(player_id);
+		map *map = get_map();
 
 		uint8_t percent = static_cast<uint8_t>(m_hp * 100 / m_info->hp);
 
-		if (m_info->hasHpBar()) {
+		if (m_info->has_hp_bar()) {
 			// Boss HP bars - Horntail's damage sponge isn't a boss in the data
-			map->send(Packets::Mobs::showBossHp(shared_from_this()));
+			map->send(packets::mobs::show_boss_hp(shared_from_this()));
 		}
 		else if (m_info->boss) {
 			// Minibosses
-			map->send(Packets::Mobs::showHp(m_mapMobId, percent));
+			map->send(packets::mobs::show_hp(m_map_mob_id, percent));
 		}
 		else if (m_info->friendly) {
-			map->send(Packets::Mobs::damageFriendlyMob(shared_from_this(), damage));
+			map->send(packets::mobs::damage_friendly_mob(shared_from_this(), damage));
 		}
 		else if (player != nullptr) {
-			player->send(Packets::Mobs::showHp(m_mapMobId, percent));
+			player->send(packets::mobs::show_hp(m_map_mob_id, percent));
 		}
 
 		// Need to preserve the pointer through mob deletion in die()
 		auto sponge = m_sponge.lock();
-		if (m_hp == Stats::MinHp) {
+		if (m_hp == stats::min_hp) {
 			die(player);
 		}
 		if (sponge != nullptr) {
-			sponge->applyDamage(playerId, damage, false);
+			sponge->apply_damage(player_id, damage, false);
 			// Apply damage after you can be sure that all the units are linked and ready
 		}
 	}
 	else if (m_hp == 1) {
-		removeStatus(StatusEffects::Mob::Poison);
+		remove_status(status_effects::mob::poison);
 	}
 }
 
-auto Mob::applyWebDamage() -> void {
-	damage_t webDamage = getMaxHp() / (50 - m_webLevel);
-	if (webDamage > m_hp) {
+auto mob::apply_web_damage() -> void {
+	game_damage web_damage = get_max_hp() / (50 - m_web_level);
+	if (web_damage >= m_hp) {
 		// Keep HP from hitting 0
-		webDamage = m_hp - 1;
+		web_damage = m_hp - 1;
 	}
-	if (webDamage != 0) {
-		m_damages[m_webPlayerId] += webDamage;
-		m_hp -= webDamage;
-		getMap()->send(Packets::Mobs::hurtMob(m_mapMobId, webDamage));
+	if (web_damage != 0) {
+		m_damages[m_web_player_id] += web_damage;
+		m_hp -= web_damage;
+		get_map()->send(packets::mobs::hurt_mob(m_map_mob_id, web_damage));
 	}
 }
 
-auto Mob::addStatus(player_id_t playerId, vector_t<StatusInfo> &statusInfo) -> void {
-	int32_t addedStatus = 0;
-	vector_t<int32_t> reflection;
-	Map *map = getMap();
+auto mob::add_status(game_player_id player_id, vector<status_info> &status_info) -> void {
+	int32_t added_status = 0;
+	vector<int32_t> reflection;
+	map *map = get_map();
 
-	for (auto &info : statusInfo) {
-		int32_t cStatus = info.status;
-		bool alreadyHasStatus = m_statuses.find(cStatus) != std::end(m_statuses);
-		switch (cStatus) {
-			case StatusEffects::Mob::Poison: // Status effects that do not renew
-			case StatusEffects::Mob::Doom:
-				if (alreadyHasStatus) {
+	for (auto &info : status_info) {
+		int32_t c_status = info.status;
+		bool already_has_status = m_statuses.find(c_status) != std::end(m_statuses);
+		switch (c_status) {
+			case status_effects::mob::poison: // Status effects that do not renew
+			case status_effects::mob::doom:
+				if (already_has_status) {
 					continue;
 				}
 				break;
-			case StatusEffects::Mob::ShadowWeb:
-				m_webPlayerId = playerId;
-				m_webLevel = static_cast<skill_level_t>(info.val);
-				map->addWebbedMob(getMapMobId());
+			case status_effects::mob::shadow_web:
+				m_web_player_id = player_id;
+				m_web_level = static_cast<game_skill_level>(info.val);
+				map->add_webbed_mob(get_map_mob_id());
 				break;
-			case StatusEffects::Mob::MagicAttackUp:
-				switch (info.skillId) {
-					case Vana::Skills::NightLord::Taunt:
-					case Vana::Skills::Shadower::Taunt: {
-						m_tauntEffect = (100 - info.val) + 100;
+			case status_effects::mob::magic_attack_up:
+				switch (info.skill_id) {
+					case vana::skills::night_lord::taunt:
+					case vana::skills::shadower::taunt: {
+						m_taunt_effect = (100 - info.val) + 100;
 						// Value passed as 100 - x, so 100 - value will = x
 						break;
 					}
 				}
 				break;
-			case StatusEffects::Mob::VenomousWeapon:
-				m_venomCount++;
-				if (alreadyHasStatus) {
-					info.val += m_statuses[cStatus].val; // Increase the damage
+			case status_effects::mob::venomous_weapon:
+				m_venom_count++;
+				if (already_has_status) {
+					info.val += m_statuses[c_status].val; // Increase the damage
 				}
 				break;
-			case StatusEffects::Mob::WeaponDamageReflect:
-			case StatusEffects::Mob::MagicDamageReflect:
+			case status_effects::mob::weapon_damage_reflect:
+			case status_effects::mob::magic_damage_reflect:
 				reflection.push_back(info.reflection);
 				break;
 		}
 
-		m_statuses[cStatus] = info;
-		addedStatus += cStatus;
+		m_statuses[c_status] = info;
+		added_status += c_status;
 
-		switch (cStatus) {
-			case StatusEffects::Mob::Poison:
-			case StatusEffects::Mob::VenomousWeapon:
-			case StatusEffects::Mob::NinjaAmbush:
-				damage_t poisonDamage = info.val;
-				Vana::Timer::Timer::create(
-					[this, playerId, poisonDamage](const time_point_t &now) {
-						this->applyDamage(playerId, poisonDamage, true);
+		switch (c_status) {
+			case status_effects::mob::poison:
+			case status_effects::mob::venomous_weapon:
+			case status_effects::mob::ninja_ambush:
+				game_damage poison_damage = info.val;
+				vana::timer::timer::create(
+					[this, player_id, poison_damage](const time_point &now) {
+						this->apply_damage(player_id, poison_damage, true);
 					},
-					Vana::Timer::Id{TimerType::MobStatusTimer, cStatus, 1},
-					getTimers(), seconds_t{1}, seconds_t{1});
+					vana::timer::id{timer_type::mob_status_timer, c_status, 1},
+					get_timers(), seconds{1}, seconds{1});
 				break;
 		}
 
 		// We add some milliseconds to our times in order to allow poisons to not end one hit early
-		Vana::Timer::Timer::create(
-			[this, cStatus](const time_point_t &now) { this->removeStatus(cStatus, true); },
-			Vana::Timer::Id{TimerType::MobStatusTimer, cStatus},
-			getTimers(), milliseconds_t{info.time.count() * 1000 + 100});
+		vana::timer::timer::create(
+			[this, c_status](const time_point &now) { this->remove_status(c_status, true); },
+			vana::timer::id{timer_type::mob_status_timer, c_status},
+			get_timers(), milliseconds{info.time.count() * 1000 + 100});
 	}
 
 	// Calculate new status mask
@@ -233,341 +233,341 @@ auto Mob::addStatus(player_id_t playerId, vector_t<StatusInfo> &statusInfo) -> v
 	for (const auto &kvp : m_statuses) {
 		m_status |= kvp.first;
 	}
-	map->send(Packets::Mobs::applyStatus(m_mapMobId, addedStatus, statusInfo, 300, reflection));
+	map->send(packets::mobs::apply_status(m_map_mob_id, added_status, status_info, 300, reflection));
 }
 
-auto Mob::removeStatus(int32_t status, bool fromTimer) -> void {
+auto mob::remove_status(int32_t status, bool from_timer) -> void {
 	auto kvp = m_statuses.find(status);
-	if (kvp != std::end(m_statuses) && getHp() > 0) {
-		const StatusInfo &stat = kvp->second;
-		Map *map = getMap();
+	if (kvp != std::end(m_statuses) && get_hp() > 0) {
+		const status_info &stat = kvp->second;
+		map *map = get_map();
 		switch (status) {
-			case StatusEffects::Mob::ShadowWeb:
-				m_webLevel = 0;
-				m_webPlayerId = 0;
-				map->removeWebbedMob(getMapMobId());
+			case status_effects::mob::shadow_web:
+				m_web_level = 0;
+				m_web_player_id = 0;
+				map->remove_webbed_mob(get_map_mob_id());
 				break;
-			case StatusEffects::Mob::MagicAttackUp:
-				switch (stat.skillId) {
-					case Vana::Skills::NightLord::Taunt:
-					case Vana::Skills::Shadower::Taunt:
-						m_tauntEffect = 100;
+			case status_effects::mob::magic_attack_up:
+				switch (stat.skill_id) {
+					case vana::skills::night_lord::taunt:
+					case vana::skills::shadower::taunt:
+						m_taunt_effect = 100;
 						break;
 				}
 				break;
-			case StatusEffects::Mob::VenomousWeapon:
-				m_venomCount = 0;
+			case status_effects::mob::venomous_weapon:
+				m_venom_count = 0;
 				// Intentional fallthrough
-			case StatusEffects::Mob::Poison:
+			case status_effects::mob::poison:
 				// Stop poison damage timer
-				getTimers()->removeTimer(Vana::Timer::Id{TimerType::MobStatusTimer, status, 1});
+				get_timers()->remove_timer(vana::timer::id{timer_type::mob_status_timer, status, 1});
 				break;
 		}
-		if (!fromTimer) {
-			getTimers()->removeTimer(Vana::Timer::Id{TimerType::MobStatusTimer, status});
+		if (!from_timer) {
+			get_timers()->remove_timer(vana::timer::id{timer_type::mob_status_timer, status});
 		}
 		m_status -= status;
 		m_statuses.erase(kvp);
-		map->send(Packets::Mobs::removeStatus(m_mapMobId, status));
+		map->send(packets::mobs::remove_status(m_map_mob_id, status));
 	}
 }
 
-auto Mob::hasWeaponReflection() const -> bool {
-	int32_t mask = StatusEffects::Mob::WeaponDamageReflect;
+auto mob::has_weapon_reflection() const -> bool {
+	int32_t mask = status_effects::mob::weapon_damage_reflect;
 	return (m_status & mask) != 0;
 }
 
-auto Mob::hasMagicReflection() const -> bool {
-	int32_t mask = StatusEffects::Mob::MagicDamageReflect;
+auto mob::has_magic_reflection() const -> bool {
+	int32_t mask = status_effects::mob::magic_damage_reflect;
 	return (m_status & mask) != 0;
 }
 
-auto Mob::hasImmunity() const -> bool {
-	int32_t mask = StatusEffects::Mob::WeaponImmunity | StatusEffects::Mob::MagicImmunity | StatusEffects::Mob::WeaponDamageReflect | StatusEffects::Mob::MagicDamageReflect;
+auto mob::has_immunity() const -> bool {
+	int32_t mask = status_effects::mob::weapon_immunity | status_effects::mob::magic_immunity | status_effects::mob::weapon_damage_reflect | status_effects::mob::magic_damage_reflect;
 	return (m_status & mask) != 0;
 }
 
-auto Mob::hasStatus(int32_t status) const -> bool {
+auto mob::has_status(int32_t status) const -> bool {
 	return (m_status & status) != 0;
 }
 
-auto Mob::getStatusValue(int32_t status) -> optional_t<StatusInfo> {
+auto mob::get_status_value(int32_t status) -> optional<status_info> {
 	auto kvp = m_statuses.find(status);
-	return kvp != std::end(m_statuses) ? kvp->second : optional_t<StatusInfo>{};
+	return kvp != std::end(m_statuses) ? kvp->second : optional<status_info>{};
 }
 
-auto Mob::getStatusBits() const -> int32_t {
+auto mob::get_status_bits() const -> int32_t {
 	return m_status;
 }
 
-auto Mob::getStatusInfo() const -> const ord_map_t<int32_t, StatusInfo> & {
+auto mob::get_status_info() const -> const ord_map<int32_t, status_info> & {
 	return m_statuses;
 }
 
-auto Mob::getMagicReflection() -> optional_t<StatusInfo> {
-	return getStatusValue(StatusEffects::Mob::MagicDamageReflect);
+auto mob::get_magic_reflection() -> optional<status_info> {
+	return get_status_value(status_effects::mob::magic_damage_reflect);
 }
 
-auto Mob::getWeaponReflection() -> optional_t<StatusInfo> {
-	return getStatusValue(StatusEffects::Mob::WeaponDamageReflect);
+auto mob::get_weapon_reflection() -> optional<status_info> {
+	return get_status_value(status_effects::mob::weapon_damage_reflect);
 }
 
-auto Mob::setController(ref_ptr_t<Player> control, MobSpawnType spawn, ref_ptr_t<Player> display) -> void {
-	endControl();
+auto mob::set_controller(ref_ptr<player> control, mob_spawn_type spawn, ref_ptr<player> display) -> void {
+	end_control();
 
 	m_controller = control;
 	if (control != nullptr) {
-		control->send(Packets::Mobs::requestControl(shared_from_this(), spawn));
+		control->send(packets::mobs::request_control(shared_from_this(), spawn));
 	}
-	else if (getControlStatus() == MobControlStatus::None) {
+	else if (get_control_status() == mob_control_status::none) {
 		if (display != nullptr) {
-			display->send(Packets::Mobs::requestControl(shared_from_this(), spawn));
+			display->send(packets::mobs::request_control(shared_from_this(), spawn));
 		}
 		else {
-			getMap()->send(Packets::Mobs::requestControl(shared_from_this(), spawn));
+			get_map()->send(packets::mobs::request_control(shared_from_this(), spawn));
 		}
 	}
 
-	m_anticipatedSkill = 0;
-	m_anticipatedSkillLevel = 0;
-	m_anticipatedSkillPlayerId = 0;
-	m_skillFeasible = false;
+	m_anticipated_skill = 0;
+	m_anticipated_skill_level = 0;
+	m_anticipated_skill_player_id = 0;
+	m_skill_feasible = false;
 }
 
-auto Mob::endControl() -> void {
+auto mob::end_control() -> void {
 	// TODO FIXME resource
-	// isDisconnecting should not be necessary here, but it requires a great deal of structural fixing to properly fix
-	if (m_controller != nullptr && m_controller->getMapId() == getMapId() && !m_controller->isDisconnecting()) {
-		m_controller->send(Packets::Mobs::endControlMob(m_mapMobId));
+	// is_disconnecting should not be necessary here, but it requires a great deal of structural fixing to properly fix
+	if (m_controller != nullptr && m_controller->get_map_id() == get_map_id() && !m_controller->is_disconnecting()) {
+		m_controller->send(packets::mobs::end_control_mob(m_map_mob_id));
 	}
 }
 
-auto Mob::die(ref_ptr_t<Player> player, bool fromExplosion) -> void {
-	Map *map = getMap();
+auto mob::die(ref_ptr<player> player, bool from_explosion) -> void {
+	map *map = get_map();
 
-	endControl();
+	end_control();
 
 	while (m_markers.size() > 0) {
 		auto marker = m_markers[0];
-		auto source = marker->getActiveBuffs()->getHomingBeaconSource();
+		auto source = marker->get_active_buffs()->get_homing_beacon_source();
 		if (source.is_initialized()) {
-			auto &buffSource = source.get();
-			marker->getActiveBuffs()->removeBuff(
-				buffSource,
-				Buffs::preprocessBuff(marker, buffSource, seconds_t{0}));
+			auto &buff_source = source.get();
+			marker->get_active_buffs()->remove_buff(
+				buff_source,
+				buffs::preprocess_buff(marker, buff_source, seconds{0}));
 		}
 
 		m_markers.erase(m_markers.begin());
 	}
 
-	player_id_t highestDamager = distributeExpAndGetDropRecipient(player);
+	game_player_id highest_damager = distribute_exp_and_get_drop_recipient(player);
 
 	// Ending of death stuff
-	DropHandler::doDrops(highestDamager, m_mapId, getLevel(), m_mobId, getPos(), hasExplosiveDrop(), hasFfaDrop(), getTauntEffect());
+	drop_handler::do_drops(highest_damager, m_map_id, get_level(), m_mob_id, get_pos(), has_explosive_drop(), has_ffa_drop(), get_taunt_effect());
 
 	if (player != nullptr) {
-		Party *party = player->getParty();
+		party *party = player->get_party();
 		if (party != nullptr) {
-			auto members = party->getPartyMembers(m_mapId);
+			auto members = party->get_party_members(m_map_id);
 			for (const auto &member : members) {
-				member->getQuests()->updateQuestMob(m_mobId);
+				member->get_quests()->update_quest_mob(m_mob_id);
 			}
 		}
 		else {
-			player->getQuests()->updateQuestMob(m_mobId);
+			player->get_quests()->update_quest_mob(m_mob_id);
 		}
 	}
 
-	map->mobDeath(shared_from_this(), fromExplosion);
+	map->mob_death(shared_from_this(), from_explosion);
 }
 
-auto Mob::explode() -> void {
+auto mob::explode() -> void {
 	die(nullptr, true);
 }
 
-auto Mob::kill() -> void {
-	applyDamage(0, getHp());
+auto mob::kill() -> void {
+	apply_damage(0, get_hp());
 }
 
-auto Mob::consumeMp(int32_t mp) -> void {
+auto mob::consume_mp(int32_t mp) -> void {
 	m_mp = std::max(m_mp - mp, 0);
 }
 
-auto Mob::distributeExpAndGetDropRecipient(ref_ptr_t<Player> killer) -> player_id_t {
-	player_id_t highestDamager = 0;
-	uint64_t highestDamage = 0;
+auto mob::distribute_exp_and_get_drop_recipient(ref_ptr<player> killer) -> game_player_id {
+	game_player_id highest_damager = 0;
+	uint64_t highest_damage = 0;
 
 	if (m_damages.size() > 0) {
-		struct PartyExp {
-			PartyExp() :
-				totalExp{0},
+		struct party_exp {
+			party_exp() :
+				total_exp{0},
 				party{nullptr},
-				highestDamager{nullptr},
-				highestDamage{0},
-				minHitLevel{Stats::PlayerLevels}
+				highest_damager{nullptr},
+				highest_damage{0},
+				min_hit_level{stats::player_levels}
 			{
 			}
 
-			player_level_t minHitLevel;
-			uint64_t totalExp;
-			uint64_t highestDamage;
-			ref_ptr_t<Player> highestDamager;
-			Party *party;
+			game_player_level min_hit_level;
+			uint64_t total_exp;
+			uint64_t highest_damage;
+			ref_ptr<player> highest_damager;
+			party *party;
 		};
 
-		hash_map_t<party_id_t, PartyExp> parties;
+		hash_map<game_party_id, party_exp> parties;
 
-		int32_t mobExpRate = ChannelServer::getInstance().getConfig().rates.mobExpRate;
+		int32_t mob_exp_rate = channel_server::get_instance().get_config().rates.mob_exp_rate;
 
 		for (const auto &kvp : m_damages) {
-			player_id_t damagerId = kvp.first;
+			game_player_id damager_id = kvp.first;
 			uint64_t damage = kvp.second;
-			if (damage > highestDamage) {
+			if (damage > highest_damage) {
 				// Find the highest damager to give drop ownership
-				highestDamager = damagerId;
-				highestDamage = damage;
+				highest_damager = damager_id;
+				highest_damage = damage;
 			}
 
-			auto damager = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(damagerId);
-			if (damager == nullptr || damager->getMapId() != m_mapId || damager->getStats()->isDead()) {
+			auto damager = channel_server::get_instance().get_player_data_provider().get_player(damager_id);
+			if (damager == nullptr || damager->get_map_id() != m_map_id || damager->get_stats()->is_dead()) {
 				// Only give EXP if the damager is in the same channel, on the same map and is alive
 				continue;
 			}
-			player_level_t damagerLevel = damager->getStats()->getLevel();
-			Party *damagerParty = damager->getParty();
+			game_player_level damager_level = damager->get_stats()->get_level();
+			party *damager_party = damager->get_party();
 
-			uint64_t exp = static_cast<uint64_t>(m_info->exp) * ((8 * damage / m_totalHealth) + (damager == killer ? 2 : 0)) / 10;
-			if (damagerParty != nullptr) {
-				party_id_t partyId = damagerParty->getId();
-				auto kvp = parties.find(partyId);
+			uint64_t exp = static_cast<uint64_t>(m_info->exp) * ((8 * damage / m_total_health) + (damager == killer ? 2 : 0)) / 10;
+			if (damager_party != nullptr) {
+				game_party_id party_id = damager_party->get_id();
+				auto kvp = parties.find(party_id);
 				if (kvp == std::end(parties)) {
-					PartyExp newParty;
-					newParty.totalExp = 0;
-					newParty.party = damagerParty;
-					kvp = parties.emplace(partyId, newParty).first;
+					party_exp new_party;
+					new_party.total_exp = 0;
+					new_party.party = damager_party;
+					kvp = parties.emplace(party_id, new_party).first;
 				}
 
-				PartyExp &damagingParty = kvp->second;
-				damagingParty.totalExp += exp;
+				party_exp &damaging_party = kvp->second;
+				damaging_party.total_exp += exp;
 
-				if (damagerLevel < damagingParty.minHitLevel) {
-					damagingParty.minHitLevel = damagerLevel;
+				if (damager_level < damaging_party.min_hit_level) {
+					damaging_party.min_hit_level = damager_level;
 				}
-				if (damage > damagingParty.highestDamage) {
-					damagingParty.highestDamager = damager;
-					damagingParty.highestDamage = damage;
+				if (damage > damaging_party.highest_damage) {
+					damaging_party.highest_damager = damager;
+					damaging_party.highest_damage = damage;
 				}
 			}
 			else {
 				// Account for EXP increasing junk
-				int16_t hsRate = damager->getActiveBuffs()->getHolySymbolRate();
-				exp = exp * getTauntEffect() / 100;
-				exp *= mobExpRate;
-				exp += ((exp * hsRate) / 100);
-				damager->getStats()->giveExp(exp, false, (damager == killer));
+				int16_t hs_rate = damager->get_active_buffs()->get_holy_symbol_rate();
+				exp = exp * get_taunt_effect() / 100;
+				exp *= mob_exp_rate;
+				exp += ((exp * hs_rate) / 100);
+				damager->get_stats()->give_exp(exp, false, (damager == killer));
 			}
 		}
 
 		if (parties.size() > 0) {
 			for (const auto &kvp : parties) {
-				const PartyExp &info = kvp.second;
-				Party *damagerParty = info.party;
-				vector_t<ref_ptr_t<Player>> partyMembers = damagerParty->getPartyMembers(getMapId());
-				uint16_t totalLevel = 0;
-				uint16_t leechCount = 0;
-				for (const auto &partyMember : partyMembers) {
-					player_level_t damagerLevel = partyMember->getStats()->getLevel();
-					if (damagerLevel < (info.minHitLevel - 5) && damagerLevel < (getLevel() - 5)) {
+				const party_exp &info = kvp.second;
+				party *damager_party = info.party;
+				vector<ref_ptr<player>> party_members = damager_party->get_party_members(get_map_id());
+				uint16_t total_level = 0;
+				uint16_t leech_count = 0;
+				for (const auto &party_member : party_members) {
+					game_player_level damager_level = party_member->get_stats()->get_level();
+					if (damager_level < (info.min_hit_level - 5) && damager_level < (get_level() - 5)) {
 						continue;
 					}
-					totalLevel += damagerLevel;
-					leechCount++;
+					total_level += damager_level;
+					leech_count++;
 				}
-				for (const auto &partyMember : partyMembers) {
-					player_level_t damagerLevel = partyMember->getStats()->getLevel();
-					if (damagerLevel < (info.minHitLevel - 5) && damagerLevel < (getLevel() - 5)) {
+				for (const auto &party_member : party_members) {
+					game_player_level damager_level = party_member->get_stats()->get_level();
+					if (damager_level < (info.min_hit_level - 5) && damager_level < (get_level() - 5)) {
 						continue;
 					}
-					uint64_t exp = static_cast<uint64_t>(m_info->exp) * ((8 * damagerLevel / totalLevel) + (partyMember == info.highestDamager ? 2 : 0)) / 10;
-					int16_t hsRate = partyMember->getActiveBuffs()->getHolySymbolRate();
-					exp = exp * getTauntEffect() / 100;
-					exp *= mobExpRate;
-					exp += ((exp * hsRate) / 100);
-					partyMember->getStats()->giveExp(exp, false, (partyMember == killer));
+					uint64_t exp = static_cast<uint64_t>(m_info->exp) * ((8 * damager_level / total_level) + (party_member == info.highest_damager ? 2 : 0)) / 10;
+					int16_t hs_rate = party_member->get_active_buffs()->get_holy_symbol_rate();
+					exp = exp * get_taunt_effect() / 100;
+					exp *= mob_exp_rate;
+					exp += ((exp * hs_rate) / 100);
+					party_member->get_stats()->give_exp(exp, false, (party_member == killer));
 				}
 			}
 		}
 	}
-	return highestDamager;
+	return highest_damager;
 }
 
-auto Mob::skillHeal(int32_t healHp, int32_t healRange) -> void {
-	if (isSponge()) {
+auto mob::skill_heal(int32_t heal_hp, int32_t heal_range) -> void {
+	if (is_sponge()) {
 		return;
 	}
-	int32_t amount = Randomizer::range<int32_t>(healHp, healRange);
+	int32_t amount = randomizer::range<int32_t>(heal_hp, heal_range);
 	int32_t original = amount;
 
-	if (m_hp + amount > getMaxHp()) {
-		amount = getMaxHp() - m_hp;
-		m_hp = getMaxHp();
+	if (m_hp + amount > get_max_hp()) {
+		amount = get_max_hp() - m_hp;
+		m_hp = get_max_hp();
 	}
 	else {
 		m_hp += amount;
 	}
-	m_totalHealth += amount;
+	m_total_health += amount;
 
 	if (auto sponge = m_sponge.lock()) {
-		healHp = sponge->getHp() + amount;
-		healHp = ext::constrain_range<int32_t>(healHp, Stats::MinHp, sponge->getMaxHp());
-		sponge->m_hp = healHp;
+		heal_hp = sponge->get_hp() + amount;
+		heal_hp = ext::constrain_range<int32_t>(heal_hp, stats::min_hp, sponge->get_max_hp());
+		sponge->m_hp = heal_hp;
 	}
 
-	getMap()->send(Packets::Mobs::healMob(m_mapMobId, original));
+	get_map()->send(packets::mobs::heal_mob(m_map_mob_id, original));
 }
 
-auto Mob::dispelBuffs() -> void {
+auto mob::dispel_buffs() -> void {
 	auto statuses = {
-		StatusEffects::Mob::Watk, StatusEffects::Mob::Wdef,
-		StatusEffects::Mob::Matk, StatusEffects::Mob::Mdef,
-		StatusEffects::Mob::Acc, StatusEffects::Mob::Avoid,
-		StatusEffects::Mob::Speed,
+		status_effects::mob::watk, status_effects::mob::wdef,
+		status_effects::mob::matk, status_effects::mob::mdef,
+		status_effects::mob::acc, status_effects::mob::avoid,
+		status_effects::mob::speed,
 	};
 
 	for (const auto &status : statuses) {
-		removeStatus(status);
+		remove_status(status);
 	}
 }
 
-auto Mob::doCrashSkill(skill_id_t skillId) -> void {
-	switch (skillId) {
-		case Vana::Skills::Crusader::ArmorCrash: removeStatus(StatusEffects::Mob::Wdef); break;
-		case Vana::Skills::WhiteKnight::MagicCrash: removeStatus(StatusEffects::Mob::Matk); break;
-		case Vana::Skills::DragonKnight::PowerCrash: removeStatus(StatusEffects::Mob::Watk); break;
+auto mob::do_crash_skill(game_skill_id skill_id) -> void {
+	switch (skill_id) {
+		case vana::skills::crusader::armor_crash: remove_status(status_effects::mob::wdef); break;
+		case vana::skills::white_knight::magic_crash: remove_status(status_effects::mob::matk); break;
+		case vana::skills::dragon_knight::power_crash: remove_status(status_effects::mob::watk); break;
 	}
 }
 
-auto Mob::mpEat(ref_ptr_t<Player> player, MpEaterData *mp) -> void {
-	if (m_mpEaterCount < 3 && getMp() > 0 && Randomizer::percentage<uint16_t>() < mp->prop) {
+auto mob::mp_eat(ref_ptr<player> player, mp_eater_data *mp) -> void {
+	if (m_mp_eater_count < 3 && get_mp() > 0 && randomizer::percentage<uint16_t>() < mp->prop) {
 		mp->used = true;
-		int32_t eatenMp = getMaxMp() * mp->x / 100;
+		int32_t eaten_mp = get_max_mp() * mp->x / 100;
 
-		eatenMp = std::min<int32_t>(eatenMp, getMp());
-		m_mp = getMp() - eatenMp;
+		eaten_mp = std::min<int32_t>(eaten_mp, get_mp());
+		m_mp = get_mp() - eaten_mp;
 
-		eatenMp = std::min<int32_t>(eatenMp, Stats::MaxMaxMp);
-		player->getStats()->modifyMp(eatenMp);
+		eaten_mp = std::min<int32_t>(eaten_mp, stats::max_max_mp);
+		player->get_stats()->modify_mp(eaten_mp);
 
-		player->sendMap(Packets::Skills::showSkillEffect(player->getId(), mp->skillId));
-		m_mpEaterCount++;
+		player->send_map(packets::skills::show_skill_effect(player->get_id(), mp->skill_id));
+		m_mp_eater_count++;
 	}
 }
 
-auto Mob::addMarker(ref_ptr_t<Player> player) -> void {
+auto mob::add_marker(ref_ptr<player> player) -> void {
 	m_markers.push_back(player);
 }
 
-auto Mob::removeMarker(ref_ptr_t<Player> player) -> void {
+auto mob::remove_marker(ref_ptr<player> player) -> void {
 	for (size_t i = 0; i < m_markers.size(); i++) {
 		auto test = m_markers[i];
 		if (test == player) {
@@ -577,50 +577,50 @@ auto Mob::removeMarker(ref_ptr_t<Player> player) -> void {
 	}
 }
 
-auto Mob::chooseRandomSkill(ref_ptr_t<Player> player, mob_skill_id_t &skillId, mob_skill_level_t &skillLevel) -> void {
-	if (m_info->skillCount == 0 || m_anticipatedSkill != 0 || !canCastSkills()) {
+auto mob::choose_random_skill(ref_ptr<player> player, game_mob_skill_id &skill_id, game_mob_skill_level &skill_level) -> void {
+	if (m_info->skill_count == 0 || m_anticipated_skill != 0 || !can_cast_skills()) {
 		return;
 	}
 
-	time_point_t now = TimeUtilities::getNow();
-	if (TimeUtilities::getDistanceInSeconds(now, m_lastSkillUse) < seconds_t{3}) {
+	time_point now = utilities::time::get_now();
+	if (utilities::time::get_distance_in_seconds(now, m_last_skill_use) < seconds{3}) {
 		return;
 	}
 
-	vector_t<const MobSkillInfo *> viableSkills;
-	auto &skills = ChannelServer::getInstance().getMobDataProvider().getSkills(getMobIdOrLink());
+	vector<const mob_skill_info *> viable_skills;
+	auto &skills = channel_server::get_instance().get_mob_data_provider().get_skills(get_mob_id_or_link());
 	for (const auto &info : skills) {
 		bool stop = false;
-		auto mobSkill = ChannelServer::getInstance().getSkillDataProvider().getMobSkill(info.skillId, info.level);
+		auto mob_skill = channel_server::get_instance().get_skill_data_provider().get_mob_skill(info.skill_id, info.level);
 
-		switch (info.skillId) {
-			case MobSkills::WeaponAttackUp:
-			case MobSkills::WeaponAttackUpAoe:
-				stop = hasStatus(StatusEffects::Mob::Watk);
+		switch (info.skill_id) {
+			case mob_skills::weapon_attack_up:
+			case mob_skills::weapon_attack_up_aoe:
+				stop = has_status(status_effects::mob::watk);
 				break;
-			case MobSkills::MagicAttackUp:
-			case MobSkills::MagicAttackUpAoe:
-				stop = hasStatus(StatusEffects::Mob::Matk);
+			case mob_skills::magic_attack_up:
+			case mob_skills::magic_attack_up_aoe:
+				stop = has_status(status_effects::mob::matk);
 				break;
-			case MobSkills::WeaponDefenseUp:
-			case MobSkills::WeaponDefenseUpAoe:
-				stop = hasStatus(StatusEffects::Mob::Wdef);
+			case mob_skills::weapon_defense_up:
+			case mob_skills::weapon_defense_up_aoe:
+				stop = has_status(status_effects::mob::wdef);
 				break;
-			case MobSkills::MagicDefenseUp:
-			case MobSkills::MagicDefenseUpAoe:
-				stop = hasStatus(StatusEffects::Mob::Mdef);
+			case mob_skills::magic_defense_up:
+			case mob_skills::magic_defense_up_aoe:
+				stop = has_status(status_effects::mob::mdef);
 				break;
-			case MobSkills::WeaponImmunity:
-			case MobSkills::MagicImmunity:
-			case MobSkills::WeaponDamageReflect:
-			case MobSkills::MagicDamageReflect:
-				stop = hasImmunity();
+			case mob_skills::weapon_immunity:
+			case mob_skills::magic_immunity:
+			case mob_skills::weapon_damage_reflect:
+			case mob_skills::magic_damage_reflect:
+				stop = has_immunity();
 				break;
-			case MobSkills::McSpeedUp:
-				stop = hasStatus(StatusEffects::Mob::Speed);
+			case mob_skills::mc_speed_up:
+				stop = has_status(status_effects::mob::speed);
 				break;
-			case MobSkills::Summon:
-				stop = static_cast<int16_t>(m_spawns.size()) > mobSkill->limit;
+			case mob_skills::summon:
+				stop = static_cast<int16_t>(m_spawns.size()) > mob_skill->limit;
 				break;
 		}
 
@@ -628,207 +628,207 @@ auto Mob::chooseRandomSkill(ref_ptr_t<Player> player, mob_skill_id_t &skillId, m
 			continue;
 		}
 
-		auto kvp = m_skillUse.find(info.skillId);
-		if (kvp != std::end(m_skillUse)) {
-			time_point_t targetTime = kvp->second + seconds_t{mobSkill->cooldown};
-			stop = now < targetTime;
+		auto kvp = m_skill_use.find(info.skill_id);
+		if (kvp != std::end(m_skill_use)) {
+			time_point target_time = kvp->second + seconds{mob_skill->cooldown};
+			stop = now < target_time;
 		}
 
 		if (!stop) {
-			double currentMobHpPercentage = static_cast<double>(getHp()) * 100. / static_cast<double>(getMaxHp());
-			stop = currentMobHpPercentage > static_cast<double>(mobSkill->hp);
+			double current_mob_hp_percentage = static_cast<double>(get_hp()) * 100. / static_cast<double>(get_max_hp());
+			stop = current_mob_hp_percentage > static_cast<double>(mob_skill->hp);
 		}
 
 		if (!stop) {
-			viableSkills.push_back(&info);
+			viable_skills.push_back(&info);
 		}
 	}
 
-	if (viableSkills.size() == 0) {
+	if (viable_skills.size() == 0) {
 		return;
 	}
 
-	auto skill = *Randomizer::select(viableSkills);
-	skillId = skill->skillId;
-	skillLevel = skill->level;
-	m_anticipatedSkill = skillId;
-	m_anticipatedSkillLevel = skillLevel;
-	m_anticipatedSkillPlayerId = player->getId();
+	auto skill = *randomizer::select(viable_skills);
+	skill_id = skill->skill_id;
+	skill_level = skill->level;
+	m_anticipated_skill = skill_id;
+	m_anticipated_skill_level = skill_level;
+	m_anticipated_skill_player_id = player->get_id();
 }
 
-auto Mob::resetAnticipatedSkill() -> void {
-	m_anticipatedSkill = 0;
-	m_anticipatedSkillLevel = 0;
-	m_anticipatedSkillPlayerId = 0;
+auto mob::reset_anticipated_skill() -> void {
+	m_anticipated_skill = 0;
+	m_anticipated_skill_level = 0;
+	m_anticipated_skill_player_id = 0;
 }
 
-auto Mob::useAnticipatedSkill() -> Result {
-	mob_skill_id_t skillId = m_anticipatedSkill;
-	mob_skill_level_t level = m_anticipatedSkillLevel;
+auto mob::use_anticipated_skill() -> result {
+	game_mob_skill_id skill_id = m_anticipated_skill;
+	game_mob_skill_level level = m_anticipated_skill_level;
 
-	resetAnticipatedSkill();
+	reset_anticipated_skill();
 
-	if (!canCastSkills()) {
-		return Result::Failure;
+	if (!can_cast_skills()) {
+		return result::failure;
 	}
 
-	time_point_t now = TimeUtilities::getNow();
-	m_skillUse[skillId] = now;
-	m_lastSkillUse = now;
+	time_point now = utilities::time::get_now();
+	m_skill_use[skill_id] = now;
+	m_last_skill_use = now;
 
-	auto &channel = ChannelServer::getInstance();
-	auto skillLevelInfo = channel.getSkillDataProvider().getMobSkill(skillId, level);
+	auto &channel = channel_server::get_instance();
+	auto skill_level_info = channel.get_skill_data_provider().get_mob_skill(skill_id, level);
 
-	auto &skills = channel.getMobDataProvider().getSkills(m_mobId);
-	milliseconds_t delay = milliseconds_t{0};
+	auto &skills = channel.get_mob_data_provider().get_skills(m_mob_id);
+	milliseconds delay = milliseconds{0};
 	for (const auto &skill : skills) {
-		if (skill.skillId == skillId && skill.level == level) {
-			delay = skill.effectAfter;
+		if (skill.skill_id == skill_id && skill.level == level) {
+			delay = skill.effect_after;
 			break;
 		}
 	}
 
-	consumeMp(skillLevelInfo->mp);
+	consume_mp(skill_level_info->mp);
 
-	Rect skillArea = skillLevelInfo->dimensions.move(getPos());
-	Map *map = getMap();
-	vector_t<StatusInfo> statuses;
+	rect skill_area = skill_level_info->dimensions.move(get_pos());
+	map *map = get_map();
+	vector<status_info> statuses;
 	bool aoe = false;
 
-	switch (skillId) {
-		case MobSkills::WeaponAttackUpAoe:
+	switch (skill_id) {
+		case mob_skills::weapon_attack_up_aoe:
 			aoe = true;
-		case MobSkills::WeaponAttackUp:
-			statuses.emplace_back(StatusEffects::Mob::Watk, skillLevelInfo->x, skillId, level, skillLevelInfo->time);
+		case mob_skills::weapon_attack_up:
+			statuses.emplace_back(status_effects::mob::watk, skill_level_info->x, skill_id, level, skill_level_info->time);
 			break;
-		case MobSkills::MagicAttackUpAoe:
+		case mob_skills::magic_attack_up_aoe:
 			aoe = true;
-		case MobSkills::MagicAttackUp:
-			statuses.emplace_back(StatusEffects::Mob::Matk, skillLevelInfo->x, skillId, level, skillLevelInfo->time);
+		case mob_skills::magic_attack_up:
+			statuses.emplace_back(status_effects::mob::matk, skill_level_info->x, skill_id, level, skill_level_info->time);
 			break;
-		case MobSkills::WeaponDefenseUpAoe:
+		case mob_skills::weapon_defense_up_aoe:
 			aoe = true;
-		case MobSkills::WeaponDefenseUp:
-			statuses.emplace_back(StatusEffects::Mob::Wdef, skillLevelInfo->x, skillId, level, skillLevelInfo->time);
+		case mob_skills::weapon_defense_up:
+			statuses.emplace_back(status_effects::mob::wdef, skill_level_info->x, skill_id, level, skill_level_info->time);
 			break;
-		case MobSkills::MagicDefenseUpAoe:
+		case mob_skills::magic_defense_up_aoe:
 			aoe = true;
-		case MobSkills::MagicDefenseUp:
-			statuses.emplace_back(StatusEffects::Mob::Mdef, skillLevelInfo->x, skillId, level, skillLevelInfo->time);
+		case mob_skills::magic_defense_up:
+			statuses.emplace_back(status_effects::mob::mdef, skill_level_info->x, skill_id, level, skill_level_info->time);
 			break;
-		case MobSkills::HealAoe:
-			map->healMobs(skillLevelInfo->x, skillLevelInfo->y, skillArea);
+		case mob_skills::heal_aoe:
+			map->heal_mobs(skill_level_info->x, skill_level_info->y, skill_area);
 			break;
-		case MobSkills::Seal:
-		case MobSkills::Darkness:
-		case MobSkills::Weakness:
-		case MobSkills::Stun:
-		case MobSkills::Curse:
-		case MobSkills::Poison:
-		case MobSkills::Slow:
-		case MobSkills::Seduce:
-		case MobSkills::CrazySkull:
-		case MobSkills::Zombify: {
-			auto func = [skillId, level, delay](ref_ptr_t<Player> player) {
-				Buffs::addBuff(player, skillId, level, delay);
+		case mob_skills::seal:
+		case mob_skills::darkness:
+		case mob_skills::weakness:
+		case mob_skills::stun:
+		case mob_skills::curse:
+		case mob_skills::poison:
+		case mob_skills::slow:
+		case mob_skills::seduce:
+		case mob_skills::crazy_skull:
+		case mob_skills::zombify: {
+			auto func = [skill_id, level, delay](ref_ptr<player> player) {
+				buffs::add_buff(player, skill_id, level, delay);
 			};
-			map->runFunctionPlayers(skillArea, skillLevelInfo->prop, skillLevelInfo->count, func);
+			map->run_function_players(skill_area, skill_level_info->prop, skill_level_info->count, func);
 			break;
 		}
-		case MobSkills::Dispel: {
-			map->runFunctionPlayers(skillArea, skillLevelInfo->prop, [](ref_ptr_t<Player> player) {
-				player->getActiveBuffs()->dispelBuffs();
+		case mob_skills::dispel: {
+			map->run_function_players(skill_area, skill_level_info->prop, [](ref_ptr<player> player) {
+				player->get_active_buffs()->dispel_buffs();
 			});
 			break;
 		}
-		case MobSkills::SendToTown: {
-			if (auto banishInfo = channel.getSkillDataProvider().getBanishData(getMobId())) {
-				map_id_t field = banishInfo->field;
-				string_t message = banishInfo->message;
-				const PortalInfo * const portal = Maps::getMap(field)->queryPortalName(banishInfo->portal);
+		case mob_skills::send_to_town: {
+			if (auto banish_info = channel.get_skill_data_provider().get_banish_data(get_mob_id())) {
+				game_map_id field = banish_info->field;
+				string message = banish_info->message;
+				const portal_info * const portal = maps::get_map(field)->query_portal_name(banish_info->portal);
 
-				auto func = [&message, &field, &portal](ref_ptr_t<Player> player) {
+				auto func = [&message, &field, &portal](ref_ptr<player> player) {
 					if (!message.empty()) {
-						player->send(Packets::Player::showMessage(message, Packets::Player::NoticeTypes::Blue));
+						player->send(packets::player::show_message(message, packets::player::notice_types::blue));
 					}
-					player->setMap(field, portal);
+					player->set_map(field, portal);
 				};
-				map->runFunctionPlayers(skillArea, skillLevelInfo->prop, skillLevelInfo->count, func);
+				map->run_function_players(skill_area, skill_level_info->prop, skill_level_info->count, func);
 			}
 			else {
-				player_id_t playerId = m_anticipatedSkillPlayerId;
-				mob_id_t mobId = getMobIdOrLink();
-				channel.log(LogType::Hacking, [&](out_stream_t &str) {
-					str << "Likely hacking by player ID " << playerId << ". "
-						<< "SendToTown used on an invalid mob: " << mobId;
+				game_player_id player_id = m_anticipated_skill_player_id;
+				game_mob_id mob_id = get_mob_id_or_link();
+				channel.log(log_type::hacking, [&](out_stream &str) {
+					str << "Likely hacking by player ID " << player_id << ". "
+						<< "SendToTown used on an invalid mob: " << mob_id;
 				});
-				return Result::Failure;
+				return result::failure;
 			}
 			break;
 		}
-		case MobSkills::PoisonMist:
-			new Mist{getMapId(), this, seconds_t{skillLevelInfo->time}, skillArea, skillId, level};
+		case mob_skills::poison_mist:
+			new mist{get_map_id(), this, seconds{skill_level_info->time}, skill_area, skill_id, level};
 			break;
-		case MobSkills::WeaponImmunity:
-			statuses.emplace_back(StatusEffects::Mob::WeaponImmunity, skillLevelInfo->x, skillId, level, skillLevelInfo->time);
+		case mob_skills::weapon_immunity:
+			statuses.emplace_back(status_effects::mob::weapon_immunity, skill_level_info->x, skill_id, level, skill_level_info->time);
 			break;
-		case MobSkills::MagicImmunity:
-			statuses.emplace_back(StatusEffects::Mob::MagicImmunity, skillLevelInfo->x, skillId, level, skillLevelInfo->time);
+		case mob_skills::magic_immunity:
+			statuses.emplace_back(status_effects::mob::magic_immunity, skill_level_info->x, skill_id, level, skill_level_info->time);
 			break;
-		case MobSkills::WeaponDamageReflect:
-			statuses.emplace_back(StatusEffects::Mob::WeaponImmunity, skillLevelInfo->x, skillId, level, skillLevelInfo->time);
-			statuses.emplace_back(StatusEffects::Mob::WeaponDamageReflect, skillLevelInfo->x, skillId, level, skillLevelInfo->y, skillLevelInfo->time);
+		case mob_skills::weapon_damage_reflect:
+			statuses.emplace_back(status_effects::mob::weapon_immunity, skill_level_info->x, skill_id, level, skill_level_info->time);
+			statuses.emplace_back(status_effects::mob::weapon_damage_reflect, skill_level_info->x, skill_id, level, skill_level_info->y, skill_level_info->time);
 			break;
-		case MobSkills::MagicDamageReflect:
-			statuses.emplace_back(StatusEffects::Mob::MagicImmunity, skillLevelInfo->x, skillId, level, skillLevelInfo->time);
-			statuses.emplace_back(StatusEffects::Mob::MagicDamageReflect, skillLevelInfo->x, skillId, level, skillLevelInfo->y, skillLevelInfo->time);
+		case mob_skills::magic_damage_reflect:
+			statuses.emplace_back(status_effects::mob::magic_immunity, skill_level_info->x, skill_id, level, skill_level_info->time);
+			statuses.emplace_back(status_effects::mob::magic_damage_reflect, skill_level_info->x, skill_id, level, skill_level_info->y, skill_level_info->time);
 			break;
-		case MobSkills::AnyDamageReflect:
-			statuses.emplace_back(StatusEffects::Mob::WeaponImmunity, skillLevelInfo->x, skillId, level, skillLevelInfo->time);
-			statuses.emplace_back(StatusEffects::Mob::MagicImmunity, skillLevelInfo->x, skillId, level, skillLevelInfo->time);
-			statuses.emplace_back(StatusEffects::Mob::WeaponDamageReflect, skillLevelInfo->x, skillId, level, skillLevelInfo->y, skillLevelInfo->time);
-			statuses.emplace_back(StatusEffects::Mob::MagicDamageReflect, skillLevelInfo->x, skillId, level, skillLevelInfo->y, skillLevelInfo->time);
+		case mob_skills::any_damage_reflect:
+			statuses.emplace_back(status_effects::mob::weapon_immunity, skill_level_info->x, skill_id, level, skill_level_info->time);
+			statuses.emplace_back(status_effects::mob::magic_immunity, skill_level_info->x, skill_id, level, skill_level_info->time);
+			statuses.emplace_back(status_effects::mob::weapon_damage_reflect, skill_level_info->x, skill_id, level, skill_level_info->y, skill_level_info->time);
+			statuses.emplace_back(status_effects::mob::magic_damage_reflect, skill_level_info->x, skill_id, level, skill_level_info->y, skill_level_info->time);
 			break;
-		case MobSkills::McSpeedUp:
-			statuses.emplace_back(StatusEffects::Mob::Speed, skillLevelInfo->x, skillId, level, skillLevelInfo->time);
+		case mob_skills::mc_speed_up:
+			statuses.emplace_back(status_effects::mob::speed, skill_level_info->x, skill_id, level, skill_level_info->time);
 			break;
-		case MobSkills::Summon:
-			map->mobSummonSkillUsed(shared_from_this(), skillLevelInfo);
+		case mob_skills::summon:
+			map->mob_summon_skill_used(shared_from_this(), skill_level_info);
 			break;
 	}
 
 	if (statuses.size() > 0) {
 		if (aoe) {
-			map->statusMobs(statuses, skillArea);
+			map->status_mobs(statuses, skill_area);
 		}
 		else {
-			addStatus(0, statuses);
+			add_status(0, statuses);
 		}
 	}
 
-	return Result::Successful;
+	return result::successful;
 }
 
-auto Mob::canCastSkills() const -> bool {
-	return !(hasStatus(StatusEffects::Mob::Freeze) || hasStatus(StatusEffects::Mob::Stun) || hasStatus(StatusEffects::Mob::ShadowWeb) || hasStatus(StatusEffects::Mob::Seal));
+auto mob::can_cast_skills() const -> bool {
+	return !(has_status(status_effects::mob::freeze) || has_status(status_effects::mob::stun) || has_status(status_effects::mob::shadow_web) || has_status(status_effects::mob::seal));
 }
 
-auto Mob::isSponge(mob_id_t mobId) -> bool {
-	switch (mobId) {
-		case Mobs::HorntailSponge: return true;
+auto mob::is_sponge(game_mob_id mob_id) -> bool {
+	switch (mob_id) {
+		case mobs::horntail_sponge: return true;
 	}
 	return false;
 }
 
-auto Mob::spawnsSponge(mob_id_t mobId) -> bool {
-	switch (mobId) {
-		case Mobs::SummonHorntail: return true;
+auto mob::spawns_sponge(game_mob_id mob_id) -> bool {
+	switch (mob_id) {
+		case mobs::summon_horntail: return true;
 	}
 	return false;
 }
 
-auto Mob::getMap() const -> Map * {
-	return Maps::getMap(m_mapId);
+auto mob::get_map() const -> map * {
+	return maps::get_map(m_map_id);
 }
 
 }

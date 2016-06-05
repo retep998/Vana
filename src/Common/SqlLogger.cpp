@@ -18,57 +18,57 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SqlLogger.hpp"
 #include "Common/Database.hpp"
 
-namespace Vana {
+namespace vana {
 
-SqlLogger::SqlLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize) :
-	Logger{filename, format, timeFormat, serverType, bufferSize},
-	m_bufferSize{bufferSize}
+sql_logger::sql_logger(const string &filename, const string &format, const string &time_format, server_type type, size_t buffer_size) :
+	base_logger{filename, format, time_format, type, buffer_size},
+	m_buffer_size{buffer_size}
 {
-	m_buffer.reserve(bufferSize);
+	m_buffer.reserve(buffer_size);
 }
 
-SqlLogger::~SqlLogger() {
+sql_logger::~sql_logger() {
 	flush();
 }
 
-auto SqlLogger::log(LogType type, const opt_string_t &identifier, const string_t &message) -> void {
-	LogMessage m;
+auto sql_logger::log(log_type type, const opt_string &identifier, const string &message) -> void {
+	log_message m;
 	m.type = type;
 	m.message = message;
 	m.time = time(nullptr);
 	m.identifier = identifier;
 	m_buffer.push_back(m);
-	if (m_buffer.size() >= m_bufferSize) {
+	if (m_buffer.size() >= m_buffer_size) {
 		flush();
 	}
 }
 
-auto SqlLogger::flush() -> void {
+auto sql_logger::flush() -> void {
 	if (m_buffer.size() > 0) {
-		auto &db = Database::getCharDb();
-		auto &sql = db.getSession();
-		server_type_t serverType = static_cast<server_type_t>(getServerType());
-		int32_t logType = 0;
-		opt_string_t identifier;
+		auto &db = database::get_char_db();
+		auto &sql = db.get_session();
+		server_type_underlying type = static_cast<server_type_underlying>(get_server_type());
+		int32_t log_type = 0;
+		opt_string identifier;
 		// For GCC, GCC doesn't interpret operators very well
 		identifier = "";
-		string_t message = "";
-		UnixTime logTime;
+		string message = "";
+		unix_time log_time;
 
 		soci::statement st = (sql.prepare
-			<< "INSERT INTO " << db.makeTable("logs") << " (log_time, origin, info_type, identifier, message) "
-			<< "VALUES (:time, :origin, :infoType, :identifier, :message)",
-			soci::use(logTime, "time"),
-			soci::use(serverType, "origin"),
-			soci::use(logType, "infoType"),
+			<< "INSERT INTO " << db.make_table("logs") << " (log_time, origin, info_type, identifier, message) "
+			<< "VALUES (:time, :origin, :info_type, :identifier, :message)",
+			soci::use(log_time, "time"),
+			soci::use(type, "origin"),
+			soci::use(log_type, "info_type"),
 			soci::use(identifier, "identifier"),
 			soci::use(message, "message"));
 
-		for (const auto &bufferedMessage : m_buffer) {
-			logType = static_cast<int32_t>(bufferedMessage.type);
-			logTime = bufferedMessage.time;
-			identifier = bufferedMessage.identifier;
-			message = bufferedMessage.message;
+		for (const auto &buffered_message : m_buffer) {
+			log_type = static_cast<int32_t>(buffered_message.type);
+			log_time = buffered_message.time;
+			identifier = buffered_message.identifier;
+			message = buffered_message.message;
 			st.execute(true);
 		}
 

@@ -23,59 +23,59 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <string>
 
-namespace Vana {
+namespace vana {
 
-auto ReactorDataProvider::loadData() -> void {
-	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Reactors... ";
+auto reactor_data_provider::load_data() -> void {
+	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Reactors... ";
 
-	loadReactors();
-	loadStates();
-	loadTriggerSkills();
+	load_reactors();
+	load_states();
+	load_trigger_skills();
 
 	std::cout << "DONE" << std::endl;
 }
 
-auto ReactorDataProvider::loadReactors() -> void {
-	m_reactorInfo.clear();
+auto reactor_data_provider::load_reactors() -> void {
+	m_reactor_info.clear();
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("reactor_data"));
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("reactor_data"));
 
 	for (const auto &row : rs) {
-		ReactorInfo reactor;
-		reactor_id_t id = row.get<reactor_id_t>("reactorid");
-		reactor.maxStates = row.get<int8_t>("max_states");
-		reactor.link = row.get<reactor_id_t>("link");
+		reactor_info reactor;
+		game_reactor_id id = row.get<game_reactor_id>("reactorid");
+		reactor.max_states = row.get<int8_t>("max_states");
+		reactor.link = row.get<game_reactor_id>("link");
 
-		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&reactor](const string_t &cmp) {
-			if (cmp == "remove_in_field_set") reactor.removeInFieldSet = true;
-			else if (cmp == "activate_by_touch") reactor.activateByTouch = true;
+		utilities::str::run_flags(row.get<opt_string>("flags"), [&reactor](const string &cmp) {
+			if (cmp == "remove_in_field_set") reactor.remove_in_field_set = true;
+			else if (cmp == "activate_by_touch") reactor.activate_by_touch = true;
 		});
 
-		m_reactorInfo[id] = reactor;
+		m_reactor_info[id] = reactor;
 	}
 }
 
-auto ReactorDataProvider::loadStates() -> void {
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("reactor_events") << " ORDER BY reactorId, state ASC");
+auto reactor_data_provider::load_states() -> void {
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("reactor_events") << " ORDER BY reactorId, state ASC");
 
 	for (const auto &row : rs) {
-		ReactorStateInfo state;
-		reactor_id_t id = row.get<reactor_id_t>("reactorid");
-		int8_t stateId = row.get<int8_t>("state");
-		state.itemId = row.get<item_id_t>("itemid");
-		state.itemQuantity = row.get<slot_qty_t>("quantity");
-		state.dimensions = Rect{
-			Point{row.get<coord_t>("ltx"), row.get<coord_t>("lty")},
-			Point{row.get<coord_t>("rbx"), row.get<coord_t>("rby")}
+		reactor_state_info state;
+		game_reactor_id id = row.get<game_reactor_id>("reactorid");
+		int8_t state_id = row.get<int8_t>("state");
+		state.item_id = row.get<game_item_id>("itemid");
+		state.item_quantity = row.get<game_slot_qty>("quantity");
+		state.dimensions = rect{
+			point{row.get<game_coord>("ltx"), row.get<game_coord>("lty")},
+			point{row.get<game_coord>("rbx"), row.get<game_coord>("rby")}
 		};
-		state.nextState = row.get<int8_t>("next_state");
+		state.next_state = row.get<int8_t>("next_state");
 		state.timeout = row.get<int32_t>("timeout");
 
-		StringUtilities::runEnum(row.get<string_t>("event_type"), [&state](const string_t &cmp) {
+		utilities::str::run_enum(row.get<string>("event_type"), [&state](const string &cmp) {
 			if (cmp == "plain_advance_state") state.type = 0;
 			else if (cmp == "no_clue") state.type = 0;
 			else if (cmp == "no_clue2") state.type = 0;
@@ -85,30 +85,30 @@ auto ReactorDataProvider::loadStates() -> void {
 			else if (cmp == "hit_by_item") state.type = 100;
 		});
 
-		m_reactorInfo[id].states[stateId].push_back(state);
+		m_reactor_info[id].states[state_id].push_back(state);
 	}
 }
 
-auto ReactorDataProvider::loadTriggerSkills() -> void {
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("reactor_event_trigger_skills"));
+auto reactor_data_provider::load_trigger_skills() -> void {
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("reactor_event_trigger_skills"));
 
 	for (const auto &row : rs) {
-		reactor_id_t id = row.get<reactor_id_t>("reactorid");
+		game_reactor_id id = row.get<game_reactor_id>("reactorid");
 		int8_t state = row.get<int8_t>("state");
-		skill_id_t skillId = row.get<skill_id_t>("skillid");
+		game_skill_id skill_id = row.get<game_skill_id>("skillid");
 
-		for (size_t j = 0; j < m_reactorInfo[id].states[state].size(); ++j) {
-			m_reactorInfo[id].states[state][j].triggerSkills.push_back(skillId);
+		for (size_t j = 0; j < m_reactor_info[id].states[state].size(); ++j) {
+			m_reactor_info[id].states[state][j].trigger_skills.push_back(skill_id);
 		}
 	}
 }
 
-auto ReactorDataProvider::getReactorData(reactor_id_t reactorId, bool respectLink) const -> const ReactorInfo & {
-	auto kvp = m_reactorInfo.find(reactorId);
-	if (respectLink && kvp->second.link != 0) {
-		kvp = m_reactorInfo.find(kvp->second.link);
+auto reactor_data_provider::get_reactor_data(game_reactor_id reactor_id, bool respect_link) const -> const reactor_info & {
+	auto kvp = m_reactor_info.find(reactor_id);
+	if (respect_link && kvp->second.link != 0) {
+		kvp = m_reactor_info.find(kvp->second.link);
 	}
 	return kvp->second;
 }

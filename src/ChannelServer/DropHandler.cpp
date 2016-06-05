@@ -39,58 +39,58 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Skills.hpp"
 #include <algorithm>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t droppingLevel, int32_t droppingId, const Point &origin, bool explosive, bool ffa, int32_t taunt, bool isSteal) -> void {
-	auto &channel = ChannelServer::getInstance();
-	auto &globalDrops = channel.getDropDataProvider().getGlobalDrops();
-	if (!channel.getDropDataProvider().hasDrops(droppingId) && globalDrops.size() == 0) {
+auto drop_handler::do_drops(game_player_id player_id, game_map_id map_id, int32_t dropping_level, int32_t dropping_id, const point &origin, bool explosive, bool ffa, int32_t taunt, bool is_steal) -> void {
+	auto &channel = channel_server::get_instance();
+	auto &global_drops = channel.get_drop_data_provider().get_global_drops();
+	if (!channel.get_drop_data_provider().has_drops(dropping_id) && global_drops.size() == 0) {
 		return;
 	}
 
 	// Make a copy of the data so we can modify the object with global drops
-	auto drops = channel.getDropDataProvider().getDrops(droppingId);
+	auto drops = channel.get_drop_data_provider().get_drops(dropping_id);
 
-	auto player = channel.getPlayerDataProvider().getPlayer(playerId);
-	coord_t dropPosCounter = 0;
-	party_id_t partyId = 0;
-	Point pos;
+	auto player = channel.get_player_data_provider().get_player(player_id);
+	game_coord drop_pos_counter = 0;
+	game_party_id party_id = 0;
+	point pos;
 
 	if (player != nullptr) {
-		if (Party *party = player->getParty()) {
-			partyId = party->getId();
+		if (party *party = player->get_party()) {
+			party_id = party->get_id();
 		}
 	}
 
-	auto &config = channel.getConfig();
-	int32_t dropRate = config.rates.dropRate;
-	int32_t globalDropRate = config.rates.globalDropRate;
-	int32_t mesoRate = config.rates.dropMeso;
-	int32_t globalMesoRate = config.rates.globalDropMeso;
-	if (config.rates.isGlobalDropConsistentWithRegularDropRate()) {
-		globalDropRate = dropRate;
+	auto &config = channel.get_config();
+	int32_t drop_rate = config.rates.drop_rate;
+	int32_t global_drop_rate = config.rates.global_drop_rate;
+	int32_t meso_rate = config.rates.drop_meso;
+	int32_t global_meso_rate = config.rates.global_drop_meso;
+	if (config.rates.is_global_drop_consistent_with_regular_drop_rate()) {
+		global_drop_rate = drop_rate;
 	}
-	if (config.rates.isGlobalDropMesoConsistentWithRegularDropMesoRate()) {
-		globalMesoRate = mesoRate;
+	if (config.rates.is_global_drop_meso_consistent_with_regular_drop_meso_rate()) {
+		global_meso_rate = meso_rate;
 	}
 
-	if (droppingLevel != 0 && globalDrops.size() != 0) {
-		DropInfo d;
-		int8_t continent = channel.getMapDataProvider().getContinent(mapId).get(0);
+	if (dropping_level != 0 && global_drops.size() != 0) {
+		drop_info d;
+		int8_t continent = channel.get_map_data_provider().get_continent(map_id).get(0);
 
-		if (globalDropRate > 0) {
-			for (const auto &globalDrop : globalDrops) {
-				if (droppingLevel >= globalDrop.minLevel && droppingLevel <= globalDrop.maxLevel) {
-					if (globalDrop.continent == 0 || (continent == globalDrop.continent)) {
-						d = DropInfo{};
-						d.isGlobal = true;
-						d.chance = globalDrop.chance;
-						d.isMesos = globalDrop.isMesos;
-						d.itemId = globalDrop.itemId;
-						d.minAmount = globalDrop.minAmount;
-						d.maxAmount = globalDrop.maxAmount;
-						d.questId = globalDrop.questId;
+		if (global_drop_rate > 0) {
+			for (const auto &global_drop : global_drops) {
+				if (dropping_level >= global_drop.min_level && dropping_level <= global_drop.max_level) {
+					if (global_drop.continent == 0 || (continent == global_drop.continent)) {
+						d = drop_info{};
+						d.is_global = true;
+						d.chance = global_drop.chance;
+						d.is_mesos = global_drop.is_mesos;
+						d.item_id = global_drop.item_id;
+						d.min_amount = global_drop.min_amount;
+						d.max_amount = global_drop.max_amount;
+						d.quest_id = global_drop.quest_id;
 						drops.push_back(d);
 					}
 				}
@@ -98,233 +98,233 @@ auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t dropping
 		}
 	}
 
-	if (config.rates.dropRate == 0) {
+	if (config.rates.drop_rate == 0) {
 		return;
 	}
 
-	Randomizer::shuffle(drops);
-	coord_t mod = explosive ? 35 : 25;
-	for (const auto &dropInfo : drops) {
-		if (dropInfo.isMesos && mesoRate == 0) {
+	randomizer::shuffle(drops);
+	game_coord mod = explosive ? 35 : 25;
+	for (const auto &drop_info : drops) {
+		if (drop_info.is_mesos && meso_rate == 0) {
 			continue;
 		}
-		if (dropInfo.isGlobal && dropInfo.isMesos && globalMesoRate == 0) {
+		if (drop_info.is_global && drop_info.is_mesos && global_meso_rate == 0) {
 			continue;
 		}
 
-		slot_qty_t amount = static_cast<slot_qty_t>(Randomizer::rand<int32_t>(dropInfo.maxAmount, dropInfo.minAmount));
-		Drop *drop = nullptr;
-		uint32_t chance = dropInfo.chance;
+		game_slot_qty amount = static_cast<game_slot_qty>(randomizer::rand<int32_t>(drop_info.max_amount, drop_info.min_amount));
+		drop *value = nullptr;
+		uint32_t chance = drop_info.chance;
 
-		if (isSteal) {
+		if (is_steal) {
 			chance = chance * 3 / 10;
 		}
 		else {
 			chance = chance * taunt / 100;
-			chance *= dropInfo.isGlobal ?
-				globalDropRate :
-				dropRate;
+			chance *= drop_info.is_global ?
+				global_drop_rate :
+				drop_rate;
 		}
 
-		if (Randomizer::rand<uint32_t>(999999) < chance) {
-			pos.x = origin.x + ((dropPosCounter % 2) ?
-				(mod * (dropPosCounter + 1) / 2) :
-				-(mod * (dropPosCounter / 2)));
+		if (randomizer::rand<uint32_t>(999999) < chance) {
+			pos.x = origin.x + ((drop_pos_counter % 2) ?
+				(mod * (drop_pos_counter + 1) / 2) :
+				-(mod * (drop_pos_counter / 2)));
 			pos.y = origin.y;
 
 			/*
-			// getFootholdAtPosition doesn't work correctly
-			if (Maps::getMap(mapId)->getFootholdAtPosition(pos) == 0) {
-				pos = Maps::getMap(mapId)->findFloor(pos);
+			// get_foothold_at_position doesn't work correctly
+			if (maps::get_map(map_id)->get_foothold_at_position(pos) == 0) {
+				pos = maps::get_map(map_id)->find_floor(pos);
 			}
 			*/
 
-			if (!dropInfo.isMesos) {
-				item_id_t itemId = dropInfo.itemId;
-				quest_id_t questId = dropInfo.questId;
+			if (!drop_info.is_mesos) {
+				game_item_id item_id = drop_info.item_id;
+				game_quest_id quest_id = drop_info.quest_id;
 
-				if (questId > 0) {
-					if (player == nullptr || player->getQuests()->itemDropAllowed(itemId, questId) == AllowQuestItemResult::Disallow) {
+				if (quest_id > 0) {
+					if (player == nullptr || player->get_quests()->item_drop_allowed(item_id, quest_id) == allow_quest_item_result::disallow) {
 						continue;
 					}
 				}
 
-				Item f = GameLogicUtilities::isEquip(itemId) ?
-					Item{ChannelServer::getInstance().getEquipDataProvider(),
-						itemId,
-						Items::StatVariance::Normal,
-						player != nullptr && player->hasGmBenefits()} :
-					Item{itemId, amount};
+				item f = game_logic_utilities::is_equip(item_id) ?
+					item{channel_server::get_instance().get_equip_data_provider(),
+						item_id,
+						items::stat_variance::normal,
+						player != nullptr && player->has_gm_benefits()} :
+					item{item_id, amount};
 
-				drop = new Drop{mapId, f, pos, playerId};
+				value = new drop{map_id, f, pos, player_id};
 
-				if (questId > 0) {
-					drop->setQuest(questId);
+				if (quest_id > 0) {
+					value->set_quest(quest_id);
 				}
 			}
 			else {
-				mesos_t mesos = amount;
-				if (!isSteal) {
-					mesos *= dropInfo.isGlobal ?
-						globalMesoRate :
-						mesoRate;
+				game_mesos mesos = amount;
+				if (!is_steal) {
+					mesos *= drop_info.is_global ?
+						global_meso_rate :
+						meso_rate;
 
 					if (player != nullptr) {
-						auto mesoUp = player->getActiveBuffs()->getMesoUpSource();
-						if (mesoUp.is_initialized()) {
-							mesos = (mesos * player->getActiveBuffs()->getBuffSkillInfo(mesoUp.get())->x) / 100;
+						auto meso_up = player->get_active_buffs()->get_meso_up_source();
+						if (meso_up.is_initialized()) {
+							mesos = (mesos * player->get_active_buffs()->get_buff_skill_info(meso_up.get())->x) / 100;
 						}
 					}
 				}
-				drop = new Drop{mapId, mesos, pos, playerId};
+				value = new drop{map_id, mesos, pos, player_id};
 			}
 		}
 
-		if (drop != nullptr) {
+		if (value != nullptr) {
 			if (explosive) {
-				drop->setType(Drop::Explosive);
+				value->set_type(drop::explosive);
 			}
 			else if (ffa) {
-				drop->setType(Drop::FreeForAll);
+				value->set_type(drop::free_for_all);
 			}
-			else if (partyId > 0) {
-				drop->setType(Drop::Party);
-				drop->setOwner(partyId);
+			else if (party_id > 0) {
+				value->set_type(drop::party);
+				value->set_owner(party_id);
 			}
-			drop->setTime(100);
-			drop->doDrop(origin);
-			dropPosCounter++;
-			ReactorHandler::checkDrop(player, drop);
+			value->set_time(100);
+			value->do_drop(origin);
+			drop_pos_counter++;
+			reactor_handler::check_drop(player, value);
 		}
 	}
 }
 
-auto DropHandler::dropMesos(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	reader.skip<tick_count_t>();
+auto drop_handler::drop_mesos(ref_ptr<player> player, packet_reader &reader) -> void {
+	reader.skip<game_tick_count>();
 	int32_t amount = reader.get<int32_t>();
-	if (amount < 10 || amount > 50000 || amount > player->getInventory()->getMesos()) {
+	if (amount < 10 || amount > 50000 || amount > player->get_inventory()->get_mesos()) {
 		// Hacking
 		return;
 	}
-	player->getInventory()->modifyMesos(-amount, true);
-	Drop *drop = new Drop(player->getMapId(), amount, player->getPos(), player->getId(), true);
-	drop->setTime(0);
-	drop->doDrop(player->getPos());
+	player->get_inventory()->modify_mesos(-amount, true);
+	drop *value = new drop{player->get_map_id(), amount, player->get_pos(), player->get_id(), true};
+	value->set_time(0);
+	value->do_drop(player->get_pos());
 }
 
-auto DropHandler::petLoot(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	pet_id_t petId = reader.get<pet_id_t>();
-	lootItem(player, reader, petId);
+auto drop_handler::pet_loot(ref_ptr<player> player, packet_reader &reader) -> void {
+	game_pet_id pet_id = reader.get<game_pet_id>();
+	loot_item(player, reader, pet_id);
 }
 
-auto DropHandler::lootItem(ref_ptr_t<Player> player, PacketReader &reader, pet_id_t petId) -> void {
+auto drop_handler::loot_item(ref_ptr<player> player_value, packet_reader &reader, game_pet_id pet_id) -> void {
 	reader.unk<uint8_t>();
-	reader.skip<tick_count_t>();
-	Point playerPos = reader.get<Point>();
-	map_object_t dropId = reader.get<map_object_t>();
-	Drop *drop = player->getMap()->getDrop(dropId);
+	reader.skip<game_tick_count>();
+	point player_pos = reader.get<point>();
+	game_map_object drop_id = reader.get<game_map_object>();
+	drop *drop = player_value->get_map()->get_drop(drop_id);
 
 	if (drop == nullptr) {
-		player->send(Packets::Drops::dontTake());
+		player_value->send(packets::drops::dont_take());
 		return;
 	}
-	else if (drop->getPos() - player->getPos() > 300) {
+	else if (drop->get_pos() - player_value->get_pos() > 300) {
 		// Hacking
 		return;
 	}
-	else if (player->isUsingGmHide()) {
-		player->send(Packets::Drops::dropNotAvailableForPickup());
-		player->send(Packets::Drops::dontTake());
+	else if (player_value->is_using_gm_hide()) {
+		player_value->send(packets::drops::drop_not_available_for_pickup());
+		player_value->send(packets::drops::dont_take());
 		return;
 	}
 
-	if (drop->isQuest()) {
-		if (player->getQuests()->itemDropAllowed(drop->getObjectId(), drop->getQuest()) == AllowQuestItemResult::Disallow) {
-			player->send(Packets::Drops::dropNotAvailableForPickup());
-			player->send(Packets::Drops::dontTake());
+	if (drop->is_quest()) {
+		if (player_value->get_quests()->item_drop_allowed(drop->get_object_id(), drop->get_quest()) == allow_quest_item_result::disallow) {
+			player_value->send(packets::drops::drop_not_available_for_pickup());
+			player_value->send(packets::drops::dont_take());
 			return;
 		}
 	}
-	if (drop->isMesos()) {
-		int32_t playerRate = 100;
-		mesos_t rawMesos = drop->getObjectId();
-		auto giveMesos = [](ref_ptr_t<Player> p, mesos_t mesos) -> Result {
-			if (p->getInventory()->modifyMesos(mesos, true)) {
-				p->send(Packets::Drops::pickupDrop(mesos, 0, true));
+	if (drop->is_mesos()) {
+		int32_t player_rate = 100;
+		game_mesos raw_mesos = drop->get_object_id();
+		auto give_mesos = [](ref_ptr<player> p, game_mesos mesos) -> result {
+			if (p->get_inventory()->modify_mesos(mesos, true)) {
+				p->send(packets::drops::pickup_drop(mesos, 0, true));
 			}
 			else {
-				p->send(Packets::Drops::dontTake());
-				return Result::Failure;
+				p->send(packets::drops::dont_take());
+				return result::failure;
 			}
-			return Result::Successful;
+			return result::successful;
 		};
 
-		if (player->getParty() != nullptr && !drop->isPlayerDrop()) {
+		if (player_value->get_party() != nullptr && !drop->is_player_drop()) {
 			// Player gets 100% unless partied and having others on the map, in which case it's 60%
-			vector_t<ref_ptr_t<Player>> members = player->getParty()->getPartyMembers(player->getMapId());
+			vector<ref_ptr<player>> members = player_value->get_party()->get_party_members(player_value->get_map_id());
 			if (members.size() != 1) {
-				playerRate = 60;
-				mesos_t mesos = rawMesos * playerRate / 100;
+				player_rate = 60;
+				game_mesos mesos = raw_mesos * player_rate / 100;
 
-				if (giveMesos(player, mesos) == Result::Failure) {
+				if (give_mesos(player_value, mesos) == result::failure) {
 					// Can't pick up the mesos
 					return;
 				}
 
-				playerRate = 40 / (members.size() - 1);
-				mesos = rawMesos * playerRate / 100;
-				ref_ptr_t<Player> p = nullptr;
+				player_rate = 40 / (members.size() - 1);
+				mesos = raw_mesos * player_rate / 100;
+				ref_ptr<player> p = nullptr;
 
 				for (uint8_t j = 0; j < members.size(); ++j) {
 					p = members[j];
-					if (p != player) {
-						giveMesos(p, mesos);
+					if (p != player_value) {
+						give_mesos(p, mesos);
 					}
 				}
 			}
 		}
-		if (playerRate == 100) {
-			if (giveMesos(player, rawMesos) == Result::Failure) {
+		if (player_rate == 100) {
+			if (give_mesos(player_value, raw_mesos) == result::failure) {
 				return;
 			}
 		}
 	}
 	else {
-		Item dropItem = drop->getItem();
-		auto cons = ChannelServer::getInstance().getItemDataProvider().getConsumeInfo(dropItem.getId());
-		if (cons != nullptr && cons->autoConsume) {
-			if (GameLogicUtilities::isMonsterCard(drop->getObjectId())) {
-				player->send(Packets::Drops::pickupDropSpecial(drop->getObjectId()));
-				Inventory::useItem(player, dropItem.getId());
-				player->send(Packets::Drops::dontTake());
-				drop->takeDrop(player, petId);
+		item drop_item = drop->get_item();
+		auto cons = channel_server::get_instance().get_item_data_provider().get_consume_info(drop_item.get_id());
+		if (cons != nullptr && cons->auto_consume) {
+			if (game_logic_utilities::is_monster_card(drop->get_object_id())) {
+				player_value->send(packets::drops::pickup_drop_special(drop->get_object_id()));
+				inventory::use_item(player_value, drop_item.get_id());
+				player_value->send(packets::drops::dont_take());
+				drop->take_drop(player_value, pet_id);
 				return;
 			}
-			Inventory::useItem(player, dropItem.getId());
+			inventory::use_item(player_value, drop_item.get_id());
 		}
 		else {
-			auto item = new Item{dropItem};
-			slot_qty_t dropAmount = drop->getAmount();
-			if (item->hasKarma()) {
-				item->setKarma(false);
+			auto new_item = new item{drop_item};
+			game_slot_qty drop_amount = drop->get_amount();
+			if (new_item->has_karma()) {
+				new_item->set_karma(false);
 			}
-			slot_qty_t amount = Inventory::addItem(player, item, true);
+			game_slot_qty amount = inventory::add_item(player_value, new_item, true);
 			if (amount > 0) {
-				if ((dropAmount - amount) > 0) {
-					player->send(Packets::Drops::pickupDrop(drop->getObjectId(), dropAmount - amount));
-					drop->setItemAmount(amount);
+				if ((drop_amount - amount) > 0) {
+					player_value->send(packets::drops::pickup_drop(drop->get_object_id(), drop_amount - amount));
+					drop->set_item_amount(amount);
 				}
-				player->send(Packets::Drops::cantGetAnymoreItems());
-				player->send(Packets::Drops::dontTake());
+				player_value->send(packets::drops::cant_get_anymore_items());
+				player_value->send(packets::drops::dont_take());
 				return;
 			}
 		}
-		// TODO FIXME Bug here? drop->getObjectId is going to be either a meso count or item identifier
-		// pickupDrop packet calls for map_object_t and it's unclear which is correct and which isn't
-		player->send(Packets::Drops::pickupDrop(drop->getObjectId(), drop->getAmount()));
+		// TODO FIXME Bug here? drop->get_object_id is going to be either a meso count or item identifier
+		// pickup_drop packet calls for game_map_object and it's unclear which is correct and which isn't
+		player_value->send(packets::drops::pickup_drop(drop->get_object_id(), drop->get_amount()));
 	}
-	ReactorHandler::checkLoot(drop);
-	drop->takeDrop(player, petId);
+	reactor_handler::check_loot(drop);
+	drop->take_drop(player_value, pet_id);
 }
 
 }

@@ -39,241 +39,241 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-namespace Vana {
-	class PacketBuilder;
-	struct SplitPacketBuilder;
+namespace vana {
+	class packet_builder;
+	struct split_packet_builder;
 
-	namespace ChannelServer {
-		class Drop;
-		class Instance;
-		class Mist;
-		class Mob;
-		class Player;
-		class Reactor;
+	namespace channel_server {
+		class drop;
+		class instance;
+		class mist;
+		class mob;
+		class player;
+		class reactor;
 
-		namespace SpawnTypes {
+		namespace spawn_types {
 			enum {
-				Mob = 0x01,
-				Reactor = 0x02,
-				All = Mob | Reactor
+				mob = 0x01,
+				reactor = 0x02,
+				all = mob | reactor
 			};
 		}
 
-		struct MysticDoorOpenResult {
-			MysticDoorOpenResult(MysticDoorResult result) :
+		struct mystic_door_open_result {
+			mystic_door_open_result(mystic_door_result result) :
 				result{result},
-				townId{Vana::Maps::NoMap},
+				town_id{vana::maps::no_map},
 				portal{nullptr}
 			{
 			}
 
-			MysticDoorOpenResult(map_id_t townId, const PortalInfo * const portal) :
-				result{MysticDoorResult::Success},
-				townId{townId},
+			mystic_door_open_result(game_map_id town_id, const portal_info * const portal) :
+				result{mystic_door_result::success},
+				town_id{town_id},
 				portal{portal}
 			{
 			}
 
-			MysticDoorResult result;
-			map_id_t townId;
-			const PortalInfo * const portal;
+			mystic_door_result result;
+			game_map_id town_id;
+			const portal_info * const portal;
 		};
 
-		class Map : public TimerContainerHolder {
-			NONCOPYABLE(Map);
-			NO_DEFAULT_CONSTRUCTOR(Map);
+		class map : public timer_container_holder {
+			NONCOPYABLE(map);
+			NO_DEFAULT_CONSTRUCTOR(map);
 		public:
-			Map(ref_ptr_t<MapInfo> info, map_id_t id);
+			map(ref_ptr<map_info> info, game_map_id id);
 
-			auto boatDock(bool isDocked) -> void;
-			static auto setMapUnloadTime(seconds_t newTime) -> void;
+			auto boat_dock(bool is_docked) -> void;
+			static auto set_map_unload_time(seconds new_time) -> void;
 
 			// Map info
-			static auto makeNpcId(map_object_t receivedId) -> size_t;
-			static auto makeReactorId(map_object_t receivedId) -> size_t;
-			auto makeNpcId() -> map_object_t;
-			auto makeReactorId() -> map_object_t;
-			auto setMusic(const string_t &musicName) -> void;
-			auto setMobSpawning(mob_id_t spawn) -> void;
-			auto canVip() const -> bool { return !m_info->limitations.vipRock; }
-			auto canChalkboard() const -> bool { return !m_info->limitations.chalkboard; }
-			auto loseOnePercent() const -> bool { return m_info->limitations.regularExpLoss || m_info->town || m_mobs.size() == 0; }
-			auto getContinent() const -> uint8_t { return m_info->continent; }
-			auto getForcedReturn() const -> map_id_t { return m_info->forcedReturn; }
-			auto getReturnMap() const -> map_id_t { return m_info->returnMap; }
-			auto getId() const -> map_id_t { return m_id; }
-			auto getDimensions() const -> Rect { return m_realDimensions; }
-			auto getMusic() const -> string_t { return m_music; }
+			static auto make_npc_id(game_map_object received_id) -> size_t;
+			static auto make_reactor_id(game_map_object received_id) -> size_t;
+			auto make_npc_id() -> game_map_object;
+			auto make_reactor_id() -> game_map_object;
+			auto set_music(const string &music_name) -> void;
+			auto set_mob_spawning(game_mob_id spawn) -> void;
+			auto can_vip() const -> bool { return !m_info->limitations.vip_rock; }
+			auto can_chalkboard() const -> bool { return !m_info->limitations.chalkboard; }
+			auto lose_one_percent() const -> bool { return m_info->limitations.regular_exp_loss || m_info->town || m_mobs.size() == 0; }
+			auto get_continent() const -> uint8_t { return m_info->continent; }
+			auto get_forced_return() const -> game_map_id { return m_info->forced_return; }
+			auto get_return_map() const -> game_map_id { return m_info->return_map; }
+			auto get_id() const -> game_map_id { return m_id; }
+			auto get_dimensions() const -> rect { return m_real_dimensions; }
+			auto get_music() const -> string { return m_music; }
 
 			// Footholds
-			auto findFloor(const Point &pos, Point &floorPos, coord_t startHeightModifier = 0, const Rect &searchArea = Rect{}) -> SearchResult;
-			auto getFootholdAtPosition(const Point &pos) -> foothold_id_t;
-			auto isValidFoothold(foothold_id_t id) -> bool;
-			auto isVerticalFoothold(foothold_id_t id) -> bool;
-			auto getPositionAtFoothold(foothold_id_t id) -> Point;
+			auto find_floor(const point &pos, point &floor_pos, game_coord start_height_modifier = 0, const rect &search_area = rect{}) -> search_result;
+			auto get_foothold_at_position(const point &pos) -> game_foothold_id;
+			auto is_valid_foothold(game_foothold_id id) -> bool;
+			auto is_vertical_foothold(game_foothold_id id) -> bool;
+			auto get_position_at_foothold(game_foothold_id id) -> point;
 
 			// Seats
-			auto seatOccupied(seat_id_t id) -> bool;
-			auto playerSeated(seat_id_t id, ref_ptr_t<Player> player) -> void;
+			auto seat_occupied(game_seat_id id) -> bool;
+			auto player_seated(game_seat_id id, ref_ptr<player> player) -> void;
 
 			// Portals
-			auto getPortal(const string_t &name) const -> const PortalInfo * const;
-			auto getSpawnPoint(portal_id_t portalId = -1) const -> const PortalInfo * const;
-			auto getNearestSpawnPoint(const Point &pos) const -> const PortalInfo * const;
-			auto queryPortalName(const string_t &name, ref_ptr_t<Player> player = nullptr) const -> const PortalInfo * const;
-			auto setPortalState(const string_t &name, bool enabled) -> void;
-			auto getPortalNames() const -> vector_t<string_t>;
-			auto getTownMysticDoorPortal(ref_ptr_t<Player> player) const -> MysticDoorOpenResult;
-			auto getTownMysticDoorPortal(ref_ptr_t<Player> player, uint8_t zeroBasedPartyIndex) const -> MysticDoorOpenResult;
-			auto getMysticDoorPortal(ref_ptr_t<Player> player) const -> MysticDoorOpenResult;
-			auto getMysticDoorPortal(ref_ptr_t<Player> player, uint8_t zeroBasedPartyIndex) const -> MysticDoorOpenResult;
+			auto get_portal(const string &name) const -> const portal_info * const;
+			auto get_spawn_point(game_portal_id portal_id = -1) const -> const portal_info * const;
+			auto get_nearest_spawn_point(const point &pos) const -> const portal_info * const;
+			auto query_portal_name(const string &name, ref_ptr<player> player = nullptr) const -> const portal_info * const;
+			auto set_portal_state(const string &name, bool enabled) -> void;
+			auto get_portal_names() const -> vector<string>;
+			auto get_town_mystic_door_portal(ref_ptr<player> player) const -> mystic_door_open_result;
+			auto get_town_mystic_door_portal(ref_ptr<player> player, uint8_t zero_based_party_index) const -> mystic_door_open_result;
+			auto get_mystic_door_portal(ref_ptr<player> player) const -> mystic_door_open_result;
+			auto get_mystic_door_portal(ref_ptr<player> player, uint8_t zero_based_party_index) const -> mystic_door_open_result;
 
 			// Players
-			auto addPlayer(ref_ptr_t<Player> player) -> void;
-			auto getNumPlayers() const -> size_t;
-			auto getPlayer(size_t playerIndex) const -> ref_ptr_t<Player>;
-			auto getPlayerNames() -> string_t;
-			auto removePlayer(ref_ptr_t<Player> player) -> void;
-			auto checkPlayerEquip(ref_ptr_t<Player> player) -> void;
-			auto runFunctionPlayers(const Rect &dimensions, int16_t prop, function_t<void(ref_ptr_t<Player>)> successFunc) -> void;
-			auto runFunctionPlayers(const Rect &dimensions, int16_t prop, int16_t count, function_t<void(ref_ptr_t<Player>)> successFunc) -> void;
-			auto runFunctionPlayers(function_t<void(ref_ptr_t<Player>)> successFunc) -> void;
-			auto gmHideChange(ref_ptr_t<Player> player) -> void;
-			auto getAllPlayerIds() const -> vector_t<player_id_t>;
+			auto add_player(ref_ptr<player> player) -> void;
+			auto get_num_players() const -> size_t;
+			auto get_player(size_t player_index) const -> ref_ptr<player>;
+			auto get_player_names() -> string;
+			auto remove_player(ref_ptr<player> player) -> void;
+			auto check_player_equip(ref_ptr<player> player) -> void;
+			auto run_function_players(const rect &dimensions, int16_t prop, function<void(ref_ptr<player>)> success_func) -> void;
+			auto run_function_players(const rect &dimensions, int16_t prop, int16_t count, function<void(ref_ptr<player>)> success_func) -> void;
+			auto run_function_players(function<void(ref_ptr<player>)> success_func) -> void;
+			auto gm_hide_change(ref_ptr<player> player) -> void;
+			auto get_all_player_ids() const -> vector<game_player_id>;
 
 			// NPCs
-			auto addNpc(const NpcSpawnInfo &npc) -> map_object_t;
-			auto removeNpc(size_t npcIndex) -> void;
-			auto isValidNpcIndex(size_t npcIndex) const -> bool;
-			auto getNpc(size_t npcIndex) const -> NpcSpawnInfo;
+			auto add_npc(const npc_spawn_info &npc) -> game_map_object;
+			auto remove_npc(size_t npc_index) -> void;
+			auto is_valid_npc_index(size_t npc_index) const -> bool;
+			auto get_npc(size_t npc_index) const -> npc_spawn_info;
 
 			// Mobs
-			auto addWebbedMob(map_object_t mapMobId) -> void;
-			auto removeWebbedMob(map_object_t mapMobId) -> void;
-			auto mobDeath(ref_ptr_t<Mob> mob, bool fromExplosion) -> void;
-			auto healMobs(int32_t baseHp, int32_t hpRange, const Rect &dimensions) -> void;
-			auto statusMobs(vector_t<StatusInfo> &statuses, const Rect &dimensions) -> void;
-			auto spawnZakum(const Point &pos, foothold_id_t foothold = 0) -> void;
-			auto convertShellToNormal(ref_ptr_t<Mob> mob) -> void;
-			auto spawnMob(mob_id_t mobId, const Point &pos, foothold_id_t foothold = 0, ref_ptr_t<Mob> owner = nullptr, int8_t summonEffect = 0) -> ref_ptr_t<Mob>;
-			auto spawnMob(int32_t spawnId, const MobSpawnInfo &info) -> ref_ptr_t<Mob>;
-			auto killMobs(ref_ptr_t<Player> player, bool distributeExpAndDrops, mob_id_t mobId = 0) -> int32_t;
-			auto countMobs(mob_id_t mobId = 0) -> int32_t;
-			auto getMob(map_object_t mapMobId) -> ref_ptr_t<Mob>;
-			auto runFunctionMobs(function_t<void(ref_ptr_t<const Mob>)> func) -> void;
-			auto switchController(ref_ptr_t<Mob> mob, ref_ptr_t<Player> newController) -> void;
-			auto mobSummonSkillUsed(ref_ptr_t<Mob> mob, const MobSkillLevelInfo * const skill) -> void;
+			auto add_webbed_mob(game_map_object map_mob_id) -> void;
+			auto remove_webbed_mob(game_map_object map_mob_id) -> void;
+			auto mob_death(ref_ptr<mob> mob, bool from_explosion) -> void;
+			auto heal_mobs(int32_t base_hp, int32_t hp_range, const rect &dimensions) -> void;
+			auto status_mobs(vector<status_info> &statuses, const rect &dimensions) -> void;
+			auto spawn_zakum(const point &pos, game_foothold_id foothold = 0) -> void;
+			auto convert_shell_to_normal(ref_ptr<mob> mob) -> void;
+			auto spawn_mob(game_mob_id mob_id, const point &pos, game_foothold_id foothold = 0, ref_ptr<mob> owner = nullptr, int8_t summon_effect = 0) -> ref_ptr<mob>;
+			auto spawn_mob(int32_t spawn_id, const mob_spawn_info &info) -> ref_ptr<mob>;
+			auto kill_mobs(ref_ptr<player> player, bool distribute_exp_and_drops, game_mob_id mob_id = 0) -> int32_t;
+			auto count_mobs(game_mob_id mob_id = 0) -> int32_t;
+			auto get_mob(game_map_object map_mob_id) -> ref_ptr<mob>;
+			auto run_function_mobs(function<void(ref_ptr<const mob>)> func) -> void;
+			auto switch_controller(ref_ptr<mob> mob, ref_ptr<player> new_controller) -> void;
+			auto mob_summon_skill_used(ref_ptr<mob> mob, const mob_skill_level_info * const skill) -> void;
 
 			// Reactors
-			auto addReactor(Reactor *reactor) -> void;
-			auto removeReactor(size_t reactorIndex) -> void;
-			auto killReactors(bool showPacket = true) -> void;
-			auto getReactor(size_t reactorIndex) const -> Reactor *;
-			auto getNumReactors() const -> size_t;
+			auto add_reactor(reactor *reactor) -> void;
+			auto remove_reactor(size_t reactor_index) -> void;
+			auto kill_reactors(bool show_packet = true) -> void;
+			auto get_reactor(size_t reactor_index) const -> reactor *;
+			auto get_num_reactors() const -> size_t;
 
 			// Drops
-			auto addDrop(Drop *drop) -> void;
-			auto getDrop(map_object_t id) -> Drop *;
-			auto removeDrop(map_object_t id) -> void;
-			auto clearDrops(bool showPacket = true) -> void;
+			auto add_drop(drop *drop) -> void;
+			auto get_drop(game_map_object id) -> drop *;
+			auto remove_drop(game_map_object id) -> void;
+			auto clear_drops(bool show_packet = true) -> void;
 
 			// Mists
-			auto addMist(Mist *mist) -> void;
+			auto add_mist(mist *mist) -> void;
 
 			// Timer stuff
-			auto setMapTimer(const seconds_t &timer) -> void;
-			auto respawn(int8_t types = SpawnTypes::All) -> void;
+			auto set_map_timer(const seconds &timer) -> void;
+			auto respawn(int8_t types = spawn_types::all) -> void;
 
 			// Show all map objects
-			auto showObjects(ref_ptr_t<Player> player) -> void;
+			auto show_objects(ref_ptr<player> player) -> void;
 
 			// Packet stuff
-			auto send(const PacketBuilder &builder, ref_ptr_t<Player> sender = nullptr) -> void;
-			auto send(const SplitPacketBuilder &builder, ref_ptr_t<Player> sender) -> void;
+			auto send(const packet_builder &builder, ref_ptr<player> sender = nullptr) -> void;
+			auto send(const split_packet_builder &builder, ref_ptr<player> sender) -> void;
 
 			// Instance
-			auto setInstance(Instance *instance) -> void { m_instance = instance; }
-			auto endInstance(bool reset) -> void;
-			auto getInstance() const -> Instance * { return m_instance; }
+			auto set_instance(instance *inst) -> void { m_instance = inst; }
+			auto end_instance(bool reset) -> void;
+			auto get_instance() const -> instance * { return m_instance; }
 
 			// Weather cash item
-			auto createWeather(ref_ptr_t<Player> player, bool adminWeather, int32_t time, item_id_t itemId, const string_t &message) -> bool;
+			auto create_weather(ref_ptr<player> player, bool admin_weather, int32_t time, game_item_id item_id, const string &message) -> bool;
 		private:
-			static const map_object_t NpcStart = 100;
-			static const map_object_t ReactorStart = 200;
+			static const game_map_object npc_start = 100;
+			static const game_map_object reactor_start = 200;
 			// TODO FIXME msvc
 			// Remove this crap comment once MSVC supports static initializers
-			static int32_t s_mapUnloadTime/* = 0*/;
+			static int32_t s_map_unload_time/* = 0*/;
 
-			friend class MapDataProvider;
-			auto addFoothold(const FootholdInfo &foothold) -> void;
-			auto addSeat(const SeatInfo &seat) -> void;
-			auto addPortal(const PortalInfo &portal) -> void;
-			auto addMobSpawn(const MobSpawnInfo &spawn) -> void;
-			auto addReactorSpawn(const ReactorSpawnInfo &spawn) -> void;
-			auto addTimeMob(ref_ptr_t<TimeMob> info) -> void;
-			auto checkSpawn(time_point_t time) -> void;
-			auto checkShadowWeb() -> void;
-			auto checkMists() -> void;
-			auto clearDrops(time_point_t time) -> void;
-			auto timeMob(bool firstLoad = true) -> void;
-			auto spawnShell(mob_id_t mobId, const Point &pos, foothold_id_t foothold) -> ref_ptr_t<Mob>;
-			auto updateMobControl(ref_ptr_t<Player> player) -> void;
-			auto updateMobControl(ref_ptr_t<Mob> mob, MobSpawnType spawn = MobSpawnType::Existing, ref_ptr_t<Player> display = nullptr) -> void;
-			auto mapTick(const time_point_t &now) -> void;
-			auto getTimeMobId() const -> map_object_t { return m_timeMob; }
-			auto getTimeMob() const -> TimeMob * { return m_timeMobInfo.get(); }
-			auto getMist(mist_id_t id) -> Mist *;
-			auto findController(ref_ptr_t<Mob> mob) -> ref_ptr_t<Player>;
-			auto clearMists(bool showPacket = true) -> void;
-			auto removeMist(Mist *mist) -> void;
-			auto findRandomFloorPos() -> Point;
-			auto findRandomFloorPos(const Rect &area) -> Point;
-			auto buffPlayers(item_id_t buffId) -> void;
+			friend class map_data_provider;
+			auto add_foothold(const foothold_info &foothold) -> void;
+			auto add_seat(const seat_info &seat) -> void;
+			auto add_portal(const portal_info &portal) -> void;
+			auto add_mob_spawn(const mob_spawn_info &spawn) -> void;
+			auto add_reactor_spawn(const reactor_spawn_info &spawn) -> void;
+			auto add_time_mob(ref_ptr<time_mob> info) -> void;
+			auto check_spawn(time_point time) -> void;
+			auto check_shadow_web() -> void;
+			auto check_mists() -> void;
+			auto clear_drops(time_point time) -> void;
+			auto check_time_mob_spawn(bool first_load = true) -> void;
+			auto spawn_shell(game_mob_id mob_id, const point &pos, game_foothold_id foothold) -> ref_ptr<mob>;
+			auto update_mob_control(ref_ptr<player> player) -> void;
+			auto update_mob_control(ref_ptr<mob> mob, mob_spawn_type spawn = mob_spawn_type::existing, ref_ptr<player> display = nullptr) -> void;
+			auto map_tick(const time_point &now) -> void;
+			auto get_time_mob_id() const -> game_map_object { return m_time_mob; }
+			auto get_time_mob() const -> time_mob * { return m_time_mob_info.get(); }
+			auto get_mist(game_mist_id id) -> mist *;
+			auto find_controller(ref_ptr<mob> mob) -> ref_ptr<player>;
+			auto clear_mists(bool show_packet = true) -> void;
+			auto remove_mist(mist *mist) -> void;
+			auto find_random_floor_pos() -> point;
+			auto find_random_floor_pos(const rect &area) -> point;
+			auto buff_players(game_item_id buff_id) -> void;
 
 			// Longer-lived data
 			bool m_ship = false;
-			bool m_runUnloader = true;
-			bool m_inferSizeFromFootholds = false;
-			map_id_t m_id = 0;
-			map_object_t m_timeMob = 0;
-			mob_id_t m_spawnMobs = -1;
-			int32_t m_emptyMapTicks = 0;
-			int32_t m_minSpawnCount = 0;
-			int32_t m_maxSpawnCount = 0;
-			int32_t m_maxMobSpawnTime = -1;
-			Instance *m_instance = nullptr;
-			seconds_t m_timer = seconds_t{0};
-			time_point_t m_timerStart = time_point_t{seconds_t{0}};
-			time_point_t m_lastSpawn = time_point_t{seconds_t{0}};
-			string_t m_music;
-			Rect m_realDimensions;
-			IdPool<map_object_t> m_objectIds;
-			IdPool<mist_id_t> m_mistIds;
-			recursive_mutex_t m_dropsMutex;
-			ref_ptr_t<MapInfo> m_info;
-			ref_ptr_t<TimeMob> m_timeMobInfo;
-			vector_t<FootholdInfo> m_footholds;
-			vector_t<ReactorSpawnInfo> m_reactorSpawns;
-			vector_t<NpcSpawnInfo> m_npcSpawns;
-			vector_t<MobSpawnInfo> m_mobSpawns;
-			ord_map_t<seat_id_t, SeatInfo> m_seats;
-			hash_map_t<string_t, PortalInfo> m_portals;
-			hash_map_t<portal_id_t, PortalInfo> m_spawnPoints;
-			vector_t<PortalInfo> m_doorPoints;
-			hash_map_t<string_t, Point> m_reactorPositions;
+			bool m_run_unloader = true;
+			bool m_infer_size_from_footholds = false;
+			game_map_id m_id = 0;
+			game_map_object m_time_mob = 0;
+			game_mob_id m_spawn_mobs = -1;
+			int32_t m_empty_map_ticks = 0;
+			int32_t m_min_spawn_count = 0;
+			int32_t m_max_spawn_count = 0;
+			int32_t m_max_mob_spawn_time = -1;
+			instance *m_instance = nullptr;
+			seconds m_timer = seconds{0};
+			time_point m_timer_start = time_point{seconds{0}};
+			time_point m_last_spawn = time_point{seconds{0}};
+			string m_music;
+			rect m_real_dimensions;
+			id_pool<game_map_object> m_object_ids;
+			id_pool<game_mist_id> m_mist_ids;
+			recursive_mutex m_drops_mutex;
+			ref_ptr<map_info> m_info;
+			ref_ptr<time_mob> m_time_mob_info;
+			vector<foothold_info> m_footholds;
+			vector<reactor_spawn_info> m_reactor_spawns;
+			vector<npc_spawn_info> m_npc_spawns;
+			vector<mob_spawn_info> m_mob_spawns;
+			ord_map<game_seat_id, seat_info> m_seats;
+			hash_map<string, portal_info> m_portals;
+			hash_map<game_portal_id, portal_info> m_spawn_points;
+			vector<portal_info> m_door_points;
+			hash_map<string, point> m_reactor_positions;
 
 			// Shorter-lived objects
-			vector_t<ref_ptr_t<Player>> m_players;
-			vector_t<Reactor *> m_reactors;
-			vector_t<Respawnable> m_mobRespawns;
-			vector_t<Respawnable> m_reactorRespawns;
-			hash_map_t<map_object_t, view_ptr_t<Mob>> m_webbed;
-			hash_map_t<map_object_t, ref_ptr_t<Mob>> m_mobs;
-			hash_map_t<player_id_t, ref_ptr_t<Player>> m_playersWithoutProtectItem;
-			hash_map_t<map_object_t, Drop *> m_drops;
-			hash_map_t<mist_id_t, Mist *> m_poisonMists;
-			hash_map_t<mist_id_t, Mist *> m_mists;
+			vector<ref_ptr<player>> m_players;
+			vector<reactor *> m_reactors;
+			vector<respawnable> m_mob_respawns;
+			vector<respawnable> m_reactor_respawns;
+			hash_map<game_map_object, view_ptr<mob>> m_webbed;
+			hash_map<game_map_object, ref_ptr<mob>> m_mobs;
+			hash_map<game_player_id, ref_ptr<player>> m_players_without_protect_item;
+			hash_map<game_map_object, drop *> m_drops;
+			hash_map<game_mist_id, mist *> m_poison_mists;
+			hash_map<game_mist_id, mist *> m_mists;
 		};
 	}
 }

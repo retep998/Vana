@@ -20,20 +20,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include "Common/IPacket.hpp"
 
-namespace Vana {
-	enum class BuffSourceType : int8_t {
-		None,
-		Skill,
-		MobSkill,
-		Item,
+namespace vana {
+	enum class buff_source_type : int8_t {
+		none = 0,
+		skill,
+		mob_skill,
+		item,
 	};
 
 	template <>
-	struct PacketSerialize<BuffSourceType> {
-		auto read(PacketReader &reader) -> BuffSourceType {
-			return static_cast<BuffSourceType>(reader.get<int8_t>());
+	struct packet_serialize<buff_source_type> {
+		auto read(packet_reader &reader) -> buff_source_type {
+			return static_cast<buff_source_type>(reader.get<int8_t>());
 		}
-		auto write(PacketBuilder &builder, const BuffSourceType &obj) -> void {
+		auto write(packet_builder &builder, const buff_source_type &obj) -> void {
 			builder.add<int8_t>(static_cast<int8_t>(obj));
 		}
 	};

@@ -22,19 +22,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/PacketBuilder.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class Ip;
+namespace vana {
+	class ip;
 
-	namespace LoginServer {
-		class World;
+	namespace login_server {
+		class world;
 
-		namespace Packets {
-			namespace Interserver {
-				PACKET(connect, World *world);
-				PACKET(noMoreWorld);
-				PACKET(connectChannel, optional_t<world_id_t> worldId, optional_t<Ip> ip, optional_t<port_t> port);
-				PACKET(playerConnectingToChannel, channel_id_t channel, player_id_t charId, const Ip &ip);
-				PACKET(rehashConfig, World *world);
+		namespace packets {
+			namespace interserver {
+				PACKET(connect, world *world_value);
+				PACKET(no_more_world);
+				PACKET(connect_channel, optional<game_world_id> world_id, optional<ip> ip_value, optional<connection_port> port);
+				PACKET(player_connecting_to_channel, game_channel_id chan_id, game_player_id char_id, const ip &ip_value);
+				PACKET(rehash_config, world *world_value);
 			}
 		}
 	}

@@ -22,54 +22,54 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <vector>
 
-namespace Vana {
-	struct ConsumeInfo {
-		bool autoConsume = false;
-		bool ignoreWdef = false;
-		bool ignoreMdef = false;
+namespace vana {
+	struct consume_info {
+		bool auto_consume = false;
+		bool ignore_wdef = false;
+		bool ignore_mdef = false;
 		bool party = false;
-		bool mouseCancel = true;
-		bool ignoreContinent = false;
+		bool mouse_cancel = true;
+		bool ignore_continent = false;
 		bool ghost = false;
 		bool barrier = false;
-		bool overrideTraction = false;
-		bool preventDrown = false;
-		bool preventFreeze = false;
-		bool mesoUp = false;
-		bool dropUp = false;
-		bool partyDropUp = false;
+		bool override_traction = false;
+		bool prevent_drown = false;
+		bool prevent_freeze = false;
+		bool meso_up = false;
+		bool drop_up = false;
+		bool party_drop_up = false;
 		uint8_t effect = 0;
-		uint8_t decHunger = 0;
-		uint8_t decFatigue = 0;
+		uint8_t dec_hunger = 0;
+		uint8_t dec_fatigue = 0;
 		uint8_t cp = 0;
-		health_t hp = 0;
-		health_t mp = 0;
-		int16_t hpr = 0;
-		int16_t mpr = 0;
-		stat_t wAtk = 0;
-		stat_t mAtk = 0;
-		stat_t avo = 0;
-		stat_t acc = 0;
-		stat_t wDef = 0;
-		stat_t mDef = 0;
-		stat_t speed = 0;
-		stat_t jump = 0;
-		int16_t fireResist = 0;
-		int16_t iceResist = 0;
-		int16_t lightningResist = 0;
-		int16_t poisonResist = 0;
-		int16_t curseDef = 0;
-		int16_t stunDef = 0;
-		int16_t weaknessDef = 0;
-		int16_t darknessDef = 0;
-		int16_t sealDef = 0;
-		int16_t dropUpItemRange = 0;
+		game_health hp = 0;
+		game_health mp = 0;
+		int16_t hp_rate = 0;
+		int16_t mp_rate = 0;
+		game_stat watk = 0;
+		game_stat matk = 0;
+		game_stat avo = 0;
+		game_stat acc = 0;
+		game_stat wdef = 0;
+		game_stat mdef = 0;
+		game_stat speed = 0;
+		game_stat jump = 0;
+		int16_t fire_resist = 0;
+		int16_t ice_resist = 0;
+		int16_t lightning_resist = 0;
+		int16_t poison_resist = 0;
+		int16_t curse_def = 0;
+		int16_t stun_def = 0;
+		int16_t weakness_def = 0;
+		int16_t darkness_def = 0;
+		int16_t seal_def = 0;
+		int16_t drop_up_item_range = 0;
 		uint16_t chance = 0;
-		item_id_t dropUpItem = 0;
-		map_id_t moveTo = 0;
+		game_item_id drop_up_item = 0;
+		game_map_id move_to = 0;
 		int32_t ailment = 0;
-		seconds_t buffTime = seconds_t{0};
-		vector_t<MorphChanceInfo> morphs;
-		vector_t<CardMapRangeInfo> mapRanges;
+		seconds buff_time = seconds{0};
+		vector<morph_chance_info> morphs;
+		vector<card_map_range_info> map_ranges;
 	};
 }

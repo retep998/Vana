@@ -19,15 +19,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	enum class ScriptTypes {
-		Npc,
-		Reactor,
-		Quest,
-		Item,
-		MapEntry,
-		FirstMapEntry,
-		Portal,
-		Instance,
+namespace vana {
+	enum class script_types {
+		npc,
+		reactor,
+		quest,
+		item,
+		map_entry,
+		first_map_entry,
+		portal,
+		instance,
 	};
 }

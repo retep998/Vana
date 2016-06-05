@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct MobSkillInfo {
-		mob_skill_id_t skillId = 0;
-		mob_skill_level_t level = 0;
-		milliseconds_t effectAfter = milliseconds_t{0};
+namespace vana {
+	struct mob_skill_info {
+		game_mob_skill_id skill_id = 0;
+		game_mob_skill_level level = 0;
+		milliseconds effect_after = milliseconds{0};
 	};
 }

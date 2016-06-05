@@ -21,36 +21,36 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Mob.hpp"
 #include "ChannelServer/Player.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-Mist::Mist(map_id_t mapId, ref_ptr_t<Player> owner, seconds_t time, const Rect &area, skill_id_t skillId, skill_level_t level, bool isPoison) :
-	m_ownerMap{mapId},
-	m_ownerId{owner->getId()},
-	m_skill{skillId},
+mist::mist(game_map_id map_id, ref_ptr<player> owner, seconds time, const rect &area, game_skill_id skill_id, game_skill_level level, bool is_poison) :
+	m_owner_map{map_id},
+	m_owner_id{owner->get_id()},
+	m_skill{skill_id},
 	m_level{level},
 	m_area{area},
 	m_time{time},
 	m_delay{8},
-	m_isMobMist{false},
-	m_poison{isPoison}
+	m_is_mob_mist{false},
+	m_poison{is_poison}
 {
-	Maps::getMap(mapId)->addMist(this);
+	maps::get_map(map_id)->add_mist(this);
 }
 
-Mist::Mist(map_id_t mapId, Mob *owner, seconds_t time, const Rect &area, mob_skill_id_t skillId, mob_skill_level_t level) :
-	m_ownerMap{mapId},
-	m_ownerId{owner->getMapMobId()},
-	m_skill{skillId},
+mist::mist(game_map_id map_id, mob *owner, seconds time, const rect &area, game_mob_skill_id skill_id, game_mob_skill_level level) :
+	m_owner_map{map_id},
+	m_owner_id{owner->get_map_mob_id()},
+	m_skill{skill_id},
 	m_level{level},
 	m_area{area},
 	m_time{time}
 {
-	Maps::getMap(mapId)->addMist(this);
+	maps::get_map(map_id)->add_mist(this);
 }
 
-auto Mist::getMap() const -> Map * {
-	return Maps::getMap(m_ownerMap);
+auto mist::get_map() const -> map * {
+	return maps::get_map(m_owner_map);
 }
 
 }

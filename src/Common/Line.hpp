@@ -23,43 +23,43 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <cmath>
 #include <ostream>
 
-namespace Vana {
+namespace vana {
 	// IMPORTANT
-	// The assumption made in the Point, Line, and Rect classes are that the coordinate system works like you'd expect for x, but is inverted for y
+	// The assumption made in the point, line, and rect classes are that the coordinate system works like you'd expect for x, but is inverted for y
 	// That is, -1000 x is on the left side, 1000 x is on the right side
 	// However, -1000 y is on the top and 1000 y is on the bottom
 	// Be VERY careful when dealing with things that require the Y position
-	struct Line {
-		Line() = default;
-		Line(const Point &pt1, const Point &pt2);
+	struct line {
+		line() = default;
+		line(const point &pt1, const point &pt2);
 
-		auto slope() const -> Ratio;
-		auto contains(const Point &pos) const -> bool;
-		auto slopeContains(const Point &pos) const -> bool;
-		auto withinRangeX(coord_t xValue) const -> bool;
-		auto withinRangeY(coord_t yValue) const -> bool;
-		auto interpolateForX(coord_t yValue) const -> optional_t<coord_t>;
-		auto interpolateForY(coord_t xValue) const -> optional_t<coord_t>;
-		auto move(coord_t xOffset, coord_t yOffset) const -> Line;
-		auto moveX(coord_t xOffset) const -> Line;
-		auto moveY(coord_t yOffset) const -> Line;
-		auto center() const -> Point;
+		auto slope() const -> ratio;
+		auto contains(const point &pos) const -> bool;
+		auto slope_contains(const point &pos) const -> bool;
+		auto within_range_x(game_coord value_x) const -> bool;
+		auto within_range_y(game_coord value_y) const -> bool;
+		auto interpolate_for_x(game_coord value_y) const -> optional<game_coord>;
+		auto interpolate_for_y(game_coord value_x) const -> optional<game_coord>;
+		auto move(game_coord offset_x, game_coord offset_y) const -> line;
+		auto move_x(game_coord offset) const -> line;
+		auto move_y(game_coord offset) const -> line;
+		auto center() const -> point;
 		auto length() const -> int32_t;
-		auto makeRect() const -> Rect;
-		auto isVertical() const -> bool;
-		auto isHorizontal() const -> bool;
-		auto isOrigin() const -> bool;
-		auto isEdge(const Point &pt) -> bool;
-		auto isEdge(coord_t xValue, coord_t yValue) -> bool;
+		auto make_rect() const -> rect;
+		auto is_vertical() const -> bool;
+		auto is_horizontal() const -> bool;
+		auto is_origin() const -> bool;
+		auto is_edge(const point &pt) -> bool;
+		auto is_edge(game_coord value_x, game_coord value_y) -> bool;
 
-		Point pt1;
-		Point pt2;
+		point pt1;
+		point pt2;
 
-		friend auto operator <<(std::ostream &out, const Line &line) -> std::ostream &;
+		friend auto operator <<(std::ostream &out, const line &line) -> std::ostream &;
 	};
 
 	inline
-	auto operator <<(std::ostream &out, const Line &line) -> std::ostream & {
+	auto operator <<(std::ostream &out, const line &line) -> std::ostream & {
 		return out << "(" << line.pt1 << ", " << line.pt2 << ")";
 	}
 }

@@ -19,79 +19,79 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	namespace Parties {
-		const size_t MaxMembers = 6;
+namespace vana {
+	namespace parties {
+		const size_t max_members = 6;
 	}
 
-	namespace Characters {
-		const size_t MinNameSize = 4;
-		const size_t MaxNameSize = 12;
-		const size_t MinPasswordSize = 5;
-		const size_t MaxPasswordSize = 15;
-		const int32_t DefaultCharacterSlots = 3;
+	namespace characters {
+		const size_t min_name_size = 4;
+		const size_t max_name_size = 12;
+		const size_t min_password_size = 5;
+		const size_t max_password_size = 15;
+		const int32_t default_character_slots = 3;
 	}
 
-	namespace Gender {
-		enum : gender_id_t {
-			Male = 0,
-			Female = 1,
-			Both = 2
+	namespace gender {
+		enum : game_gender_id {
+			male = 0,
+			female = 1,
+			both = 2
 		};
 	}
 
-	namespace Buddies {
-		const size_t MaxGroupNameSize = 13;
+	namespace buddies {
+		const size_t max_group_name_size = 13;
 	}
 
-	namespace GuildsAndAlliances {
-		const size_t MinNameSize = 4;
-		const size_t MaxNameSize = 12;
-		const int32_t RankQuantity = 5;
-		const int32_t MaxGuildCapacity = 100;
-		const int32_t MaxAllianceCapacity = 3;
-		const int32_t ThreadsPerPage = 10;
+	namespace guilds_and_alliances {
+		const size_t min_name_size = 4;
+		const size_t max_name_size = 12;
+		const int32_t rank_quantity = 5;
+		const int32_t max_guild_capacity = 100;
+		const int32_t max_alliance_capacity = 3;
+		const int32_t threads_per_page = 10;
 	}
 
-	namespace Stats {
-		const player_level_t PlayerLevels = 200;
-		const player_level_t CygnusLevels = 120;
-		const uint8_t PetLevels = 30;
-		const uint8_t MountLevels = 30;
-		const health_t MaxMaxHp = 30000;
-		const health_t MinMaxHp = 1;
-		const health_t MaxMaxMp = 30000;
-		const health_t MinMaxMp = 1;
-		const fame_t MaxFame = 30000;
-		const fame_t MinFame = -30000;
-		const health_t MinHp = 0;
-		const health_t MinMp = 0;
-		const health_t DefaultHp = 50;
-		const int16_t MaxCloseness = 30000;
-		const stat_t ApPerLevel = 5;
-		const stat_t ApPerCygnusLevel = 6;
-		const player_level_t CygnusApCutoff = 70;
-		const stat_t SpPerLevel = 3;
-		const int8_t MaxFullness = 100;
-		const int8_t MinFullness = 0;
-		const int8_t PetFeedFullness = 30;
-		const damage_t MaxDamage = 199999;
-		const int16_t EnergyChargeDecay = 200;
-		const int16_t MaxEnergyChargeLevel = 10000;
+	namespace stats {
+		const game_player_level player_levels = 200;
+		const game_player_level cygnus_levels = 120;
+		const uint8_t pet_levels = 30;
+		const uint8_t mount_levels = 30;
+		const game_health max_max_hp = 30000;
+		const game_health min_max_hp = 1;
+		const game_health max_max_mp = 30000;
+		const game_health min_max_mp = 1;
+		const game_fame max_fame = 30000;
+		const game_fame min_fame = -30000;
+		const game_health min_hp = 0;
+		const game_health min_mp = 0;
+		const game_health default_hp = 50;
+		const int16_t max_closeness = 30000;
+		const game_stat ap_per_level = 5;
+		const game_stat ap_per_cygnus_level = 6;
+		const game_player_level cygnus_ap_cutoff = 70;
+		const game_stat sp_per_level = 3;
+		const int8_t max_fullness = 100;
+		const int8_t min_fullness = 0;
+		const int8_t pet_feed_fullness = 30;
+		const game_damage max_damage = 199999;
+		const int16_t energy_charge_decay = 200;
+		const int16_t max_energy_charge_level = 10000;
 
-		const int16_t PetExp[PetLevels - 1] = {
+		const int16_t pet_exp[pet_levels - 1] = {
 			1, 3, 6, 14, 31, 60, 108, 181, 287, 434,
 			632, 891, 1224, 1642, 2161, 2793, 3557, 4467, 5542, 6801,
 			8263, 9950, 11882, 14084, 16578, 19391, 22548, 26074, 30000
 		};
 
-		const int16_t MountExp[MountLevels - 1] = {
+		const int16_t mount_exp[mount_levels - 1] = {
 			6, 25, 50, 105, 134, 196, 254, 263, 315, 367,
 			430, 543, 587, 679, 725, 897, 1146, 1394, 1701, 2247,
 			2543, 2898, 3156, 3313, 3584, 3923, 4150, 4305, 4550
 		};
 
-		const experience_t PlayerExp[PlayerLevels - 1] = {
+		const game_experience player_exp[player_levels - 1] = {
 			// 20 rows of 10 levels each (with 9 in the last row)
 
 	#if MAPLE_LOCALE == MAPLE_LOCALE_GLOBAL
@@ -164,77 +164,77 @@ namespace Vana {
 	#endif
 		};
 
-		namespace BaseHp {
-			const health_t Variation = 4; // This is the range of HP that the server will give
+		namespace base_hp {
+			const game_health variation = 4; // This is the range of HP that the server will give
 
-			const health_t Beginner = 12; // These are base HP values rewarded on level up
-			const health_t Warrior = 24;
-			const health_t Magician = 10;
-			const health_t Bowman = 20;
-			const health_t Thief = 20;
-			const health_t Pirate = 22;
-			const health_t Gm = 150;
+			const game_health beginner = 12; // These are base HP values rewarded on level up
+			const game_health warrior = 24;
+			const game_health magician = 10;
+			const game_health bowman = 20;
+			const game_health thief = 20;
+			const game_health pirate = 22;
+			const game_health gm = 150;
 
-			const health_t BeginnerAp = 8; // These are base HP values rewarded on AP distribution
-			const health_t WarriorAp = 20;
-			const health_t MagicianAp = 8;
-			const health_t BowmanAp = 16;
-			const health_t ThiefAp = 16;
-			const health_t PirateAp = 18;
-			const health_t GmAp = 16;
+			const game_health beginner_ap = 8; // These are base HP values rewarded on AP distribution
+			const game_health warrior_ap = 20;
+			const game_health magician_ap = 8;
+			const game_health bowman_ap = 16;
+			const game_health thief_ap = 16;
+			const game_health pirate_ap = 18;
+			const game_health gm_ap = 16;
 		}
-		namespace BaseMp {
-			const health_t Variation = 2; // This is the range of MP that the server will give
+		namespace base_mp {
+			const game_health variation = 2; // This is the range of MP that the server will give
 
-			const health_t Beginner = 10; // These are base MP values rewarded on level up
-			const health_t Warrior = 4;
-			const health_t Magician = 6;
-			const health_t Bowman = 14;
-			const health_t Thief = 14;
-			const health_t Pirate = 18;
-			const health_t Gm = 150;
+			const game_health beginner = 10; // These are base MP values rewarded on level up
+			const game_health warrior = 4;
+			const game_health magician = 6;
+			const game_health bowman = 14;
+			const game_health thief = 14;
+			const game_health pirate = 18;
+			const game_health gm = 150;
 
-			const health_t BeginnerAp = 6; // These are base MP values rewarded on AP distribution
-			const health_t WarriorAp = 2;
-			const health_t MagicianAp = 18;
-			const health_t BowmanAp = 10;
-			const health_t ThiefAp = 10;
-			const health_t PirateAp = 14;
-			const health_t GmAp = 10;
+			const game_health beginner_ap = 6; // These are base MP values rewarded on AP distribution
+			const game_health warrior_ap = 2;
+			const game_health magician_ap = 18;
+			const game_health bowman_ap = 10;
+			const game_health thief_ap = 10;
+			const game_health pirate_ap = 14;
+			const game_health gm_ap = 10;
 		}
-		enum Constants : int32_t {
-			Skin = 0x01,
-			Face = 0x02,
-			Hair = 0x04,
-			Pet = 0x08,
-			Level = 0x10,
-			Job = 0x20,
-			Str = 0x40,
-			Dex = 0x80,
-			Int = 0x100,
-			Luk = 0x200,
-			Hp = 0x400,
-			MaxHp = 0x800,
-			Mp = 0x1000,
-			MaxMp = 0x2000,
-			Ap = 0x4000,
-			Sp = 0x8000,
-			Exp = 0x10000,
-			Fame = 0x20000,
-			Mesos = 0x40000
+		enum constants : int32_t {
+			skin = 0x01,
+			face = 0x02,
+			hair = 0x04,
+			pet = 0x08,
+			level = 0x10,
+			job = 0x20,
+			str = 0x40,
+			dex = 0x80,
+			intl = 0x100,
+			luk = 0x200,
+			hp = 0x400,
+			max_hp = 0x800,
+			mp = 0x1000,
+			max_mp = 0x2000,
+			ap = 0x4000,
+			sp = 0x8000,
+			exp = 0x10000,
+			fame = 0x20000,
+			mesos = 0x40000,
 		};
 	}
 
-	namespace MonsterCards {
-		const uint8_t MaxCardLevel = 5;
-		const int32_t MaxPlayerLevel = 8;
-		const int32_t PlayerLevels[MaxPlayerLevel - 1] = {10, 30, 60, 100, 150, 210, 280};
+	namespace monster_cards {
+		const uint8_t max_card_level = 5;
+		const int32_t max_player_level = 8;
+		const int32_t player_levels[max_player_level - 1] = {10, 30, 60, 100, 150, 210, 280};
 	}
 
-	enum class MobElementalAttribute : int8_t {
-		Normal,
-		Immune,
-		Strong,
-		Weak
+	enum class mob_elemental_attribute : int8_t {
+		normal,
+		immune,
+		strong,
+		weak,
 	};
 }

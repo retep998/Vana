@@ -20,23 +20,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <string>
 
-namespace Vana {
-	namespace Mcdb {
-		namespace Locales {
-			const string_t Global = "global";
-			const string_t Korea = "korea";
-			const string_t Japan = "japan";
-			const string_t China = "china";
-			const string_t Europe = "europe";
-			const string_t Thailand = "thailand";
-			const string_t Taiwan = "taiwan";
-			const string_t Sea = "sea";
-			const string_t Brazil = "brazil";
+namespace vana {
+	namespace mcdb {
+		namespace locales {
+			const string global = "global";
+			const string korea = "korea";
+			const string japan = "japan";
+			const string china = "china";
+			const string europe = "europe";
+			const string thailand = "thailand";
+			const string taiwan = "taiwan";
+			const string sea = "sea";
+			const string brazil = "brazil";
 		}
 
-		const int32_t MajorVersion = 4;
-		const int32_t SubVersion = 3;
-		const string_t Locale = Locales::Global;
-		const bool IsTestServer = false;
+		const int32_t major_version = 4;
+		const int32_t sub_version = 3;
+		const string locale = locales::global;
+		const bool is_test_server = false;
 	}
 }

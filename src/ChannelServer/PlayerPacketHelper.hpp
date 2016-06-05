@@ -20,16 +20,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/PacketBuilder.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class Item;
+namespace vana {
+	class item;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		namespace Packets {
-			namespace Helpers {
-				PACKET(addItemInfo, inventory_slot_t slot, Item *item, bool shortSlot = false);
-				PACKET(addPlayerDisplay, ref_ptr_t<Vana::ChannelServer::Player> player);
+		namespace packets {
+			namespace helpers {
+				PACKET(add_item_info, game_inventory_slot slot, item *item, bool short_slot = false);
+				PACKET(add_player_display, ref_ptr<vana::channel_server::player> player);
 			}
 		}
 	}

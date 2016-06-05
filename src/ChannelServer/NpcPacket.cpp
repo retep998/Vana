@@ -25,47 +25,47 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Player.hpp"
 #include "ChannelServer/SmsgHeader.hpp"
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
-namespace Npc {
+namespace vana {
+namespace channel_server {
+namespace packets {
+namespace npc {
 
-PACKET_IMPL(showNpc, const NpcSpawnInfo &npc, map_object_t id, bool show) {
-	PacketBuilder builder;
+PACKET_IMPL(show_npc, const npc_spawn_info &npc, game_map_object id, bool show) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_NPC_SHOW)
-		.add<map_object_t>(id)
-		.add<npc_id_t>(npc.id)
-		.add<Point>(npc.pos)
-		.add<bool>(!npc.facesLeft)
-		.add<foothold_id_t>(npc.foothold)
-		.add<coord_t>(npc.rx0)
-		.add<coord_t>(npc.rx1)
+		.add<packet_header>(SMSG_NPC_SHOW)
+		.add<game_map_object>(id)
+		.add<game_npc_id>(npc.id)
+		.add<point>(npc.pos)
+		.add<bool>(!npc.faces_left)
+		.add<game_foothold_id>(npc.foothold)
+		.add<game_coord>(npc.rx0)
+		.add<game_coord>(npc.rx1)
 		.add<bool>(show);
 	return builder;
 }
 
-PACKET_IMPL(controlNpc, const NpcSpawnInfo &npc, map_object_t id, bool show) {
-	PacketBuilder builder;
+PACKET_IMPL(control_npc, const npc_spawn_info &npc, game_map_object id, bool show) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_NPC_CONTROL)
+		.add<packet_header>(SMSG_NPC_CONTROL)
 		.add<int8_t>(1)
-		.add<map_object_t>(id)
-		.add<npc_id_t>(npc.id)
-		.add<Point>(npc.pos)
-		.add<bool>(!npc.facesLeft)
-		.add<foothold_id_t>(npc.foothold)
-		.add<coord_t>(npc.rx0)
-		.add<coord_t>(npc.rx1)
+		.add<game_map_object>(id)
+		.add<game_npc_id>(npc.id)
+		.add<point>(npc.pos)
+		.add<bool>(!npc.faces_left)
+		.add<game_foothold_id>(npc.foothold)
+		.add<game_coord>(npc.rx0)
+		.add<game_coord>(npc.rx1)
 		.add<bool>(show);
 	return builder;
 }
 
-PACKET_IMPL(animateNpc, PacketReader &reader) {
-	PacketBuilder builder;
-	builder.add<header_t>(SMSG_NPC_ANIMATE);
+PACKET_IMPL(animate_npc, packet_reader &reader) {
+	packet_builder builder;
+	builder.add<packet_header>(SMSG_NPC_ANIMATE);
 
-	size_t len = reader.getBufferLength();
+	size_t len = reader.get_buffer_length();
 	if (len == 6) {
 		// NPC talking
 		builder
@@ -74,50 +74,50 @@ PACKET_IMPL(animateNpc, PacketReader &reader) {
 	}
 	else if (len > 6) {
 		// NPC moving
-		builder.addBuffer(reader.getBuffer(), len - 9);
+		builder.add_buffer(reader.get_buffer(), len - 9);
 	}
 	return builder;
 }
 
-PACKET_IMPL(showNpcEffect, int32_t index, bool show) {
-	PacketBuilder builder;
+PACKET_IMPL(show_npc_effect, int32_t index, bool show) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_NPC_SHOW_EFFECT)
+		.add<packet_header>(SMSG_NPC_SHOW_EFFECT)
 		.add<int32_t>(index)
 		.add<bool>(show);
 	return builder;
 }
 
 PACKET_IMPL(bought, uint8_t msg) {
-	PacketBuilder builder;
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_ITEM_PURCHASED)
+		.add<packet_header>(SMSG_ITEM_PURCHASED)
 		.add<int8_t>(msg);
 	return builder;
 }
 
-PACKET_IMPL(showShop, const ShopData &shop, slot_qty_t rechargeableBonus) {
-	PacketBuilder builder;
-	slot_qty_t shopCount = static_cast<slot_qty_t>(shop.items.size() + shop.rechargeables.size());
-	hash_set_t<item_id_t> itemsAdded;
+PACKET_IMPL(show_shop, const shop_data &shop, game_slot_qty rechargeable_bonus) {
+	packet_builder builder;
+	game_slot_qty shop_count = static_cast<game_slot_qty>(shop.items.size() + shop.rechargeables.size());
+	hash_set<game_item_id> items_added;
 
 	builder
-		.add<header_t>(SMSG_SHOP)
-		.add<npc_id_t>(shop.npc)
-		.defer<slot_qty_t>();
+		.add<packet_header>(SMSG_SHOP)
+		.add<game_npc_id>(shop.npc)
+		.defer<game_slot_qty>();
 
 	// Items
 	for (const auto &item : shop.items) {
 		builder
-			.add<item_id_t>(item->itemId)
-			.add<mesos_t>(item->price);
+			.add<game_item_id>(item->item_id)
+			.add<game_mesos>(item->price);
 
-		if (GameLogicUtilities::isRechargeable(item->itemId)) {
-			itemsAdded.emplace(item->itemId);
+		if (game_logic_utilities::is_rechargeable(item->item_id)) {
+			items_added.emplace(item->item_id);
 			double cost = 0.0;
 			if (shop.rechargeables.size() > 0) {
-				shopCount--;
-				auto kvp = shop.rechargeables.find(item->itemId);
+				shop_count--;
+				auto kvp = shop.rechargeables.find(item->item_id);
 				if (kvp != std::end(shop.rechargeables)) {
 					cost = kvp->second;
 				}
@@ -125,41 +125,41 @@ PACKET_IMPL(showShop, const ShopData &shop, slot_qty_t rechargeableBonus) {
 			builder.add<double>(cost);
 		}
 		else {
-			builder.add<slot_qty_t>(item->quantity);
+			builder.add<game_slot_qty>(item->quantity);
 		}
-		auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(item->itemId);
-		slot_qty_t maxSlot = itemInfo->maxSlot;
-		if (GameLogicUtilities::isRechargeable(item->itemId)) {
-			maxSlot += rechargeableBonus;
+		auto item_info = channel_server::get_instance().get_item_data_provider().get_item_info(item->item_id);
+		game_slot_qty max_slot = item_info->max_slot;
+		if (game_logic_utilities::is_rechargeable(item->item_id)) {
+			max_slot += rechargeable_bonus;
 		}
-		builder.add<slot_qty_t>(maxSlot);
+		builder.add<game_slot_qty>(max_slot);
 	}
 
 	// Rechargeables
 	for (const auto &kvp : shop.rechargeables) {
-		if (itemsAdded.find(kvp.first) == std::end(itemsAdded)) {
+		if (items_added.find(kvp.first) == std::end(items_added)) {
 			builder
-				.add<item_id_t>(kvp.first)
+				.add<game_item_id>(kvp.first)
 				.add<int32_t>(0)
 				.add<double>(kvp.second)
-				.add<slot_qty_t>(ChannelServer::getInstance().getItemDataProvider().getItemInfo(kvp.first)->maxSlot + rechargeableBonus);
+				.add<game_slot_qty>(channel_server::get_instance().get_item_data_provider().get_item_info(kvp.first)->max_slot + rechargeable_bonus);
 		}
 	}
 
-	builder.set<slot_qty_t>(shopCount, sizeof(header_t) + sizeof(npc_id_t));
+	builder.set<game_slot_qty>(shop_count, sizeof(packet_header) + sizeof(game_npc_id));
 	return builder;
 }
 
-PACKET_IMPL(npcChat, int8_t type, map_object_t npcId, const string_t &text, bool excludeText) {
-	PacketBuilder builder;
+PACKET_IMPL(npc_chat, int8_t type, game_map_object npc_id, const string &text, bool exclude_text) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_NPC_TALK)
+		.add<packet_header>(SMSG_NPC_TALK)
 		.add<int8_t>(4)
-		.add<map_object_t>(npcId)
+		.add<game_map_object>(npc_id)
 		.add<int8_t>(type);
 
-	if (!excludeText) {
-		builder.add<string_t>(text);
+	if (!exclude_text) {
+		builder.add<string>(text);
 	}
 	return builder;
 }

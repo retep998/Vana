@@ -21,8 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <vector>
 
-namespace Vana {
-	struct QuestRequestsData {
-		vector_t<QuestRequestInfo> universal;
+namespace vana {
+	struct quest_requests_data {
+		vector<quest_request_info> universal;
 	};
 }

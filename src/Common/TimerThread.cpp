@@ -23,31 +23,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <chrono>
 #include <functional>
 
-namespace Vana {
-namespace Timer {
+namespace vana {
+namespace timer {
 
-TimerThread::TimerThread()
+timer_thread::timer_thread()
 {
-	m_container = make_ref_ptr<Container>();
-	m_thread = ThreadPool::lease(
-		[this](owned_lock_t<recursive_mutex_t> &lock) {
-			time_point_t waitTime = getWaitTime();
-			time_point_t now = TimeUtilities::getNow();
+	m_container = make_ref_ptr<container>();
+	m_thread = thread_pool::lease(
+		[this](owned_lock<recursive_mutex> &lock) {
+			time_point wait_time = get_wait_time();
+			time_point now = utilities::time::get_now();
 
-			while (waitTime <= now && m_timers.size() > 0) {
-				timer_pair_t top = m_timers.top();
+			while (wait_time <= now && m_timers.size() > 0) {
+				timer_pair top = m_timers.top();
 
-				if (ref_ptr_t<Timer> timer = top.second.lock()) {
+				if (ref_ptr<timer> timer = top.second.lock()) {
 					m_timers.pop();
 
-					if (timer->run(now) == RunResult::Reset) {
+					if (timer->run(now) == run_result::reset) {
 						m_timers.emplace(timer->reset(now), timer);
 					}
 					else {
-						timer->removeFromContainer();
+						timer->remove_from_container();
 					}
 
-					waitTime = getWaitTime();
+					wait_time = get_wait_time();
 				}
 				else {
 					// Expired timer
@@ -56,34 +56,34 @@ TimerThread::TimerThread()
 				}
 			}
 
-			m_mainLoopCondition.wait_until(lock, waitTime);
+			m_main_loop_condition.wait_until(lock, wait_time);
 		},
 		[this] {
-			m_mainLoopCondition.notify_one();
+			m_main_loop_condition.notify_one();
 		},
-		m_timersMutex);
+		m_timers_mutex);
 }
 
-TimerThread::~TimerThread() {
+timer_thread::~timer_thread() {
 	m_thread.reset();
 }
 
-auto TimerThread::getTimerContainer() const -> ref_ptr_t<Container> {
+auto timer_thread::get_timer_container() const -> ref_ptr<container> {
 	return m_container;
 }
 
-auto TimerThread::registerTimer(ref_ptr_t<Timer> timer, time_point_t runAt) -> void {
-	owned_lock_t<recursive_mutex_t> l{m_timersMutex};
-	m_timers.emplace(runAt, timer);
-	m_mainLoopCondition.notify_one();
+auto timer_thread::register_timer(ref_ptr<timer> timer, time_point run_at) -> void {
+	owned_lock<recursive_mutex> l{m_timers_mutex};
+	m_timers.emplace(run_at, timer);
+	m_main_loop_condition.notify_one();
 }
 
-auto TimerThread::getWaitTime() const -> time_point_t {
+auto timer_thread::get_wait_time() const -> time_point {
 	if (m_timers.size() > 0) {
 		return m_timers.top().first;
 	}
 
-	return TimeUtilities::getNowWithTimeAdded(milliseconds_t{1000000000});
+	return utilities::time::get_now_with_time_added(milliseconds{1000000000});
 }
 
 }

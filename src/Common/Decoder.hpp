@@ -25,56 +25,56 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <botan/pipe.h>
 #include <string>
 
-namespace Vana {
-	class PacketBuilder;
+namespace vana {
+	class packet_builder;
 
-	class Decoder {
+	class decoder {
 	public:
-		explicit Decoder(bool encrypted);
+		explicit decoder(bool encrypted);
 
-		auto validPacket(unsigned char *header) -> bool;
-		auto getLength(unsigned char *header) -> uint16_t;
+		auto valid_packet(unsigned char *header) -> bool;
+		auto get_length(unsigned char *header) -> uint16_t;
 
-		auto createHeader(unsigned char *header, uint16_t size) -> void;
-		auto encrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) -> void;
-		auto decrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) -> void;
-		auto setRecvIv(iv_t iv) -> void { m_recv.updateIv(iv); }
-		auto setSendIv(iv_t iv) -> void { m_send.updateIv(iv); }
-		auto getRecvIv() const -> iv_t { return m_recv.getIv(); }
-		auto getSendIv() const -> iv_t { return m_send.getIv(); }
+		auto create_header(unsigned char *header, uint16_t size) -> void;
+		auto encrypt(unsigned char *buffer, int32_t size, uint16_t header_len) -> void;
+		auto decrypt(unsigned char *buffer, int32_t size, uint16_t header_len) -> void;
+		auto set_recv_iv(crypto_iv iv) -> void { m_recv.update_iv(iv); }
+		auto set_send_iv(crypto_iv iv) -> void { m_send.update_iv(iv); }
+		auto get_recv_iv() const -> crypto_iv { return m_recv.get_iv(); }
+		auto get_send_iv() const -> crypto_iv { return m_send.get_iv(); }
 	private:
-		auto getVersionAndSize(unsigned char *header, uint16_t &version, uint16_t &size) -> void;
+		auto get_version_and_size(unsigned char *header, uint16_t &version, uint16_t &size) -> void;
 
-		BlockCipherIv m_recv;
-		BlockCipherIv m_send;
+		block_cipher_iv m_recv;
+		block_cipher_iv m_send;
 		bool m_encrypted = true;
-		Botan::OctetString m_botanKey;
+		Botan::OctetString m_botan_key;
 	};
 
 	inline
-	auto Decoder::getLength(unsigned char *header) -> uint16_t {
+	auto decoder::get_length(unsigned char *header) -> uint16_t {
 		uint16_t version = 0;
-		uint16_t pSize = 0;
-		getVersionAndSize(header, version, pSize);
-		return pSize;
+		uint16_t p_size = 0;
+		get_version_and_size(header, version, p_size);
+		return p_size;
 	}
 
 	inline
-	auto Decoder::validPacket(unsigned char *header) -> bool {
+	auto decoder::valid_packet(unsigned char *header) -> bool {
 		uint16_t version = 0;
-		uint16_t pSize = 0;
-		getVersionAndSize(header, version, pSize);
-		return version == MapleVersion::Version && pSize >= 2;
+		uint16_t p_size = 0;
+		get_version_and_size(header, version, p_size);
+		return version == maple_version::version && p_size >= 2;
 	}
 
 	inline
-	auto Decoder::getVersionAndSize(unsigned char *header, uint16_t &version, uint16_t &size) -> void {
+	auto decoder::get_version_and_size(unsigned char *header, uint16_t &version, uint16_t &size) -> void {
 		if (!m_encrypted) {
 			version = *reinterpret_cast<uint16_t *>(header);
 			size = *reinterpret_cast<uint16_t *>(header + 2);
 		}
 		else {
-			auto iv = m_recv.getBytes();
+			auto iv = m_recv.get_bytes();
 			uint16_t enc = ((iv[3] << 8) | iv[2]);
 			version = (-(*reinterpret_cast<uint16_t *>(header)) - 1) ^ enc;
 			size = *reinterpret_cast<uint16_t *>(header) ^ *reinterpret_cast<uint16_t *>(header + 2);

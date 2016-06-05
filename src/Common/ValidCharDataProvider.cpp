@@ -26,107 +26,107 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
-namespace Vana {
+namespace vana {
 
-auto ValidCharDataProvider::loadData() -> void {
-	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Char Info... ";
+auto valid_char_data_provider::load_data() -> void {
+	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Char Info... ";
 
-	loadForbiddenNames();
-	loadCreationItems();
+	load_forbidden_names();
+	load_creation_items();
 
 	std::cout << "DONE" << std::endl;
 }
 
-auto ValidCharDataProvider::loadForbiddenNames() -> void {
-	m_forbiddenNames.clear();
+auto valid_char_data_provider::load_forbidden_names() -> void {
+	m_forbidden_names.clear();
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("character_forbidden_names"));
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("character_forbidden_names"));
 
 	for (const auto &row : rs) {
-		m_forbiddenNames.push_back(row.get<string_t>("forbidden_name"));
+		m_forbidden_names.push_back(row.get<string>("forbidden_name"));
 	}
 }
 
-auto ValidCharDataProvider::loadCreationItems() -> void {
+auto valid_char_data_provider::load_creation_items() -> void {
 	m_adventurer.clear();
 	m_cygnus.clear();
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("character_creation_data"));
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("character_creation_data"));
 
 	for (const auto &row : rs) {
-		gender_id_t genderId = GameLogicUtilities::getGenderId(row.get<string_t>("gender"));
-		int32_t objectId = row.get<int32_t>("objectid");
-		int8_t classId = -1;
+		game_gender_id gender_id = game_logic_utilities::get_gender_id(row.get<string>("gender"));
+		int32_t object_id = row.get<int32_t>("objectid");
+		int8_t class_id = -1;
 
-		StringUtilities::runEnum(row.get<string_t>("character_type"), [&classId](const string_t &cmp) {
-			if (cmp == "regular") classId = Adventurer;
-			else if (cmp == "cygnus") classId = Cygnus;
+		utilities::str::run_enum(row.get<string>("character_type"), [&class_id](const string &cmp) {
+			if (cmp == "regular") class_id = adventurer;
+			else if (cmp == "cygnus") class_id = cygnus;
 		});
 
-		auto &items = genderId == Gender::Male ?
-			(classId == Adventurer ? m_adventurer.male : m_cygnus.male) :
-			(classId == Adventurer ? m_adventurer.female : m_cygnus.female);
+		auto &items = gender_id == gender::male ?
+			(class_id == adventurer ? m_adventurer.male : m_cygnus.male) :
+			(class_id == adventurer ? m_adventurer.female : m_cygnus.female);
 
-		StringUtilities::runEnum(row.get<string_t>("object_type"), [&items, &objectId](const string_t &cmp) {
-			if (cmp == "face") items.faces.push_back(objectId);
-			else if (cmp == "hair") items.hair.push_back(objectId);
-			else if (cmp == "haircolor") items.hairColor.push_back(objectId);
-			else if (cmp == "skin") items.skin.push_back(static_cast<skin_id_t>(objectId));
-			else if (cmp == "top") items.top.push_back(objectId);
-			else if (cmp == "bottom") items.bottom.push_back(objectId);
-			else if (cmp == "shoes") items.shoes.push_back(objectId);
-			else if (cmp == "weapon") items.weapons.push_back(objectId);
+		utilities::str::run_enum(row.get<string>("object_type"), [&items, &object_id](const string &cmp) {
+			if (cmp == "face") items.faces.push_back(object_id);
+			else if (cmp == "hair") items.hair.push_back(object_id);
+			else if (cmp == "haircolor") items.hair_color.push_back(object_id);
+			else if (cmp == "skin") items.skin.push_back(static_cast<game_skin_id>(object_id));
+			else if (cmp == "top") items.top.push_back(object_id);
+			else if (cmp == "bottom") items.bottom.push_back(object_id);
+			else if (cmp == "shoes") items.shoes.push_back(object_id);
+			else if (cmp == "weapon") items.weapons.push_back(object_id);
 		});
 	}
 }
 
-auto ValidCharDataProvider::isForbiddenName(const string_t &cmp) const -> bool {
-	string_t c = StringUtilities::removeSpaces(StringUtilities::toLower(cmp));
-	return ext::any_of(m_forbiddenNames, [&c](const string_t &s) -> bool {
-		return c.find(s, 0) != string_t::npos;
+auto valid_char_data_provider::is_forbidden_name(const string &cmp) const -> bool {
+	string c = utilities::str::remove_spaces(utilities::str::to_lower(cmp));
+	return ext::any_of(m_forbidden_names, [&c](const string &s) -> bool {
+		return c.find(s, 0) != string::npos;
 	});
 }
 
-auto ValidCharDataProvider::isValidCharacter(gender_id_t genderId, hair_id_t hair, hair_id_t hairColor, face_id_t face, skin_id_t skin, item_id_t top, item_id_t bottom, item_id_t shoes, item_id_t weapon, int8_t classId) const -> bool {
-	if (genderId != Gender::Male && genderId != Gender::Female) {
+auto valid_char_data_provider::is_valid_character(game_gender_id gender_id, game_hair_id hair, game_hair_id hair_color, game_face_id face, game_skin_id skin, game_item_id top, game_item_id bottom, game_item_id shoes, game_item_id weapon, int8_t class_id) const -> bool {
+	if (gender_id != gender::male && gender_id != gender::female) {
 		return false;
 	}
 
-	auto &items = getItems(genderId, classId);
-	bool valid = isValidItem(hair, items, ValidItemType::Hair);
-	if (valid) valid = isValidItem(hairColor, items, ValidItemType::HairColor);
-	if (valid) valid = isValidItem(face, items, ValidItemType::Face);
-	if (valid) valid = isValidItem(skin, items, ValidItemType::Skin);
-	if (valid) valid = isValidItem(top, items, ValidItemType::Top);
-	if (valid) valid = isValidItem(bottom, items, ValidItemType::Bottom);
-	if (valid) valid = isValidItem(shoes, items, ValidItemType::Shoes);
-	if (valid) valid = isValidItem(weapon, items, ValidItemType::Weapon);
+	auto &items = get_items(gender_id, class_id);
+	bool valid = is_valid_item(hair, items, valid_item_type::hair);
+	if (valid) valid = is_valid_item(hair_color, items, valid_item_type::hair_color);
+	if (valid) valid = is_valid_item(face, items, valid_item_type::face);
+	if (valid) valid = is_valid_item(skin, items, valid_item_type::skin);
+	if (valid) valid = is_valid_item(top, items, valid_item_type::top);
+	if (valid) valid = is_valid_item(bottom, items, valid_item_type::bottom);
+	if (valid) valid = is_valid_item(shoes, items, valid_item_type::shoes);
+	if (valid) valid = is_valid_item(weapon, items, valid_item_type::weapon);
 	return valid;
 }
 
-auto ValidCharDataProvider::isValidItem(int32_t id, const ValidClassData &items, ValidItemType type) const -> bool {
-	auto idTest = [id](int32_t test) -> bool { return id == test; };
+auto valid_char_data_provider::is_valid_item(int32_t id, const valid_class_data &items, valid_item_type type) const -> bool {
+	auto id_test = [id](int32_t test) -> bool { return id == test; };
 	switch (type) {
-		case ValidItemType::Face: return ext::any_of(items.faces, idTest);
-		case ValidItemType::Hair: return ext::any_of(items.hair, idTest);
-		case ValidItemType::HairColor: return ext::any_of(items.hairColor, idTest);
-		case ValidItemType::Skin: return ext::any_of(items.skin, [id = static_cast<skin_id_t>(id)](skin_id_t test) -> bool { return id == test; });
-		case ValidItemType::Top: return ext::any_of(items.top, idTest);
-		case ValidItemType::Bottom: return ext::any_of(items.bottom, idTest);
-		case ValidItemType::Shoes: return ext::any_of(items.shoes, idTest);
-		case ValidItemType::Weapon: return ext::any_of(items.weapons, idTest);
+		case valid_item_type::face: return ext::any_of(items.faces, id_test);
+		case valid_item_type::hair: return ext::any_of(items.hair, id_test);
+		case valid_item_type::hair_color: return ext::any_of(items.hair_color, id_test);
+		case valid_item_type::skin: return ext::any_of(items.skin, [id = static_cast<game_skin_id>(id)](game_skin_id test) -> bool { return id == test; });
+		case valid_item_type::top: return ext::any_of(items.top, id_test);
+		case valid_item_type::bottom: return ext::any_of(items.bottom, id_test);
+		case valid_item_type::shoes: return ext::any_of(items.shoes, id_test);
+		case valid_item_type::weapon: return ext::any_of(items.weapons, id_test);
 	}
-	throw NotImplementedException{"ValidItemType"};
+	throw not_implemented_exception{"valid_item_type"};
 }
 
-auto ValidCharDataProvider::getItems(gender_id_t genderId, int8_t classId) const -> const ValidClassData & {
-	return genderId == Gender::Male ?
-		(classId == Adventurer ? m_adventurer.male : m_cygnus.male) :
-		(classId == Adventurer ? m_adventurer.female : m_cygnus.female);
+auto valid_char_data_provider::get_items(game_gender_id gender_id, int8_t class_id) const -> const valid_class_data & {
+	return gender_id == gender::male ?
+		(class_id == adventurer ? m_adventurer.male : m_cygnus.male) :
+		(class_id == adventurer ? m_adventurer.female : m_cygnus.female);
 }
 
 }

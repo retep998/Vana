@@ -19,18 +19,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	class PacketReader;
+namespace vana {
+	class packet_reader;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		namespace Fame {
-			auto handleFame(ref_ptr_t<Player> player, PacketReader &reader) -> void;
-			auto canFame(ref_ptr_t<Player> player, player_id_t to) -> int32_t;
-			auto addFameLog(player_id_t from, player_id_t to) -> void;
-			auto getLastFameLog(player_id_t from) -> SearchResult;
-			auto getLastFameSpLog(player_id_t from, player_id_t to) -> SearchResult;
+		namespace fame {
+			auto handle_fame(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto can_fame(ref_ptr<player> player, game_player_id to) -> int32_t;
+			auto add_fame_log(game_player_id from, game_player_id to) -> void;
+			auto get_last_fame_log(game_player_id from) -> search_result;
+			auto get_last_fame_sp_log(game_player_id from, game_player_id to) -> search_result;
 		}
 	}
 }

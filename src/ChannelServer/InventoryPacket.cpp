@@ -31,363 +31,363 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/PlayerPacketHelper.hpp"
 #include "ChannelServer/SmsgHeader.hpp"
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
-namespace Inventory {
+namespace vana {
+namespace channel_server {
+namespace packets {
+namespace inventory {
 
-SPLIT_PACKET_IMPL(updatePlayer, ref_ptr_t<Player> player) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(update_player, ref_ptr<player> player) {
+	split_packet_builder builder;
 	builder.player
-		.add<header_t>(SMSG_PLAYER_CHANGE_LOOK)
-		.add<player_id_t>(player->getId())
+		.add<packet_header>(SMSG_PLAYER_CHANGE_LOOK)
+		.add<game_player_id>(player->get_id())
 		.add<int8_t>(1)
-		.addBuffer(Helpers::addPlayerDisplay(player))
+		.add_buffer(helpers::add_player_display(player))
 		.unk<int8_t>()
 		.unk<int16_t>();
 
-	builder.map.addBuffer(builder.player);
+	builder.map.add_buffer(builder.player);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(sitChair, player_id_t playerId, item_id_t chairId) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(sit_chair, game_player_id player_id, game_item_id chair_id) {
+	split_packet_builder builder;
 	builder.player
-		.add<header_t>(SMSG_PLAYER_UPDATE)
+		.add<packet_header>(SMSG_PLAYER_UPDATE)
 		.add<int16_t>(1)
 		.unk<int32_t>();
 
 	builder.map
-		.add<header_t>(SMSG_CHAIR_SIT)
-		.add<player_id_t>(playerId)
-		.add<item_id_t>(chairId);
+		.add<packet_header>(SMSG_CHAIR_SIT)
+		.add<game_player_id>(player_id)
+		.add<game_item_id>(chair_id);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(stopChair, player_id_t playerId, bool seatTaken) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(stop_chair, game_player_id player_id, bool seat_taken) {
+	split_packet_builder builder;
 	builder.player
-		.add<header_t>(SMSG_CHAIR)
+		.add<packet_header>(SMSG_CHAIR)
 		.add<int8_t>(0);
 
-	if (seatTaken) {
+	if (seat_taken) {
 		return builder;
 	}
 
 	builder.map
-		.add<header_t>(SMSG_CHAIR_SIT)
-		.add<player_id_t>(playerId)
-		.add<item_id_t>(0);
+		.add<packet_header>(SMSG_CHAIR_SIT)
+		.add<game_player_id>(player_id)
+		.add<game_item_id>(0);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useScroll, player_id_t playerId, int8_t succeed, bool destroy, bool legendarySpirit) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(use_scroll, game_player_id player_id, int8_t succeed, bool destroy, bool legendary_spirit) {
+	split_packet_builder builder;
 	builder.player
-		.add<header_t>(SMSG_SCROLL_USE)
-		.add<player_id_t>(playerId)
+		.add<packet_header>(SMSG_SCROLL_USE)
+		.add<game_player_id>(player_id)
 		.add<int8_t>(succeed)
 		.add<bool>(destroy)
-		.add<int16_t>(legendarySpirit);
+		.add<int16_t>(legendary_spirit);
 
-	builder.map.addBuffer(builder.player);
+	builder.map.add_buffer(builder.player);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(sendChalkboardUpdate, player_id_t playerId, const string_t &msg) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(send_chalkboard_update, game_player_id player_id, const string &msg) {
+	split_packet_builder builder;
 	builder.player
-		.add<header_t>(SMSG_CHALKBOARD)
-		.add<player_id_t>(playerId)
+		.add<packet_header>(SMSG_CHALKBOARD)
+		.add<game_player_id>(player_id)
 		.add<bool>(!msg.empty())
-		.add<string_t>(msg);
+		.add<string>(msg);
 
-	builder.map.addBuffer(builder.player);
+	builder.map.add_buffer(builder.player);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useSkillbook, player_id_t playerId, skill_id_t skillId, int32_t newMaxLevel, bool use, bool succeed) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(use_skillbook, game_player_id player_id, game_skill_id skill_id, int32_t new_max_level, bool use, bool succeed) {
+	split_packet_builder builder;
 	builder.player
-		.add<header_t>(SMSG_SKILLBOOK)
-		.add<player_id_t>(playerId)
+		.add<packet_header>(SMSG_SKILLBOOK)
+		.add<game_player_id>(player_id)
 		.add<int8_t>(1) // Number of skills? Maybe just padding or random boolean
-		.add<skill_id_t>(skillId)
-		.add<int32_t>(newMaxLevel)
+		.add<game_skill_id>(skill_id)
+		.add<int32_t>(new_max_level)
 		.add<bool>(use)
 		.add<bool>(succeed);
 
-	builder.map.addBuffer(builder.player);
+	builder.map.add_buffer(builder.player);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useItemEffect, player_id_t playerId, item_id_t itemId) {
-	SplitPacketBuilder builder;
+SPLIT_PACKET_IMPL(use_item_effect, game_player_id player_id, game_item_id item_id) {
+	split_packet_builder builder;
 	builder.player
-		.add<header_t>(SMSG_ITEM_EFFECT)
-		.add<player_id_t>(playerId)
-		.add<item_id_t>(itemId);
+		.add<packet_header>(SMSG_ITEM_EFFECT)
+		.add<game_player_id>(player_id)
+		.add<game_item_id>(item_id);
 
-	builder.map.addBuffer(builder.player);
+	builder.map.add_buffer(builder.player);
 	return builder;
 }
 
-PACKET_IMPL(inventoryOperation, bool unk, const vector_t<InventoryPacketOperation> &operations) {
-	PacketBuilder builder;
+PACKET_IMPL(inventory_operation, bool unk, const vector<inventory_packet_operation> &operations) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_INVENTORY_OPERATION)
+		.add<packet_header>(SMSG_INVENTORY_OPERATION)
 		.add<bool>(unk)
 		.add<uint8_t>(static_cast<uint8_t>(operations.size()));
 
-	int8_t addedByte = -1;
+	int8_t added_byte = -1;
 
 	for (const auto &operation : operations) {
 		builder
-			.add<int8_t>(operation.operationType)
-			.add<inventory_t>(GameLogicUtilities::getInventory(operation.item->getId()));
+			.add<int8_t>(operation.operation_type)
+			.add<game_inventory>(game_logic_utilities::get_inventory(operation.item->get_id()));
 
-		switch (operation.operationType) {
-			case Packets::Inventory::OperationTypes::AddItem:
-				builder.addBuffer(Helpers::addItemInfo(operation.currentSlot, operation.item, true));
+		switch (operation.operation_type) {
+			case packets::inventory::operation_types::add_item:
+				builder.add_buffer(helpers::add_item_info(operation.current_slot, operation.item, true));
 				break;
-			case Packets::Inventory::OperationTypes::ModifyQuantity:
+			case packets::inventory::operation_types::modify_quantity:
 				builder
-					.add<inventory_slot_t>(operation.currentSlot)
-					.add<slot_qty_t>(operation.item->getAmount());
+					.add<game_inventory_slot>(operation.current_slot)
+					.add<game_slot_qty>(operation.item->get_amount());
 				break;
-			case Packets::Inventory::OperationTypes::ModifySlot:
+			case packets::inventory::operation_types::modify_slot:
 				builder
-					.add<inventory_slot_t>(operation.oldSlot)
-					.add<inventory_slot_t>(operation.currentSlot);
+					.add<game_inventory_slot>(operation.old_slot)
+					.add<game_inventory_slot>(operation.current_slot);
 
-				if (addedByte == -1) {
-					if (operation.oldSlot < 0) {
-						addedByte = 1;
+				if (added_byte == -1) {
+					if (operation.old_slot < 0) {
+						added_byte = 1;
 					}
-					else if (operation.currentSlot < 0) {
-						addedByte = 2;
+					else if (operation.current_slot < 0) {
+						added_byte = 2;
 					}
 				}
 				break;
-			case Packets::Inventory::OperationTypes::RemoveItem:
-				builder.add<inventory_slot_t>(operation.currentSlot);
+			case packets::inventory::operation_types::remove_item:
+				builder.add<game_inventory_slot>(operation.current_slot);
 				break;
 		}
 	}
 
-	if (addedByte != -1) {
-		builder.add<int8_t>(addedByte);
+	if (added_byte != -1) {
+		builder.add<int8_t>(added_byte);
 	}
 	return builder;
 }
 
-PACKET_IMPL(sitMapChair, seat_id_t chairId) {
-	PacketBuilder builder;
+PACKET_IMPL(sit_map_chair, game_seat_id chair_id) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_CHAIR)
+		.add<packet_header>(SMSG_CHAIR)
 		.add<int8_t>(1)
-		.add<seat_id_t>(chairId);
+		.add<game_seat_id>(chair_id);
 	return builder;
 }
 
-PACKET_IMPL(showMegaphone, const string_t &msg) {
-	PacketBuilder builder;
+PACKET_IMPL(show_megaphone, const string &msg) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MESSAGE)
+		.add<packet_header>(SMSG_MESSAGE)
 		.add<int8_t>(2)
-		.add<string_t>(msg);
+		.add<string>(msg);
 	return builder;
 }
 
-PACKET_IMPL(showSuperMegaphone, const string_t &msg, bool whisper) {
-	PacketBuilder builder;
+PACKET_IMPL(show_super_megaphone, const string &msg, bool whisper) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MESSAGE)
+		.add<packet_header>(SMSG_MESSAGE)
 		.add<int8_t>(3)
-		.add<string_t>(msg)
-		.add<int8_t>(ChannelServer::getInstance().getChannelId())
+		.add<string>(msg)
+		.add<int8_t>(channel_server::get_instance().get_channel_id())
 		.add<bool>(whisper);
 	return builder;
 }
 
-PACKET_IMPL(showMessenger, const string_t &playerName, const string_t &msg1, const string_t &msg2, const string_t &msg3, const string_t &msg4, unsigned char *displayInfo, int32_t displayInfoSize, item_id_t itemId) {
-	PacketBuilder builder;
+PACKET_IMPL(show_messenger, const string &player_name, const string &msg1, const string &msg2, const string &msg3, const string &msg4, unsigned char *display_info, int32_t display_info_size, game_item_id item_id) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_AVATAR_MEGAPHONE)
-		.add<item_id_t>(itemId)
-		.add<string_t>(playerName)
-		.add<string_t>(msg1)
-		.add<string_t>(msg2)
-		.add<string_t>(msg3)
-		.add<string_t>(msg4)
-		.add<int32_t>(ChannelServer::getInstance().getChannelId())
-		.addBuffer(displayInfo, displayInfoSize);
+		.add<packet_header>(SMSG_AVATAR_MEGAPHONE)
+		.add<game_item_id>(item_id)
+		.add<string>(player_name)
+		.add<string>(msg1)
+		.add<string>(msg2)
+		.add<string>(msg3)
+		.add<string>(msg4)
+		.add<int32_t>(channel_server::get_instance().get_channel_id())
+		.add_buffer(display_info, display_info_size);
 	return builder;
 }
 
-PACKET_IMPL(showItemMegaphone, const string_t &msg, bool whisper, Item *item) {
-	PacketBuilder builder;
+PACKET_IMPL(show_item_megaphone, const string &msg, bool whisper, item *item) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MESSAGE)
+		.add<packet_header>(SMSG_MESSAGE)
 		.add<int8_t>(8)
-		.add<string_t>(msg)
-		.add<int8_t>(ChannelServer::getInstance().getChannelId())
+		.add<string>(msg)
+		.add<int8_t>(channel_server::get_instance().get_channel_id())
 		.add<bool>(whisper);
 
 	if (item == nullptr) {
 		builder.add<int8_t>(0);
 	}
 	else {
-		builder.addBuffer(Helpers::addItemInfo(1, item));
+		builder.add_buffer(helpers::add_item_info(1, item));
 	}
 	return builder;
 }
 
-PACKET_IMPL(showTripleMegaphone, int8_t lines, const string_t &line1, const string_t &line2, const string_t &line3, bool whisper) {
-	PacketBuilder builder;
+PACKET_IMPL(show_triple_megaphone, int8_t lines, const string &line1, const string &line2, const string &line3, bool whisper) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MESSAGE)
-		.add<int8_t>(0x0a)
-		.add<string_t>(line1)
+		.add<packet_header>(SMSG_MESSAGE)
+		.add<int8_t>(0x0A)
+		.add<string>(line1)
 		.add<int8_t>(lines);
 	if (lines > 1) {
-		builder.add<string_t>(line2);
+		builder.add<string>(line2);
 	}
 	if (lines > 2) {
-		builder.add<string_t>(line3);
+		builder.add<string>(line3);
 	}
 	builder
-		.add<int8_t>(ChannelServer::getInstance().getChannelId())
+		.add<int8_t>(channel_server::get_instance().get_channel_id())
 		.add<bool>(whisper);
 	return builder;
 }
 
-PACKET_IMPL(updateSlots, inventory_t inventory, inventory_slot_count_t slots) {
-	PacketBuilder builder;
+PACKET_IMPL(update_slots, game_inventory inventory, game_inventory_slot_count slots) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_INVENTORY_SLOT_UPDATE)
-		.add<inventory_t>(inventory)
-		.add<inventory_slot_count_t>(slots);
+		.add<packet_header>(SMSG_INVENTORY_SLOT_UPDATE)
+		.add<game_inventory>(inventory)
+		.add<game_inventory_slot_count>(slots);
 	return builder;
 }
 
-PACKET_IMPL(blankUpdate) {
-	PacketBuilder builder;
-	vector_t<InventoryPacketOperation> ops;
-	builder.addBuffer(inventoryOperation(true, ops));
+PACKET_IMPL(blank_update) {
+	packet_builder builder;
+	vector<inventory_packet_operation> ops;
+	builder.add_buffer(inventory_operation(true, ops));
 	return builder;
 }
 
-PACKET_IMPL(sendRockUpdate, int8_t mode, int8_t type, const vector_t<map_id_t> &maps) {
-	PacketBuilder builder;
+PACKET_IMPL(send_rock_update, int8_t mode, int8_t type, const vector<game_map_id> &maps) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_TELEPORT_ROCK)
+		.add<packet_header>(SMSG_TELEPORT_ROCK)
 		.add<int8_t>(mode)
 		.add<int8_t>(type)
-		.addBuffer(Helpers::fillRockPacket(maps, (type == RockTypes::Regular ? Inventories::TeleportRockMax : Inventories::VipRockMax)));
+		.add_buffer(helpers::fill_rock_packet(maps, (type == rock_types::regular ? inventories::teleport_rock_max : inventories::vip_rock_max)));
 	return builder;
 }
 
-PACKET_IMPL(sendRockError, int8_t code, int8_t type) {
-	PacketBuilder builder;
+PACKET_IMPL(send_rock_error, int8_t code, int8_t type) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_TELEPORT_ROCK)
+		.add<packet_header>(SMSG_TELEPORT_ROCK)
 		.add<int8_t>(code)
 		.add<int8_t>(type);
 	return builder;
 }
 
-PACKET_IMPL(sendMesobagSucceed, mesos_t mesos) {
-	PacketBuilder builder;
+PACKET_IMPL(send_mesobag_succeed, game_mesos mesos) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_MESOBAG_SUCCESS)
-		.add<mesos_t>(mesos);
+		.add<packet_header>(SMSG_MESOBAG_SUCCESS)
+		.add<game_mesos>(mesos);
 	return builder;
 }
 
-PACKET_IMPL(sendMesobagFailed) {
-	PacketBuilder builder;
-	builder.add<header_t>(SMSG_MESOBAG_FAILURE);
+PACKET_IMPL(send_mesobag_failed) {
+	packet_builder builder;
+	builder.add<packet_header>(SMSG_MESOBAG_FAILURE);
 	return builder;
 }
 
-PACKET_IMPL(useCharm, uint8_t charmsLeft, uint8_t daysLeft) {
-	PacketBuilder builder;
+PACKET_IMPL(use_charm, uint8_t charms_left, uint8_t days_left) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_THEATRICS)
+		.add<packet_header>(SMSG_THEATRICS)
 		.add<int8_t>(0x06)
 		.add<int8_t>(0x01)
-		.add<uint8_t>(charmsLeft)
-		.add<uint8_t>(daysLeft);
+		.add<uint8_t>(charms_left)
+		.add<uint8_t>(days_left);
 	return builder;
 }
 
-PACKET_IMPL(sendHammerSlots, int32_t slots) {
-	PacketBuilder builder;
+PACKET_IMPL(send_hammer_slots, int32_t slots) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_HAMMER)
+		.add<packet_header>(SMSG_HAMMER)
 		.add<int8_t>(0x34) // No idea... mode of some sort, I think
 		.add<int32_t>(0x00)
 		.add<int32_t>(slots);
 	return builder;
 }
 
-PACKET_IMPL(sendHulkSmash, inventory_slot_t slot, Item *hammered) {
-	PacketBuilder builder;
-	vector_t<InventoryPacketOperation> ops;
-	ops.emplace_back(OperationTypes::RemoveItem, hammered, slot);
-	ops.emplace_back(OperationTypes::AddItem, hammered, slot);
-	builder.addBuffer(inventoryOperation(false, ops));
+PACKET_IMPL(send_hulk_smash, game_inventory_slot slot, item *hammered) {
+	packet_builder builder;
+	vector<inventory_packet_operation> ops;
+	ops.emplace_back(operation_types::remove_item, hammered, slot);
+	ops.emplace_back(operation_types::add_item, hammered, slot);
+	builder.add_buffer(inventory_operation(false, ops));
 	return builder;
 }
 
-PACKET_IMPL(sendHammerUpdate) {
-	PacketBuilder builder;
+PACKET_IMPL(send_hammer_update) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_HAMMER)
+		.add<packet_header>(SMSG_HAMMER)
 		.add<int8_t>(0x38) // No idea... mode of some sort, I think
 		.add<int32_t>(0x00);
 	return builder;
 }
 
-PACKET_IMPL(playCashSong, item_id_t itemId, const string_t &playerName) {
-	PacketBuilder builder;
+PACKET_IMPL(play_cash_song, game_item_id item_id, const string &player_name) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_CASH_SONG)
-		.add<item_id_t>(itemId)
-		.add<string_t>(playerName);
+		.add<packet_header>(SMSG_CASH_SONG)
+		.add<game_item_id>(item_id)
+		.add<string>(player_name);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(sendRewardItemAnimation, player_id_t playerId, item_id_t itemId, const string_t &effect) {
-	SplitPacketBuilder builder;
-	PacketBuilder buffer;
+SPLIT_PACKET_IMPL(send_reward_item_animation, game_player_id player_id, game_item_id item_id, const string &effect) {
+	split_packet_builder builder;
+	packet_builder buffer;
 	buffer
 		.add<int8_t>(0x0E)
-		.add<item_id_t>(itemId)
+		.add<game_item_id>(item_id)
 		.add<int8_t>(1) // Unk...?
-		.add<string_t>(effect);
+		.add<string>(effect);
 
 	builder.player
-		.add<header_t>(SMSG_THEATRICS)
-		.addBuffer(buffer);
+		.add<packet_header>(SMSG_THEATRICS)
+		.add_buffer(buffer);
 
 	builder.map
-		.add<header_t>(SMSG_SKILL_SHOW)
-		.add<player_id_t>(playerId)
-		.addBuffer(buffer);
+		.add<packet_header>(SMSG_SKILL_SHOW)
+		.add<game_player_id>(player_id)
+		.add_buffer(buffer);
 	return builder;
 }
 
-PACKET_IMPL(sendItemExpired, const vector_t<item_id_t> &items) {
-	PacketBuilder builder;
+PACKET_IMPL(send_item_expired, const vector<game_item_id> &items) {
+	packet_builder builder;
 	builder
 		.add<int16_t>(SMSG_NOTICE)
 		.add<int8_t>(0x08)
 		.add<uint8_t>(static_cast<uint8_t>(items.size()));
 
-	for (const auto &itemId : items) {
-		builder.add<item_id_t>(itemId);
+	for (const auto &item_id : items) {
+		builder.add<game_item_id>(item_id);
 	}
 	return builder;
 }

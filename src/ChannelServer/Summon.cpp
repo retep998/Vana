@@ -20,55 +20,55 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/SkillDataProvider.hpp"
 #include "ChannelServer/ChannelServer.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-Summon::Summon(summon_id_t id, skill_id_t summonId, skill_level_t level, bool isFacingLeft, const Point &position, foothold_id_t foothold) :
-	MovableLife{foothold, position, 4},
+summon::summon(game_summon_id id, game_skill_id summon_id, game_skill_level level, bool is_facing_left, const point &position, game_foothold_id foothold) :
+	movable_life{foothold, position, 4},
 	m_id{id},
-	m_summonId{summonId},
+	m_summon_id{summon_id},
 	m_level{level}
 {
-	m_actionType = Attack;
-	switch (summonId) {
-		case Vana::Skills::Ranger::Puppet:
-		case Vana::Skills::Sniper::Puppet:
-		case Vana::Skills::WindArcher::Puppet:
-			m_actionType = DoNothing;
-			m_hp = ChannelServer::getInstance().getSkillDataProvider().getSkill(summonId, level)->x;
+	m_action_type = attack;
+	switch (summon_id) {
+		case vana::skills::ranger::puppet:
+		case vana::skills::sniper::puppet:
+		case vana::skills::wind_archer::puppet:
+			m_action_type = do_nothing;
+			m_hp = channel_server::get_instance().get_skill_data_provider().get_skill(summon_id, level)->x;
 			// Intentional fallthrough
-		case Vana::Skills::Outlaw::Octopus:
-		case Vana::Skills::Corsair::WrathOfTheOctopi:
-			m_movementType = Static;
+		case vana::skills::outlaw::octopus:
+		case vana::skills::corsair::wrath_of_the_octopi:
+			m_movement_type = fixed;
 			break;
-		case Vana::Skills::Priest::SummonDragon:
-		case Vana::Skills::Ranger::SilverHawk:
-		case Vana::Skills::Sniper::GoldenEagle:
-		case Vana::Skills::Bowmaster::Phoenix:
-		case Vana::Skills::Marksman::Frostprey:
-			m_movementType = FlyClose;
+		case vana::skills::priest::summon_dragon:
+		case vana::skills::ranger::silver_hawk:
+		case vana::skills::sniper::golden_eagle:
+		case vana::skills::bowmaster::phoenix:
+		case vana::skills::marksman::frostprey:
+			m_movement_type = fly_close;
 			break;
-		case Vana::Skills::Outlaw::Gaviota:
-			m_movementType = FlyFar;
+		case vana::skills::outlaw::gaviota:
+			m_movement_type = fly_far;
 			break;
-		case Vana::Skills::DarkKnight::Beholder:
-			m_actionType = Beholder;
+		case vana::skills::dark_knight::beholder:
+			m_action_type = beholder;
 			// Intentional fallthrough
-		case Vana::Skills::Bishop::Bahamut:
-		case Vana::Skills::FpArchMage::Elquines:
-		case Vana::Skills::IlArchMage::Ifrit:
-		case Vana::Skills::DawnWarrior::Soul:
-		case Vana::Skills::BlazeWizard::Flame:
-		case Vana::Skills::BlazeWizard::Ifrit:
-		case Vana::Skills::WindArcher::Storm:
-		case Vana::Skills::NightWalker::Darkness:
-		case Vana::Skills::ThunderBreaker::Lightning:
-			m_movementType = Follow;
+		case vana::skills::bishop::bahamut:
+		case vana::skills::fp_arch_mage::elquines:
+		case vana::skills::il_arch_mage::ifrit:
+		case vana::skills::dawn_warrior::soul:
+		case vana::skills::blaze_wizard::flame:
+		case vana::skills::blaze_wizard::ifrit:
+		case vana::skills::wind_archer::storm:
+		case vana::skills::night_walker::darkness:
+		case vana::skills::thunder_breaker::lightning:
+			m_movement_type = follow;
 			break;
 		default:
 			// Might be a processing problem or it might be a hacking problem
-			ChannelServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &str) {
-				str << "Summon not accounted for in the types: " << summonId;
+			channel_server::get_instance().log(log_type::malformed_packet, [&](out_stream &str) {
+				str << "Summon not accounted for in the types: " << summon_id;
 			});
 			break;
 	}

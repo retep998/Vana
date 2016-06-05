@@ -21,19 +21,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <unordered_map>
 
-namespace Vana {
-	class QuestDataProvider {
+namespace vana {
+	class quest_data_provider {
 	public:
-		auto loadData() -> void;
+		auto load_data() -> void;
 
-		auto isQuest(quest_id_t questId) const -> bool;
-		auto getInfo(quest_id_t questId) const -> const Quest &;
+		auto is_quest(game_quest_id quest_id) const -> bool;
+		auto get_info(game_quest_id quest_id) const -> const quest &;
 	private:
-		auto loadQuestData() -> void;
-		auto loadRequests() -> void;
-		auto loadRequiredJobs() -> void;
-		auto loadRewards() -> void;
+		auto load_quest_data() -> void;
+		auto load_requests() -> void;
+		auto load_required_jobs() -> void;
+		auto load_rewards() -> void;
 
-		hash_map_t<quest_id_t, Quest> m_quests;
+		hash_map<game_quest_id, quest> m_quests;
 	};
 }

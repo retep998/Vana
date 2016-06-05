@@ -20,29 +20,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/PlayerBuddyList.hpp"
 #include "ChannelServer/SmsgHeader.hpp"
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
-namespace Buddy {
+namespace vana {
+namespace channel_server {
+namespace packets {
+namespace buddy {
 
 PACKET_IMPL(error, uint8_t error) {
-	PacketBuilder builder;
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_BUDDY)
+		.add<packet_header>(SMSG_BUDDY)
 		.add<int8_t>(error);
 	return builder;
 }
 
-PACKET_IMPL(update, ref_ptr_t<Player> player, uint8_t type) {
-	PacketBuilder builder;
-	uint8_t size = player->getBuddyList()->listSize();
+PACKET_IMPL(update, ref_ptr<player> player, uint8_t type) {
+	packet_builder builder;
+	uint8_t size = player->get_buddy_list()->list_size();
 
 	builder
-		.add<header_t>(SMSG_BUDDY)
+		.add<packet_header>(SMSG_BUDDY)
 		.add<int8_t>(type)
 		.add<uint8_t>(size);
 
-	player->getBuddyList()->addBuddies(builder);
+	player->get_buddy_list()->add_buddies(builder);
 
 	for (uint8_t i = 0; i < size; i++) {
 		builder.unk<int32_t>();
@@ -50,27 +50,27 @@ PACKET_IMPL(update, ref_ptr_t<Player> player, uint8_t type) {
 	return builder;
 }
 
-PACKET_IMPL(showSize, ref_ptr_t<Player> player) {
-	PacketBuilder builder;
+PACKET_IMPL(show_size, ref_ptr<player> player) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_BUDDY)
+		.add<packet_header>(SMSG_BUDDY)
 		.add<int8_t>(0x15)
-		.add<uint8_t>(player->getBuddyListSize());
+		.add<uint8_t>(player->get_buddy_list_size());
 	return builder;
 }
 
-PACKET_IMPL(invitation, const BuddyInvite &invite) {
-	PacketBuilder builder;
+PACKET_IMPL(invitation, const buddy_invite &invite) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_BUDDY)
+		.add<packet_header>(SMSG_BUDDY)
 		.add<int8_t>(0x09)
-		.add<player_id_t>(invite.id)
-		.add<string_t>(invite.name)
-		.add<player_id_t>(invite.id)
-		.add<string_t>(invite.name, 13)
-		.add<uint8_t>(OppositeStatus::Requested) // Buddy status
+		.add<game_player_id>(invite.id)
+		.add<string>(invite.name)
+		.add<game_player_id>(invite.id)
+		.add<string>(invite.name, 13)
+		.add<uint8_t>(opposite_status::requested) // Buddy status
 		.unk<int32_t>(-1) // Doesn't appear to matter
-		.add<string_t>("Default Group", 13) // Needs to be set to "Default Group", because it's automatically added.
+		.add<string>("Default Group", 13) // Needs to be set to "Default Group", because it's automatically added.
 		.unk<int8_t>()
 		.add<int8_t>(20) // Seems to be the amount of buddy slots for the character...
 		.unk<uint8_t>(0xFD)
@@ -79,14 +79,14 @@ PACKET_IMPL(invitation, const BuddyInvite &invite) {
 	return builder;
 }
 
-PACKET_IMPL(online, player_id_t charId, channel_id_t channel, bool cashShop) {
-	PacketBuilder builder;
+PACKET_IMPL(online, game_player_id char_id, game_channel_id channel, bool cash_shop) {
+	packet_builder builder;
 	builder
-		.add<header_t>(SMSG_BUDDY)
-		.add<int8_t>(ActionTypes::Logon)
-		.add<player_id_t>(charId)
+		.add<packet_header>(SMSG_BUDDY)
+		.add<int8_t>(action_types::logon)
+		.add<game_player_id>(char_id)
 		.unk<int8_t>()
-		.add<int32_t>(cashShop ? 20 : channel);
+		.add<int32_t>(cash_shop ? 20 : channel);
 	return builder;
 }
 

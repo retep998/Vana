@@ -19,85 +19,85 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
+namespace vana {
 	// Specific packet constants that are shared between servers
-	namespace PartyActions {
-		enum PartyActions : int8_t {
-			Create = 0x01,
-			Leave = 0x02,
-			Join = 0x03,
-			Invite = 0x04,
-			Expel = 0x05,
-			SetLeader = 0x06,
-			SilentUpdate,
-			LogInOrOut,
+	namespace party_actions {
+		enum party_actions : int8_t {
+			create = 0x01,
+			leave = 0x02,
+			join = 0x03,
+			invite = 0x04,
+			expel = 0x05,
+			set_leader = 0x06,
+			silent_update,
+			log_in_or_out,
 		};
 	}
 
-	using sync_t = int8_t;
-	using update_bits_t = uint16_t;
-	namespace Sync {
-		namespace SyncTypes {
-			enum SyncTypes : sync_t {
-				ChannelStart,
-				Config,
-				Update,
-				Player,
-				Party,
-				Buddy,
-				Guild,
-				GuildBbs,
-				Alliance,
+	using protocol_sync = int8_t;
+	using protocol_update_bits = uint16_t;
+	namespace sync {
+		namespace sync_types {
+			enum sync_types : protocol_sync {
+				channel_start,
+				config,
+				update,
+				player,
+				party,
+				buddy,
+				guild,
+				guild_bbs,
+				alliance,
 			};
 		}
-		namespace Config {
-			enum SyncModes : sync_t {
-				RateSet,
-				RateReset,
-				ScrollingHeader,
+		namespace config {
+			enum sync_modes : protocol_sync {
+				rate_set,
+				rate_reset,
+				scrolling_header,
 			};
 		}
-		namespace Player {
-			enum SyncModes : sync_t {
-				Connect,
-				Disconnect,
-				ChangeChannelRequest,
-				ChangeChannelGo,
-				NewConnectable,
-				DeleteConnectable,
-				UpdatePlayer,
-				CharacterCreated,
-				CharacterDeleted,
+		namespace player {
+			enum sync_modes : protocol_sync {
+				connect,
+				disconnect,
+				change_channel_request,
+				change_channel_go,
+				new_connectable,
+				delete_connectable,
+				update_player,
+				character_created,
+				character_deleted,
 			};
-			namespace UpdateBits {
-				enum : update_bits_t {
-					Level = 0x01,
-					Job = 0x02,
-					Map = 0x04,
-					Channel = 0x08,
-					Ip = 0x10,
-					Cash = 0x20,
-					Mts = 0x40,
-					Transfer = 0x80,
-					Full = 0x8000,
+			namespace update_bits {
+				enum : protocol_update_bits {
+					level = 0x01,
+					job = 0x02,
+					map = 0x04,
+					channel = 0x08,
+					ip = 0x10,
+					cash = 0x20,
+					mts = 0x40,
+					transfer = 0x80,
+					full = 0x8000,
 				};
 			}
 		}
-		namespace Party {
-			enum SyncModes : sync_t {
-				Disband,
-				Create,
-				SwitchLeader,
-				RemoveMember,
-				AddMember,
+		namespace party {
+			enum sync_modes : protocol_sync {
+				disband,
+				create,
+				switch_leader,
+				remove_member,
+				add_member,
 			};
 		}
-		namespace Buddy {
-			enum SyncModes : sync_t {
-				Invite,
-				AcceptInvite,
-				RemoveBuddy,
-				ReaddBuddy,
+		namespace buddy {
+			enum sync_modes : protocol_sync {
+				invite,
+				accept_invite,
+				remove_buddy,
+				readd_buddy,
 			};
 		}
 	}

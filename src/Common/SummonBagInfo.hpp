@@ -19,9 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Common/Types.hpp"
 
-namespace Vana {
-	struct SummonBagInfo {
-		mob_id_t mobId = 0;
+namespace vana {
+	struct summon_bag_info {
+		game_mob_id mob_id = 0;
 		uint32_t chance = 0;
 	};
 }

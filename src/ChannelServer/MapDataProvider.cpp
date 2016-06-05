@@ -24,257 +24,261 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/MapleTvs.hpp"
 #include <utility>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto MapDataProvider::getMap(map_id_t mapId) -> Map * {
-	if (m_maps.find(mapId) != std::end(m_maps)) {
-		return m_maps[mapId];
+auto map_data_provider::get_map(game_map_id map_id) -> map * {
+	if (m_maps.find(map_id) != std::end(m_maps)) {
+		return m_maps[map_id];
 	}
 	else {
-		Map *map = nullptr;
-		loadMap(mapId, map);
+		map *map = nullptr;
+		load_map(map_id, map);
 		return map;
 	}
 }
 
-auto MapDataProvider::unloadMap(map_id_t mapId) -> void {
-	auto iter = m_maps.find(mapId);
+auto map_data_provider::unload_map(game_map_id map_id) -> void {
+	auto iter = m_maps.find(map_id);
 	if (iter != std::end(m_maps)) {
 		delete iter->second;
 		m_maps.erase(iter);
 	}
 }
 
-auto MapDataProvider::loadData() -> void {
-	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Continents... ";
+auto map_data_provider::load_data() -> void {
+	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Continents... ";
 
 	m_continents.clear();
-	int8_t mapCluster;
+	int8_t map_cluster;
 	int8_t continent;
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("map_continent_data"));
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("map_continent_data"));
 
 	for (const auto &row : rs) {
-		mapCluster = row.get<int8_t>("map_cluster");
+		map_cluster = row.get<int8_t>("map_cluster");
 		continent = row.get<int8_t>("continent");
 
-		m_continents.emplace(mapCluster, continent);
+		m_continents.emplace(map_cluster, continent);
 	}
 
 	std::cout << "DONE" << std::endl;
 }
 
-auto MapDataProvider::loadMap(map_id_t mapId, Map *&map) -> void {
-	owned_lock_t<mutex_t> l{m_loadMutex};
+auto map_data_provider::load_map(game_map_id map_id, map *&map) -> void {
+	owned_lock<mutex> l{m_load_mutex};
 
-	map_id_t checkMap = loadMapData(mapId, map);
-	if (checkMap != -1) {
-		loadSeats(map, checkMap);
-		loadPortals(map, checkMap);
-		loadMapLife(map, checkMap);
-		loadFootholds(map, checkMap);
-		loadMapTimeMob(map);
+	game_map_id check_map = load_map_data(map_id, map);
+	if (check_map != -1) {
+		load_seats(map, check_map);
+		load_portals(map, check_map);
+		load_map_life(map, check_map);
+		load_footholds(map, check_map);
+		load_map_time_mob(map);
 	}
 }
 
-auto MapDataProvider::loadMapData(map_id_t mapId, Map *&map) -> map_id_t {
-	map_id_t link = 0;
+auto map_data_provider::load_map_data(game_map_id map_id, map *&data) -> game_map_id {
+	game_map_id link = 0;
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("map_data") << " WHERE mapid = :map", soci::use(mapId, "map"));
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("map_data") << " WHERE mapid = :map",
+		soci::use(map_id, "map"));
 
 	for (const auto &row : rs) {
-		ref_ptr_t<MapInfo> mapInfo = make_ref_ptr<MapInfo>();
-		link = row.get<map_id_t>("link");
-		mapInfo->link = link;
+		ref_ptr<map_info> info = make_ref_ptr<map_info>();
+		link = row.get<game_map_id>("link");
+		info->link = link;
 
-		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&mapInfo](const string_t &cmp) {
-			if (cmp == "town") mapInfo->town = true;
-			else if (cmp == "clock") mapInfo->clock = true;
-			else if (cmp == "swim") mapInfo->swim = true;
-			else if (cmp == "fly") mapInfo->fly = true;
-			else if (cmp == "everlast") mapInfo->everlast = true;
-			else if (cmp == "no_party_leader_pass") mapInfo->noLeaderPass = true;
-			else if (cmp == "shop") mapInfo->shop = true;
-			else if (cmp == "scroll_disable") mapInfo->scrollDisable = true;
-			else if (cmp == "shuffle_reactors") mapInfo->shuffleReactors = true;
+		utilities::str::run_flags(row.get<opt_string>("flags"), [&info](const string &cmp) {
+			if (cmp == "town") info->town = true;
+			else if (cmp == "clock") info->clock = true;
+			else if (cmp == "swim") info->swim = true;
+			else if (cmp == "fly") info->fly = true;
+			else if (cmp == "everlast") info->everlast = true;
+			else if (cmp == "no_party_leader_pass") info->no_leader_pass = true;
+			else if (cmp == "shop") info->shop = true;
+			else if (cmp == "scroll_disable") info->scroll_disable = true;
+			else if (cmp == "shuffle_reactors") info->shuffle_reactors = true;
 		});
 
-		StringUtilities::runFlags(row.get<opt_string_t>("field_type"), [&mapInfo](const string_t &cmp) {
-			if (cmp == "force_map_equip") mapInfo->forceMapEquip = true;
+		utilities::str::run_flags(row.get<opt_string>("field_type"), [&info](const string &cmp) {
+			if (cmp == "force_map_equip") info->force_map_equip = true;
 		});
 
-		StringUtilities::runFlags(row.get<opt_string_t>("field_limitations"), [&mapInfo](const string_t &cmp) {
-			FieldLimit *limitations = &mapInfo->limitations;
+		utilities::str::run_flags(row.get<opt_string>("field_limitations"), [&info](const string &cmp) {
+			field_limit *limitations = &info->limitations;
 			if (cmp == "jump") limitations->jump = true;
-			else if (cmp == "movement_skills") limitations->movementSkills = true;
-			else if (cmp == "summoning_bag") limitations->summoningBag = true;
-			else if (cmp == "mystic_door") limitations->mysticDoor = true;
-			else if (cmp == "channel_switching") limitations->channelSwitching = true;
-			else if (cmp == "regular_exp_loss") limitations->regularExpLoss = true;
-			else if (cmp == "vip_rock") limitations->vipRock = true;
+			else if (cmp == "movement_skills") limitations->movement_skills = true;
+			else if (cmp == "summoning_bag") limitations->summoning_bag = true;
+			else if (cmp == "mystic_door") limitations->mystic_door = true;
+			else if (cmp == "channel_switching") limitations->channel_switching = true;
+			else if (cmp == "regular_exp_loss") limitations->regular_exp_loss = true;
+			else if (cmp == "vip_rock") limitations->vip_rock = true;
 			else if (cmp == "minigames") limitations->minigames = true;
 			else if (cmp == "mount") limitations->mount = true;
-			else if (cmp == "potion_use") limitations->potionUse = true;
-			else if (cmp == "drop_down") limitations->dropDown = true;
+			else if (cmp == "potion_use") limitations->potion_use = true;
+			else if (cmp == "drop_down") limitations->drop_down = true;
 			else if (cmp == "chalkboard") limitations->chalkboard = true;
 		});
 
-		mapInfo->continent = getContinent(mapId).get(0);
-		mapInfo->returnMap = row.get<map_id_t>("return_map");
-		mapInfo->forcedReturn = row.get<map_id_t>("forced_return_map");
-		mapInfo->spawnRate = row.get<double>("mob_rate");
-		mapInfo->defaultMusic = row.get<string_t>("default_bgm");
-		mapInfo->dimensions = Rect{
-			Point{row.get<coord_t>("map_ltx"), row.get<coord_t>("map_lty")},
-			Point{row.get<coord_t>("map_rbx"), row.get<coord_t>("map_rby")}
+		info->continent = get_continent(map_id).get(0);
+		info->return_map = row.get<game_map_id>("return_map");
+		info->forced_return = row.get<game_map_id>("forced_return_map");
+		info->spawn_rate = row.get<double>("mob_rate");
+		info->default_music = row.get<string>("default_bgm");
+		info->dimensions = rect{
+			point{row.get<game_coord>("map_ltx"), row.get<game_coord>("map_lty")},
+			point{row.get<game_coord>("map_rbx"), row.get<game_coord>("map_rby")}
 		};
-		mapInfo->shuffleName = row.get<string_t>("shuffle_name");
-		mapInfo->regularHpDecrease = row.get<uint8_t>("decrease_hp");
-		mapInfo->traction = row.get<double>("default_traction");
-		mapInfo->regenRate = row.get<int8_t>("regen_rate");
-		mapInfo->minLevel = row.get<player_level_t>("min_level_limit");
-		mapInfo->timeLimit = row.get<int32_t>("time_limit");
-		mapInfo->protectItem = row.get<item_id_t>("protect_item");
-		mapInfo->damagePerSecond = row.get<damage_t>("damage_per_second");
-		mapInfo->shipKind = row.get<int8_t>("ship_kind");
+		info->shuffle_name = row.get<string>("shuffle_name");
+		info->regular_hp_decrease = row.get<uint8_t>("decrease_hp");
+		info->traction = row.get<double>("default_traction");
+		info->regen_rate = row.get<int8_t>("regen_rate");
+		info->min_level = row.get<game_player_level>("min_level_limit");
+		info->time_limit = row.get<int32_t>("time_limit");
+		info->protect_item = row.get<game_item_id>("protect_item");
+		info->damage_per_second = row.get<game_damage>("damage_per_second");
+		info->ship_kind = row.get<int8_t>("ship_kind");
 
-		map = new Map(mapInfo, mapId);
+		data = new map{info, map_id};
 	}
 
-	m_maps[mapId] = map;
-	if (map == nullptr) {
+	m_maps[map_id] = data;
+	if (data == nullptr) {
 		return -1;
 	}
-	return (link == 0 ? mapId : link);
+	return (link == 0 ? map_id : link);
 }
 
-auto MapDataProvider::loadSeats(Map *map, map_id_t link) -> void {
-
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("map_seats") << " WHERE mapid = :map", soci::use(link, "map"));
+auto map_data_provider::load_seats(map *map, game_map_id link) -> void {
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("map_seats") << " WHERE mapid = :map",
+		soci::use(link, "map"));
 
 	for (const auto &row : rs) {
-		SeatInfo chair;
-		seat_id_t id = row.get<seat_id_t>("seatid");
-		chair.pos = Point{row.get<coord_t>("x_pos"), row.get<coord_t>("y_pos")};
+		seat_info chair;
+		game_seat_id id = row.get<game_seat_id>("seatid");
+		chair.pos = point{row.get<game_coord>("x_pos"), row.get<game_coord>("y_pos")};
 		chair.id = id;
 
-		map->addSeat(chair);
+		map->add_seat(chair);
 	}
 }
 
-auto MapDataProvider::loadPortals(Map *map, map_id_t link) -> void {
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("map_portals") << " WHERE mapid = :map", soci::use(link, "map"));
+auto map_data_provider::load_portals(map *map, game_map_id link) -> void {
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("map_portals") << " WHERE mapid = :map",
+		soci::use(link, "map"));
 
 	for (const auto &row : rs) {
-		PortalInfo portal;
-		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&portal](const string_t &cmp) {
-			if (cmp == "only_once") portal.onlyOnce = true;
+		portal_info portal;
+		utilities::str::run_flags(row.get<opt_string>("flags"), [&portal](const string &cmp) {
+			if (cmp == "only_once") portal.only_once = true;
 		});
 
-		portal.id = row.get<portal_id_t>("id");
-		portal.name = row.get<string_t>("label");
-		portal.pos = Point{row.get<coord_t>("x_pos"), row.get<coord_t>("y_pos")};
-		portal.toMap = row.get<map_id_t>("destination");
-		portal.toName = row.get<string_t>("destination_label");
-		portal.script = row.get<string_t>("script");
+		portal.id = row.get<game_portal_id>("id");
+		portal.name = row.get<string>("label");
+		portal.pos = point{row.get<game_coord>("x_pos"), row.get<game_coord>("y_pos")};
+		portal.to_map = row.get<game_map_id>("destination");
+		portal.to_name = row.get<string>("destination_label");
+		portal.script = row.get<string>("script");
 
-		map->addPortal(portal);
+		map->add_portal(portal);
 	}
 }
 
-auto MapDataProvider::loadMapLife(Map *map, map_id_t link) -> void {
-	NpcSpawnInfo npc;
-	MobSpawnInfo spawn;
-	ReactorSpawnInfo reactor;
-	SpawnInfo life;
-	string_t type;
+auto map_data_provider::load_map_life(map *map, game_map_id link) -> void {
+	npc_spawn_info npc;
+	mob_spawn_info spawn;
+	reactor_spawn_info reactor;
+	spawn_info life;
+	string type;
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("map_life") << " WHERE mapid = :map", soci::use(link, "map"));
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("map_life") << " WHERE mapid = :map",
+		soci::use(link, "map"));
 
 	for (const auto &row : rs) {
-		life = SpawnInfo{};
-		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&life](const string_t &cmp) {
-			if (cmp == "faces_left") life.facesLeft = true;
+		life = spawn_info{};
+		utilities::str::run_flags(row.get<opt_string>("flags"), [&life](const string &cmp) {
+			if (cmp == "faces_left") life.faces_left = true;
 		});
 
-		type = row.get<string_t>("life_type");
+		type = row.get<string>("life_type");
 		life.id = row.get<int32_t>("lifeid");
-		life.pos = Point{row.get<coord_t>("x_pos"), row.get<coord_t>("y_pos")};
-		life.foothold = row.get<foothold_id_t>("foothold");
+		life.pos = point{row.get<game_coord>("x_pos"), row.get<game_coord>("y_pos")};
+		life.foothold = row.get<game_foothold_id>("foothold");
 		life.time = row.get<int32_t>("respawn_time");
 
 		if (type == "npc") {
-			npc = NpcSpawnInfo{};
-			npc.setSpawnInfo(life);
-			npc.rx0 = row.get<coord_t>("min_click_pos");
-			npc.rx1 = row.get<coord_t>("max_click_pos");
-			map->addNpc(npc);
+			npc = npc_spawn_info{};
+			npc.set_spawn_info(life);
+			npc.rx0 = row.get<game_coord>("min_click_pos");
+			npc.rx1 = row.get<game_coord>("max_click_pos");
+			map->add_npc(npc);
 		}
 		else if (type == "mob") {
-			spawn = MobSpawnInfo{};
-			spawn.setSpawnInfo(life);
-			map->addMobSpawn(spawn);
+			spawn = mob_spawn_info{};
+			spawn.set_spawn_info(life);
+			map->add_mob_spawn(spawn);
 		}
 		else if (type == "reactor") {
-			reactor = ReactorSpawnInfo{};
-			reactor.setSpawnInfo(life);
-			reactor.name = row.get<string_t>("life_name");
-			map->addReactorSpawn(reactor);
+			reactor = reactor_spawn_info{};
+			reactor.set_spawn_info(life);
+			reactor.name = row.get<string>("life_name");
+			map->add_reactor_spawn(reactor);
 		}
 	}
 }
 
-auto MapDataProvider::loadFootholds(Map *map, map_id_t link) -> void {
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("map_footholds") << " WHERE mapid = :map", soci::use(link, "map"));
+auto map_data_provider::load_footholds(map *map, game_map_id link) -> void {
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("map_footholds") << " WHERE mapid = :map",
+		soci::use(link, "map"));
 
 	for (const auto &row : rs) {
-		FootholdInfo foot;
-		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&foot](const string_t &cmp) {
-			if (cmp == "forbid_downward_jump") foot.forbidJumpDown = true;
+		foothold_info foot;
+		utilities::str::run_flags(row.get<opt_string>("flags"), [&foot](const string &cmp) {
+			if (cmp == "forbid_downward_jump") foot.forbid_jump_down = true;
 		});
 
-		foot.id = row.get<foothold_id_t>("id");
-		foot.line = Line{
-			Point{row.get<coord_t>("x1"), row.get<coord_t>("y1")},
-			Point{row.get<coord_t>("x2"), row.get<coord_t>("y2")}
+		foot.id = row.get<game_foothold_id>("id");
+		foot.line = line{
+			point{row.get<game_coord>("x1"), row.get<game_coord>("y1")},
+			point{row.get<game_coord>("x2"), row.get<game_coord>("y2")}
 		};
-		foot.dragForce = row.get<int16_t>("drag_force");
-		foot.leftEdge = row.get<foothold_id_t>("previousid") == 0;
-		foot.rightEdge = row.get<foothold_id_t>("nextid") == 0;
-		map->addFoothold(foot);
+		foot.drag_force = row.get<int16_t>("drag_force");
+		foot.left_edge = row.get<game_foothold_id>("previousid") == 0;
+		foot.right_edge = row.get<game_foothold_id>("nextid") == 0;
+		map->add_foothold(foot);
 	}
 }
 
-auto MapDataProvider::loadMapTimeMob(Map *map) -> void {
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("map_time_mob") << " WHERE mapid = :map", soci::use(map->getId(), "map"));
+auto map_data_provider::load_map_time_mob(map *map) -> void {
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("map_time_mob") << " WHERE mapid = :map", soci::use(map->get_id(), "map"));
 
 	for (const auto &row : rs) {
-		ref_ptr_t<TimeMob> info = make_ref_ptr<TimeMob>();
+		ref_ptr<time_mob> info = make_ref_ptr<time_mob>();
 
-		info->id = row.get<mob_id_t>("mobid");
-		info->startHour = row.get<int8_t>("start_hour");
-		info->endHour = row.get<int8_t>("end_hour");
-		info->message = row.get<string_t>("message");
+		info->id = row.get<game_mob_id>("mobid");
+		info->start_hour = row.get<int8_t>("start_hour");
+		info->end_hour = row.get<int8_t>("end_hour");
+		info->message = row.get<string>("message");
 	}
 }
 
-auto MapDataProvider::getContinent(map_id_t mapId) const -> opt_int8_t {
-	int8_t cluster = GameLogicUtilities::getMapCluster(mapId);
+auto map_data_provider::get_continent(game_map_id map_id) const -> opt_int8_t {
+	int8_t cluster = game_logic_utilities::get_map_cluster(map_id);
 	auto kvp = m_continents.find(cluster);
 	if (kvp == std::end(m_continents)) {
 		return {};

@@ -20,11 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <vector>
 
-namespace Vana {
-	struct ItemRewardInfo {
-		item_id_t rewardId = 0;
+namespace vana {
+	struct item_reward_info {
+		game_item_id reward_id = 0;
 		uint16_t prob = 0;
 		int16_t quantity = 0;
-		string_t effect;
+		string effect;
 	};
 }

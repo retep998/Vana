@@ -24,730 +24,730 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-namespace Vana {
+namespace vana {
 
-auto BuffDataProvider::processSkills(Buff value, const init_list_t<skill_id_t> &skills) -> void {
+auto buff_data_provider::process_skills(buff value, const init_list<game_skill_id> &skills) -> void {
 	for (const auto &s : skills) {
 		if (m_buffs.find(s) != std::end(m_buffs)) throw std::invalid_argument{"skill is already present"};
 		m_buffs[s] = value;
 	}
 }
 
-auto BuffDataProvider::loadData() -> void {
-	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Buffs... ";
+auto buff_data_provider::load_data() -> void {
+	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Buffs... ";
 
-	auto physicalAttack = BuffInfo::fromPlayerOnly(1, BuffSkillValue::Watk);
-	auto physicalDefense = BuffInfo::fromPlayerOnly(2, BuffSkillValue::Wdef);
-	auto magicAttack = BuffInfo::fromPlayerOnly(3, BuffSkillValue::Matk);
-	auto magicDefense = BuffInfo::fromPlayerOnly(4, BuffSkillValue::Mdef);
-	auto accuracy = BuffInfo::fromPlayerOnly(5, BuffSkillValue::Accuracy);
-	auto avoid = BuffInfo::fromPlayerOnly(6, BuffSkillValue::Avoid);
-	auto craft = BuffInfo::fromPlayerOnly(7, BuffSkillValue::Predefined);
-	auto speed = BuffInfo::fromMapMovement(8, BuffSkillValue::Speed, BuffMapInfo{1, BuffSkillValue::Speed});
-	auto jump = BuffInfo::fromPlayerOnlyMovement(9, BuffSkillValue::Jump);
-	auto magicGuard = BuffInfo::fromPlayerOnly(10, BuffSkillValue::X);
-	auto darkSight = BuffInfo::fromMapNoMovement(11, BuffSkillValue::X, BuffMapInfo{});
-	auto booster = BuffInfo::fromPlayerOnly(12, BuffSkillValue::X);
-	auto powerGuard = BuffInfo::fromPlayerOnly(13, BuffSkillValue::X);
-	auto hyperBodyHp = BuffInfo::fromPlayerOnly(14, BuffSkillValue::X);
-	auto hyperBodyMp = BuffInfo::fromPlayerOnly(15, BuffSkillValue::Y);
-	auto invincible = BuffInfo::fromPlayerOnly(16, BuffSkillValue::X);
-	auto soulArrow = BuffInfo::fromMapNoMovement(17, BuffSkillValue::X, BuffMapInfo{});
-	auto stun = BuffInfo::fromMapMovement(18, 1, BuffMapInfo{4, BuffSkillValue::BitpackedSkillAndLevel32});
-	auto poison = BuffInfo::fromMapNoMovement(19, BuffSkillValue::X, BuffMapInfo{BuffSkillValue::SpecialProcessing});
-	auto seal = BuffInfo::fromMapNoMovement(20, 2, BuffMapInfo{4, BuffSkillValue::BitpackedSkillAndLevel32});
-	auto darkness = BuffInfo::fromMapNoMovement(21, 1, BuffMapInfo{4, BuffSkillValue::BitpackedSkillAndLevel32});
-	auto combo = BuffInfo::fromMapNoMovement(22, BuffSkillValue::SpecialProcessing, BuffMapInfo{1, BuffSkillValue::SpecialProcessing});
-	auto charge = BuffInfo::fromMapNoMovement(23, BuffSkillValue::Matk, BuffMapInfo{4, BuffSkillValue::SkillId});
-	auto timedHurt = BuffInfo::fromPlayerOnly(24, BuffSkillValue::Level);
-	auto holySymbol = BuffInfo::fromPlayerOnly(25, BuffSkillValue::X);
-	auto mesoUp = BuffInfo::fromPlayerOnly(26, BuffSkillValue::X);
-	auto shadowPartner = BuffInfo::fromMapNoMovement(27, BuffSkillValue::BitpackedXy16, BuffMapInfo{});
-	auto pickpocket = BuffInfo::fromPlayerOnly(28, BuffSkillValue::X);
-	auto mesoGuard = BuffInfo::fromPlayerOnly(29, BuffSkillValue::X);
+	auto physical_attack = buff_info::from_player_only(1, buff_skill_value::watk);
+	auto physical_defense = buff_info::from_player_only(2, buff_skill_value::wdef);
+	auto magic_attack = buff_info::from_player_only(3, buff_skill_value::matk);
+	auto magic_defense = buff_info::from_player_only(4, buff_skill_value::mdef);
+	auto accuracy = buff_info::from_player_only(5, buff_skill_value::accuracy);
+	auto avoid = buff_info::from_player_only(6, buff_skill_value::avoid);
+	auto craft = buff_info::from_player_only(7, buff_skill_value::predefined);
+	auto speed = buff_info::from_map_movement(8, buff_skill_value::speed, buff_map_info{1, buff_skill_value::speed});
+	auto jump = buff_info::from_player_only_movement(9, buff_skill_value::jump);
+	auto magic_guard = buff_info::from_player_only(10, buff_skill_value::x);
+	auto dark_sight = buff_info::from_map_no_movement(11, buff_skill_value::x, buff_map_info{});
+	auto booster = buff_info::from_player_only(12, buff_skill_value::x);
+	auto power_guard = buff_info::from_player_only(13, buff_skill_value::x);
+	auto hyper_body_hp = buff_info::from_player_only(14, buff_skill_value::x);
+	auto hyper_body_mp = buff_info::from_player_only(15, buff_skill_value::y);
+	auto invincible = buff_info::from_player_only(16, buff_skill_value::x);
+	auto soul_arrow = buff_info::from_map_no_movement(17, buff_skill_value::x, buff_map_info{});
+	auto stun = buff_info::from_map_movement(18, 1, buff_map_info{4, buff_skill_value::bitpacked_skill_and_level_32});
+	auto poison = buff_info::from_map_no_movement(19, buff_skill_value::x, buff_map_info{buff_skill_value::special_processing});
+	auto seal = buff_info::from_map_no_movement(20, 2, buff_map_info{4, buff_skill_value::bitpacked_skill_and_level_32});
+	auto darkness = buff_info::from_map_no_movement(21, 1, buff_map_info{4, buff_skill_value::bitpacked_skill_and_level_32});
+	auto combo = buff_info::from_map_no_movement(22, buff_skill_value::special_processing, buff_map_info{1, buff_skill_value::special_processing});
+	auto charge = buff_info::from_map_no_movement(23, buff_skill_value::matk, buff_map_info{4, buff_skill_value::skill_id});
+	auto timed_hurt = buff_info::from_player_only(24, buff_skill_value::level);
+	auto holy_symbol = buff_info::from_player_only(25, buff_skill_value::x);
+	auto meso_up = buff_info::from_player_only(26, buff_skill_value::x);
+	auto shadow_partner = buff_info::from_map_no_movement(27, buff_skill_value::bitpacked_xy_16, buff_map_info{});
+	auto pickpocket = buff_info::from_player_only(28, buff_skill_value::x);
+	auto meso_guard = buff_info::from_player_only(29, buff_skill_value::x);
 	// 30 - ???
-	auto weakness = BuffInfo::fromMapMovement(31, 1, BuffMapInfo{4, BuffSkillValue::BitpackedSkillAndLevel32});
-	auto curse = BuffInfo::fromMapNoMovement(32, 1, BuffMapInfo{4, BuffSkillValue::BitpackedSkillAndLevel32});
-	auto slow = BuffInfo::fromPlayerOnlyMovement(33, BuffSkillValue::X);
-	auto morph = BuffInfo::fromMapMovement(34, BuffSkillValue::Morph, BuffMapInfo{2, BuffSkillValue::Morph});
-	auto timedHeal = BuffInfo::fromPlayerOnly(35, BuffSkillValue::X);
+	auto weakness = buff_info::from_map_movement(31, 1, buff_map_info{4, buff_skill_value::bitpacked_skill_and_level_32});
+	auto curse = buff_info::from_map_no_movement(32, 1, buff_map_info{4, buff_skill_value::bitpacked_skill_and_level_32});
+	auto slow = buff_info::from_player_only_movement(33, buff_skill_value::x);
+	auto morph = buff_info::from_map_movement(34, buff_skill_value::morph, buff_map_info{2, buff_skill_value::morph});
+	auto timed_heal = buff_info::from_player_only(35, buff_skill_value::x);
 	// No, I have no idea why Maple Warrior is a "movement" buff
-	auto mapleWarrior = BuffInfo::fromPlayerOnlyMovement(36, BuffSkillValue::X);
-	auto powerStance = BuffInfo::fromPlayerOnly(37, BuffSkillValue::Prop);
-	auto sharpEyes = BuffInfo::fromPlayerOnly(38, BuffSkillValue::BitpackedXy16);
-	auto manaReflection = BuffInfo::fromPlayerOnly(39, BuffSkillValue::Level);
-	auto seduce = BuffInfo::fromMapMovement(40, BuffSkillValue::X, BuffMapInfo{4, BuffSkillValue::BitpackedSkillAndLevel32});
-	auto shadowStars = BuffInfo::fromMapNoMovement(41, BuffSkillValue::SpecialProcessing, BuffMapInfo{4, BuffSkillValue::SpecialProcessing});
-	auto infinity = BuffInfo::fromPlayerOnly(42, BuffSkillValue::X);
-	auto holyShield = BuffInfo::fromPlayerOnly(43, BuffSkillValue::X);
-	auto hamstring = BuffInfo::fromPlayerOnly(44, BuffSkillValue::X);
-	auto blind = BuffInfo::fromPlayerOnly(45, BuffSkillValue::X);
-	auto concentrate = BuffInfo::fromPlayerOnly(46, BuffSkillValue::X);
-	auto zombify = BuffInfo::fromMapNoMovement(47, BuffSkillValue::X, BuffMapInfo{4, BuffSkillValue::BitpackedSkillAndLevel32});
-	auto echo = BuffInfo::fromPlayerOnly(48, BuffSkillValue::X);
+	auto maple_warrior = buff_info::from_player_only_movement(36, buff_skill_value::x);
+	auto power_stance = buff_info::from_player_only(37, buff_skill_value::prop);
+	auto sharp_eyes = buff_info::from_player_only(38, buff_skill_value::bitpacked_xy_16);
+	auto mana_reflection = buff_info::from_player_only(39, buff_skill_value::level);
+	auto seduce = buff_info::from_map_movement(40, buff_skill_value::x, buff_map_info{4, buff_skill_value::bitpacked_skill_and_level_32});
+	auto shadow_stars = buff_info::from_map_no_movement(41, buff_skill_value::special_processing, buff_map_info{4, buff_skill_value::special_processing});
+	auto infinity = buff_info::from_player_only(42, buff_skill_value::x);
+	auto holy_shield = buff_info::from_player_only(43, buff_skill_value::x);
+	auto hamstring = buff_info::from_player_only(44, buff_skill_value::x);
+	auto blind = buff_info::from_player_only(45, buff_skill_value::x);
+	auto concentrate = buff_info::from_player_only(46, buff_skill_value::x);
+	auto zombify = buff_info::from_map_no_movement(47, buff_skill_value::x, buff_map_info{4, buff_skill_value::bitpacked_skill_and_level_32});
+	auto echo = buff_info::from_player_only(48, buff_skill_value::x);
 	// 49 - ???
 	// 50 - ???
 	// 51 - ???
-	auto crazySkull = BuffInfo::fromMapNoMovement(52, BuffSkillValue::X, BuffMapInfo{4, BuffSkillValue::BitpackedSkillAndLevel32});
+	auto crazy_skull = buff_info::from_map_no_movement(52, buff_skill_value::x, buff_map_info{4, buff_skill_value::bitpacked_skill_and_level_32});
 	// 53 - ???
-	auto ignoreWeaponImmunity = BuffInfo::fromPlayerOnly(54, BuffSkillValue::Predefined); // Value is a percentage, so 100 means always ignore
-	auto ignoreMagicImmunity = BuffInfo::fromPlayerOnly(55, BuffSkillValue::Predefined); // Value is a percentage, so 100 means always ignore
+	auto ignore_weapon_immunity = buff_info::from_player_only(54, buff_skill_value::predefined); // Value is a percentage, so 100 means always ignore
+	auto ignore_magic_immunity = buff_info::from_player_only(55, buff_skill_value::predefined); // Value is a percentage, so 100 means always ignore
 	// 56 - ???
 	// ??? - not sure what normally goes here, I use it for GM Hide because it appears to have no ill effects
-	auto unk = BuffInfo::fromPlayerOnly(57, BuffSkillValue::SpecialProcessing);
+	auto unk = buff_info::from_player_only(57, buff_skill_value::special_processing);
 	// 58 - ???
 	// 59 - ???
 	// 60 - ???
 	// 61 - ???
-	auto spark = BuffInfo::fromPlayerOnly(62, BuffSkillValue::X);
+	auto spark = buff_info::from_player_only(62, buff_skill_value::x);
 	// 63 - ???
-	auto dawnFinalAttack = BuffInfo::fromPlayerOnly(64, 1);
-	auto windFinalAttack = BuffInfo::fromPlayerOnly(65, 1);
-	auto elementalReset = BuffInfo::fromPlayerOnly(66, BuffSkillValue::X);
-	auto windWalk = BuffInfo::fromMapNoMovement(67, 1, BuffMapInfo{});
-	auto energyCharge = BuffInfo::fromMapNoMovement(68, BuffSkillValue::SpecialPacket, BuffMapInfo{BuffSkillValue::SpecialPacket});
-	auto dashSpeed = BuffInfo::fromMapMovement(69, BuffSkillValue::SpecialPacket, BuffMapInfo{BuffSkillValue::SpecialPacket});
-	auto dashJump = BuffInfo::fromMapMovement(70, BuffSkillValue::SpecialPacket, BuffMapInfo{BuffSkillValue::SpecialPacket});
-	auto mount = BuffInfo::fromMapMovement(71, BuffSkillValue::SpecialPacket, BuffMapInfo{BuffSkillValue::SpecialPacket});
-	auto speedInfusion = BuffInfo::fromPlayerOnly(72, BuffSkillValue::SpecialPacket);
-	auto homingBeacon = BuffInfo::fromPlayerOnly(73, BuffSkillValue::SpecialPacket);
+	auto dawn_warrior_final_attack = buff_info::from_player_only(64, 1);
+	auto wind_walker_final_attack = buff_info::from_player_only(65, 1);
+	auto elemental_reset = buff_info::from_player_only(66, buff_skill_value::x);
+	auto wind_walk = buff_info::from_map_no_movement(67, 1, buff_map_info{});
+	auto energy_charge = buff_info::from_map_no_movement(68, buff_skill_value::special_packet, buff_map_info{buff_skill_value::special_packet});
+	auto dash_speed = buff_info::from_map_movement(69, buff_skill_value::special_packet, buff_map_info{buff_skill_value::special_packet});
+	auto dash_jump = buff_info::from_map_movement(70, buff_skill_value::special_packet, buff_map_info{buff_skill_value::special_packet});
+	auto mount = buff_info::from_map_movement(71, buff_skill_value::special_packet, buff_map_info{buff_skill_value::special_packet});
+	auto speed_infusion = buff_info::from_player_only(72, buff_skill_value::special_packet);
+	auto homing_beacon = buff_info::from_player_only(73, buff_skill_value::special_packet);
 
-	processSkills(
-		Buff{{
-			magicGuard,
+	process_skills(
+		buff{{
+			magic_guard,
 		}}, {
-			Skills::Magician::MagicGuard,
-			Skills::BlazeWizard::MagicGuard,
+			skills::magician::magic_guard,
+			skills::blaze_wizard::magic_guard,
 		});
 
-	processSkills(
-		Buff{{
+	process_skills(
+		buff{{
 			speed,
-			darkSight,
+			dark_sight,
 		}}, {
-			Skills::Rogue::DarkSight,
-			Skills::NightWalker::DarkSight,
+			skills::rogue::dark_sight,
+			skills::night_walker::dark_sight,
 		});
 
-	processSkills(
-		Buff{{
+	process_skills(
+		buff{{
 			booster,
 		}}, {
-			Skills::Fighter::SwordBooster,
-			Skills::Fighter::AxeBooster,
-			Skills::Page::SwordBooster,
-			Skills::Page::BwBooster,
-			Skills::Spearman::SpearBooster,
-			Skills::Spearman::PolearmBooster,
-			Skills::FpMage::SpellBooster,
-			Skills::IlMage::SpellBooster,
-			Skills::Hunter::BowBooster,
-			Skills::Crossbowman::CrossbowBooster,
-			Skills::Assassin::ClawBooster,
-			Skills::Bandit::DaggerBooster,
-			Skills::Brawler::KnucklerBooster,
-			Skills::Gunslinger::GunBooster,
-			Skills::DawnWarrior::SwordBooster,
-			Skills::BlazeWizard::SpellBooster,
-			Skills::WindArcher::BowBooster,
-			Skills::NightWalker::ClawBooster,
-			Skills::ThunderBreaker::KnucklerBooster,
+			skills::fighter::sword_booster,
+			skills::fighter::axe_booster,
+			skills::page::sword_booster,
+			skills::page::bw_booster,
+			skills::spearman::spear_booster,
+			skills::spearman::polearm_booster,
+			skills::fp_mage::spell_booster,
+			skills::il_mage::spell_booster,
+			skills::hunter::bow_booster,
+			skills::crossbowman::crossbow_booster,
+			skills::assassin::claw_booster,
+			skills::bandit::dagger_booster,
+			skills::brawler::knuckler_booster,
+			skills::gunslinger::gun_booster,
+			skills::dawn_warrior::sword_booster,
+			skills::blaze_wizard::spell_booster,
+			skills::wind_archer::bow_booster,
+			skills::night_walker::claw_booster,
+			skills::thunder_breaker::knuckler_booster,
 		});
 
-	processSkills(
-		Buff{{
-			powerGuard,
+	process_skills(
+		buff{{
+			power_guard,
 		}}, {
-			Skills::Fighter::PowerGuard,
-			Skills::Page::PowerGuard,
+			skills::fighter::power_guard,
+			skills::page::power_guard,
 		});
 
-	processSkills(
-		Buff{{
-			hyperBodyHp,
-			hyperBodyMp,
+	process_skills(
+		buff{{
+			hyper_body_hp,
+			hyper_body_mp,
 		}}, {
-			Skills::Spearman::HyperBody,
-			Skills::SuperGm::HyperBody,
+			skills::spearman::hyper_body,
+			skills::super_gm::hyper_body,
 		});
 
-	processSkills(
-		Buff{{
+	process_skills(
+		buff{{
 			invincible,
 		}}, {
-			Skills::Cleric::Invincible,
+			skills::cleric::invincible,
 		});
 
-	processSkills(
-		Buff{{
-			soulArrow,
+	process_skills(
+		buff{{
+			soul_arrow,
 		}}, {
-			Skills::Hunter::SoulArrow,
-			Skills::Crossbowman::SoulArrow,
-			Skills::WindArcher::SoulArrow,
+			skills::hunter::soul_arrow,
+			skills::crossbowman::soul_arrow,
+			skills::wind_archer::soul_arrow,
 		});
 
-	processSkills(
-		Buff{{
+	process_skills(
+		buff{{
 			combo,
 		}}, {
-			Skills::Crusader::ComboAttack,
-			Skills::DawnWarrior::ComboAttack,
+			skills::crusader::combo_attack,
+			skills::dawn_warrior::combo_attack,
 		});
 
-	processSkills(
-		Buff{{
-			magicAttack,
+	process_skills(
+		buff{{
+			magic_attack,
 			charge,
 		}}, {
-			Skills::WhiteKnight::BwFireCharge,
-			Skills::WhiteKnight::BwIceCharge,
-			Skills::WhiteKnight::BwLitCharge,
-			Skills::WhiteKnight::SwordFireCharge,
-			Skills::WhiteKnight::SwordIceCharge,
-			Skills::WhiteKnight::SwordLitCharge,
-			Skills::Paladin::BwHolyCharge,
-			Skills::Paladin::SwordHolyCharge,
-			Skills::DawnWarrior::SoulCharge,
-			Skills::ThunderBreaker::LightningCharge,
+			skills::white_knight::bw_fire_charge,
+			skills::white_knight::bw_ice_charge,
+			skills::white_knight::bw_lit_charge,
+			skills::white_knight::sword_fire_charge,
+			skills::white_knight::sword_ice_charge,
+			skills::white_knight::sword_lit_charge,
+			skills::paladin::bw_holy_charge,
+			skills::paladin::sword_holy_charge,
+			skills::dawn_warrior::soul_charge,
+			skills::thunder_breaker::lightning_charge,
 		});
 
-	processSkills(
-		Buff{{
-			physicalAttack,
-			timedHurt.
-				withAct(BuffAction::Hurt, BuffSkillValue::X, seconds_t{4}),
+	process_skills(
+		buff{{
+			physical_attack,
+			timed_hurt.
+				with_act(buff_action::hurt, buff_skill_value::x, seconds{4}),
 		}}, {
-			Skills::DragonKnight::DragonBlood,
+			skills::dragon_knight::dragon_blood,
 		});
 
-	processSkills(
-		Buff{{
-			holySymbol,
+	process_skills(
+		buff{{
+			holy_symbol,
 		}}, {
-			Skills::Priest::HolySymbol,
-			Skills::SuperGm::HolySymbol,
+			skills::priest::holy_symbol,
+			skills::super_gm::holy_symbol,
 		});
 
-	processSkills(
-		Buff{{
-			mesoUp,
+	process_skills(
+		buff{{
+			meso_up,
 		}}, {
-			Skills::Hermit::MesoUp,
+			skills::hermit::meso_up,
 		});
 
-	processSkills(
-		Buff{{
-			shadowPartner,
+	process_skills(
+		buff{{
+			shadow_partner,
 		}}, {
-			Skills::Hermit::ShadowPartner,
-			Skills::NightWalker::ShadowPartner,
+			skills::hermit::shadow_partner,
+			skills::night_walker::shadow_partner,
 		});
 
-	processSkills(
-		Buff{{
+	process_skills(
+		buff{{
 			pickpocket,
 		}}, {
-			Skills::ChiefBandit::Pickpocket,
+			skills::chief_bandit::pickpocket,
 		});
 
-	processSkills(
-		Buff{{
-			mesoGuard,
+	process_skills(
+		buff{{
+			meso_guard,
 		}}, {
-			Skills::ChiefBandit::MesoGuard,
+			skills::chief_bandit::meso_guard,
 		});
 
-	processSkills(
-		Buff{{
-			timedHeal.
-				withAct(BuffAction::Heal, BuffSkillValue::X, milliseconds_t{4900}),
+	process_skills(
+		buff{{
+			timed_heal.
+				with_act(buff_action::heal, buff_skill_value::x, milliseconds{4900}),
 		}}, {
-			Skills::Beginner::Recovery,
-			Skills::Noblesse::Recovery,
+			skills::beginner::recovery,
+			skills::noblesse::recovery,
 		});
 
-	processSkills(
-		Buff{{
-			mapleWarrior,
+	process_skills(
+		buff{{
+			maple_warrior,
 		}}, {
-			Skills::Hero::MapleWarrior,
-			Skills::Paladin::MapleWarrior,
-			Skills::DarkKnight::MapleWarrior,
-			Skills::FpArchMage::MapleWarrior,
-			Skills::IlArchMage::MapleWarrior,
-			Skills::Bishop::MapleWarrior,
-			Skills::Bowmaster::MapleWarrior,
-			Skills::Marksman::MapleWarrior,
-			Skills::NightLord::MapleWarrior,
-			Skills::Shadower::MapleWarrior,
-			Skills::Buccaneer::MapleWarrior,
-			Skills::Corsair::MapleWarrior,
+			skills::hero::maple_warrior,
+			skills::paladin::maple_warrior,
+			skills::dark_knight::maple_warrior,
+			skills::fp_arch_mage::maple_warrior,
+			skills::il_arch_mage::maple_warrior,
+			skills::bishop::maple_warrior,
+			skills::bowmaster::maple_warrior,
+			skills::marksman::maple_warrior,
+			skills::night_lord::maple_warrior,
+			skills::shadower::maple_warrior,
+			skills::buccaneer::maple_warrior,
+			skills::corsair::maple_warrior,
 		});
 
-	processSkills(
-		Buff{{
-			powerStance,
+	process_skills(
+		buff{{
+			power_stance,
 		}}, {
-			Skills::Hero::PowerStance,
-			Skills::Paladin::PowerStance,
-			Skills::DarkKnight::PowerStance,
+			skills::hero::power_stance,
+			skills::paladin::power_stance,
+			skills::dark_knight::power_stance,
 		});
 
-	processSkills(
-		Buff{{
-			sharpEyes,
+	process_skills(
+		buff{{
+			sharp_eyes,
 		}}, {
-			Skills::Bowmaster::SharpEyes,
-			Skills::Marksman::SharpEyes,
+			skills::bowmaster::sharp_eyes,
+			skills::marksman::sharp_eyes,
 		});
 
-	processSkills(
-		Buff{{
-			manaReflection,
+	process_skills(
+		buff{{
+			mana_reflection,
 		}}, {
-			Skills::FpArchMage::ManaReflection,
-			Skills::IlArchMage::ManaReflection,
-			Skills::Bishop::ManaReflection,
+			skills::fp_arch_mage::mana_reflection,
+			skills::il_arch_mage::mana_reflection,
+			skills::bishop::mana_reflection,
 		});
 
-	processSkills(
-		Buff{{
-			shadowStars,
+	process_skills(
+		buff{{
+			shadow_stars,
 		}}, {
-			Skills::NightLord::ShadowStars,
+			skills::night_lord::shadow_stars,
 		});
 
-	processSkills(
-		Buff{{
+	process_skills(
+		buff{{
 			infinity,
 		}}, {
-			Skills::FpArchMage::Infinity,
-			Skills::IlArchMage::Infinity,
-			Skills::Bishop::Infinity,
+			skills::fp_arch_mage::infinity,
+			skills::il_arch_mage::infinity,
+			skills::bishop::infinity,
 		});
 
-	processSkills(
-		Buff{{
-			holyShield,
+	process_skills(
+		buff{{
+			holy_shield,
 		}}, {
-			Skills::Bishop::HolyShield,
+			skills::bishop::holy_shield,
 		});
 
-	processSkills(
-		Buff{{
+	process_skills(
+		buff{{
 			hamstring,
 		}}, {
-			Skills::Bowmaster::Hamstring,
+			skills::bowmaster::hamstring,
 		});
 
-	processSkills(
-		Buff{{
+	process_skills(
+		buff{{
 			blind,
 		}}, {
-			Skills::Marksman::Blind,
+			skills::marksman::blind,
 		});
 
-	processSkills(
-		Buff{{
-			physicalAttack,
+	process_skills(
+		buff{{
+			physical_attack,
 			concentrate,
 		}}, {
-			Skills::Bowmaster::Concentrate,
+			skills::bowmaster::concentrate,
 		});
 
-	processSkills(
-		Buff{{
-			physicalAttack,
+	process_skills(
+		buff{{
+			physical_attack,
 			echo,
 		}}, {
-			Skills::Beginner::EchoOfHero,
-			Skills::Noblesse::EchoOfHero,
+			skills::beginner::echo_of_hero,
+			skills::noblesse::echo_of_hero,
 		});
 
-	processSkills(
-		Buff{{
+	process_skills(
+		buff{{
 			unk,
 		}}, {
-			Skills::SuperGm::Hide,
+			skills::super_gm::hide,
 		});
 
-	processSkills(
-		Buff{{
+	process_skills(
+		buff{{
 			spark,
 		}}, {
-			Skills::ThunderBreaker::Spark,
+			skills::thunder_breaker::spark,
 		});
 
-	processSkills(
-		Buff{{
-			dawnFinalAttack,
+	process_skills(
+		buff{{
+			dawn_warrior_final_attack,
 		}}, {
-			Skills::DawnWarrior::FinalAttack,
+			skills::dawn_warrior::final_attack,
 		});
 
-	processSkills(
-		Buff{{
-			windFinalAttack,
+	process_skills(
+		buff{{
+			wind_walker_final_attack,
 		}}, {
-			Skills::WindArcher::FinalAttack,
+			skills::wind_archer::final_attack,
 		});
 
-	processSkills(
-		Buff{{
-			elementalReset,
+	process_skills(
+		buff{{
+			elemental_reset,
 		}}, {
-			Skills::BlazeWizard::ElementalReset,
+			skills::blaze_wizard::elemental_reset,
 		});
 
-	processSkills(
-		Buff{{
+	process_skills(
+		buff{{
 			speed,
-			windWalk,
+			wind_walk,
 		}}, {
-			Skills::WindArcher::WindWalk,
+			skills::wind_archer::wind_walk,
 		});
 
-	processSkills(
-		Buff{{
-			energyCharge,
+	process_skills(
+		buff{{
+			energy_charge,
 		}}, {
-			Skills::Marauder::EnergyCharge,
-			Skills::ThunderBreaker::EnergyCharge,
+			skills::marauder::energy_charge,
+			skills::thunder_breaker::energy_charge,
 		});
 
-	processSkills(
-		Buff{{
-			dashSpeed,
-			dashJump,
+	process_skills(
+		buff{{
+			dash_speed,
+			dash_jump,
 		}}, {
-			Skills::Pirate::Dash,
-			Skills::ThunderBreaker::Dash,
+			skills::pirate::dash,
+			skills::thunder_breaker::dash,
 		});
 
-	processSkills(
-		Buff{{
+	process_skills(
+		buff{{
 			mount,
 		}}, {
-			Skills::Beginner::MonsterRider,
-			Skills::Noblesse::MonsterRider,
+			skills::beginner::monster_rider,
+			skills::noblesse::monster_rider,
 		});
 
-	processSkills(
-		Buff{{
-			speedInfusion,
+	process_skills(
+		buff{{
+			speed_infusion,
 		}}, {
-			Skills::Buccaneer::SpeedInfusion,
-			Skills::ThunderBreaker::SpeedInfusion,
+			skills::buccaneer::speed_infusion,
+			skills::thunder_breaker::speed_infusion,
 		});
 
-	processSkills(
-		Buff{{
-			homingBeacon,
+	process_skills(
+		buff{{
+			homing_beacon,
 		}}, {
-			Skills::Outlaw::HomingBeacon,
-			Skills::Corsair::Bullseye,
+			skills::outlaw::homing_beacon,
+			skills::corsair::bullseye,
 		});
 
-	processSkills(
-		Buff{{
-			physicalDefense,
+	process_skills(
+		buff{{
+			physical_defense,
 		}}, {
-			Skills::Magician::MagicArmor,
-			Skills::Swordsman::IronBody,
-			Skills::BlazeWizard::MagicArmor,
-			Skills::DawnWarrior::IronBody,
+			skills::magician::magic_armor,
+			skills::swordsman::iron_body,
+			skills::blaze_wizard::magic_armor,
+			skills::dawn_warrior::iron_body,
 		});
 
-	processSkills(
-		Buff{{
+	process_skills(
+		buff{{
 			accuracy,
 			avoid,
 		}}, {
-			Skills::Archer::Focus,
-			Skills::WindArcher::Focus,
+			skills::archer::focus,
+			skills::wind_archer::focus,
 		});
 
-	processSkills(
-		Buff{{
-			physicalAttack,
-			physicalDefense,
+	process_skills(
+		buff{{
+			physical_attack,
+			physical_defense,
 		}}, {
-			Skills::Fighter::Rage,
-			Skills::DawnWarrior::Rage,
+			skills::fighter::rage,
+			skills::dawn_warrior::rage,
 		});
 
-	processSkills(
-		Buff{{
-			physicalDefense,
-			magicDefense,
+	process_skills(
+		buff{{
+			physical_defense,
+			magic_defense,
 		}}, {
-			Skills::Spearman::IronWill,
+			skills::spearman::iron_will,
 		});
 
-	processSkills(
-		Buff{{
-			magicAttack,
+	process_skills(
+		buff{{
+			magic_attack,
 		}}, {
-			Skills::FpWizard::Meditation,
-			Skills::IlWizard::Meditation,
-			Skills::BlazeWizard::Meditation,
+			skills::fp_wizard::meditation,
+			skills::il_wizard::meditation,
+			skills::blaze_wizard::meditation,
 		});
 
-	processSkills(
-		Buff{{
-			physicalAttack,
-			physicalDefense,
-			magicDefense,
+	process_skills(
+		buff{{
+			physical_attack,
+			physical_defense,
+			magic_defense,
 			accuracy,
 			avoid,
 		}}, {
-			Skills::Cleric::Bless,
+			skills::cleric::bless,
 		});
 
-	processSkills(
-		Buff{{
-			physicalAttack,
-			physicalDefense,
-			magicAttack,
-			magicDefense,
+	process_skills(
+		buff{{
+			physical_attack,
+			physical_defense,
+			magic_attack,
+			magic_defense,
 			accuracy,
 			avoid,
 		}}, {
-			Skills::SuperGm::Bless,
+			skills::super_gm::bless,
 		});
 
-	processSkills(
-		Buff{{
-			physicalAttack,
+	process_skills(
+		buff{{
+			physical_attack,
 		}}, {
-			Skills::Hero::Enrage,
+			skills::hero::enrage,
 		});
 
-	processSkills(
-		Buff{{
+	process_skills(
+		buff{{
 			stun.
-				withPredefinedValue(1).
-				withMapInfo({}),
+				with_predefined_value(1).
+				with_map_info({}),
 		}}, {
-			Skills::DragonKnight::DragonRoar,
+			skills::dragon_knight::dragon_roar,
 		});
 
-	processSkills(
-		Buff{{
+	process_skills(
+		buff{{
 			speed,
 		}}, {
-			Skills::Beginner::NimbleFeet,
-			Skills::Noblesse::NimbleFeet,
+			skills::beginner::nimble_feet,
+			skills::noblesse::nimble_feet,
 		});
 
-	processSkills(
-		Buff{{
+	process_skills(
+		buff{{
 			speed,
 			jump,
 		}}, {
-			Skills::Assassin::Haste,
-			Skills::Bandit::Haste,
-			Skills::NightWalker::Haste,
-			Skills::Gm::Haste,
-			Skills::SuperGm::Haste,
+			skills::assassin::haste,
+			skills::bandit::haste,
+			skills::night_walker::haste,
+			skills::gm::haste,
+			skills::super_gm::haste,
 		});
 
-	processSkills(
-		Buff{{
+	process_skills(
+		buff{{
 			morph,
 		}}, {
-			Skills::Brawler::OakBarrel,
+			skills::brawler::oak_barrel,
 		});
 
-	processSkills(
-		Buff{{
-			physicalDefense,
-			magicDefense,
+	process_skills(
+		buff{{
+			physical_defense,
+			magic_defense,
 			speed,
 			jump,
 			morph.
-				withValue(BuffSkillValue::GenderSpecificMorph).
-				withMapInfo(BuffMapInfo{2, BuffSkillValue::GenderSpecificMorph}),
+				with_value(buff_skill_value::gender_specific_morph).
+				with_map_info(buff_map_info{2, buff_skill_value::gender_specific_morph}),
 		}}, {
-			Skills::Marauder::Transformation,
-			Skills::Buccaneer::SuperTransformation,
-			Skills::WindArcher::EagleEye,
-			Skills::ThunderBreaker::Transformation,
+			skills::marauder::transformation,
+			skills::buccaneer::super_transformation,
+			skills::wind_archer::eagle_eye,
+			skills::thunder_breaker::transformation,
 		});
 
-	processSkills(
-		Buff{{
-			physicalDefense,
-			magicDefense,
+	process_skills(
+		buff{{
+			physical_defense,
+			magic_defense,
 			mount,
 		}}, {
-			Skills::Corsair::Battleship,
+			skills::corsair::battleship,
 		});
 
-	m_mobSkillInfo[MobSkills::Stun] = Buff{stun};
-	m_mobSkillInfo[MobSkills::Poison] = Buff{poison};
-	m_mobSkillInfo[MobSkills::Seal] = Buff{seal};
-	m_mobSkillInfo[MobSkills::Darkness] = Buff{darkness};
-	m_mobSkillInfo[MobSkills::Weakness] = Buff{weakness};
-	m_mobSkillInfo[MobSkills::Curse] = Buff{curse};
-	m_mobSkillInfo[MobSkills::Slow] = Buff{slow};
-	m_mobSkillInfo[MobSkills::Seduce] = Buff{seduce};
-	m_mobSkillInfo[MobSkills::CrazySkull] = Buff{crazySkull};
-	m_mobSkillInfo[MobSkills::Zombify] = Buff{zombify};
+	m_mob_skill_info[mob_skills::stun] = buff{stun};
+	m_mob_skill_info[mob_skills::poison] = buff{poison};
+	m_mob_skill_info[mob_skills::seal] = buff{seal};
+	m_mob_skill_info[mob_skills::darkness] = buff{darkness};
+	m_mob_skill_info[mob_skills::weakness] = buff{weakness};
+	m_mob_skill_info[mob_skills::curse] = buff{curse};
+	m_mob_skill_info[mob_skills::slow] = buff{slow};
+	m_mob_skill_info[mob_skills::seduce] = buff{seduce};
+	m_mob_skill_info[mob_skills::crazy_skull] = buff{crazy_skull};
+	m_mob_skill_info[mob_skills::zombify] = buff{zombify};
 
-	m_basics.physicalAttack = physicalAttack;
-	m_basics.physicalDefense = physicalDefense;
-	m_basics.magicAttack = magicAttack;
-	m_basics.magicDefense = magicDefense;
+	m_basics.physical_attack = physical_attack;
+	m_basics.physical_defense = physical_defense;
+	m_basics.magic_attack = magic_attack;
+	m_basics.magic_defense = magic_defense;
 	m_basics.accuracy = accuracy;
 	m_basics.avoid = avoid;
 	m_basics.speed = speed;
 	m_basics.craft = craft;
 	m_basics.jump = jump;
-	m_basics.magicGuard = magicGuard;
-	m_basics.darkSight = darkSight;
+	m_basics.magic_guard = magic_guard;
+	m_basics.dark_sight = dark_sight;
 	m_basics.booster = booster;
-	m_basics.powerGuard = powerGuard;
-	m_basics.hyperBodyHp = hyperBodyHp;
-	m_basics.hyperBodyMp = hyperBodyMp;
+	m_basics.power_guard = power_guard;
+	m_basics.hyper_body_hp = hyper_body_hp;
+	m_basics.hyper_body_mp = hyper_body_mp;
 	m_basics.invincible = invincible;
-	m_basics.soulArrow = soulArrow;
+	m_basics.soul_arrow = soul_arrow;
 	m_basics.stun = stun;
 	m_basics.poison = poison;
 	m_basics.seal = seal;
 	m_basics.darkness = darkness;
 	m_basics.combo = combo;
 	m_basics.charge = charge;
-	m_basics.timedHurt = timedHurt;
-	m_basics.holySymbol = holySymbol;
-	m_basics.mesoUp = mesoUp;
-	m_basics.shadowPartner = shadowPartner;
+	m_basics.timed_hurt = timed_hurt;
+	m_basics.holy_symbol = holy_symbol;
+	m_basics.meso_up = meso_up;
+	m_basics.shadow_partner = shadow_partner;
 	m_basics.pickpocket = pickpocket;
-	m_basics.mesoGuard = mesoGuard;
+	m_basics.meso_guard = meso_guard;
 	m_basics.weakness = weakness;
 	m_basics.curse = curse;
 	m_basics.slow = slow;
 	m_basics.morph = morph;
-	m_basics.timedHeal = timedHeal;
-	m_basics.mapleWarrior = mapleWarrior;
-	m_basics.powerStance = powerStance;
-	m_basics.sharpEyes = sharpEyes;
-	m_basics.manaReflection = manaReflection;
+	m_basics.timed_heal = timed_heal;
+	m_basics.maple_warrior = maple_warrior;
+	m_basics.power_stance = power_stance;
+	m_basics.sharp_eyes = sharp_eyes;
+	m_basics.mana_reflection = mana_reflection;
 	m_basics.seduce = seduce;
-	m_basics.shadowStars = shadowStars;
+	m_basics.shadow_stars = shadow_stars;
 	m_basics.infinity = infinity;
-	m_basics.holyShield = holyShield;
+	m_basics.holy_shield = holy_shield;
 	m_basics.hamstring = hamstring;
 	m_basics.blind = blind;
 	m_basics.concentrate = concentrate;
 	m_basics.zombify = zombify;
 	m_basics.echo = echo;
-	m_basics.crazySkull = crazySkull;
-	m_basics.ignoreWeaponImmunity = ignoreWeaponImmunity;
-	m_basics.ignoreMagicImmunity = ignoreMagicImmunity;
+	m_basics.crazy_skull = crazy_skull;
+	m_basics.ignore_weapon_immunity = ignore_weapon_immunity;
+	m_basics.ignore_magic_immunity = ignore_magic_immunity;
 	m_basics.spark = spark;
-	m_basics.dawnWarriorFinalAttack = dawnFinalAttack;
-	m_basics.windWalkerFinalAttack = windFinalAttack;
-	m_basics.elementalReset = elementalReset;
-	m_basics.windWalk = windWalk;
-	m_basics.energyCharge = energyCharge;
-	m_basics.dashSpeed = dashSpeed;
-	m_basics.dashJump = dashJump;
+	m_basics.dawn_warrior_final_attack = dawn_warrior_final_attack;
+	m_basics.wind_walker_final_attack = wind_walker_final_attack;
+	m_basics.elemental_reset = elemental_reset;
+	m_basics.wind_walk = wind_walk;
+	m_basics.energy_charge = energy_charge;
+	m_basics.dash_speed = dash_speed;
+	m_basics.dash_jump = dash_jump;
 	m_basics.mount = mount;
-	m_basics.speedInfusion = speedInfusion;
-	m_basics.homingBeacon = homingBeacon;
+	m_basics.speed_infusion = speed_infusion;
+	m_basics.homing_beacon = homing_beacon;
 
 	std::cout << "DONE" << std::endl;
 }
 
-auto BuffDataProvider::addItemInfo(item_id_t itemId, const ConsumeInfo &cons) -> void {
-	vector_t<BuffInfo> values;
+auto buff_data_provider::add_item_info(game_item_id item_id, const consume_info &cons) -> void {
+	vector<buff_info> values;
 
-	if (cons.wAtk > 0) {
-		values.push_back(m_basics.physicalAttack.withPredefinedValue(cons.wAtk));
+	if (cons.watk > 0) {
+		values.push_back(m_basics.physical_attack.with_predefined_value(cons.watk));
 	}
-	if (cons.wDef > 0) {
-		values.push_back(m_basics.physicalDefense.withPredefinedValue(cons.wDef));
+	if (cons.wdef > 0) {
+		values.push_back(m_basics.physical_defense.with_predefined_value(cons.wdef));
 	}
-	if (cons.mAtk > 0) {
-		values.push_back(m_basics.magicAttack.withPredefinedValue(cons.mAtk));
+	if (cons.matk > 0) {
+		values.push_back(m_basics.magic_attack.with_predefined_value(cons.matk));
 	}
-	if (cons.mDef > 0) {
-		values.push_back(m_basics.magicDefense.withPredefinedValue(cons.mDef));
+	if (cons.mdef > 0) {
+		values.push_back(m_basics.magic_defense.with_predefined_value(cons.mdef));
 	}
 	if (cons.acc > 0) {
-		values.push_back(m_basics.accuracy.withPredefinedValue(cons.acc));
+		values.push_back(m_basics.accuracy.with_predefined_value(cons.acc));
 	}
 	if (cons.avo > 0) {
-		values.push_back(m_basics.avoid.withPredefinedValue(cons.avo));
+		values.push_back(m_basics.avoid.with_predefined_value(cons.avo));
 	}
 	if (cons.speed > 0) {
 		values.push_back(m_basics.speed.
-			withPredefinedValue(cons.speed).
-			withMapInfo(BuffMapInfo{1, cons.speed}));
+			with_predefined_value(cons.speed).
+			with_map_info(buff_map_info{1, cons.speed}));
 	}
 	if (cons.jump > 0) {
-		values.push_back(m_basics.jump.withPredefinedValue(cons.jump));
+		values.push_back(m_basics.jump.with_predefined_value(cons.jump));
 	}
 	if (cons.morphs.size() > 0) {
 		for (const auto &m : cons.morphs) {
 			values.push_back(m_basics.morph.
-				withPredefinedValue(m.morph).
-				withChance(m.chance).
-				withMapInfo(BuffMapInfo{2, m.morph}));
+				with_predefined_value(m.morph).
+				with_chance(m.chance).
+				with_map_info(buff_map_info{2, m.morph}));
 		}
 	}
 
 	// TODO FIXME buffs
 	// Need some buff bytes/types for ALL of the following
-	if (cons.preventDrown) {
+	if (cons.prevent_drown) {
 
 	}
-	if (cons.preventFreeze) {
+	if (cons.prevent_freeze) {
 
 	}
-	if (cons.iceResist > 0) {
+	if (cons.ice_resist > 0) {
 
 	}
-	if (cons.fireResist > 0) {
+	if (cons.fire_resist > 0) {
 
 	}
-	if (cons.poisonResist > 0) {
+	if (cons.poison_resist > 0) {
 
 	}
-	if (cons.lightningResist > 0) {
+	if (cons.lightning_resist > 0) {
 
 	}
-	if (cons.curseDef > 0) {
+	if (cons.curse_def > 0) {
 
 	}
-	if (cons.stunDef > 0) {
+	if (cons.stun_def > 0) {
 
 	}
-	if (cons.weaknessDef > 0) {
+	if (cons.weakness_def > 0) {
 
 	}
-	if (cons.darknessDef > 0) {
+	if (cons.darkness_def > 0) {
 
 	}
-	if (cons.sealDef > 0) {
+	if (cons.seal_def > 0) {
 
 	}
-	if (cons.ignoreWdef) {
-		values.push_back(m_basics.ignoreWeaponImmunity.withPredefinedValue(cons.chance));
+	if (cons.ignore_wdef) {
+		values.push_back(m_basics.ignore_weapon_immunity.with_predefined_value(cons.chance));
 	}
-	if (cons.ignoreMdef) {
-		values.push_back(m_basics.ignoreMagicImmunity.withPredefinedValue(cons.chance));
+	if (cons.ignore_mdef) {
+		values.push_back(m_basics.ignore_magic_immunity.with_predefined_value(cons.chance));
 	}
-	if (cons.mesoUp) {
+	if (cons.meso_up) {
 
 	}
-	if (cons.partyDropUp) {
+	if (cons.party_drop_up) {
 
 	}
-	if (cons.dropUp) {
-		switch (cons.dropUp) {
+	if (cons.drop_up) {
+		switch (cons.drop_up) {
 			case 1: // Regular drop rate increase for all items, the only one I can parse at the moment
 				break;
 			//case 2: // Specific item drop rate increase
@@ -756,34 +756,34 @@ auto BuffDataProvider::addItemInfo(item_id_t itemId, const ConsumeInfo &cons) ->
 	}
 
 	if (values.size() > 0) {
-		m_items[itemId] = Buff{values};
+		m_items[item_id] = buff{values};
 	}
 }
 
-auto BuffDataProvider::isBuff(const BuffSource &source) const -> bool {
-	switch (source.getType()) {
-		case BuffSourceType::Skill: return m_buffs.find(source.getSkillId()) != std::end(m_buffs);
-		case BuffSourceType::MobSkill: return m_mobSkillInfo.find(source.getMobSkillId()) != std::end(m_mobSkillInfo);
-		case BuffSourceType::Item: return m_items.find(source.getItemId()) != std::end(m_items);
+auto buff_data_provider::is_buff(const buff_source &source) const -> bool {
+	switch (source.get_type()) {
+		case buff_source_type::skill: return m_buffs.find(source.get_skill_id()) != std::end(m_buffs);
+		case buff_source_type::mob_skill: return m_mob_skill_info.find(source.get_mob_skill_id()) != std::end(m_mob_skill_info);
+		case buff_source_type::item: return m_items.find(source.get_item_id()) != std::end(m_items);
 	}
-	throw NotImplementedException{"BuffSourceType"};
+	throw not_implemented_exception{"buff_source_type"};
 }
 
-auto BuffDataProvider::isDebuff(const BuffSource &source) const -> bool {
-	if (source.getType() != BuffSourceType::MobSkill) return false;
-	return m_mobSkillInfo.find(source.getMobSkillId()) != std::end(m_mobSkillInfo);
+auto buff_data_provider::is_debuff(const buff_source &source) const -> bool {
+	if (source.get_type() != buff_source_type::mob_skill) return false;
+	return m_mob_skill_info.find(source.get_mob_skill_id()) != std::end(m_mob_skill_info);
 }
 
-auto BuffDataProvider::getInfo(const BuffSource &source) const -> const Buff & {
-	switch (source.getType()) {
-		case BuffSourceType::Skill: return m_buffs.find(source.getSkillId())->second;
-		case BuffSourceType::MobSkill: return m_mobSkillInfo.find(source.getMobSkillId())->second;
-		case BuffSourceType::Item: return m_items.find(source.getItemId())->second;
+auto buff_data_provider::get_info(const buff_source &source) const -> const buff & {
+	switch (source.get_type()) {
+		case buff_source_type::skill: return m_buffs.find(source.get_skill_id())->second;
+		case buff_source_type::mob_skill: return m_mob_skill_info.find(source.get_mob_skill_id())->second;
+		case buff_source_type::item: return m_items.find(source.get_item_id())->second;
 	}
-	throw NotImplementedException{"BuffSourceType"};
+	throw not_implemented_exception{"buff_source_type"};
 }
 
-auto BuffDataProvider::getBuffsByEffect() const -> const BuffInfoByEffect & {
+auto buff_data_provider::get_buffs_by_effect() const -> const buff_info_by_effect & {
 	return m_basics;
 }
 

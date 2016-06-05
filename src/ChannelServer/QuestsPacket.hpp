@@ -22,34 +22,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/SplitPacketBuilder.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
-	namespace ChannelServer {
-		class Player;
-		struct ActiveQuest;
+namespace vana {
+	namespace channel_server {
+		class player;
+		struct active_quest;
 
-		namespace Packets {
-			namespace Quests {
-				enum ErrorCodes : int8_t {
-					ErrorUnk = 0x09,
-					ErrorNoItemSpace = 0x0A,
-					ErrorNotEnoughMesos = 0x0B,
-					ErrorEquipWorn = 0x0D,
-					ErrorOnlyOne = 0x0E
+		namespace packets {
+			namespace quests {
+				enum error_codes : int8_t {
+					error_unk = 0x09,
+					error_no_item_space = 0x0A,
+					error_not_enough_mesos = 0x0B,
+					error_equip_worn = 0x0D,
+					error_only_one = 0x0E
 				};
 
-				PACKET(acceptQuest, quest_id_t questId, npc_id_t npcId);
-				PACKET(acceptQuestNotice, quest_id_t questId);
-				PACKET(completeQuestNotice, quest_id_t questId, FileTime time);
-				PACKET(completeQuest, quest_id_t questId, npc_id_t npcId, quest_id_t nextQuest);
-				SPLIT_PACKET(completeQuestAnimation, player_id_t playerId);
-				PACKET(updateQuest, const ActiveQuest &quest);
-				PACKET(doneQuest, quest_id_t questId);
-				PACKET(questError, quest_id_t questId, int8_t errorCode);
-				PACKET(questExpire, quest_id_t questId);
-				PACKET(forfeitQuest, quest_id_t questId);
-				PACKET(giveItem, item_id_t itemId, slot_qty_t amount);
-				PACKET(giveMesos, mesos_t amount);
-				PACKET(giveFame, fame_t amount);
+				PACKET(accept_quest, game_quest_id quest_id, game_npc_id npc_id);
+				PACKET(accept_quest_notice, game_quest_id quest_id);
+				PACKET(complete_quest_notice, game_quest_id quest_id, file_time time);
+				PACKET(complete_quest, game_quest_id quest_id, game_npc_id npc_id, game_quest_id next_quest);
+				SPLIT_PACKET(complete_quest_animation, game_player_id player_id);
+				PACKET(update_quest, const active_quest &quest);
+				PACKET(done_quest, game_quest_id quest_id);
+				PACKET(quest_error, game_quest_id quest_id, int8_t error_code);
+				PACKET(quest_expire, game_quest_id quest_id);
+				PACKET(forfeit_quest, game_quest_id quest_id);
+				PACKET(give_item, game_item_id item_id, game_slot_qty amount);
+				PACKET(give_mesos, game_mesos amount);
+				PACKET(give_fame, game_fame amount);
 			}
 		}
 	}

@@ -21,15 +21,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <unordered_map>
 
-namespace Vana {
-	class Variables {
+namespace vana {
+	class variables {
 	public:
-		auto setVariable(const string_t &name, const string_t &value) -> void;
-		auto getVariable(const string_t &name) const -> string_t;
-		auto deleteVariable(const string_t &name) -> void;
+		auto set_variable(const string &name, const string &value) -> void;
+		auto get_variable(const string &name) const -> string;
+		auto delete_variable(const string &name) -> void;
 
-		auto operator[](const string_t &key) const -> string_t;
+		auto operator[](const string &key) const -> string;
 	protected:
-		hash_map_t<string_t, string_t> m_variables;
+		hash_map<string, string> m_variables;
 	};
 }

@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <locale>
 #include <string>
 
-namespace Vana {
-	struct CaseInsensitiveHash {
+namespace vana {
+	struct case_insensitive_hash {
 		auto operator()(const std::string &s) const -> size_t {
 	#if SIZE_MAX == UINT32_MAX
 			size_t const prime = 16777619U;

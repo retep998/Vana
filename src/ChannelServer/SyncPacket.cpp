@@ -24,142 +24,142 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Party.hpp"
 #include "ChannelServer/Player.hpp"
 
-namespace Vana {
-namespace ChannelServer {
-namespace Packets {
-namespace Interserver {
+namespace vana {
+namespace channel_server {
+namespace packets {
+namespace interserver {
 
-PACKET_IMPL(Config::scrollingHeader, const string_t &message) {
-	PacketBuilder builder;
+PACKET_IMPL(config::scrolling_header, const string &message) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_SYNC)
-		.add<sync_t>(Sync::SyncTypes::Config)
-		.add<sync_t>(Sync::Config::ScrollingHeader)
-		.add<string_t>(message);
+		.add<packet_header>(IMSG_SYNC)
+		.add<protocol_sync>(sync::sync_types::config)
+		.add<protocol_sync>(sync::config::scrolling_header)
+		.add<string>(message);
 	return builder;
 }
 
-PACKET_IMPL(Config::resetRates, int32_t flags) {
-	PacketBuilder builder;
+PACKET_IMPL(config::reset_rates, int32_t flags) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_SYNC)
-		.add<sync_t>(Sync::SyncTypes::Config)
-		.add<sync_t>(Sync::Config::RateReset)
+		.add<packet_header>(IMSG_SYNC)
+		.add<protocol_sync>(sync::sync_types::config)
+		.add<protocol_sync>(sync::config::rate_reset)
 		.add<int32_t>(flags);
 	return builder;
 }
 
-PACKET_IMPL(Config::modifyRates, const RatesConfig &rates) {
-	PacketBuilder builder;
+PACKET_IMPL(config::modify_rates, const rates_config &rates) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_SYNC)
-		.add<sync_t>(Sync::SyncTypes::Config)
-		.add<sync_t>(Sync::Config::RateSet)
-		.add<RatesConfig>(rates);
+		.add<packet_header>(IMSG_SYNC)
+		.add<protocol_sync>(sync::sync_types::config)
+		.add<protocol_sync>(sync::config::rate_set)
+		.add<rates_config>(rates);
 	return builder;
 }
 
-PACKET_IMPL(Player::updatePlayer, const PlayerData &player, update_bits_t flags) {
-	PacketBuilder builder;
+PACKET_IMPL(player::update_player, const player_data &player, protocol_update_bits flags) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_SYNC)
-		.add<sync_t>(Sync::SyncTypes::Player)
-		.add<sync_t>(Sync::Player::UpdatePlayer)
-		.add<update_bits_t>(flags)
-		.add<player_id_t>(player.id);
+		.add<packet_header>(IMSG_SYNC)
+		.add<protocol_sync>(sync::sync_types::player)
+		.add<protocol_sync>(sync::player::update_player)
+		.add<protocol_update_bits>(flags)
+		.add<game_player_id>(player.id);
 
-	if (flags & Sync::Player::UpdateBits::Full) {
-		builder.add<PlayerData>(player);
+	if (flags & sync::player::update_bits::full) {
+		builder.add<player_data>(player);
 	}
 	else {
-		if (flags & Sync::Player::UpdateBits::Level) {
+		if (flags & sync::player::update_bits::level) {
 			builder.add<int16_t>(player.level.get());
 		}
-		if (flags & Sync::Player::UpdateBits::Job) {
+		if (flags & sync::player::update_bits::job) {
 			builder.add<int16_t>(player.job.get());
 		}
-		if (flags & Sync::Player::UpdateBits::Map) {
+		if (flags & sync::player::update_bits::map) {
 			builder.add<int32_t>(player.map.get());
 		}
-		if (flags & Sync::Player::UpdateBits::Channel) {
-			builder.add<channel_id_t>(player.channel.get());
+		if (flags & sync::player::update_bits::channel) {
+			builder.add<game_channel_id>(player.channel.get());
 		}
-		if (flags & Sync::Player::UpdateBits::Ip) {
-			builder.add<Ip>(player.ip);
+		if (flags & sync::player::update_bits::ip) {
+			builder.add<ip>(player.ip);
 		}
-		if (flags & Sync::Player::UpdateBits::Cash) {
-			builder.add<bool>(player.cashShop);
+		if (flags & sync::player::update_bits::cash) {
+			builder.add<bool>(player.cash_shop);
 		}
-		if (flags & Sync::Player::UpdateBits::Mts) {
+		if (flags & sync::player::update_bits::mts) {
 			builder.add<bool>(player.mts);
 		}
 	}
 	return builder;
 }
 
-PACKET_IMPL(Player::changeChannel, ref_ptr_t<Vana::ChannelServer::Player> info, channel_id_t channel) {
-	PacketBuilder builder;
+PACKET_IMPL(player::change_channel, ref_ptr<vana::channel_server::player> info, game_channel_id channel) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_SYNC)
-		.add<sync_t>(Sync::SyncTypes::Player)
-		.add<sync_t>(Sync::Player::ChangeChannelRequest)
-		.add<player_id_t>(info->getId())
-		.add<channel_id_t>(channel)
-		.add<Ip>(info->getIp().get())
-		.addBuffer(info->getTransferPacket());
+		.add<packet_header>(IMSG_SYNC)
+		.add<protocol_sync>(sync::sync_types::player)
+		.add<protocol_sync>(sync::player::change_channel_request)
+		.add<game_player_id>(info->get_id())
+		.add<game_channel_id>(channel)
+		.add<ip>(info->get_ip().get())
+		.add_buffer(info->get_transfer_packet());
 
 	return builder;
 }
 
-PACKET_IMPL(Player::connect, const PlayerData &player, bool firstConnect) {
-	PacketBuilder builder;
+PACKET_IMPL(player::connect, const player_data &player, bool first_connect) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_SYNC)
-		.add<sync_t>(Sync::SyncTypes::Player)
-		.add<sync_t>(Sync::Player::Connect)
-		.add<bool>(firstConnect)
-		.add<player_id_t>(player.id);
+		.add<packet_header>(IMSG_SYNC)
+		.add<protocol_sync>(sync::sync_types::player)
+		.add<protocol_sync>(sync::player::connect)
+		.add<bool>(first_connect)
+		.add<game_player_id>(player.id);
 
-	if (firstConnect) {
-		builder.add<PlayerData>(player);
+	if (first_connect) {
+		builder.add<player_data>(player);
 	}
 	else {
 		builder
-			.add<map_id_t>(player.map.get())
-			.add<channel_id_t>(player.channel.get())
-			.add<Ip>(player.ip);
+			.add<game_map_id>(player.map.get())
+			.add<game_channel_id>(player.channel.get())
+			.add<ip>(player.ip);
 	}
 
 	return builder;
 }
 
-PACKET_IMPL(Player::disconnect, player_id_t playerId) {
-	PacketBuilder builder;
+PACKET_IMPL(player::disconnect, game_player_id player_id) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_SYNC)
-		.add<sync_t>(Sync::SyncTypes::Player)
-		.add<sync_t>(Sync::Player::Disconnect)
-		.add<player_id_t>(playerId);
+		.add<packet_header>(IMSG_SYNC)
+		.add<protocol_sync>(sync::sync_types::player)
+		.add<protocol_sync>(sync::player::disconnect)
+		.add<game_player_id>(player_id);
 	return builder;
 }
 
-PACKET_IMPL(Player::connectableEstablished, player_id_t playerId) {
-	PacketBuilder builder;
+PACKET_IMPL(player::connectable_established, game_player_id player_id) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_SYNC)
-		.add<sync_t>(Sync::SyncTypes::Player)
-		.add<sync_t>(Sync::Player::ChangeChannelGo)
-		.add<player_id_t>(playerId);
+		.add<packet_header>(IMSG_SYNC)
+		.add<protocol_sync>(sync::sync_types::player)
+		.add<protocol_sync>(sync::player::change_channel_go)
+		.add<game_player_id>(player_id);
 	return builder;
 }
 
-PACKET_IMPL(Party::sync, int8_t type, player_id_t playerId, int32_t target) {
-	PacketBuilder builder;
+PACKET_IMPL(party::sync, int8_t type, game_player_id player_id, int32_t target) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_SYNC)
-		.add<sync_t>(Sync::SyncTypes::Party)
+		.add<packet_header>(IMSG_SYNC)
+		.add<protocol_sync>(sync::sync_types::party)
 		.add<int8_t>(type)
-		.add<player_id_t>(playerId);
+		.add<game_player_id>(player_id);
 
 	if (target != 0) {
 		builder.add<int32_t>(target);
@@ -167,47 +167,47 @@ PACKET_IMPL(Party::sync, int8_t type, player_id_t playerId, int32_t target) {
 	return builder;
 }
 
-PACKET_IMPL(Buddy::buddyInvite, player_id_t inviterId, player_id_t inviteeId) {
-	PacketBuilder builder;
+PACKET_IMPL(buddy::buddy_invite, game_player_id inviter_id, game_player_id invitee_id) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_SYNC)
-		.add<sync_t>(Sync::SyncTypes::Buddy)
-		.add<sync_t>(Sync::Buddy::Invite)
-		.add<player_id_t>(inviterId)
-		.add<player_id_t>(inviteeId);
+		.add<packet_header>(IMSG_SYNC)
+		.add<protocol_sync>(sync::sync_types::buddy)
+		.add<protocol_sync>(sync::buddy::invite)
+		.add<game_player_id>(inviter_id)
+		.add<game_player_id>(invitee_id);
 	return builder;
 }
 
-PACKET_IMPL(Buddy::acceptBuddyInvite, player_id_t inviteeId, player_id_t inviterId) {
-	PacketBuilder builder;
+PACKET_IMPL(buddy::accept_buddy_invite, game_player_id invitee_id, game_player_id inviter_id) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_SYNC)
-		.add<sync_t>(Sync::SyncTypes::Buddy)
-		.add<sync_t>(Sync::Buddy::AcceptInvite)
-		.add<player_id_t>(inviteeId)
-		.add<player_id_t>(inviterId);
+		.add<packet_header>(IMSG_SYNC)
+		.add<protocol_sync>(sync::sync_types::buddy)
+		.add<protocol_sync>(sync::buddy::accept_invite)
+		.add<game_player_id>(invitee_id)
+		.add<game_player_id>(inviter_id);
 	return builder;
 }
 
-PACKET_IMPL(Buddy::removeBuddy, player_id_t listOwnerId, player_id_t removalId) {
-	PacketBuilder builder;
+PACKET_IMPL(buddy::remove_buddy, game_player_id list_owner_id, game_player_id removal_id) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_SYNC)
-		.add<sync_t>(Sync::SyncTypes::Buddy)
-		.add<sync_t>(Sync::Buddy::RemoveBuddy)
-		.add<player_id_t>(listOwnerId)
-		.add<player_id_t>(removalId);
+		.add<packet_header>(IMSG_SYNC)
+		.add<protocol_sync>(sync::sync_types::buddy)
+		.add<protocol_sync>(sync::buddy::remove_buddy)
+		.add<game_player_id>(list_owner_id)
+		.add<game_player_id>(removal_id);
 	return builder;
 }
 
-PACKET_IMPL(Buddy::readdBuddy, player_id_t listOwnerId, player_id_t buddyId) {
-	PacketBuilder builder;
+PACKET_IMPL(buddy::readd_buddy, game_player_id list_owner_id, game_player_id buddy_id) {
+	packet_builder builder;
 	builder
-		.add<header_t>(IMSG_SYNC)
-		.add<sync_t>(Sync::SyncTypes::Buddy)
-		.add<sync_t>(Sync::Buddy::ReaddBuddy)
-		.add<player_id_t>(listOwnerId)
-		.add<player_id_t>(buddyId);
+		.add<packet_header>(IMSG_SYNC)
+		.add<protocol_sync>(sync::sync_types::buddy)
+		.add<protocol_sync>(sync::buddy::readd_buddy)
+		.add<game_player_id>(list_owner_id)
+		.add<game_player_id>(buddy_id);
 	return builder;
 }
 

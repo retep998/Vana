@@ -21,23 +21,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-	struct FileLog {
-		string_t message;
-		string_t file;
+namespace vana {
+	struct file_log {
+		string message;
+		string file;
 	};
 
-	class FileLogger : public Logger {
+	class file_logger : public base_logger {
 	public:
-		FileLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize = 10);
-		~FileLogger();
+		file_logger(const string &filename, const string &format, const string &time_format, server_type type, size_t buffer_size = 10);
+		~file_logger();
 
-		auto log(LogType type, const opt_string_t &identifier, const string_t &message) -> void override;
+		auto log(log_type type, const opt_string &identifier, const string &message) -> void override;
 		auto flush() -> void;
-		auto getFilenameFormat() const -> const string_t & { return m_filenameFormat; }
+		auto get_filename_format() const -> const string & { return m_filename_format; }
 	private:
-		string_t m_filenameFormat;
-		size_t m_bufferSize;
-		vector_t<FileLog> m_buffer;
+		string m_filename_format;
+		size_t m_buffer_size;
+		vector<file_log> m_buffer;
 	};
 }

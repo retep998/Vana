@@ -27,102 +27,102 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 #include <string>
 
-namespace Vana {
+namespace vana {
 
-auto ScriptDataProvider::loadData() -> void {
-	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Scripts... ";
+auto script_data_provider::load_data() -> void {
+	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Scripts... ";
 
-	m_npcScripts.clear();
-	m_reactorScripts.clear();
-	m_questScripts.clear();
-	m_mapEntryScripts.clear();
-	m_firstMapEntryScripts.clear();
-	m_itemScripts.clear();
+	m_npc_scripts.clear();
+	m_reactor_scripts.clear();
+	m_quest_scripts.clear();
+	m_map_entry_scripts.clear();
+	m_first_map_entry_scripts.clear();
+	m_item_scripts.clear();
 
-	auto &db = Database::getDataDb();
-	auto &sql = db.getSession();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.makeTable("scripts"));
+	auto &db = database::get_data_db();
+	auto &sql = db.get_session();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("scripts"));
 
 	for (const auto &row : rs) {
-		int32_t objectId = row.get<int32_t>("objectid");
-		string_t script = row.get<string_t>("script");
+		int32_t object_id = row.get<int32_t>("objectid");
+		string script = row.get<string>("script");
 		int8_t modifier = row.get<int8_t>("helper");
 
-		StringUtilities::runEnum(row.get<string_t>("script_type"), [&](const string_t &cmp) {
-			if (cmp == "npc") m_npcScripts[objectId] = script;
-			else if (cmp == "reactor") m_reactorScripts[objectId] = script;
-			else if (cmp == "map_enter") m_mapEntryScripts[objectId] = script;
-			else if (cmp == "map_first_enter") m_firstMapEntryScripts[objectId] = script;
-			else if (cmp == "item") m_itemScripts[objectId] = script;
-			else if (cmp == "quest") m_questScripts[static_cast<quest_id_t>(objectId)][modifier] = script;
+		utilities::str::run_enum(row.get<string>("script_type"), [&](const string &cmp) {
+			if (cmp == "npc") m_npc_scripts[object_id] = script;
+			else if (cmp == "reactor") m_reactor_scripts[object_id] = script;
+			else if (cmp == "map_enter") m_map_entry_scripts[object_id] = script;
+			else if (cmp == "map_first_enter") m_first_map_entry_scripts[object_id] = script;
+			else if (cmp == "item") m_item_scripts[object_id] = script;
+			else if (cmp == "quest") m_quest_scripts[static_cast<game_quest_id>(object_id)][modifier] = script;
 		});
 	}
 
 	std::cout << "DONE" << std::endl;
 }
 
-auto ScriptDataProvider::getScript(AbstractServer *server, int32_t objectId, ScriptTypes type) const -> string_t {
-	if (hasScript(objectId, type)) {
-		string_t s = buildScriptPath(type, resolve(type).find(objectId)->second);
-		if (FileUtilities::fileExists(s)) {
+auto script_data_provider::get_script(abstract_server *server, int32_t object_id, script_types type) const -> string {
+	if (has_script(object_id, type)) {
+		string s = build_script_path(type, resolve(type).find(object_id)->second);
+		if (utilities::file::exists(s)) {
 			return s;
 		}
 #ifdef DEBUG
-		else server->log(LogType::DebugError, "Missing script '" + s + "'");
+		else server->log(log_type::debug_error, "Missing script '" + s + "'");
 #endif
 	}
-	return buildScriptPath(type, std::to_string(objectId));
+	return build_script_path(type, std::to_string(object_id));
 }
 
-auto ScriptDataProvider::getQuestScript(AbstractServer *server, quest_id_t questId, int8_t state) const -> string_t {
-	if (hasQuestScript(questId, state)) {
-		string_t s = buildScriptPath(ScriptTypes::Quest, m_questScripts.find(questId)->second.find(state)->second);
-		if (FileUtilities::fileExists(s)) {
+auto script_data_provider::get_quest_script(abstract_server *server, game_quest_id quest_id, int8_t state) const -> string {
+	if (has_quest_script(quest_id, state)) {
+		string s = build_script_path(script_types::quest, m_quest_scripts.find(quest_id)->second.find(state)->second);
+		if (utilities::file::exists(s)) {
 			return s;
 		}
 #ifdef DEBUG
-		else server->log(LogType::DebugError, "Missing quest script '" + s + "'");
+		else server->log(log_type::debug_error, "Missing quest script '" + s + "'");
 #endif
 	}
-	return buildScriptPath(ScriptTypes::Quest, std::to_string(questId) + (state == 0 ? "s" : "e"));
+	return build_script_path(script_types::quest, std::to_string(quest_id) + (state == 0 ? "s" : "e"));
 }
 
-auto ScriptDataProvider::buildScriptPath(ScriptTypes type, const string_t &location) const -> string_t {
-	string_t s = "scripts/" + resolvePath(type) + "/" + location + ".lua";
+auto script_data_provider::build_script_path(script_types type, const string &location) const -> string {
+	string s = "scripts/" + resolve_path(type) + "/" + location + ".lua";
 	return s;
 }
 
-auto ScriptDataProvider::hasScript(int32_t objectId, ScriptTypes type) const -> bool {
-	return ext::is_element(resolve(type), objectId);
+auto script_data_provider::has_script(int32_t object_id, script_types type) const -> bool {
+	return ext::is_element(resolve(type), object_id);
 }
 
-auto ScriptDataProvider::hasQuestScript(quest_id_t questId, int8_t state) const -> bool {
-	return ext::is_element(m_questScripts, questId);
+auto script_data_provider::has_quest_script(game_quest_id quest_id, int8_t state) const -> bool {
+	return ext::is_element(m_quest_scripts, quest_id);
 }
 
-auto ScriptDataProvider::resolve(ScriptTypes type) const -> const hash_map_t<int32_t, string_t> & {
+auto script_data_provider::resolve(script_types type) const -> const hash_map<int32_t, string> & {
 	switch (type) {
-		case ScriptTypes::Item: return m_itemScripts;
-		case ScriptTypes::MapEntry: return m_mapEntryScripts;
-		case ScriptTypes::FirstMapEntry: return m_firstMapEntryScripts;
-		case ScriptTypes::Npc: return m_npcScripts;
-		case ScriptTypes::Reactor: return m_reactorScripts;
+		case script_types::item: return m_item_scripts;
+		case script_types::map_entry: return m_map_entry_scripts;
+		case script_types::first_map_entry: return m_first_map_entry_scripts;
+		case script_types::npc: return m_npc_scripts;
+		case script_types::reactor: return m_reactor_scripts;
 	}
-	throw NotImplementedException{"ScriptType"};
+	throw not_implemented_exception{"script_types"};
 }
 
-auto ScriptDataProvider::resolvePath(ScriptTypes type) const -> string_t {
+auto script_data_provider::resolve_path(script_types type) const -> string {
 	switch (type) {
-		case ScriptTypes::Item: return "items";
-		case ScriptTypes::MapEntry: return "map_entry";
-		case ScriptTypes::FirstMapEntry: return "first_map_entry";
-		case ScriptTypes::Npc: return "npcs";
-		case ScriptTypes::Reactor: return "reactors";
-		case ScriptTypes::Quest: return "quests";
-		case ScriptTypes::Instance: return "instances";
-		case ScriptTypes::Portal: return "portals";
+		case script_types::item: return "items";
+		case script_types::map_entry: return "map_entry";
+		case script_types::first_map_entry: return "first_map_entry";
+		case script_types::npc: return "npcs";
+		case script_types::reactor: return "reactors";
+		case script_types::quest: return "quests";
+		case script_types::instance: return "instances";
+		case script_types::portal: return "portals";
 	}
-	throw NotImplementedException{"ScriptType"};
+	throw not_implemented_exception{"script_types"};
 }
 
 }

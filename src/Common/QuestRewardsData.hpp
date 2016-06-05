@@ -22,9 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-namespace Vana {
-	struct QuestRewardsData {
-		vector_t<QuestRewardInfo> universal;
-		hash_map_t<job_id_t, vector_t<QuestRewardInfo>> job;
+namespace vana {
+	struct quest_rewards_data {
+		vector<quest_reward_info> universal;
+		hash_map<game_job_id, vector<quest_reward_info>> job;
 	};
 }

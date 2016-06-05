@@ -26,82 +26,82 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <array>
 #include <vector>
 
-namespace Vana {
-	namespace ChannelServer {
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class player;
 
-		enum class BuffPacketValueType {
-			Value,
-			Packet,
-			SpecialPacket,
+		enum class buff_packet_value_type {
+			value,
+			packet,
+			special_packet,
 		};
 
-		struct BuffPacketValue {
-			static BuffPacketValue fromValue(uint8_t size, int64_t value) {
-				BuffPacketValue ret;
-				ret.valueSize = size;
+		struct buff_packet_value {
+			static buff_packet_value from_value(uint8_t size, int64_t value) {
+				buff_packet_value ret;
+				ret.value_size = size;
 				ret.value = value;
-				ret.type = BuffPacketValueType::Value;
+				ret.type = buff_packet_value_type::value;
 				return ret;
 			}
 
-			static BuffPacketValue fromPacket(PacketBuilder builder) {
-				BuffPacketValue ret;
+			static buff_packet_value from_packet(packet_builder builder) {
+				buff_packet_value ret;
 				ret.builder = builder;
-				ret.type = BuffPacketValueType::Packet;
+				ret.type = buff_packet_value_type::packet;
 				return ret;
 			}
 
-			static BuffPacketValue fromSpecialPacket(PacketBuilder builder) {
-				BuffPacketValue ret;
+			static buff_packet_value from_special_packet(packet_builder builder) {
+				buff_packet_value ret;
 				ret.builder = builder;
-				ret.type = BuffPacketValueType::SpecialPacket;
+				ret.type = buff_packet_value_type::special_packet;
 				return ret;
 			}
 
-			uint8_t valueSize = 0;
+			uint8_t value_size = 0;
 			int64_t value = 0;
 			int32_t time = 0;
-			BuffPacketValueType type;
-			PacketBuilder builder;
+			buff_packet_value_type type;
+			packet_builder builder;
 		private:
-			BuffPacketValue() = default;
+			buff_packet_value() = default;
 		};
 
-		struct BuffPacketStructure {
-			BuffPacketStructure()
+		struct buff_packet_structure {
+			buff_packet_structure()
 			{
 				std::fill(std::begin(types), std::end(types), 0);
 			}
 
-			bool anyMovementBuffs = false;
-			buff_array_t types;
-			vector_t<BuffPacketValue> values;
+			bool any_movement_buffs = false;
+			buff_array types;
+			vector<buff_packet_value> values;
 		};
 
-		struct BuffPacketValues {
-			BuffPacketStructure player;
-			optional_t<BuffPacketStructure> map;
-			milliseconds_t delay = milliseconds_t{0};
+		struct buff_packet_values {
+			buff_packet_structure player;
+			optional<buff_packet_structure> map;
+			milliseconds delay = milliseconds{0};
 		};
 
-		namespace Buffs {
-			auto addBuff(ref_ptr_t<Player> player, item_id_t itemId, const seconds_t &time) -> Result;
-			auto addBuff(ref_ptr_t<Player> player, skill_id_t skillId, skill_level_t level, int16_t addedInfo, map_object_t mapMobId = 0) -> Result;
-			auto addBuff(ref_ptr_t<Player> player, mob_skill_id_t skillId, mob_skill_level_t level, milliseconds_t delay) -> Result;
-			auto endBuff(ref_ptr_t<Player> player, const BuffSource &source, bool fromTimer = false) -> void;
-			auto preprocessBuff(ref_ptr_t<Player> player, skill_id_t skillId, skill_level_t level, const seconds_t &time) -> Buff;
-			auto preprocessBuff(ref_ptr_t<Player> player, item_id_t itemId, const seconds_t &time) -> Buff;
-			auto preprocessBuff(ref_ptr_t<Player> player, mob_skill_id_t skillId, mob_skill_level_t level, const seconds_t &time) -> Buff;
-			auto preprocessBuff(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time) -> Buff;
-			auto preprocessBuff(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, const Buff &buff) -> Buff;
-			auto preprocessBuff(const Buff &buff, const vector_t<uint8_t> &bitPositionsToInclude) -> Buff;
-			auto convertToPacketTypes(const Buff &buff) -> BuffPacketValues;
-			auto convertToPacket(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, const Buff &buff) -> BuffPacketValues;
-			auto buffMayApply(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, const BuffInfo &buff) -> bool;
-			auto getValue(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, const BuffInfo &buff) -> BuffPacketValue;
-			auto getValue(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, uint8_t bitPosition, const BuffMapInfo &buff) -> BuffPacketValue;
-			auto getValue(ref_ptr_t<Player> player, const BuffSource &source, const seconds_t &time, uint8_t bitPosition, BuffSkillValue value, uint8_t buffValueSize) -> BuffPacketValue;
+		namespace buffs {
+			auto add_buff(ref_ptr<player> player, game_item_id item_id, const seconds &time) -> result;
+			auto add_buff(ref_ptr<player> player, game_skill_id skill_id, game_skill_level level, int16_t added_info, game_map_object map_mob_id = 0) -> result;
+			auto add_buff(ref_ptr<player> player, game_mob_skill_id skill_id, game_mob_skill_level level, milliseconds delay) -> result;
+			auto end_buff(ref_ptr<player> player, const buff_source &source, bool from_timer = false) -> void;
+			auto preprocess_buff(ref_ptr<player> player, game_skill_id skill_id, game_skill_level level, const seconds &time) -> buff;
+			auto preprocess_buff(ref_ptr<player> player, game_item_id item_id, const seconds &time) -> buff;
+			auto preprocess_buff(ref_ptr<player> player, game_mob_skill_id skill_id, game_mob_skill_level level, const seconds &time) -> buff;
+			auto preprocess_buff(ref_ptr<player> player, const buff_source &source, const seconds &time) -> buff;
+			auto preprocess_buff(ref_ptr<player> player, const buff_source &source, const seconds &time, const buff &buff_value) -> buff;
+			auto preprocess_buff(const buff &buff_value, const vector<uint8_t> &bit_positions_to_include) -> buff;
+			auto convert_to_packet_types(const buff &buff) -> buff_packet_values;
+			auto convert_to_packet(ref_ptr<player> player, const buff_source &source, const seconds &time, const buff &buff) -> buff_packet_values;
+			auto buff_may_apply(ref_ptr<player> player, const buff_source &source, const seconds &time, const buff_info &buff) -> bool;
+			auto get_value(ref_ptr<player> player, const buff_source &source, const seconds &time, const buff_info &buff) -> buff_packet_value;
+			auto get_value(ref_ptr<player> player, const buff_source &source, const seconds &time, uint8_t bit_position, const buff_map_info &buff) -> buff_packet_value;
+			auto get_value(ref_ptr<player> player, const buff_source &source, const seconds &time, uint8_t bit_position, buff_skill_value value, uint8_t buff_value_size) -> buff_packet_value;
 		}
 	}
 }

@@ -26,47 +26,47 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-namespace Vana {
-	namespace ChannelServer {
-		class Map;
-		class Player;
+namespace vana {
+	namespace channel_server {
+		class map;
+		class player;
 
-		struct MapleTvMessage {
-			bool hasReceiver = false;
+		struct maple_tv_message {
+			bool has_receiver = false;
 			int32_t time = 0;
-			item_id_t megaphoneId = 0;
-			player_id_t senderId = 0;
+			game_item_id megaphone_id = 0;
+			game_player_id sender_id = 0;
 			uint32_t counter = 0;
-			string_t msg1;
-			string_t msg2;
-			string_t msg3;
-			string_t msg4;
-			string_t msg5;
-			string_t sendName;
-			string_t recvName;
-			PacketBuilder recvDisplay;
-			PacketBuilder sendDisplay;
+			string msg1;
+			string msg2;
+			string msg3;
+			string msg4;
+			string msg5;
+			string send_name;
+			string recv_name;
+			packet_builder recv_display;
+			packet_builder send_display;
 		};
 
-		class MapleTvs : public TimerContainerHolder {
+		class maple_tvs : public timer_container_holder {
 		public:
-			auto addMap(Map *map) -> void;
+			auto add_map(map *map) -> void;
 
-			auto addMessage(ref_ptr_t<Player> sender, ref_ptr_t<Player> receiver, const string_t &msg, const string_t &msg2, const string_t &msg3, const string_t &msg4, const string_t &msg5, item_id_t megaphoneId, int32_t time) -> void;
-			auto isMapleTvMap(map_id_t id) const -> bool;
-			auto hasMessage() const -> bool;
-			auto getCounter() -> uint32_t;
-			auto getCurrentMessage() const -> const MapleTvMessage &;
-			auto getMessageTime() const -> seconds_t;
+			auto add_message(ref_ptr<player> sender, ref_ptr<player> receiver, const string &msg, const string &msg2, const string &msg3, const string &msg4, const string &msg5, game_item_id megaphone_id, int32_t time) -> void;
+			auto is_maple_tv_map(game_map_id id) const -> bool;
+			auto has_message() const -> bool;
+			auto get_counter() -> uint32_t;
+			auto get_current_message() const -> const maple_tv_message &;
+			auto get_message_time() const -> seconds;
 		private:
-			auto parseBuffer() -> void;
-			auto send(const PacketBuilder &builder) -> void;
+			auto parse_buffer() -> void;
+			auto send(const packet_builder &builder) -> void;
 
-			bool m_hasMessage = false;
+			bool m_has_message = false;
 			uint32_t m_counter = 0;
-			MapleTvMessage m_currentMessage;
-			queue_t<MapleTvMessage> m_buffer;
-			hash_map_t<map_id_t, Map *> m_maps;
+			maple_tv_message m_current_message;
+			queue<maple_tv_message> m_buffer;
+			hash_map<game_map_id, map *> m_maps;
 		};
 	}
 }

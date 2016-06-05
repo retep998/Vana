@@ -26,37 +26,37 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-namespace Vana {
-	struct SaltingConfig {
-		SaltSizeConfig accountSaltSize;
-		SaltConfig account;
-		SaltConfig interserver;	
+namespace vana {
+	struct salting_config {
+		salt_size_config account_salt_size;
+		salt_config account;
+		salt_config interserver;	
 	};
 
 	template <>
-	struct LuaSerialize<SaltingConfig> {
-		auto read(LuaEnvironment &config, const string_t &prefix) -> SaltingConfig {
-			SaltingConfig ret;
+	struct lua_serialize<salting_config> {
+		auto read(lua_environment &config, const string &prefix) -> salting_config {
+			salting_config ret;
 
-			LuaVariant account = config.get<LuaVariant>("account");
-			config.validateObject(LuaType::Table, account, "account");
+			lua_variant account = config.get<lua_variant>("account");
+			config.validate_object(lua::lua_type::table, account, "account");
 
-			auto map = account.as<hash_map_t<LuaVariant, LuaVariant>>();
-			bool hasSaltSize = false;
+			auto map = account.as<hash_map<lua_variant, lua_variant>>();
+			bool has_salt_size = false;
 			for (const auto &kvp : map) {
-				config.validateKey(LuaType::String, kvp.first, prefix);
+				config.validate_key(lua::lua_type::string, kvp.first, prefix);
 
-				string_t key = kvp.first.as<string_t>();
+				string key = kvp.first.as<string>();
 				if (key == "salt_size") {
-					hasSaltSize = true;
-					ret.accountSaltSize = kvp.second.into<SaltSizeConfig>(config, prefix + "." + key);
+					has_salt_size = true;
+					ret.account_salt_size = kvp.second.into<salt_size_config>(config, prefix + "." + key);
 				}
 			}
 
-			config.required(hasSaltSize, "salt_size", "account");
+			config.required(has_salt_size, "salt_size", "account");
 
-			ret.account = config.get<SaltConfig>("account");
-			ret.interserver = config.get<SaltConfig>("interserver");
+			ret.account = config.get<salt_config>("account");
+			ret.interserver = config.get<salt_config>("interserver");
 
 			return ret;
 		}

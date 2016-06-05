@@ -27,122 +27,123 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Player.hpp"
 #include <functional>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-Pet::Pet(Player *player, Item *item) :
-	MovableLife{0, Point{}, 0},
+pet::pet(player *player, item *item) :
+	movable_life{0, point{}, 0},
 	m_player{player},
-	m_itemId{item->getId()},
-	m_name{ChannelServer::getInstance().getItemDataProvider().getItemInfo(m_itemId)->name},
+	m_item_id{item->get_id()},
+	m_name{channel_server::get_instance().get_item_data_provider().get_item_info(m_item_id)->name},
 	m_item{item}
 {
-	auto &db = Database::getCharDb();
-	auto &sql = db.getSession();
+	auto &db = database::get_char_db();
+	auto &sql = db.get_session();
 
-	sql.once << "INSERT INTO " << db.makeTable("pets") << " (name) VALUES (:name)", soci::use(m_name, "name");
+	sql.once << "INSERT INTO " << db.make_table("pets") << " (name) VALUES (:name)",
+		soci::use(m_name, "name");
 
-	m_id = db.getLastId<pet_id_t>();
-	item->setPetId(m_id);
+	m_id = db.get_last_id<game_pet_id>();
+	item->set_pet_id(m_id);
 }
 
-Pet::Pet(Player *player, Item *item, const soci::row &row) :
-	MovableLife{0, Point{}, 0},
+pet::pet(player *player, item *item, const soci::row &row) :
+	movable_life{0, point{}, 0},
 	m_player{player},
-	m_id{item->getPetId()},
-	m_itemId{item->getId()},
+	m_id{item->get_pet_id()},
+	m_item_id{item->get_id()},
 	m_item{item}
 {
-	initializePet(row);
-	if (isSummoned()) {
+	initialize_pet(row);
+	if (is_summoned()) {
 		if (m_index.is_initialized() && m_index.get() == 1) {
-			startTimer();
+			start_timer();
 		}
-		player->getPets()->setSummoned(m_index.get(), m_id);
+		player->get_pets()->set_summoned(m_index.get(), m_id);
 	}
 }
 
-auto Pet::levelUp() -> void {
+auto pet::level_up() -> void {
 	m_level += 1;
-	m_player->sendMap(Packets::Pets::levelUp(m_player->getId(), this));
+	m_player->send_map(packets::pets::level_up(m_player->get_id(), this));
 }
 
-auto Pet::setName(const string_t &name) -> void {
+auto pet::set_name(const string &name) -> void {
 	m_name = name;
-	m_player->sendMap(Packets::Pets::changeName(m_player->getId(), this));
+	m_player->send_map(packets::pets::change_name(m_player->get_id(), this));
 }
 
-auto Pet::addCloseness(int16_t amount) -> void {
+auto pet::add_closeness(int16_t amount) -> void {
 	m_closeness += amount;
-	if (m_closeness > Stats::MaxCloseness) {
-		m_closeness = Stats::MaxCloseness;
+	if (m_closeness > stats::max_closeness) {
+		m_closeness = stats::max_closeness;
 	}
-	while (m_closeness >= Stats::PetExp[m_level - 1] && m_level < Stats::PetLevels) {
-		levelUp();
+	while (m_closeness >= stats::pet_exp[m_level - 1] && m_level < stats::pet_levels) {
+		level_up();
 	}
 
-	m_player->send(Packets::Pets::updatePet(this, m_item));
+	m_player->send(packets::pets::update_pet(this, m_item));
 }
 
-auto Pet::modifyFullness(int8_t offset, bool sendPacket) -> void {
-	if (m_fullness + offset > Stats::MaxFullness) {
-		m_fullness = Stats::MaxFullness;
+auto pet::modify_fullness(int8_t offset, bool send_packet) -> void {
+	if (m_fullness + offset > stats::max_fullness) {
+		m_fullness = stats::max_fullness;
 	}
 	else {
 		m_fullness += offset;
 	}
 
-	if (m_fullness < Stats::MinFullness) {
-		m_fullness = Stats::MinFullness;
+	if (m_fullness < stats::min_fullness) {
+		m_fullness = stats::min_fullness;
 	}
 
-	if (sendPacket) {
-		m_player->send(Packets::Pets::updatePet(this, m_item));
+	if (send_packet) {
+		m_player->send(packets::pets::update_pet(this, m_item));
 	}
 }
 
-auto Pet::startTimer() -> void {
-	Vana::Timer::Id id{TimerType::PetTimer, getIndex().get()}; // The timer will automatically stop if another pet gets inserted into this index
-	duration_t repeat = seconds_t{(6 - ChannelServer::getInstance().getItemDataProvider().getPetInfo(getItemId())->hunger) * 60}; // TODO FIXME formula
-	Vana::Timer::Timer::create(
-		[this](const time_point_t &now) {
-			this->modifyFullness(-1, true);
+auto pet::start_timer() -> void {
+	vana::timer::id id{timer_type::pet_timer, get_index().get()}; // The timer will automatically stop if another pet gets inserted into this index
+	duration repeat = seconds{(6 - channel_server::get_instance().get_item_data_provider().get_pet_info(get_item_id())->hunger) * 60}; // TODO FIXME formula
+	vana::timer::timer::create(
+		[this](const time_point &now) {
+			this->modify_fullness(-1, true);
 		},
 		id,
-		m_player->getTimerContainer(),
-		seconds_t{0},
+		m_player->get_timer_container(),
+		seconds{0},
 		repeat);
 }
 
-auto Pet::hasNameTag() const -> bool {
+auto pet::has_name_tag() const -> bool {
 	if (m_index.is_initialized()) {
 		switch (m_index.get()) {
-			case 0: return m_player->getInventory()->getEquippedId(EquipSlots::PetLabelRing1, true) != 0;
-			case 1: return m_player->getInventory()->getEquippedId(EquipSlots::PetLabelRing2, true) != 0;
-			case 2: return m_player->getInventory()->getEquippedId(EquipSlots::PetLabelRing3, true) != 0;
+			case 0: return m_player->get_inventory()->get_equipped_id(equip_slots::pet_label_ring1, true) != 0;
+			case 1: return m_player->get_inventory()->get_equipped_id(equip_slots::pet_label_ring2, true) != 0;
+			case 2: return m_player->get_inventory()->get_equipped_id(equip_slots::pet_label_ring3, true) != 0;
 		}
 	}
 	return false;
 }
 
-auto Pet::hasQuoteItem() const -> bool {
+auto pet::has_quote_item() const -> bool {
 	if (m_index.is_initialized()) {
 		switch (m_index.get()) {
-			case 0: return m_player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing1, true) != 0;
-			case 1: return m_player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing2, true) != 0;
-			case 2: return m_player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing3, true) != 0;
+			case 0: return m_player->get_inventory()->get_equipped_id(equip_slots::pet_quote_ring1, true) != 0;
+			case 1: return m_player->get_inventory()->get_equipped_id(equip_slots::pet_quote_ring2, true) != 0;
+			case 2: return m_player->get_inventory()->get_equipped_id(equip_slots::pet_quote_ring3, true) != 0;
 		}
 	}
 	return false;
 }
 
-auto Pet::initializePet(const soci::row &row) -> void {
+auto pet::initialize_pet(const soci::row &row) -> void {
 	m_index = row.get<opt_int8_t>("index");
-	m_name = row.get<string_t>("pet_name");
+	m_name = row.get<string>("pet_name");
 	m_level = row.get<int8_t>("level");
 	m_closeness = row.get<int16_t>("closeness");
 	m_fullness = row.get<int8_t>("fullness");
-	m_inventorySlot = row.get<int8_t>("slot");
+	m_inventory_slot = row.get<int8_t>("slot");
 }
 
 }

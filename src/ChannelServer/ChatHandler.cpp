@@ -29,66 +29,66 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/WorldServerPacket.hpp"
 #include <algorithm>
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-auto ChatHandler::initializeCommands() -> void {
-	ChatHandlerFunctions::initialize();
+auto chat_handler::initialize_commands() -> void {
+	chat_handler_functions::initialize();
 }
 
-auto ChatHandler::handleChat(ref_ptr_t<Player> player, PacketReader &reader) -> void {
-	chat_t message = reader.get<chat_t>();
-	bool bubbleOnly = reader.get<bool>(); // Skill macros only display chat bubbles
+auto chat_handler::handle_chat(ref_ptr<player> player, packet_reader &reader) -> void {
+	game_chat message = reader.get<game_chat>();
+	bool bubble_only = reader.get<bool>(); // Skill macros only display chat bubbles
 
-	if (ChatHandler::handleCommand(player, message) == HandleResult::Unhandled) {
-		if (player->isGmChat()) {
-			ChannelServer::getInstance().getPlayerDataProvider().handleGmChat(player, message);
+	if (chat_handler::handle_command(player, message) == handle_result::unhandled) {
+		if (player->is_gm_chat()) {
+			channel_server::get_instance().get_player_data_provider().handle_gm_chat(player, message);
 			return;
 		}
 
-		player->sendMap(Packets::Players::showChat(player->getId(), player->isGm(), message, bubbleOnly));
+		player->send_map(packets::players::show_chat(player->get_id(), player->is_gm(), message, bubble_only));
 	}
 }
 
-auto ChatHandler::handleCommand(ref_ptr_t<Player> player, const chat_t &message) -> HandleResult {
-	using ChatHandlerFunctions::sCommandList;
+auto chat_handler::handle_command(ref_ptr<player> player, const game_chat &message) -> handle_result {
+	using chat_handler_functions::g_command_list;
 
-	if (player->isAdmin() && message[0] == '/') {
+	if (player->is_admin() && message[0] == '/') {
 		// Prevent command printing for Admins
-		return HandleResult::Handled;
+		return handle_result::handled;
 	}
 
-	if (player->isGm() && message[0] == '!' && message.size() > 2) {
+	if (player->is_gm() && message[0] == '!' && message.size() > 2) {
 		char *chat = const_cast<char *>(message.c_str());
-		chat_t command = strtok(chat + 1, " ");
-		chat_t args = message.length() > command.length() + 2 ? message.substr(command.length() + 2) : "";
-		auto kvp = sCommandList.find(command);
-		if (kvp == std::end(sCommandList)) {
-			ChatHandlerFunctions::showError(player, "Invalid command: " + command);
+		game_chat command = strtok(chat + 1, " ");
+		game_chat args = message.length() > command.length() + 2 ? message.substr(command.length() + 2) : "";
+		auto kvp = g_command_list.find(command);
+		if (kvp == std::end(g_command_list)) {
+			chat_handler_functions::show_error(player, "Invalid command: " + command);
 		}
 		else {
 			auto &cmd = kvp->second;
-			if (player->getGmLevel() < cmd.level) {
-				ChatHandlerFunctions::showError(player, "You are not at a high enough GM level to use the command");
+			if (player->get_gm_level() < cmd.level) {
+				chat_handler_functions::show_error(player, "You are not at a high enough GM level to use the command");
 			}
-			else if (cmd.command(player, args) == ChatResult::ShowSyntax) {
-				ChatHandlerFunctions::showSyntax(player, command);
+			else if (cmd.command(player, args) == chat_result::show_syntax) {
+				chat_handler_functions::show_syntax(player, command);
 			}
 		}
-		return HandleResult::Handled;
+		return handle_result::handled;
 	}
 
-	return HandleResult::Unhandled;
+	return handle_result::unhandled;
 }
 
-auto ChatHandler::handleGroupChat(ref_ptr_t<Player> player, PacketReader &reader) -> void {
+auto chat_handler::handle_group_chat(ref_ptr<player> player, packet_reader &reader) -> void {
 	int8_t type = reader.get<int8_t>();
 	uint8_t amount = reader.get<uint8_t>();
-	vector_t<player_id_t> receivers = reader.get<vector_t<player_id_t>>(amount);
-	chat_t chat = reader.get<chat_t>();
+	vector<game_player_id> receivers = reader.get<vector<game_player_id>>(amount);
+	game_chat chat = reader.get<game_chat>();
 
-	if (ChatHandler::handleCommand(player, chat) == HandleResult::Unhandled) {
-		ChannelServer::getInstance().getPlayerDataProvider().handleGroupChat(type, player->getId(), receivers, chat);
+	if (chat_handler::handle_command(player, chat) == handle_result::unhandled) {
+		channel_server::get_instance().get_player_data_provider().handle_group_chat(type, player->get_id(), receivers, chat);
 	}
 }
 

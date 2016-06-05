@@ -21,46 +21,46 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/TimeUtilities.hpp"
 #include <memory>
 
-namespace Vana {
-namespace Timer {
+namespace vana {
+namespace timer {
 
-auto Timer::create(const timer_func_t func, const Id &id, ref_ptr_t<Container> container, const duration_t &differenceFromNow, const duration_t &repeat) -> void {
+auto timer::create(const timer_func func, const id &id, ref_ptr<container> container, const duration &difference_from_now, const duration &repeat) -> void {
 	if (container == nullptr) {
-		container = TimerThread::getInstance().getTimerContainer();
+		container = timer_thread::get_instance().get_timer_container();
 	}
 
-	ref_ptr_t<Timer> timer = make_ref_ptr<Timer>(func, id, container, differenceFromNow, repeat);
-	container->registerTimer(timer, id, timer->m_runAt);
+	ref_ptr<timer> timer = make_ref_ptr<vana::timer::timer>(func, id, container, difference_from_now, repeat);
+	container->register_timer(timer, id, timer->m_run_at);
 }
 
-Timer::Timer(const timer_func_t func, const Id &id, ref_ptr_t<Container> container, const duration_t &differenceFromNow, const duration_t &repeat) :
+timer::timer(const timer_func func, const id &id, ref_ptr<container> container, const duration &difference_from_now, const duration &repeat) :
 	m_id{id},
 	m_container{container},
-	m_repeatTime{repeat},
+	m_repeat_time{repeat},
 	m_function{func}
 {
 	m_repeat = repeat.count() != 0;
-	m_runAt = TimeUtilities::getNowWithTimeAdded(differenceFromNow);
+	m_run_at = utilities::time::get_now_with_time_added(difference_from_now);
 }
 
-auto Timer::removeFromContainer() const -> void {
-	if (ref_ptr_t<Container> container = m_container.lock()) {
-		container->removeTimer(m_id);
+auto timer::remove_from_container() const -> void {
+	if (ref_ptr<container> container = m_container.lock()) {
+		container->remove_timer(m_id);
 	}
 }
 
-auto Timer::run(const time_point_t &now) const -> RunResult {
+auto timer::run(const time_point &now) const -> run_result {
 	m_function(now);
-	return m_repeat ? RunResult::Reset : RunResult::Complete;
+	return m_repeat ? run_result::reset : run_result::complete;
 }
 
-auto Timer::reset(const time_point_t &now) -> time_point_t {
-	m_runAt = now + m_repeatTime;
-	return m_runAt;
+auto timer::reset(const time_point &now) -> time_point {
+	m_run_at = now + m_repeat_time;
+	return m_run_at;
 }
 
-auto Timer::getTimeLeft() const -> duration_t {
-	return m_runAt - TimeUtilities::getNow();
+auto timer::get_time_left() const -> duration {
+	return m_run_at - utilities::time::get_now();
 }
 
 }

@@ -26,35 +26,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer/WorldServer.hpp"
 #include <iostream>
 
-namespace Vana {
-namespace WorldServer {
+namespace vana {
+namespace world_server {
 
-auto LoginServerSession::handle(PacketReader &reader) -> Result {
-	switch (reader.get<header_t>()) {
-		case IMSG_WORLD_CONNECT: LoginServerConnectHandler::connect(shared_from_this(), reader); break;
-		case IMSG_REHASH_CONFIG: WorldServer::getInstance().rehashConfig(reader.get<WorldConfig>()); break;
+auto login_server_session::handle(packet_reader &reader) -> result {
+	switch (reader.get<packet_header>()) {
+		case IMSG_WORLD_CONNECT: login_server_connect_handler::connect(shared_from_this(), reader); break;
+		case IMSG_REHASH_CONFIG: world_server::get_instance().rehash_config(reader.get<world_config>()); break;
 		case IMSG_TO_CHANNEL: {
-			channel_id_t channelId = reader.get<channel_id_t>();
-			WorldServer::getInstance().getChannels().send(channelId, Packets::identity(reader));
+			game_channel_id channel_id = reader.get<game_channel_id>();
+			world_server::get_instance().get_channels().send(channel_id, packets::identity(reader));
 			break;
 		}
 		case IMSG_TO_CHANNEL_LIST: {
-			vector_t<channel_id_t> channels = reader.get<vector_t<channel_id_t>>();
-			WorldServer::getInstance().getChannels().send(channels, Packets::identity(reader));
+			vector<game_channel_id> channels = reader.get<vector<game_channel_id>>();
+			world_server::get_instance().get_channels().send(channels, packets::identity(reader));
 			break;
 		}
-		case IMSG_TO_ALL_CHANNELS: WorldServer::getInstance().getChannels().send(Packets::identity(reader)); break;
-		case IMSG_SYNC: SyncHandler::handle(shared_from_this(), reader); break;
+		case IMSG_TO_ALL_CHANNELS: world_server::get_instance().get_channels().send(packets::identity(reader)); break;
+		case IMSG_SYNC: sync_handler::handle(shared_from_this(), reader); break;
 	}
-	return Result::Successful;
+	return result::successful;
 }
 
-auto LoginServerSession::onConnect() -> void {
-	WorldServer::getInstance().onConnectToLogin(shared_from_this());
+auto login_server_session::on_connect() -> void {
+	world_server::get_instance().on_connect_to_login(shared_from_this());
 }
 
-auto LoginServerSession::onDisconnect() -> void {
-	WorldServer::getInstance().onDisconnectFromLogin();
+auto login_server_session::on_disconnect() -> void {
+	world_server::get_instance().on_disconnect_from_login();
 }
 
 }

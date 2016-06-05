@@ -21,50 +21,50 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/Types.hpp"
 #include <unordered_map>
 
-namespace Vana {
-	class PacketBuilder;
+namespace vana {
+	class packet_builder;
 
-	namespace ChannelServer {
-		class Player;
+	namespace channel_server {
+		class player;
 
-		struct MonsterCard {
-			MonsterCard() = default;
-			MonsterCard(item_id_t id, uint8_t level) : id{id}, level{level} { }
+		struct monster_card {
+			monster_card() = default;
+			monster_card(game_item_id id, uint8_t level) : id{id}, level{level} { }
 
-			item_id_t id = 0;
+			game_item_id id = 0;
 			uint8_t level = 0;
 		};
 
-		class PlayerMonsterBook {
-			NONCOPYABLE(PlayerMonsterBook);
-			NO_DEFAULT_CONSTRUCTOR(PlayerMonsterBook);
+		class player_monster_book {
+			NONCOPYABLE(player_monster_book);
+			NO_DEFAULT_CONSTRUCTOR(player_monster_book);
 		public:
-			PlayerMonsterBook(Player *player);
+			player_monster_book(player *player);
 
 			auto load() -> void;
 			auto save() -> void;
-			auto connectPacket(PacketBuilder &builder) -> void;
-			auto infoPacket(PacketBuilder &builder) -> void;
+			auto connect_packet(packet_builder &builder) -> void;
+			auto info_packet(packet_builder &builder) -> void;
 
-			auto addCard(item_id_t itemId, uint8_t level = 1, bool initialLoad = false) -> bool;
-			auto calculateLevel() -> void;
-			auto setCover(int32_t newCover) -> void { m_cover = newCover; }
+			auto add_card(game_item_id item_id, uint8_t level = 1, bool initial_load = false) -> bool;
+			auto calculate_level() -> void;
+			auto set_cover(int32_t new_cover) -> void { m_cover = new_cover; }
 
-			auto getCard(item_id_t cardId) -> MonsterCard *;
-			auto getCardLevel(item_id_t cardId) -> uint8_t;
-			auto getSpecials() const -> int32_t { return m_specialCount; }
-			auto getNormals() const -> int32_t { return m_normalCount; }
-			auto getSize() const -> int32_t { return static_cast<int32_t>(m_cards.size()); }
-			auto getLevel() const -> int32_t { return m_level; }
-			auto getCover() const -> int32_t { return m_cover; }
-			auto isFull(item_id_t cardId) -> bool;
+			auto get_card(game_item_id card_id) -> monster_card *;
+			auto get_card_level(game_item_id card_id) -> uint8_t;
+			auto get_specials() const -> int32_t { return m_special_count; }
+			auto get_normals() const -> int32_t { return m_normal_count; }
+			auto get_size() const -> int32_t { return static_cast<int32_t>(m_cards.size()); }
+			auto get_level() const -> int32_t { return m_level; }
+			auto get_cover() const -> int32_t { return m_cover; }
+			auto is_full(game_item_id card_id) -> bool;
 		private:
-			int32_t m_specialCount = 0;
-			int32_t m_normalCount = 0;
+			int32_t m_special_count = 0;
+			int32_t m_normal_count = 0;
 			int32_t m_level = 1;
 			int32_t m_cover = 0;
-			Player *m_player = nullptr;
-			hash_map_t<item_id_t, MonsterCard> m_cards;
+			player *m_player = nullptr;
+			hash_map<game_item_id, monster_card> m_cards;
 		};
 	}
 }

@@ -22,35 +22,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Common/TimerType.hpp"
 #include "Common/Types.hpp"
 
-namespace Vana {
+namespace vana {
 	// Keep track of a pool of objects and query them from time to time until only one reference remains
 	template <typename TObject>
-	class FinalizationPool {
+	class finalization_pool {
 	public:
 		// Minimum use count refers to the baseline number of usages in cases of mutual referencing
-		auto initialize(uint32_t uniquePoolSeed, uint32_t minimumUseCount = 0) -> void {
+		auto initialize(uint32_t unique_pool_seed, uint32_t minimum_use_count = 0) -> void {
 			if (m_initialized) {
-				throw InvalidOperationException{"Must only initialize once"};
+				throw invalid_operation_exception{"must only initialize once"};
 			}
 
 			// Add 1 to the minimum use count in order to account for our copy
-			m_minimumUseCount = minimumUseCount + 1;
+			m_minimum_use_count = minimum_use_count + 1;
 
-			Timer::Timer::create(
-				[this](const time_point_t &) {
+			timer::timer::create(
+				[this](const time_point &) {
 					this->process();
 				},
-				Timer::Id{TimerType::FinalizeTimer, uniquePoolSeed},
-				Timer::TimerThread::getInstance().getTimerContainer(),
-				seconds_t{60},
-				seconds_t{30});
+				timer::id{timer_type::finalize_timer, unique_pool_seed},
+				timer::timer_thread::get_instance().get_timer_container(),
+				seconds{60},
+				seconds{30});
 
 			m_initialized = true;
 		}
 
-		auto store(ref_ptr_t<TObject> obj) -> void {
+		auto store(ref_ptr<TObject> obj) -> void {
 			if (!m_initialized) {
-				throw InvalidOperationException{"Must initialize before use"};
+				throw invalid_operation_exception{"Must initialize before use"};
 			}
 
 			m_waiting.push_back(obj);
@@ -65,9 +65,9 @@ namespace Vana {
 			// Iteration 0, remove, i--
 			// I would be assuming both underflow and overflow behavior and I don't think either is guaranteed
 			for (size_t i = 1; i <= m_waiting.size(); i++) {
-				ref_ptr_t<TObject> &v = m_waiting[i - 1];
-				unsigned long useCount = (unsigned long)v.use_count();
-				if (useCount <= m_minimumUseCount) {
+				ref_ptr<TObject> &v = m_waiting[i - 1];
+				unsigned long use_count = (unsigned long)v.use_count();
+				if (use_count <= m_minimum_use_count) {
 					m_waiting.erase(std::begin(m_waiting) + (i - 1));
 					i--;
 				}
@@ -75,7 +75,7 @@ namespace Vana {
 		}
 
 		bool m_initialized = false;
-		uint32_t m_minimumUseCount = 0;
-		vector_t<ref_ptr_t<TObject>> m_waiting;
+		uint32_t m_minimum_use_count = 0;
+		vector<ref_ptr<TObject>> m_waiting;
 	};
 }

@@ -21,56 +21,56 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer/Maps.hpp"
 #include "ChannelServer/Player.hpp"
 
-namespace Vana {
-namespace ChannelServer {
+namespace vana {
+namespace channel_server {
 
-LuaPortal::LuaPortal(const string_t &filename, player_id_t playerId, map_id_t mapId, const PortalInfo * const portal) :
-	LuaScriptable{filename, playerId}
+lua_portal::lua_portal(const string &filename, game_player_id player_id, game_map_id map_id, const portal_info * const portal) :
+	lua_scriptable{filename, player_id}
 {
-	set<portal_id_t>("system_portal_id", portal->id);
-	set<string_t>("system_portal_name", portal->name);
-	set<map_id_t>("system_map_id", mapId);
+	set<game_portal_id>("system_portal_id", portal->id);
+	set<string>("system_portal_name", portal->name);
+	set<game_map_id>("system_map_id", map_id);
 
 	// Portal
-	expose("instantWarp", &LuaExports::instantWarp);
-	expose("playPortalSe", &LuaExports::playPortalSe);
-	expose("portalFailed", &LuaExports::portalFailed);
+	expose("instantWarp", &lua_exports::instant_warp);
+	expose("playPortalSe", &lua_exports::play_portal_se);
+	expose("portalFailed", &lua_exports::portal_failed);
 
 	run();
 }
 
-auto LuaPortal::playerWarped() -> bool {
+auto lua_portal::player_warped() -> bool {
 	return exists("player_warped");
 }
 
-auto LuaPortal::playerMapChanged() -> bool {
+auto lua_portal::player_map_changed() -> bool {
 	return exists("player_map_changed");
 }
 
-auto LuaPortal::portalFailed() -> bool {
+auto lua_portal::portal_failed() -> bool {
 	return exists("player_portal_failed");
 }
 
 // Portal
-auto LuaExports::instantWarp(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	auto player = getPlayer(luaVm, env);
-	string_t portal = env.get<string_t>(luaVm, 1);
-	portal_id_t portalId = player->getMap()->getPortal(portal)->id;
-	player->send(Packets::Map::instantWarp(portalId));
-	env.set<bool>(luaVm, "player_warped", true);
+auto lua_exports::instant_warp(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	auto player = get_player(lua_vm, env);
+	string portal = env.get<string>(lua_vm, 1);
+	game_portal_id portal_id = player->get_map()->get_portal(portal)->id;
+	player->send(packets::map::instant_warp(portal_id));
+	env.set<bool>(lua_vm, "player_warped", true);
 	return 0;
 }
 
-auto LuaExports::playPortalSe(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	getPlayer(luaVm, env)->send(Packets::playPortalSoundEffect());
+auto lua_exports::play_portal_se(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	get_player(lua_vm, env)->send(packets::play_portal_sound_effect());
 	return 0;
 }
 
-auto LuaExports::portalFailed(lua_State *luaVm) -> lua_return_t {
-	auto &env = getEnvironment(luaVm);
-	env.set<bool>(luaVm, "player_portal_failed", true);
+auto lua_exports::portal_failed(lua_State *lua_vm) -> lua::lua_return {
+	auto &env = get_environment(lua_vm);
+	env.set<bool>(lua_vm, "player_portal_failed", true);
 	return 0;
 }
 
