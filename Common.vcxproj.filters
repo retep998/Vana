@@ -63,762 +63,762 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Common\BuffDataProvider.cpp">
+    <ClCompile Include="src\common_temp\BuffDataProvider.cpp">
       <Filter>Data Loading</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\InitializeCommon.cpp">
+    <ClCompile Include="src\common_temp\InitializeCommon.cpp">
       <Filter>Data Loading</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\Database.cpp">
+    <ClCompile Include="src\common_temp\Database.cpp">
       <Filter>Database</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\PacketReader.cpp">
+    <ClCompile Include="src\common_temp\PacketReader.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\FileUtilities.cpp">
+    <ClCompile Include="src\common_temp\FileUtilities.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\Randomizer.cpp">
+    <ClCompile Include="src\common_temp\Randomizer.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\StringUtilities.cpp">
+    <ClCompile Include="src\common_temp\StringUtilities.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\TimeUtilities.cpp">
+    <ClCompile Include="src\common_temp\TimeUtilities.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\ConnectionManager.cpp">
+    <ClCompile Include="src\common_temp\ConnectionManager.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\Variables.cpp">
+    <ClCompile Include="src\common_temp\Variables.cpp">
       <Filter>Data Structures</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\BeautyDataProvider.cpp">
+    <ClCompile Include="src\common_temp\BeautyDataProvider.cpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\DropDataProvider.cpp">
+    <ClCompile Include="src\common_temp\DropDataProvider.cpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\EquipDataProvider.cpp">
+    <ClCompile Include="src\common_temp\EquipDataProvider.cpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\ItemDataProvider.cpp">
+    <ClCompile Include="src\common_temp\ItemDataProvider.cpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\MobDataProvider.cpp">
+    <ClCompile Include="src\common_temp\MobDataProvider.cpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\NpcDataProvider.cpp">
+    <ClCompile Include="src\common_temp\NpcDataProvider.cpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\QuestDataProvider.cpp">
+    <ClCompile Include="src\common_temp\QuestDataProvider.cpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\ReactorDataProvider.cpp">
+    <ClCompile Include="src\common_temp\ReactorDataProvider.cpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\ScriptDataProvider.cpp">
+    <ClCompile Include="src\common_temp\ScriptDataProvider.cpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\ShopDataProvider.cpp">
+    <ClCompile Include="src\common_temp\ShopDataProvider.cpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\SkillDataProvider.cpp">
+    <ClCompile Include="src\common_temp\SkillDataProvider.cpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\ValidCharDataProvider.cpp">
+    <ClCompile Include="src\common_temp\ValidCharDataProvider.cpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\Item.cpp">
+    <ClCompile Include="src\common_temp\Item.cpp">
       <Filter>Data Structures</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\ConsoleLogger.cpp">
+    <ClCompile Include="src\common_temp\ConsoleLogger.cpp">
       <Filter>Loggers</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\FileLogger.cpp">
+    <ClCompile Include="src\common_temp\FileLogger.cpp">
       <Filter>Loggers</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\Logger.cpp">
+    <ClCompile Include="src\common_temp\Logger.cpp">
       <Filter>Loggers</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\SqlLogger.cpp">
+    <ClCompile Include="src\common_temp\SqlLogger.cpp">
       <Filter>Loggers</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\Timer.cpp">
+    <ClCompile Include="src\common_temp\Timer.cpp">
       <Filter>Timer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\TimerContainer.cpp">
+    <ClCompile Include="src\common_temp\TimerContainer.cpp">
       <Filter>Timer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\TimerThread.cpp">
+    <ClCompile Include="src\common_temp\TimerThread.cpp">
       <Filter>Timer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\AuthenticationPacket.cpp">
+    <ClCompile Include="src\common_temp\AuthenticationPacket.cpp">
       <Filter>Inter-Server</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\Decoder.cpp">
+    <ClCompile Include="src\common_temp\Decoder.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\Session.cpp">
+    <ClCompile Include="src\common_temp\Session.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\Decoder.cpp">
+    <ClCompile Include="src\common_temp\Decoder.cpp">
       <Filter>Source\Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\Quest.cpp">
+    <ClCompile Include="src\common_temp\Quest.cpp">
       <Filter>Data Structures</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\TauswortheGenerator.cpp">
+    <ClCompile Include="src\common_temp\TauswortheGenerator.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\CurseDataProvider.cpp">
+    <ClCompile Include="src\common_temp\CurseDataProvider.cpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\ConfigFile.cpp">
+    <ClCompile Include="src\common_temp\ConfigFile.cpp">
       <Filter>Configuration</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\MySqlQueryParser.cpp">
+    <ClCompile Include="src\common_temp\MySqlQueryParser.cpp">
       <Filter>Database</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\DatabaseUpdater.cpp">
+    <ClCompile Include="src\common_temp\DatabaseUpdater.cpp">
       <Filter>Database</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\AbstractServer.cpp">
+    <ClCompile Include="src\common_temp\AbstractServer.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\PrecompiledHeader.cpp" />
-    <ClCompile Include="src\Common\Ip.cpp">
+    <ClCompile Include="src\common_temp\PrecompiledHeader.cpp" />
+    <ClCompile Include="src\common_temp\Ip.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\ExternalIp.cpp">
+    <ClCompile Include="src\common_temp\ExternalIp.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\ClientIp.cpp">
+    <ClCompile Include="src\common_temp\ClientIp.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\ExternalIpResolver.cpp">
+    <ClCompile Include="src\common_temp\ExternalIpResolver.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\PacketBuilder.cpp">
+    <ClCompile Include="src\common_temp\PacketBuilder.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\LuaEnvironment.cpp">
+    <ClCompile Include="src\common_temp\LuaEnvironment.cpp">
       <Filter>Scripting</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\ExitCodes.cpp" />
-    <ClCompile Include="src\Common\VanaMain.cpp" />
-    <ClCompile Include="src\Common\Buff.cpp">
+    <ClCompile Include="src\common_temp\ExitCodes.cpp" />
+    <ClCompile Include="src\common_temp\VanaMain.cpp" />
+    <ClCompile Include="src\common_temp\Buff.cpp">
       <Filter>Data Structures\Buffs</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\BuffInfo.cpp">
+    <ClCompile Include="src\common_temp\BuffInfo.cpp">
       <Filter>Data Structures\Buffs</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\BuffSource.cpp">
+    <ClCompile Include="src\common_temp\BuffSource.cpp">
       <Filter>Data Structures\Buffs</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\Line.cpp">
+    <ClCompile Include="src\common_temp\Line.cpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\Rect.cpp">
+    <ClCompile Include="src\common_temp\Rect.cpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\BuffMapInfo.cpp">
+    <ClCompile Include="src\common_temp\BuffMapInfo.cpp">
       <Filter>Data Structures\Buffs</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\FileTime.cpp">
+    <ClCompile Include="src\common_temp\FileTime.cpp">
       <Filter>Data Structures\Time</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\HashUtilities.cpp">
+    <ClCompile Include="src\common_temp\HashUtilities.cpp">
       <Filter>Encryption</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\LuaVariant.cpp">
+    <ClCompile Include="src\common_temp\LuaVariant.cpp">
       <Filter>Scripting</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\SaltTransformationConfig.cpp">
+    <ClCompile Include="src\common_temp\SaltTransformationConfig.cpp">
       <Filter>Configuration</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\PasswordTransformationConfig.cpp">
+    <ClCompile Include="src\common_temp\PasswordTransformationConfig.cpp">
       <Filter>Configuration</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\Point.cpp">
+    <ClCompile Include="src\common_temp\Point.cpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\Ratio.cpp">
+    <ClCompile Include="src\common_temp\Ratio.cpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\ThreadPool.cpp">
+    <ClCompile Include="src\common_temp\ThreadPool.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\EncryptedPacketTransformer.cpp">
+    <ClCompile Include="src\common_temp\EncryptedPacketTransformer.cpp">
       <Filter>Encryption</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\BlockCipherIv.cpp">
+    <ClCompile Include="src\common_temp\BlockCipherIv.cpp">
       <Filter>Encryption</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\ConnectionListener.cpp">
+    <ClCompile Include="src\common_temp\ConnectionListener.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\PacketTransformer.cpp">
+    <ClCompile Include="src\common_temp\PacketTransformer.cpp">
       <Filter>Encryption</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\CommonPacket.cpp">
+    <ClCompile Include="src\common_temp\CommonPacket.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\ServerAcceptedSession.cpp">
+    <ClCompile Include="src\common_temp\ServerAcceptedSession.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\PacketHandler.cpp">
+    <ClCompile Include="src\common_temp\PacketHandler.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Common\GameConstants.hpp">
+    <ClInclude Include="src\common_temp\GameConstants.hpp">
       <Filter>Game Constants</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ItemConstants.hpp">
+    <ClInclude Include="src\common_temp\ItemConstants.hpp">
       <Filter>Game Constants</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\MapConstants.hpp">
+    <ClInclude Include="src\common_temp\MapConstants.hpp">
       <Filter>Game Constants</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\MobConstants.hpp">
+    <ClInclude Include="src\common_temp\MobConstants.hpp">
       <Filter>Game Constants</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\SkillConstants.hpp">
+    <ClInclude Include="src\common_temp\SkillConstants.hpp">
       <Filter>Game Constants</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\FileUtilities.hpp">
+    <ClInclude Include="src\common_temp\FileUtilities.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\TimeUtilities.hpp">
+    <ClInclude Include="src\common_temp\TimeUtilities.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\GameLogicUtilities.hpp">
+    <ClInclude Include="src\common_temp\GameLogicUtilities.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\MiscUtilities.hpp">
+    <ClInclude Include="src\common_temp\MiscUtilities.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Randomizer.hpp">
+    <ClInclude Include="src\common_temp\Randomizer.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\StringUtilities.hpp">
+    <ClInclude Include="src\common_temp\StringUtilities.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\PacketReader.hpp">
+    <ClInclude Include="src\common_temp\PacketReader.hpp">
       <Filter>Packets</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ConsoleLogger.hpp">
+    <ClInclude Include="src\common_temp\ConsoleLogger.hpp">
       <Filter>Loggers</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\SqlLogger.hpp">
+    <ClInclude Include="src\common_temp\SqlLogger.hpp">
       <Filter>Loggers</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\FileLogger.hpp">
+    <ClInclude Include="src\common_temp\FileLogger.hpp">
       <Filter>Loggers</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Logger.hpp">
+    <ClInclude Include="src\common_temp\Logger.hpp">
       <Filter>Loggers</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Database.hpp">
+    <ClInclude Include="src\common_temp\Database.hpp">
       <Filter>Database</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\BeautyDataProvider.hpp">
+    <ClInclude Include="src\common_temp\BeautyDataProvider.hpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ValidCharDataProvider.hpp">
+    <ClInclude Include="src\common_temp\ValidCharDataProvider.hpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\DropDataProvider.hpp">
+    <ClInclude Include="src\common_temp\DropDataProvider.hpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\EquipDataProvider.hpp">
+    <ClInclude Include="src\common_temp\EquipDataProvider.hpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ItemDataProvider.hpp">
+    <ClInclude Include="src\common_temp\ItemDataProvider.hpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\MobDataProvider.hpp">
+    <ClInclude Include="src\common_temp\MobDataProvider.hpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\NpcDataProvider.hpp">
+    <ClInclude Include="src\common_temp\NpcDataProvider.hpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\QuestDataProvider.hpp">
+    <ClInclude Include="src\common_temp\QuestDataProvider.hpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ReactorDataProvider.hpp">
+    <ClInclude Include="src\common_temp\ReactorDataProvider.hpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ScriptDataProvider.hpp">
+    <ClInclude Include="src\common_temp\ScriptDataProvider.hpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ShopDataProvider.hpp">
+    <ClInclude Include="src\common_temp\ShopDataProvider.hpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\SkillDataProvider.hpp">
+    <ClInclude Include="src\common_temp\SkillDataProvider.hpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\BuffDataProvider.hpp">
+    <ClInclude Include="src\common_temp\BuffDataProvider.hpp">
       <Filter>Data Loading</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\InitializeCommon.hpp">
+    <ClInclude Include="src\common_temp\InitializeCommon.hpp">
       <Filter>Data Loading</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Variables.hpp">
+    <ClInclude Include="src\common_temp\Variables.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Item.hpp">
+    <ClInclude Include="src\common_temp\Item.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ConnectionManager.hpp">
+    <ClInclude Include="src\common_temp\ConnectionManager.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Timer.hpp">
+    <ClInclude Include="src\common_temp\Timer.hpp">
       <Filter>Timer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\TimerContainer.hpp">
+    <ClInclude Include="src\common_temp\TimerContainer.hpp">
       <Filter>Timer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\TimerId.hpp">
+    <ClInclude Include="src\common_temp\TimerId.hpp">
       <Filter>Timer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\TimerThread.hpp">
+    <ClInclude Include="src\common_temp\TimerThread.hpp">
       <Filter>Timer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\InterHelper.hpp">
+    <ClInclude Include="src\common_temp\InterHelper.hpp">
       <Filter>Inter-Server</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\AuthenticationPacket.hpp">
+    <ClInclude Include="src\common_temp\AuthenticationPacket.hpp">
       <Filter>Inter-Server</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ComboLoggers.hpp">
+    <ClInclude Include="src\common_temp\ComboLoggers.hpp">
       <Filter>Loggers</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\BitUtilities.hpp">
+    <ClInclude Include="src\common_temp\BitUtilities.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Decoder.hpp">
+    <ClInclude Include="src\common_temp\Decoder.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Session.hpp">
+    <ClInclude Include="src\common_temp\Session.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Decoder.hpp">
+    <ClInclude Include="src\common_temp\Decoder.hpp">
       <Filter>Source\Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Quest.hpp">
+    <ClInclude Include="src\common_temp\Quest.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\TauswortheGenerator.hpp">
+    <ClInclude Include="src\common_temp\TauswortheGenerator.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\hash_combine.hpp">
+    <ClInclude Include="src\common_temp\hash_combine.hpp">
       <Filter>Lib</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\shared_array.hpp">
+    <ClInclude Include="src\common_temp\shared_array.hpp">
       <Filter>Lib</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\tokenizer.hpp">
+    <ClInclude Include="src\common_temp\tokenizer.hpp">
       <Filter>Lib</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\optional.hpp">
+    <ClInclude Include="src\common_temp\optional.hpp">
       <Filter>Lib</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\SociExtensions.hpp">
+    <ClInclude Include="src\common_temp\SociExtensions.hpp">
       <Filter>Lib</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\JobConstants.hpp">
+    <ClInclude Include="src\common_temp\JobConstants.hpp">
       <Filter>Game Constants</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\CurseDataProvider.hpp">
+    <ClInclude Include="src\common_temp\CurseDataProvider.hpp">
       <Filter>Data Loading\MCDB</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ConfigFile.hpp">
+    <ClInclude Include="src\common_temp\ConfigFile.hpp">
       <Filter>Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\MySqlQueryParser.hpp">
+    <ClInclude Include="src\common_temp\MySqlQueryParser.hpp">
       <Filter>Database</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\DatabaseUpdater.hpp">
+    <ClInclude Include="src\common_temp\DatabaseUpdater.hpp">
       <Filter>Database</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\AbstractServer.hpp">
+    <ClInclude Include="src\common_temp\AbstractServer.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\IPacket.hpp">
+    <ClInclude Include="src\common_temp\IPacket.hpp">
       <Filter>Packets</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ExitCodes.hpp" />
-    <ClInclude Include="src\Common\PrecompiledHeader.hpp" />
-    <ClInclude Include="src\Common\Types.hpp" />
-    <ClInclude Include="src\Common\Ip.hpp">
+    <ClInclude Include="src\common_temp\ExitCodes.hpp" />
+    <ClInclude Include="src\common_temp\PrecompiledHeader.hpp" />
+    <ClInclude Include="src\common_temp\Types.hpp" />
+    <ClInclude Include="src\common_temp\Ip.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ExternalIp.hpp">
+    <ClInclude Include="src\common_temp\ExternalIp.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ClientIp.hpp">
+    <ClInclude Include="src\common_temp\ClientIp.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\InterHeader.hpp">
+    <ClInclude Include="src\common_temp\InterHeader.hpp">
       <Filter>Packets\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ExternalIpResolver.hpp">
+    <ClInclude Include="src\common_temp\ExternalIpResolver.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\StopWatch.hpp">
+    <ClInclude Include="src\common_temp\StopWatch.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\make_unique.hpp">
+    <ClInclude Include="src\common_temp\make_unique.hpp">
       <Filter>Lib</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\CaseInsensitiveHash.hpp">
+    <ClInclude Include="src\common_temp\CaseInsensitiveHash.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\CaseInsensitiveEquals.hpp">
+    <ClInclude Include="src\common_temp\CaseInsensitiveEquals.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\TimerContainerHolder.hpp">
+    <ClInclude Include="src\common_temp\TimerContainerHolder.hpp">
       <Filter>Timer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\VanaMain.hpp" />
-    <ClInclude Include="src\Common\Algorithm.hpp">
+    <ClInclude Include="src\common_temp\VanaMain.hpp" />
+    <ClInclude Include="src\common_temp\Algorithm.hpp">
       <Filter>Lib</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\PacketBuilder.hpp">
+    <ClInclude Include="src\common_temp\PacketBuilder.hpp">
       <Filter>Packets</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\PacketWrapper.hpp">
+    <ClInclude Include="src\common_temp\PacketWrapper.hpp">
       <Filter>Packets</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\SplitPacketBuilder.hpp">
+    <ClInclude Include="src\common_temp\SplitPacketBuilder.hpp">
       <Filter>Packets</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\LuaEnvironment.hpp">
+    <ClInclude Include="src\common_temp\LuaEnvironment.hpp">
       <Filter>Scripting</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\TimerType.hpp">
+    <ClInclude Include="src\common_temp\TimerType.hpp">
       <Filter>Timer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\CommonHeader.hpp">
+    <ClInclude Include="src\common_temp\CommonHeader.hpp">
       <Filter>Packets\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\IdPool.hpp">
+    <ClInclude Include="src\common_temp\IdPool.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\IdLooper.hpp">
+    <ClInclude Include="src\common_temp\IdLooper.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ObjectPool.hpp">
+    <ClInclude Include="src\common_temp\ObjectPool.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Buff.hpp">
+    <ClInclude Include="src\common_temp\Buff.hpp">
       <Filter>Data Structures\Buffs</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\BuffAction.hpp">
+    <ClInclude Include="src\common_temp\BuffAction.hpp">
       <Filter>Data Structures\Buffs</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\BuffInfo.hpp">
+    <ClInclude Include="src\common_temp\BuffInfo.hpp">
       <Filter>Data Structures\Buffs</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\BuffSkillValue.hpp">
+    <ClInclude Include="src\common_temp\BuffSkillValue.hpp">
       <Filter>Data Structures\Buffs</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\BuffSourceType.hpp">
+    <ClInclude Include="src\common_temp\BuffSourceType.hpp">
       <Filter>Data Structures\Buffs</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\BuffSource.hpp">
+    <ClInclude Include="src\common_temp\BuffSource.hpp">
       <Filter>Data Structures\Buffs</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Line.hpp">
+    <ClInclude Include="src\common_temp\Line.hpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Point.hpp">
+    <ClInclude Include="src\common_temp\Point.hpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Rect.hpp">
+    <ClInclude Include="src\common_temp\Rect.hpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\WidePoint.hpp">
+    <ClInclude Include="src\common_temp\WidePoint.hpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\BuffInfoByEffect.hpp">
+    <ClInclude Include="src\common_temp\BuffInfoByEffect.hpp">
       <Filter>Data Structures\Buffs</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\BuffMapInfo.hpp">
+    <ClInclude Include="src\common_temp\BuffMapInfo.hpp">
       <Filter>Data Structures\Buffs</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\UnixTime.hpp">
+    <ClInclude Include="src\common_temp\UnixTime.hpp">
       <Filter>Data Structures\Time</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\FileTime.hpp">
+    <ClInclude Include="src\common_temp\FileTime.hpp">
       <Filter>Data Structures\Time</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\HashUtilities.hpp">
+    <ClInclude Include="src\common_temp\HashUtilities.hpp">
       <Filter>Encryption</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\SaltLeftoverPolicy.hpp">
+    <ClInclude Include="src\common_temp\SaltLeftoverPolicy.hpp">
       <Filter>Encryption</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\SaltModifyPolicy.hpp">
+    <ClInclude Include="src\common_temp\SaltModifyPolicy.hpp">
       <Filter>Encryption</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\SaltPolicy.hpp">
+    <ClInclude Include="src\common_temp\SaltPolicy.hpp">
       <Filter>Encryption</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\WorldConfig.hpp">
+    <ClInclude Include="src\common_temp\WorldConfig.hpp">
       <Filter>Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\LogConfig.hpp">
+    <ClInclude Include="src\common_temp\LogConfig.hpp">
       <Filter>Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\DbConfig.hpp">
+    <ClInclude Include="src\common_temp\DbConfig.hpp">
       <Filter>Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\InterServerConfig.hpp">
+    <ClInclude Include="src\common_temp\InterServerConfig.hpp">
       <Filter>Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\RatesConfig.hpp">
+    <ClInclude Include="src\common_temp\RatesConfig.hpp">
       <Filter>Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\MajorBossConfig.hpp">
+    <ClInclude Include="src\common_temp\MajorBossConfig.hpp">
       <Filter>Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\SaltConfig.hpp">
+    <ClInclude Include="src\common_temp\SaltConfig.hpp">
       <Filter>Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\LuaVariant.hpp">
+    <ClInclude Include="src\common_temp\LuaVariant.hpp">
       <Filter>Scripting</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\LuaType.hpp">
+    <ClInclude Include="src\common_temp\LuaType.hpp">
       <Filter>Scripting</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\SaltingConfig.hpp">
+    <ClInclude Include="src\common_temp\SaltingConfig.hpp">
       <Filter>Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\SaltTransformationConfig.hpp">
+    <ClInclude Include="src\common_temp\SaltTransformationConfig.hpp">
       <Filter>Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\PasswordTransformationConfig.hpp">
+    <ClInclude Include="src\common_temp\PasswordTransformationConfig.hpp">
       <Filter>Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\SaltSizeConfig.hpp">
+    <ClInclude Include="src\common_temp\SaltSizeConfig.hpp">
       <Filter>Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\SaltSizePolicy.hpp">
+    <ClInclude Include="src\common_temp\SaltSizePolicy.hpp">
       <Filter>Encryption</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\MapPosition.hpp">
+    <ClInclude Include="src\common_temp\MapPosition.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Ratio.hpp">
+    <ClInclude Include="src\common_temp\Ratio.hpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ThreadPool.hpp">
+    <ClInclude Include="src\common_temp\ThreadPool.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ServerType.hpp">
+    <ClInclude Include="src\common_temp\ServerType.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\McdbVersion.hpp" />
-    <ClInclude Include="src\Common\MapleVersion.hpp" />
-    <ClInclude Include="src\Common\PlayerData.hpp">
+    <ClInclude Include="src\common_temp\McdbVersion.hpp" />
+    <ClInclude Include="src\common_temp\MapleVersion.hpp" />
+    <ClInclude Include="src\common_temp\PlayerData.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\PartyData.hpp">
+    <ClInclude Include="src\common_temp\PartyData.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Respawnable.hpp">
+    <ClInclude Include="src\common_temp\Respawnable.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\GuildLogo.hpp">
+    <ClInclude Include="src\common_temp\GuildLogo.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\SpawnInfo.hpp">
+    <ClInclude Include="src\common_temp\SpawnInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\SeatInfo.hpp">
+    <ClInclude Include="src\common_temp\SeatInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\PortalInfo.hpp">
+    <ClInclude Include="src\common_temp\PortalInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\FootholdInfo.hpp">
+    <ClInclude Include="src\common_temp\FootholdInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ScrollInfo.hpp">
+    <ClInclude Include="src\common_temp\ScrollInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\SkillbookInfo.hpp">
+    <ClInclude Include="src\common_temp\SkillbookInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\SummonBagInfo.hpp">
+    <ClInclude Include="src\common_temp\SummonBagInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ConsumeInfo.hpp">
+    <ClInclude Include="src\common_temp\ConsumeInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\CardMapRangeInfo.hpp">
+    <ClInclude Include="src\common_temp\CardMapRangeInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ItemInfo.hpp">
+    <ClInclude Include="src\common_temp\ItemInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\PetInfo.hpp">
+    <ClInclude Include="src\common_temp\PetInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\PetInteractInfo.hpp">
+    <ClInclude Include="src\common_temp\PetInteractInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ItemRewardInfo.hpp">
+    <ClInclude Include="src\common_temp\ItemRewardInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\DropInfo.hpp">
+    <ClInclude Include="src\common_temp\DropInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\GlobalDropInfo.hpp">
+    <ClInclude Include="src\common_temp\GlobalDropInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\EquipInfo.hpp">
+    <ClInclude Include="src\common_temp\EquipInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\MobAttackInfo.hpp">
+    <ClInclude Include="src\common_temp\MobAttackInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\MobAttackType.hpp">
+    <ClInclude Include="src\common_temp\MobAttackType.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\MobInfo.hpp">
+    <ClInclude Include="src\common_temp\MobInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\MobSkillInfo.hpp">
+    <ClInclude Include="src\common_temp\MobSkillInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\SkillLevelInfo.hpp">
+    <ClInclude Include="src\common_temp\SkillLevelInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\SkillType.hpp">
+    <ClInclude Include="src\common_temp\SkillType.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\AttackData.hpp">
+    <ClInclude Include="src\common_temp\AttackData.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\BanishFieldInfo.hpp">
+    <ClInclude Include="src\common_temp\BanishFieldInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ChargeOrStationarySkillData.hpp">
+    <ClInclude Include="src\common_temp\ChargeOrStationarySkillData.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\MpEaterData.hpp">
+    <ClInclude Include="src\common_temp\MpEaterData.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ReturnDamageData.hpp">
+    <ClInclude Include="src\common_temp\ReturnDamageData.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\MobSkillLevelInfo.hpp">
+    <ClInclude Include="src\common_temp\MobSkillLevelInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\MorphChanceInfo.hpp">
+    <ClInclude Include="src\common_temp\MorphChanceInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\MorphInfo.hpp">
+    <ClInclude Include="src\common_temp\MorphInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\NpcInfo.hpp">
+    <ClInclude Include="src\common_temp\NpcInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ReactorInfo.hpp">
+    <ClInclude Include="src\common_temp\ReactorInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ReactorStateInfo.hpp">
+    <ClInclude Include="src\common_temp\ReactorStateInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ScriptTypes.hpp">
+    <ClInclude Include="src\common_temp\ScriptTypes.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ShopInfo.hpp">
+    <ClInclude Include="src\common_temp\ShopInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ShopItemInfo.hpp">
+    <ClInclude Include="src\common_temp\ShopItemInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ValidItemType.hpp">
+    <ClInclude Include="src\common_temp\ValidItemType.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ValidClassData.hpp">
+    <ClInclude Include="src\common_temp\ValidClassData.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ValidClassGenderData.hpp">
+    <ClInclude Include="src\common_temp\ValidClassGenderData.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ValidLookData.hpp">
+    <ClInclude Include="src\common_temp\ValidLookData.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ShopData.hpp">
+    <ClInclude Include="src\common_temp\ShopData.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ItemDbInformation.hpp">
+    <ClInclude Include="src\common_temp\ItemDbInformation.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ItemDbRecord.hpp">
+    <ClInclude Include="src\common_temp\ItemDbRecord.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\QuestRewardInfo.hpp">
+    <ClInclude Include="src\common_temp\QuestRewardInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\QuestRewardsData.hpp">
+    <ClInclude Include="src\common_temp\QuestRewardsData.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\QuestStateData.hpp">
+    <ClInclude Include="src\common_temp\QuestStateData.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\QuestRequestsData.hpp">
+    <ClInclude Include="src\common_temp\QuestRequestsData.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\QuestRequestInfo.hpp">
+    <ClInclude Include="src\common_temp\QuestRequestInfo.hpp">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Preprocessor.hpp">
+    <ClInclude Include="src\common_temp\Preprocessor.hpp">
       <Filter>Lib</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\EnumBase.hpp">
+    <ClInclude Include="src\common_temp\EnumBase.hpp">
       <Filter>Lib</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\EnumUtilities.hpp">
+    <ClInclude Include="src\common_temp\EnumUtilities.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ConnectionType.hpp">
+    <ClInclude Include="src\common_temp\ConnectionType.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\EncryptedPacketTransformer.hpp">
+    <ClInclude Include="src\common_temp\EncryptedPacketTransformer.hpp">
       <Filter>Encryption</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\BlockCipherIv.hpp">
+    <ClInclude Include="src\common_temp\BlockCipherIv.hpp">
       <Filter>Encryption</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ConnectionListener.hpp">
+    <ClInclude Include="src\common_temp\ConnectionListener.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ConnectionListenerConfig.hpp">
+    <ClInclude Include="src\common_temp\ConnectionListenerConfig.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\PingConfig.hpp">
+    <ClInclude Include="src\common_temp\PingConfig.hpp">
       <Filter>Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\PacketTransformer.hpp">
+    <ClInclude Include="src\common_temp\PacketTransformer.hpp">
       <Filter>Encryption</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\CommonPacket.hpp">
+    <ClInclude Include="src\common_temp\CommonPacket.hpp">
       <Filter>Packets</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ServerAcceptedSession.hpp">
+    <ClInclude Include="src\common_temp\ServerAcceptedSession.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\PacketHandler.hpp">
+    <ClInclude Include="src\common_temp\PacketHandler.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\FinalizationPool.hpp">
+    <ClInclude Include="src\common_temp\FinalizationPool.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
