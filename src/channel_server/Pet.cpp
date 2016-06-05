@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Pet.hpp"
-#include "common_temp/Database.hpp"
-#include "common_temp/GameConstants.hpp"
-#include "common_temp/ItemDataProvider.hpp"
-#include "common_temp/TimeUtilities.hpp"
-#include "common_temp/Timer.hpp"
+#include "common/Database.hpp"
+#include "common/GameConstants.hpp"
+#include "common/ItemDataProvider.hpp"
+#include "common/TimeUtilities.hpp"
+#include "common/Timer.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/Map.hpp"
 #include "channel_server/PetsPacket.hpp"

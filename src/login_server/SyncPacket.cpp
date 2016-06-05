@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SyncPacket.hpp"
-#include "common_temp/InterHeader.hpp"
-#include "common_temp/InterHelper.hpp"
+#include "common/InterHeader.hpp"
+#include "common/InterHelper.hpp"
 
 namespace vana {
 namespace login_server {

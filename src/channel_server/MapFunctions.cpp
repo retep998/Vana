@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapFunctions.hpp"
-#include "common_temp/Algorithm.hpp"
-#include "common_temp/MobConstants.hpp"
-#include "common_temp/MapPosition.hpp"
-#include "common_temp/StringUtilities.hpp"
+#include "common/Algorithm.hpp"
+#include "common/MobConstants.hpp"
+#include "common/MapPosition.hpp"
+#include "common/StringUtilities.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/Map.hpp"
 #include "channel_server/Maps.hpp"

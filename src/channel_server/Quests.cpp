@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Quests.hpp"
-#include "common_temp/ItemDataProvider.hpp"
-#include "common_temp/NpcDataProvider.hpp"
-#include "common_temp/PacketReader.hpp"
-#include "common_temp/QuestDataProvider.hpp"
+#include "common/ItemDataProvider.hpp"
+#include "common/NpcDataProvider.hpp"
+#include "common/PacketReader.hpp"
+#include "common/QuestDataProvider.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/Inventory.hpp"
 #include "channel_server/NpcHandler.hpp"

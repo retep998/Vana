@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Maps.hpp"
-#include "common_temp/FileUtilities.hpp"
-#include "common_temp/PacketReader.hpp"
+#include "common/FileUtilities.hpp"
+#include "common/PacketReader.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/Instance.hpp"
 #include "channel_server/Inventory.hpp"

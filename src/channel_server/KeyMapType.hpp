@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common_temp/EnumBase.hpp"
-#include "common_temp/Types.hpp"
+#include "common/EnumBase.hpp"
+#include "common/Types.hpp"
 
 #define ENUM(type, make) \
 	make(type, none, 0) \

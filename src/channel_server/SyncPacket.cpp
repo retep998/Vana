@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SyncPacket.hpp"
-#include "common_temp/InterHeader.hpp"
-#include "common_temp/InterHelper.hpp"
-#include "common_temp/RatesConfig.hpp"
-#include "common_temp/Session.hpp"
+#include "common/InterHeader.hpp"
+#include "common/InterHelper.hpp"
+#include "common/RatesConfig.hpp"
+#include "common/Session.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/Party.hpp"
 #include "channel_server/Player.hpp"

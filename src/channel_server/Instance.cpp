@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Instance.hpp"
-#include "common_temp/TimeUtilities.hpp"
-#include "common_temp/Timer.hpp"
-#include "common_temp/TimerContainer.hpp"
-#include "common_temp/TimeUtilities.hpp"
+#include "common/TimeUtilities.hpp"
+#include "common/Timer.hpp"
+#include "common/TimerContainer.hpp"
+#include "common/TimeUtilities.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/Instances.hpp"
 #include "channel_server/LuaInstance.hpp"

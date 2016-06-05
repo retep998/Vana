@@ -17,14 +17,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common_temp/AbstractServer.hpp"
-#include "common_temp/CurseDataProvider.hpp"
-#include "common_temp/EquipDataProvider.hpp"
-#include "common_temp/FinalizationPool.hpp"
-#include "common_temp/SaltConfig.hpp"
-#include "common_temp/SaltSizeConfig.hpp"
-#include "common_temp/Types.hpp"
-#include "common_temp/ValidCharDataProvider.hpp"
+#include "common/AbstractServer.hpp"
+#include "common/CurseDataProvider.hpp"
+#include "common/EquipDataProvider.hpp"
+#include "common/FinalizationPool.hpp"
+#include "common/SaltConfig.hpp"
+#include "common/SaltSizeConfig.hpp"
+#include "common/Types.hpp"
+#include "common/ValidCharDataProvider.hpp"
 #include "login_server/LoginServerAcceptedSession.hpp"
 #include "login_server/Worlds.hpp"
 

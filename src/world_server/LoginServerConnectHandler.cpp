@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerConnectHandler.hpp"
-#include "common_temp/ExitCodes.hpp"
-#include "common_temp/PacketReader.hpp"
-#include "common_temp/WorldConfig.hpp"
+#include "common/ExitCodes.hpp"
+#include "common/PacketReader.hpp"
+#include "common/WorldConfig.hpp"
 #include "world_server/Channels.hpp"
 #include "world_server/LoginServerSession.hpp"
 #include "world_server/PlayerDataProvider.hpp"

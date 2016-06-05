@@ -17,10 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common_temp/FileTime.hpp"
-#include "common_temp/Quest.hpp"
-#include "common_temp/QuestDataProvider.hpp"
-#include "common_temp/Types.hpp"
+#include "common/FileTime.hpp"
+#include "common/Quest.hpp"
+#include "common/QuestDataProvider.hpp"
+#include "common/Types.hpp"
 #include "channel_server/Quests.hpp"
 #include <iomanip>
 #include <map>

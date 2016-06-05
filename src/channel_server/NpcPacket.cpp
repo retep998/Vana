@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "NpcPacket.hpp"
-#include "common_temp/ItemDataProvider.hpp"
-#include "common_temp/PacketReader.hpp"
-#include "common_temp/Session.hpp"
-#include "common_temp/ShopDataProvider.hpp"
+#include "common/ItemDataProvider.hpp"
+#include "common/PacketReader.hpp"
+#include "common/Session.hpp"
+#include "common/ShopDataProvider.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/Maps.hpp"
 #include "channel_server/Player.hpp"

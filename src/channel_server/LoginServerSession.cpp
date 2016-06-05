@@ -16,12 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerSession.hpp"
-#include "common_temp/ExitCodes.hpp"
-#include "common_temp/InterHeader.hpp"
-#include "common_temp/PacketReader.hpp"
-#include "common_temp/PacketWrapper.hpp"
-#include "common_temp/ServerType.hpp"
-#include "common_temp/WorldConfig.hpp"
+#include "common/ExitCodes.hpp"
+#include "common/InterHeader.hpp"
+#include "common/PacketReader.hpp"
+#include "common/PacketWrapper.hpp"
+#include "common/ServerType.hpp"
+#include "common/WorldConfig.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/PartyHandler.hpp"
 #include "channel_server/PlayerDataProvider.hpp"

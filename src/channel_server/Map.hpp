@@ -17,17 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common_temp/FootholdInfo.hpp"
-#include "common_temp/IdPool.hpp"
-#include "common_temp/MapConstants.hpp"
-#include "common_temp/Point.hpp"
-#include "common_temp/PortalInfo.hpp"
-#include "common_temp/Rect.hpp"
-#include "common_temp/Respawnable.hpp"
-#include "common_temp/SeatInfo.hpp"
-#include "common_temp/SpawnInfo.hpp"
-#include "common_temp/TimerContainerHolder.hpp"
-#include "common_temp/Types.hpp"
+#include "common/FootholdInfo.hpp"
+#include "common/IdPool.hpp"
+#include "common/MapConstants.hpp"
+#include "common/Point.hpp"
+#include "common/PortalInfo.hpp"
+#include "common/Rect.hpp"
+#include "common/Respawnable.hpp"
+#include "common/SeatInfo.hpp"
+#include "common/SpawnInfo.hpp"
+#include "common/TimerContainerHolder.hpp"
+#include "common/Types.hpp"
 #include "channel_server/MapDataProvider.hpp"
 #include "channel_server/Mob.hpp"
 #include <ctime>

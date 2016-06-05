@@ -17,12 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common_temp/AbstractServer.hpp"
-#include "common_temp/FinalizationPool.hpp"
-#include "common_temp/Ip.hpp"
-#include "common_temp/RatesConfig.hpp"
-#include "common_temp/Types.hpp"
-#include "common_temp/WorldConfig.hpp"
+#include "common/AbstractServer.hpp"
+#include "common/FinalizationPool.hpp"
+#include "common/Ip.hpp"
+#include "common/RatesConfig.hpp"
+#include "common/Types.hpp"
+#include "common/WorldConfig.hpp"
 #include "world_server/Channels.hpp"
 #include "world_server/LoginServerSession.hpp"
 #include "world_server/PlayerDataProvider.hpp"

@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerAcceptPacket.hpp"
-#include "common_temp/InterHeader.hpp"
-#include "common_temp/InterHelper.hpp"
-#include "common_temp/WorldConfig.hpp"
+#include "common/InterHeader.hpp"
+#include "common/InterHelper.hpp"
+#include "common/WorldConfig.hpp"
 #include "login_server/World.hpp"
 
 namespace vana {

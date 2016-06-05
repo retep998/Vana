@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common_temp/Types.hpp"
-#include "common_temp/WorldConfig.hpp"
+#include "common/Types.hpp"
+#include "common/WorldConfig.hpp"
 #include "login_server/Channel.hpp"
 #include <memory>
 #include <functional>

@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapDataProvider.hpp"
-#include "common_temp/Database.hpp"
-#include "common_temp/GameLogicUtilities.hpp"
-#include "common_temp/InitializeCommon.hpp"
-#include "common_temp/StringUtilities.hpp"
+#include "common/Database.hpp"
+#include "common/GameLogicUtilities.hpp"
+#include "common/InitializeCommon.hpp"
+#include "common/StringUtilities.hpp"
 #include "channel_server/Map.hpp"
 #include "channel_server/MapleTvs.hpp"
 #include <utility>

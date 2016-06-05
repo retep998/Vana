@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common_temp/TimerContainerHolder.hpp"
-#include "common_temp/Types.hpp"
-#include "common_temp/Variables.hpp"
+#include "common/TimerContainerHolder.hpp"
+#include "common/Types.hpp"
+#include "common/Variables.hpp"
 #include <memory>
 #include <string>
 

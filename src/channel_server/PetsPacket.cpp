@@ -16,12 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PetsPacket.hpp"
-#include "common_temp/FileTime.hpp"
-#include "common_temp/GameConstants.hpp"
-#include "common_temp/Item.hpp"
-#include "common_temp/ItemConstants.hpp"
-#include "common_temp/PacketReader.hpp"
-#include "common_temp/Session.hpp"
+#include "common/FileTime.hpp"
+#include "common/GameConstants.hpp"
+#include "common/Item.hpp"
+#include "common/ItemConstants.hpp"
+#include "common/PacketReader.hpp"
+#include "common/Session.hpp"
 #include "channel_server/Maps.hpp"
 #include "channel_server/Pet.hpp"
 #include "channel_server/Player.hpp"

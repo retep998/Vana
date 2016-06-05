@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common_temp/MobConstants.hpp"
-#include "common_temp/MobDataProvider.hpp"
-#include "common_temp/Point.hpp"
-#include "common_temp/TimerContainerHolder.hpp"
-#include "common_temp/Types.hpp"
+#include "common/MobConstants.hpp"
+#include "common/MobDataProvider.hpp"
+#include "common/Point.hpp"
+#include "common/TimerContainerHolder.hpp"
+#include "common/Types.hpp"
 #include "channel_server/MovableLife.hpp"
 #include <map>
 #include <memory>

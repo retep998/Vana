@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ChatHandler.hpp"
-#include "common_temp/PacketReader.hpp"
-#include "common_temp/Session.hpp"
-#include "common_temp/StringUtilities.hpp"
+#include "common/PacketReader.hpp"
+#include "common/Session.hpp"
+#include "common/StringUtilities.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/ChatHandlerFunctions.hpp"
 #include "channel_server/Map.hpp"

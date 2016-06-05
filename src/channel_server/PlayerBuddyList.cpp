@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerBuddyList.hpp"
-#include "common_temp/Algorithm.hpp"
-#include "common_temp/Database.hpp"
-#include "common_temp/GameConstants.hpp"
-#include "common_temp/MiscUtilities.hpp"
-#include "common_temp/StringUtilities.hpp"
+#include "common/Algorithm.hpp"
+#include "common/Database.hpp"
+#include "common/GameConstants.hpp"
+#include "common/MiscUtilities.hpp"
+#include "common/StringUtilities.hpp"
 #include "channel_server/BuddyListPacket.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/Player.hpp"

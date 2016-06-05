@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SkillsPacket.hpp"
-#include "common_temp/ChargeOrStationarySkillData.hpp"
-#include "common_temp/GameConstants.hpp"
-#include "common_temp/Session.hpp"
+#include "common/ChargeOrStationarySkillData.hpp"
+#include "common/GameConstants.hpp"
+#include "common/Session.hpp"
 #include "channel_server/Maps.hpp"
 #include "channel_server/Player.hpp"
 #include "channel_server/Skills.hpp"

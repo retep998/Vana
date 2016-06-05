@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Summon.hpp"
-#include "common_temp/SkillConstants.hpp"
-#include "common_temp/SkillDataProvider.hpp"
+#include "common/SkillConstants.hpp"
+#include "common/SkillDataProvider.hpp"
 #include "channel_server/ChannelServer.hpp"
 
 namespace vana {

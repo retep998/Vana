@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerAcceptHandler.hpp"
-#include "common_temp/PacketBuilder.hpp"
-#include "common_temp/PacketReader.hpp"
-#include "common_temp/PacketWrapper.hpp"
-#include "common_temp/StringUtilities.hpp"
+#include "common/PacketBuilder.hpp"
+#include "common/PacketReader.hpp"
+#include "common/PacketWrapper.hpp"
+#include "common/StringUtilities.hpp"
 #include "login_server/Channel.hpp"
 #include "login_server/LoginServer.hpp"
 #include "login_server/LoginServerAcceptedSession.hpp"

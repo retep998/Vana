@@ -16,12 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerQuests.hpp"
-#include "common_temp/Algorithm.hpp"
-#include "common_temp/Database.hpp"
-#include "common_temp/GameLogicUtilities.hpp"
-#include "common_temp/QuestDataProvider.hpp"
-#include "common_temp/Randomizer.hpp"
-#include "common_temp/TimeUtilities.hpp"
+#include "common/Algorithm.hpp"
+#include "common/Database.hpp"
+#include "common/GameLogicUtilities.hpp"
+#include "common/QuestDataProvider.hpp"
+#include "common/Randomizer.hpp"
+#include "common/TimeUtilities.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/Inventory.hpp"
 #include "channel_server/Player.hpp"

@@ -17,12 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common_temp/IdPool.hpp"
-#include "common_temp/InterHelper.hpp"
-#include "common_temp/Ip.hpp"
-#include "common_temp/PartyData.hpp"
-#include "common_temp/PlayerData.hpp"
-#include "common_temp/Types.hpp"
+#include "common/IdPool.hpp"
+#include "common/InterHelper.hpp"
+#include "common/Ip.hpp"
+#include "common/PartyData.hpp"
+#include "common/PlayerData.hpp"
+#include "common/Types.hpp"
 #include <functional>
 #include <memory>
 #include <string>

@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Buffs.hpp"
-#include "common_temp/Algorithm.hpp"
-#include "common_temp/BuffDataProvider.hpp"
-#include "common_temp/GameLogicUtilities.hpp"
-#include "common_temp/SkillConstants.hpp"
-#include "common_temp/SkillDataProvider.hpp"
+#include "common/Algorithm.hpp"
+#include "common/BuffDataProvider.hpp"
+#include "common/GameLogicUtilities.hpp"
+#include "common/SkillConstants.hpp"
+#include "common/SkillDataProvider.hpp"
 #include "channel_server/BuffsPacket.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/Map.hpp"

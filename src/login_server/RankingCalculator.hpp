@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common_temp/Types.hpp"
-#include "common_temp/UnixTime.hpp"
+#include "common/Types.hpp"
+#include "common/UnixTime.hpp"
 #include <mutex>
 #include <string>
 #include <vector>

@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common_temp/Point.hpp"
-#include "common_temp/Rect.hpp"
-#include "common_temp/Types.hpp"
+#include "common/Point.hpp"
+#include "common/Rect.hpp"
+#include "common/Types.hpp"
 #include <memory>
 #include <mutex>
 #include <string>

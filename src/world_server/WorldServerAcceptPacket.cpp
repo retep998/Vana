@@ -16,12 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerAcceptPacket.hpp"
-#include "common_temp/InterHeader.hpp"
-#include "common_temp/InterHelper.hpp"
-#include "common_temp/PacketReader.hpp"
-#include "common_temp/Session.hpp"
-#include "common_temp/TimeUtilities.hpp"
-#include "common_temp/WorldConfig.hpp"
+#include "common/InterHeader.hpp"
+#include "common/InterHelper.hpp"
+#include "common/PacketReader.hpp"
+#include "common/Session.hpp"
+#include "common/TimeUtilities.hpp"
+#include "common/WorldConfig.hpp"
 #include "world_server/Channels.hpp"
 #include "world_server/PlayerDataProvider.hpp"
 #include "world_server/WorldServer.hpp"

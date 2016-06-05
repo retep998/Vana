@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "DropsPacket.hpp"
-#include "common_temp/GameLogicUtilities.hpp"
-#include "common_temp/ItemConstants.hpp"
-#include "common_temp/Session.hpp"
+#include "common/GameLogicUtilities.hpp"
+#include "common/ItemConstants.hpp"
+#include "common/Session.hpp"
 #include "channel_server/Drop.hpp"
 #include "channel_server/Maps.hpp"
 #include "channel_server/Player.hpp"

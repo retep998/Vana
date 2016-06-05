@@ -17,12 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common_temp/Buff.hpp"
-#include "common_temp/BuffInfo.hpp"
-#include "common_temp/BuffSource.hpp"
-#include "common_temp/PacketBuilder.hpp"
-#include "common_temp/SkillConstants.hpp"
-#include "common_temp/Types.hpp"
+#include "common/Buff.hpp"
+#include "common/BuffInfo.hpp"
+#include "common/BuffSource.hpp"
+#include "common/PacketBuilder.hpp"
+#include "common/SkillConstants.hpp"
+#include "common/Types.hpp"
 #include <array>
 #include <vector>
 
