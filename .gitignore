@@ -1,0 +1,35 @@
+# File extensions
+*.bat
+*.cmake
+*.exe
+*.dll
+*.idb
+*.ncb
+*.obj
+*.pch
+*.pdb
+*.res
+*.sdf
+*.opensdf
+*.suo
+*.user
+*.patch
+*.diff
+*.vc.db
+*.vc.opendb
+
+# Folders
+bin
+build
+CMakeCache.txt
+CMakeFiles
+Debug*
+lib
+Makefile
+Release*
+.vs
+ipch
+logs
+
+# Subdirectory directives
+conf/*.lua
