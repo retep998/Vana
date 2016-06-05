@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "User.hpp"
-#include "common/Database.hpp"
-#include "common/PacketBuilder.hpp"
-#include "common/PacketReader.hpp"
+#include "common/database_temp.hpp"
+#include "common/packet_builder.hpp"
+#include "common/packet_reader.hpp"
 #include "login_server/Characters.hpp"
 #include "login_server/CmsgHeader.hpp"
 #include "login_server/Login.hpp"

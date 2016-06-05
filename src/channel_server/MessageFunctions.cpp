@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MessageFunctions.hpp"
-#include "common/InterHeader.hpp"
-#include "common/PacketWrapper.hpp"
+#include "common/inter_header.hpp"
+#include "common/packet_wrapper.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/Player.hpp"
 #include "channel_server/PlayerDataProvider.hpp"

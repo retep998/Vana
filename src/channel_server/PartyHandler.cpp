@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PartyHandler.hpp"
-#include "common/InterHelper.hpp"
-#include "common/PacketReader.hpp"
+#include "common/inter_helper.hpp"
+#include "common/packet_reader.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/Party.hpp"
 #include "channel_server/PartyPacket.hpp"

@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerPacket.hpp"
-#include "common/ClientIp.hpp"
-#include "common/FileTime.hpp"
-#include "common/InterHeader.hpp"
-#include "common/Session.hpp"
-#include "common/TimeUtilities.hpp"
+#include "common/client_ip.hpp"
+#include "common/file_time.hpp"
+#include "common/inter_header.hpp"
+#include "common/session_temp.hpp"
+#include "common/time_utilities.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/KeyMaps.hpp"
 #include "channel_server/Pet.hpp"

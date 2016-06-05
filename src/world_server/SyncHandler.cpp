@@ -16,12 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SyncHandler.hpp"
-#include "common/Database.hpp"
-#include "common/InterHeader.hpp"
-#include "common/InterHelper.hpp"
-#include "common/PacketReader.hpp"
-#include "common/RatesConfig.hpp"
-#include "common/Session.hpp"
+#include "common/database_temp.hpp"
+#include "common/inter_header.hpp"
+#include "common/inter_helper.hpp"
+#include "common/packet_reader.hpp"
+#include "common/rates_config.hpp"
+#include "common/session_temp.hpp"
 #include "world_server/Channel.hpp"
 #include "world_server/Channels.hpp"
 #include "world_server/PlayerDataProvider.hpp"

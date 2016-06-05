@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InventoryPacketHelper.hpp"
-#include "common/MapConstants.hpp"
+#include "common/map_constants.hpp"
 
 namespace vana {
 namespace channel_server {

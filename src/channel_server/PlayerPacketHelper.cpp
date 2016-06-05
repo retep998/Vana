@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerPacketHelper.hpp"
-#include "common/FileTime.hpp"
-#include "common/GameLogicUtilities.hpp"
-#include "common/ItemConstants.hpp"
-#include "common/TimeUtilities.hpp"
+#include "common/file_time.hpp"
+#include "common/game_logic_utilities.hpp"
+#include "common/item_constants.hpp"
+#include "common/time_utilities.hpp"
 #include "channel_server/Inventory.hpp"
 #include "channel_server/Pet.hpp"
 #include "channel_server/Player.hpp"

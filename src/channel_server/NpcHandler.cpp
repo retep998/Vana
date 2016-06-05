@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "NpcHandler.hpp"
-#include "common/GameLogicUtilities.hpp"
-#include "common/ItemDataProvider.hpp"
-#include "common/NpcDataProvider.hpp"
-#include "common/PacketReader.hpp"
-#include "common/ShopDataProvider.hpp"
+#include "common/game_logic_utilities.hpp"
+#include "common/item_data_provider.hpp"
+#include "common/npc_data_provider.hpp"
+#include "common/packet_reader.hpp"
+#include "common/shop_data_provider.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/Inventory.hpp"
 #include "channel_server/InventoryPacket.hpp"

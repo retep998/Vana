@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/Ip.hpp"
-#include "common/InterHelper.hpp"
-#include "common/PacketBuilder.hpp"
-#include "common/PlayerData.hpp"
-#include "common/Types.hpp"
+#include "common/ip_temp.hpp"
+#include "common/inter_helper.hpp"
+#include "common/packet_builder.hpp"
+#include "common/player_data.hpp"
+#include "common/types_temp.hpp"
 #include <string>
 #include <vector>
 

@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapPacket.hpp"
-#include "common/FileTime.hpp"
-#include "common/Point.hpp"
-#include "common/Session.hpp"
-#include "common/TimeUtilities.hpp"
-#include "common/WidePoint.hpp"
+#include "common/file_time.hpp"
+#include "common/point_temp.hpp"
+#include "common/session_temp.hpp"
+#include "common/time_utilities.hpp"
+#include "common/wide_point.hpp"
 #include "channel_server/Buffs.hpp"
 #include "channel_server/BuffsPacketHelper.hpp"
 #include "channel_server/ChannelServer.hpp"

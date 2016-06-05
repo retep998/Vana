@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "StatusInfo.hpp"
-#include "common/Randomizer.hpp"
-#include "common/SkillConstants.hpp"
+#include "common/randomizer_temp.hpp"
+#include "common/skill_constants.hpp"
 
 namespace vana {
 namespace channel_server {

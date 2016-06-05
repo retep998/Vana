@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/ChargeOrStationarySkillData.hpp"
-#include "common/PacketHandler.hpp"
-#include "common/SkillDataProvider.hpp"
-#include "common/TauswortheGenerator.hpp"
-#include "common/TimerContainerHolder.hpp"
+#include "common/charge_or_stationary_skill_data.hpp"
+#include "common/packet_handler.hpp"
+#include "common/skill_data_provider.hpp"
+#include "common/tausworthe_generator.hpp"
+#include "common/timer_container_holder.hpp"
 #include "channel_server/MovableLife.hpp"
 #include "channel_server/Npc.hpp"
 #include "channel_server/PlayerActiveBuffs.hpp"

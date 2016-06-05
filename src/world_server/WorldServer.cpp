@@ -16,12 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServer.hpp"
-#include "common/ConnectionListenerConfig.hpp"
-#include "common/ConnectionManager.hpp"
-#include "common/ExitCodes.hpp"
-#include "common/InitializeCommon.hpp"
-#include "common/ServerType.hpp"
-#include "common/StringUtilities.hpp"
+#include "common/connection_listener_config.hpp"
+#include "common/connection_manager.hpp"
+#include "common/exit_codes.hpp"
+#include "common/initialize_common.hpp"
+#include "common/server_type.hpp"
+#include "common/string_utilities.hpp"
 #include "world_server/Channels.hpp"
 #include "world_server/SyncPacket.hpp"
 #include "world_server/WorldServerAcceptPacket.hpp"

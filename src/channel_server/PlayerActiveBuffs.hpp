@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/BuffInfo.hpp"
-#include "common/IPacket.hpp"
-#include "common/Types.hpp"
+#include "common/buff_info.hpp"
+#include "common/i_packet.hpp"
+#include "common/types_temp.hpp"
 #include "channel_server/Buffs.hpp"
 #include <memory>
 #include <queue>

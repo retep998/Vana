@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ChatHandlerFunctions.hpp"
-#include "common/JobConstants.hpp"
+#include "common/job_constants.hpp"
 #include "channel_server/CustomFunctions.hpp"
 #include "channel_server/InfoFunctions.hpp"
 #include "channel_server/MapFunctions.hpp"

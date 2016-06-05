@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "StoragePacket.hpp"
-#include "common/GameConstants.hpp"
-#include "common/GameLogicUtilities.hpp"
-#include "common/Session.hpp"
+#include "common/game_constants.hpp"
+#include "common/game_logic_utilities.hpp"
+#include "common/session_temp.hpp"
 #include "channel_server/Inventory.hpp"
 #include "channel_server/Player.hpp"
 #include "channel_server/PlayerPacketHelper.hpp"

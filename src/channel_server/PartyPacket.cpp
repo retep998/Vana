@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PartyPacket.hpp"
-#include "common/GameConstants.hpp"
-#include "common/InterHelper.hpp"
-#include "common/Session.hpp"
-#include "common/WidePoint.hpp"
+#include "common/game_constants.hpp"
+#include "common/inter_helper.hpp"
+#include "common/session_temp.hpp"
+#include "common/wide_point.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/MysticDoor.hpp"
 #include "channel_server/Party.hpp"

@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerSession.hpp"
-#include "common/InterHeader.hpp"
-#include "common/PacketReader.hpp"
-#include "common/PacketWrapper.hpp"
-#include "common/ServerType.hpp"
+#include "common/inter_header.hpp"
+#include "common/packet_reader.hpp"
+#include "common/packet_wrapper.hpp"
+#include "common/server_type.hpp"
 #include "world_server/Channels.hpp"
 #include "world_server/LoginServerConnectHandler.hpp"
 #include "world_server/SyncHandler.hpp"

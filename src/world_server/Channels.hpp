@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/ExternalIp.hpp"
-#include "common/Ip.hpp"
-#include "common/Types.hpp"
+#include "common/external_ip.hpp"
+#include "common/ip_temp.hpp"
+#include "common/types_temp.hpp"
 #include <memory>
 #include <string>
 #include <unordered_map>

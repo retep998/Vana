@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InventoryPacket.hpp"
-#include "common/GameLogicUtilities.hpp"
-#include "common/InterHeader.hpp"
-#include "common/ItemConstants.hpp"
-#include "common/Session.hpp"
+#include "common/game_logic_utilities.hpp"
+#include "common/inter_header.hpp"
+#include "common/item_constants.hpp"
+#include "common/session_temp.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/Inventory.hpp"
 #include "channel_server/InventoryPacketHelper.hpp"

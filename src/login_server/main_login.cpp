@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "common/VanaMain.hpp"
+#include "common/vana_main.hpp"
 #include "login_server/LoginServer.hpp"
 
 auto main() -> vana::exit_code_underlying {

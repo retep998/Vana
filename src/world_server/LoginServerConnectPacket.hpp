@@ -17,10 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/ExternalIp.hpp"
-#include "common/Ip.hpp"
-#include "common/PacketBuilder.hpp"
-#include "common/Types.hpp"
+#include "common/external_ip.hpp"
+#include "common/ip_temp.hpp"
+#include "common/packet_builder.hpp"
+#include "common/types_temp.hpp"
 #include <vector>
 
 namespace vana {

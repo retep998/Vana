@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/ServerAcceptedSession.hpp"
-#include "common/Types.hpp"
+#include "common/server_accepted_session.hpp"
+#include "common/types_temp.hpp"
 
 namespace vana {
 	class packet_reader;

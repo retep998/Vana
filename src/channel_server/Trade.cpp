@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Trade.hpp"
-#include "common/GameLogicUtilities.hpp"
-#include "common/ItemDataProvider.hpp"
+#include "common/game_logic_utilities.hpp"
+#include "common/item_data_provider.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/Inventory.hpp"
 #include "channel_server/InventoryPacket.hpp"

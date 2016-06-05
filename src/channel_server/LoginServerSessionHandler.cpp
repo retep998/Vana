@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerSessionHandler.hpp"
-#include "common/ExitCodes.hpp"
-#include "common/Session.hpp"
+#include "common/exit_codes.hpp"
+#include "common/session_temp.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/LoginServerSession.hpp"
 #include <iostream>

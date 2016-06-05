@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/Point.hpp"
-#include "common/Rect.hpp"
-#include "common/Types.hpp"
+#include "common/point_temp.hpp"
+#include "common/rect_temp.hpp"
+#include "common/types_temp.hpp"
 
 namespace vana {
 	struct skill_level_info;

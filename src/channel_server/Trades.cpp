@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Trades.hpp"
-#include "common/TimeUtilities.hpp"
-#include "common/Timer.hpp"
-#include "common/TimerContainer.hpp"
+#include "common/time_utilities.hpp"
+#include "common/timer_temp.hpp"
+#include "common/timer_container.hpp"
 #include "channel_server/Player.hpp"
 #include "channel_server/Trade.hpp"
 #include "channel_server/TradeHandler.hpp"

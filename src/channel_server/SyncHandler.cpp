@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SyncHandler.hpp"
-#include "common/InterHeader.hpp"
-#include "common/InterHelper.hpp"
-#include "common/PacketReader.hpp"
-#include "common/RatesConfig.hpp"
+#include "common/inter_header.hpp"
+#include "common/inter_helper.hpp"
+#include "common/packet_reader.hpp"
+#include "common/rates_config.hpp"
 #include "channel_server/BuddyListPacket.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/Party.hpp"

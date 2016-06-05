@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Channels.hpp"
-#include "common/PacketBuilder.hpp"
-#include "common/Session.hpp"
+#include "common/packet_builder.hpp"
+#include "common/session_temp.hpp"
 #include "world_server/Channel.hpp"
 #include "world_server/LoginServerConnectPacket.hpp"
 #include "world_server/WorldServer.hpp"

@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/Types.hpp"
+#include "common/types_temp.hpp"
 
 namespace vana {
 	enum class key_map_action : int32_t {

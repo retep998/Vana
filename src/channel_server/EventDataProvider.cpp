@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "EventDataProvider.hpp"
-#include "common/InitializeCommon.hpp"
-#include "common/Timer.hpp"
-#include "common/TimeUtilities.hpp"
+#include "common/initialize_common.hpp"
+#include "common/timer_temp.hpp"
+#include "common/time_utilities.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/Instance.hpp"
 #include "channel_server/Instances.hpp"

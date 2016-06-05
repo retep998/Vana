@@ -16,12 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerAcceptedSession.hpp"
-#include "common/InterHeader.hpp"
-#include "common/PacketReader.hpp"
-#include "common/PacketWrapper.hpp"
-#include "common/ServerType.hpp"
-#include "common/Session.hpp"
-#include "common/StringUtilities.hpp"
+#include "common/inter_header.hpp"
+#include "common/packet_reader.hpp"
+#include "common/packet_wrapper.hpp"
+#include "common/server_type.hpp"
+#include "common/session_temp.hpp"
+#include "common/string_utilities.hpp"
 #include "login_server/LoginServer.hpp"
 #include "login_server/LoginServerAcceptHandler.hpp"
 #include "login_server/RankingCalculator.hpp"

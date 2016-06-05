@@ -16,12 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ManagementFunctions.hpp"
-#include "common/Database.hpp"
-#include "common/ExitCodes.hpp"
-#include "common/ItemConstants.hpp"
-#include "common/ItemDataProvider.hpp"
-#include "common/RatesConfig.hpp"
-#include "common/StringUtilities.hpp"
+#include "common/database_temp.hpp"
+#include "common/exit_codes.hpp"
+#include "common/item_constants.hpp"
+#include "common/item_data_provider.hpp"
+#include "common/rates_config.hpp"
+#include "common/string_utilities.hpp"
 #include "channel_server/ChannelServer.hpp"
 #include "channel_server/Inventory.hpp"
 #include "channel_server/Maps.hpp"
