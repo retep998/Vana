@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/inter_header.hpp"
 #include "common/inter_helper.hpp"
 #include "common/world_config.hpp"
-#include "login_server/world_temp.hpp"
+#include "login_server/world.hpp"
 
 namespace vana {
 namespace login_server {

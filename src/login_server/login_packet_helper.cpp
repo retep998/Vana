@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "login_packet_helper.hpp"
 #include "common/item_constants.hpp"
-#include "login_server/characters_temp.hpp"
+#include "login_server/characters.hpp"
 
 namespace vana {
 namespace login_server {

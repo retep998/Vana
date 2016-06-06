@@ -26,9 +26,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/server_type.hpp"
 #include "login_server/login_server_accept_packet.hpp"
 #include "login_server/ranking_calculator.hpp"
-#include "login_server/user_temp.hpp"
-#include "login_server/world_temp.hpp"
-#include "login_server/worlds_temp.hpp"
+#include "login_server/user.hpp"
+#include "login_server/world.hpp"
+#include "login_server/worlds.hpp"
 #include <iostream>
 #include <sstream>
 

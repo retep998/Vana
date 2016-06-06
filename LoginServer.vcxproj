@@ -111,14 +111,14 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\login_server\characters_temp.cpp" />
-    <ClCompile Include="src\login_server\login_temp.cpp" />
+    <ClCompile Include="src\login_server\characters.cpp" />
+    <ClCompile Include="src\login_server\login.cpp" />
     <ClCompile Include="src\login_server\login_server.cpp" />
     <ClCompile Include="src\login_server\ranking_calculator.cpp" />
     <ClCompile Include="src\login_server\sync_packet.cpp" />
-    <ClCompile Include="src\login_server\user_temp.cpp" />
-    <ClCompile Include="src\login_server\world_temp.cpp" />
-    <ClCompile Include="src\login_server\worlds_temp.cpp" />
+    <ClCompile Include="src\login_server\user.cpp" />
+    <ClCompile Include="src\login_server\world.cpp" />
+    <ClCompile Include="src\login_server\worlds.cpp" />
     <ClCompile Include="src\login_server\login_packet.cpp" />
     <ClCompile Include="src\login_server\login_packet_helper.cpp" />
     <ClCompile Include="src\login_server\login_server_accepted_session.cpp" />
@@ -126,21 +126,21 @@
     <ClCompile Include="src\login_server\login_server_accept_handler.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\login_server\channel_temp.hpp" />
+    <ClInclude Include="src\login_server\channel.hpp" />
     <ClInclude Include="src\login_server\cmsg_header.hpp" />
     <ClInclude Include="src\login_server\precompiled_header.hpp" />
     <ClInclude Include="src\login_server\login_packet.hpp" />
     <ClInclude Include="src\login_server\login_packet_helper.hpp" />
-    <ClInclude Include="src\login_server\characters_temp.hpp" />
-    <ClInclude Include="src\login_server\login_temp.hpp" />
+    <ClInclude Include="src\login_server\characters.hpp" />
+    <ClInclude Include="src\login_server\login.hpp" />
     <ClInclude Include="src\login_server\login_server.hpp" />
     <ClInclude Include="src\login_server\player_status.hpp" />
     <ClInclude Include="src\login_server\ranking_calculator.hpp" />
     <ClInclude Include="src\login_server\smsg_header.hpp" />
     <ClInclude Include="src\login_server\sync_packet.hpp" />
-    <ClInclude Include="src\login_server\user_temp.hpp" />
-    <ClInclude Include="src\login_server\world_temp.hpp" />
-    <ClInclude Include="src\login_server\worlds_temp.hpp" />
+    <ClInclude Include="src\login_server\user.hpp" />
+    <ClInclude Include="src\login_server\world.hpp" />
+    <ClInclude Include="src\login_server\worlds.hpp" />
     <ClInclude Include="src\login_server\login_server_accepted_session.hpp" />
     <ClInclude Include="src\login_server\login_server_accept_packet.hpp" />
     <ClInclude Include="src\login_server\login_server_accept_handler.hpp" />

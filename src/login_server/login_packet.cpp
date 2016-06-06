@@ -17,13 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "login_packet.hpp"
 #include "common/client_ip.hpp"
-#include "login_server/channel_temp.hpp"
-#include "login_server/characters_temp.hpp"
+#include "login_server/channel.hpp"
+#include "login_server/characters.hpp"
 #include "login_server/login_packet_helper.hpp"
 #include "login_server/player_status.hpp"
 #include "login_server/smsg_header.hpp"
-#include "login_server/user_temp.hpp"
-#include "login_server/world_temp.hpp"
+#include "login_server/user.hpp"
+#include "login_server/world.hpp"
 
 namespace vana {
 namespace login_server {

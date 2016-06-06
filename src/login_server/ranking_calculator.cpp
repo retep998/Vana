@@ -27,8 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/timer_thread.hpp"
 #include "common/time_utilities.hpp"
 #include "login_server/login_server.hpp"
-#include "login_server/world_temp.hpp"
-#include "login_server/worlds_temp.hpp"
+#include "login_server/world.hpp"
+#include "login_server/worlds.hpp"
 #include <algorithm>
 #include <functional>
 #include <iomanip>
