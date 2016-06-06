@@ -15,20 +15,20 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "SyncHandler.hpp"
+#include "sync_handler.hpp"
 #include "common/database.hpp"
 #include "common/inter_header.hpp"
 #include "common/inter_helper.hpp"
 #include "common/packet_reader.hpp"
 #include "common/rates_config.hpp"
 #include "common/session.hpp"
-#include "world_server/Channel.hpp"
-#include "world_server/Channels.hpp"
-#include "world_server/PlayerDataProvider.hpp"
-#include "world_server/SyncPacket.hpp"
-#include "world_server/WorldServer.hpp"
-#include "world_server/WorldServerAcceptedSession.hpp"
-#include "world_server/WorldServerAcceptPacket.hpp"
+#include "world_server/channel_temp.hpp"
+#include "world_server/channels_temp.hpp"
+#include "world_server/player_data_provider.hpp"
+#include "world_server/sync_packet.hpp"
+#include "world_server/world_server.hpp"
+#include "world_server/world_server_accepted_session.hpp"
+#include "world_server/world_server_accept_packet.hpp"
 
 namespace vana {
 namespace world_server {

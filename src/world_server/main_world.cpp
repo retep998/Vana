@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "common/vana_main.hpp"
-#include "world_server/WorldServer.hpp"
+#include "world_server/world_server.hpp"
 
 auto main() -> vana::exit_code_underlying {
 	return vana::main<vana::world_server::world_server>();

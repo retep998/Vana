@@ -15,13 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Channels.hpp"
+#include "channels_temp.hpp"
 #include "common/packet_builder.hpp"
 #include "common/session.hpp"
-#include "world_server/Channel.hpp"
-#include "world_server/LoginServerConnectPacket.hpp"
-#include "world_server/WorldServer.hpp"
-#include "world_server/WorldServerAcceptedSession.hpp"
+#include "world_server/channel_temp.hpp"
+#include "world_server/login_server_connect_packet.hpp"
+#include "world_server/world_server.hpp"
+#include "world_server/world_server_accepted_session.hpp"
 
 namespace vana {
 namespace world_server {

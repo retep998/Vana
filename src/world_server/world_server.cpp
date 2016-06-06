@@ -15,16 +15,16 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "WorldServer.hpp"
+#include "world_server.hpp"
 #include "common/connection_listener_config.hpp"
 #include "common/connection_manager.hpp"
 #include "common/exit_codes.hpp"
 #include "common/initialize_common.hpp"
 #include "common/server_type.hpp"
 #include "common/string_utilities.hpp"
-#include "world_server/Channels.hpp"
-#include "world_server/SyncPacket.hpp"
-#include "world_server/WorldServerAcceptPacket.hpp"
+#include "world_server/channels_temp.hpp"
+#include "world_server/sync_packet.hpp"
+#include "world_server/world_server_accept_packet.hpp"
 
 namespace vana {
 namespace world_server {

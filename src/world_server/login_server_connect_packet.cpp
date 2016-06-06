@@ -15,44 +15,44 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "WorldServerAcceptPacket.hpp"
+#include "login_server_connect_packet.hpp"
 #include "common/inter_header.hpp"
-#include "common/inter_helper.hpp"
-#include "common/packet_reader.hpp"
 #include "common/session.hpp"
-#include "common/time_utilities.hpp"
-#include "common/world_config.hpp"
-#include "world_server/Channels.hpp"
-#include "world_server/PlayerDataProvider.hpp"
-#include "world_server/WorldServer.hpp"
-#include "world_server/WorldServerAcceptedSession.hpp"
-#include <unordered_map>
-#include <map>
+#include "world_server/login_server_session.hpp"
+#include "world_server/world_server.hpp"
 
 namespace vana {
 namespace world_server {
 namespace packets {
-namespace interserver {
 
-PACKET_IMPL(connect, game_channel_id channel, connection_port port) {
+PACKET_IMPL(register_channel, game_channel_id channel, const ip &channel_ip, const ip_matrix &ext_ip, connection_port port) {
 	packet_builder builder;
 	builder
-		.add<packet_header>(IMSG_CHANNEL_CONNECT)
+		.add<packet_header>(IMSG_REGISTER_CHANNEL)
 		.add<game_channel_id>(channel)
-		.add<connection_port>(port)
-		.add<world_config>(world_server::get_instance().get_config());
+		.add<ip>(channel_ip)
+		.add<vector<external_ip>>(ext_ip)
+		.add<connection_port>(port);
 	return builder;
 }
 
-PACKET_IMPL(rehash_config, const world_config &config) {
+PACKET_IMPL(update_channel_pop, game_channel_id channel, int32_t population) {
 	packet_builder builder;
 	builder
-		.add<packet_header>(IMSG_REHASH_CONFIG)
-		.add<world_config>(config);
+		.add<packet_header>(IMSG_UPDATE_CHANNEL_POP)
+		.add<game_channel_id>(channel)
+		.add<int32_t>(population);
 	return builder;
 }
 
+PACKET_IMPL(remove_channel, game_channel_id channel) {
+	packet_builder builder;
+	builder
+		.add<packet_header>(IMSG_REMOVE_CHANNEL)
+		.add<game_channel_id>(channel);
+	return builder;
 }
+
 }
 }
 }

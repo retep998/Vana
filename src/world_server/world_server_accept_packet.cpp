@@ -15,44 +15,44 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginServerConnectPacket.hpp"
+#include "world_server_accept_packet.hpp"
 #include "common/inter_header.hpp"
+#include "common/inter_helper.hpp"
+#include "common/packet_reader.hpp"
 #include "common/session.hpp"
-#include "world_server/LoginServerSession.hpp"
-#include "world_server/WorldServer.hpp"
+#include "common/time_utilities.hpp"
+#include "common/world_config.hpp"
+#include "world_server/channels_temp.hpp"
+#include "world_server/player_data_provider.hpp"
+#include "world_server/world_server.hpp"
+#include "world_server/world_server_accepted_session.hpp"
+#include <unordered_map>
+#include <map>
 
 namespace vana {
 namespace world_server {
 namespace packets {
+namespace interserver {
 
-PACKET_IMPL(register_channel, game_channel_id channel, const ip &channel_ip, const ip_matrix &ext_ip, connection_port port) {
+PACKET_IMPL(connect, game_channel_id channel, connection_port port) {
 	packet_builder builder;
 	builder
-		.add<packet_header>(IMSG_REGISTER_CHANNEL)
+		.add<packet_header>(IMSG_CHANNEL_CONNECT)
 		.add<game_channel_id>(channel)
-		.add<ip>(channel_ip)
-		.add<vector<external_ip>>(ext_ip)
-		.add<connection_port>(port);
+		.add<connection_port>(port)
+		.add<world_config>(world_server::get_instance().get_config());
 	return builder;
 }
 
-PACKET_IMPL(update_channel_pop, game_channel_id channel, int32_t population) {
+PACKET_IMPL(rehash_config, const world_config &config) {
 	packet_builder builder;
 	builder
-		.add<packet_header>(IMSG_UPDATE_CHANNEL_POP)
-		.add<game_channel_id>(channel)
-		.add<int32_t>(population);
+		.add<packet_header>(IMSG_REHASH_CONFIG)
+		.add<world_config>(config);
 	return builder;
 }
 
-PACKET_IMPL(remove_channel, game_channel_id channel) {
-	packet_builder builder;
-	builder
-		.add<packet_header>(IMSG_REMOVE_CHANNEL)
-		.add<game_channel_id>(channel);
-	return builder;
 }
-
 }
 }
 }

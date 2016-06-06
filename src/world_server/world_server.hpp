@@ -23,10 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/rates_config.hpp"
 #include "common/types.hpp"
 #include "common/world_config.hpp"
-#include "world_server/Channels.hpp"
-#include "world_server/LoginServerSession.hpp"
-#include "world_server/PlayerDataProvider.hpp"
-#include "world_server/WorldServerAcceptedSession.hpp"
+#include "world_server/channels_temp.hpp"
+#include "world_server/login_server_session.hpp"
+#include "world_server/player_data_provider.hpp"
+#include "world_server/world_server_accepted_session.hpp"
 #include <string>
 
 namespace vana {

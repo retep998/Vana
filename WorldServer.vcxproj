@@ -55,10 +55,10 @@
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>PrecompiledHeader.hpp</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>precompiled_header.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ForcedIncludeFiles>PrecompiledHeader.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles>precompiled_header.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
       <AdditionalOptions>/Zc:throwingNew %(AdditionalOptions)</AdditionalOptions>
@@ -86,10 +86,10 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>PrecompiledHeader.hpp</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>precompiled_header.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ForcedIncludeFiles>PrecompiledHeader.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles>precompiled_header.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
       <AdditionalOptions>/Zc:throwingNew %(AdditionalOptions)</AdditionalOptions>
@@ -106,36 +106,36 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\world_server\Channel.cpp" />
+    <ClCompile Include="src\world_server\channel_temp.cpp" />
     <ClCompile Include="src\world_server\main_world.cpp" />
-    <ClCompile Include="src\world_server\PlayerDataProvider.cpp" />
-    <ClCompile Include="src\world_server\PrecompiledHeader.cpp">
+    <ClCompile Include="src\world_server\player_data_provider.cpp" />
+    <ClCompile Include="src\world_server\precompiled_header.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\world_server\Channels.cpp" />
-    <ClCompile Include="src\world_server\SyncHandler.cpp" />
-    <ClCompile Include="src\world_server\SyncPacket.cpp" />
-    <ClCompile Include="src\world_server\WorldServer.cpp" />
-    <ClCompile Include="src\world_server\LoginServerSession.cpp" />
-    <ClCompile Include="src\world_server\LoginServerConnectPacket.cpp" />
-    <ClCompile Include="src\world_server\WorldServerAcceptedSession.cpp" />
-    <ClCompile Include="src\world_server\WorldServerAcceptPacket.cpp" />
-    <ClCompile Include="src\world_server\LoginServerConnectHandler.cpp" />
+    <ClCompile Include="src\world_server\channels_temp.cpp" />
+    <ClCompile Include="src\world_server\sync_handler.cpp" />
+    <ClCompile Include="src\world_server\sync_packet.cpp" />
+    <ClCompile Include="src\world_server\world_server.cpp" />
+    <ClCompile Include="src\world_server\login_server_session.cpp" />
+    <ClCompile Include="src\world_server\login_server_connect_packet.cpp" />
+    <ClCompile Include="src\world_server\world_server_accepted_session.cpp" />
+    <ClCompile Include="src\world_server\world_server_accept_packet.cpp" />
+    <ClCompile Include="src\world_server\login_server_connect_handler.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\world_server\Channel.hpp" />
-    <ClInclude Include="src\world_server\PlayerDataProvider.hpp" />
-    <ClInclude Include="src\world_server\PrecompiledHeader.hpp" />
-    <ClInclude Include="src\world_server\Channels.hpp" />
-    <ClInclude Include="src\world_server\SyncHandler.hpp" />
-    <ClInclude Include="src\world_server\SyncPacket.hpp" />
-    <ClInclude Include="src\world_server\WorldServer.hpp" />
-    <ClInclude Include="src\world_server\LoginServerSession.hpp" />
-    <ClInclude Include="src\world_server\LoginServerConnectPacket.hpp" />
-    <ClInclude Include="src\world_server\WorldServerAcceptedSession.hpp" />
-    <ClInclude Include="src\world_server\WorldServerAcceptPacket.hpp" />
-    <ClInclude Include="src\world_server\LoginServerConnectHandler.hpp" />
+    <ClInclude Include="src\world_server\channel_temp.hpp" />
+    <ClInclude Include="src\world_server\player_data_provider.hpp" />
+    <ClInclude Include="src\world_server\precompiled_header.hpp" />
+    <ClInclude Include="src\world_server\channels_temp.hpp" />
+    <ClInclude Include="src\world_server\sync_handler.hpp" />
+    <ClInclude Include="src\world_server\sync_packet.hpp" />
+    <ClInclude Include="src\world_server\world_server.hpp" />
+    <ClInclude Include="src\world_server\login_server_session.hpp" />
+    <ClInclude Include="src\world_server\login_server_connect_packet.hpp" />
+    <ClInclude Include="src\world_server\world_server_accepted_session.hpp" />
+    <ClInclude Include="src\world_server\world_server_accept_packet.hpp" />
+    <ClInclude Include="src\world_server\login_server_connect_handler.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Common.vcxproj">

@@ -15,15 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginServerConnectHandler.hpp"
+#include "login_server_connect_handler.hpp"
 #include "common/exit_codes.hpp"
 #include "common/packet_reader.hpp"
 #include "common/world_config.hpp"
-#include "world_server/Channels.hpp"
-#include "world_server/LoginServerSession.hpp"
-#include "world_server/PlayerDataProvider.hpp"
-#include "world_server/SyncPacket.hpp"
-#include "world_server/WorldServer.hpp"
+#include "world_server/channels_temp.hpp"
+#include "world_server/login_server_session.hpp"
+#include "world_server/player_data_provider.hpp"
+#include "world_server/sync_packet.hpp"
+#include "world_server/world_server.hpp"
 #include <iostream>
 
 namespace vana {
