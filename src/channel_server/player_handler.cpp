@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/skill_data_provider.hpp"
 #include "common/skill_type.hpp"
 #include "common/time_utilities.hpp"
-#include "common/timer.hpp"
+#include "common/timer/timer.hpp"
 #include "common/wide_point.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/drop.hpp"
@@ -575,7 +575,7 @@ auto player_handler::use_melee_attack(ref_ptr<player> player, packet_reader &rea
 					pp_drop->do_drop(origin);
 				},
 				vana::timer::id{
-					timer_type::pickpocket_timer,
+					vana::timer::type::pickpocket_timer,
 					player->get_id(),
 					player->get_active_buffs()->get_pickpocket_counter()
 				},

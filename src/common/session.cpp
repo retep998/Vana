@@ -94,7 +94,7 @@ auto session::start(const ping_config &ping, ref_ptr<packet_transformer> transfo
 		m_max_ping_count = ping.timeout_ping_count;
 		timer::timer::create(
 			[this](const time_point &now) { this->ping(); },
-			timer::id{timer_type::ping_timer},
+			timer::id{timer::type::ping_timer},
 			get_timers(),
 			ping.initial_delay,
 			ping.interval);

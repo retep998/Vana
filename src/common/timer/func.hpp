@@ -15,29 +15,12 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "timer_container.hpp"
-#include "common/timer_thread.hpp"
-#include "common/timer.hpp"
-#include <chrono>
+#pragma once
+
+#include "common/types.hpp"
 
 namespace vana {
-namespace timer {
-
-auto container::is_timer_running(const id &id) const -> bool {
-	return m_timers.find(id) != std::end(m_timers);
-}
-
-auto container::register_timer(ref_ptr<timer> timer, const id &id, time_point run_at) -> void {
-	m_timers[id] = timer;
-	timer_thread::get_instance().register_timer(timer, run_at);
-}
-
-auto container::remove_timer(const id &id) -> void {
-	auto iter = m_timers.find(id);
-	if (iter != std::end(m_timers)) {
-		m_timers.erase(iter);
+	namespace timer {
+		using func = function<void(const time_point &)>;
 	}
-}
-
-}
 }

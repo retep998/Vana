@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/game_logic_utilities.hpp"
 #include "common/randomizer.hpp"
 #include "common/skill_data_provider.hpp"
-#include "common/timer.hpp"
-#include "common/timer_id.hpp"
+#include "common/timer/id.hpp"
+#include "common/timer/timer.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/map.hpp"
 #include "channel_server/map_packet.hpp"
@@ -561,7 +561,7 @@ auto player_skills::open_mystic_door(const point &pos, seconds door_time) -> mys
 		[this](const time_point &now) {
 			this->close_mystic_door(true);
 		},
-		vana::timer::id{timer_type::door_timer},
+		vana::timer::id{vana::timer::type::door_timer},
 		m_player->get_timer_container(),
 		m_mystic_door->get_door_time());
 
@@ -570,7 +570,7 @@ auto player_skills::open_mystic_door(const point &pos, seconds door_time) -> mys
 
 auto player_skills::close_mystic_door(bool from_timer) -> void {
 	if (!from_timer) {
-		m_player->get_timer_container()->remove_timer(vana::timer::id{timer_type::door_timer});
+		m_player->get_timer_container()->remove_timer(vana::timer::id{vana::timer::type::door_timer});
 	}
 
 	ref_ptr<mystic_door> door = m_mystic_door;

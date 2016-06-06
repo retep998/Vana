@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "common/packet_builder.hpp"
-#include "common/timer_container_holder.hpp"
+#include "common/timer/container_holder.hpp"
 #include "common/types.hpp"
 #include <memory>
 #include <queue>
@@ -48,7 +48,7 @@ namespace vana {
 			packet_builder send_display;
 		};
 
-		class maple_tvs : public timer_container_holder {
+		class maple_tvs : public vana::timer::container_holder {
 		public:
 			auto add_map(map *map) -> void;
 

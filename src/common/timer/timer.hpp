@@ -17,8 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/timer_id.hpp"
-#include "common/timer_type.hpp"
+#include "common/timer/func.hpp"
+#include "common/timer/id.hpp"
+#include "common/timer/run_result.hpp"
+#include "common/timer/type.hpp"
 #include "common/types.hpp"
 #include <ctime>
 #include <functional>
@@ -26,12 +28,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace vana {
 	namespace timer {
-		using timer_func = function<void(const time_point &)>;
-
-		enum class run_result {
-			reset,
-			complete,
-		};
 
 		class container;
 		class thread;
@@ -40,8 +36,8 @@ namespace vana {
 			NONCOPYABLE(timer);
 			NO_DEFAULT_CONSTRUCTOR(timer);
 		public:
-			timer(const timer_func func, const id &id, ref_ptr<container> container, const duration &difference_from_now, const duration &repeat);
-			static auto create(const timer_func func, const id &id, ref_ptr<container> container, const duration &difference_from_now, const duration &repeat = seconds{0}) -> void;
+			timer(const func f, const id &id, ref_ptr<container> container, const duration &difference_from_now, const duration &repeat);
+			static auto create(const func f, const id &id, ref_ptr<container> container, const duration &difference_from_now, const duration &repeat = seconds{0}) -> void;
 
 			auto get_time_left() const -> duration;
 			auto run(const time_point &now) const -> run_result;
@@ -53,7 +49,7 @@ namespace vana {
 			time_point m_run_at;
 			bool m_repeat;
 			duration m_repeat_time;
-			timer_func m_function;
+			func m_function;
 		};
 	}
 }

@@ -33,10 +33,10 @@ namespace vana {
 		class container;
 		class timer;
 
-		class timer_thread {
-			SINGLETON(timer_thread);
+		class thread {
+			SINGLETON(thread);
 		public:
-			~timer_thread();
+			~thread();
 			auto get_timer_container() const -> ref_ptr<container>;
 			auto register_timer(ref_ptr<timer> timer, time_point run_at) -> void;
 		private:
@@ -53,7 +53,7 @@ namespace vana {
 			std::priority_queue<timer_pair, vector<timer_pair>, find_closest_timer> m_timers;
 			std::condition_variable_any m_main_loop_condition;
 			recursive_mutex m_timers_mutex;
-			ref_ptr<thread> m_thread;
+			ref_ptr<std::thread> m_thread;
 			ref_ptr<container> m_container; // Central container for timers that don't belong to other containers
 		};
 	}

@@ -23,8 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/reactor_data_provider.hpp"
 #include "common/script_data_provider.hpp"
 #include "common/time_utilities.hpp"
-#include "common/timer.hpp"
-#include "common/timer_thread.hpp"
+#include "common/timer/thread.hpp"
+#include "common/timer/timer.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/drop.hpp"
 #include "channel_server/lua/lua_reactor.hpp"
@@ -125,7 +125,7 @@ auto reactor_handler::check_drop(ref_ptr<player> player, drop *drop) -> void {
 						reaction.player = player;
 						reaction.state = reactor_event.next_state;
 
-						vana::timer::id id{timer_type::reaction_timer, drop->get_id()};
+						vana::timer::id id{vana::timer::type::reaction_timer, drop->get_id()};
 						vana::timer::timer::create(reaction, id, nullptr, seconds{3});
 					}
 					return;
@@ -136,8 +136,8 @@ auto reactor_handler::check_drop(ref_ptr<player> player, drop *drop) -> void {
 }
 
 auto reactor_handler::check_loot(drop *drop) -> void {
-	vana::timer::id id{timer_type::reaction_timer, drop->get_id()};
-	vana::timer::timer_thread::get_instance().get_timer_container()->remove_timer(id);
+	vana::timer::id id{vana::timer::type::reaction_timer, drop->get_id()};
+	vana::timer::thread::get_instance().get_timer_container()->remove_timer(id);
 }
 
 }

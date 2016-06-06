@@ -78,7 +78,7 @@ auto pet_handler::handle_summon(ref_ptr<player> player, packet_reader &reader) -
 		int8_t index = pet_value->get_index().get();
 		player->get_pets()->set_summoned(index, 0);
 		if (index == 0) {
-			vana::timer::id id{timer_type::pet_timer, index};
+			vana::timer::id id{vana::timer::type::pet_timer, index};
 			player->get_timer_container()->remove_timer(id);
 		}
 		if (multipet) {
@@ -116,7 +116,7 @@ auto pet_handler::handle_summon(ref_ptr<player> player, packet_reader &reader) -
 				player->send_map(packets::pets::pet_summoned(player->get_id(), pet_value));
 			}
 			else if (pet *kicked = player->get_pets()->get_summoned(0)) {
-				vana::timer::id id{timer_type::pet_timer, kicked->get_index().get()};
+				vana::timer::id id{vana::timer::type::pet_timer, kicked->get_index().get()};
 				player->get_timer_container()->remove_timer(id);
 				kicked->desummon();
 				player->send_map(packets::pets::pet_summoned(player->get_id(), pet_value, true));

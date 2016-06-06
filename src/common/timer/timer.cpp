@@ -15,29 +15,29 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "common/timer.hpp"
-#include "common/timer_container.hpp"
-#include "common/timer_thread.hpp"
+#include "common/timer/timer.hpp"
+#include "common/timer/container.hpp"
+#include "common/timer/thread.hpp"
 #include "common/time_utilities.hpp"
 #include <memory>
 
 namespace vana {
 namespace timer {
 
-auto timer::create(const timer_func func, const id &id, ref_ptr<container> container, const duration &difference_from_now, const duration &repeat) -> void {
+auto timer::create(const func f, const id &id, ref_ptr<container> container, const duration &difference_from_now, const duration &repeat) -> void {
 	if (container == nullptr) {
-		container = timer_thread::get_instance().get_timer_container();
+		container = vana::timer::thread::get_instance().get_timer_container();
 	}
 
-	ref_ptr<timer> timer = make_ref_ptr<vana::timer::timer>(func, id, container, difference_from_now, repeat);
+	ref_ptr<timer> timer = make_ref_ptr<vana::timer::timer>(f, id, container, difference_from_now, repeat);
 	container->register_timer(timer, id, timer->m_run_at);
 }
 
-timer::timer(const timer_func func, const id &id, ref_ptr<container> container, const duration &difference_from_now, const duration &repeat) :
+timer::timer(const func f, const id &id, ref_ptr<container> container, const duration &difference_from_now, const duration &repeat) :
 	m_id{id},
 	m_container{container},
 	m_repeat_time{repeat},
-	m_function{func}
+	m_function{f}
 {
 	m_repeat = repeat.count() != 0;
 	m_run_at = utilities::time::get_now_with_time_added(difference_from_now);

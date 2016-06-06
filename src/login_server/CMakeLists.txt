@@ -1,9 +1,9 @@
 file(GLOB LOGIN_SRC *.cpp)
-file(GLOB LOGIN_HEADERS *.hpp)
+file(GLOB LOGIN_HDR *.hpp)
 source_group("Login Sources" FILES ${LOGIN_SRC})
-source_group("Login Headers" FILES ${LOGIN_HEADERS})
+source_group("Login Headers" FILES ${LOGIN_HDR})
 
-add_executable(login_server ${LOGIN_SRC} ${LOGIN_HEADERS})
+add_executable(login_server ${LOGIN_SRC} ${LOGIN_HDR})
 
 
 target_link_libraries(login_server

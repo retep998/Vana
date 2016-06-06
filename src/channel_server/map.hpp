@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/respawnable.hpp"
 #include "common/seat_info.hpp"
 #include "common/spawn_info.hpp"
-#include "common/timer_container_holder.hpp"
+#include "common/timer/container_holder.hpp"
 #include "common/types.hpp"
 #include "channel_server/map_data_provider.hpp"
 #include "channel_server/mob.hpp"
@@ -79,7 +79,7 @@ namespace vana {
 			const portal_info * const portal;
 		};
 
-		class map : public timer_container_holder {
+		class map : public vana::timer::container_holder {
 			NONCOPYABLE(map);
 			NO_DEFAULT_CONSTRUCTOR(map);
 		public:

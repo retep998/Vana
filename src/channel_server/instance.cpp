@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "instance.hpp"
 #include "common/time_utilities.hpp"
-#include "common/timer.hpp"
-#include "common/timer_container.hpp"
+#include "common/timer/container.hpp"
+#include "common/timer/timer.hpp"
 #include "common/time_utilities.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/instances.hpp"
@@ -162,7 +162,7 @@ auto instance::add_future_timer(const string &timer_name, seconds time, seconds 
 		timer.is_persistent = persistence.count() > 0;
 		m_timer_actions.emplace(timer_name, timer);
 
-		vana::timer::id id{timer_type::instance_timer, timer.counter_id};
+		vana::timer::id id{vana::timer::type::instance_timer, timer.counter_id};
 		vana::timer::timer::create([this, timer_name](const time_point &now) { this->timer_complete(timer_name, true); },
 			id, get_timers(), time, persistence);
 
@@ -178,7 +178,7 @@ auto instance::add_second_of_hour_timer(const string &timer_name, int16_t second
 		timer.is_persistent = persistence.count() > 0;
 		m_timer_actions.emplace(timer_name, timer);
 
-		vana::timer::id id{timer_type::instance_timer, timer.counter_id};
+		vana::timer::id id{vana::timer::type::instance_timer, timer.counter_id};
 		vana::timer::timer::create([this, timer_name](const time_point &now) { this->timer_complete(timer_name, true); },
 			id, get_timers(), utilities::time::get_distance_to_next_occurring_second_of_hour(second_of_hour), persistence);
 
@@ -192,7 +192,7 @@ auto instance::get_timer_seconds_remaining(const string &timer_name) -> seconds 
 	auto kvp = m_timer_actions.find(timer_name);
 	if (kvp != std::end(m_timer_actions)) {
 		auto &timer = kvp->second;
-		vana::timer::id id{timer_type::instance_timer, timer.counter_id};
+		vana::timer::id id{vana::timer::type::instance_timer, timer.counter_id};
 		time_left = get_timers()->get_remaining_time<seconds>(id);
 	}
 	return time_left;
@@ -211,7 +211,7 @@ auto instance::remove_timer(const string &timer_name, bool perform_event) -> voi
 	if (kvp != std::end(m_timer_actions)) {
 		const timer_action &timer = kvp->second;
 		if (get_timer_seconds_remaining(timer_name).count() > 0) {
-			vana::timer::id id{timer_type::instance_timer, timer.counter_id};
+			vana::timer::id id{vana::timer::type::instance_timer, timer.counter_id};
 			get_timers()->remove_timer(id);
 			if (perform_event) {
 				timer_end(timer_name, false);
@@ -243,7 +243,7 @@ auto instance::set_instance_timer(const duration &time, bool first_run) -> void 
 		timer.is_persistent = m_persistent.count() > 0;
 		m_timer_actions.emplace("instance", timer);
 
-		vana::timer::id id{timer_type::instance_timer, timer.counter_id};
+		vana::timer::id id{vana::timer::type::instance_timer, timer.counter_id};
 		vana::timer::timer::create(
 			[this](const time_point &now) {
 				this->instance_end(false, true);

@@ -17,26 +17,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/timer/container_holder.hpp"
+#include "common/timer/container.hpp"
 #include "common/types.hpp"
-#include "common/variables.hpp"
 #include <memory>
-#include <string>
 
 namespace vana {
-	namespace channel_server {
-		class event_data_provider : public vana::timer::container_holder {
+	namespace timer {
+		class container_holder {
 		public:
-			event_data_provider();
-			auto load_data() -> void;
-			auto clear_instances() -> void;
-			auto get_variables() const -> variables * { return m_variables.get(); }
+			container_holder() {
+				m_timers = make_ref_ptr<vana::timer::container>();
+			}
+		protected:
+			auto clear_timers() -> void { m_timers.reset(); }
+			auto get_timers() const -> ref_ptr<vana::timer::container> { return m_timers; }
 		private:
-			auto load_events() -> void;
-			auto load_instances() -> void;
-			auto start_instance(const string &name, const duration &time, const duration &repeat = seconds{0}) -> void;
-
-			owned_ptr<variables> m_variables;
+			ref_ptr<vana::timer::container> m_timers;
 		};
 	}
 }

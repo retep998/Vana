@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "maple_tvs.hpp"
 #include "common/time_utilities.hpp"
-#include "common/timer.hpp"
+#include "common/timer/timer.hpp"
 #include "channel_server/map.hpp"
 #include "channel_server/maple_tv_packet.hpp"
 #include "channel_server/player.hpp"
@@ -69,7 +69,7 @@ auto maple_tvs::parse_buffer() -> void {
 
 		m_current_message = message;
 
-		vana::timer::id id{timer_type::maple_tv_timer, message.sender_id, message.counter};
+		vana::timer::id id{timer::type::maple_tv_timer, message.sender_id, message.counter};
 		vana::timer::timer::create(
 			[this](const time_point &now) { this->parse_buffer(); },
 			id, get_timers(), seconds{message.time});
@@ -87,7 +87,7 @@ auto maple_tvs::send(const packet_builder &builder) -> void {
 }
 
 auto maple_tvs::get_message_time() const -> seconds {
-	vana::timer::id id{timer_type::maple_tv_timer, m_current_message.sender_id, m_current_message.counter};
+	vana::timer::id id{timer::type::maple_tv_timer, m_current_message.sender_id, m_current_message.counter};
 	return get_timers()->get_remaining_time<seconds>(id);
 }
 

@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/game_constants.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/packet_reader.hpp"
-#include "common/timer.hpp"
+#include "common/timer/timer.hpp"
 #include "common/time_utilities.hpp"
 #include "channel_server/map.hpp"
 #include "channel_server/player.hpp"
@@ -39,7 +39,7 @@ player_summons::player_summons(player *player) :
 
 auto player_summons::add_summon(summon *summon, seconds time) -> void {
 	game_summon_id summon_id = summon->get_id();
-	vana::timer::id id{timer_type::buff_timer, summon_id, 1};
+	vana::timer::id id{vana::timer::type::buff_timer, summon_id, 1};
 	vana::timer::timer::create(
 		[this, summon_id](const time_point &now) {
 			summon_handler::remove_summon(
@@ -60,7 +60,7 @@ auto player_summons::remove_summon(game_summon_id summon_id, bool from_timer) ->
 	summon *value = get_summon(summon_id);
 	if (value != nullptr) {
 		if (!from_timer) {
-			vana::timer::id id{timer_type::buff_timer, summon_id, 1};
+			vana::timer::id id{vana::timer::type::buff_timer, summon_id, 1};
 			m_player->get_timer_container()->remove_timer(id);
 		}
 		ext::remove_element(m_summons, value);
@@ -99,7 +99,7 @@ auto player_summons::changed_map() -> void {
 }
 
 auto player_summons::get_summon_time_remaining(game_summon_id summon_id) const -> seconds {
-	vana::timer::id id{timer_type::buff_timer, summon_id, 1};
+	vana::timer::id id{vana::timer::type::buff_timer, summon_id, 1};
 	return m_player->get_timer_container()->get_remaining_time<seconds>(id);
 }
 

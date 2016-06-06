@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/packet_transformer.hpp"
 #include "common/ping_config.hpp"
 #include "common/shared_array.hpp"
-#include "common/timer_container_holder.hpp"
+#include "common/timer/container_holder.hpp"
 #include "common/types.hpp"
 #include <asio.hpp>
 #include <memory>
@@ -41,7 +41,7 @@ namespace vana {
 	using handler = ref_ptr<packet_handler>;
 	using handler_creator = function<handler()>;
 
-	class session : public enable_shared<session>, public timer_container_holder {
+	class session : public enable_shared<session>, public timer::container_holder {
 	public:
 		session(
 			asio::io_service &service,

@@ -154,7 +154,6 @@ namespace vana {
 	using hours = std::chrono::hours;
 	using string = std::string;
 	using out_stream = std::ostringstream;
-	using thread = std::thread;
 	using mutex = std::mutex;
 	using recursive_mutex = std::recursive_mutex;
 	using match = std::smatch;

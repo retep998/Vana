@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "common/hash_combine.hpp"
-#include "common/timer_type.hpp"
+#include "common/timer/type.hpp"
 #include "common/types.hpp"
 #include <algorithm>
 #include <functional>
@@ -28,13 +28,13 @@ namespace vana {
 		struct id {
 			NO_DEFAULT_CONSTRUCTOR(id);
 		public:
-			id(timer_type type, uint32_t id, uint32_t id2);
-			id(timer_type type, uint32_t id, int32_t id2);
-			id(timer_type type, uint32_t id);
-			id(timer_type type, int32_t id, uint32_t id2);
-			id(timer_type type, int32_t id, int32_t id2);
-			id(timer_type type, int32_t id);
-			id(timer_type type);
+			id(vana::timer::type type, uint32_t id, uint32_t id2);
+			id(vana::timer::type type, uint32_t id, int32_t id2);
+			id(vana::timer::type type, uint32_t id);
+			id(vana::timer::type type, int32_t id, uint32_t id2);
+			id(vana::timer::type type, int32_t id, int32_t id2);
+			id(vana::timer::type type, int32_t id);
+			id(vana::timer::type type);
 
 			uint32_t type;
 			uint32_t id1;
@@ -44,7 +44,7 @@ namespace vana {
 		};
 
 		inline
-		id::id(timer_type type, uint32_t id, uint32_t id2) :
+		id::id(vana::timer::type type, uint32_t id, uint32_t id2) :
 			type{static_cast<uint32_t>(type)},
 			id1{id},
 			id2{id2}
@@ -52,7 +52,7 @@ namespace vana {
 		}
 
 		inline
-		id::id(timer_type type, uint32_t id, int32_t id2) :
+		id::id(vana::timer::type type, uint32_t id, int32_t id2) :
 			type{static_cast<uint32_t>(type)},
 			id1{id},
 			id2{static_cast<uint32_t>(id2)}
@@ -60,7 +60,7 @@ namespace vana {
 		}
 
 		inline
-		id::id(timer_type type, uint32_t id) :
+		id::id(vana::timer::type type, uint32_t id) :
 			type{static_cast<uint32_t>(type)},
 			id1{id},
 			id2{0}
@@ -68,7 +68,7 @@ namespace vana {
 		}
 
 		inline
-		id::id(timer_type type, int32_t id, uint32_t id2) :
+		id::id(vana::timer::type type, int32_t id, uint32_t id2) :
 			type{static_cast<uint32_t>(type)},
 			id1{static_cast<uint32_t>(id)},
 			id2{id2}
@@ -76,7 +76,7 @@ namespace vana {
 		}
 
 		inline
-		id::id(timer_type type, int32_t id, int32_t id2) :
+		id::id(vana::timer::type type, int32_t id, int32_t id2) :
 			type{static_cast<uint32_t>(type)},
 			id1{static_cast<uint32_t>(id)},
 			id2{static_cast<uint32_t>(id2)}
@@ -84,7 +84,7 @@ namespace vana {
 		}
 
 		inline
-		id::id(timer_type type, int32_t id) :
+		id::id(vana::timer::type type, int32_t id) :
 			type{static_cast<uint32_t>(type)},
 			id1{static_cast<uint32_t>(id)},
 			id2{0}
@@ -92,7 +92,7 @@ namespace vana {
 		}
 
 		inline
-		id::id(timer_type type) :
+		id::id(vana::timer::type type) :
 			type{static_cast<uint32_t>(type)},
 			id1{0},
 			id2{0}

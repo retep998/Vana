@@ -50,7 +50,7 @@ namespace vana {
 	private:
 		vector<ref_ptr<connection_listener>> m_servers;
 		hash_set<ref_ptr<session>> m_sessions;
-		ref_ptr<thread> m_thread;
+		ref_ptr<std::thread> m_thread;
 		owned_ptr<asio::io_service::work> m_work;
 		asio::io_service m_io_service;
 		abstract_server *m_server;

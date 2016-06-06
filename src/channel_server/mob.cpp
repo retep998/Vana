@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/mp_eater_data.hpp"
 #include "common/randomizer.hpp"
 #include "common/time_utilities.hpp"
-#include "common/timer.hpp"
+#include "common/timer/timer.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/drop_handler.hpp"
 #include "channel_server/instance.hpp"
@@ -69,13 +69,13 @@ mob::mob(game_map_object map_mob_id, game_map_id map_id, game_mob_id mob_id, vie
 		int32_t mp_recovery = m_info->mp_recovery;
 		vana::timer::timer::create(
 			[this, hp_recovery, mp_recovery](const time_point &now) { this->natural_heal(hp_recovery, mp_recovery); },
-			vana::timer::id{timer_type::mob_heal_timer},
+			vana::timer::id{vana::timer::type::mob_heal_timer},
 			get_timers(), seconds{1}, seconds{10});
 	}
 	if (m_info->remove_after > 0) {
 		vana::timer::timer::create(
 			[this](const time_point &now) { this->kill(); },
-			vana::timer::id{timer_type::mob_remove_timer, m_map_mob_id},
+			vana::timer::id{vana::timer::type::mob_remove_timer, m_map_mob_id},
 			get_timers(), seconds{m_info->remove_after});
 	}
 }
@@ -216,7 +216,7 @@ auto mob::add_status(game_player_id player_id, vector<status_info> &status_info)
 					[this, player_id, poison_damage](const time_point &now) {
 						this->apply_damage(player_id, poison_damage, true);
 					},
-					vana::timer::id{timer_type::mob_status_timer, c_status, 1},
+					vana::timer::id{vana::timer::type::mob_status_timer, c_status, 1},
 					get_timers(), seconds{1}, seconds{1});
 				break;
 		}
@@ -224,7 +224,7 @@ auto mob::add_status(game_player_id player_id, vector<status_info> &status_info)
 		// We add some milliseconds to our times in order to allow poisons to not end one hit early
 		vana::timer::timer::create(
 			[this, c_status](const time_point &now) { this->remove_status(c_status, true); },
-			vana::timer::id{timer_type::mob_status_timer, c_status},
+			vana::timer::id{vana::timer::type::mob_status_timer, c_status},
 			get_timers(), milliseconds{info.time.count() * 1000 + 100});
 	}
 
@@ -260,11 +260,11 @@ auto mob::remove_status(int32_t status, bool from_timer) -> void {
 				// Intentional fallthrough
 			case status_effects::mob::poison:
 				// Stop poison damage timer
-				get_timers()->remove_timer(vana::timer::id{timer_type::mob_status_timer, status, 1});
+				get_timers()->remove_timer(vana::timer::id{vana::timer::type::mob_status_timer, status, 1});
 				break;
 		}
 		if (!from_timer) {
-			get_timers()->remove_timer(vana::timer::id{timer_type::mob_status_timer, status});
+			get_timers()->remove_timer(vana::timer::id{vana::timer::type::mob_status_timer, status});
 		}
 		m_status -= status;
 		m_statuses.erase(kvp);

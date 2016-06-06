@@ -15,28 +15,29 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#pragma once
-
-#include "common/timer/container_holder.hpp"
-#include "common/types.hpp"
-#include "common/variables.hpp"
-#include <memory>
-#include <string>
+#include "container.hpp"
+#include "common/timer/thread.hpp"
+#include "common/timer/timer.hpp"
+#include <chrono>
 
 namespace vana {
-	namespace channel_server {
-		class event_data_provider : public vana::timer::container_holder {
-		public:
-			event_data_provider();
-			auto load_data() -> void;
-			auto clear_instances() -> void;
-			auto get_variables() const -> variables * { return m_variables.get(); }
-		private:
-			auto load_events() -> void;
-			auto load_instances() -> void;
-			auto start_instance(const string &name, const duration &time, const duration &repeat = seconds{0}) -> void;
+namespace timer {
 
-			owned_ptr<variables> m_variables;
-		};
+auto container::is_timer_running(const id &id) const -> bool {
+	return m_timers.find(id) != std::end(m_timers);
+}
+
+auto container::register_timer(ref_ptr<timer> timer, const id &id, time_point run_at) -> void {
+	m_timers[id] = timer;
+	vana::timer::thread::get_instance().register_timer(timer, run_at);
+}
+
+auto container::remove_timer(const id &id) -> void {
+	auto iter = m_timers.find(id);
+	if (iter != std::end(m_timers)) {
+		m_timers.erase(iter);
 	}
+}
+
+}
 }

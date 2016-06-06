@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/packet_handler.hpp"
 #include "common/skill_data_provider.hpp"
 #include "common/tausworthe_generator.hpp"
-#include "common/timer_container_holder.hpp"
+#include "common/timer/container_holder.hpp"
 #include "channel_server/movable_life.hpp"
 #include "channel_server/npc.hpp"
 #include "channel_server/player_active_buffs.hpp"
@@ -53,7 +53,7 @@ namespace vana {
 		class map;
 		class party;
 
-		class player : public packet_handler, public enable_shared<player>, public timer_container_holder, public movable_life {
+		class player : public packet_handler, public enable_shared<player>, public vana::timer::container_holder, public movable_life {
 			NONCOPYABLE(player);
 		public:
 			player();

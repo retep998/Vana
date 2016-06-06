@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/timer.hpp"
-#include "common/timer_thread.hpp"
-#include "common/timer_type.hpp"
+#include "common/timer/timer.hpp"
+#include "common/timer/thread.hpp"
+#include "common/timer/type.hpp"
 #include "common/types.hpp"
 
 namespace vana {
@@ -40,8 +40,8 @@ namespace vana {
 				[this](const time_point &) {
 					this->process();
 				},
-				timer::id{timer_type::finalize_timer, unique_pool_seed},
-				timer::timer_thread::get_instance().get_timer_container(),
+				timer::id{timer::type::finalize_timer, unique_pool_seed},
+				timer::thread::get_instance().get_timer_container(),
 				seconds{60},
 				seconds{30});
 

@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "common/id_pool.hpp"
-#include "common/timer_container_holder.hpp"
+#include "common/timer/container_holder.hpp"
 #include "common/types.hpp"
 #include <memory>
 #include <unordered_map>
@@ -28,7 +28,7 @@ namespace vana {
 		class active_trade;
 		class player;
 
-		class trades : public timer_container_holder {
+		class trades : public vana::timer::container_holder {
 		public:
 			trades();
 			auto new_trade(ref_ptr<player> start, ref_ptr<player> recv) -> game_trade_id;

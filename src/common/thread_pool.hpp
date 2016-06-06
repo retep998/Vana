@@ -24,11 +24,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace vana {
 	class thread_pool {
 	public:
-		static auto lease(function<void()> work, function<void()> pre_wait_hook) -> ref_ptr<thread> {
+		static auto lease(function<void()> work, function<void()> pre_wait_hook) -> ref_ptr<std::thread> {
 			return s_pool.lease(work, pre_wait_hook);
 		}
 
-		static auto lease(function<void(owned_lock<recursive_mutex> &)> work, function<void()> pre_wait_hook, recursive_mutex &mutex) -> ref_ptr<thread> {
+		static auto lease(function<void(owned_lock<recursive_mutex> &)> work, function<void()> pre_wait_hook, recursive_mutex &mutex) -> ref_ptr<std::thread> {
 			return s_pool.lease(work, pre_wait_hook, mutex);
 		}
 
@@ -37,10 +37,10 @@ namespace vana {
 		}
 	private:
 		struct thread_pair {
-			ref_ptr<thread> thread;
+			ref_ptr<std::thread> thread;
 			function<void()> pre_wait_hook;
 
-			thread_pair(ref_ptr<vana::thread> thread, function<void()> pre_wait_hook) :
+			thread_pair(ref_ptr<std::thread> thread, function<void()> pre_wait_hook) :
 				thread{thread},
 				pre_wait_hook{pre_wait_hook}
 			{
@@ -53,8 +53,8 @@ namespace vana {
 				m_runhread = true;
 			}
 
-			auto lease(function<void()> work, function<void()> pre_wait_hook) -> ref_ptr<thread> {
-				auto thread = make_ref_ptr<vana::thread>([this, work]() -> void {
+			auto lease(function<void()> work, function<void()> pre_wait_hook) -> ref_ptr<std::thread> {
+				auto thread = make_ref_ptr<std::thread>([this, work]() -> void {
 					while (m_runhread.load(std::memory_order_relaxed)) {
 						work();
 					}
@@ -64,8 +64,8 @@ namespace vana {
 				return thread;
 			}
 
-			auto lease(function<void(owned_lock<recursive_mutex> &)> work, function<void()> pre_wait_hook, recursive_mutex &mutex) -> ref_ptr<thread> {
-				auto thread = make_ref_ptr<vana::thread>([this, work, &mutex]() -> void {
+			auto lease(function<void(owned_lock<recursive_mutex> &)> work, function<void()> pre_wait_hook, recursive_mutex &mutex) -> ref_ptr<std::thread> {
+				auto thread = make_ref_ptr<std::thread>([this, work, &mutex]() -> void {
 					owned_lock<recursive_mutex> l{mutex};
 					while (m_runhread.load(std::memory_order_relaxed)) {
 						work(l);

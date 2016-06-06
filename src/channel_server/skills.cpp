@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/skill_constants.hpp"
 #include "common/skill_data_provider.hpp"
 #include "common/time_utilities.hpp"
-#include "common/timer.hpp"
+#include "common/timer/timer.hpp"
 #include "channel_server/buffs.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/gm_packet.hpp"
@@ -647,7 +647,7 @@ auto skills::start_cooldown(ref_ptr<player> player, game_skill_id skill_id, seco
 		[player, skill_id](const time_point &now) {
 			skills::stop_cooldown(player, skill_id);
 		},
-		vana::timer::id{timer_type::cool_timer, skill_id},
+		vana::timer::id{vana::timer::type::cool_timer, skill_id},
 		player->get_timer_container(),
 		seconds{cool_time});
 }
@@ -659,7 +659,7 @@ auto skills::stop_cooldown(ref_ptr<player> player, game_skill_id skill_id) -> vo
 		player->get_active_buffs()->reset_battleship_hp();
 	}
 
-	vana::timer::id id{timer_type::cool_timer, skill_id};
+	vana::timer::id id{vana::timer::type::cool_timer, skill_id};
 	auto container = player->get_timer_container();
 	if (container->is_timer_running(id)) {
 		container->remove_timer(id);
@@ -667,14 +667,14 @@ auto skills::stop_cooldown(ref_ptr<player> player, game_skill_id skill_id) -> vo
 }
 
 auto skills::is_cooling(ref_ptr<player> player, game_skill_id skill_id) -> bool {
-	vana::timer::id id{timer_type::cool_timer, skill_id};
+	vana::timer::id id{vana::timer::type::cool_timer, skill_id};
 	return player->get_timer_container()->is_timer_running(id);
 }
 
 auto skills::get_cooldown_time_left(ref_ptr<player> player, game_skill_id skill_id) -> int16_t {
 	int16_t cool_time = 0;
 	if (is_cooling(player, skill_id)) {
-		vana::timer::id id{timer_type::cool_timer, skill_id};
+		vana::timer::id id{vana::timer::type::cool_timer, skill_id};
 		cool_time = static_cast<int16_t>(player->get_timer_container()->get_remaining_time<seconds>(id).count());
 	}
 	return cool_time;

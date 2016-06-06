@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/game_constants.hpp"
 #include "common/item_data_provider.hpp"
 #include "common/time_utilities.hpp"
-#include "common/timer.hpp"
+#include "common/timer/timer.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/map.hpp"
 #include "channel_server/pets_packet.hpp"
@@ -103,7 +103,7 @@ auto pet::modify_fullness(int8_t offset, bool send_packet) -> void {
 }
 
 auto pet::start_timer() -> void {
-	vana::timer::id id{timer_type::pet_timer, get_index().get()}; // The timer will automatically stop if another pet gets inserted into this index
+	vana::timer::id id{vana::timer::type::pet_timer, get_index().get()}; // The timer will automatically stop if another pet gets inserted into this index
 	duration repeat = seconds{(6 - channel_server::get_instance().get_item_data_provider().get_pet_info(get_item_id())->hunger) * 60}; // TODO FIXME formula
 	vana::timer::timer::create(
 		[this](const time_point &now) {

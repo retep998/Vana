@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "trades.hpp"
 #include "common/time_utilities.hpp"
-#include "common/timer.hpp"
-#include "common/timer_container.hpp"
+#include "common/timer/container.hpp"
+#include "common/timer/timer.hpp"
 #include "channel_server/player.hpp"
 #include "channel_server/trade.hpp"
 #include "channel_server/trade_handler.hpp"
@@ -64,7 +64,7 @@ auto trades::get_trade(game_trade_id id) -> active_trade * {
 }
 
 auto trades::get_timer_seconds_remaining(game_trade_id id) -> seconds {
-	vana::timer::id timer_id{timer_type::trade_timer, id};
+	vana::timer::id timer_id{vana::timer::type::trade_timer, id};
 	return get_timers()->get_remaining_time<seconds>(timer_id);
 }
 
@@ -73,12 +73,12 @@ auto trades::timeout(ref_ptr<player> sender) -> void {
 }
 
 auto trades::stop_timeout(game_trade_id id) -> void {
-	vana::timer::id timer_id{timer_type::trade_timer, id};
+	vana::timer::id timer_id{vana::timer::type::trade_timer, id};
 	get_timers()->remove_timer(timer_id);
 }
 
 auto trades::start_timeout(game_trade_id id, ref_ptr<player> sender) -> void {
-	vana::timer::id timer_id{timer_type::trade_timer, id};
+	vana::timer::id timer_id{vana::timer::type::trade_timer, id};
 	vana::timer::timer::create(
 		[this, sender](const time_point &now) {
 			this->timeout(sender);

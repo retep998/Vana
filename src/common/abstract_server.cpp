@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/session.hpp"
 #include "common/sql_logger.hpp"
 #include "common/thread_pool.hpp"
-#include "common/timer_thread.hpp"
+#include "common/timer/thread.hpp"
 #include "common/time_utilities.hpp"
 #include <chrono>
 #include <ctime>

@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/timer_container_holder.hpp"
+#include "common/timer/container_holder.hpp"
 #include "common/types.hpp"
 #include "common/variables.hpp"
 #include <memory>
@@ -40,7 +40,7 @@ namespace vana {
 			struct id;
 		}
 
-		class instance : public timer_container_holder {
+		class instance : public vana::timer::container_holder {
 			NONCOPYABLE(instance);
 			NO_DEFAULT_CONSTRUCTOR(instance);
 		public:

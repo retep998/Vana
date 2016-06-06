@@ -15,10 +15,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "timer_thread.hpp"
+#include "thread.hpp"
 #include "common/thread_pool.hpp"
-#include "common/timer.hpp"
-#include "common/timer_container.hpp"
+#include "common/timer/timer.hpp"
+#include "common/timer/container.hpp"
 #include "common/time_utilities.hpp"
 #include <chrono>
 #include <functional>
@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace vana {
 namespace timer {
 
-timer_thread::timer_thread()
+thread::thread()
 {
 	m_container = make_ref_ptr<container>();
 	m_thread = thread_pool::lease(
@@ -64,21 +64,21 @@ timer_thread::timer_thread()
 		m_timers_mutex);
 }
 
-timer_thread::~timer_thread() {
+thread::~thread() {
 	m_thread.reset();
 }
 
-auto timer_thread::get_timer_container() const -> ref_ptr<container> {
+auto thread::get_timer_container() const -> ref_ptr<container> {
 	return m_container;
 }
 
-auto timer_thread::register_timer(ref_ptr<timer> timer, time_point run_at) -> void {
+auto thread::register_timer(ref_ptr<timer> timer, time_point run_at) -> void {
 	owned_lock<recursive_mutex> l{m_timers_mutex};
 	m_timers.emplace(run_at, timer);
 	m_main_loop_condition.notify_one();
 }
 
-auto timer_thread::get_wait_time() const -> time_point {
+auto thread::get_wait_time() const -> time_point {
 	if (m_timers.size() > 0) {
 		return m_timers.top().first;
 	}

@@ -23,8 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/job_constants.hpp"
 #include "common/stop_watch.hpp"
 #include "common/string_utilities.hpp"
-#include "common/timer.hpp"
-#include "common/timer_thread.hpp"
+#include "common/timer/timer.hpp"
+#include "common/timer/thread.hpp"
 #include "common/time_utilities.hpp"
 #include "login_server/login_server.hpp"
 #include "login_server/world.hpp"
@@ -51,7 +51,7 @@ auto ranking_calculator::set_timer() -> void {
 auto ranking_calculator::run_thread() -> void {
 	// Ranking on larger servers may take a long time and we don't want that to be blocking
 	// The thread_t object will be deleted immediately, but the thread will continue to run
-	auto p = make_owned_ptr<thread>([] { ranking_calculator::all(); });
+	auto p = make_owned_ptr<std::thread>([] { ranking_calculator::all(); });
 	p->detach();
 }
 

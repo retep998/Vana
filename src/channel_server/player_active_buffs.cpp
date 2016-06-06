@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/randomizer.hpp"
 #include "common/skill_data_provider.hpp"
 #include "common/time_utilities.hpp"
-#include "common/timer.hpp"
-#include "common/timer_container.hpp"
+#include "common/timer/container.hpp"
+#include "common/timer/timer.hpp"
 #include "channel_server/buffs_packet.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/maps.hpp"
@@ -180,7 +180,7 @@ auto player_active_buffs::add_buff(const buff_source &source, const buff &buff, 
 		}
 	}
 
-	vana::timer::id buff_timer_id{timer_type::buff_timer, static_cast<int32_t>(source.get_type()), source.get_id()};
+	vana::timer::id buff_timer_id{vana::timer::type::buff_timer, static_cast<int32_t>(source.get_type()), source.get_id()};
 	if (has_timer) {
 		// Get rid of timers/same buff if they currently exist
 		m_player->get_timer_container()->remove_timer(buff_timer_id);
@@ -189,7 +189,7 @@ auto player_active_buffs::add_buff(const buff_source &source, const buff &buff, 
 	if (buff.any_acts()) {
 		for (const auto &info : buff.get_buff_info()) {
 			if (!info.has_act()) continue;
-			vana::timer::id act_id{timer_type::skill_act_timer, info.get_bit_position()};
+			vana::timer::id act_id{vana::timer::type::skill_act_timer, info.get_bit_position()};
 			m_player->get_timer_container()->remove_timer(act_id);
 		}
 	}
@@ -242,12 +242,12 @@ auto player_active_buffs::add_buff(const buff_source &source, const buff &buff, 
 				}
 
 				for (const auto &bit : displaced_act_bit_positions) {
-					vana::timer::id act_id{timer_type::skill_act_timer, bit};
+					vana::timer::id act_id{vana::timer::type::skill_act_timer, bit};
 					m_player->get_timer_container()->remove_timer(act_id);
 				}
 
 				if (applicable.size() == 0) {
-					vana::timer::id id{timer_type::buff_timer, static_cast<int32_t>(existing.type), existing.identifier};
+					vana::timer::id id{vana::timer::type::buff_timer, static_cast<int32_t>(existing.type), existing.identifier};
 					m_player->get_timer_container()->remove_timer(id);
 
 					m_buffs.erase(std::begin(m_buffs) + i);
@@ -284,7 +284,7 @@ auto player_active_buffs::add_buff(const buff_source &source, const buff &buff, 
 					info.get_act_value(),
 					2).value;
 
-				vana::timer::id act_id{timer_type::skill_act_timer, info.get_bit_position()};
+				vana::timer::id act_id{vana::timer::type::skill_act_timer, info.get_bit_position()};
 				vana::timer::timer::create(
 					run_act,
 					act_id,
@@ -321,7 +321,7 @@ auto player_active_buffs::add_buff(const buff_source &source, const buff &buff, 
 
 auto player_active_buffs::remove_buff(const buff_source &source, const buff &buff, bool from_timer) -> void {
 	if (!from_timer) {
-		vana::timer::id id{timer_type::buff_timer, static_cast<int32_t>(source.get_type()), source.get_id()};
+		vana::timer::id id{vana::timer::type::buff_timer, static_cast<int32_t>(source.get_type()), source.get_id()};
 		m_player->get_timer_container()->remove_timer(id);
 	}
 
@@ -337,7 +337,7 @@ auto player_active_buffs::remove_buff(const buff_source &source, const buff &buf
 
 			for (const auto &act_info : info.raw.get_buff_info()) {
 				if (!act_info.has_act()) continue;
-				vana::timer::id act_id{timer_type::skill_act_timer, act_info.get_bit_position()};
+				vana::timer::id act_id{vana::timer::type::skill_act_timer, act_info.get_bit_position()};
 				m_player->get_timer_container()->remove_timer(act_id);
 			}
 
@@ -391,7 +391,7 @@ auto player_active_buffs::remove_buffs() -> void {
 }
 
 auto player_active_buffs::get_buff_seconds_remaining(buff_source_type type, int32_t buff_id) const -> seconds {
-	vana::timer::id id{timer_type::buff_timer, static_cast<int32_t>(type), buff_id};
+	vana::timer::id id{vana::timer::type::buff_timer, static_cast<int32_t>(type), buff_id};
 	return m_player->get_timer_container()->get_remaining_time<seconds>(id);
 }
 
@@ -723,7 +723,7 @@ auto player_active_buffs::decrease_energy_charge_level() -> void {
 auto player_active_buffs::start_energy_charge_timer() -> void {
 	game_skill_id skill_id = m_player->get_skills()->get_energy_charge();
 	m_energy_charge_timer_counter++;
-	vana::timer::id id{timer_type::energy_charge_timer, skill_id, m_energy_charge_timer_counter};
+	vana::timer::id id{vana::timer::type::energy_charge_timer, skill_id, m_energy_charge_timer_counter};
 	vana::timer::timer::create(
 		[this](const time_point &now) {
 			this->decrease_energy_charge_level();
@@ -735,7 +735,7 @@ auto player_active_buffs::start_energy_charge_timer() -> void {
 
 auto player_active_buffs::stop_energy_charge_timer() -> void {
 	game_skill_id skill_id = m_player->get_skills()->get_energy_charge();
-	vana::timer::id id{timer_type::energy_charge_timer, skill_id, m_energy_charge_timer_counter};
+	vana::timer::id id{vana::timer::type::energy_charge_timer, skill_id, m_energy_charge_timer_counter};
 	m_player->get_timer_container()->remove_timer(id);
 }
 
@@ -1090,7 +1090,7 @@ auto player_active_buffs::parse_transfer_packet(packet_reader &reader) -> void {
 
 		m_buffs.push_back(buff);
 
-		vana::timer::id id{timer_type::buff_timer, static_cast<int32_t>(buff.type), buff.identifier};
+		vana::timer::id id{vana::timer::type::buff_timer, static_cast<int32_t>(buff.type), buff.identifier};
 		vana::timer::timer::create(
 			[this, packet_skill_id](const time_point &now) {
 				skills::stop_skill(m_player, translate_to_source(packet_skill_id), true);

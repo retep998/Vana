@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/mob_constants.hpp"
 #include "common/mob_data_provider.hpp"
 #include "common/point.hpp"
-#include "common/timer_container_holder.hpp"
+#include "common/timer/container_holder.hpp"
 #include "common/types.hpp"
 #include "channel_server/movable_life.hpp"
 #include <map>
@@ -40,7 +40,7 @@ namespace vana {
 		class player;
 		struct status_info;
 
-		class mob : public movable_life, public enable_shared<mob>, public timer_container_holder {
+		class mob : public movable_life, public enable_shared<mob>, public vana::timer::container_holder {
 			NONCOPYABLE(mob);
 			NO_DEFAULT_CONSTRUCTOR(mob);
 		public:

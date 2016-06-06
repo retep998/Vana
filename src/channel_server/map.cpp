@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/session.hpp"
 #include "common/split_packet_builder.hpp"
 #include "common/time_utilities.hpp"
-#include "common/timer.hpp"
+#include "common/timer/timer.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/drop.hpp"
 #include "channel_server/effect_packet.hpp"
@@ -72,7 +72,7 @@ map::map(ref_ptr<map_info> info, game_map_id id) :
 	// Dynamic loading, start the map timer once the object is created
 	vana::timer::timer::create(
 		[this](const time_point &now) { this->map_tick(now); },
-		vana::timer::id{timer_type::map_timer, id},
+		vana::timer::id{vana::timer::type::map_timer, id},
 		get_timers(), seconds{0}, seconds{1});
 
 	point right_bottom = info->dimensions.right_bottom();
@@ -160,11 +160,11 @@ auto map::add_portal(const portal_info &portal) -> void {
 
 auto map::add_time_mob(ref_ptr<time_mob> info) -> void {
 	vana::timer::timer::create([this](const time_point &now) { this->check_time_mob_spawn(false); },
-		vana::timer::id{timer_type::map_timer, get_id(), 1},
+		vana::timer::id{vana::timer::type::map_timer, get_id(), 1},
 		get_timers(), utilities::time::get_distance_to_next_occurring_second_of_hour(0), hours{1});
 
 	vana::timer::timer::create([this](const time_point &now) { this->check_time_mob_spawn(true); },
-		vana::timer::id{timer_type::map_timer, get_id(), 2},
+		vana::timer::id{vana::timer::type::map_timer, get_id(), 2},
 		get_timers(), seconds{3}); // First check
 
 	m_time_mob_info = info;
@@ -1041,7 +1041,7 @@ auto map::add_mist(mist *mist) -> void {
 
 	vana::timer::timer::create(
 		[this, mist](const time_point &now) { this->remove_mist(mist); },
-		vana::timer::id{timer_type::mist_timer, mist->get_id()},
+		vana::timer::id{vana::timer::type::mist_timer, mist->get_id()},
 		get_timers(), seconds{mist->get_time()});
 
 	send(packets::map::spawn_mist(mist, false));
@@ -1258,7 +1258,7 @@ auto map::set_map_timer(const seconds &timer) -> void {
 	if (timer.count() > 0) {
 		vana::timer::timer::create(
 			[this](const time_point &now) { this->set_map_timer(seconds{0}); },
-			vana::timer::id{timer_type::map_timer, get_id(), 25},
+			vana::timer::id{vana::timer::type::map_timer, get_id(), 25},
 			get_timers(), timer);
 	}
 }
@@ -1371,7 +1371,7 @@ auto map::send(const split_packet_builder &builder, ref_ptr<player> sender) -> v
 }
 
 auto map::create_weather(ref_ptr<player> player, bool admin_weather, int32_t time, int32_t item_id, const string &message) -> bool {
-	vana::timer::id timer_id{timer_type::weather_timer}; // Just to check if there's already a weather item running and adding a new one
+	vana::timer::id timer_id{vana::timer::type::weather_timer}; // Just to check if there's already a weather item running and adding a new one
 	if (get_timers()->is_timer_running(timer_id)) {
 		// Hacking
 		return false;
