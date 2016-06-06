@@ -20,10 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "channel_server/custom_functions.hpp"
 #include "channel_server/info_functions.hpp"
 #include "channel_server/map_functions.hpp"
-#include "channel_server/maps_temp.hpp"
+#include "channel_server/maps.hpp"
 #include "channel_server/management_functions.hpp"
 #include "channel_server/message_functions.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/player.hpp"
 #include "channel_server/player_mod_functions.hpp"
 #include "channel_server/player_packet.hpp"
 

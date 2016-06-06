@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/tausworthe_generator.hpp"
 #include "common/timer_container_holder.hpp"
 #include "channel_server/movable_life.hpp"
-#include "channel_server/npc_temp.hpp"
+#include "channel_server/npc.hpp"
 #include "channel_server/player_active_buffs.hpp"
 #include "channel_server/player_buddy_list.hpp"
 #include "channel_server/player_inventory.hpp"

@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mobs_packet.hpp"
 #include "common/session.hpp"
 #include "common/wide_point.hpp"
-#include "channel_server/maps_temp.hpp"
-#include "channel_server/mob_temp.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/maps.hpp"
+#include "channel_server/mob.hpp"
+#include "channel_server/player.hpp"
 #include "channel_server/smsg_header.hpp"
 #include "channel_server/status_info.hpp"
 

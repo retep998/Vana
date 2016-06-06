@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "maple_tvs.hpp"
 #include "common/time_utilities.hpp"
 #include "common/timer.hpp"
-#include "channel_server/map_temp.hpp"
+#include "channel_server/map.hpp"
 #include "channel_server/maple_tv_packet.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/player.hpp"
 #include "channel_server/player_packet_helper.hpp"
 #include "channel_server/smsg_header.hpp"
 #include <functional>

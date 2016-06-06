@@ -15,20 +15,20 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "instance_temp.hpp"
+#include "instance.hpp"
 #include "common/time_utilities.hpp"
 #include "common/timer.hpp"
 #include "common/timer_container.hpp"
 #include "common/time_utilities.hpp"
 #include "channel_server/channel_server.hpp"
-#include "channel_server/instances_temp.hpp"
+#include "channel_server/instances.hpp"
 #include "channel_server/lua_instance.hpp"
 #include "channel_server/map_packet.hpp"
-#include "channel_server/map_temp.hpp"
-#include "channel_server/maps_temp.hpp"
-#include "channel_server/party_temp.hpp"
-#include "channel_server/player_temp.hpp"
-#include "channel_server/reactor_temp.hpp"
+#include "channel_server/map.hpp"
+#include "channel_server/maps.hpp"
+#include "channel_server/party.hpp"
+#include "channel_server/player.hpp"
+#include "channel_server/reactor.hpp"
 #include <functional>
 #include <sstream>
 #include <utility>

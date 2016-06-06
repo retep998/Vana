@@ -15,16 +15,16 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "trade_temp.hpp"
+#include "trade.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/item_data_provider.hpp"
 #include "channel_server/channel_server.hpp"
-#include "channel_server/inventory_temp.hpp"
+#include "channel_server/inventory.hpp"
 #include "channel_server/inventory_packet.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/player.hpp"
 #include "channel_server/player_data_provider.hpp"
 #include "channel_server/trade_handler.hpp"
-#include "channel_server/trades_temp.hpp"
+#include "channel_server/trades.hpp"
 
 namespace vana {
 namespace channel_server {

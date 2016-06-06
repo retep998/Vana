@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/timer_container_holder.hpp"
 #include "common/types.hpp"
 #include "channel_server/map_data_provider.hpp"
-#include "channel_server/mob_temp.hpp"
+#include "channel_server/mob.hpp"
 #include <ctime>
 #include <functional>
 #include <map>

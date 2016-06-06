@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "player_mod_functions.hpp"
 #include "common/skill_constants.hpp"
 #include "channel_server/channel_server.hpp"
-#include "channel_server/maps_temp.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/maps.hpp"
+#include "channel_server/player.hpp"
 #include "channel_server/player_packet.hpp"
 #include "channel_server/player_data_provider.hpp"
 

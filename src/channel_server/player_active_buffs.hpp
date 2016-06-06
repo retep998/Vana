@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/buff_info.hpp"
 #include "common/i_packet.hpp"
 #include "common/types.hpp"
-#include "channel_server/buffs_temp.hpp"
+#include "channel_server/buffs.hpp"
 #include <memory>
 #include <queue>
 #include <unordered_map>

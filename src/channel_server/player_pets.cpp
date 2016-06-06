@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_pets.hpp"
 #include "common/database.hpp"
-#include "channel_server/pet_temp.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/pet.hpp"
+#include "channel_server/player.hpp"
 
 namespace vana {
 namespace channel_server {

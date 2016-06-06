@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/quest.hpp"
 #include "common/quest_data_provider.hpp"
 #include "common/types.hpp"
-#include "channel_server/quests_temp.hpp"
+#include "channel_server/quests.hpp"
 #include <iomanip>
 #include <map>
 #include <sstream>

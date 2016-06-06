@@ -26,11 +26,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/timer.hpp"
 #include "common/timer_thread.hpp"
 #include "channel_server/channel_server.hpp"
-#include "channel_server/drop_temp.hpp"
+#include "channel_server/drop.hpp"
 #include "channel_server/lua_reactor.hpp"
-#include "channel_server/maps_temp.hpp"
-#include "channel_server/player_temp.hpp"
-#include "channel_server/reactor_temp.hpp"
+#include "channel_server/maps.hpp"
+#include "channel_server/player.hpp"
+#include "channel_server/reactor.hpp"
 #include "channel_server/reactor_packet.hpp"
 #include <functional>
 #include <iostream>

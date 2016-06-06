@@ -18,21 +18,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "common/types.hpp"
-#include "channel_server/map_temp.hpp"
+#include "channel_server/instance.hpp"
+#include <string>
+#include <unordered_map>
 
 namespace vana {
-	class packet_reader;
-
 	namespace channel_server {
-		class player;
-
-		namespace maps {
-			auto get_map(game_map_id map_id) -> map *;
-			auto unload_map(game_map_id map_id) -> void;
-			auto use_portal(ref_ptr<player> player, const portal_info * const portal) -> void;
-			auto use_portal(ref_ptr<player> player, packet_reader &reader) -> void;
-			auto use_scripted_portal(ref_ptr<player> player, packet_reader &reader) -> void;
-			auto add_player(ref_ptr<player> player, game_map_id map_id) -> void;
-		}
+		class instances {
+		public:
+			auto add_instance(instance *inst) -> void;
+			auto remove_instance(instance *inst) -> void;
+			auto get_instance(const string &name) -> instance *;
+			auto is_instance(const string &name) -> bool;
+		private:
+			case_insensitive_hash_map<instance *> m_instances;
+		};
 	}
 }

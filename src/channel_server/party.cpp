@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "party_temp.hpp"
+#include "party.hpp"
 #include "common/game_constants.hpp"
 #include "channel_server/channel_server.hpp"
-#include "channel_server/instance_temp.hpp"
+#include "channel_server/instance.hpp"
 #include "channel_server/map_packet.hpp"
-#include "channel_server/maps_temp.hpp"
+#include "channel_server/maps.hpp"
 #include "channel_server/party_packet.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/player.hpp"
 #include "channel_server/player_data_provider.hpp"
 #include "channel_server/player_packet.hpp"
 #include "channel_server/player_skills.hpp"

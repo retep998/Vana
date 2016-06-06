@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "buddy_list_handler.hpp"
 #include "common/packet_reader.hpp"
 #include "channel_server/buddy_list_packet.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/player.hpp"
 #include <string>
 
 namespace vana {

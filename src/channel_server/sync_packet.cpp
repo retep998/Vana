@@ -21,8 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/rates_config.hpp"
 #include "common/session.hpp"
 #include "channel_server/channel_server.hpp"
-#include "channel_server/party_temp.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/party.hpp"
+#include "channel_server/player.hpp"
 
 namespace vana {
 namespace channel_server {

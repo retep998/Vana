@@ -23,12 +23,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/time_utilities.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/key_maps.hpp"
-#include "channel_server/pet_temp.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/pet.hpp"
+#include "channel_server/player.hpp"
 #include "channel_server/player_data_provider.hpp"
 #include "channel_server/player_packet_helper.hpp"
 #include "channel_server/skill_macros.hpp"
-#include "channel_server/skills_temp.hpp"
+#include "channel_server/skills.hpp"
 #include "channel_server/smsg_header.hpp"
 #include <unordered_map>
 

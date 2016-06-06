@@ -22,13 +22,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/packet_reader.hpp"
 #include "common/shop_data_provider.hpp"
 #include "channel_server/channel_server.hpp"
-#include "channel_server/inventory_temp.hpp"
+#include "channel_server/inventory.hpp"
 #include "channel_server/inventory_packet.hpp"
-#include "channel_server/map_temp.hpp"
-#include "channel_server/maps_temp.hpp"
-#include "channel_server/npc_temp.hpp"
+#include "channel_server/map.hpp"
+#include "channel_server/maps.hpp"
+#include "channel_server/npc.hpp"
 #include "channel_server/npc_packet.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/player.hpp"
 #include "channel_server/storage_packet.hpp"
 
 namespace vana {

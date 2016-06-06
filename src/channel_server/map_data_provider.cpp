@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/game_logic_utilities.hpp"
 #include "common/initialize_common.hpp"
 #include "common/string_utilities.hpp"
-#include "channel_server/map_temp.hpp"
+#include "channel_server/map.hpp"
 #include "channel_server/maple_tvs.hpp"
 #include <utility>
 

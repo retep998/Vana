@@ -15,17 +15,17 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "maps_temp.hpp"
+#include "maps.hpp"
 #include "common/file_utilities.hpp"
 #include "common/packet_reader.hpp"
 #include "channel_server/channel_server.hpp"
-#include "channel_server/instance_temp.hpp"
-#include "channel_server/inventory_temp.hpp"
+#include "channel_server/instance.hpp"
+#include "channel_server/inventory.hpp"
 #include "channel_server/lua_portal.hpp"
 #include "channel_server/map_data_provider.hpp"
 #include "channel_server/map_packet.hpp"
 #include "channel_server/pet_handler.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/player.hpp"
 #include "channel_server/player_packet.hpp"
 #include "channel_server/player_data_provider.hpp"
 #include "channel_server/summon_handler.hpp"

@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "npc_temp.hpp"
+#include "npc.hpp"
 #include "common/file_utilities.hpp"
 #include "common/script_data_provider.hpp"
 #include "common/session.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/lua_npc.hpp"
 #include "channel_server/npc_packet.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/player.hpp"
 #include "channel_server/smsg_header.hpp"
 #include <string>
 

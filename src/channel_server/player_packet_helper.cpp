@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/game_logic_utilities.hpp"
 #include "common/item_constants.hpp"
 #include "common/time_utilities.hpp"
-#include "channel_server/inventory_temp.hpp"
-#include "channel_server/pet_temp.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/inventory.hpp"
+#include "channel_server/pet.hpp"
+#include "channel_server/player.hpp"
 #include <cmath>
 
 namespace vana {

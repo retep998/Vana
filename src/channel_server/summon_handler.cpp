@@ -26,12 +26,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/skill_data_provider.hpp"
 #include "channel_server/buffs_packet.hpp"
 #include "channel_server/channel_server.hpp"
-#include "channel_server/map_temp.hpp"
-#include "channel_server/maps_temp.hpp"
+#include "channel_server/map.hpp"
+#include "channel_server/maps.hpp"
 #include "channel_server/movement_handler.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/player.hpp"
 #include "channel_server/player_packet.hpp"
-#include "channel_server/summon_temp.hpp"
+#include "channel_server/summon.hpp"
 #include "channel_server/summons_packet.hpp"
 
 namespace vana {

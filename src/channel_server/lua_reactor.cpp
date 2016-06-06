@@ -17,15 +17,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "lua_reactor.hpp"
 #include "common/game_logic_utilities.hpp"
-#include "channel_server/drop_temp.hpp"
-#include "channel_server/maps_temp.hpp"
-#include "channel_server/mob_temp.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/drop.hpp"
+#include "channel_server/maps.hpp"
+#include "channel_server/mob.hpp"
+#include "channel_server/player.hpp"
 #include "channel_server/player_packet.hpp"
 #include "channel_server/player_data_provider.hpp"
-#include "channel_server/quests_temp.hpp"
+#include "channel_server/quests.hpp"
 #include "channel_server/reactor_packet.hpp"
-#include "channel_server/reactor_temp.hpp"
+#include "channel_server/reactor.hpp"
 #include <string>
 
 namespace vana {

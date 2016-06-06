@@ -21,11 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/map_position.hpp"
 #include "common/string_utilities.hpp"
 #include "channel_server/channel_server.hpp"
-#include "channel_server/map_temp.hpp"
-#include "channel_server/maps_temp.hpp"
+#include "channel_server/map.hpp"
+#include "channel_server/maps.hpp"
 #include "channel_server/map_packet.hpp"
-#include "channel_server/party_temp.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/party.hpp"
+#include "channel_server/player.hpp"
 #include "channel_server/player_packet.hpp"
 #include <chrono>
 #include <iostream>

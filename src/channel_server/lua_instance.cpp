@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "lua_instance.hpp"
 #include "channel_server/channel_server.hpp"
-#include "channel_server/instance_temp.hpp"
-#include "channel_server/instances_temp.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/instance.hpp"
+#include "channel_server/instances.hpp"
+#include "channel_server/player.hpp"
 #include "channel_server/player_data_provider.hpp"
 
 namespace vana {

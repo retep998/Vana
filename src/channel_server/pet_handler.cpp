@@ -24,13 +24,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/randomizer.hpp"
 #include "common/skill_constants.hpp"
 #include "channel_server/channel_server.hpp"
-#include "channel_server/inventory_temp.hpp"
+#include "channel_server/inventory.hpp"
 #include "channel_server/inventory_packet.hpp"
-#include "channel_server/map_temp.hpp"
+#include "channel_server/map.hpp"
 #include "channel_server/movement_handler.hpp"
-#include "channel_server/pet_temp.hpp"
+#include "channel_server/pet.hpp"
 #include "channel_server/pets_packet.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/player.hpp"
 
 namespace vana {
 namespace channel_server {

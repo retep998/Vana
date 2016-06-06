@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "mob_temp.hpp"
+#include "mob.hpp"
 #include "common/algorithm.hpp"
 #include "common/game_constants.hpp"
 #include "common/misc_utilities.hpp"
@@ -25,15 +25,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/timer.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/drop_handler.hpp"
-#include "channel_server/instance_temp.hpp"
-#include "channel_server/maps_temp.hpp"
-#include "channel_server/mist_temp.hpp"
+#include "channel_server/instance.hpp"
+#include "channel_server/maps.hpp"
+#include "channel_server/mist.hpp"
 #include "channel_server/mobs_packet.hpp"
-#include "channel_server/party_temp.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/party.hpp"
+#include "channel_server/player.hpp"
 #include "channel_server/player_data_provider.hpp"
 #include "channel_server/player_packet.hpp"
-#include "channel_server/skills_temp.hpp"
+#include "channel_server/skills.hpp"
 #include "channel_server/skills_packet.hpp"
 #include "channel_server/status_info.hpp"
 #include <functional>

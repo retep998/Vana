@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/timer.hpp"
 #include "common/time_utilities.hpp"
 #include "channel_server/channel_server.hpp"
-#include "channel_server/instance_temp.hpp"
-#include "channel_server/instances_temp.hpp"
+#include "channel_server/instance.hpp"
+#include "channel_server/instances.hpp"
 #include <cstdio>
 #include <functional>
 #include <iomanip>

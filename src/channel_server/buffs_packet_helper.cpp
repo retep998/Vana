@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "buffs_packet_helper.hpp"
-#include "channel_server/buffs_temp.hpp"
+#include "channel_server/buffs.hpp"
 #include "channel_server/player_active_buffs.hpp"
 
 namespace vana {

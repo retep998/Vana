@@ -48,55 +48,55 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\channel_server\buffs_temp.cpp">
+    <ClCompile Include="src\channel_server\buffs.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\channel_server\drop_temp.cpp">
+    <ClCompile Include="src\channel_server\drop.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\channel_server\fame_temp.cpp">
+    <ClCompile Include="src\channel_server\fame.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\channel_server\inventory_temp.cpp">
+    <ClCompile Include="src\channel_server\inventory.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
     <ClCompile Include="src\channel_server\key_maps.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\channel_server\map_temp.cpp">
+    <ClCompile Include="src\channel_server\map.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
     <ClCompile Include="src\channel_server\maple_tvs.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\channel_server\maps_temp.cpp">
+    <ClCompile Include="src\channel_server\maps.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\channel_server\mist_temp.cpp">
+    <ClCompile Include="src\channel_server\mist.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\channel_server\mob_temp.cpp">
+    <ClCompile Include="src\channel_server\mob.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\channel_server\npc_temp.cpp">
+    <ClCompile Include="src\channel_server\npc.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\channel_server\party_temp.cpp">
+    <ClCompile Include="src\channel_server\party.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\channel_server\quests_temp.cpp">
+    <ClCompile Include="src\channel_server\quests.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
     <ClCompile Include="src\channel_server\skill_macros.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\channel_server\skills_temp.cpp">
+    <ClCompile Include="src\channel_server\skills.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\channel_server\trade_temp.cpp">
+    <ClCompile Include="src\channel_server\trade.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\channel_server\trades_temp.cpp">
+    <ClCompile Include="src\channel_server\trades.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
     <ClCompile Include="src\channel_server\buddy_list_packet.cpp">
@@ -186,7 +186,7 @@
     <ClCompile Include="src\channel_server\lua_scriptable.cpp">
       <Filter>Scripting</Filter>
     </ClCompile>
-    <ClCompile Include="src\channel_server\player_temp.cpp">
+    <ClCompile Include="src\channel_server\player.cpp">
       <Filter>Player</Filter>
     </ClCompile>
     <ClCompile Include="src\channel_server\player_active_buffs.cpp">
@@ -228,10 +228,10 @@
     <ClCompile Include="src\channel_server\event_data_provider.cpp">
       <Filter>Instance</Filter>
     </ClCompile>
-    <ClCompile Include="src\channel_server\instance_temp.cpp">
+    <ClCompile Include="src\channel_server\instance.cpp">
       <Filter>Instance</Filter>
     </ClCompile>
-    <ClCompile Include="src\channel_server\instances_temp.cpp">
+    <ClCompile Include="src\channel_server\instances.cpp">
       <Filter>Instance</Filter>
     </ClCompile>
     <ClCompile Include="src\channel_server\buddy_list_handler.cpp">
@@ -258,7 +258,7 @@
     <ClCompile Include="src\channel_server\trade_handler.cpp">
       <Filter>Handlers</Filter>
     </ClCompile>
-    <ClCompile Include="src\channel_server\pet_temp.cpp">
+    <ClCompile Include="src\channel_server\pet.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
     <ClCompile Include="src\channel_server\pet_handler.cpp">
@@ -279,7 +279,7 @@
     <ClCompile Include="src\channel_server\effect_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\channel_server\reactor_temp.cpp">
+    <ClCompile Include="src\channel_server\reactor.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
     <ClCompile Include="src\channel_server\reactor_handler.cpp">
@@ -319,7 +319,7 @@
     <ClCompile Include="src\channel_server\summon_handler.cpp">
       <Filter>Handlers</Filter>
     </ClCompile>
-    <ClCompile Include="src\channel_server\summon_temp.cpp">
+    <ClCompile Include="src\channel_server\summon.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
     <ClCompile Include="src\channel_server\channel_server.cpp" />
@@ -353,64 +353,64 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\channel_server\buffs_temp.hpp">
+    <ClInclude Include="src\channel_server\buffs.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\channel_server\trades_temp.hpp">
+    <ClInclude Include="src\channel_server\trades.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\channel_server\drop_temp.hpp">
+    <ClInclude Include="src\channel_server\drop.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\channel_server\fame_temp.hpp">
+    <ClInclude Include="src\channel_server\fame.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\channel_server\inventory_temp.hpp">
+    <ClInclude Include="src\channel_server\inventory.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\channel_server\key_maps.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\channel_server\map_temp.hpp">
+    <ClInclude Include="src\channel_server\map.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\channel_server\maple_tvs.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\channel_server\maps_temp.hpp">
+    <ClInclude Include="src\channel_server\maps.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\channel_server\mist_temp.hpp">
+    <ClInclude Include="src\channel_server\mist.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\channel_server\mob_temp.hpp">
+    <ClInclude Include="src\channel_server\mob.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\channel_server\movable_life.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\channel_server\npc_temp.hpp">
+    <ClInclude Include="src\channel_server\npc.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\channel_server\party_temp.hpp">
+    <ClInclude Include="src\channel_server\party.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\channel_server\pet_temp.hpp">
+    <ClInclude Include="src\channel_server\pet.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\channel_server\quests_temp.hpp">
+    <ClInclude Include="src\channel_server\quests.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\channel_server\reactor_temp.hpp">
+    <ClInclude Include="src\channel_server\reactor.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\channel_server\skill_macros.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\channel_server\skills_temp.hpp">
+    <ClInclude Include="src\channel_server\skills.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\channel_server\trade_temp.hpp">
+    <ClInclude Include="src\channel_server\trade.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\channel_server\map_data_provider.hpp">
@@ -452,10 +452,10 @@
     <ClInclude Include="src\channel_server\event_data_provider.hpp">
       <Filter>Instance</Filter>
     </ClInclude>
-    <ClInclude Include="src\channel_server\instances_temp.hpp">
+    <ClInclude Include="src\channel_server\instances.hpp">
       <Filter>Instance</Filter>
     </ClInclude>
-    <ClInclude Include="src\channel_server\instance_temp.hpp">
+    <ClInclude Include="src\channel_server\instance.hpp">
       <Filter>Instance</Filter>
     </ClInclude>
     <ClInclude Include="src\channel_server\sync_handler.hpp">
@@ -539,7 +539,7 @@
     <ClInclude Include="src\channel_server\summons_packet.hpp">
       <Filter>Packets</Filter>
     </ClInclude>
-    <ClInclude Include="src\channel_server\player_temp.hpp">
+    <ClInclude Include="src\channel_server\player.hpp">
       <Filter>Player</Filter>
     </ClInclude>
     <ClInclude Include="src\channel_server\player_variables.hpp">
@@ -626,7 +626,7 @@
     <ClInclude Include="src\channel_server\summon_handler.hpp">
       <Filter>Handlers</Filter>
     </ClInclude>
-    <ClInclude Include="src\channel_server\summon_temp.hpp">
+    <ClInclude Include="src\channel_server\summon.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\channel_server\channel_server.hpp" />

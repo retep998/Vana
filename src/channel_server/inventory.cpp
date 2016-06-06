@@ -15,19 +15,19 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "inventory_temp.hpp"
+#include "inventory.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/item_data_provider.hpp"
 #include "common/randomizer.hpp"
 #include "common/skill_data_provider.hpp"
-#include "channel_server/buffs_temp.hpp"
+#include "channel_server/buffs.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/inventory_packet.hpp"
-#include "channel_server/map_temp.hpp"
+#include "channel_server/map.hpp"
 #include "channel_server/monster_book_packet.hpp"
-#include "channel_server/pet_temp.hpp"
+#include "channel_server/pet.hpp"
 #include "channel_server/pets_packet.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/player.hpp"
 #include "channel_server/player_monster_book.hpp"
 
 namespace vana {

@@ -15,16 +15,16 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "pet_temp.hpp"
+#include "pet.hpp"
 #include "common/database.hpp"
 #include "common/game_constants.hpp"
 #include "common/item_data_provider.hpp"
 #include "common/time_utilities.hpp"
 #include "common/timer.hpp"
 #include "channel_server/channel_server.hpp"
-#include "channel_server/map_temp.hpp"
+#include "channel_server/map.hpp"
 #include "channel_server/pets_packet.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/player.hpp"
 #include <functional>
 
 namespace vana {

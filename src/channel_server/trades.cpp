@@ -15,12 +15,12 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "trades_temp.hpp"
+#include "trades.hpp"
 #include "common/time_utilities.hpp"
 #include "common/timer.hpp"
 #include "common/timer_container.hpp"
-#include "channel_server/player_temp.hpp"
-#include "channel_server/trade_temp.hpp"
+#include "channel_server/player.hpp"
+#include "channel_server/trade.hpp"
 #include "channel_server/trade_handler.hpp"
 #include <functional>
 

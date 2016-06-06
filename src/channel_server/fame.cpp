@@ -15,12 +15,12 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "fame_temp.hpp"
+#include "fame.hpp"
 #include "common/database.hpp"
 #include "common/packet_reader.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/fame_packet.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/player.hpp"
 #include "channel_server/player_data_provider.hpp"
 
 namespace vana {

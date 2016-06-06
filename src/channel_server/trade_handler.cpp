@@ -24,10 +24,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/timer.hpp"
 #include "common/timer_thread.hpp"
 #include "channel_server/channel_server.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/player.hpp"
 #include "channel_server/player_data_provider.hpp"
-#include "channel_server/trade_temp.hpp"
-#include "channel_server/trades_temp.hpp"
+#include "channel_server/trade.hpp"
+#include "channel_server/trades.hpp"
 #include "channel_server/trades_packet.hpp"
 #include <functional>
 #include <string>

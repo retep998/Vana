@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "buffs_temp.hpp"
+#include "buffs.hpp"
 #include "common/algorithm.hpp"
 #include "common/buff_data_provider.hpp"
 #include "common/game_logic_utilities.hpp"
@@ -23,8 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/skill_data_provider.hpp"
 #include "channel_server/buffs_packet.hpp"
 #include "channel_server/channel_server.hpp"
-#include "channel_server/map_temp.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/map.hpp"
+#include "channel_server/player.hpp"
 #include "channel_server/summon_handler.hpp"
 
 namespace vana {

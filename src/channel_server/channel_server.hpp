@@ -37,12 +37,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/valid_char_data_provider.hpp"
 #include "common/world_config.hpp"
 #include "channel_server/event_data_provider.hpp"
-#include "channel_server/instances_temp.hpp"
+#include "channel_server/instances.hpp"
 #include "channel_server/login_server_session.hpp"
 #include "channel_server/map_data_provider.hpp"
 #include "channel_server/maple_tvs.hpp"
 #include "channel_server/player_data_provider.hpp"
-#include "channel_server/trades_temp.hpp"
+#include "channel_server/trades.hpp"
 #include "channel_server/world_server_session.hpp"
 #include <string>
 #include <vector>

@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "lua_npc.hpp"
 #include "common/script_data_provider.hpp"
 #include "channel_server/channel_server.hpp"
-#include "channel_server/npc_temp.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/npc.hpp"
+#include "channel_server/player.hpp"
 #include "channel_server/player_data_provider.hpp"
-#include "channel_server/quests_temp.hpp"
+#include "channel_server/quests.hpp"
 #include "channel_server/storage_packet.hpp"
 #include <vector>
 

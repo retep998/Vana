@@ -22,9 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/packet_reader.hpp"
 #include "common/timer.hpp"
 #include "common/time_utilities.hpp"
-#include "channel_server/map_temp.hpp"
-#include "channel_server/player_temp.hpp"
-#include "channel_server/summon_temp.hpp"
+#include "channel_server/map.hpp"
+#include "channel_server/player.hpp"
+#include "channel_server/summon.hpp"
 #include "channel_server/summon_handler.hpp"
 #include "channel_server/summons_packet.hpp"
 #include <functional>

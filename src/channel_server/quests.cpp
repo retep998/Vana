@@ -15,15 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "quests_temp.hpp"
+#include "quests.hpp"
 #include "common/item_data_provider.hpp"
 #include "common/npc_data_provider.hpp"
 #include "common/packet_reader.hpp"
 #include "common/quest_data_provider.hpp"
 #include "channel_server/channel_server.hpp"
-#include "channel_server/inventory_temp.hpp"
+#include "channel_server/inventory.hpp"
 #include "channel_server/npc_handler.hpp"
-#include "channel_server/player_temp.hpp"
+#include "channel_server/player.hpp"
 #include "channel_server/quests_packet.hpp"
 
 namespace vana {
