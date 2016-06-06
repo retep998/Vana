@@ -15,9 +15,19 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "common/vana_main.hpp"
-#include "channel_server/channel_server.hpp"
+#pragma once
 
-auto main() -> vana::exit_code_underlying {
-	return vana::main<vana::channel_server::channel_server>();
+#include "channel_server/chat_handler_functions.hpp"
+
+namespace vana {
+	namespace channel_server {
+		class player;
+
+		namespace message_functions {
+			auto world_message(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto global_message(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto channel_message(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto gm_chat_mode(ref_ptr<player> player, const game_chat &args) -> chat_result;
+		}
+	}
 }

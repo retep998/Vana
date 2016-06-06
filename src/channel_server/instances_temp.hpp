@@ -15,9 +15,23 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "common/vana_main.hpp"
-#include "channel_server/channel_server.hpp"
+#pragma once
 
-auto main() -> vana::exit_code_underlying {
-	return vana::main<vana::channel_server::channel_server>();
+#include "common/types.hpp"
+#include "channel_server/instance_temp.hpp"
+#include <string>
+#include <unordered_map>
+
+namespace vana {
+	namespace channel_server {
+		class instances {
+		public:
+			auto add_instance(instance *inst) -> void;
+			auto remove_instance(instance *inst) -> void;
+			auto get_instance(const string &name) -> instance *;
+			auto is_instance(const string &name) -> bool;
+		private:
+			case_insensitive_hash_map<instance *> m_instances;
+		};
+	}
 }

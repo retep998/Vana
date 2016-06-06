@@ -3,10 +3,10 @@ file(GLOB CHANNEL_HEADERS *.hpp)
 source_group("Channel Sources" FILES ${CHANNEL_SRC})
 source_group("Channel Headers" FILES ${CHANNEL_HEADERS})
 
-add_executable(ChannelServer ${CHANNEL_SRC} ${CHANNEL_HEADERS})
+add_executable(channel_server ${CHANNEL_SRC} ${CHANNEL_HEADERS})
 
-target_link_libraries(ChannelServer
-	Common	
+target_link_libraries(channel_server
+	common	
 	${MYSQL_LIBRARIES}
 	${SOCI_LIBRARIES}
 	${LUA_LIBRARIES}

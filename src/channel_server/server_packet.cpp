@@ -15,9 +15,30 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "common/vana_main.hpp"
-#include "channel_server/channel_server.hpp"
+#include "server_packet.hpp"
+#include "common/session.hpp"
+#include "channel_server/player_temp.hpp"
+#include "channel_server/player_data_provider.hpp"
+#include "channel_server/smsg_header.hpp"
 
-auto main() -> vana::exit_code_underlying {
-	return vana::main<vana::channel_server::channel_server>();
+namespace vana {
+namespace channel_server {
+namespace packets {
+
+PACKET_IMPL(show_scrolling_header, const string &msg) {
+	packet_builder builder;
+	builder
+		.add<packet_header>(SMSG_MESSAGE)
+		.add<int8_t>(4)
+		.add<bool>(!msg.empty())
+		.add<string>(msg);
+
+	if (!msg.empty()) {
+		builder.add<string>(msg);
+	}
+	return builder;
+}
+
+}
+}
 }

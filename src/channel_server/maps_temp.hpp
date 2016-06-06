@@ -15,9 +15,24 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "common/vana_main.hpp"
-#include "channel_server/channel_server.hpp"
+#pragma once
 
-auto main() -> vana::exit_code_underlying {
-	return vana::main<vana::channel_server::channel_server>();
+#include "common/types.hpp"
+#include "channel_server/map_temp.hpp"
+
+namespace vana {
+	class packet_reader;
+
+	namespace channel_server {
+		class player;
+
+		namespace maps {
+			auto get_map(game_map_id map_id) -> map *;
+			auto unload_map(game_map_id map_id) -> void;
+			auto use_portal(ref_ptr<player> player, const portal_info * const portal) -> void;
+			auto use_portal(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto use_scripted_portal(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto add_player(ref_ptr<player> player, game_map_id map_id) -> void;
+		}
+	}
 }

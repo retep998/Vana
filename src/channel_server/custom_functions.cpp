@@ -15,9 +15,17 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "common/vana_main.hpp"
-#include "channel_server/channel_server.hpp"
+#include "custom_functions.hpp"
+#include "channel_server/player_temp.hpp"
 
-auto main() -> vana::exit_code_underlying {
-	return vana::main<vana::channel_server::channel_server>();
+namespace vana {
+namespace channel_server {
+
+auto custom_functions::initialize(case_insensitive_hash_map<chat_command, game_chat> &command_list) -> void {
+	// Define any custom functions you may have here, just like chat_handler_functions::initialize
+	chat_command command;
+
+}
+
+}
 }
