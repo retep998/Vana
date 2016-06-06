@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace vana {
 namespace channel_server {
+namespace lua {
 
 lua_portal::lua_portal(const string &filename, game_player_id player_id, game_map_id map_id, const portal_info * const portal) :
 	lua_scriptable{filename, player_id}
@@ -52,7 +53,7 @@ auto lua_portal::portal_failed() -> bool {
 }
 
 // Portal
-auto lua_exports::instant_warp(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::instant_warp(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	auto player = get_player(lua_vm, env);
 	string portal = env.get<string>(lua_vm, 1);
@@ -62,17 +63,18 @@ auto lua_exports::instant_warp(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::play_portal_se(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::play_portal_se(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	get_player(lua_vm, env)->send(packets::play_portal_sound_effect());
 	return 0;
 }
 
-auto lua_exports::portal_failed(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::portal_failed(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.set<bool>(lua_vm, "player_portal_failed", true);
 	return 0;
 }
 
+}
 }
 }

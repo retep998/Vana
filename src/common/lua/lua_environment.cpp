@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 
 namespace vana {
+namespace lua {
 
 object_pool<int32_t, lua_environment *> lua_environment::s_environments =
 	object_pool<int32_t, lua_environment *>{1, 1000000};
@@ -174,7 +175,7 @@ auto lua_environment::exists(const string &key) -> bool {
 
 auto lua_environment::exists(lua_State *lua_vm, const string &key) -> bool {
 	lua_getglobal(lua_vm, key.c_str());
-	bool ret = !lua_isnil(lua_vm, -1);
+	bool ret = ::lua_type(lua_vm, -1) != LUA_TNIL;
 	lua_pop(lua_vm, 1);
 	return ret;
 }
@@ -189,25 +190,25 @@ auto lua_environment::error(const string &text) -> void {
 	handle_error(m_file, text);
 }
 
-auto lua_environment::is(const string &key, lua::lua_type type) -> bool {
+auto lua_environment::is(const string &key, lua_type type) -> bool {
 	return is(m_lua_vm, key, type);
 }
 
-auto lua_environment::is_any_of(const string &key, init_list<lua::lua_type> types) -> bool {
-	return std::any_of(std::begin(types), std::end(types), [&](lua::lua_type type) -> bool {
+auto lua_environment::is_any_of(const string &key, init_list<lua_type> types) -> bool {
+	return std::any_of(std::begin(types), std::end(types), [&](lua_type type) -> bool {
 		return is(key, type);
 	});
 }
 
-auto lua_environment::is(lua_State *lua_vm, const string &key, lua::lua_type type) -> bool {
+auto lua_environment::is(lua_State *lua_vm, const string &key, lua_type type) -> bool {
 	lua_getglobal(lua_vm, key.c_str());
 	bool ret = is(lua_vm, -1, type);
 	lua_pop(lua_vm, 1);
 	return ret;
 }
 
-auto lua_environment::is_any_of(lua_State *lua_vm, const string &key, init_list<lua::lua_type> types) -> bool {
-	return std::any_of(std::begin(types), std::end(types), [&](lua::lua_type type) -> bool {
+auto lua_environment::is_any_of(lua_State *lua_vm, const string &key, init_list<lua_type> types) -> bool {
+	return std::any_of(std::begin(types), std::end(types), [&](lua_type type) -> bool {
 		return is(lua_vm, key, type);
 	});
 }
@@ -228,16 +229,16 @@ auto lua_environment::count(lua_State *lua_vm) -> int {
 	return lua_gettop(lua_vm);
 }
 
-auto lua_environment::validate_value(lua::lua_type expected_type, const lua_variant &v, const string &key, const string &prefix, bool nil_is_valid) -> lua::lua_type {
-	lua::lua_type type = v.get_type();
-	if (nil_is_valid && type == lua::lua_type::nil) return type;
+auto lua_environment::validate_value(lua_type expected_type, const lua_variant &v, const string &key, const string &prefix, bool nil_is_valid) -> lua_type {
+	lua_type type = v.get_type();
+	if (nil_is_valid && type == lua_type::nil) return type;
 	if (type != expected_type) {
 		string representation;
 		switch (type) {
-			case lua::lua_type::boolean: representation = "bool"; break;
-			case lua::lua_type::number: representation = "number"; break;
-			case lua::lua_type::string: representation = "string"; break;
-			case lua::lua_type::table: representation = "table"; break;
+			case lua_type::boolean: representation = "bool"; break;
+			case lua_type::number: representation = "number"; break;
+			case lua_type::string: representation = "string"; break;
+			case lua_type::table: representation = "table"; break;
 			default: throw not_implemented_exception{"LuaType"};
 		}
 		error("Key '" + key + "' on object " + prefix + " must have a " + representation + " value");
@@ -245,30 +246,30 @@ auto lua_environment::validate_value(lua::lua_type expected_type, const lua_vari
 	return type;
 }
 
-auto lua_environment::validate_key(lua::lua_type expected_type, const lua_variant &v, const string &prefix) -> void {
-	lua::lua_type type = v.get_type();
+auto lua_environment::validate_key(lua_type expected_type, const lua_variant &v, const string &prefix) -> void {
+	lua_type type = v.get_type();
 	if (type != expected_type) {
 		string representation;
 		switch (type) {
-			case lua::lua_type::boolean: representation = "bool"; break;
-			case lua::lua_type::number: representation = "number"; break;
-			case lua::lua_type::string: representation = "string"; break;
-			case lua::lua_type::table: representation = "table"; break;
+			case lua_type::boolean: representation = "bool"; break;
+			case lua_type::number: representation = "number"; break;
+			case lua_type::string: representation = "string"; break;
+			case lua_type::table: representation = "table"; break;
 			default: throw not_implemented_exception{"LuaType"};
 		}
 		error("Object " + prefix + " keys must be " + representation + "s");
 	}
 }
 
-auto lua_environment::validate_object(lua::lua_type expected_type, const lua_variant &v, const string &prefix) -> void {
-	lua::lua_type type = v.get_type();
+auto lua_environment::validate_object(lua_type expected_type, const lua_variant &v, const string &prefix) -> void {
+	lua_type type = v.get_type();
 	if (type != expected_type) {
 		string representation;
 		switch (type) {
-			case lua::lua_type::boolean: representation = "bool"; break;
-			case lua::lua_type::number: representation = "number"; break;
-			case lua::lua_type::string: representation = "string"; break;
-			case lua::lua_type::table: representation = "table"; break;
+			case lua_type::boolean: representation = "bool"; break;
+			case lua_type::number: representation = "number"; break;
+			case lua_type::string: representation = "string"; break;
+			case lua_type::table: representation = "table"; break;
 			default: throw not_implemented_exception{"LuaType"};
 		}
 		error("Object " + prefix + " must be a " + representation + " object");
@@ -279,32 +280,33 @@ auto lua_environment::required(bool present, const string &key, const string &pr
 	if (!present) error("Missing required key '" + key + "' on object " + prefix);
 }
 
-auto lua_environment::is(int index, lua::lua_type type) -> bool {
+auto lua_environment::is(int index, lua_type type) -> bool {
 	return is(m_lua_vm, index, type);
 }
 
-auto lua_environment::is(lua_State *lua_vm, int index, lua::lua_type type) -> bool {
-	return lua_type(lua_vm, index) == static_cast<int>(type);
+auto lua_environment::is(lua_State *lua_vm, int index, lua_type type) -> bool {
+	return ::lua_type(lua_vm, index) == static_cast<int>(type);
 }
 
-auto lua_environment::is_any_of(int index, init_list<lua::lua_type> types) -> bool {
-	return std::any_of(std::begin(types), std::end(types), [&](lua::lua_type type) -> bool {
+auto lua_environment::is_any_of(int index, init_list<lua_type> types) -> bool {
+	return std::any_of(std::begin(types), std::end(types), [&](lua_type type) -> bool {
 		return is(index, type);
 	});
 }
 
-auto lua_environment::is_any_of(lua_State *lua_vm, int index, init_list<lua::lua_type> types) -> bool {
-	return std::any_of(std::begin(types), std::end(types), [&](lua::lua_type type) -> bool {
+auto lua_environment::is_any_of(lua_State *lua_vm, int index, init_list<lua_type> types) -> bool {
+	return std::any_of(std::begin(types), std::end(types), [&](lua_type type) -> bool {
 		return is(lua_vm, index, type);
 	});
 }
 
-auto lua_environment::type_of(int index) -> lua::lua_type {
-	return static_cast<lua::lua_type>(lua_type(m_lua_vm, index));
+auto lua_environment::type_of(int index) -> lua_type {
+	return static_cast<lua_type>(::lua_type(m_lua_vm, index));
 }
 
-auto lua_environment::type_of(lua_State *lua_vm, int index) -> lua::lua_type {
-	return static_cast<lua::lua_type>(lua_type(lua_vm, index));
+auto lua_environment::type_of(lua_State *lua_vm, int index) -> lua_type {
+	return static_cast<lua_type>(::lua_type(lua_vm, index));
 }
 
+}
 }

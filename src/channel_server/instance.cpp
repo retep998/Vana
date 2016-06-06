@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/time_utilities.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/instances.hpp"
-#include "channel_server/lua_instance.hpp"
+#include "channel_server/lua/lua_instance.hpp"
 #include "channel_server/map_packet.hpp"
 #include "channel_server/map.hpp"
 #include "channel_server/maps.hpp"
@@ -43,7 +43,7 @@ instance::instance(const string &name, game_map_id map, game_player_id player_id
 	m_start{utilities::time::get_now()}
 {
 	m_variables = make_owned_ptr<variables>();
-	m_lua_instance = make_owned_ptr<lua_instance>(name, player_id);
+	m_lua_instance = make_owned_ptr<lua::lua_instance>(name, player_id);
 
 	if (player_id != 0) {
 		channel_server::get_instance().log(log_type::instance_begin, [&](out_stream &log) { log << name << " started by player ID " << player_id; });

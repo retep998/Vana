@@ -24,13 +24,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace vana {
 
-password_transformation_config::password_transformation_config(salt_policy policy, vector<lua_variant> args) :
+password_transformation_config::password_transformation_config(salt_policy policy, vector<lua::lua_variant> args) :
 	m_policy{policy},
 	m_args{args}
 {
 }
 
-auto password_transformation_config::validate_args(salt_policy policy, const vector<lua_variant> &args) -> validity_result {
+auto password_transformation_config::validate_args(salt_policy policy, const vector<lua::lua_variant> &args) -> validity_result {
 	switch (policy) {
 		case salt_policy::append:
 		case salt_policy::prepend: {

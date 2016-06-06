@@ -1,6 +1,13 @@
 file(GLOB COMMON_SRC *.cpp)
 file(GLOB COMMON_HEADERS *.hpp)
-source_group("Common Sources" FILES ${COMMON_SRC})
-source_group("Common Headers" FILES ${COMMON_HEADERS})
 
-add_library(common STATIC ${COMMON_SRC} ${COMMON_HEADERS})
+file(GLOB RECURSE COMMON_LUA_SRC lua\*.cpp)
+file(GLOB RECURSE COMMON_LUA_HEADERS lua\*.hpp)
+
+source_group("common" FILES ${COMMON_SRC} ${COMMON_HEADERS})
+source_group("common\\lua" FILES ${COMMON_LUA_SRC} ${COMMON_LUA_HEADERS})
+
+add_library(common STATIC
+	${COMMON_SRC} ${COMMON_HEADERS}
+	${COMMON_LUA_SRC} ${COMMON_LUA_HEADERS}
+)

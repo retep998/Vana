@@ -37,14 +37,14 @@
     <Filter Include="Player">
       <UniqueIdentifier>{164396e1-e03b-4852-a4f4-a1db48bd34ca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scripting">
-      <UniqueIdentifier>{8121e5ce-8978-4b9e-ac5d-ae595156b19d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Packets\Headers">
       <UniqueIdentifier>{54fdf726-3161-438c-b0db-4221fff64580}</UniqueIdentifier>
     </Filter>
     <Filter Include="Inter-Server\Login">
       <UniqueIdentifier>{fec8b288-0295-4f17-a679-ac4bb251ca91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lua">
+      <UniqueIdentifier>{8121e5ce-8978-4b9e-ac5d-ae595156b19d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -170,21 +170,6 @@
     </ClCompile>
     <ClCompile Include="src\channel_server\map_data_provider.cpp">
       <Filter>Data Loading</Filter>
-    </ClCompile>
-    <ClCompile Include="src\channel_server\lua_instance.cpp">
-      <Filter>Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="src\channel_server\lua_npc.cpp">
-      <Filter>Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="src\channel_server\lua_portal.cpp">
-      <Filter>Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="src\channel_server\lua_reactor.cpp">
-      <Filter>Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="src\channel_server\lua_scriptable.cpp">
-      <Filter>Scripting</Filter>
     </ClCompile>
     <ClCompile Include="src\channel_server\player.cpp">
       <Filter>Player</Filter>
@@ -350,6 +335,21 @@
     </ClCompile>
     <ClCompile Include="src\channel_server\login_server_session_handler.cpp">
       <Filter>Inter-Server\Login</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\lua\lua_instance.cpp">
+      <Filter>lua</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\lua\lua_npc.cpp">
+      <Filter>lua</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\lua\lua_portal.cpp">
+      <Filter>lua</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\lua\lua_reactor.cpp">
+      <Filter>lua</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\lua\lua_scriptable.cpp">
+      <Filter>lua</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -578,21 +578,6 @@
     <ClInclude Include="src\channel_server\player_summons.hpp">
       <Filter>Player</Filter>
     </ClInclude>
-    <ClInclude Include="src\channel_server\lua_instance.hpp">
-      <Filter>Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="src\channel_server\lua_scriptable.hpp">
-      <Filter>Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="src\channel_server\lua_npc.hpp">
-      <Filter>Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="src\channel_server\lua_portal.hpp">
-      <Filter>Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="src\channel_server\lua_reactor.hpp">
-      <Filter>Scripting</Filter>
-    </ClInclude>
     <ClInclude Include="src\channel_server\chat_handler.hpp">
       <Filter>Handlers\Chat Handlers</Filter>
     </ClInclude>
@@ -672,6 +657,21 @@
     </ClInclude>
     <ClInclude Include="src\channel_server\login_server_session_handler.hpp">
       <Filter>Inter-Server\Login</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\lua\lua_instance.hpp">
+      <Filter>lua</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\lua\lua_npc.hpp">
+      <Filter>lua</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\lua\lua_portal.hpp">
+      <Filter>lua</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\lua\lua_reactor.hpp">
+      <Filter>lua</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\lua\lua_scriptable.hpp">
+      <Filter>lua</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

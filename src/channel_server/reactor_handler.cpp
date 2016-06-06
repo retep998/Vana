@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/timer_thread.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/drop.hpp"
-#include "channel_server/lua_reactor.hpp"
+#include "channel_server/lua/lua_reactor.hpp"
 #include "channel_server/maps.hpp"
 #include "channel_server/player.hpp"
 #include "channel_server/reactor.hpp"
@@ -62,7 +62,7 @@ auto reactor_handler::hit_reactor(ref_ptr<player> player, packet_reader &reader)
 				string filename = channel.get_script_data_provider().get_script(&channel, reactor->get_reactor_id(), script_types::reactor);
 
 				if (utilities::file::exists(filename)) {
-					lua_reactor{filename, player->get_id(), id, reactor->get_map_id()};
+					lua::lua_reactor{filename, player->get_id(), id, reactor->get_map_id()};
 				}
 				else {
 					// Default action of dropping an item
@@ -100,7 +100,7 @@ struct reaction {
 		string filename = channel.get_script_data_provider().get_script(&channel, reactor->get_reactor_id(), script_types::reactor);
 		// TODO FIXME reactor
 		// Not sure if this reactor identifier dispatch is correct
-		lua_reactor{filename, player->get_id(), static_cast<game_map_object>(map::make_reactor_id(reactor->get_id())), reactor->get_map_id()};
+		lua::lua_reactor{filename, player->get_id(), static_cast<game_map_object>(map::make_reactor_id(reactor->get_id())), reactor->get_map_id()};
 	}
 
 	reactor *reactor = nullptr;

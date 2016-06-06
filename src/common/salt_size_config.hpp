@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "common/config_file.hpp"
-#include "common/lua_variant.hpp"
+#include "common/lua/lua_variant.hpp"
 #include "common/password_transformation_config.hpp"
 #include "common/salt_size_policy.hpp"
 #include "common/salt_transformation_config.hpp"
@@ -35,15 +35,15 @@ namespace vana {
 	};
 
 	template <>
-	struct lua_variant_into<salt_size_config> {
+	struct lua::lua_variant_into<salt_size_config> {
 		auto transform(lua_environment &config, const lua_variant &src, const string &prefix) -> salt_size_config {
 			salt_size_config ret;
 
-			if (!src.is_any_of({ lua::lua_type::number, lua::lua_type::table })) {
+			if (!src.is_any_of({ lua_type::number, lua_type::table })) {
 				config.error(prefix + " must be a valid Lua number or a table");
 			}
 
-			if (src.is(lua::lua_type::number)) {
+			if (src.is(lua_type::number)) {
 				int32_t size = src.as<int32_t>();
 				if (size < 0) {
 					config.error(prefix + " must be a non-negative number");
@@ -64,17 +64,17 @@ namespace vana {
 				bool has_min = false;
 				bool has_max = false;
 				for (const auto &kvp : values) {
-					config.validate_key(lua::lua_type::string, kvp.first, prefix);
+					config.validate_key(lua_type::string, kvp.first, prefix);
 
 					string key = kvp.first.as<string>();
 					if (key == "min") {
 						has_min = true;
-						config.validate_value(lua::lua_type::number, kvp.second, key, prefix);
+						config.validate_value(lua_type::number, kvp.second, key, prefix);
 						ret.min = kvp.second.as<int32_t>();
 					}
 					else if (key == "max") {
 						has_max = true;
-						config.validate_value(lua::lua_type::number, kvp.second, key, prefix);
+						config.validate_value(lua_type::number, kvp.second, key, prefix);
 						ret.max = kvp.second.as<int32_t>();
 					}
 				}

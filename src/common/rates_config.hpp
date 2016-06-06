@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "common/i_packet.hpp"
-#include "common/lua_environment.hpp"
-#include "common/lua_variant.hpp"
+#include "common/lua/lua_environment.hpp"
+#include "common/lua/lua_variant.hpp"
 #include "common/packet_builder.hpp"
 #include "common/packet_reader.hpp"
 #include "common/types.hpp"
@@ -68,39 +68,39 @@ namespace vana {
 	};
 
 	template <>
-	struct lua_variant_into<rates_config> {
+	struct lua::lua_variant_into<rates_config> {
 		auto transform(lua_environment &config, const lua_variant &obj, const string &prefix) -> rates_config {
-			config.validate_object(lua::lua_type::table, obj, prefix);
+			config.validate_object(lua_type::table, obj, prefix);
 		
 			rates_config ret;
 
 			auto &values = obj.as<hash_map<lua_variant, lua_variant>>();
 			for (const auto &value : values) {
-				config.validate_key(lua::lua_type::string, value.first, prefix);
+				config.validate_key(lua_type::string, value.first, prefix);
 
 				string key = value.first.as<string>();
 				if (key == "mob_exp") {
-					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.mob_exp_rate = value.second.as<int32_t>();
 				}
 				else if (key == "quest_exp") {
-					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.quest_exp_rate = value.second.as<int32_t>();
 				}
 				else if (key == "drop_meso") {
-					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.drop_meso = value.second.as<int32_t>();
 				}
 				else if (key == "drop_rate") {
-					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.drop_rate = value.second.as<int32_t>();
 				}
 				else if (key == "global_drop_rate") {
-					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.global_drop_rate = value.second.as<int32_t>();
 				}
 				else if (key == "global_drop_meso") {
-					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.global_drop_meso = value.second.as<int32_t>();
 				}
 			}

@@ -32,47 +32,47 @@ namespace vana {
 	};
 
 	template <>
-	struct lua_serialize<log_config> {
+	struct lua::lua_serialize<log_config> {
 		auto read(lua_environment &config, const string &prefix) -> log_config {
 			log_config ret;
 
 			lua_variant obj = config.get<lua_variant>(prefix);
-			config.validate_object(lua::lua_type::table, obj, prefix);
+			config.validate_object(lua_type::table, obj, prefix);
 
 			auto map = obj.as<hash_map<lua_variant, lua_variant>>();
 			bool has_log = false;
 			bool has_destination = false;
 			bool has_format = false;
 			for (const auto &kvp : map) {
-				config.validate_key(lua::lua_type::string, kvp.first, prefix);
+				config.validate_key(lua_type::string, kvp.first, prefix);
 
 				string key = kvp.first.as<string>();
 				if (key == "log") {
 					has_log = true;
-					config.validate_value(lua::lua_type::boolean, kvp.second, key, prefix);
+					config.validate_value(lua_type::boolean, kvp.second, key, prefix);
 					ret.log = kvp.second.as<bool>();
 					if (!ret.log) break;
 				}
 				else if (key == "destination") {
 					has_destination = true;
-					config.validate_value(lua::lua_type::number, kvp.second, key, prefix);
+					config.validate_value(lua_type::number, kvp.second, key, prefix);
 					ret.destination = kvp.second.as<int32_t>();
 				}
 				else if (key == "format") {
 					has_format = true;
-					config.validate_value(lua::lua_type::string, kvp.second, key, prefix);
+					config.validate_value(lua_type::string, kvp.second, key, prefix);
 					ret.format = kvp.second.as<string>();
 				}
 				else if (key == "buffer_size") {
-					if (config.validate_value(lua::lua_type::number, kvp.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, kvp.second, key, prefix, true) == lua_type::nil) continue;
 					ret.buffer_size = kvp.second.as<uint32_t>();
 				}
 				else if (key == "file") {
-					if (config.validate_value(lua::lua_type::string, kvp.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::string, kvp.second, key, prefix, true) == lua_type::nil) continue;
 					ret.file = kvp.second.as<string>();
 				}
 				else if (key == "time_format") {
-					if (config.validate_value(lua::lua_type::string, kvp.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::string, kvp.second, key, prefix, true) == lua_type::nil) continue;
 					ret.time_format = kvp.second.as<string>();
 				}
 			}

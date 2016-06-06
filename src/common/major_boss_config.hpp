@@ -30,26 +30,26 @@ namespace vana {
 	};
 
 	template <>
-	struct lua_variant_into<major_boss_config> {
+	struct lua::lua_variant_into<major_boss_config> {
 		auto transform(lua_environment &config, const lua_variant &obj, const string &prefix) -> major_boss_config {
-			config.validate_object(lua::lua_type::table, obj, prefix);
+			config.validate_object(lua_type::table, obj, prefix);
 		
 			major_boss_config ret;
 
 			auto &values = obj.as<hash_map<lua_variant, lua_variant>>();
 			for (const auto &value : values) {
-				config.validate_key(lua::lua_type::string, value.first, prefix);
+				config.validate_key(lua_type::string, value.first, prefix);
 
 				string key = value.first.as<string>();
 				if (key == "attempts") {
-					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.attempts = value.second.as<int16_t>();
 				}
 				else if (key == "channels") {
-					if (config.validate_value(lua::lua_type::table, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::table, value.second, key, prefix, true) == lua_type::nil) continue;
 					auto channels = value.second.as<vector<lua_variant>>();
 					for (const auto &channel : channels) {
-						config.validate_value(lua::lua_type::number, channel, "channels", prefix);
+						config.validate_value(lua_type::number, channel, "channels", prefix);
 					}
 
 					ret.channels = value.second.as<vector<game_channel_id>>();

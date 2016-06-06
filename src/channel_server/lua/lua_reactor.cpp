@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace vana {
 namespace channel_server {
+namespace lua {
 
 lua_reactor::lua_reactor(const string &filename, game_player_id player_id, game_reactor_id reactor_id, game_map_id map_id) :
 	lua_scriptable{filename, player_id},
@@ -61,13 +62,13 @@ auto lua_exports::get_reactor(lua_State *lua_vm, lua_environment &env) -> reacto
 }
 
 // Reactor
-auto lua_exports::get_state(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_state(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int8_t>(lua_vm, get_reactor(lua_vm, env)->get_state());
 	return 1;
 }
 
-auto lua_exports::reset(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::reset(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	reactor *reactor = get_reactor(lua_vm, env);
 	reactor->revive();
@@ -76,14 +77,14 @@ auto lua_exports::reset(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::set_state_reactor(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_state_reactor(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	get_reactor(lua_vm, env)->set_state(env.get<int8_t>(lua_vm, 1), true);
 	return 0;
 }
 
 // Miscellaneous
-auto lua_exports::drop_item_reactor(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::drop_item_reactor(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_item_id item_id = env.get<game_item_id>(lua_vm, 1);
 	game_slot_qty amount = 1;
@@ -106,14 +107,14 @@ auto lua_exports::drop_item_reactor(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::get_distance_reactor(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_distance_reactor(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int32_t>(lua_vm, get_player(lua_vm, env)->get_pos() - get_reactor(lua_vm, env)->get_pos());
 	return 1;
 }
 
 // Mob
-auto lua_exports::spawn_mob_reactor(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::spawn_mob_reactor(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_mob_id mob_id = env.get<game_mob_id>(lua_vm, 1);
 	reactor *reactor = get_reactor(lua_vm, env);
@@ -121,7 +122,7 @@ auto lua_exports::spawn_mob_reactor(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::spawn_zakum(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::spawn_zakum(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_coord x = env.get<game_coord>(lua_vm, 1);
 	game_coord y = env.get<game_coord>(lua_vm, 2);
@@ -133,5 +134,6 @@ auto lua_exports::spawn_zakum(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
+}
 }
 }

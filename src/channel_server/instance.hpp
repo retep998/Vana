@@ -29,12 +29,13 @@ namespace vana {
 	struct portal_info;
 
 	namespace channel_server {
-		class lua_instance;
 		class map;
 		class party;
 		class player;
 		class reactor;
-
+		namespace lua {
+			class lua_instance;
+		}
 		namespace timer {
 			struct id;
 		}
@@ -110,7 +111,7 @@ namespace vana {
 			auto set_instance_timer(const duration &time, bool first_run = false) -> void;
 			auto timer_complete(const string &name, bool from_timer = false) -> void;
 			auto remove_timer(const string &name, bool perform_event) -> void;
-			auto get_lua_instance() -> lua_instance * { return m_lua_instance.get(); }
+			auto get_lua_instance() -> lua::lua_instance * { return m_lua_instance.get(); }
 			auto get_counter_id() -> uint32_t;
 			auto instance_end(bool called_by_lua, bool from_timer = false) -> void;
 
@@ -122,7 +123,7 @@ namespace vana {
 			duration m_persistent;
 			string m_name;
 			owned_ptr<variables> m_variables;
-			owned_ptr<lua_instance> m_lua_instance; // Lua instance for interacting with scripts
+			owned_ptr<lua::lua_instance> m_lua_instance; // Lua instance for interacting with scripts
 			vector<map *> m_maps;
 			vector<party *> m_parties;
 			hash_map<string, timer_action> m_timer_actions; // Timers indexed by name

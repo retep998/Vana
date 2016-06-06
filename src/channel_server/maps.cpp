@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "channel_server/channel_server.hpp"
 #include "channel_server/instance.hpp"
 #include "channel_server/inventory.hpp"
-#include "channel_server/lua_portal.hpp"
+#include "channel_server/lua/lua_portal.hpp"
 #include "channel_server/map_data_provider.hpp"
 #include "channel_server/map_packet.hpp"
 #include "channel_server/pet_handler.hpp"
@@ -59,7 +59,7 @@ auto maps::use_portal(ref_ptr<player> player, const portal_info * const portal) 
 		string filename = channel_server::get_instance().get_script_data_provider().build_script_path(script_types::portal, portal->script);
 
 		if (utilities::file::exists(filename)) {
-			lua_portal lua_env = {filename, player->get_id(), player->get_map_id(), portal};
+			lua::lua_portal lua_env = {filename, player->get_id(), player->get_map_id(), portal};
 
 			if (!lua_env.player_map_changed()) {
 				player->send(packets::map::portal_blocked());

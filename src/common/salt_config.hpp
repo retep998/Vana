@@ -26,18 +26,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 namespace vana {
+	class lua::lua_variant;
+
 	struct salt_config {
-		password_transformation_config policy = {salt_policy::prepend, vector<lua_variant>{}};
+		password_transformation_config policy = {salt_policy::prepend, vector<lua::lua_variant>{}};
 		vector<salt_transformation_config> modify_policies;
 	};
 
 	template <>
-	struct lua_serialize<salt_config> {
+	struct lua::lua_serialize<salt_config> {
 		auto read(lua_environment &config, const string &prefix) -> salt_config {
 			salt_config ret;
 
 			lua_variant obj = config.get<lua_variant>(prefix);
-			config.validate_object(lua::lua_type::table, obj, prefix);
+			config.validate_object(lua_type::table, obj, prefix);
 
 			auto map = obj.as<hash_map<lua_variant, lua_variant>>();
 			bool has_salt_policy = false;
@@ -45,17 +47,17 @@ namespace vana {
 			lua_variant salt_policy;
 			lua_variant salt_modify_policy;
 			for (const auto &kvp : map) {
-				config.validate_key(lua::lua_type::string, kvp.first, prefix);
+				config.validate_key(lua_type::string, kvp.first, prefix);
 
 				string key = kvp.first.as<string>();
 				if (key == "salt") {
 					has_salt_policy = true;
-					config.validate_value(lua::lua_type::table, kvp.second, key, prefix);
+					config.validate_value(lua_type::table, kvp.second, key, prefix);
 					salt_policy = kvp.second;
 				}
 				else if (key == "salt_modify") {
 					has_salt_modify_policy = true;
-					config.validate_value(lua::lua_type::table, kvp.second, key, prefix);
+					config.validate_value(lua_type::table, kvp.second, key, prefix);
 					salt_modify_policy = kvp.second;
 				}
 			}

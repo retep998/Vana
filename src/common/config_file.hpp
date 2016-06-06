@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/lua_environment.hpp"
+#include "common/lua/lua_environment.hpp"
 #include "common/types.hpp"
 #include <string>
 #include <vector>
@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace vana {
 	DEFAULT_EXCEPTION(config_exception, std::runtime_error);
 
-	class config_file : public lua_environment {
+	class config_file : public lua::lua_environment {
 		NONCOPYABLE(config_file);
 		NO_DEFAULT_CONSTRUCTOR(config_file);
 	public:

@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "common/point.hpp"
 #include "common/types.hpp"
-#include "channel_server/lua_npc.hpp"
+#include "channel_server/lua/lua_npc.hpp"
 #include <memory>
 #include <string>
 #include <vector>
@@ -27,6 +27,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace vana {
 	namespace channel_server {
 		class player;
+		namespace lua {
+			class lua_npc;
+		}
 
 		class npc {
 			NONCOPYABLE(npc);
@@ -105,7 +108,7 @@ namespace vana {
 			string m_get_text;
 			string m_script;
 			point m_pos;
-			owned_ptr<lua_npc> m_lua_npc;
+			owned_ptr<lua::lua_npc> m_lua_npc;
 			vector<ref_ptr<npc_chat_state>> m_previous_states;
 		};
 	}

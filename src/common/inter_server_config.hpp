@@ -38,7 +38,7 @@ namespace vana {
 	};
 
 	template <>
-	struct lua_serialize<inter_server_config> {
+	struct lua::lua_serialize<inter_server_config> {
 		auto read(lua_environment &config, const string &prefix) -> inter_server_config {
 			inter_server_config ret;
 			ret.client_encryption = config.get<bool>("use_client_encryption");

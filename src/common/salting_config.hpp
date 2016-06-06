@@ -34,17 +34,17 @@ namespace vana {
 	};
 
 	template <>
-	struct lua_serialize<salting_config> {
+	struct lua::lua_serialize<salting_config> {
 		auto read(lua_environment &config, const string &prefix) -> salting_config {
 			salting_config ret;
 
 			lua_variant account = config.get<lua_variant>("account");
-			config.validate_object(lua::lua_type::table, account, "account");
+			config.validate_object(lua_type::table, account, "account");
 
 			auto map = account.as<hash_map<lua_variant, lua_variant>>();
 			bool has_salt_size = false;
 			for (const auto &kvp : map) {
-				config.validate_key(lua::lua_type::string, kvp.first, prefix);
+				config.validate_key(lua_type::string, kvp.first, prefix);
 
 				string key = kvp.first.as<string>();
 				if (key == "salt_size") {

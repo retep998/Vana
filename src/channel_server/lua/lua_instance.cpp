@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace vana {
 namespace channel_server {
+namespace lua {
 
 lua_instance::lua_instance(const string &name, game_player_id player_id) :
 	lua_scriptable{channel_server::get_instance().get_script_data_provider().build_script_path(script_types::instance, name), player_id}
@@ -35,13 +36,13 @@ lua_instance::lua_instance(const string &name, game_player_id player_id) :
 	run(); // Running is loading the functions
 }
 
-auto lua_exports::create_instance_instance(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::create_instance_instance(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	string name = env.get<string>(lua_vm, 1);
 	int32_t time = env.get<int32_t>(lua_vm, 2);
 	bool show_timer = env.get<bool>(lua_vm, 3);
 	int32_t persistent = 0;
-	if (env.is(lua_vm, 4, lua::lua_type::number)) {
+	if (env.is(lua_vm, 4, lua_type::number)) {
 		persistent = env.get<int32_t>(lua_vm, 4);
 	}
 
@@ -56,5 +57,6 @@ auto lua_exports::create_instance_instance(lua_State *lua_vm) -> lua::lua_return
 	return 0;
 }
 
+}
 }
 }

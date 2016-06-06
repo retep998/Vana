@@ -56,6 +56,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace vana {
 namespace channel_server {
+namespace lua {
 
 // TODO FIXME msvc
 // Remove this when MSVC supports static init
@@ -446,7 +447,7 @@ auto lua_exports::obtain_set_variable_pair(lua_State *lua_vm, lua_environment &e
 	return ret;
 }
 
-auto lua_exports::push_get_variable_data(lua_State *lua_vm, lua_environment &env, const string &value, variable_type::type return_type) -> lua::lua_return {
+auto lua_exports::push_get_variable_data(lua_State *lua_vm, lua_environment &env, const string &value, variable_type::type return_type) -> lua_return {
 	if (value == "nil") {
 		env.push_nil(lua_vm);
 	}
@@ -476,7 +477,7 @@ auto lua_exports::push_get_variable_data(lua_State *lua_vm, lua_environment &env
 	return 1;
 }
 
-auto lua_exports::is_boss_channel(lua_State *lua_vm, const vector<game_channel_id> &elements) -> lua::lua_return {
+auto lua_exports::is_boss_channel(lua_State *lua_vm, const vector<game_channel_id> &elements) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_channel_id channel = channel_server::get_instance().get_channel_id() + 1;
 	env.push<bool>(lua_vm, ext::any_of(elements, [channel](game_channel_id test_channel) -> bool { return test_channel == channel; }));
@@ -484,7 +485,7 @@ auto lua_exports::is_boss_channel(lua_State *lua_vm, const vector<game_channel_i
 }
 
 // Miscellaneous
-auto lua_exports::console_output(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::console_output(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	switch (env.type_of(lua_vm, 1)) {
 		case lua::lua_type::none: std::cout << "i_nV_aL_iD__aR_gU_mE_nT" << std::endl; break;
@@ -501,19 +502,19 @@ auto lua_exports::console_output(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::get_random_number(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_random_number(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int32_t>(lua_vm, randomizer::rand<int32_t>(env.get<int32_t>(lua_vm, 1), 1));
 	return 1;
 }
 
-auto lua_exports::log(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::log(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	channel_server::get_instance().log(log_type::script_log, env.get<string>(lua_vm, 1));
 	return 0;
 }
 
-auto lua_exports::select_discrete(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::select_discrete(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	vector<double> relative_chances = env.get<vector<double>>(lua_vm, 1);
 	if (relative_chances.size() == 0) {
@@ -527,7 +528,7 @@ auto lua_exports::select_discrete(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::show_global_message(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::show_global_message(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	string msg = env.get<string>(lua_vm, 1);
 	int8_t type = env.get<int8_t>(lua_vm, 2);
@@ -541,7 +542,7 @@ auto lua_exports::show_global_message(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::show_world_message(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::show_world_message(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	string msg = env.get<string>(lua_vm, 1);
 	int8_t type = env.get<int8_t>(lua_vm, 2);
@@ -553,26 +554,26 @@ auto lua_exports::show_world_message(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::test_export(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::test_export(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	return 0;
 }
 
 // Channel
-auto lua_exports::delete_channel_variable(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::delete_channel_variable(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	string key = env.get<string>(lua_vm, 1);
 	channel_server::get_instance().get_event_data_provider().get_variables()->delete_variable(key);
 	return 0;
 }
 
-auto lua_exports::get_channel(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_channel(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_channel_id>(lua_vm, channel_server::get_instance().get_channel_id() + 1);
 	return 1;
 }
 
-auto lua_exports::get_channel_variable(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_channel_variable(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	variable_type::type return_type = variable_type::string;
 	if (env.is(lua_vm, 2, lua::lua_type::number)) {
@@ -583,20 +584,20 @@ auto lua_exports::get_channel_variable(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::get_world(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_world(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_world_id>(lua_vm, channel_server::get_instance().get_world_id() + 1);
 	return 1;
 }
 
-auto lua_exports::set_channel_variable(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_channel_variable(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	auto kvp = obtain_set_variable_pair(lua_vm, env);
 	channel_server::get_instance().get_event_data_provider().get_variables()->set_variable(kvp.first, kvp.second);
 	return 0;
 }
 
-auto lua_exports::show_channel_message(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::show_channel_message(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	string msg = env.get<string>(lua_vm, 1);
 	int8_t type = env.get<int8_t>(lua_vm, 2);
@@ -605,94 +606,94 @@ auto lua_exports::show_channel_message(lua_State *lua_vm) -> lua::lua_return {
 }
 
 // Bosses
-auto lua_exports::get_horntail_channels(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_horntail_channels(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<vector<game_channel_id>>(lua_vm, channel_server::get_instance().get_config().horntail.channels);
 	return 1;
 }
 
-auto lua_exports::get_max_horntail_battles(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_max_horntail_battles(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int16_t>(lua_vm, channel_server::get_instance().get_config().horntail.attempts);
 	return 1;
 }
 
-auto lua_exports::get_max_papulatus_battles(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_max_papulatus_battles(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int16_t>(lua_vm, channel_server::get_instance().get_config().papulatus.attempts);
 	return 1;
 }
 
-auto lua_exports::get_max_pianus_battles(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_max_pianus_battles(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int16_t>(lua_vm, channel_server::get_instance().get_config().pianus.attempts);
 	return 1;
 }
 
-auto lua_exports::get_max_pink_bean_battles(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_max_pink_bean_battles(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int16_t>(lua_vm, channel_server::get_instance().get_config().pinkbean.attempts);
 	return 1;
 }
 
-auto lua_exports::get_max_zakum_battles(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_max_zakum_battles(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int16_t>(lua_vm, channel_server::get_instance().get_config().zakum.attempts);
 	return 1;
 }
 
-auto lua_exports::get_papulatus_channels(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_papulatus_channels(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<vector<game_channel_id>>(lua_vm, channel_server::get_instance().get_config().papulatus.channels);
 	return 1;
 }
 
-auto lua_exports::get_pianus_channels(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_pianus_channels(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<vector<game_channel_id>>(lua_vm, channel_server::get_instance().get_config().pianus.channels);
 	return 1;
 }
 
-auto lua_exports::get_pink_bean_channels(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_pink_bean_channels(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<vector<game_channel_id>>(lua_vm, channel_server::get_instance().get_config().pinkbean.channels);
 	return 1;
 }
 
-auto lua_exports::get_zakum_channels(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_zakum_channels(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<vector<game_channel_id>>(lua_vm, channel_server::get_instance().get_config().zakum.channels);
 	return 1;
 }
 
-auto lua_exports::is_horntail_channel(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_horntail_channel(lua_State *lua_vm) -> lua_return {
 	return is_boss_channel(lua_vm, channel_server::get_instance().get_config().horntail.channels);
 }
 
-auto lua_exports::is_papulatus_channel(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_papulatus_channel(lua_State *lua_vm) -> lua_return {
 	return is_boss_channel(lua_vm, channel_server::get_instance().get_config().papulatus.channels);
 }
 
-auto lua_exports::is_pianus_channel(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_pianus_channel(lua_State *lua_vm) -> lua_return {
 	return is_boss_channel(lua_vm, channel_server::get_instance().get_config().pianus.channels);
 }
 
-auto lua_exports::is_pink_bean_channel(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_pink_bean_channel(lua_State *lua_vm) -> lua_return {
 	return is_boss_channel(lua_vm, channel_server::get_instance().get_config().pinkbean.channels);
 }
 
-auto lua_exports::is_zakum_channel(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_zakum_channel(lua_State *lua_vm) -> lua_return {
 	return is_boss_channel(lua_vm, channel_server::get_instance().get_config().zakum.channels);
 }
 
 // NPC
-auto lua_exports::is_busy(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_busy(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<bool>(lua_vm, get_player(lua_vm, env)->get_npc() != nullptr);
 	return 1;
 }
 
-auto lua_exports::remove_npc(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::remove_npc(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	uint32_t index = env.get<uint32_t>(lua_vm, 2);
@@ -700,7 +701,7 @@ auto lua_exports::remove_npc(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::run_npc(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::run_npc(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_npc_id npc_id = env.get<game_npc_id>(lua_vm, 1);
 	string script;
@@ -718,14 +719,14 @@ auto lua_exports::run_npc(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::show_shop(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::show_shop(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_shop_id shop_id = env.get<game_shop_id>(lua_vm, 1);
 	npc_handler::show_shop(get_player(lua_vm, env), shop_id);
 	return 0;
 }
 
-auto lua_exports::spawn_npc(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::spawn_npc(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	game_npc_id npc_id = env.get<game_npc_id>(lua_vm, 2);
@@ -744,62 +745,62 @@ auto lua_exports::spawn_npc(lua_State *lua_vm) -> lua::lua_return {
 }
 
 // Beauty
-auto lua_exports::get_all_faces(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_all_faces(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<vector<game_face_id>>(lua_vm, channel_server::get_instance().get_beauty_data_provider().get_faces(get_player(lua_vm, env)->get_gender()));
 	return 1;
 }
 
-auto lua_exports::get_all_hairs(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_all_hairs(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<vector<game_hair_id>>(lua_vm, channel_server::get_instance().get_beauty_data_provider().get_hair(get_player(lua_vm, env)->get_gender()));
 	return 1;
 }
 
-auto lua_exports::get_all_skins(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_all_skins(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<vector<game_skin_id>>(lua_vm, channel_server::get_instance().get_beauty_data_provider().get_skins());
 	return 1;
 }
 
-auto lua_exports::get_random_face(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_random_face(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_face_id>(lua_vm, channel_server::get_instance().get_beauty_data_provider().get_random_face(get_player(lua_vm, env)->get_gender()));
 	return 1;
 }
 
-auto lua_exports::get_random_hair(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_random_hair(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_hair_id>(lua_vm, channel_server::get_instance().get_beauty_data_provider().get_random_hair(get_player(lua_vm, env)->get_gender()));
 	return 1;
 }
 
-auto lua_exports::get_random_skin(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_random_skin(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_skin_id>(lua_vm, channel_server::get_instance().get_beauty_data_provider().get_random_skin());
 	return 1;
 }
 
-auto lua_exports::is_valid_face(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_valid_face(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<bool>(lua_vm, channel_server::get_instance().get_beauty_data_provider().is_valid_face(get_player(lua_vm, env)->get_gender(), env.get<game_face_id>(lua_vm, 1)));
 	return 1;
 }
 
-auto lua_exports::is_valid_hair(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_valid_hair(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<bool>(lua_vm, channel_server::get_instance().get_beauty_data_provider().is_valid_hair(get_player(lua_vm, env)->get_gender(), env.get<game_hair_id>(lua_vm, 1)));
 	return 1;
 }
 
-auto lua_exports::is_valid_skin(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_valid_skin(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<bool>(lua_vm, channel_server::get_instance().get_beauty_data_provider().is_valid_skin(env.get<game_skin_id>(lua_vm, 1)));
 	return 1;
 }
 
 // Buddy
-auto lua_exports::add_buddy_slots(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::add_buddy_slots(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	auto p = get_player(lua_vm, env);
 	uint8_t csize = p->get_buddy_list_size();
@@ -808,14 +809,14 @@ auto lua_exports::add_buddy_slots(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::get_buddy_slots(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_buddy_slots(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<uint8_t>(lua_vm, get_player(lua_vm, env)->get_buddy_list_size());
 	return 1;
 }
 
 // Skill
-auto lua_exports::add_skill_level(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::add_skill_level(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_skill_id skill_id = env.get<game_skill_id>(lua_vm, 1);
 	game_skill_level level = env.get<game_skill_level>(lua_vm, 2);
@@ -829,21 +830,21 @@ auto lua_exports::add_skill_level(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::get_skill_level(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_skill_level(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_skill_id skill_id = env.get<game_skill_id>(lua_vm, 1);
 	env.push<game_skill_level>(lua_vm, get_player(lua_vm, env)->get_skills()->get_skill_level(skill_id));
 	return 1;
 }
 
-auto lua_exports::get_max_skill_level(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_max_skill_level(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_skill_id skill_id = env.get<game_skill_id>(lua_vm, 1);
 	env.push<game_skill_level>(lua_vm, get_player(lua_vm, env)->get_skills()->get_max_skill_level(skill_id));
 	return 1;
 }
 
-auto lua_exports::set_max_skill_level(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_max_skill_level(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_skill_id skill_id = env.get<game_skill_id>(lua_vm, 1);
 	game_skill_level level = env.get<game_skill_level>(lua_vm, 2);
@@ -852,21 +853,21 @@ auto lua_exports::set_max_skill_level(lua_State *lua_vm) -> lua::lua_return {
 }
 
 // Quest
-auto lua_exports::get_quest_data(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_quest_data(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_quest_id quest_id = env.get<game_quest_id>(lua_vm, 1);
 	env.push<string>(lua_vm, get_player(lua_vm, env)->get_quests()->get_quest_data(quest_id));
 	return 1;
 }
 
-auto lua_exports::is_quest_active(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_quest_active(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_quest_id quest_id = env.get<game_quest_id>(lua_vm, 1);
 	env.push<bool>(lua_vm, get_player(lua_vm, env)->get_quests()->is_quest_active(quest_id));
 	return 1;
 }
 
-auto lua_exports::is_quest_inactive(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_quest_inactive(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_quest_id quest_id = env.get<game_quest_id>(lua_vm, 1);
 	auto player = get_player(lua_vm, env);
@@ -875,14 +876,14 @@ auto lua_exports::is_quest_inactive(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::is_quest_completed(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_quest_completed(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_quest_id quest_id = env.get<game_quest_id>(lua_vm, 1);
 	env.push<bool>(lua_vm, get_player(lua_vm, env)->get_quests()->is_quest_complete(quest_id));
 	return 1;
 }
 
-auto lua_exports::set_quest_data(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_quest_data(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_quest_id quest_id = env.get<game_quest_id>(lua_vm, 1);
 	string data = env.get<string>(lua_vm, 2);
@@ -891,7 +892,7 @@ auto lua_exports::set_quest_data(lua_State *lua_vm) -> lua::lua_return {
 }
 
 // Inventory
-auto lua_exports::add_slots(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::add_slots(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_inventory inventory = env.get<game_inventory>(lua_vm, 1);
 	game_inventory_slot_count rows = env.get<game_inventory_slot_count>(lua_vm, 2);
@@ -899,14 +900,14 @@ auto lua_exports::add_slots(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::add_storage_slots(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::add_storage_slots(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_storage_slot slots = env.get<game_storage_slot>(lua_vm, 1);
 	get_player(lua_vm, env)->get_storage()->set_slots(get_player(lua_vm, env)->get_storage()->get_slots() + slots);
 	return 0;
 }
 
-auto lua_exports::destroy_equipped_item(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::destroy_equipped_item(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_item_id item_id = env.get<game_item_id>(lua_vm, 1);
 	auto player = get_player(lua_vm, env);
@@ -918,41 +919,41 @@ auto lua_exports::destroy_equipped_item(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::get_equipped_item_in_slot(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_equipped_item_in_slot(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_inventory_slot slot = env.get<game_inventory_slot>(lua_vm, 1);
 	env.push<game_item_id>(lua_vm, get_player(lua_vm, env)->get_inventory()->get_equipped_id(slot));
 	return 1;
 }
 
-auto lua_exports::get_item_amount(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_item_amount(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_item_id item_id = env.get<game_item_id>(lua_vm, 1);
 	env.push<game_slot_qty>(lua_vm, get_player(lua_vm, env)->get_inventory()->get_item_amount(item_id));
 	return 1;
 }
 
-auto lua_exports::get_max_stack_size(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_max_stack_size(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_item_id item_id = env.get<game_item_id>(lua_vm, 1);
 	env.push<game_slot_qty>(lua_vm, channel_server::get_instance().get_item_data_provider().get_item_info(item_id)->max_slot);
 	return 1;
 }
 
-auto lua_exports::get_mesos(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_mesos(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_mesos>(lua_vm, get_player(lua_vm, env)->get_inventory()->get_mesos());
 	return 1;
 }
 
-auto lua_exports::get_open_slots(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_open_slots(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_inventory inv = env.get<game_inventory>(lua_vm, 1);
 	env.push<game_inventory_slot_count>(lua_vm, get_player(lua_vm, env)->get_inventory()->get_open_slots_num(inv));
 	return 1;
 }
 
-auto lua_exports::give_item(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::give_item(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_item_id item_id = env.get<game_item_id>(lua_vm, 1);
 	game_slot_qty amount = 1;
@@ -964,7 +965,7 @@ auto lua_exports::give_item(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::give_item_gachapon(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::give_item_gachapon(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_item_id item_id = env.get<game_item_id>(lua_vm, 1);
 	game_slot_qty amount = 1;
@@ -976,7 +977,7 @@ auto lua_exports::give_item_gachapon(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::give_mesos(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::give_mesos(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_mesos mesos = env.get<game_mesos>(lua_vm, 1);
 	bool success = quests::give_mesos(get_player(lua_vm, env), mesos) == result::successful;
@@ -984,7 +985,7 @@ auto lua_exports::give_mesos(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::has_open_slots_for(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::has_open_slots_for(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_item_id item_id = env.get<game_item_id>(lua_vm, 1);
 	game_slot_qty amount = 1;
@@ -995,21 +996,21 @@ auto lua_exports::has_open_slots_for(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::is_equipped_item(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_equipped_item(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_item_id item_id = env.get<game_item_id>(lua_vm, 1);
 	env.push<bool>(lua_vm, get_player(lua_vm, env)->get_inventory()->is_equipped_item(item_id));
 	return 1;
 }
 
-auto lua_exports::is_valid_item(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_valid_item(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_item_id item_id = env.get<game_item_id>(lua_vm, 1);
 	env.push<bool>(lua_vm, channel_server::get_instance().get_item_data_provider().get_item_info(item_id) != nullptr);
 	return 1;
 }
 
-auto lua_exports::use_item(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::use_item(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_item_id item_id = env.get<game_item_id>(lua_vm, 1);
 	inventory::use_item(get_player(lua_vm, env), item_id);
@@ -1017,146 +1018,146 @@ auto lua_exports::use_item(lua_State *lua_vm) -> lua::lua_return {
 }
 
 // Player
-auto lua_exports::delete_player_variable(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::delete_player_variable(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	string key = env.get<string>(lua_vm, 1);
 	get_player(lua_vm, env)->get_variables()->delete_variable(key);
 	return 0;
 }
 
-auto lua_exports::end_morph(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::end_morph(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	get_player(lua_vm, env)->get_active_buffs()->end_morph();
 	return 0;
 }
 
-auto lua_exports::get_ap(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_ap(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_stat>(lua_vm, get_player(lua_vm, env)->get_stats()->get_ap());
 	return 1;
 }
 
-auto lua_exports::get_dex(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_dex(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_stat>(lua_vm, get_player(lua_vm, env)->get_stats()->get_dex());
 	return 1;
 }
 
-auto lua_exports::get_exp(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_exp(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_experience>(lua_vm, get_player(lua_vm, env)->get_stats()->get_exp());
 	return 1;
 }
 
-auto lua_exports::get_face(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_face(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_face_id>(lua_vm, get_player(lua_vm, env)->get_face());
 	return 1;
 }
 
-auto lua_exports::get_fame(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_fame(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_fame>(lua_vm, get_player(lua_vm, env)->get_stats()->get_fame());
 	return 1;
 }
 
-auto lua_exports::get_fh(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_fh(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_foothold_id>(lua_vm, get_player(lua_vm, env)->get_foothold());
 	return 1;
 }
 
-auto lua_exports::get_gender(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_gender(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_gender_id>(lua_vm, get_player(lua_vm, env)->get_gender());
 	return 1;
 }
 
-auto lua_exports::get_gm_level(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_gm_level(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int32_t>(lua_vm, get_player(lua_vm, env)->get_gm_level());
 	return 1;
 }
 
-auto lua_exports::get_hair(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_hair(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_hair_id>(lua_vm, get_player(lua_vm, env)->get_hair());
 	return 1;
 }
 
-auto lua_exports::get_hp(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_hp(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_health>(lua_vm, get_player(lua_vm, env)->get_stats()->get_hp());
 	return 1;
 }
 
-auto lua_exports::get_hp_mp_ap(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_hp_mp_ap(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_health_ap>(lua_vm, get_player(lua_vm, env)->get_stats()->get_hp_mp_ap());
 	return 1;
 }
 
-auto lua_exports::get_id(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_id(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_player_id>(lua_vm, get_player(lua_vm, env)->get_id());
 	return 1;
 }
 
-auto lua_exports::get_int(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_int(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_stat>(lua_vm, get_player(lua_vm, env)->get_stats()->get_int());
 	return 1;
 }
 
-auto lua_exports::get_job(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_job(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_job_id>(lua_vm, get_player(lua_vm, env)->get_stats()->get_job());
 	return 1;
 }
 
-auto lua_exports::get_level(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_level(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_player_level>(lua_vm, get_player(lua_vm, env)->get_stats()->get_level());
 	return 1;
 }
 
-auto lua_exports::get_luk(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_luk(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_stat>(lua_vm, get_player(lua_vm, env)->get_stats()->get_luk());
 	return 1;
 }
 
-auto lua_exports::get_map(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_map(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_map_id>(lua_vm, get_player(lua_vm, env)->get_map_id());
 	return 1;
 }
 
-auto lua_exports::get_max_hp(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_max_hp(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_health>(lua_vm, get_player(lua_vm, env)->get_stats()->get_max_hp());
 	return 1;
 }
 
-auto lua_exports::get_max_mp(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_max_mp(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_health>(lua_vm, get_player(lua_vm, env)->get_stats()->get_max_mp());
 	return 1;
 }
 
-auto lua_exports::get_mp(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_mp(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_health>(lua_vm, get_player(lua_vm, env)->get_stats()->get_mp());
 	return 1;
 }
 
-auto lua_exports::get_name(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_name(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<string>(lua_vm, get_player(lua_vm, env)->get_name());
 	return 1;
 }
 
-auto lua_exports::get_player_variable(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_player_variable(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	variable_type::type return_type = variable_type::string;
 	if (env.is(lua_vm, 2, lua::lua_type::number)) {
@@ -1167,63 +1168,63 @@ auto lua_exports::get_player_variable(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::get_pos_x(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_pos_x(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_coord>(lua_vm, get_player(lua_vm, env)->get_pos().x);
 	return 1;
 }
 
-auto lua_exports::get_pos_y(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_pos_y(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_coord>(lua_vm, get_player(lua_vm, env)->get_pos().y);
 	return 1;
 }
 
-auto lua_exports::get_real_max_hp(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_real_max_hp(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_health>(lua_vm, get_player(lua_vm, env)->get_stats()->get_max_hp(true));
 	return 1;
 }
 
-auto lua_exports::get_real_max_mp(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_real_max_mp(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_health>(lua_vm, get_player(lua_vm, env)->get_stats()->get_max_mp(true));
 	return 1;
 }
 
-auto lua_exports::get_skin(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_skin(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_skin_id>(lua_vm, get_player(lua_vm, env)->get_skin());
 	return 1;
 }
 
-auto lua_exports::get_sp(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_sp(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_stat>(lua_vm, get_player(lua_vm, env)->get_stats()->get_sp());
 	return 1;
 }
 
-auto lua_exports::get_str(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_str(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<game_stat>(lua_vm, get_player(lua_vm, env)->get_stats()->get_str());
 	return 1;
 }
 
-auto lua_exports::give_ap(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::give_ap(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_stat ap = env.get<game_stat>(lua_vm, -1);
 	get_player(lua_vm, env)->get_stats()->set_ap(get_player(lua_vm, env)->get_stats()->get_ap() + ap);
 	return 0;
 }
 
-auto lua_exports::give_exp(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::give_exp(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_experience exp = env.get<game_experience>(lua_vm, -1);
 	get_player(lua_vm, env)->get_stats()->give_exp(exp * channel_server::get_instance().get_config().rates.quest_exp_rate, true);
 	return 0;
 }
 
-auto lua_exports::give_fame(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::give_fame(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_fame fame = env.get<game_fame>(lua_vm, 1);
 	bool success = quests::give_fame(get_player(lua_vm, env), fame) == result::successful;
@@ -1231,14 +1232,14 @@ auto lua_exports::give_fame(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::give_sp(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::give_sp(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_stat sp = env.get<game_stat>(lua_vm, 1);
 	get_player(lua_vm, env)->get_stats()->set_sp(get_player(lua_vm, env)->get_stats()->get_sp() + sp);
 	return 0;
 }
 
-auto lua_exports::is_active_item(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_active_item(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_item_id item = env.get<game_item_id>(lua_vm, 1);
 	bool has_buff = get_player(lua_vm, env)->get_active_buffs()->has_buff(
@@ -1249,7 +1250,7 @@ auto lua_exports::is_active_item(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::is_active_skill(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_active_skill(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_skill_id skill = env.get<game_skill_id>(lua_vm, 1);
 	bool has_buff = get_player(lua_vm, env)->get_active_buffs()->has_buff(
@@ -1261,81 +1262,81 @@ auto lua_exports::is_active_skill(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::is_gm(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_gm(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<bool>(lua_vm, get_player(lua_vm, env)->is_gm());
 	return 1;
 }
 
-auto lua_exports::is_online(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_online(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<bool>(lua_vm, get_player_deduced(1, lua_vm, env) != nullptr);
 	return 1;
 }
 
-auto lua_exports::revert_player(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::revert_player(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.set<game_player_id>(lua_vm, "system_player_id", env.get<game_player_id>(lua_vm, "system_old_player_id"));
 	return 0;
 }
 
-auto lua_exports::set_ap(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_ap(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_stat ap = env.get<game_stat>(lua_vm, 1);
 	get_player(lua_vm, env)->get_stats()->set_ap(ap);
 	return 0;
 }
 
-auto lua_exports::set_dex(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_dex(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_stat dex = env.get<game_stat>(lua_vm, 1);
 	get_player(lua_vm, env)->get_stats()->set_dex(dex);
 	return 0;
 }
 
-auto lua_exports::set_exp(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_exp(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_experience exp = env.get<game_experience>(lua_vm, 1);
 	get_player(lua_vm, env)->get_stats()->set_exp(exp);
 	return 0;
 }
 
-auto lua_exports::set_hp(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_hp(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_health hp = env.get<game_health>(lua_vm, 1);
 	get_player(lua_vm, env)->get_stats()->set_hp(hp);
 	return 0;
 }
 
-auto lua_exports::set_int(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_int(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_stat intt = env.get<game_stat>(lua_vm, 1);
 	get_player(lua_vm, env)->get_stats()->set_int(intt);
 	return 0;
 }
 
-auto lua_exports::set_job(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_job(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_job_id job = env.get<game_job_id>(lua_vm, 1);
 	get_player(lua_vm, env)->get_stats()->set_job(job);
 	return 0;
 }
 
-auto lua_exports::set_level(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_level(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_player_level level = env.get<game_player_level>(lua_vm, 1);
 	get_player(lua_vm, env)->get_stats()->set_level(level);
 	return 0;
 }
 
-auto lua_exports::set_luk(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_luk(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_stat luk = env.get<game_stat>(lua_vm, 1);
 	get_player(lua_vm, env)->get_stats()->set_luk(luk);
 	return 0;
 }
 
-auto lua_exports::set_map(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_map(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
@@ -1357,28 +1358,28 @@ auto lua_exports::set_map(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::set_max_hp(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_max_hp(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_health hp = env.get<game_health>(lua_vm, 1);
 	get_player(lua_vm, env)->get_stats()->set_max_hp(hp);
 	return 0;
 }
 
-auto lua_exports::set_max_mp(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_max_mp(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_health mp = env.get<game_health>(lua_vm, 1);
 	get_player(lua_vm, env)->get_stats()->set_max_mp(mp);
 	return 0;
 }
 
-auto lua_exports::set_mp(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_mp(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_health mp = env.get<game_health>(lua_vm, 1);
 	get_player(lua_vm, env)->get_stats()->set_mp(mp);
 	return 0;
 }
 
-auto lua_exports::set_player(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_player(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	auto player = get_player_deduced(1, lua_vm, env);
 	if (player != nullptr) {
@@ -1389,28 +1390,28 @@ auto lua_exports::set_player(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::set_player_variable(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_player_variable(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	auto kvp = obtain_set_variable_pair(lua_vm, env);
 	get_player(lua_vm, env)->get_variables()->set_variable(kvp.first, kvp.second);
 	return 0;
 }
 
-auto lua_exports::set_sp(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_sp(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_stat sp = env.get<game_stat>(lua_vm, 1);
 	get_player(lua_vm, env)->get_stats()->set_sp(sp);
 	return 0;
 }
 
-auto lua_exports::set_str(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_str(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_stat str = env.get<game_stat>(lua_vm, 1);
 	get_player(lua_vm, env)->get_stats()->set_str(str);
 	return 0;
 }
 
-auto lua_exports::set_style(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_style(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	int32_t id = env.get<int32_t>(lua_vm, 1);
 	int32_t type = game_logic_utilities::get_item_type(id);
@@ -1428,7 +1429,7 @@ auto lua_exports::set_style(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::show_instruction_bubble(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::show_instruction_bubble(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	string msg = env.get<string>(lua_vm, 1);
 	game_coord width = env.get<game_coord>(lua_vm, 2);
@@ -1448,7 +1449,7 @@ auto lua_exports::show_instruction_bubble(lua_State *lua_vm) -> lua::lua_return 
 	return 0;
 }
 
-auto lua_exports::show_message(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::show_message(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	string msg = env.get<string>(lua_vm, 1);
 	int8_t type = env.get<int8_t>(lua_vm, 2);
@@ -1457,7 +1458,7 @@ auto lua_exports::show_message(lua_State *lua_vm) -> lua::lua_return {
 }
 
 // Effects
-auto lua_exports::play_field_sound(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::play_field_sound(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	string val = env.get<string>(lua_vm, 1);
 	auto &packet = packets::send_field_sound(val);
@@ -1470,7 +1471,7 @@ auto lua_exports::play_field_sound(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::play_minigame_sound(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::play_minigame_sound(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	string val = env.get<string>(lua_vm, 1);
 	auto &packet = packets::send_minigame_sound(val);
@@ -1483,7 +1484,7 @@ auto lua_exports::play_minigame_sound(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::set_music(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_music(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = -1;
 	string music = env.get<string>(lua_vm, 1);
@@ -1504,7 +1505,7 @@ auto lua_exports::set_music(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::show_map_effect(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::show_map_effect(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	string val = env.get<string>(lua_vm, 1);
 	if (env.is(lua_vm, 2, lua::lua_type::number)) {
@@ -1517,7 +1518,7 @@ auto lua_exports::show_map_effect(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::show_map_event(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::show_map_event(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	string val = env.get<string>(lua_vm, 1);
 	if (env.is(lua_vm, 2, lua::lua_type::number)) {
@@ -1531,14 +1532,14 @@ auto lua_exports::show_map_event(lua_State *lua_vm) -> lua::lua_return {
 }
 
 // Map
-auto lua_exports::clear_drops(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::clear_drops(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	maps::get_map(map_id)->clear_drops(false);
 	return 0;
 }
 
-auto lua_exports::clear_mobs(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::clear_mobs(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	bool distribute_exp_and_drops = true;
@@ -1549,7 +1550,7 @@ auto lua_exports::clear_mobs(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::count_mobs(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::count_mobs(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	game_mob_id mob_id = 0;
@@ -1560,7 +1561,7 @@ auto lua_exports::count_mobs(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::set_portal_state(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_portal_state(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	string portal_name = env.get<string>(lua_vm, 2);
@@ -1571,7 +1572,7 @@ auto lua_exports::set_portal_state(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::get_all_map_player_ids(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_all_map_player_ids(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	if (map *map = maps::get_map(map_id)) {
@@ -1581,14 +1582,14 @@ auto lua_exports::get_all_map_player_ids(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::get_num_players(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_num_players(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	env.push<uint32_t>(lua_vm, maps::get_map(map_id)->get_num_players());
 	return 1;
 }
 
-auto lua_exports::get_reactor_state(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_reactor_state(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	game_reactor_id reactor_id = env.get<game_reactor_id>(lua_vm, 2);
@@ -1603,7 +1604,7 @@ auto lua_exports::get_reactor_state(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::kill_mobs(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::kill_mobs(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_mob_id mob_id = env.get<game_mob_id>(lua_vm, 1);
 	int32_t killed = get_player(lua_vm, env)->get_map()->kill_mobs(nullptr, true, mob_id);
@@ -1611,7 +1612,7 @@ auto lua_exports::kill_mobs(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::set_boat_docked(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_boat_docked(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	bool docked = env.get<bool>(lua_vm, 2);
@@ -1619,7 +1620,7 @@ auto lua_exports::set_boat_docked(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::set_map_spawn(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_map_spawn(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	game_mob_id spawn = env.get<game_mob_id>(lua_vm, 2);
@@ -1627,7 +1628,7 @@ auto lua_exports::set_map_spawn(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::set_reactor_state(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_reactor_state(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	game_reactor_id reactor_id = env.get<game_reactor_id>(lua_vm, 2);
@@ -1642,7 +1643,7 @@ auto lua_exports::set_reactor_state(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::show_map_message(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::show_map_message(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	string msg = env.get<string>(lua_vm, 1);
 	int8_t type = env.get<int8_t>(lua_vm, 2);
@@ -1650,7 +1651,7 @@ auto lua_exports::show_map_message(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::show_map_timer(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::show_map_timer(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	seconds time = env.get<seconds>(lua_vm, 2);
@@ -1658,7 +1659,7 @@ auto lua_exports::show_map_timer(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::spawn_mob(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::spawn_mob(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_mob_id mob_id = env.get<game_mob_id>(lua_vm, 1);
 	auto player = get_player(lua_vm, env);
@@ -1666,7 +1667,7 @@ auto lua_exports::spawn_mob(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::spawn_mob_pos(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::spawn_mob_pos(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	game_mob_id mob_id = env.get<game_mob_id>(lua_vm, 2);
@@ -1681,7 +1682,7 @@ auto lua_exports::spawn_mob_pos(lua_State *lua_vm) -> lua::lua_return {
 }
 
 // Mob
-auto lua_exports::get_mob_fh(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_mob_fh(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	game_map_object map_mob_id = env.get<game_map_object>(lua_vm, 2);
@@ -1689,7 +1690,7 @@ auto lua_exports::get_mob_fh(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::get_mob_hp(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_mob_hp(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	game_map_object map_mob_id = env.get<game_map_object>(lua_vm, 2);
@@ -1697,7 +1698,7 @@ auto lua_exports::get_mob_hp(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::get_mob_max_hp(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_mob_max_hp(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	game_map_object map_mob_id = env.get<game_map_object>(lua_vm, 2);
@@ -1705,7 +1706,7 @@ auto lua_exports::get_mob_max_hp(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::get_mob_max_mp(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_mob_max_mp(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	game_map_object map_mob_id = env.get<game_map_object>(lua_vm, 2);
@@ -1713,7 +1714,7 @@ auto lua_exports::get_mob_max_mp(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::get_mob_mp(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_mob_mp(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	game_map_object map_mob_id = env.get<game_map_object>(lua_vm, 2);
@@ -1721,7 +1722,7 @@ auto lua_exports::get_mob_mp(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::get_mob_pos_x(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_mob_pos_x(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	game_map_object map_mob_id = env.get<game_map_object>(lua_vm, 2);
@@ -1729,7 +1730,7 @@ auto lua_exports::get_mob_pos_x(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::get_mob_pos_y(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_mob_pos_y(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	game_map_object map_mob_id = env.get<game_map_object>(lua_vm, 2);
@@ -1737,7 +1738,7 @@ auto lua_exports::get_mob_pos_y(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::get_real_mob_id(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_real_mob_id(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	game_map_object map_mob_id = env.get<game_map_object>(lua_vm, 2);
@@ -1745,7 +1746,7 @@ auto lua_exports::get_real_mob_id(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::kill_mob(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::kill_mob(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	game_map_object map_mob_id = env.get<game_map_object>(lua_vm, 2);
@@ -1756,7 +1757,7 @@ auto lua_exports::kill_mob(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::mob_drop_item(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::mob_drop_item(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	game_map_object map_mob_id = env.get<game_map_object>(lua_vm, 2);
@@ -1776,13 +1777,13 @@ auto lua_exports::mob_drop_item(lua_State *lua_vm) -> lua::lua_return {
 }
 
 // Time
-auto lua_exports::get_date(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_date(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int32_t>(lua_vm, utilities::time::get_date());
 	return 1;
 }
 
-auto lua_exports::get_day(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_day(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	bool is_string_return = false;
 	if (env.is(lua_vm, 1, lua::lua_type::boolean)) {
@@ -1797,7 +1798,7 @@ auto lua_exports::get_day(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::get_hour(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_hour(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	bool military = false;
 	if (env.is(lua_vm, 1, lua::lua_type::boolean)) {
@@ -1807,99 +1808,99 @@ auto lua_exports::get_hour(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::get_minute(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_minute(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int32_t>(lua_vm, utilities::time::get_minute());
 	return 1;
 }
 
-auto lua_exports::get_month(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_month(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int32_t>(lua_vm, utilities::time::get_month());
 	return 1;
 }
 
-auto lua_exports::get_nearest_minute(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_nearest_minute(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<seconds>(lua_vm, utilities::time::get_distance_to_next_minute_mark(env.get<int32_t>(lua_vm, 1)));
 	return 1;
 }
 
-auto lua_exports::get_second(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_second(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int32_t>(lua_vm, utilities::time::get_second());
 	return 1;
 }
 
-auto lua_exports::get_time(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_time(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<double>(lua_vm, static_cast<double>(time(nullptr)));
 	return 1;
 }
 
-auto lua_exports::get_time_zone_offset(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_time_zone_offset(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int32_t>(lua_vm, utilities::time::get_time_zone_offset());
 	return 1;
 }
 
-auto lua_exports::get_week(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_week(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int32_t>(lua_vm, utilities::time::get_week());
 	return 1;
 }
 
-auto lua_exports::get_year(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_year(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int32_t>(lua_vm, utilities::time::get_year(false));
 	return 1;
 }
 
-auto lua_exports::is_dst(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_dst(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<bool>(lua_vm, utilities::time::is_dst());
 	return 1;
 }
 
 // Rates
-auto lua_exports::get_drop_meso(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_drop_meso(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int32_t>(lua_vm, channel_server::get_instance().get_config().rates.drop_meso);
 	return 1;
 }
 
-auto lua_exports::get_drop_rate(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_drop_rate(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int32_t>(lua_vm, channel_server::get_instance().get_config().rates.drop_rate);
 	return 1;
 }
 
-auto lua_exports::get_exp_rate(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_exp_rate(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int32_t>(lua_vm, channel_server::get_instance().get_config().rates.mob_exp_rate);
 	return 1;
 }
 
-auto lua_exports::get_global_drop_meso(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_global_drop_meso(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int32_t>(lua_vm, channel_server::get_instance().get_config().rates.global_drop_meso);
 	return 1;
 }
 
-auto lua_exports::get_global_drop_rate(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_global_drop_rate(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int32_t>(lua_vm, channel_server::get_instance().get_config().rates.global_drop_rate);
 	return 1;
 }
 
-auto lua_exports::get_quest_exp_rate(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_quest_exp_rate(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<int32_t>(lua_vm, channel_server::get_instance().get_config().rates.quest_exp_rate);
 	return 1;
 }
 
 // Party
-auto lua_exports::check_party_footholds(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::check_party_footholds(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	int8_t member_count = env.get<int8_t>(lua_vm, 1);
 	party *p = get_player(lua_vm, env)->get_party();
@@ -1912,7 +1913,7 @@ auto lua_exports::check_party_footholds(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::get_all_party_player_ids(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_all_party_player_ids(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	if (party *party = get_player(lua_vm, env)->get_party()) {
 		env.push<vector<game_player_id>>(lua_vm, party->get_all_player_ids());
@@ -1921,7 +1922,7 @@ auto lua_exports::get_all_party_player_ids(lua_State *lua_vm) -> lua::lua_return
 	return 0;
 }
 
-auto lua_exports::get_party_count(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_party_count(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	int8_t member_count = 0;
 	party *p = get_player(lua_vm, env)->get_party();
@@ -1932,7 +1933,7 @@ auto lua_exports::get_party_count(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::get_party_id(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_party_id(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_party_id id = 0;
 	party *p = get_player(lua_vm, env)->get_party();
@@ -1943,7 +1944,7 @@ auto lua_exports::get_party_id(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::get_party_map_count(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_party_map_count(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	auto player = get_player(lua_vm, env);
 	party *p = player->get_party();
@@ -1956,7 +1957,7 @@ auto lua_exports::get_party_map_count(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::is_party_in_level_range(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_party_in_level_range(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	auto player = get_player(lua_vm, env);
 	party *p = player->get_party();
@@ -1970,7 +1971,7 @@ auto lua_exports::is_party_in_level_range(lua_State *lua_vm) -> lua::lua_return 
 	return 1;
 }
 
-auto lua_exports::is_party_leader(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_party_leader(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	auto player = get_player(lua_vm, env);
 	party *p = player->get_party();
@@ -1982,7 +1983,7 @@ auto lua_exports::is_party_leader(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::verify_party_footholds(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::verify_party_footholds(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	party *p = get_player(lua_vm, env)->get_party();
 	result verified = result::failure;
@@ -1994,7 +1995,7 @@ auto lua_exports::verify_party_footholds(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::warp_party(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::warp_party(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	string to;
@@ -2011,14 +2012,14 @@ auto lua_exports::warp_party(lua_State *lua_vm) -> lua::lua_return {
 }
 
 // Instance
-auto lua_exports::add_instance_map(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::add_instance_map(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
 	get_instance(lua_vm, env)->add_map(map_id);
 	return 0;
 }
 
-auto lua_exports::add_instance_party(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::add_instance_party(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_party_id id = env.get<game_party_id>(lua_vm, 1);
 	if (party *p = channel_server::get_instance().get_player_data_provider().get_party(id)) {
@@ -2027,21 +2028,21 @@ auto lua_exports::add_instance_party(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::add_instance_player(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::add_instance_player(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	auto player = get_player_deduced(1, lua_vm, env);
 	get_instance(lua_vm, env)->add_player(player);
 	return 0;
 }
 
-auto lua_exports::check_instance_timer(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::check_instance_timer(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	string name = env.get<string>(lua_vm, 1);
 	env.push<int32_t>(lua_vm, static_cast<int32_t>(get_instance(lua_vm, env)->get_timer_seconds_remaining(name).count()));
 	return 1;
 }
 
-auto lua_exports::create_instance(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::create_instance(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	string name = env.get<string>(lua_vm, 1);
 	seconds time = env.get<seconds>(lua_vm, 2);
@@ -2069,32 +2070,32 @@ auto lua_exports::create_instance(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::delete_instance_variable(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::delete_instance_variable(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	get_instance(lua_vm, env)->get_variables()->delete_variable(env.get<string>(lua_vm, 1));
 	return 0;
 }
 
-auto lua_exports::get_all_instance_player_ids(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_all_instance_player_ids(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<vector<game_player_id>>(lua_vm, get_instance(lua_vm, env)->get_all_player_ids());
 	return 1;
 }
 
-auto lua_exports::get_instance_player_count(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_instance_player_count(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<uint32_t>(lua_vm, get_instance(lua_vm, env)->get_player_num());
 	return 1;
 }
 
-auto lua_exports::get_instance_player_id(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_instance_player_id(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	auto player = get_player_deduced(1, lua_vm, env);
 	env.push<game_player_id>(lua_vm, player->get_id());
 	return 1;
 }
 
-auto lua_exports::get_instance_variable(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::get_instance_variable(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	variable_type::type return_type = variable_type::string;
 	if (env.is(lua_vm, 2, lua::lua_type::number)) {
@@ -2105,31 +2106,31 @@ auto lua_exports::get_instance_variable(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::is_instance(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_instance(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<bool>(lua_vm, channel_server::get_instance().get_instances().is_instance(env.get<string>(lua_vm, 1)));
 	return 1;
 }
 
-auto lua_exports::is_instance_map(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_instance_map(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<bool>(lua_vm, get_instance(lua_vm, env)->is_instance_map(env.get<game_map_id>(lua_vm, 1)));
 	return 1;
 }
 
-auto lua_exports::is_instance_persistent(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::is_instance_persistent(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.push<bool>(lua_vm, get_instance(lua_vm, env)->get_persistence().count() != 0);
 	return 1;
 }
 
-auto lua_exports::mark_for_delete(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::mark_for_delete(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	get_instance(lua_vm, env)->mark_for_delete();
 	return 0;
 }
 
-auto lua_exports::move_all_players(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::move_all_players(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
@@ -2146,7 +2147,7 @@ auto lua_exports::move_all_players(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::pass_players_between_instances(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::pass_players_between_instances(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 
 	game_map_id map_id = env.get<game_map_id>(lua_vm, 1);
@@ -2163,20 +2164,20 @@ auto lua_exports::pass_players_between_instances(lua_State *lua_vm) -> lua::lua_
 	return 0;
 }
 
-auto lua_exports::remove_all_instance_players(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::remove_all_instance_players(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	get_instance(lua_vm, env)->remove_all_players();
 	return 0;
 }
 
-auto lua_exports::remove_instance_player(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::remove_instance_player(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	auto player = get_player_deduced(1, lua_vm, env);
 	get_instance(lua_vm, env)->remove_player(player);
 	return 0;
 }
 
-auto lua_exports::respawn_instance_mobs(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::respawn_instance_mobs(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = vana::maps::no_map;
 	if (env.is(lua_vm, 1, lua::lua_type::number)) {
@@ -2186,7 +2187,7 @@ auto lua_exports::respawn_instance_mobs(lua_State *lua_vm) -> lua::lua_return {
 	return 0;
 }
 
-auto lua_exports::respawn_instance_reactors(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::respawn_instance_reactors(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_map_id map_id = vana::maps::no_map;
 	if (env.is(lua_vm, 1, lua::lua_type::number)) {
@@ -2196,13 +2197,13 @@ auto lua_exports::respawn_instance_reactors(lua_State *lua_vm) -> lua::lua_retur
 	return 0;
 }
 
-auto lua_exports::revert_instance(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::revert_instance(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	env.set<string>(lua_vm, "system_instance_name", env.get<string>(lua_vm, "system_old_instance_name"));
 	return 0;
 }
 
-auto lua_exports::set_instance(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_instance(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	string instance_name = env.get<string>(lua_vm, 1);
 	instance *inst = channel_server::get_instance().get_instances().get_instance(instance_name);
@@ -2215,34 +2216,34 @@ auto lua_exports::set_instance(lua_State *lua_vm) -> lua::lua_return {
 	return 1;
 }
 
-auto lua_exports::set_instance_persistence(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_instance_persistence(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	seconds persistence = env.get<seconds>(lua_vm, 1);
 	get_instance(lua_vm, env)->set_persistence(persistence);
 	return 0;
 }
 
-auto lua_exports::set_instance_reset(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_instance_reset(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	bool reset = env.get<bool>(lua_vm, 1);
 	get_instance(lua_vm, env)->set_reset_at_end(reset);
 	return 0;
 }
 
-auto lua_exports::set_instance_variable(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::set_instance_variable(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	auto kvp = obtain_set_variable_pair(lua_vm, env);
 	get_instance(lua_vm, env)->get_variables()->set_variable(kvp.first, kvp.second);
 	return 0;
 }
 
-auto lua_exports::show_instance_time(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::show_instance_time(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	get_instance(lua_vm, env)->show_timer(env.get<bool>(lua_vm, 1));
 	return 0;
 }
 
-auto lua_exports::start_instance_future_timer(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::start_instance_future_timer(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	string name = env.get<string>(lua_vm, 1);
 	seconds time = env.get<seconds>(lua_vm, 2);
@@ -2254,7 +2255,7 @@ auto lua_exports::start_instance_future_timer(lua_State *lua_vm) -> lua::lua_ret
 	return 1;
 }
 
-auto lua_exports::start_instance_second_of_hour_timer(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::start_instance_second_of_hour_timer(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	string name = env.get<string>(lua_vm, 1);
 	int16_t second_of_hour = env.get<int16_t>(lua_vm, 2);
@@ -2266,18 +2267,19 @@ auto lua_exports::start_instance_second_of_hour_timer(lua_State *lua_vm) -> lua:
 	return 1;
 }
 
-auto lua_exports::stop_all_instance_timers(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::stop_all_instance_timers(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	get_instance(lua_vm, env)->remove_all_timers();
 	return 0;
 }
 
-auto lua_exports::stop_instance_timer(lua_State *lua_vm) -> lua::lua_return {
+auto lua_exports::stop_instance_timer(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	string name = env.get<string>(lua_vm, 1);
 	get_instance(lua_vm, env)->remove_timer(name);
 	return 0;
 }
 
+}
 }
 }

@@ -17,33 +17,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "channel_server/lua_scriptable.hpp"
+#include "common/types.hpp"
+#include "channel_server/instance.hpp"
+#include "channel_server/lua/lua_scriptable.hpp"
 #include <string>
-#include <unordered_map>
 
 namespace vana {
-	struct portal_info;
-
 	namespace channel_server {
-		class lua_portal : public lua_scriptable {
-			NONCOPYABLE(lua_portal);
-			NO_DEFAULT_CONSTRUCTOR(lua_portal);
-		public:
-			lua_portal(const string &filename, game_player_id player_id, game_map_id map_id, const portal_info * const portal);
-			auto player_warped() -> bool;
-			auto player_map_changed() -> bool;
-			auto portal_failed() -> bool;
-		};
+		namespace lua {
+			class lua_instance : public lua_scriptable {
+				NONCOPYABLE(lua_instance);
+				NO_DEFAULT_CONSTRUCTOR(lua_instance);
+			public:
+				lua_instance(const string &name, game_player_id player_id);
+			};
 
-		namespace lua_exports {
-			auto get_portal(lua_State *lua_vm) -> const portal_info * const;
-
-			// Portal exports
-
-			// Portal
-			auto instant_warp(lua_State *lua_vm) -> lua::lua_return;
-			auto play_portal_se(lua_State *lua_vm) -> lua::lua_return;
-			auto portal_failed(lua_State *lua_vm) -> lua::lua_return;
+			namespace lua_exports {
+				auto create_instance_instance(lua_State *lua_vm) -> lua_return;
+			}
 		}
 	}
 }

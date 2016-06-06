@@ -178,12 +178,12 @@ auto login_server::load_worlds() -> void {
 	auto config = config_file::get_worlds_config();
 	config->run();
 
-	lua_variant worlds_config = config->get<lua_variant>("worlds");
+	lua::lua_variant worlds_config = config->get<lua::lua_variant>("worlds");
 	if (!worlds_config.is(lua::lua_type::table)) {
 		config->error("worlds must be a table");
 	}
 
-	auto &map = worlds_config.as<ord_map<int32_t, lua_variant>>();
+	auto &map = worlds_config.as<ord_map<int32_t, lua::lua_variant>>();
 	for (const auto &world_conf : map) {
 		auto current_config = world_conf.second.into<world_config>(*config, "worlds." + std::to_string(world_conf.first));
 

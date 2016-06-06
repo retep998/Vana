@@ -46,9 +46,6 @@
     <Filter Include="Packets\Headers">
       <UniqueIdentifier>{3fb5cdff-e02c-4539-a3e4-a39004b525ab}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scripting">
-      <UniqueIdentifier>{85f3d2b9-0abc-48fd-859b-b64510037e12}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Data Structures\Buffs">
       <UniqueIdentifier>{5a37ba2d-f8d3-41ff-a03e-3d544f0867f9}</UniqueIdentifier>
     </Filter>
@@ -60,6 +57,9 @@
     </Filter>
     <Filter Include="Encryption">
       <UniqueIdentifier>{258bcd9b-a4e1-4dd1-b4bd-a1bcfe942d61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lua">
+      <UniqueIdentifier>{85f3d2b9-0abc-48fd-859b-b64510037e12}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -202,9 +202,6 @@
     <ClCompile Include="src\common\packet_builder.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\lua_environment.cpp">
-      <Filter>Scripting</Filter>
-    </ClCompile>
     <ClCompile Include="src\common\exit_codes.cpp" />
     <ClCompile Include="src\common\vana_main.cpp" />
     <ClCompile Include="src\common\buff.cpp">
@@ -230,9 +227,6 @@
     </ClCompile>
     <ClCompile Include="src\common\hash_utilities.cpp">
       <Filter>Encryption</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\lua_variant.cpp">
-      <Filter>Scripting</Filter>
     </ClCompile>
     <ClCompile Include="src\common\salt_transformation_config.cpp">
       <Filter>Configuration</Filter>
@@ -269,6 +263,12 @@
     </ClCompile>
     <ClCompile Include="src\common\packet_handler.cpp">
       <Filter>Connection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\lua\lua_environment.cpp">
+      <Filter>lua</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\lua\lua_variant.cpp">
+      <Filter>lua</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -495,9 +495,6 @@
     <ClInclude Include="src\common\split_packet_builder.hpp">
       <Filter>Packets</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\lua_environment.hpp">
-      <Filter>Scripting</Filter>
-    </ClInclude>
     <ClInclude Include="src\common\timer_type.hpp">
       <Filter>Timer</Filter>
     </ClInclude>
@@ -587,12 +584,6 @@
     </ClInclude>
     <ClInclude Include="src\common\salt_config.hpp">
       <Filter>Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\lua_variant.hpp">
-      <Filter>Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\lua_type.hpp">
-      <Filter>Scripting</Filter>
     </ClInclude>
     <ClInclude Include="src\common\salting_config.hpp">
       <Filter>Configuration</Filter>
@@ -820,6 +811,15 @@
     </ClInclude>
     <ClInclude Include="src\common\finalization_pool.hpp">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\lua\lua_environment.hpp">
+      <Filter>lua</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\lua\lua_type.hpp">
+      <Filter>lua</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\lua\lua_variant.hpp">
+      <Filter>lua</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

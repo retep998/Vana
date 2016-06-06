@@ -25,13 +25,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace vana {
 
-salt_transformation_config::salt_transformation_config(salt_modify_policy policy, vector<lua_variant> args) :
+salt_transformation_config::salt_transformation_config(salt_modify_policy policy, vector<lua::lua_variant> args) :
 	m_policy{policy},
 	m_args{args}
 {
 }
 
-auto salt_transformation_config::validate_args(salt_modify_policy policy, const vector<lua_variant> &args) -> validity_result {
+auto salt_transformation_config::validate_args(salt_modify_policy policy, const vector<lua::lua_variant> &args) -> validity_result {
 	switch (policy) {
 		case salt_modify_policy::xor_byte_cipher: {
 			if (args.size() != 1) return validity_result::invalid;
@@ -48,7 +48,7 @@ auto salt_transformation_config::validate_args(salt_modify_policy policy, const 
 			const auto &arg = args[0];
 			if (!arg.is_any_of({ lua::lua_type::table, lua::lua_type::string })) return validity_result::invalid;
 			if (arg.is(lua::lua_type::table)) {
-				auto props = arg.as<hash_map<lua_variant, lua_variant>>();
+				auto props = arg.as<hash_map<lua::lua_variant, lua::lua_variant>>();
 				for (const auto &kvp : props) {
 					if (!kvp.first.is(lua::lua_type::number)) {
 						return validity_result::invalid;
@@ -77,7 +77,7 @@ auto salt_transformation_config::validate_args(salt_modify_policy policy, const 
 			if (args.size() != 1) return validity_result::invalid;
 			const auto &arg = args[0];
 			if (!arg.is(lua::lua_type::table)) return validity_result::invalid;
-			auto &map = arg.as<hash_map<lua_variant, lua_variant>>();
+			auto &map = arg.as<hash_map<lua::lua_variant, lua::lua_variant>>();
 			for (const auto &kvp : map) {
 				if (!kvp.first.is(lua::lua_type::number)) {
 					return validity_result::invalid;
@@ -107,7 +107,7 @@ auto salt_transformation_config::validate_args(salt_modify_policy policy, const 
 			const auto &arg = args[0];
 			if (!arg.is_any_of({ lua::lua_type::string, lua::lua_type::table })) return validity_result::invalid;
 			if (arg.is(lua::lua_type::table)) {
-				auto props = arg.as<hash_map<lua_variant, lua_variant>>();
+				auto props = arg.as<hash_map<lua::lua_variant, lua::lua_variant>>();
 				for (const auto &kvp : props) {
 					if (!kvp.first.is(lua::lua_type::number)) {
 						return validity_result::invalid;
@@ -124,7 +124,7 @@ auto salt_transformation_config::validate_args(salt_modify_policy policy, const 
 			const auto &arg = args[0];
 			if (!arg.is_any_of({ lua::lua_type::string, lua::lua_type::table })) return validity_result::invalid;
 			if (arg.is(lua::lua_type::table)) {
-				auto props = arg.as<hash_map<lua_variant, lua_variant>>();
+				auto props = arg.as<hash_map<lua::lua_variant, lua::lua_variant>>();
 				for (const auto &kvp : props) {
 					if (!kvp.first.is(lua::lua_type::number)) {
 						return validity_result::invalid;
@@ -141,7 +141,7 @@ auto salt_transformation_config::validate_args(salt_modify_policy policy, const 
 			const auto &arg = args[0];
 			if (!arg.is_any_of({ lua::lua_type::string, lua::lua_type::table })) return validity_result::invalid;
 			if (arg.is(lua::lua_type::table)) {
-				auto props = arg.as<hash_map<lua_variant, lua_variant>>();
+				auto props = arg.as<hash_map<lua::lua_variant, lua::lua_variant>>();
 				for (const auto &kvp : props) {
 					if (!kvp.first.is(lua::lua_type::number)) {
 						return validity_result::invalid;
@@ -247,7 +247,7 @@ auto salt_transformation_config::apply(string input) const -> string {
 			break;
 		}
 		case salt_modify_policy::overwrite_cipher: {
-			const auto &arg = m_args[0].as<hash_map<uint32_t, lua_variant>>();
+			const auto &arg = m_args[0].as<hash_map<uint32_t, lua::lua_variant>>();
 			ret = input;
 			for (const auto &replace : arg) {
 				uint8_t value;

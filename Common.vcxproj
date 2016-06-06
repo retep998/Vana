@@ -111,8 +111,8 @@
     <ClCompile Include="src\common\block_cipher_iv.cpp" />
     <ClCompile Include="src\common\line.cpp" />
     <ClCompile Include="src\common\logger.cpp" />
-    <ClCompile Include="src\common\lua_environment.cpp" />
-    <ClCompile Include="src\common\lua_variant.cpp" />
+    <ClCompile Include="src\common\lua\lua_environment.cpp" />
+    <ClCompile Include="src\common\lua\lua_variant.cpp" />
     <ClCompile Include="src\common\npc_data_provider.cpp" />
     <ClCompile Include="src\common\packet_builder.cpp" />
     <ClCompile Include="src\common\packet_handler.cpp" />
@@ -188,6 +188,9 @@
     <ClInclude Include="src\common\connection_listener.hpp" />
     <ClInclude Include="src\common\connection_listener_config.hpp" />
     <ClInclude Include="src\common\finalization_pool.hpp" />
+    <ClInclude Include="src\common\lua\lua_environment.hpp" />
+    <ClInclude Include="src\common\lua\lua_type.hpp" />
+    <ClInclude Include="src\common\lua\lua_variant.hpp" />
     <ClInclude Include="src\common\packet_handler.hpp" />
     <ClInclude Include="src\common\ping_config.hpp" />
     <ClInclude Include="src\common\connection_type.hpp" />
@@ -228,9 +231,6 @@
     <ClInclude Include="src\common\line.hpp" />
     <ClInclude Include="src\common\log_config.hpp" />
     <ClInclude Include="src\common\logger.hpp" />
-    <ClInclude Include="src\common\lua_environment.hpp" />
-    <ClInclude Include="src\common\lua_type.hpp" />
-    <ClInclude Include="src\common\lua_variant.hpp" />
     <ClInclude Include="src\common\major_boss_config.hpp" />
     <ClInclude Include="src\common\make_unique.hpp" />
     <ClInclude Include="src\common\map_constants.hpp" />

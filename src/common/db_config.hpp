@@ -32,12 +32,12 @@ namespace vana {
 	};
 
 	template <>
-	struct lua_serialize<db_config> {
+	struct lua::lua_serialize<db_config> {
 		auto read(lua_environment &config, const string &prefix) -> db_config {
 			db_config ret;
 
 			lua_variant obj = config.get<lua_variant>(prefix);
-			config.validate_object(lua::lua_type::table, obj, prefix);
+			config.validate_object(lua_type::table, obj, prefix);
 
 			auto map = obj.as<hash_map<lua_variant, lua_variant>>();
 			bool has_db = false;
@@ -45,35 +45,35 @@ namespace vana {
 			bool has_port = false;
 			bool has_user = false;
 			for (const auto &kvp : map) {
-				config.validate_key(lua::lua_type::string, kvp.first, prefix);
+				config.validate_key(lua_type::string, kvp.first, prefix);
 
 				string key = kvp.first.as<string>();
 				if (key == "database") {
 					has_db = true;
-					config.validate_value(lua::lua_type::string, kvp.second, key, prefix);
+					config.validate_value(lua_type::string, kvp.second, key, prefix);
 					ret.database = kvp.second.as<string>();
 				}
 				else if (key == "host") {
 					has_host = true;
-					config.validate_value(lua::lua_type::string, kvp.second, key, prefix);
+					config.validate_value(lua_type::string, kvp.second, key, prefix);
 					ret.host = kvp.second.as<string>();
 				}
 				else if (key == "username") {
 					has_user = true;
-					config.validate_value(lua::lua_type::string, kvp.second, key, prefix);
+					config.validate_value(lua_type::string, kvp.second, key, prefix);
 					ret.username = kvp.second.as<string>();
 				}
 				else if (key == "port") {
 					has_port = true;
-					config.validate_value(lua::lua_type::number, kvp.second, key, prefix);
+					config.validate_value(lua_type::number, kvp.second, key, prefix);
 					ret.port = kvp.second.as<connection_port>();
 				}
 				else if (key == "password") {
-					if (config.validate_value(lua::lua_type::string, kvp.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::string, kvp.second, key, prefix, true) == lua_type::nil) continue;
 					ret.password = kvp.second.as<string>();
 				}
 				else if (key == "table_prefix") {
-					if (config.validate_value(lua::lua_type::string, kvp.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::string, kvp.second, key, prefix, true) == lua_type::nil) continue;
 					ret.table_prefix = kvp.second.as<string>();
 				}
 			}

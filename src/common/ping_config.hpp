@@ -29,34 +29,34 @@ namespace vana {
 	};
 
 	template <>
-	struct lua_serialize<ping_config> {
-		auto read(lua_environment &config, const string &prefix) -> ping_config {
+	struct lua::lua_serialize<ping_config> {
+		auto read(lua::lua_environment &config, const string &prefix) -> ping_config {
 			ping_config ret;
 
 			lua_variant obj = config.get<lua_variant>(prefix);
-			config.validate_object(lua::lua_type::table, obj, prefix);
+			config.validate_object(lua_type::table, obj, prefix);
 
 			auto map = obj.as<hash_map<lua_variant, lua_variant>>();
 			bool has_enabled = false;
 			for (const auto &kvp : map) {
-				config.validate_key(lua::lua_type::string, kvp.first, prefix);
+				config.validate_key(lua_type::string, kvp.first, prefix);
 
 				string key = kvp.first.as<string>();
 				if (key == "enabled") {
 					has_enabled = true;
-					config.validate_value(lua::lua_type::boolean, kvp.second, key, prefix);
+					config.validate_value(lua_type::boolean, kvp.second, key, prefix);
 					ret.enable = kvp.second.as<bool>();
 				}
 				else if (key == "initial_delay") {
-					if (config.validate_value(lua::lua_type::number, kvp.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, kvp.second, key, prefix, true) == lua_type::nil) continue;
 					ret.initial_delay = milliseconds{kvp.second.as<int32_t>()};
 				}
 				else if (key == "interval") {
-					if (config.validate_value(lua::lua_type::number, kvp.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, kvp.second, key, prefix, true) == lua_type::nil) continue;
 					ret.interval = milliseconds{kvp.second.as<int32_t>()};
 				}
 				else if (key == "timeout_ping_count") {
-					if (config.validate_value(lua::lua_type::number, kvp.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, kvp.second, key, prefix, true) == lua_type::nil) continue;
 					ret.timeout_ping_count = kvp.second.as<int32_t>();
 				}
 			}

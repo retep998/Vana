@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "common/config_file.hpp"
 #include "common/i_packet.hpp"
-#include "common/lua_variant.hpp"
+#include "common/lua/lua_variant.hpp"
 #include "common/major_boss_config.hpp"
 #include "common/packet_builder.hpp"
 #include "common/packet_reader.hpp"
@@ -56,7 +56,7 @@ namespace vana {
 	};
 
 	template <>
-	struct lua_variant_into<world_config> {
+	struct lua::lua_variant_into<world_config> {
 		auto expand_major_boss(const world_config &config, major_boss_config &boss) -> void {
 			if (boss.channels.size() == 1 && boss.channels[0] == -1) {
 				boss.channels.clear();
@@ -67,7 +67,7 @@ namespace vana {
 		}
 
 		auto transform(lua_environment &config, const lua_variant &obj, const string &prefix) -> world_config {
-			config.validate_object(lua::lua_type::table, obj, prefix);
+			config.validate_object(lua_type::table, obj, prefix);
 		
 			world_config ret;
 
@@ -81,107 +81,107 @@ namespace vana {
 			bool has_horntail = false;
 			bool has_pinkbean = false;
 			for (const auto &value : values) {
-				config.validate_key(lua::lua_type::string, value.first, prefix);
+				config.validate_key(lua_type::string, value.first, prefix);
 
 				string key = value.first.as<string>();
 				if (key == "name") {
 					has_name = true;
-					config.validate_value(lua::lua_type::string, value.second, key, prefix);
+					config.validate_value(lua_type::string, value.second, key, prefix);
 					ret.name = value.second.as<string>();
 				}
 				else if (key == "id") {
 					has_id = true;
-					config.validate_value(lua::lua_type::number, value.second, key, prefix);
+					config.validate_value(lua_type::number, value.second, key, prefix);
 					ret.id = value.second.as<game_world_id>();
 				}
 				else if (key == "port") {
 					has_port = true;
-					config.validate_value(lua::lua_type::number, value.second, key, prefix);
+					config.validate_value(lua_type::number, value.second, key, prefix);
 					ret.base_port = value.second.as<connection_port>();
 				}
 				else if (key == "gm_chat_by_default") {
-					if (config.validate_value(lua::lua_type::boolean, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::boolean, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.default_gm_chat_mode = value.second.as<bool>();
 				}
 				else if (key == "channels") {
-					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.max_channels = value.second.as<game_channel_id>();
 				}
 				else if (key == "ribbon") {
-					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.ribbon = value.second.as<int8_t>();
 				}
 				else if (key == "max_stats") {
-					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.max_stats = value.second.as<game_stat>();
 				}
 				else if (key == "max_multi_level") {
-					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.max_multi_level = value.second.as<game_player_level>();
 				}
 				else if (key == "event_message") {
-					if (config.validate_value(lua::lua_type::string, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::string, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.event_message = value.second.as<string>();
 				}
 				else if (key == "scrolling_header") {
-					if (config.validate_value(lua::lua_type::string, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::string, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.scrolling_header = value.second.as<string>();
 				}
 				else if (key == "max_player_load") {
-					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.max_player_load = value.second.as<int32_t>();
 				}
 				else if (key == "max_characters") {
-					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.max_chars = value.second.as<int32_t>();
 				}
 				else if (key == "default_characters") {
-					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.default_chars = value.second.as<int32_t>();
 				}
 				else if (key == "default_storage") {
-					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.default_storage_slots = value.second.as<game_storage_slot>();
 				}
 				else if (key == "fame_time") {
-					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.fame_time = value.second.as<seconds>();
 				}
 				else if (key == "fame_reset_time") {
-					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.fame_reset_time = value.second.as<seconds>();
 				}
 				else if (key == "map_unload_time") {
-					if (config.validate_value(lua::lua_type::number, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::number, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.map_unload_time = value.second.as<seconds>();
 				}
 				else if (key == "rates") {
-					if (config.validate_value(lua::lua_type::table, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::table, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.rates = value.second.into<rates_config>(config, prefix + "." + key);
 				}
 				else if (key == "pianus") {
 					has_pianus = true;
-					if (config.validate_value(lua::lua_type::table, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::table, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.pianus = value.second.into<major_boss_config>(config, prefix + "." + key);
 				}
 				else if (key == "papulatus") {
 					has_papulatus = true;
-					if (config.validate_value(lua::lua_type::table, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::table, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.papulatus = value.second.into<major_boss_config>(config, prefix + "." + key);
 				}
 				else if (key == "zakum") {
 					has_zakum = true;
-					if (config.validate_value(lua::lua_type::table, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::table, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.zakum = value.second.into<major_boss_config>(config, prefix + "." + key);
 				}
 				else if (key == "horntail") {
 					has_horntail = true;
-					if (config.validate_value(lua::lua_type::table, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::table, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.horntail = value.second.into<major_boss_config>(config, prefix + "." + key);
 				}
 				else if (key == "pinkbean") {
 					has_pinkbean = true;
-					if (config.validate_value(lua::lua_type::table, value.second, key, prefix, true) == lua::lua_type::nil) continue;
+					if (config.validate_value(lua_type::table, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.pinkbean = value.second.into<major_boss_config>(config, prefix + "." + key);
 				}
 			}

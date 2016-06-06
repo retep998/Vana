@@ -1,9 +1,16 @@
-file(GLOB CHANNEL_SRC *.cpp)
-file(GLOB CHANNEL_HEADERS *.hpp)
-source_group("Channel Sources" FILES ${CHANNEL_SRC})
-source_group("Channel Headers" FILES ${CHANNEL_HEADERS})
+file(GLOB CHANNEL_SERVER_SRC *.cpp)
+file(GLOB CHANNEL_SERVER_HEADERS *.hpp)
 
-add_executable(channel_server ${CHANNEL_SRC} ${CHANNEL_HEADERS})
+file(GLOB RECURSE CHANNEL_SERVER_LUA_SRC lua\*.cpp)
+file(GLOB RECURSE CHANNEL_SERVER_LUA_HEADERS lua\*.hpp)
+
+source_group("channel_server" FILES ${CHANNEL_SERVER_SRC} ${CHANNEL_SERVER_HEADERS})
+source_group("channel_server\\lua" FILES ${CHANNEL_SERVER_LUA_SRC} ${CHANNEL_SERVER_LUA_HEADERS})
+
+add_executable(channel_server
+	${CHANNEL_SERVER_SRC} ${CHANNEL_SERVER_HEADERS}
+	${CHANNEL_SERVER_LUA_SRC} ${CHANNEL_SERVER_LUA_HEADERS}
+)
 
 target_link_libraries(channel_server
 	common	
