@@ -106,14 +106,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\world_server\channel_temp.cpp" />
+    <ClCompile Include="src\world_server\channel.cpp" />
     <ClCompile Include="src\world_server\main_world.cpp" />
     <ClCompile Include="src\world_server\player_data_provider.cpp" />
     <ClCompile Include="src\world_server\precompiled_header.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\world_server\channels_temp.cpp" />
+    <ClCompile Include="src\world_server\channels.cpp" />
     <ClCompile Include="src\world_server\sync_handler.cpp" />
     <ClCompile Include="src\world_server\sync_packet.cpp" />
     <ClCompile Include="src\world_server\world_server.cpp" />
@@ -124,10 +124,10 @@
     <ClCompile Include="src\world_server\login_server_connect_handler.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\world_server\channel_temp.hpp" />
+    <ClInclude Include="src\world_server\channel.hpp" />
     <ClInclude Include="src\world_server\player_data_provider.hpp" />
     <ClInclude Include="src\world_server\precompiled_header.hpp" />
-    <ClInclude Include="src\world_server\channels_temp.hpp" />
+    <ClInclude Include="src\world_server\channels.hpp" />
     <ClInclude Include="src\world_server\sync_handler.hpp" />
     <ClInclude Include="src\world_server\sync_packet.hpp" />
     <ClInclude Include="src\world_server\world_server.hpp" />

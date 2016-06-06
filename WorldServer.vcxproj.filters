@@ -18,10 +18,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\world_server\channels_temp.cpp">
+    <ClCompile Include="src\world_server\channels.cpp">
       <Filter>WorldServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\world_server\channel_temp.cpp">
+    <ClCompile Include="src\world_server\channel.cpp">
       <Filter>WorldServer</Filter>
     </ClCompile>
     <ClCompile Include="src\world_server\login_server_connect_handler.cpp">
@@ -53,10 +53,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\world_server\channel_temp.hpp">
+    <ClInclude Include="src\world_server\channel.hpp">
       <Filter>WorldServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\world_server\channels_temp.hpp">
+    <ClInclude Include="src\world_server\channels.hpp">
       <Filter>WorldServer</Filter>
     </ClInclude>
     <ClInclude Include="src\world_server\world_server_accept_packet.hpp">

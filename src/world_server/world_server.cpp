@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/initialize_common.hpp"
 #include "common/server_type.hpp"
 #include "common/string_utilities.hpp"
-#include "world_server/channels_temp.hpp"
+#include "world_server/channels.hpp"
 #include "world_server/sync_packet.hpp"
 #include "world_server/world_server_accept_packet.hpp"
 
