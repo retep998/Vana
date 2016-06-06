@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "RankingCalculator.hpp"
+#include "ranking_calculator.hpp"
 #include "common/database.hpp"
 #include "common/game_constants.hpp"
 #include "common/game_logic_utilities.hpp"
@@ -26,9 +26,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/timer.hpp"
 #include "common/timer_thread.hpp"
 #include "common/time_utilities.hpp"
-#include "login_server/LoginServer.hpp"
-#include "login_server/World.hpp"
-#include "login_server/Worlds.hpp"
+#include "login_server/login_server.hpp"
+#include "login_server/world_temp.hpp"
+#include "login_server/worlds_temp.hpp"
 #include <algorithm>
 #include <functional>
 #include <iomanip>

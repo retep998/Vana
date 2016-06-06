@@ -24,95 +24,95 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\login_server\Characters.cpp">
+    <ClCompile Include="src\login_server\characters_temp.cpp">
       <Filter>LoginServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\login_server\Login.cpp">
+    <ClCompile Include="src\login_server\login_temp.cpp">
       <Filter>LoginServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\login_server\RankingCalculator.cpp">
+    <ClCompile Include="src\login_server\ranking_calculator.cpp">
       <Filter>LoginServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\login_server\Worlds.cpp">
+    <ClCompile Include="src\login_server\worlds_temp.cpp">
       <Filter>LoginServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\login_server\LoginPacket.cpp">
+    <ClCompile Include="src\login_server\login_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\login_server\LoginPacketHelper.cpp">
+    <ClCompile Include="src\login_server\login_packet_helper.cpp">
       <Filter>Packets\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="src\login_server\World.cpp">
+    <ClCompile Include="src\login_server\world_temp.cpp">
       <Filter>LoginServer</Filter>
     </ClCompile>
     <ClCompile Include="src\login_server\main_login.cpp" />
-    <ClCompile Include="src\login_server\LoginServerAcceptPacket.cpp">
+    <ClCompile Include="src\login_server\login_server_accept_packet.cpp">
       <Filter>Inter-Server\Channel/World</Filter>
     </ClCompile>
-    <ClCompile Include="src\login_server\LoginServerAcceptHandler.cpp">
+    <ClCompile Include="src\login_server\login_server_accept_handler.cpp">
       <Filter>Inter-Server\Channel/World</Filter>
     </ClCompile>
-    <ClCompile Include="src\login_server\SyncPacket.cpp">
+    <ClCompile Include="src\login_server\sync_packet.cpp">
       <Filter>Inter-Server\Sync</Filter>
     </ClCompile>
-    <ClCompile Include="src\login_server\LoginServer.cpp" />
-    <ClCompile Include="src\login_server\PrecompiledHeader.cpp" />
-    <ClCompile Include="src\login_server\User.cpp">
+    <ClCompile Include="src\login_server\login_server.cpp" />
+    <ClCompile Include="src\login_server\precompiled_header.cpp" />
+    <ClCompile Include="src\login_server\user_temp.cpp">
       <Filter>LoginServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\login_server\LoginServerAcceptedSession.cpp">
+    <ClCompile Include="src\login_server\login_server_accepted_session.cpp">
       <Filter>Inter-Server\Channel/World</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\login_server\Channel.hpp">
+    <ClInclude Include="src\login_server\channel_temp.hpp">
       <Filter>LoginServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\login_server\Worlds.hpp">
+    <ClInclude Include="src\login_server\worlds_temp.hpp">
       <Filter>LoginServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\login_server\Characters.hpp">
+    <ClInclude Include="src\login_server\characters_temp.hpp">
       <Filter>LoginServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\login_server\Login.hpp">
+    <ClInclude Include="src\login_server\login_temp.hpp">
       <Filter>LoginServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\login_server\PlayerStatus.hpp">
+    <ClInclude Include="src\login_server\player_status.hpp">
       <Filter>LoginServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\login_server\RankingCalculator.hpp">
+    <ClInclude Include="src\login_server\ranking_calculator.hpp">
       <Filter>LoginServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\login_server\World.hpp">
+    <ClInclude Include="src\login_server\world_temp.hpp">
       <Filter>LoginServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\login_server\LoginPacketHelper.hpp">
+    <ClInclude Include="src\login_server\login_packet_helper.hpp">
       <Filter>Packets\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="src\login_server\LoginPacket.hpp">
+    <ClInclude Include="src\login_server\login_packet.hpp">
       <Filter>Packets</Filter>
     </ClInclude>
-    <ClInclude Include="src\login_server\LoginServerAcceptHandler.hpp">
+    <ClInclude Include="src\login_server\login_server_accept_handler.hpp">
       <Filter>Inter-Server\Channel/World</Filter>
     </ClInclude>
-    <ClInclude Include="src\login_server\LoginServerAcceptPacket.hpp">
+    <ClInclude Include="src\login_server\login_server_accept_packet.hpp">
       <Filter>Inter-Server\Channel/World</Filter>
     </ClInclude>
-    <ClInclude Include="src\login_server\SyncPacket.hpp">
+    <ClInclude Include="src\login_server\sync_packet.hpp">
       <Filter>Inter-Server\Sync</Filter>
     </ClInclude>
-    <ClInclude Include="src\login_server\PrecompiledHeader.hpp" />
-    <ClInclude Include="src\login_server\LoginServer.hpp" />
-    <ClInclude Include="src\login_server\CmsgHeader.hpp">
+    <ClInclude Include="src\login_server\precompiled_header.hpp" />
+    <ClInclude Include="src\login_server\login_server.hpp" />
+    <ClInclude Include="src\login_server\cmsg_header.hpp">
       <Filter>Packets\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\login_server\SmsgHeader.hpp">
+    <ClInclude Include="src\login_server\smsg_header.hpp">
       <Filter>Packets\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\login_server\User.hpp">
+    <ClInclude Include="src\login_server\user_temp.hpp">
       <Filter>LoginServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\login_server\LoginServerAcceptedSession.hpp">
+    <ClInclude Include="src\login_server\login_server_accepted_session.hpp">
       <Filter>Inter-Server\Channel/World</Filter>
     </ClInclude>
   </ItemGroup>

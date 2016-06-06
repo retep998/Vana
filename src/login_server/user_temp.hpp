@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/file_time.hpp"
 #include "common/packet_handler.hpp"
 #include "common/types.hpp"
-#include "login_server/PlayerStatus.hpp"
+#include "login_server/player_status.hpp"
 
 namespace vana {
 	class packet_reader;

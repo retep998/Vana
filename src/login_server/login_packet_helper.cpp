@@ -15,9 +15,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginPacketHelper.hpp"
+#include "login_packet_helper.hpp"
 #include "common/item_constants.hpp"
-#include "login_server/Characters.hpp"
+#include "login_server/characters_temp.hpp"
 
 namespace vana {
 namespace login_server {

@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "common/types.hpp"
 #include "common/world_config.hpp"
-#include "login_server/Channel.hpp"
+#include "login_server/channel_temp.hpp"
 #include <memory>
 #include <functional>
 #include <string>

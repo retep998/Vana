@@ -15,16 +15,16 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "User.hpp"
+#include "user_temp.hpp"
 #include "common/database.hpp"
 #include "common/packet_builder.hpp"
 #include "common/packet_reader.hpp"
-#include "login_server/Characters.hpp"
-#include "login_server/CmsgHeader.hpp"
-#include "login_server/Login.hpp"
-#include "login_server/LoginPacket.hpp"
-#include "login_server/LoginServer.hpp"
-#include "login_server/Worlds.hpp"
+#include "login_server/characters_temp.hpp"
+#include "login_server/cmsg_header.hpp"
+#include "login_server/login_temp.hpp"
+#include "login_server/login_packet.hpp"
+#include "login_server/login_server.hpp"
+#include "login_server/worlds_temp.hpp"
 #include <iostream>
 #include <stdexcept>
 

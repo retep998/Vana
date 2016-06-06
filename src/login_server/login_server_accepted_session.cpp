@@ -15,18 +15,18 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginServerAcceptedSession.hpp"
+#include "login_server_accepted_session.hpp"
 #include "common/inter_header.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
 #include "common/server_type.hpp"
 #include "common/session.hpp"
 #include "common/string_utilities.hpp"
-#include "login_server/LoginServer.hpp"
-#include "login_server/LoginServerAcceptHandler.hpp"
-#include "login_server/RankingCalculator.hpp"
-#include "login_server/World.hpp"
-#include "login_server/Worlds.hpp"
+#include "login_server/login_server.hpp"
+#include "login_server/login_server_accept_handler.hpp"
+#include "login_server/ranking_calculator.hpp"
+#include "login_server/world_temp.hpp"
+#include "login_server/worlds_temp.hpp"
 
 namespace vana {
 namespace login_server {

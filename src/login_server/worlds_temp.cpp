@@ -15,19 +15,19 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Worlds.hpp"
+#include "worlds_temp.hpp"
 #include "common/packet_reader.hpp"
 #include "common/session.hpp"
 #include "common/string_utilities.hpp"
-#include "login_server/Channel.hpp"
-#include "login_server/Characters.hpp"
-#include "login_server/LoginPacket.hpp"
-#include "login_server/LoginServer.hpp"
-#include "login_server/LoginServerAcceptedSession.hpp"
-#include "login_server/LoginServerAcceptPacket.hpp"
-#include "login_server/PlayerStatus.hpp"
-#include "login_server/User.hpp"
-#include "login_server/World.hpp"
+#include "login_server/channel_temp.hpp"
+#include "login_server/characters_temp.hpp"
+#include "login_server/login_packet.hpp"
+#include "login_server/login_server.hpp"
+#include "login_server/login_server_accepted_session.hpp"
+#include "login_server/login_server_accept_packet.hpp"
+#include "login_server/player_status.hpp"
+#include "login_server/user_temp.hpp"
+#include "login_server/world_temp.hpp"
 #include <iostream>
 
 namespace vana {

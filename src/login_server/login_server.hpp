@@ -25,8 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/salt_size_config.hpp"
 #include "common/types.hpp"
 #include "common/valid_char_data_provider.hpp"
-#include "login_server/LoginServerAcceptedSession.hpp"
-#include "login_server/Worlds.hpp"
+#include "login_server/login_server_accepted_session.hpp"
+#include "login_server/worlds_temp.hpp"
 
 namespace vana {
 	namespace login_server {

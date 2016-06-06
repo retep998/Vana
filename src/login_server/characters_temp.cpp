@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Characters.hpp"
+#include "characters_temp.hpp"
 #include "common/algorithm.hpp"
 #include "common/curse_data_provider.hpp"
 #include "common/client_ip.hpp"
@@ -28,13 +28,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/packet_reader.hpp"
 #include "common/session.hpp"
 #include "common/valid_char_data_provider.hpp"
-#include "login_server/LoginPacket.hpp"
-#include "login_server/LoginServer.hpp"
-#include "login_server/LoginServerAcceptPacket.hpp"
-#include "login_server/SyncPacket.hpp"
-#include "login_server/User.hpp"
-#include "login_server/World.hpp"
-#include "login_server/Worlds.hpp"
+#include "login_server/login_packet.hpp"
+#include "login_server/login_server.hpp"
+#include "login_server/login_server_accept_packet.hpp"
+#include "login_server/sync_packet.hpp"
+#include "login_server/user_temp.hpp"
+#include "login_server/world_temp.hpp"
+#include "login_server/worlds_temp.hpp"
 #include <unordered_map>
 
 namespace vana {

@@ -15,15 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginPacket.hpp"
+#include "login_packet.hpp"
 #include "common/client_ip.hpp"
-#include "login_server/Channel.hpp"
-#include "login_server/Characters.hpp"
-#include "login_server/LoginPacketHelper.hpp"
-#include "login_server/PlayerStatus.hpp"
-#include "login_server/SmsgHeader.hpp"
-#include "login_server/User.hpp"
-#include "login_server/World.hpp"
+#include "login_server/channel_temp.hpp"
+#include "login_server/characters_temp.hpp"
+#include "login_server/login_packet_helper.hpp"
+#include "login_server/player_status.hpp"
+#include "login_server/smsg_header.hpp"
+#include "login_server/user_temp.hpp"
+#include "login_server/world_temp.hpp"
 
 namespace vana {
 namespace login_server {

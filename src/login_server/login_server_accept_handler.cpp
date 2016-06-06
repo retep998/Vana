@@ -15,16 +15,16 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginServerAcceptHandler.hpp"
+#include "login_server_accept_handler.hpp"
 #include "common/packet_builder.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
 #include "common/string_utilities.hpp"
-#include "login_server/Channel.hpp"
-#include "login_server/LoginServer.hpp"
-#include "login_server/LoginServerAcceptedSession.hpp"
-#include "login_server/World.hpp"
-#include "login_server/Worlds.hpp"
+#include "login_server/channel_temp.hpp"
+#include "login_server/login_server.hpp"
+#include "login_server/login_server_accepted_session.hpp"
+#include "login_server/world_temp.hpp"
+#include "login_server/worlds_temp.hpp"
 #include <iostream>
 
 namespace vana {
