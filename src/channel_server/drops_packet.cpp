@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "drops_packet.hpp"
 #include "common/game_logic_utilities.hpp"
-#include "common/item_constants.hpp"
 #include "common/session.hpp"
 #include "channel_server/drop.hpp"
 #include "channel_server/maps.hpp"
@@ -49,7 +48,7 @@ PACKET_IMPL(show_drop, drop *drop, int8_t type, const point &origin) {
 			.unk<int16_t>();
 	}
 	if (!drop->is_mesos()) {
-		builder.add<file_time>(items::no_expiration);
+		builder.add<file_time>(constant::item::no_expiration);
 	}
 	builder.add<bool>(!drop->is_player_drop()); // Determines whether pets can pick item up or not
 	return builder;
@@ -121,7 +120,7 @@ PACKET_IMPL(pickup_drop, game_map_object id, int32_t amount, bool is_mesos, int1
 	if (is_mesos) {
 		builder.add<int16_t>(cafe_bonus);
 	}
-	else if (game_logic_utilities::get_inventory(id) != inventories::equip) {
+	else if (game_logic_utilities::get_inventory(id) != constant::inventory::equip) {
 		builder.add<game_slot_qty>(static_cast<game_slot_qty>(amount));
 	}
 	if (!is_mesos) {

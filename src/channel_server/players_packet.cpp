@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "players_packet.hpp"
 #include "common/attack_data.hpp"
-#include "common/game_constants.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/inter_header.hpp"
 #include "common/packet_reader.hpp"
@@ -176,7 +175,7 @@ SPLIT_PACKET_IMPL(use_melee_attack, game_player_id player_id, game_skill_id mast
 		.add<int8_t>(hit_byte)
 		.add<game_skill_level>(attack.skill_level);
 
-	if (skill_id != vana::skills::all::regular_attack) {
+	if (skill_id != constant::skill::all::regular_attack) {
 		builder.map.add<game_skill_id>(skill_id);
 	}
 
@@ -212,7 +211,7 @@ SPLIT_PACKET_IMPL(use_ranged_attack, game_player_id player_id, game_skill_id mas
 		.add<int8_t>((attack.targets * 0x10) + attack.hits)
 		.add<game_skill_level>(attack.skill_level);
 
-	if (skill_id != vana::skills::all::regular_attack) {
+	if (skill_id != constant::skill::all::regular_attack) {
 		builder.map.add<game_skill_id>(skill_id);
 	}
 
@@ -233,7 +232,7 @@ SPLIT_PACKET_IMPL(use_ranged_attack, game_player_id player_id, game_skill_id mas
 		for (const auto &hit : target.second) {
 			game_damage damage = hit;
 			switch (skill_id) {
-				case vana::skills::marksman::snipe: // Snipe is always crit
+				case constant::skill::marksman::snipe: // Snipe is always crit
 					damage |= 0x80000000; // Critical damage = 0x80000000 + damage
 					break;
 				default:

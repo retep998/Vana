@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_mounts.hpp"
 #include "common/database.hpp"
-#include "common/game_constants.hpp"
 #include "channel_server/player.hpp"
 
 namespace vana {
@@ -136,7 +135,7 @@ auto player_mounts::set_current_tiredness(int8_t tiredness) -> void {
 }
 
 auto player_mounts::mount_info_packet(packet_builder &builder) -> void {
-	if (get_current_mount() > 0 && m_player->get_inventory()->get_equipped_id(equip_slots::saddle) != 0) {
+	if (get_current_mount() > 0 && m_player->get_inventory()->get_equipped_id(constant::equip_slot::saddle) != 0) {
 		builder.add<bool>(true);
 		builder.add<int32_t>(get_current_level());
 		builder.add<int32_t>(get_current_exp());
@@ -148,7 +147,7 @@ auto player_mounts::mount_info_packet(packet_builder &builder) -> void {
 }
 
 auto player_mounts::mount_info_map_spawn_packet(packet_builder &builder) -> void {
-	if (get_current_mount() > 0 && m_player->get_inventory()->get_equipped_id(equip_slots::saddle) != 0) {
+	if (get_current_mount() > 0 && m_player->get_inventory()->get_equipped_id(constant::equip_slot::saddle) != 0) {
 		builder.add<int32_t>(get_current_level());
 		builder.add<int32_t>(get_current_exp());
 		builder.add<int32_t>(get_current_tiredness());

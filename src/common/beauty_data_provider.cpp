@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "beauty_data_provider.hpp"
 #include "common/algorithm.hpp"
+#include "common/constant/gender.hpp"
 #include "common/database.hpp"
-#include "common/game_constants.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/initialize_common.hpp"
 #include "common/randomizer.hpp"
@@ -63,7 +63,7 @@ auto beauty_data_provider::load_hair() -> void {
 	for (const auto &row : rs) {
 		game_gender_id gender_id = game_logic_utilities::get_gender_id(row.get<string>("gender"));
 		game_hair_id hair = row.get<game_hair_id>("hairid");
-		auto &gender = gender_id == gender::female ? m_female : m_male;
+		auto &gender = gender_id == constant::gender::female ? m_female : m_male;
 		gender.hair.push_back(hair);
 	}
 
@@ -80,7 +80,7 @@ auto beauty_data_provider::load_faces() -> void {
 	for (const auto &row : rs) {
 		game_gender_id gender_id = game_logic_utilities::get_gender_id(row.get<string>("gender"));
 		game_face_id face = row.get<game_face_id>("faceid");
-		auto &gender = gender_id == gender::female ? m_female : m_male;
+		auto &gender = gender_id == constant::gender::female ? m_female : m_male;
 		gender.faces.push_back(face);
 	}
 
@@ -126,7 +126,7 @@ auto beauty_data_provider::is_valid_skin(game_skin_id skin) const -> bool {
 }
 
 auto beauty_data_provider::get_gender(game_gender_id gender_id) const -> const valid_look_data & {
-	return gender_id == gender::female ? m_female : m_male;
+	return gender_id == constant::gender::female ? m_female : m_male;
 }
 
 }

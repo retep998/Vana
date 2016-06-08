@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/database.hpp"
 #include "common/equip_data_provider.hpp"
 #include "common/game_logic_utilities.hpp"
-#include "common/item_constants.hpp"
 #include "common/item_data_provider.hpp"
 #include "common/misc_utilities.hpp"
 #include "common/time_utilities.hpp"
@@ -38,14 +37,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace vana {
 namespace channel_server {
 
-player_inventory::player_inventory(player *player, const array<game_inventory_slot_count, inventories::count> &max_slots, game_mesos mesos) :
+player_inventory::player_inventory(player *player, const array<game_inventory_slot_count, constant::inventory::count> &max_slots, game_mesos mesos) :
 	m_max_slots{max_slots},
 	m_mesos{mesos},
 	m_player{player}
 {
 	array<game_item_id, 2> init = {0};
 
-	for (size_t i = 0; i < inventories::equipped_slots; ++i) {
+	for (size_t i = 0; i < constant::inventory::equipped_slots; ++i) {
 		m_equipped[i] = init;
 	}
 
@@ -91,7 +90,7 @@ auto player_inventory::load() -> void {
 		int8_t index = row.get<int8_t>("map_index");
 		game_map_id map_id = row.get<game_map_id>("map_id");
 
-		if (index >= inventories::teleport_rock_max) {
+		if (index >= constant::inventory::teleport_rock_max) {
 			m_vip_locations.push_back(map_id);
 		}
 		else {
@@ -125,7 +124,7 @@ auto player_inventory::save() -> void {
 			st.execute(true);
 		}
 
-		rock_index = inventories::teleport_rock_max;
+		rock_index = constant::inventory::teleport_rock_max;
 		for (size_t i = 0; i < m_vip_locations.size(); ++i) {
 			map_id = m_vip_locations[i];
 			st.execute(true);
@@ -140,7 +139,7 @@ auto player_inventory::save() -> void {
 		use(item::inventory, "inv");
 
 	vector<item_db_record> v;
-	for (game_inventory i = inventories::equip; i <= inventories::count; ++i) {
+	for (game_inventory i = constant::inventory::equip; i <= constant::inventory::count; ++i) {
 		const auto &items_inv = m_items[i - 1];
 		for (const auto &kvp : items_inv) {
 			item_db_record rec(kvp.first, char_id, m_player->get_account_id(), m_player->get_world_id(), item::inventory, kvp.second);
@@ -157,7 +156,7 @@ auto player_inventory::add_max_slots(game_inventory inventory, game_inventory_sl
 	game_inventory_slot_count &inv = m_max_slots[inventory];
 	inv += (rows * 4);
 
-	inv = ext::constrain_range(inv, inventories::min_slots_per_inventory, inventories::max_slots_per_inventory);
+	inv = ext::constrain_range(inv, constant::inventory::min_slots_per_inventory, constant::inventory::max_slots_per_inventory);
 	m_player->send(packets::inventory::update_slots(inventory + 1, inv));
 }
 
@@ -166,7 +165,7 @@ auto player_inventory::set_mesos(game_mesos mesos, bool send_packet) -> void {
 		mesos = 0;
 	}
 	m_mesos = mesos;
-	m_player->send(packets::player::update_stat(stats::mesos, m_mesos, send_packet));
+	m_player->send(packets::player::update_stat(constant::stat::mesos, m_mesos, send_packet));
 }
 
 auto player_inventory::modify_mesos(game_mesos mod, bool send_packet) -> bool {
@@ -183,7 +182,7 @@ auto player_inventory::modify_mesos(game_mesos mod, bool send_packet) -> bool {
 		}
 		m_mesos = meso_test;
 	}
-	m_player->send(packets::player::update_stat(stats::mesos, m_mesos, send_packet));
+	m_player->send(packets::player::update_stat(constant::stat::mesos, m_mesos, send_packet));
 	return true;
 }
 
@@ -250,7 +249,7 @@ auto player_inventory::set_item(game_inventory inv, game_inventory_slot slot, it
 }
 
 auto player_inventory::destroy_equipped_item(game_item_id item_id) -> void {
-	game_inventory inv = inventories::equip;
+	game_inventory inv = constant::inventory::equip;
 	const auto &equips = m_items[inv - 1];
 	for (const auto &kvp : equips) {
 		if (kvp.first < 0 && kvp.second->get_id() == item_id) {
@@ -270,7 +269,7 @@ auto player_inventory::get_item_amount_by_slot(game_inventory inv, game_inventor
 }
 
 auto player_inventory::add_equipped(game_inventory_slot slot, game_item_id item_id) -> void {
-	if (std::abs(slot) == equip_slots::mount) {
+	if (std::abs(slot) == constant::equip_slot::mount) {
 		m_player->get_mounts()->set_current_mount(item_id);
 	}
 
@@ -283,11 +282,11 @@ auto player_inventory::get_equipped_id(game_inventory_slot slot, bool cash) -> g
 }
 
 auto player_inventory::add_equipped_packet(packet_builder &builder) -> void {
-	for (int8_t i = 0; i < inventories::equipped_slots; ++i) {
+	for (int8_t i = 0; i < constant::inventory::equipped_slots; ++i) {
 		// Shown items
 		if (m_equipped[i][0] > 0 || m_equipped[i][1] > 0) {
 			builder.add<int8_t>(i);
-			if (m_equipped[i][1] <= 0 || (i == equip_slots::weapon && m_equipped[i][0] > 0)) {
+			if (m_equipped[i][1] <= 0 || (i == constant::equip_slot::weapon && m_equipped[i][0] > 0)) {
 				// Normal weapons always here
 				builder.add<int32_t>(m_equipped[i][0]);
 			}
@@ -297,15 +296,15 @@ auto player_inventory::add_equipped_packet(packet_builder &builder) -> void {
 		}
 	}
 	builder.add<int8_t>(-1);
-	for (int8_t i = 0; i < inventories::equipped_slots; ++i) {
+	for (int8_t i = 0; i < constant::inventory::equipped_slots; ++i) {
 		// Covered items
-		if (m_equipped[i][1] > 0 && m_equipped[i][0] > 0 && i != equip_slots::weapon) {
+		if (m_equipped[i][1] > 0 && m_equipped[i][0] > 0 && i != constant::equip_slot::weapon) {
 			builder.add<int8_t>(i);
 			builder.add<int32_t>(m_equipped[i][0]);
 		}
 	}
 	builder.add<int8_t>(-1);
-	builder.add<int32_t>(m_equipped[equip_slots::weapon][1]); // Cash weapon
+	builder.add<int32_t>(m_equipped[constant::equip_slot::weapon][1]); // Cash weapon
 }
 
 auto player_inventory::get_item_amount(game_item_id item_id) -> game_slot_qty {
@@ -313,7 +312,7 @@ auto player_inventory::get_item_amount(game_item_id item_id) -> game_slot_qty {
 }
 
 auto player_inventory::is_equipped_item(game_item_id item_id) -> bool {
-	const auto &equips = m_items[inventories::equip - 1];
+	const auto &equips = m_items[constant::inventory::equip - 1];
 	bool has = false;
 	for (const auto &kvp : equips) {
 		if (kvp.first < 0 && kvp.second->get_id() == item_id) {
@@ -369,13 +368,13 @@ auto player_inventory::get_open_slots_num(game_inventory inv) -> game_inventory_
 }
 
 auto player_inventory::do_shadow_stars() -> game_item_id {
-	for (game_inventory_slot s = 1; s <= get_max_slots(inventories::use); ++s) {
-		item *item = get_item(inventories::use, s);
+	for (game_inventory_slot s = 1; s <= get_max_slots(constant::inventory::use); ++s) {
+		item *item = get_item(constant::inventory::use, s);
 		if (item == nullptr) {
 			continue;
 		}
-		if (game_logic_utilities::is_star(item->get_id()) && item->get_amount() >= items::shadow_stars_cost) {
-			inventory::take_item_slot(ref_ptr<player>{m_player}, inventories::use, s, items::shadow_stars_cost);
+		if (game_logic_utilities::is_star(item->get_id()) && item->get_amount() >= constant::item::shadow_stars_cost) {
+			inventory::take_item_slot(ref_ptr<player>{m_player}, constant::inventory::use, s, constant::item::shadow_stars_cost);
 			return item->get_id();
 		}
 	}
@@ -385,13 +384,13 @@ auto player_inventory::do_shadow_stars() -> game_item_id {
 auto player_inventory::add_rock_map(game_map_id map_id, int8_t type) -> void {
 	const int8_t mode = packets::inventory::rock_modes::add;
 	if (type == packets::inventory::rock_types::regular) {
-		if (m_rock_locations.size() < inventories::teleport_rock_max) {
+		if (m_rock_locations.size() < constant::inventory::teleport_rock_max) {
 			m_rock_locations.push_back(map_id);
 		}
 		m_player->send(packets::inventory::send_rock_update(mode, type, m_rock_locations));
 	}
 	else if (type == packets::inventory::rock_types::vip) {
-		if (m_vip_locations.size() < inventories::vip_rock_max) {
+		if (m_vip_locations.size() < constant::inventory::vip_rock_max) {
 			m_vip_locations.push_back(map_id);
 			// TODO FIXME packet
 			// Want packet
@@ -424,7 +423,7 @@ auto player_inventory::del_rock_map(game_map_id map_id, int8_t type) -> void {
 
 auto player_inventory::swap_items(int8_t inventory, int16_t slot1, int16_t slot2) -> void {
 	bool equipped_slot2 = (slot2 < 0);
-	if (inventory == inventories::equip && equipped_slot2) {
+	if (inventory == constant::inventory::equip && equipped_slot2) {
 		// Handle these specially
 		item *item1 = get_item(inventory, slot1);
 		if (item1 == nullptr) {
@@ -456,47 +455,47 @@ auto player_inventory::swap_items(int8_t inventory, int16_t slot1, int16_t slot2
 
 		item *remove = nullptr;
 		game_inventory_slot old_slot = 0;
-		bool weapon = (stripped_slot2 == equip_slots::weapon);
-		bool shield = (stripped_slot2 == equip_slots::shield);
-		bool top = (stripped_slot2 == equip_slots::top);
-		bool bottom = (stripped_slot2 == equip_slots::bottom);
+		bool weapon = (stripped_slot2 == constant::equip_slot::weapon);
+		bool shield = (stripped_slot2 == constant::equip_slot::shield);
+		bool top = (stripped_slot2 == constant::equip_slot::top);
+		bool bottom = (stripped_slot2 == constant::equip_slot::bottom);
 
-		if (weapon && game_logic_utilities::is2h_weapon(item_id1) && get_equipped_id(equip_slots::shield) != 0) {
-			old_slot = -equip_slots::shield;
+		if (weapon && game_logic_utilities::is2h_weapon(item_id1) && get_equipped_id(constant::equip_slot::shield) != 0) {
+			old_slot = -constant::equip_slot::shield;
 		}
-		else if (shield && game_logic_utilities::is2h_weapon(get_equipped_id(equip_slots::weapon))) {
-			old_slot = -equip_slots::weapon;
+		else if (shield && game_logic_utilities::is2h_weapon(get_equipped_id(constant::equip_slot::weapon))) {
+			old_slot = -constant::equip_slot::weapon;
 		}
-		else if (top && game_logic_utilities::is_overall(item_id1) && get_equipped_id(equip_slots::bottom) != 0) {
-			old_slot = -equip_slots::bottom;
+		else if (top && game_logic_utilities::is_overall(item_id1) && get_equipped_id(constant::equip_slot::bottom) != 0) {
+			old_slot = -constant::equip_slot::bottom;
 		}
-		else if (bottom && game_logic_utilities::is_overall(get_equipped_id(equip_slots::top))) {
-			old_slot = -equip_slots::top;
+		else if (bottom && game_logic_utilities::is_overall(get_equipped_id(constant::equip_slot::top))) {
+			old_slot = -constant::equip_slot::top;
 		}
 		if (old_slot != 0) {
 			remove = get_item(inventory, old_slot);
 			bool only_swap = true;
-			if ((get_equipped_id(equip_slots::shield) != 0) && (get_equipped_id(equip_slots::weapon) != 0)) {
+			if ((get_equipped_id(constant::equip_slot::shield) != 0) && (get_equipped_id(constant::equip_slot::weapon) != 0)) {
 				only_swap = false;
 			}
-			else if ((get_equipped_id(equip_slots::top) != 0) && (get_equipped_id(equip_slots::bottom) != 0)) {
+			else if ((get_equipped_id(constant::equip_slot::top) != 0) && (get_equipped_id(constant::equip_slot::bottom) != 0)) {
 				only_swap = false;
 			}
 			if (only_swap) {
 				int16_t swap_slot = 0;
 				if (weapon) {
-					swap_slot = -equip_slots::shield;
+					swap_slot = -constant::equip_slot::shield;
 					m_player->get_active_buffs()->swap_weapon();
 				}
 				else if (shield) {
-					swap_slot = -equip_slots::weapon;
+					swap_slot = -constant::equip_slot::weapon;
 					m_player->get_active_buffs()->swap_weapon();
 				}
 				else if (top) {
-					swap_slot = -equip_slots::bottom;
+					swap_slot = -constant::equip_slot::bottom;
 				}
 				else if (bottom) {
-					swap_slot = -equip_slots::top;
+					swap_slot = -constant::equip_slot::top;
 				}
 
 				set_item(inventory, swap_slot, nullptr);
@@ -619,12 +618,12 @@ auto player_inventory::add_wish_list_item(game_item_id item_id) -> void {
 auto player_inventory::connect_packet(packet_builder &builder) -> void {
 	builder.add<int32_t>(m_mesos);
 
-	for (game_inventory i = inventories::equip; i <= inventories::count; ++i) {
+	for (game_inventory i = constant::inventory::equip; i <= constant::inventory::count; ++i) {
 		builder.add<game_inventory_slot_count>(get_max_slots(i));
 	}
 
 	// Go through equips
-	const auto &equips = m_items[inventories::equip - 1];
+	const auto &equips = m_items[constant::inventory::equip - 1];
 	for (const auto &kvp : equips) {
 		if (kvp.first < 0 && kvp.first > -100) {
 			builder.add_buffer(packets::helpers::add_item_info(kvp.first, kvp.second));
@@ -645,7 +644,7 @@ auto player_inventory::connect_packet(packet_builder &builder) -> void {
 	builder.add<int8_t>(0);
 
 	// Equips done, do rest of user's items starting with Use
-	for (game_inventory i = inventories::use; i <= inventories::count; ++i) {
+	for (game_inventory i = constant::inventory::use; i <= constant::inventory::count; ++i) {
 		for (game_inventory_slot_count s = 1; s <= get_max_slots(i); ++s) {
 			item *item = get_item(i, s);
 			if (item == nullptr) {
@@ -665,8 +664,8 @@ auto player_inventory::connect_packet(packet_builder &builder) -> void {
 }
 
 auto player_inventory::rock_packet(packet_builder &builder) -> void {
-	builder.add_buffer(packets::helpers::fill_rock_packet(m_rock_locations, inventories::teleport_rock_max));
-	builder.add_buffer(packets::helpers::fill_rock_packet(m_vip_locations, inventories::vip_rock_max));
+	builder.add_buffer(packets::helpers::fill_rock_packet(m_rock_locations, constant::inventory::teleport_rock_max));
+	builder.add_buffer(packets::helpers::fill_rock_packet(m_vip_locations, constant::inventory::vip_rock_max));
 }
 
 auto player_inventory::wishlist_info_packet(packet_builder &builder) -> void {
@@ -680,10 +679,10 @@ auto player_inventory::check_expired_items() -> void {
 	vector<game_item_id> expired_item_ids;
 	file_time server_time{};
 
-	for (game_inventory i = inventories::equip; i <= inventories::count; ++i) {
+	for (game_inventory i = constant::inventory::equip; i <= constant::inventory::count; ++i) {
 		for (game_inventory_slot_count s = 1; s <= get_max_slots(i); ++s) {
 			if (item *item = get_item(i, s)) {
-				if (item->get_expiration_time() != items::no_expiration && item->get_expiration_time() <= server_time) {
+				if (item->get_expiration_time() != constant::item::no_expiration && item->get_expiration_time() <= server_time) {
 					expired_item_ids.push_back(item->get_id());
 					inventory::take_item_slot(ref_ptr<player>{m_player}, i, s, item->get_amount());
 				}

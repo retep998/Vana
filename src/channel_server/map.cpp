@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/algorithm.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/misc_utilities.hpp"
-#include "common/mob_constants.hpp"
 #include "common/npc_data_provider.hpp"
 #include "common/packet_wrapper.hpp"
 #include "common/randomizer.hpp"
@@ -585,7 +584,7 @@ auto map::get_town_mystic_door_portal(ref_ptr<player> player, uint8_t zero_based
 	}
 
 	game_map_id town_id = m_info->return_map;
-	if (town_id == vana::maps::no_map) {
+	if (town_id == constant::map::no_map) {
 		channel_server::get_instance().log(log_type::hacking, [&](out_stream &str) {
 			str << "Likely hacking by player ID " << player->get_id() << ". "
 				<< "Mystic Door used on a map that has no return map: " << m_id;
@@ -754,7 +753,7 @@ auto map::mob_death(ref_ptr<mob> mob_value, bool from_explosion) -> void {
 			inst->mob_death(mob_id, map_mob_id, m_id);
 		}
 
-		if (mob_value->has_status(status_effects::mob::shadow_web)) {
+		if (mob_value->has_status(constant::status_effect::mob::shadow_web)) {
 			remove_webbed_mob(map_mob_id);
 		}
 
@@ -767,14 +766,14 @@ auto map::mob_death(ref_ptr<mob> mob_value, bool from_explosion) -> void {
 		}
 		else {
 			switch (mob_id) {
-				case mobs::zakum_arm1:
-				case mobs::zakum_arm2:
-				case mobs::zakum_arm3:
-				case mobs::zakum_arm4:
-				case mobs::zakum_arm5:
-				case mobs::zakum_arm6:
-				case mobs::zakum_arm7:
-				case mobs::zakum_arm8:
+				case constant::mob::zakum_arm1:
+				case constant::mob::zakum_arm2:
+				case constant::mob::zakum_arm3:
+				case constant::mob::zakum_arm4:
+				case constant::mob::zakum_arm5:
+				case constant::mob::zakum_arm6:
+				case constant::mob::zakum_arm7:
+				case constant::mob::zakum_arm8:
 					if (auto owner = mob_value->m_owner.lock()) {
 						if (owner->m_spawns.size() == 1) {
 							// Last linked arm is dying
@@ -940,12 +939,12 @@ auto map::status_mobs(vector<status_info> &statuses, const rect &dimensions) -> 
 }
 
 auto map::spawn_zakum(const point &pos, game_foothold_id foothold) -> void {
-	auto body = spawn_shell(mobs::zakum_body1, pos, foothold);
+	auto body = spawn_shell(constant::mob::zakum_body1, pos, foothold);
 
 	init_list<game_mob_id> parts = {
-		mobs::zakum_arm1, mobs::zakum_arm2, mobs::zakum_arm3,
-		mobs::zakum_arm4, mobs::zakum_arm5, mobs::zakum_arm6,
-		mobs::zakum_arm7, mobs::zakum_arm8
+		constant::mob::zakum_arm1, constant::mob::zakum_arm2, constant::mob::zakum_arm3,
+		constant::mob::zakum_arm4, constant::mob::zakum_arm5, constant::mob::zakum_arm6,
+		constant::mob::zakum_arm7, constant::mob::zakum_arm8
 	};
 
 	for (const auto &part : parts) {
@@ -1154,7 +1153,7 @@ auto map::check_mists() -> void {
 	for (const auto &kvp : m_mobs) {
 		auto mob = kvp.second;
 
-		if (mob == nullptr || mob->has_status(status_effects::mob::poison) || mob->get_hp() == 1) {
+		if (mob == nullptr || mob->has_status(constant::status_effect::mob::poison) || mob->get_hp() == 1) {
 			continue;
 		}
 

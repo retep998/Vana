@@ -88,7 +88,7 @@ auto inventory::add_item(ref_ptr<player> player, item *item_value, bool from_dro
 	return item_value->get_amount();
 }
 
-auto inventory::add_new_item(ref_ptr<player> player, game_item_id item_id, game_slot_qty amount, items::stat_variance variance_policy) -> void {
+auto inventory::add_new_item(ref_ptr<player> player, game_item_id item_id, game_slot_qty amount, stat_variance variance_policy) -> void {
 	auto item_info = channel_server::get_instance().get_item_data_provider().get_item_info(item_id);
 	if (item_info == nullptr) {
 		return;

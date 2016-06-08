@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/item_constants.hpp"
 #include "common/types.hpp"
 
 namespace vana {
@@ -29,7 +28,7 @@ namespace vana {
 
 		namespace inventory {
 			auto add_item(ref_ptr<player> player, item *item_value, bool from_drop = false) -> game_slot_qty;
-			auto add_new_item(ref_ptr<player> player, game_item_id item_id, game_slot_qty amount, items::stat_variance variance_policy = items::stat_variance::none) -> void;
+			auto add_new_item(ref_ptr<player> player, game_item_id item_id, game_slot_qty amount, stat_variance variance_policy = stat_variance::none) -> void;
 			auto take_item(ref_ptr<player> player, game_item_id item_id, game_slot_qty how_many) -> void;
 			auto use_item(ref_ptr<player> player, game_item_id item_id) -> void;
 			auto take_item_slot(ref_ptr<player> player, game_inventory inv, game_inventory_slot slot, game_slot_qty amount, bool take_star = false, bool override_gm_benefits = false) -> void;

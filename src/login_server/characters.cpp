@@ -17,13 +17,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "characters.hpp"
 #include "common/algorithm.hpp"
+#include "common/constant/equip_slot.hpp"
+#include "common/constant/inventory.hpp"
+#include "common/constant/item.hpp"
+#include "common/constant/job/track.hpp"
 #include "common/curse_data_provider.hpp"
 #include "common/client_ip.hpp"
 #include "common/database.hpp"
 #include "common/equip_data_provider.hpp"
-#include "common/game_constants.hpp"
 #include "common/game_logic_utilities.hpp"
-#include "common/item_constants.hpp"
 #include "common/misc_utilities.hpp"
 #include "common/packet_reader.hpp"
 #include "common/session.hpp"
@@ -52,7 +54,7 @@ auto characters::load_equips(game_player_id id, vector<char_equip> &vec) -> void
 		<< "	AND i.slot < 0 "
 		<< "ORDER BY slot ASC",
 		soci::use(id, "id"),
-		soci::use(inventories::equip, "inv"));
+		soci::use(constant::inventory::equip, "inv"));
 
 	for (const auto &row : rs) {
 		char_equip equip;
@@ -86,7 +88,7 @@ auto characters::load_character(character &charc, const soci::row &row) -> void 
 	charc.map = row.get<game_map_id>("map");
 	charc.pos = row.get<int8_t>("pos");
 
-	if (game_logic_utilities::get_job_track(charc.job) == jobs::job_tracks::gm) {
+	if (game_logic_utilities::get_job_track(charc.job) == constant::job::track::gm) {
 		// GMs can't have their rank sent otherwise the client will crash
 		charc.world_rank = 0;
 		charc.world_rank_change = 0;
@@ -129,7 +131,7 @@ auto characters::show_all_characters(ref_ptr<user> user_value) -> void {
 		chars_num++;
 	}
 
-	uint32_t unk = chars_num + (3 - chars_num % 3); // What i've observed
+	uint32_t unk = chars_num + (3 - chars_num % 3); // What I've observed
 	user_value->send(packets::show_all_characters_info(static_cast<game_world_id>(chars.size()), unk));
 	for (const auto &kvp : chars) {
 		user_value->send(packets::show_view_all_characters(kvp.first, kvp.second));
@@ -178,7 +180,7 @@ auto characters::show_characters(ref_ptr<user> user_value) -> void {
 
 auto characters::check_character_name(ref_ptr<user> user_value, packet_reader &reader) -> void {
 	string name = reader.get<string>();
-	if (!ext::in_range_inclusive<size_t>(name.size(), vana::characters::min_name_size, vana::characters::max_name_size)) {
+	if (!ext::in_range_inclusive<size_t>(name.size(), constant::character::min_name_size, constant::character::max_name_size)) {
 		return;
 	}
 
@@ -202,8 +204,8 @@ auto characters::create_item(game_item_id item_id, ref_ptr<user> user_value, gam
 	}
 	item_db_info info{slot, char_id, user_value->get_account_id(), world_id.get(), item::inventory};
 
-	if (inventory == inventories::equip) {
-		item equip{login_server::get_instance().get_equip_data_provider(), item_id, items::stat_variance::none, false};
+	if (inventory == constant::inventory::equip) {
+		item equip{login_server::get_instance().get_equip_data_provider(), item_id, stat_variance::none, false};
 		equip.database_insert(db, info);
 	}
 	else {
@@ -219,7 +221,7 @@ auto characters::create_character(ref_ptr<user> user_value, packet_reader &reade
 	}
 
 	string name = reader.get<string>();
-	if (!ext::in_range_inclusive<size_t>(name.size(), vana::characters::min_name_size, vana::characters::max_name_size)) {
+	if (!ext::in_range_inclusive<size_t>(name.size(), constant::character::min_name_size, constant::character::max_name_size)) {
 		return;
 	}
 
@@ -278,11 +280,11 @@ auto characters::create_character(ref_ptr<user> user_value, packet_reader &reade
 
 	game_player_id id = db.get_last_id<game_player_id>();
 
-	create_item(top, user_value, id, -equip_slots::top);
-	create_item(bottom, user_value, id, -equip_slots::bottom);
-	create_item(shoes, user_value, id, -equip_slots::shoe);
-	create_item(weapon, user_value, id, -equip_slots::weapon);
-	create_item(items::beginners_guidebook, user_value, id, 1);
+	create_item(top, user_value, id, -constant::equip_slot::top);
+	create_item(bottom, user_value, id, -constant::equip_slot::bottom);
+	create_item(shoes, user_value, id, -constant::equip_slot::shoe);
+	create_item(weapon, user_value, id, -constant::equip_slot::weapon);
+	create_item(constant::item::beginners_guidebook, user_value, id, 1);
 
 	soci::row row;
 	sql.once

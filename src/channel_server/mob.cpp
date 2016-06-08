@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "mob.hpp"
 #include "common/algorithm.hpp"
-#include "common/game_constants.hpp"
 #include "common/misc_utilities.hpp"
 #include "common/mp_eater_data.hpp"
 #include "common/randomizer.hpp"
@@ -60,8 +59,8 @@ mob::mob(game_map_object map_mob_id, game_map_id map_id, game_mob_id mob_id, vie
 
 	m_total_health = m_hp;
 
-	m_status = status_effects::mob::empty;
-	status_info empty{status_effects::mob::empty, 0, 0, seconds{0}};
+	m_status = constant::status_effect::mob::empty;
+	status_info empty{constant::status_effect::mob::empty, 0, 0, seconds{0}};
 	m_statuses[empty.status] = empty;
 
 	if (m_info->hp_recovery > 0 || m_info->mp_recovery > 0) {
@@ -136,7 +135,7 @@ auto mob::apply_damage(game_player_id player_id, game_damage damage, bool poison
 
 		// Need to preserve the pointer through mob deletion in die()
 		auto sponge = m_sponge.lock();
-		if (m_hp == stats::min_hp) {
+		if (m_hp == constant::stat::min_hp) {
 			die(player);
 		}
 		if (sponge != nullptr) {
@@ -145,7 +144,7 @@ auto mob::apply_damage(game_player_id player_id, game_damage damage, bool poison
 		}
 	}
 	else if (m_hp == 1) {
-		remove_status(status_effects::mob::poison);
+		remove_status(constant::status_effect::mob::poison);
 	}
 }
 
@@ -171,35 +170,35 @@ auto mob::add_status(game_player_id player_id, vector<status_info> &status_info)
 		int32_t c_status = info.status;
 		bool already_has_status = m_statuses.find(c_status) != std::end(m_statuses);
 		switch (c_status) {
-			case status_effects::mob::poison: // Status effects that do not renew
-			case status_effects::mob::doom:
+			case constant::status_effect::mob::poison: // Status effects that do not renew
+			case constant::status_effect::mob::doom:
 				if (already_has_status) {
 					continue;
 				}
 				break;
-			case status_effects::mob::shadow_web:
+			case constant::status_effect::mob::shadow_web:
 				m_web_player_id = player_id;
 				m_web_level = static_cast<game_skill_level>(info.val);
 				map->add_webbed_mob(get_map_mob_id());
 				break;
-			case status_effects::mob::magic_attack_up:
+			case constant::status_effect::mob::magic_attack_up:
 				switch (info.skill_id) {
-					case vana::skills::night_lord::taunt:
-					case vana::skills::shadower::taunt: {
+					case constant::skill::night_lord::taunt:
+					case constant::skill::shadower::taunt: {
 						m_taunt_effect = (100 - info.val) + 100;
 						// Value passed as 100 - x, so 100 - value will = x
 						break;
 					}
 				}
 				break;
-			case status_effects::mob::venomous_weapon:
+			case constant::status_effect::mob::venomous_weapon:
 				m_venom_count++;
 				if (already_has_status) {
 					info.val += m_statuses[c_status].val; // Increase the damage
 				}
 				break;
-			case status_effects::mob::weapon_damage_reflect:
-			case status_effects::mob::magic_damage_reflect:
+			case constant::status_effect::mob::weapon_damage_reflect:
+			case constant::status_effect::mob::magic_damage_reflect:
 				reflection.push_back(info.reflection);
 				break;
 		}
@@ -208,9 +207,9 @@ auto mob::add_status(game_player_id player_id, vector<status_info> &status_info)
 		added_status += c_status;
 
 		switch (c_status) {
-			case status_effects::mob::poison:
-			case status_effects::mob::venomous_weapon:
-			case status_effects::mob::ninja_ambush:
+			case constant::status_effect::mob::poison:
+			case constant::status_effect::mob::venomous_weapon:
+			case constant::status_effect::mob::ninja_ambush:
 				game_damage poison_damage = info.val;
 				vana::timer::timer::create(
 					[this, player_id, poison_damage](const time_point &now) {
@@ -242,23 +241,23 @@ auto mob::remove_status(int32_t status, bool from_timer) -> void {
 		const status_info &stat = kvp->second;
 		map *map = get_map();
 		switch (status) {
-			case status_effects::mob::shadow_web:
+			case constant::status_effect::mob::shadow_web:
 				m_web_level = 0;
 				m_web_player_id = 0;
 				map->remove_webbed_mob(get_map_mob_id());
 				break;
-			case status_effects::mob::magic_attack_up:
+			case constant::status_effect::mob::magic_attack_up:
 				switch (stat.skill_id) {
-					case vana::skills::night_lord::taunt:
-					case vana::skills::shadower::taunt:
+					case constant::skill::night_lord::taunt:
+					case constant::skill::shadower::taunt:
 						m_taunt_effect = 100;
 						break;
 				}
 				break;
-			case status_effects::mob::venomous_weapon:
+			case constant::status_effect::mob::venomous_weapon:
 				m_venom_count = 0;
 				// Intentional fallthrough
-			case status_effects::mob::poison:
+			case constant::status_effect::mob::poison:
 				// Stop poison damage timer
 				get_timers()->remove_timer(vana::timer::id{vana::timer::type::mob_status_timer, status, 1});
 				break;
@@ -273,17 +272,17 @@ auto mob::remove_status(int32_t status, bool from_timer) -> void {
 }
 
 auto mob::has_weapon_reflection() const -> bool {
-	int32_t mask = status_effects::mob::weapon_damage_reflect;
+	int32_t mask = constant::status_effect::mob::weapon_damage_reflect;
 	return (m_status & mask) != 0;
 }
 
 auto mob::has_magic_reflection() const -> bool {
-	int32_t mask = status_effects::mob::magic_damage_reflect;
+	int32_t mask = constant::status_effect::mob::magic_damage_reflect;
 	return (m_status & mask) != 0;
 }
 
 auto mob::has_immunity() const -> bool {
-	int32_t mask = status_effects::mob::weapon_immunity | status_effects::mob::magic_immunity | status_effects::mob::weapon_damage_reflect | status_effects::mob::magic_damage_reflect;
+	int32_t mask = constant::status_effect::mob::weapon_immunity | constant::status_effect::mob::magic_immunity | constant::status_effect::mob::weapon_damage_reflect | constant::status_effect::mob::magic_damage_reflect;
 	return (m_status & mask) != 0;
 }
 
@@ -305,11 +304,11 @@ auto mob::get_status_info() const -> const ord_map<int32_t, status_info> & {
 }
 
 auto mob::get_magic_reflection() -> optional<status_info> {
-	return get_status_value(status_effects::mob::magic_damage_reflect);
+	return get_status_value(constant::status_effect::mob::magic_damage_reflect);
 }
 
 auto mob::get_weapon_reflection() -> optional<status_info> {
-	return get_status_value(status_effects::mob::weapon_damage_reflect);
+	return get_status_value(constant::status_effect::mob::weapon_damage_reflect);
 }
 
 auto mob::set_controller(ref_ptr<player> control, mob_spawn_type spawn, ref_ptr<player> display) -> void {
@@ -404,7 +403,7 @@ auto mob::distribute_exp_and_get_drop_recipient(ref_ptr<player> killer) -> game_
 				party{nullptr},
 				highest_damager{nullptr},
 				highest_damage{0},
-				min_hit_level{stats::player_levels}
+				min_hit_level{constant::stat::player_levels}
 			{
 			}
 
@@ -519,7 +518,7 @@ auto mob::skill_heal(int32_t heal_hp, int32_t heal_range) -> void {
 
 	if (auto sponge = m_sponge.lock()) {
 		heal_hp = sponge->get_hp() + amount;
-		heal_hp = ext::constrain_range<int32_t>(heal_hp, stats::min_hp, sponge->get_max_hp());
+		heal_hp = ext::constrain_range<int32_t>(heal_hp, constant::stat::min_hp, sponge->get_max_hp());
 		sponge->m_hp = heal_hp;
 	}
 
@@ -528,10 +527,10 @@ auto mob::skill_heal(int32_t heal_hp, int32_t heal_range) -> void {
 
 auto mob::dispel_buffs() -> void {
 	auto statuses = {
-		status_effects::mob::watk, status_effects::mob::wdef,
-		status_effects::mob::matk, status_effects::mob::mdef,
-		status_effects::mob::acc, status_effects::mob::avoid,
-		status_effects::mob::speed,
+		constant::status_effect::mob::watk, constant::status_effect::mob::wdef,
+		constant::status_effect::mob::matk, constant::status_effect::mob::mdef,
+		constant::status_effect::mob::acc, constant::status_effect::mob::avoid,
+		constant::status_effect::mob::speed,
 	};
 
 	for (const auto &status : statuses) {
@@ -541,9 +540,9 @@ auto mob::dispel_buffs() -> void {
 
 auto mob::do_crash_skill(game_skill_id skill_id) -> void {
 	switch (skill_id) {
-		case vana::skills::crusader::armor_crash: remove_status(status_effects::mob::wdef); break;
-		case vana::skills::white_knight::magic_crash: remove_status(status_effects::mob::matk); break;
-		case vana::skills::dragon_knight::power_crash: remove_status(status_effects::mob::watk); break;
+		case constant::skill::crusader::armor_crash: remove_status(constant::status_effect::mob::wdef); break;
+		case constant::skill::white_knight::magic_crash: remove_status(constant::status_effect::mob::matk); break;
+		case constant::skill::dragon_knight::power_crash: remove_status(constant::status_effect::mob::watk); break;
 	}
 }
 
@@ -555,7 +554,7 @@ auto mob::mp_eat(ref_ptr<player> player, mp_eater_data *mp) -> void {
 		eaten_mp = std::min<int32_t>(eaten_mp, get_mp());
 		m_mp = get_mp() - eaten_mp;
 
-		eaten_mp = std::min<int32_t>(eaten_mp, stats::max_max_mp);
+		eaten_mp = std::min<int32_t>(eaten_mp, constant::stat::max_max_mp);
 		player->get_stats()->modify_mp(eaten_mp);
 
 		player->send_map(packets::skills::show_skill_effect(player->get_id(), mp->skill_id));
@@ -594,32 +593,32 @@ auto mob::choose_random_skill(ref_ptr<player> player, game_mob_skill_id &skill_i
 		auto mob_skill = channel_server::get_instance().get_skill_data_provider().get_mob_skill(info.skill_id, info.level);
 
 		switch (info.skill_id) {
-			case mob_skills::weapon_attack_up:
-			case mob_skills::weapon_attack_up_aoe:
-				stop = has_status(status_effects::mob::watk);
+			case constant::mob_skill::weapon_attack_up:
+			case constant::mob_skill::weapon_attack_up_aoe:
+				stop = has_status(constant::status_effect::mob::watk);
 				break;
-			case mob_skills::magic_attack_up:
-			case mob_skills::magic_attack_up_aoe:
-				stop = has_status(status_effects::mob::matk);
+			case constant::mob_skill::magic_attack_up:
+			case constant::mob_skill::magic_attack_up_aoe:
+				stop = has_status(constant::status_effect::mob::matk);
 				break;
-			case mob_skills::weapon_defense_up:
-			case mob_skills::weapon_defense_up_aoe:
-				stop = has_status(status_effects::mob::wdef);
+			case constant::mob_skill::weapon_defense_up:
+			case constant::mob_skill::weapon_defense_up_aoe:
+				stop = has_status(constant::status_effect::mob::wdef);
 				break;
-			case mob_skills::magic_defense_up:
-			case mob_skills::magic_defense_up_aoe:
-				stop = has_status(status_effects::mob::mdef);
+			case constant::mob_skill::magic_defense_up:
+			case constant::mob_skill::magic_defense_up_aoe:
+				stop = has_status(constant::status_effect::mob::mdef);
 				break;
-			case mob_skills::weapon_immunity:
-			case mob_skills::magic_immunity:
-			case mob_skills::weapon_damage_reflect:
-			case mob_skills::magic_damage_reflect:
+			case constant::mob_skill::weapon_immunity:
+			case constant::mob_skill::magic_immunity:
+			case constant::mob_skill::weapon_damage_reflect:
+			case constant::mob_skill::magic_damage_reflect:
 				stop = has_immunity();
 				break;
-			case mob_skills::mc_speed_up:
-				stop = has_status(status_effects::mob::speed);
+			case constant::mob_skill::mc_speed_up:
+				stop = has_status(constant::status_effect::mob::speed);
 				break;
-			case mob_skills::summon:
+			case constant::mob_skill::summon:
 				stop = static_cast<int16_t>(m_spawns.size()) > mob_skill->limit;
 				break;
 		}
@@ -696,52 +695,52 @@ auto mob::use_anticipated_skill() -> result {
 	bool aoe = false;
 
 	switch (skill_id) {
-		case mob_skills::weapon_attack_up_aoe:
+		case constant::mob_skill::weapon_attack_up_aoe:
 			aoe = true;
-		case mob_skills::weapon_attack_up:
-			statuses.emplace_back(status_effects::mob::watk, skill_level_info->x, skill_id, level, skill_level_info->time);
+		case constant::mob_skill::weapon_attack_up:
+			statuses.emplace_back(constant::status_effect::mob::watk, skill_level_info->x, skill_id, level, skill_level_info->time);
 			break;
-		case mob_skills::magic_attack_up_aoe:
+		case constant::mob_skill::magic_attack_up_aoe:
 			aoe = true;
-		case mob_skills::magic_attack_up:
-			statuses.emplace_back(status_effects::mob::matk, skill_level_info->x, skill_id, level, skill_level_info->time);
+		case constant::mob_skill::magic_attack_up:
+			statuses.emplace_back(constant::status_effect::mob::matk, skill_level_info->x, skill_id, level, skill_level_info->time);
 			break;
-		case mob_skills::weapon_defense_up_aoe:
+		case constant::mob_skill::weapon_defense_up_aoe:
 			aoe = true;
-		case mob_skills::weapon_defense_up:
-			statuses.emplace_back(status_effects::mob::wdef, skill_level_info->x, skill_id, level, skill_level_info->time);
+		case constant::mob_skill::weapon_defense_up:
+			statuses.emplace_back(constant::status_effect::mob::wdef, skill_level_info->x, skill_id, level, skill_level_info->time);
 			break;
-		case mob_skills::magic_defense_up_aoe:
+		case constant::mob_skill::magic_defense_up_aoe:
 			aoe = true;
-		case mob_skills::magic_defense_up:
-			statuses.emplace_back(status_effects::mob::mdef, skill_level_info->x, skill_id, level, skill_level_info->time);
+		case constant::mob_skill::magic_defense_up:
+			statuses.emplace_back(constant::status_effect::mob::mdef, skill_level_info->x, skill_id, level, skill_level_info->time);
 			break;
-		case mob_skills::heal_aoe:
+		case constant::mob_skill::heal_aoe:
 			map->heal_mobs(skill_level_info->x, skill_level_info->y, skill_area);
 			break;
-		case mob_skills::seal:
-		case mob_skills::darkness:
-		case mob_skills::weakness:
-		case mob_skills::stun:
-		case mob_skills::curse:
-		case mob_skills::poison:
-		case mob_skills::slow:
-		case mob_skills::seduce:
-		case mob_skills::crazy_skull:
-		case mob_skills::zombify: {
+		case constant::mob_skill::seal:
+		case constant::mob_skill::darkness:
+		case constant::mob_skill::weakness:
+		case constant::mob_skill::stun:
+		case constant::mob_skill::curse:
+		case constant::mob_skill::poison:
+		case constant::mob_skill::slow:
+		case constant::mob_skill::seduce:
+		case constant::mob_skill::crazy_skull:
+		case constant::mob_skill::zombify: {
 			auto func = [skill_id, level, delay](ref_ptr<player> player) {
 				buffs::add_buff(player, skill_id, level, delay);
 			};
 			map->run_function_players(skill_area, skill_level_info->prop, skill_level_info->count, func);
 			break;
 		}
-		case mob_skills::dispel: {
+		case constant::mob_skill::dispel: {
 			map->run_function_players(skill_area, skill_level_info->prop, [](ref_ptr<player> player) {
 				player->get_active_buffs()->dispel_buffs();
 			});
 			break;
 		}
-		case mob_skills::send_to_town: {
+		case constant::mob_skill::send_to_town: {
 			if (auto banish_info = channel.get_skill_data_provider().get_banish_data(get_mob_id())) {
 				game_map_id field = banish_info->field;
 				string message = banish_info->message;
@@ -766,33 +765,33 @@ auto mob::use_anticipated_skill() -> result {
 			}
 			break;
 		}
-		case mob_skills::poison_mist:
+		case constant::mob_skill::poison_mist:
 			new mist{get_map_id(), this, seconds{skill_level_info->time}, skill_area, skill_id, level};
 			break;
-		case mob_skills::weapon_immunity:
-			statuses.emplace_back(status_effects::mob::weapon_immunity, skill_level_info->x, skill_id, level, skill_level_info->time);
+		case constant::mob_skill::weapon_immunity:
+			statuses.emplace_back(constant::status_effect::mob::weapon_immunity, skill_level_info->x, skill_id, level, skill_level_info->time);
 			break;
-		case mob_skills::magic_immunity:
-			statuses.emplace_back(status_effects::mob::magic_immunity, skill_level_info->x, skill_id, level, skill_level_info->time);
+		case constant::mob_skill::magic_immunity:
+			statuses.emplace_back(constant::status_effect::mob::magic_immunity, skill_level_info->x, skill_id, level, skill_level_info->time);
 			break;
-		case mob_skills::weapon_damage_reflect:
-			statuses.emplace_back(status_effects::mob::weapon_immunity, skill_level_info->x, skill_id, level, skill_level_info->time);
-			statuses.emplace_back(status_effects::mob::weapon_damage_reflect, skill_level_info->x, skill_id, level, skill_level_info->y, skill_level_info->time);
+		case constant::mob_skill::weapon_damage_reflect:
+			statuses.emplace_back(constant::status_effect::mob::weapon_immunity, skill_level_info->x, skill_id, level, skill_level_info->time);
+			statuses.emplace_back(constant::status_effect::mob::weapon_damage_reflect, skill_level_info->x, skill_id, level, skill_level_info->y, skill_level_info->time);
 			break;
-		case mob_skills::magic_damage_reflect:
-			statuses.emplace_back(status_effects::mob::magic_immunity, skill_level_info->x, skill_id, level, skill_level_info->time);
-			statuses.emplace_back(status_effects::mob::magic_damage_reflect, skill_level_info->x, skill_id, level, skill_level_info->y, skill_level_info->time);
+		case constant::mob_skill::magic_damage_reflect:
+			statuses.emplace_back(constant::status_effect::mob::magic_immunity, skill_level_info->x, skill_id, level, skill_level_info->time);
+			statuses.emplace_back(constant::status_effect::mob::magic_damage_reflect, skill_level_info->x, skill_id, level, skill_level_info->y, skill_level_info->time);
 			break;
-		case mob_skills::any_damage_reflect:
-			statuses.emplace_back(status_effects::mob::weapon_immunity, skill_level_info->x, skill_id, level, skill_level_info->time);
-			statuses.emplace_back(status_effects::mob::magic_immunity, skill_level_info->x, skill_id, level, skill_level_info->time);
-			statuses.emplace_back(status_effects::mob::weapon_damage_reflect, skill_level_info->x, skill_id, level, skill_level_info->y, skill_level_info->time);
-			statuses.emplace_back(status_effects::mob::magic_damage_reflect, skill_level_info->x, skill_id, level, skill_level_info->y, skill_level_info->time);
+		case constant::mob_skill::any_damage_reflect:
+			statuses.emplace_back(constant::status_effect::mob::weapon_immunity, skill_level_info->x, skill_id, level, skill_level_info->time);
+			statuses.emplace_back(constant::status_effect::mob::magic_immunity, skill_level_info->x, skill_id, level, skill_level_info->time);
+			statuses.emplace_back(constant::status_effect::mob::weapon_damage_reflect, skill_level_info->x, skill_id, level, skill_level_info->y, skill_level_info->time);
+			statuses.emplace_back(constant::status_effect::mob::magic_damage_reflect, skill_level_info->x, skill_id, level, skill_level_info->y, skill_level_info->time);
 			break;
-		case mob_skills::mc_speed_up:
-			statuses.emplace_back(status_effects::mob::speed, skill_level_info->x, skill_id, level, skill_level_info->time);
+		case constant::mob_skill::mc_speed_up:
+			statuses.emplace_back(constant::status_effect::mob::speed, skill_level_info->x, skill_id, level, skill_level_info->time);
 			break;
-		case mob_skills::summon:
+		case constant::mob_skill::summon:
 			map->mob_summon_skill_used(shared_from_this(), skill_level_info);
 			break;
 	}
@@ -810,19 +809,19 @@ auto mob::use_anticipated_skill() -> result {
 }
 
 auto mob::can_cast_skills() const -> bool {
-	return !(has_status(status_effects::mob::freeze) || has_status(status_effects::mob::stun) || has_status(status_effects::mob::shadow_web) || has_status(status_effects::mob::seal));
+	return !(has_status(constant::status_effect::mob::freeze) || has_status(constant::status_effect::mob::stun) || has_status(constant::status_effect::mob::shadow_web) || has_status(constant::status_effect::mob::seal));
 }
 
 auto mob::is_sponge(game_mob_id mob_id) -> bool {
 	switch (mob_id) {
-		case mobs::horntail_sponge: return true;
+		case constant::mob::horntail_sponge: return true;
 	}
 	return false;
 }
 
 auto mob::spawns_sponge(game_mob_id mob_id) -> bool {
 	switch (mob_id) {
-		case mobs::summon_horntail: return true;
+		case constant::mob::summon_horntail: return true;
 	}
 	return false;
 }

@@ -22,9 +22,6 @@
     <Filter Include="Database">
       <UniqueIdentifier>{7f88f4c5-3611-4887-871c-3defe2bced64}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game Constants">
-      <UniqueIdentifier>{29b0530c-2642-4ae6-9118-6a284e250b78}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Inter-Server">
       <UniqueIdentifier>{ee05f7d7-a4e3-43c8-a447-243f43321d17}</UniqueIdentifier>
     </Filter>
@@ -60,6 +57,18 @@
     </Filter>
     <Filter Include="timer">
       <UniqueIdentifier>{ba915691-350f-47c6-9ed5-324e433bbc1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="constant">
+      <UniqueIdentifier>{29b0530c-2642-4ae6-9118-6a284e250b78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="constant\item">
+      <UniqueIdentifier>{b3e953b0-a20e-48bf-99f3-8448af61d74d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="constant\item\cash">
+      <UniqueIdentifier>{58cd8f7f-ed73-48d4-bb29-9a77e7f9d576}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="constant\job">
+      <UniqueIdentifier>{e5dd551a-650b-4075-8864-0cc9a3188f4c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -272,21 +281,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\common\game_constants.hpp">
-      <Filter>Game Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\item_constants.hpp">
-      <Filter>Game Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\map_constants.hpp">
-      <Filter>Game Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\mob_constants.hpp">
-      <Filter>Game Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\skill_constants.hpp">
-      <Filter>Game Constants</Filter>
-    </ClInclude>
     <ClInclude Include="src\common\file_utilities.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
@@ -415,9 +409,6 @@
     </ClInclude>
     <ClInclude Include="src\common\soci_extensions.hpp">
       <Filter>Lib</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\job_constants.hpp">
-      <Filter>Game Constants</Filter>
     </ClInclude>
     <ClInclude Include="src\common\curse_data_provider.hpp">
       <Filter>Data Loading\MCDB</Filter>
@@ -826,6 +817,93 @@
     </ClInclude>
     <ClInclude Include="src\common\timer\func.hpp">
       <Filter>timer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\gender.hpp">
+      <Filter>constant</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\ship_kind.hpp">
+      <Filter>constant</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\inventory.hpp">
+      <Filter>constant</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\item\scroll_type.hpp">
+      <Filter>constant\item</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\item\type.hpp">
+      <Filter>constant\item</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\item.hpp">
+      <Filter>constant</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\party.hpp">
+      <Filter>constant</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\monster_card.hpp">
+      <Filter>constant</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\mob_skill.hpp">
+      <Filter>constant</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\mob.hpp">
+      <Filter>constant</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\map.hpp">
+      <Filter>constant</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\guild.hpp">
+      <Filter>constant</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\alliance.hpp">
+      <Filter>constant</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\job\beginner_jobs.hpp">
+      <Filter>constant\job</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\job\id.hpp">
+      <Filter>constant\job</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\job\line.hpp">
+      <Filter>constant\job</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\job\progression.hpp">
+      <Filter>constant\job</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\job\track.hpp">
+      <Filter>constant\job</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\stat.hpp">
+      <Filter>constant</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\status_effect.hpp">
+      <Filter>constant</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\skill.hpp">
+      <Filter>constant</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\equip_slot.hpp">
+      <Filter>constant</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\buff.hpp">
+      <Filter>constant</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\buddy.hpp">
+      <Filter>constant</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constants\character.hpp">
+      <Filter>constant</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constant\item\max_stat.hpp">
+      <Filter>constant\item</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constant\item\flag.hpp">
+      <Filter>constant\item</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constant\item\cash\flag.hpp">
+      <Filter>constant\item\cash</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\constant\item\cash\serial.hpp">
+      <Filter>constant\item\cash</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

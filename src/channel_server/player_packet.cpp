@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_packet.hpp"
 #include "common/client_ip.hpp"
+#include "common/constant/stat.hpp"
 #include "common/file_time.hpp"
 #include "common/inter_header.hpp"
 #include "common/session.hpp"
@@ -155,27 +156,27 @@ PACKET_IMPL(update_stat, int32_t update_bits, int32_t value, bool item_response)
 
 	switch (update_bits) {
 		// For now it only accepts updateBits as a single unit, might be a collection later
-		case stats::pet:
-		case stats::level:
-		case stats::job:
-		case stats::str:
-		case stats::dex:
-		case stats::intl:
-		case stats::luk:
-		case stats::hp:
-		case stats::max_hp:
-		case stats::mp:
-		case stats::max_mp:
-		case stats::ap:
-		case stats::sp:
+		case constant::stat::pet:
+		case constant::stat::level:
+		case constant::stat::job:
+		case constant::stat::str:
+		case constant::stat::dex:
+		case constant::stat::intl:
+		case constant::stat::luk:
+		case constant::stat::hp:
+		case constant::stat::max_hp:
+		case constant::stat::mp:
+		case constant::stat::max_mp:
+		case constant::stat::ap:
+		case constant::stat::sp:
 			builder.add<int16_t>(static_cast<int16_t>(value));
 			break;
-		case stats::skin:
-		case stats::face:
-		case stats::hair:
-		case stats::exp:
-		case stats::fame:
-		case stats::mesos:
+		case constant::stat::skin:
+		case constant::stat::face:
+		case constant::stat::hair:
+		case constant::stat::exp:
+		case constant::stat::fame:
+		case constant::stat::mesos:
 			builder.add<int32_t>(value);
 			break;
 	}

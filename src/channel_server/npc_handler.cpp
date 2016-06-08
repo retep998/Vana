@@ -231,7 +231,7 @@ auto npc_handler::use_shop(ref_ptr<player> player, packet_reader &reader) -> voi
 		}
 		case shop_opcodes::recharge: {
 			game_inventory_slot slot = reader.get<game_inventory_slot>();
-			item *item = player->get_inventory()->get_item(inventories::use, slot);
+			item *item = player->get_inventory()->get_item(constant::inventory::use, slot);
 			if (item == nullptr || !game_logic_utilities::is_rechargeable(item->get_id())) {
 				// Hacking
 				return;

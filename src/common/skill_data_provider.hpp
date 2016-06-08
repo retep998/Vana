@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/banish_field_info.hpp"
 #include "common/mob_skill_level_info.hpp"
 #include "common/morph_info.hpp"
-#include "common/skill_constants.hpp"
+#include "common/constant/skill.hpp"
 #include "common/skill_level_info.hpp"
 #include "common/types.hpp"
 #include <unordered_map>

@@ -16,6 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "map_packet.hpp"
+#include "common/constant/map.hpp"
+#include "common/constant/ship_kind.hpp"
 #include "common/file_time.hpp"
 #include "common/point.hpp"
 #include "common/session.hpp"
@@ -67,7 +69,7 @@ PACKET_IMPL(player_packet, ref_ptr<vana::channel_server::player> player) {
 		.add<game_foothold_id>(player->get_foothold())
 		.unk<int8_t>();
 
-	for (int8_t i = 0; i < inventories::max_pet_count; i++) {
+	for (int8_t i = 0; i < constant::inventory::max_pet_count; i++) {
 		if (pet *pet = player->get_pets()->get_summoned(i)) {
 			builder
 				.add<bool>(true)
@@ -256,8 +258,8 @@ PACKET_IMPL(remove_portal) {
 	packet_builder builder;
 	builder
 		.add<packet_header>(SMSG_PORTAL_ACTION)
-		.add<game_map_id>(vana::maps::no_map)
-		.add<game_map_id>(vana::maps::no_map);
+		.add<game_map_id>(constant::map::no_map)
+		.add<game_map_id>(constant::map::no_map);
 	return builder;
 }
 
@@ -274,10 +276,10 @@ PACKET_IMPL(boat_dock_update, bool docked, int8_t ship_kind) {
 	packet_builder builder;
 	builder
 		.add<packet_header>(SMSG_SHIP)
-		.add<int8_t>(ship_kind == ship_kind::balrog ?
+		.add<int8_t>(ship_kind == constant::ship_kind::balrog ?
 			0x0A :
 			(docked ? 0x0C : 0x08))
-		.add<int8_t>(ship_kind == ship_kind::balrog ?
+		.add<int8_t>(ship_kind == constant::ship_kind::balrog ?
 			(docked ? 0x04 : 0x05) :
 			(docked ? 0x06 : 0x02));
 	return builder;

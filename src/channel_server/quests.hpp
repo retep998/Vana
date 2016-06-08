@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/item_constants.hpp"
 #include "common/types.hpp"
 
 namespace vana {
@@ -29,7 +28,7 @@ namespace vana {
 		namespace quests {
 			auto get_quest(ref_ptr<player> player, packet_reader &reader) -> void;
 			auto give_fame(ref_ptr<player> player, game_fame amount) -> result;
-			auto give_item(ref_ptr<player> player, game_item_id item_id, game_slot_qty amount, items::stat_variance variance_policy = items::stat_variance::none) -> result;
+			auto give_item(ref_ptr<player> player, game_item_id item_id, game_slot_qty amount, stat_variance variance_policy = stat_variance::none) -> result;
 			auto give_mesos(ref_ptr<player> player, game_mesos amount) -> result;
 		}
 	}

@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "common/file_time.hpp"
-#include "common/item_constants.hpp"
+#include "common/constant/item.hpp"
 #include "common/item_db_information.hpp"
 #include "common/item_db_record.hpp"
 #include "common/types.hpp"
@@ -35,7 +35,7 @@ namespace vana {
 		item() = default;
 		item(const soci::row &row);
 		item(game_item_id item_id, game_slot_qty amount);
-		item(const equip_data_provider &provider, game_item_id equip_id, items::stat_variance policy, bool is_gm);
+		item(const equip_data_provider &provider, game_item_id equip_id, stat_variance policy, bool is_gm);
 		item(item *item);
 
 		auto has_warm_support() const -> bool;
@@ -149,7 +149,7 @@ namespace vana {
 		game_item_id m_id = 0;
 		int32_t m_hammers = 0;
 		game_pet_id m_pet_id = 0;
-		file_time m_expiration = items::no_expiration;
+		file_time m_expiration = constant::item::no_expiration;
 		string m_name;
 	};
 }

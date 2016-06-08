@@ -101,11 +101,11 @@ auto maps::use_portal(ref_ptr<player> player, packet_reader &reader) -> void {
 				reader.unk<int8_t>(); // Seemingly useless
 				bool wheel = reader.get<bool>();
 				if (wheel) {
-					if (player->get_inventory()->get_item_amount(items::wheel_of_destiny) <= 0) {
+					if (player->get_inventory()->get_item_amount(constant::item::wheel_of_destiny) <= 0) {
 						player->accept_death(false);
 						return;
 					}
-					inventory::take_item(player, items::wheel_of_destiny, 1);
+					inventory::take_item(player, constant::item::wheel_of_destiny, 1);
 				}
 				player->accept_death(wheel);
 			}

@@ -55,7 +55,7 @@ PACKET_IMPL(mob_packet, ref_ptr<mob> value, int8_t summon_effect, ref_ptr<mob> o
 		.add<int32_t>(value->get_status_bits());
 
 	for (const auto &kvp : value->get_status_info()) {
-		if (kvp.first != status_effects::mob::empty) {
+		if (kvp.first != constant::status_effect::mob::empty) {
 			const status_info &info = kvp.second;
 			builder.add<int16_t>(static_cast<int16_t>(info.val));
 			if (info.skill_id >= 0) {

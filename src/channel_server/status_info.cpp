@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "status_info.hpp"
 #include "common/randomizer.hpp"
-#include "common/skill_constants.hpp"
 
 namespace vana {
 namespace channel_server {
@@ -30,14 +29,14 @@ status_info::status_info(int32_t status, int32_t val, int32_t skill_id, seconds 
 	reflection{0}
 {
 	switch (val) {
-		case status_effects::mob::freeze:
-			if (skill_id == vana::skills::fp_arch_mage::paralyze) {
+		case constant::status_effect::mob::freeze:
+			if (skill_id == constant::skill::fp_arch_mage::paralyze) {
 				break;
 			}
-		case status_effects::mob::stun:
+		case constant::status_effect::mob::stun:
 			time = seconds{
 				time.count() +
-				(skill_id == vana::skills::il_arch_mage::blizzard ? 3 : 1) +
+				(skill_id == constant::skill::il_arch_mage::blizzard ? 3 : 1) +
 				randomizer::rand<int32_t>(static_cast<int32_t>(time.count()) * 2)
 			};
 			// The 1 accounts for the skill cast time

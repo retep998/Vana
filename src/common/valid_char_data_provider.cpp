@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "valid_char_data_provider.hpp"
 #include "common/algorithm.hpp"
 #include "common/database.hpp"
-#include "common/game_constants.hpp"
+#include "common/constant/gender.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/initialize_common.hpp"
 #include "common/string_utilities.hpp"
@@ -67,7 +67,7 @@ auto valid_char_data_provider::load_creation_items() -> void {
 			else if (cmp == "cygnus") class_id = cygnus;
 		});
 
-		auto &items = gender_id == gender::male ?
+		auto &items = gender_id == constant::gender::male ?
 			(class_id == adventurer ? m_adventurer.male : m_cygnus.male) :
 			(class_id == adventurer ? m_adventurer.female : m_cygnus.female);
 
@@ -92,7 +92,7 @@ auto valid_char_data_provider::is_forbidden_name(const string &cmp) const -> boo
 }
 
 auto valid_char_data_provider::is_valid_character(game_gender_id gender_id, game_hair_id hair, game_hair_id hair_color, game_face_id face, game_skin_id skin, game_item_id top, game_item_id bottom, game_item_id shoes, game_item_id weapon, int8_t class_id) const -> bool {
-	if (gender_id != gender::male && gender_id != gender::female) {
+	if (gender_id != constant::gender::male && gender_id != constant::gender::female) {
 		return false;
 	}
 
@@ -124,7 +124,7 @@ auto valid_char_data_provider::is_valid_item(int32_t id, const valid_class_data 
 }
 
 auto valid_char_data_provider::get_items(game_gender_id gender_id, int8_t class_id) const -> const valid_class_data & {
-	return gender_id == gender::male ?
+	return gender_id == constant::gender::male ?
 		(class_id == adventurer ? m_adventurer.male : m_cygnus.male) :
 		(class_id == adventurer ? m_adventurer.female : m_cygnus.female);
 }

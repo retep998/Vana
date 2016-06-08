@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "pet.hpp"
 #include "common/database.hpp"
-#include "common/game_constants.hpp"
 #include "common/item_data_provider.hpp"
 #include "common/time_utilities.hpp"
 #include "common/timer/timer.hpp"
@@ -75,10 +74,10 @@ auto pet::set_name(const string &name) -> void {
 
 auto pet::add_closeness(int16_t amount) -> void {
 	m_closeness += amount;
-	if (m_closeness > stats::max_closeness) {
-		m_closeness = stats::max_closeness;
+	if (m_closeness > constant::stat::max_closeness) {
+		m_closeness = constant::stat::max_closeness;
 	}
-	while (m_closeness >= stats::pet_exp[m_level - 1] && m_level < stats::pet_levels) {
+	while (m_closeness >= constant::stat::pet_exp[m_level - 1] && m_level < constant::stat::pet_levels) {
 		level_up();
 	}
 
@@ -86,15 +85,15 @@ auto pet::add_closeness(int16_t amount) -> void {
 }
 
 auto pet::modify_fullness(int8_t offset, bool send_packet) -> void {
-	if (m_fullness + offset > stats::max_fullness) {
-		m_fullness = stats::max_fullness;
+	if (m_fullness + offset > constant::stat::max_fullness) {
+		m_fullness = constant::stat::max_fullness;
 	}
 	else {
 		m_fullness += offset;
 	}
 
-	if (m_fullness < stats::min_fullness) {
-		m_fullness = stats::min_fullness;
+	if (m_fullness < constant::stat::min_fullness) {
+		m_fullness = constant::stat::min_fullness;
 	}
 
 	if (send_packet) {
@@ -118,9 +117,9 @@ auto pet::start_timer() -> void {
 auto pet::has_name_tag() const -> bool {
 	if (m_index.is_initialized()) {
 		switch (m_index.get()) {
-			case 0: return m_player->get_inventory()->get_equipped_id(equip_slots::pet_label_ring1, true) != 0;
-			case 1: return m_player->get_inventory()->get_equipped_id(equip_slots::pet_label_ring2, true) != 0;
-			case 2: return m_player->get_inventory()->get_equipped_id(equip_slots::pet_label_ring3, true) != 0;
+			case 0: return m_player->get_inventory()->get_equipped_id(constant::equip_slot::pet_label_ring1, true) != 0;
+			case 1: return m_player->get_inventory()->get_equipped_id(constant::equip_slot::pet_label_ring2, true) != 0;
+			case 2: return m_player->get_inventory()->get_equipped_id(constant::equip_slot::pet_label_ring3, true) != 0;
 		}
 	}
 	return false;
@@ -129,9 +128,9 @@ auto pet::has_name_tag() const -> bool {
 auto pet::has_quote_item() const -> bool {
 	if (m_index.is_initialized()) {
 		switch (m_index.get()) {
-			case 0: return m_player->get_inventory()->get_equipped_id(equip_slots::pet_quote_ring1, true) != 0;
-			case 1: return m_player->get_inventory()->get_equipped_id(equip_slots::pet_quote_ring2, true) != 0;
-			case 2: return m_player->get_inventory()->get_equipped_id(equip_slots::pet_quote_ring3, true) != 0;
+			case 0: return m_player->get_inventory()->get_equipped_id(constant::equip_slot::pet_quote_ring1, true) != 0;
+			case 1: return m_player->get_inventory()->get_equipped_id(constant::equip_slot::pet_quote_ring2, true) != 0;
+			case 2: return m_player->get_inventory()->get_equipped_id(constant::equip_slot::pet_quote_ring3, true) != 0;
 		}
 	}
 	return false;

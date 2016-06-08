@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "skills_packet.hpp"
 #include "common/charge_or_stationary_skill_data.hpp"
-#include "common/game_constants.hpp"
 #include "common/session.hpp"
 #include "channel_server/maps.hpp"
 #include "channel_server/player.hpp"
@@ -51,9 +50,9 @@ SPLIT_PACKET_IMPL(show_skill, game_player_id player_id, game_skill_id skill_id, 
 		.add<game_skill_level>(level);
 
 	switch (skill_id) {
-		case vana::skills::hero::monster_magnet:
-		case vana::skills::paladin::monster_magnet:
-		case vana::skills::dark_knight::monster_magnet:
+		case constant::skill::hero::monster_magnet:
+		case constant::skill::paladin::monster_magnet:
+		case constant::skill::dark_knight::monster_magnet:
 			buffer.add<uint8_t>(direction);
 			break;
 	}
@@ -91,16 +90,16 @@ SPLIT_PACKET_IMPL(show_skill_effect, game_player_id player_id, game_skill_id ski
 	split_packet_builder builder;
 	packet_builder buffer;
 	switch (skill_id) {
-		case vana::skills::fp_wizard::mp_eater:
-		case vana::skills::il_wizard::mp_eater:
-		case vana::skills::cleric::mp_eater:
+		case constant::skill::fp_wizard::mp_eater:
+		case constant::skill::il_wizard::mp_eater:
+		case constant::skill::cleric::mp_eater:
 			buffer
 				.add<int8_t>(1)
 				.add<game_skill_id>(skill_id)
 				.add<int8_t>(1);
 			break;
-		case vana::skills::chief_bandit::meso_guard:
-		case vana::skills::dragon_knight::dragon_blood:
+		case constant::skill::chief_bandit::meso_guard:
+		case constant::skill::dragon_knight::dragon_blood:
 			buffer
 				.add<int8_t>(5)
 				.add<game_skill_id>(skill_id);
@@ -164,7 +163,7 @@ SPLIT_PACKET_IMPL(show_berserk, game_player_id player_id, game_skill_level level
 	packet_builder buffer;
 	buffer
 		.add<int8_t>(1)
-		.add<game_skill_id>(vana::skills::dark_knight::berserk)
+		.add<game_skill_id>(constant::skill::dark_knight::berserk)
 		.add<game_skill_level>(level)
 		.add<bool>(on);
 

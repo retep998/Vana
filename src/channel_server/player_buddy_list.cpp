@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "player_buddy_list.hpp"
 #include "common/algorithm.hpp"
 #include "common/database.hpp"
-#include "common/game_constants.hpp"
 #include "common/misc_utilities.hpp"
 #include "common/string_utilities.hpp"
 #include "channel_server/buddy_list_packet.hpp"
@@ -75,7 +74,7 @@ auto player_buddy_list::add_buddy(const string &name, const string &group, bool 
 		return packets::buddy::errors::buddy_list_full;
 	}
 
-	if (!ext::in_range_inclusive<size_t>(name.size(), characters::min_name_size, characters::max_name_size) || group.size() > buddies::max_group_name_size) {
+	if (!ext::in_range_inclusive<size_t>(name.size(), constant::character::min_name_size, constant::character::max_name_size) || group.size() > constant::buddy::max_group_name_size) {
 		// Invalid name or group length
 		return packets::buddy::errors::user_does_not_exist;
 	}

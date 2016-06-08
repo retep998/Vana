@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "quest_data_provider.hpp"
 #include "common/algorithm.hpp"
 #include "common/database.hpp"
+#include "common/constant/job/id.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/initialize_common.hpp"
 #include "common/quest.hpp"
@@ -155,75 +156,91 @@ auto quest_data_provider::load_rewards() -> void {
 					}
 				};
 				if (cmp == "beginner") {
-					add_reward_for_jobs({jobs::job_ids::beginner});
+					add_reward_for_jobs({
+						constant::job::id::beginner
+					});
 				}
 				else if (cmp == "warrior") {
 					add_reward_for_jobs({
-						jobs::job_ids::swordsman,
-						jobs::job_ids::fighter, jobs::job_ids::crusader, jobs::job_ids::hero,
-						jobs::job_ids::page, jobs::job_ids::white_knight, jobs::job_ids::paladin,
-						jobs::job_ids::spearman, jobs::job_ids::dragon_knight, jobs::job_ids::dark_knight
+						constant::job::id::swordsman,
+						constant::job::id::fighter, constant::job::id::crusader, constant::job::id::hero,
+						constant::job::id::page, constant::job::id::white_knight, constant::job::id::paladin,
+						constant::job::id::spearman, constant::job::id::dragon_knight, constant::job::id::dark_knight,
 					});
 				}
 				else if (cmp == "magician") {
 					add_reward_for_jobs({
-						jobs::job_ids::magician,
-						jobs::job_ids::fp_wizard, jobs::job_ids::fp_mage, jobs::job_ids::fp_arch_mage,
-						jobs::job_ids::il_wizard, jobs::job_ids::il_mage, jobs::job_ids::il_arch_mage,
-						jobs::job_ids::cleric, jobs::job_ids::priest, jobs::job_ids::bishop
+						constant::job::id::magician,
+						constant::job::id::fp_wizard, constant::job::id::fp_mage, constant::job::id::fp_arch_mage,
+						constant::job::id::il_wizard, constant::job::id::il_mage, constant::job::id::il_arch_mage,
+						constant::job::id::cleric, constant::job::id::priest, constant::job::id::bishop,
 					});
 				}
 				else if (cmp == "bowman") {
 					add_reward_for_jobs({
-						jobs::job_ids::archer,
-						jobs::job_ids::hunter, jobs::job_ids::ranger, jobs::job_ids::bowmaster,
-						jobs::job_ids::crossbowman, jobs::job_ids::sniper, jobs::job_ids::marksman
+						constant::job::id::archer,
+						constant::job::id::hunter, constant::job::id::ranger, constant::job::id::bowmaster,
+						constant::job::id::crossbowman, constant::job::id::sniper, constant::job::id::marksman,
 					});
 				}
 				else if (cmp == "thief") {
 					add_reward_for_jobs({
-						jobs::job_ids::rogue,
-						jobs::job_ids::assassin, jobs::job_ids::hermit, jobs::job_ids::night_lord,
-						jobs::job_ids::bandit, jobs::job_ids::chief_bandit, jobs::job_ids::shadower
+						constant::job::id::rogue,
+						constant::job::id::assassin, constant::job::id::hermit, constant::job::id::night_lord,
+						constant::job::id::bandit, constant::job::id::chief_bandit, constant::job::id::shadower,
 					});
 				}
 				else if (cmp == "pirate") {
 					add_reward_for_jobs({
-						jobs::job_ids::pirate,
-						jobs::job_ids::brawler, jobs::job_ids::marauder, jobs::job_ids::buccaneer,
-						jobs::job_ids::gunslinger, jobs::job_ids::outlaw, jobs::job_ids::corsair
+						constant::job::id::pirate,
+						constant::job::id::brawler, constant::job::id::marauder, constant::job::id::buccaneer,
+						constant::job::id::gunslinger, constant::job::id::outlaw, constant::job::id::corsair,
 					});
 				}
 				else if (cmp == "cygnus_beginner") {
-					add_reward_for_jobs({jobs::job_ids::noblesse});
+					add_reward_for_jobs({
+						constant::job::id::noblesse
+					});
 				}
 				else if (cmp == "cygnus_warrior") {
-					add_reward_for_jobs({jobs::job_ids::dawn_warrior1, jobs::job_ids::dawn_warrior2, jobs::job_ids::dawn_warrior3});
+					add_reward_for_jobs({
+						constant::job::id::dawn_warrior1, constant::job::id::dawn_warrior2, constant::job::id::dawn_warrior3
+					});
 				}
 				else if (cmp == "cygnus_magician") {
-					add_reward_for_jobs({jobs::job_ids::blaze_wizard1, jobs::job_ids::blaze_wizard2, jobs::job_ids::blaze_wizard3});
+					add_reward_for_jobs({
+						constant::job::id::blaze_wizard1, constant::job::id::blaze_wizard2, constant::job::id::blaze_wizard3
+					});
 				}
 				else if (cmp == "cygnus_bowman") {
-					add_reward_for_jobs({jobs::job_ids::wind_archer1, jobs::job_ids::wind_archer2, jobs::job_ids::wind_archer3});
+					add_reward_for_jobs({
+						constant::job::id::wind_archer1, constant::job::id::wind_archer2, constant::job::id::wind_archer3
+					});
 				}
 				else if (cmp == "cygnus_thief") {
-					add_reward_for_jobs({jobs::job_ids::night_walker1, jobs::job_ids::night_walker2, jobs::job_ids::night_walker3});
+					add_reward_for_jobs({
+						constant::job::id::night_walker1, constant::job::id::night_walker2, constant::job::id::night_walker3
+					});
 				}
 				else if (cmp == "cygnus_pirate") {
-					add_reward_for_jobs({jobs::job_ids::thunder_breaker1, jobs::job_ids::thunder_breaker2, jobs::job_ids::thunder_breaker3});
+					add_reward_for_jobs({
+						constant::job::id::thunder_breaker1, constant::job::id::thunder_breaker2, constant::job::id::thunder_breaker3
+					});
 				}
 				else if (cmp == "episode2_beginner") {
-					add_reward_for_jobs({jobs::job_ids::legend});
+					add_reward_for_jobs({
+						constant::job::id::legend
+					});
 				}
 				else if (cmp == "episode2_warrior") {
-					add_reward_for_jobs({jobs::job_ids::aran1, jobs::job_ids::aran2, jobs::job_ids::aran3, jobs::job_ids::aran4});
+					add_reward_for_jobs({constant::job::id::aran1, constant::job::id::aran2, constant::job::id::aran3, constant::job::id::aran4});
 				}
 				else if (cmp == "episode2_magician") {
 					add_reward_for_jobs({
-						jobs::job_ids::evan1,
-						jobs::job_ids::evan2, jobs::job_ids::evan3, jobs::job_ids::evan4,
-						jobs::job_ids::evan5, jobs::job_ids::evan6, jobs::job_ids::evan7,
-						jobs::job_ids::evan8, jobs::job_ids::evan9, jobs::job_ids::evan10
+						constant::job::id::evan1,
+						constant::job::id::evan2, constant::job::id::evan3, constant::job::id::evan4,
+						constant::job::id::evan5, constant::job::id::evan6, constant::job::id::evan7,
+						constant::job::id::evan8, constant::job::id::evan9, constant::job::id::evan10,
 					});
 				}
 				else {

@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "buffs_packet_helper.hpp"
+#include "common/constant/buff.hpp"
 #include "channel_server/buffs.hpp"
 #include "channel_server/player_active_buffs.hpp"
 
@@ -26,7 +27,7 @@ namespace helpers {
 
 PACKET_IMPL(add_buff_bytes, const buff_array &bytes) {
 	packet_builder builder;
-	for (uint8_t i = 0; i < vana::buffs::byte_quantity; i++) {
+	for (uint8_t i = 0; i < constant::buff::byte_quantity; i++) {
 		size_t packet_index = 0;
 		// This is the order they show up in, ludicrously enough
 		switch (i) {

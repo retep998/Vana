@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_data_provider.hpp"
 #include "common/algorithm.hpp"
+#include "common/constant/party.hpp"
 #include "common/database.hpp"
 #include "common/initialize_common.hpp"
 #include "common/inter_header.hpp"
@@ -485,7 +486,7 @@ auto player_data_provider::handle_party_add(game_player_id player_id, game_party
 	}
 
 	auto &party = kvp->second;
-	if (party.members.size() >= parties::max_members) {
+	if (party.members.size() >= constant::party::max_members) {
 		return;
 	}
 

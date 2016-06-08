@@ -17,7 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "buff_data_provider.hpp"
 #include "common/buff_source.hpp"
-#include "common/game_constants.hpp"
+#include "common/constant/mob_skill.hpp"
+#include "common/constant/skill.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/initialize_common.hpp"
 #include "common/item_data_provider.hpp"
@@ -116,8 +117,8 @@ auto buff_data_provider::load_data() -> void {
 		buff{{
 			magic_guard,
 		}}, {
-			skills::magician::magic_guard,
-			skills::blaze_wizard::magic_guard,
+			constant::skill::magician::magic_guard,
+			constant::skill::blaze_wizard::magic_guard,
 		});
 
 	process_skills(
@@ -125,41 +126,41 @@ auto buff_data_provider::load_data() -> void {
 			speed,
 			dark_sight,
 		}}, {
-			skills::rogue::dark_sight,
-			skills::night_walker::dark_sight,
+			constant::skill::rogue::dark_sight,
+			constant::skill::night_walker::dark_sight,
 		});
 
 	process_skills(
 		buff{{
 			booster,
 		}}, {
-			skills::fighter::sword_booster,
-			skills::fighter::axe_booster,
-			skills::page::sword_booster,
-			skills::page::bw_booster,
-			skills::spearman::spear_booster,
-			skills::spearman::polearm_booster,
-			skills::fp_mage::spell_booster,
-			skills::il_mage::spell_booster,
-			skills::hunter::bow_booster,
-			skills::crossbowman::crossbow_booster,
-			skills::assassin::claw_booster,
-			skills::bandit::dagger_booster,
-			skills::brawler::knuckler_booster,
-			skills::gunslinger::gun_booster,
-			skills::dawn_warrior::sword_booster,
-			skills::blaze_wizard::spell_booster,
-			skills::wind_archer::bow_booster,
-			skills::night_walker::claw_booster,
-			skills::thunder_breaker::knuckler_booster,
+			constant::skill::fighter::sword_booster,
+			constant::skill::fighter::axe_booster,
+			constant::skill::page::sword_booster,
+			constant::skill::page::bw_booster,
+			constant::skill::spearman::spear_booster,
+			constant::skill::spearman::polearm_booster,
+			constant::skill::fp_mage::spell_booster,
+			constant::skill::il_mage::spell_booster,
+			constant::skill::hunter::bow_booster,
+			constant::skill::crossbowman::crossbow_booster,
+			constant::skill::assassin::claw_booster,
+			constant::skill::bandit::dagger_booster,
+			constant::skill::brawler::knuckler_booster,
+			constant::skill::gunslinger::gun_booster,
+			constant::skill::dawn_warrior::sword_booster,
+			constant::skill::blaze_wizard::spell_booster,
+			constant::skill::wind_archer::bow_booster,
+			constant::skill::night_walker::claw_booster,
+			constant::skill::thunder_breaker::knuckler_booster,
 		});
 
 	process_skills(
 		buff{{
 			power_guard,
 		}}, {
-			skills::fighter::power_guard,
-			skills::page::power_guard,
+			constant::skill::fighter::power_guard,
+			constant::skill::page::power_guard,
 		});
 
 	process_skills(
@@ -167,32 +168,32 @@ auto buff_data_provider::load_data() -> void {
 			hyper_body_hp,
 			hyper_body_mp,
 		}}, {
-			skills::spearman::hyper_body,
-			skills::super_gm::hyper_body,
+			constant::skill::spearman::hyper_body,
+			constant::skill::super_gm::hyper_body,
 		});
 
 	process_skills(
 		buff{{
 			invincible,
 		}}, {
-			skills::cleric::invincible,
+			constant::skill::cleric::invincible,
 		});
 
 	process_skills(
 		buff{{
 			soul_arrow,
 		}}, {
-			skills::hunter::soul_arrow,
-			skills::crossbowman::soul_arrow,
-			skills::wind_archer::soul_arrow,
+			constant::skill::hunter::soul_arrow,
+			constant::skill::crossbowman::soul_arrow,
+			constant::skill::wind_archer::soul_arrow,
 		});
 
 	process_skills(
 		buff{{
 			combo,
 		}}, {
-			skills::crusader::combo_attack,
-			skills::dawn_warrior::combo_attack,
+			constant::skill::crusader::combo_attack,
+			constant::skill::dawn_warrior::combo_attack,
 		});
 
 	process_skills(
@@ -200,16 +201,16 @@ auto buff_data_provider::load_data() -> void {
 			magic_attack,
 			charge,
 		}}, {
-			skills::white_knight::bw_fire_charge,
-			skills::white_knight::bw_ice_charge,
-			skills::white_knight::bw_lit_charge,
-			skills::white_knight::sword_fire_charge,
-			skills::white_knight::sword_ice_charge,
-			skills::white_knight::sword_lit_charge,
-			skills::paladin::bw_holy_charge,
-			skills::paladin::sword_holy_charge,
-			skills::dawn_warrior::soul_charge,
-			skills::thunder_breaker::lightning_charge,
+			constant::skill::white_knight::bw_fire_charge,
+			constant::skill::white_knight::bw_ice_charge,
+			constant::skill::white_knight::bw_lit_charge,
+			constant::skill::white_knight::sword_fire_charge,
+			constant::skill::white_knight::sword_ice_charge,
+			constant::skill::white_knight::sword_lit_charge,
+			constant::skill::paladin::bw_holy_charge,
+			constant::skill::paladin::sword_holy_charge,
+			constant::skill::dawn_warrior::soul_charge,
+			constant::skill::thunder_breaker::lightning_charge,
 		});
 
 	process_skills(
@@ -218,44 +219,44 @@ auto buff_data_provider::load_data() -> void {
 			timed_hurt.
 				with_act(buff_action::hurt, buff_skill_value::x, seconds{4}),
 		}}, {
-			skills::dragon_knight::dragon_blood,
+			constant::skill::dragon_knight::dragon_blood,
 		});
 
 	process_skills(
 		buff{{
 			holy_symbol,
 		}}, {
-			skills::priest::holy_symbol,
-			skills::super_gm::holy_symbol,
+			constant::skill::priest::holy_symbol,
+			constant::skill::super_gm::holy_symbol,
 		});
 
 	process_skills(
 		buff{{
 			meso_up,
 		}}, {
-			skills::hermit::meso_up,
+			constant::skill::hermit::meso_up,
 		});
 
 	process_skills(
 		buff{{
 			shadow_partner,
 		}}, {
-			skills::hermit::shadow_partner,
-			skills::night_walker::shadow_partner,
+			constant::skill::hermit::shadow_partner,
+			constant::skill::night_walker::shadow_partner,
 		});
 
 	process_skills(
 		buff{{
 			pickpocket,
 		}}, {
-			skills::chief_bandit::pickpocket,
+			constant::skill::chief_bandit::pickpocket,
 		});
 
 	process_skills(
 		buff{{
 			meso_guard,
 		}}, {
-			skills::chief_bandit::meso_guard,
+			constant::skill::chief_bandit::meso_guard,
 		});
 
 	process_skills(
@@ -263,89 +264,89 @@ auto buff_data_provider::load_data() -> void {
 			timed_heal.
 				with_act(buff_action::heal, buff_skill_value::x, milliseconds{4900}),
 		}}, {
-			skills::beginner::recovery,
-			skills::noblesse::recovery,
+			constant::skill::beginner::recovery,
+			constant::skill::noblesse::recovery,
 		});
 
 	process_skills(
 		buff{{
 			maple_warrior,
 		}}, {
-			skills::hero::maple_warrior,
-			skills::paladin::maple_warrior,
-			skills::dark_knight::maple_warrior,
-			skills::fp_arch_mage::maple_warrior,
-			skills::il_arch_mage::maple_warrior,
-			skills::bishop::maple_warrior,
-			skills::bowmaster::maple_warrior,
-			skills::marksman::maple_warrior,
-			skills::night_lord::maple_warrior,
-			skills::shadower::maple_warrior,
-			skills::buccaneer::maple_warrior,
-			skills::corsair::maple_warrior,
+			constant::skill::hero::maple_warrior,
+			constant::skill::paladin::maple_warrior,
+			constant::skill::dark_knight::maple_warrior,
+			constant::skill::fp_arch_mage::maple_warrior,
+			constant::skill::il_arch_mage::maple_warrior,
+			constant::skill::bishop::maple_warrior,
+			constant::skill::bowmaster::maple_warrior,
+			constant::skill::marksman::maple_warrior,
+			constant::skill::night_lord::maple_warrior,
+			constant::skill::shadower::maple_warrior,
+			constant::skill::buccaneer::maple_warrior,
+			constant::skill::corsair::maple_warrior,
 		});
 
 	process_skills(
 		buff{{
 			power_stance,
 		}}, {
-			skills::hero::power_stance,
-			skills::paladin::power_stance,
-			skills::dark_knight::power_stance,
+			constant::skill::hero::power_stance,
+			constant::skill::paladin::power_stance,
+			constant::skill::dark_knight::power_stance,
 		});
 
 	process_skills(
 		buff{{
 			sharp_eyes,
 		}}, {
-			skills::bowmaster::sharp_eyes,
-			skills::marksman::sharp_eyes,
+			constant::skill::bowmaster::sharp_eyes,
+			constant::skill::marksman::sharp_eyes,
 		});
 
 	process_skills(
 		buff{{
 			mana_reflection,
 		}}, {
-			skills::fp_arch_mage::mana_reflection,
-			skills::il_arch_mage::mana_reflection,
-			skills::bishop::mana_reflection,
+			constant::skill::fp_arch_mage::mana_reflection,
+			constant::skill::il_arch_mage::mana_reflection,
+			constant::skill::bishop::mana_reflection,
 		});
 
 	process_skills(
 		buff{{
 			shadow_stars,
 		}}, {
-			skills::night_lord::shadow_stars,
+			constant::skill::night_lord::shadow_stars,
 		});
 
 	process_skills(
 		buff{{
 			infinity,
 		}}, {
-			skills::fp_arch_mage::infinity,
-			skills::il_arch_mage::infinity,
-			skills::bishop::infinity,
+			constant::skill::fp_arch_mage::infinity,
+			constant::skill::il_arch_mage::infinity,
+			constant::skill::bishop::infinity,
 		});
 
 	process_skills(
 		buff{{
 			holy_shield,
 		}}, {
-			skills::bishop::holy_shield,
+			constant::skill::bishop::holy_shield,
 		});
 
 	process_skills(
 		buff{{
 			hamstring,
 		}}, {
-			skills::bowmaster::hamstring,
+			constant::skill::bowmaster::hamstring,
 		});
 
 	process_skills(
 		buff{{
 			blind,
 		}}, {
-			skills::marksman::blind,
+			constant::skill::marksman::blind,
 		});
 
 	process_skills(
@@ -353,7 +354,7 @@ auto buff_data_provider::load_data() -> void {
 			physical_attack,
 			concentrate,
 		}}, {
-			skills::bowmaster::concentrate,
+			constant::skill::bowmaster::concentrate,
 		});
 
 	process_skills(
@@ -361,43 +362,43 @@ auto buff_data_provider::load_data() -> void {
 			physical_attack,
 			echo,
 		}}, {
-			skills::beginner::echo_of_hero,
-			skills::noblesse::echo_of_hero,
+			constant::skill::beginner::echo_of_hero,
+			constant::skill::noblesse::echo_of_hero,
 		});
 
 	process_skills(
 		buff{{
 			unk,
 		}}, {
-			skills::super_gm::hide,
+			constant::skill::super_gm::hide,
 		});
 
 	process_skills(
 		buff{{
 			spark,
 		}}, {
-			skills::thunder_breaker::spark,
+			constant::skill::thunder_breaker::spark,
 		});
 
 	process_skills(
 		buff{{
 			dawn_warrior_final_attack,
 		}}, {
-			skills::dawn_warrior::final_attack,
+			constant::skill::dawn_warrior::final_attack,
 		});
 
 	process_skills(
 		buff{{
 			wind_walker_final_attack,
 		}}, {
-			skills::wind_archer::final_attack,
+			constant::skill::wind_archer::final_attack,
 		});
 
 	process_skills(
 		buff{{
 			elemental_reset,
 		}}, {
-			skills::blaze_wizard::elemental_reset,
+			constant::skill::blaze_wizard::elemental_reset,
 		});
 
 	process_skills(
@@ -405,15 +406,15 @@ auto buff_data_provider::load_data() -> void {
 			speed,
 			wind_walk,
 		}}, {
-			skills::wind_archer::wind_walk,
+			constant::skill::wind_archer::wind_walk,
 		});
 
 	process_skills(
 		buff{{
 			energy_charge,
 		}}, {
-			skills::marauder::energy_charge,
-			skills::thunder_breaker::energy_charge,
+			constant::skill::marauder::energy_charge,
+			constant::skill::thunder_breaker::energy_charge,
 		});
 
 	process_skills(
@@ -421,42 +422,42 @@ auto buff_data_provider::load_data() -> void {
 			dash_speed,
 			dash_jump,
 		}}, {
-			skills::pirate::dash,
-			skills::thunder_breaker::dash,
+			constant::skill::pirate::dash,
+			constant::skill::thunder_breaker::dash,
 		});
 
 	process_skills(
 		buff{{
 			mount,
 		}}, {
-			skills::beginner::monster_rider,
-			skills::noblesse::monster_rider,
+			constant::skill::beginner::monster_rider,
+			constant::skill::noblesse::monster_rider,
 		});
 
 	process_skills(
 		buff{{
 			speed_infusion,
 		}}, {
-			skills::buccaneer::speed_infusion,
-			skills::thunder_breaker::speed_infusion,
+			constant::skill::buccaneer::speed_infusion,
+			constant::skill::thunder_breaker::speed_infusion,
 		});
 
 	process_skills(
 		buff{{
 			homing_beacon,
 		}}, {
-			skills::outlaw::homing_beacon,
-			skills::corsair::bullseye,
+			constant::skill::outlaw::homing_beacon,
+			constant::skill::corsair::bullseye,
 		});
 
 	process_skills(
 		buff{{
 			physical_defense,
 		}}, {
-			skills::magician::magic_armor,
-			skills::swordsman::iron_body,
-			skills::blaze_wizard::magic_armor,
-			skills::dawn_warrior::iron_body,
+			constant::skill::magician::magic_armor,
+			constant::skill::swordsman::iron_body,
+			constant::skill::blaze_wizard::magic_armor,
+			constant::skill::dawn_warrior::iron_body,
 		});
 
 	process_skills(
@@ -464,8 +465,8 @@ auto buff_data_provider::load_data() -> void {
 			accuracy,
 			avoid,
 		}}, {
-			skills::archer::focus,
-			skills::wind_archer::focus,
+			constant::skill::archer::focus,
+			constant::skill::wind_archer::focus,
 		});
 
 	process_skills(
@@ -473,8 +474,8 @@ auto buff_data_provider::load_data() -> void {
 			physical_attack,
 			physical_defense,
 		}}, {
-			skills::fighter::rage,
-			skills::dawn_warrior::rage,
+			constant::skill::fighter::rage,
+			constant::skill::dawn_warrior::rage,
 		});
 
 	process_skills(
@@ -482,16 +483,16 @@ auto buff_data_provider::load_data() -> void {
 			physical_defense,
 			magic_defense,
 		}}, {
-			skills::spearman::iron_will,
+			constant::skill::spearman::iron_will,
 		});
 
 	process_skills(
 		buff{{
 			magic_attack,
 		}}, {
-			skills::fp_wizard::meditation,
-			skills::il_wizard::meditation,
-			skills::blaze_wizard::meditation,
+			constant::skill::fp_wizard::meditation,
+			constant::skill::il_wizard::meditation,
+			constant::skill::blaze_wizard::meditation,
 		});
 
 	process_skills(
@@ -502,7 +503,7 @@ auto buff_data_provider::load_data() -> void {
 			accuracy,
 			avoid,
 		}}, {
-			skills::cleric::bless,
+			constant::skill::cleric::bless,
 		});
 
 	process_skills(
@@ -514,14 +515,14 @@ auto buff_data_provider::load_data() -> void {
 			accuracy,
 			avoid,
 		}}, {
-			skills::super_gm::bless,
+			constant::skill::super_gm::bless,
 		});
 
 	process_skills(
 		buff{{
 			physical_attack,
 		}}, {
-			skills::hero::enrage,
+			constant::skill::hero::enrage,
 		});
 
 	process_skills(
@@ -530,15 +531,15 @@ auto buff_data_provider::load_data() -> void {
 				with_predefined_value(1).
 				with_map_info({}),
 		}}, {
-			skills::dragon_knight::dragon_roar,
+			constant::skill::dragon_knight::dragon_roar,
 		});
 
 	process_skills(
 		buff{{
 			speed,
 		}}, {
-			skills::beginner::nimble_feet,
-			skills::noblesse::nimble_feet,
+			constant::skill::beginner::nimble_feet,
+			constant::skill::noblesse::nimble_feet,
 		});
 
 	process_skills(
@@ -546,18 +547,18 @@ auto buff_data_provider::load_data() -> void {
 			speed,
 			jump,
 		}}, {
-			skills::assassin::haste,
-			skills::bandit::haste,
-			skills::night_walker::haste,
-			skills::gm::haste,
-			skills::super_gm::haste,
+			constant::skill::assassin::haste,
+			constant::skill::bandit::haste,
+			constant::skill::night_walker::haste,
+			constant::skill::gm::haste,
+			constant::skill::super_gm::haste,
 		});
 
 	process_skills(
 		buff{{
 			morph,
 		}}, {
-			skills::brawler::oak_barrel,
+			constant::skill::brawler::oak_barrel,
 		});
 
 	process_skills(
@@ -570,10 +571,10 @@ auto buff_data_provider::load_data() -> void {
 				with_value(buff_skill_value::gender_specific_morph).
 				with_map_info(buff_map_info{2, buff_skill_value::gender_specific_morph}),
 		}}, {
-			skills::marauder::transformation,
-			skills::buccaneer::super_transformation,
-			skills::wind_archer::eagle_eye,
-			skills::thunder_breaker::transformation,
+			constant::skill::marauder::transformation,
+			constant::skill::buccaneer::super_transformation,
+			constant::skill::wind_archer::eagle_eye,
+			constant::skill::thunder_breaker::transformation,
 		});
 
 	process_skills(
@@ -582,19 +583,19 @@ auto buff_data_provider::load_data() -> void {
 			magic_defense,
 			mount,
 		}}, {
-			skills::corsair::battleship,
+			constant::skill::corsair::battleship,
 		});
 
-	m_mob_skill_info[mob_skills::stun] = buff{stun};
-	m_mob_skill_info[mob_skills::poison] = buff{poison};
-	m_mob_skill_info[mob_skills::seal] = buff{seal};
-	m_mob_skill_info[mob_skills::darkness] = buff{darkness};
-	m_mob_skill_info[mob_skills::weakness] = buff{weakness};
-	m_mob_skill_info[mob_skills::curse] = buff{curse};
-	m_mob_skill_info[mob_skills::slow] = buff{slow};
-	m_mob_skill_info[mob_skills::seduce] = buff{seduce};
-	m_mob_skill_info[mob_skills::crazy_skull] = buff{crazy_skull};
-	m_mob_skill_info[mob_skills::zombify] = buff{zombify};
+	m_mob_skill_info[constant::mob_skill::stun] = buff{stun};
+	m_mob_skill_info[constant::mob_skill::poison] = buff{poison};
+	m_mob_skill_info[constant::mob_skill::seal] = buff{seal};
+	m_mob_skill_info[constant::mob_skill::darkness] = buff{darkness};
+	m_mob_skill_info[constant::mob_skill::weakness] = buff{weakness};
+	m_mob_skill_info[constant::mob_skill::curse] = buff{curse};
+	m_mob_skill_info[constant::mob_skill::slow] = buff{slow};
+	m_mob_skill_info[constant::mob_skill::seduce] = buff{seduce};
+	m_mob_skill_info[constant::mob_skill::crazy_skull] = buff{crazy_skull};
+	m_mob_skill_info[constant::mob_skill::zombify] = buff{zombify};
 
 	m_basics.physical_attack = physical_attack;
 	m_basics.physical_defense = physical_defense;

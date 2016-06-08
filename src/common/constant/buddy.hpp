@@ -20,19 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/types.hpp"
 
 namespace vana {
-	namespace maps {
-		enum : game_map_id {
-			gm_map = 180000000,
-			origin_of_clock_tower = 220080001,
-			sorcerers_room = 270020211,
-			no_map = 999999999
-		};
-	}
-
-	namespace ship_kind {
-		enum : int8_t {
-			regular = 0x00,
-			balrog = 0x01,
-		};
+	namespace constant {
+		namespace buddy {
+			const size_t max_group_name_size = 13;
+		}
 	}
 }

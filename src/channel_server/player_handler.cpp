@@ -26,7 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/randomizer.hpp"
 #include "common/packet_reader.hpp"
 #include "common/return_damage_data.hpp"
-#include "common/skill_constants.hpp"
 #include "common/skill_data_provider.hpp"
 #include "common/skill_type.hpp"
 #include "common/time_utilities.hpp"
@@ -354,13 +353,13 @@ auto player_handler::handle_moving(ref_ptr<player> player, packet_reader &reader
 auto player_handler::handle_special_skills(ref_ptr<player> player, packet_reader &reader) -> void {
 	game_skill_id skill_id = reader.get<game_skill_id>();
 	switch (skill_id) {
-		case vana::skills::hero::monster_magnet:
-		case vana::skills::paladin::monster_magnet:
-		case vana::skills::dark_knight::monster_magnet:
-		case vana::skills::marksman::piercing_arrow:
-		case vana::skills::fp_arch_mage::big_bang:
-		case vana::skills::il_arch_mage::big_bang:
-		case vana::skills::bishop::big_bang: {
+		case constant::skill::hero::monster_magnet:
+		case constant::skill::paladin::monster_magnet:
+		case constant::skill::dark_knight::monster_magnet:
+		case constant::skill::marksman::piercing_arrow:
+		case constant::skill::fp_arch_mage::big_bang:
+		case constant::skill::il_arch_mage::big_bang:
+		case constant::skill::bishop::big_bang: {
 			charge_or_stationary_skill_data info;
 			info.skill_id = skill_id;
 			info.level = reader.get<game_skill_level>();
@@ -370,7 +369,7 @@ auto player_handler::handle_special_skills(ref_ptr<player> player, packet_reader
 			player->send_map(packets::skills::end_charge_or_stationary_skill(player->get_id(), info));
 			break;
 		}
-		case vana::skills::chief_bandit::chakra: {
+		case constant::skill::chief_bandit::chakra: {
 			game_stat dex = player->get_stats()->get_dex(true);
 			game_stat luk = player->get_stats()->get_luk(true);
 			int16_t recovery = player->get_skills()->get_skill_info(skill_id)->y;
@@ -482,7 +481,7 @@ auto player_handler::use_melee_attack(ref_ptr<player> player, packet_reader &rea
 	game_skill_id skill_id = attack.skill_id;
 	game_skill_level level = attack.skill_level;
 
-	if (skill_id != vana::skills::all::regular_attack) {
+	if (skill_id != constant::skill::all::regular_attack) {
 		if (skills::use_attack_skill(player, skill_id) == result::failure) {
 			// Most likely hacking, could feasibly be lag
 			return;
@@ -539,10 +538,10 @@ auto player_handler::use_melee_attack(ref_ptr<player> player, packet_reader &rea
 				}
 				break;
 			}
-			if (skill_id == vana::skills::paladin::heavens_hammer) {
-				damage = (mob->is_boss() ? stats::max_damage : (mob->get_hp() - 1));
+			if (skill_id == constant::skill::paladin::heavens_hammer) {
+				damage = (mob->is_boss() ? constant::stat::max_damage : (mob->get_hp() - 1));
 			}
-			else if (skill_id == vana::skills::bandit::steal && !mob->is_boss()) {
+			else if (skill_id == constant::skill::bandit::steal && !mob->is_boss()) {
 				drop_handler::do_drops(player->get_id(), map_id, mob->get_level(), mob->get_mob_id(), mob->get_pos(), false, false, mob->get_taunt_effect(), true);
 			}
 			int32_t temp_hp = mob->get_hp();
@@ -554,7 +553,7 @@ auto player_handler::use_melee_attack(ref_ptr<player> player, packet_reader &rea
 		}
 		if (target_total > 0) {
 			if (mob != nullptr && mob->get_hp() > 0) {
-				mob_handler::handle_mob_status(player->get_id(), mob, skill_id, level, player->get_inventory()->get_equipped_id(equip_slots::weapon), connected_hits);
+				mob_handler::handle_mob_status(player->get_id(), mob, skill_id, level, player->get_inventory()->get_equipped_id(constant::equip_slot::weapon), connected_hits);
 				if (mob->get_hp() < mob->get_self_destruct_hp()) {
 					mob->explode();
 				}
@@ -597,7 +596,7 @@ auto player_handler::use_melee_attack(ref_ptr<player> player, packet_reader &rea
 	}
 
 	switch (skill_id) {
-		case vana::skills::chief_bandit::meso_explosion: {
+		case constant::skill::chief_bandit::meso_explosion: {
 			uint8_t items = reader.get<int8_t>();
 			for (uint8_t i = 0; i < items; i++) {
 				game_map_object obj_id = reader.get<game_map_object>();
@@ -614,8 +613,8 @@ auto player_handler::use_melee_attack(ref_ptr<player> player, packet_reader &rea
 			}
 			break;
 		}
-		case vana::skills::marauder::energy_drain:
-		case vana::skills::thunder_breaker::energy_drain: {
+		case constant::skill::marauder::energy_drain:
+		case constant::skill::thunder_breaker::energy_drain: {
 			int32_t hp_recover = static_cast<int32_t>(attack.total_damage * player->get_skills()->get_skill_info(skill_id)->x / 100);
 			if (hp_recover > player->get_stats()->get_max_hp()) {
 				player->get_stats()->set_hp(player->get_stats()->get_max_hp());
@@ -625,24 +624,24 @@ auto player_handler::use_melee_attack(ref_ptr<player> player, packet_reader &rea
 			}
 			break;
 		}
-		case vana::skills::crusader::sword_panic: // Crusader finishers
-		case vana::skills::crusader::sword_coma:
-		case vana::skills::crusader::axe_panic:
-		case vana::skills::crusader::axe_coma:
-		case vana::skills::dawn_warrior::panic:
-		case vana::skills::dawn_warrior::coma:
+		case constant::skill::crusader::sword_panic: // Crusader finishers
+		case constant::skill::crusader::sword_coma:
+		case constant::skill::crusader::axe_panic:
+		case constant::skill::crusader::axe_coma:
+		case constant::skill::dawn_warrior::panic:
+		case constant::skill::dawn_warrior::coma:
 			player->get_active_buffs()->reset_combo();
 			break;
-		case vana::skills::night_walker::poison_bomb: {
+		case constant::skill::night_walker::poison_bomb: {
 			auto skill = channel_server::get_instance().get_skill_data_provider().get_skill(skill_id, level);
 			mist *mist_value = new mist{player->get_map_id(), player, skill->buff_time, skill->dimensions.move(attack.projectile_pos), skill_id, level, true};
 			break;
 		}
-		case vana::skills::crusader::shout:
-		case vana::skills::gm::super_dragon_roar:
-		case vana::skills::super_gm::super_dragon_roar:
+		case constant::skill::crusader::shout:
+		case constant::skill::gm::super_dragon_roar:
+		case constant::skill::super_gm::super_dragon_roar:
 			break;
-		case vana::skills::dragon_knight::dragon_roar: {
+		case constant::skill::dragon_knight::dragon_roar: {
 			int16_t x_property = channel_server::get_instance().get_skill_data_provider().get_skill(skill_id, level)->x;
 			uint16_t reduction = (player->get_stats()->get_max_hp() / 100) * x_property;
 			if (reduction < player->get_stats()->get_hp()) {
@@ -652,10 +651,10 @@ auto player_handler::use_melee_attack(ref_ptr<player> player, packet_reader &rea
 				// Hacking
 				return;
 			}
-			buffs::add_buff(player, vana::skills::dragon_knight::dragon_roar, level, 0);
+			buffs::add_buff(player, constant::skill::dragon_knight::dragon_roar, level, 0);
 			break;
 		}
-		case vana::skills::dragon_knight::sacrifice: {
+		case constant::skill::dragon_knight::sacrifice: {
 			if (attack.total_damage > 0) {
 				int16_t x_property = player->get_skills()->get_skill_info(skill_id)->x;
 				int32_t hp_damage = static_cast<int32_t>(attack.total_damage * x_property / 100);
@@ -668,11 +667,11 @@ auto player_handler::use_melee_attack(ref_ptr<player> player, packet_reader &rea
 			}
 			break;
 		}
-		case vana::skills::white_knight::charge_blow: {
-			game_skill_level skill_level = player->get_skills()->get_skill_level(vana::skills::paladin::advanced_charge);
+		case constant::skill::white_knight::charge_blow: {
+			game_skill_level skill_level = player->get_skills()->get_skill_level(constant::skill::paladin::advanced_charge);
 			int16_t x_property = 0;
 			if (skill_level > 0) {
-				x_property = channel_server::get_instance().get_skill_data_provider().get_skill(vana::skills::paladin::advanced_charge, skill_level)->x;
+				x_property = channel_server::get_instance().get_skill_data_provider().get_skill(constant::skill::paladin::advanced_charge, skill_level)->x;
 			}
 			if ((x_property != 100) && (x_property == 0 || randomizer::percentage<int16_t>() > (x_property - 1))) {
 				player->get_active_buffs()->stop_charge();
@@ -705,9 +704,9 @@ auto player_handler::use_ranged_attack(ref_ptr<player> player, packet_reader &re
 	player->send_map(packets::players::use_ranged_attack(player->get_id(), mastery_id, player->get_skills()->get_skill_level(mastery_id), attack));
 
 	switch (skill_id) {
-		case vana::skills::bowmaster::hurricane:
-		case vana::skills::wind_archer::hurricane:
-		case vana::skills::corsair::rapid_fire:
+		case constant::skill::bowmaster::hurricane:
+		case constant::skill::wind_archer::hurricane:
+		case constant::skill::corsair::rapid_fire:
 			if (!player->has_charge_or_stationary_skill()) {
 				charge_or_stationary_skill_data info;
 				info.skill_id = skill_id;
@@ -752,7 +751,7 @@ auto player_handler::use_ranged_attack(ref_ptr<player> player, packet_reader &re
 				continue;
 			}
 			max_hp = mob->get_max_hp();
-			if (skill_id == vana::skills::ranger::mortal_blow || skill_id == vana::skills::sniper::mortal_blow) {
+			if (skill_id == constant::skill::ranger::mortal_blow || skill_id == constant::skill::sniper::mortal_blow) {
 				auto sk = player->get_skills()->get_skill_info(skill_id);
 				int32_t hp_percentage = max_hp * sk->x / 100; // Percentage of HP required for Mortal Blow activation
 				if (mob->get_hp() < hp_percentage && randomizer::percentage<int16_t>() < sk->y) {
@@ -765,13 +764,13 @@ auto player_handler::use_ranged_attack(ref_ptr<player> player, packet_reader &re
 			if (temp_hp <= damage) {
 				mob = nullptr;
 			}
-			else if (skill_id == vana::skills::outlaw::homing_beacon || skill_id == vana::skills::corsair::bullseye) {
+			else if (skill_id == constant::skill::outlaw::homing_beacon || skill_id == constant::skill::corsair::bullseye) {
 				buffs::add_buff(player, skill_id, level, 0, map_mob_id);
 			}
 		}
 		if (target_total > 0) {
 			if (mob != nullptr && mob->get_hp() > 0) {
-				mob_handler::handle_mob_status(player->get_id(), mob, skill_id, level, player->get_inventory()->get_equipped_id(equip_slots::weapon), connected_hits, first_hit);
+				mob_handler::handle_mob_status(player->get_id(), mob, skill_id, level, player->get_inventory()->get_equipped_id(constant::equip_slot::weapon), connected_hits, first_hit);
 				if (mob->get_hp() < mob->get_self_destruct_hp()) {
 					mob->explode();
 				}
@@ -792,8 +791,8 @@ auto player_handler::use_ranged_attack(ref_ptr<player> player, packet_reader &re
 	}
 
 	switch (skill_id) {
-		case vana::skills::night_walker::vampire:
-		case vana::skills::assassin::drain: {
+		case constant::skill::night_walker::vampire:
+		case constant::skill::assassin::drain: {
 			int16_t x_property = player->get_skills()->get_skill_info(skill_id)->x;
 			int32_t hp_recover = static_cast<int32_t>(attack.total_damage * x_property / 100);
 			game_health player_max_hp = player->get_stats()->get_max_hp();
@@ -811,7 +810,7 @@ auto player_handler::use_ranged_attack(ref_ptr<player> player, packet_reader &re
 			}
 			break;
 		}
-		case vana::skills::dawn_warrior::soul_blade:
+		case constant::skill::dawn_warrior::soul_blade:
 			if (attack.total_damage > 0) {
 				player->get_active_buffs()->add_combo();
 			}
@@ -887,7 +886,7 @@ auto player_handler::use_spell_attack(ref_ptr<player> player, packet_reader &rea
 			}
 		}
 		if (mob != nullptr && target_total > 0 && mob->get_hp() > 0) {
-			mob_handler::handle_mob_status(player->get_id(), mob, skill_id, level, player->get_inventory()->get_equipped_id(equip_slots::weapon), connected_hits);
+			mob_handler::handle_mob_status(player->get_id(), mob, skill_id, level, player->get_inventory()->get_equipped_id(constant::equip_slot::weapon), connected_hits);
 			if (mob->get_hp() < mob->get_self_destruct_hp()) {
 				mob->explode();
 			}
@@ -895,8 +894,8 @@ auto player_handler::use_spell_attack(ref_ptr<player> player, packet_reader &rea
 	}
 
 	switch (skill_id) {
-		case vana::skills::fp_mage::poison_mist:
-		case vana::skills::blaze_wizard::flame_gear: {
+		case constant::skill::fp_mage::poison_mist:
+		case constant::skill::blaze_wizard::flame_gear: {
 			auto skill = channel_server::get_instance().get_skill_data_provider().get_skill(skill_id, level);
 			mist *value = new mist{player->get_map_id(), player, skill->buff_time, skill->dimensions.move(player->get_pos()), skill_id, level, true};
 			break;
@@ -943,7 +942,7 @@ auto player_handler::use_energy_charge_attack(ref_ptr<player> player, packet_rea
 			}
 		}
 		if (mob != nullptr && target_total > 0 && mob->get_hp() > 0) {
-			mob_handler::handle_mob_status(player->get_id(), mob, skill_id, level, player->get_inventory()->get_equipped_id(equip_slots::weapon), connected_hits);
+			mob_handler::handle_mob_status(player->get_id(), mob, skill_id, level, player->get_inventory()->get_equipped_id(constant::equip_slot::weapon), connected_hits);
 			if (mob->get_hp() < mob->get_self_destruct_hp()) {
 				mob->explode();
 			}
@@ -982,14 +981,14 @@ auto player_handler::use_summon_attack(ref_ptr<player> player, packet_reader &re
 			}
 		}
 		if (mob != nullptr && target_total > 0 && mob->get_hp() > 0) {
-			mob_handler::handle_mob_status(player->get_id(), mob, summon->get_skill_id(), summon->get_skill_level(), player->get_inventory()->get_equipped_id(equip_slots::weapon), connected_hits);
+			mob_handler::handle_mob_status(player->get_id(), mob, summon->get_skill_id(), summon->get_skill_level(), player->get_inventory()->get_equipped_id(constant::equip_slot::weapon), connected_hits);
 			if (mob->get_hp() < mob->get_self_destruct_hp()) {
 				mob->explode();
 			}
 		}
 	}
 
-	if (summon->get_skill_id() == vana::skills::outlaw::gaviota) {
+	if (summon->get_skill_id() == constant::skill::outlaw::gaviota) {
 		summon_handler::remove_summon(player, attack.summon_id, false, summon_messages::none, false);
 	}
 }
@@ -1009,7 +1008,7 @@ auto player_handler::compile_attack(ref_ptr<player> player, packet_reader &reade
 		targets = t_byte / 0x10;
 		hits = t_byte % 0x10;
 
-		if (skill_id != vana::skills::all::regular_attack) {
+		if (skill_id != constant::skill::all::regular_attack) {
 			attack.skill_level = player->get_skills()->get_skill_level(skill_id);
 		}
 
@@ -1019,28 +1018,28 @@ auto player_handler::compile_attack(ref_ptr<player> player, packet_reader &reade
 		reader.skip<game_checksum>();
 
 		switch (skill_id) {
-			case vana::skills::hermit::shadow_meso:
+			case constant::skill::hermit::shadow_meso:
 				attack.is_shadow_meso = true;
 				shadow_meso = true;
 				break;
-			case vana::skills::chief_bandit::meso_explosion:
+			case constant::skill::chief_bandit::meso_explosion:
 				attack.is_meso_explosion = true;
 				meso_explosion = true;
 				break;
-			case vana::skills::cleric::heal:
+			case constant::skill::cleric::heal:
 				attack.is_heal = true;
 				break;
-			case vana::skills::gunslinger::grenade:
-			case vana::skills::brawler::corkscrew_blow:
-			case vana::skills::thunder_breaker::corkscrew_blow:
-			case vana::skills::bowmaster::hurricane:
-			case vana::skills::wind_archer::hurricane:
-			case vana::skills::marksman::piercing_arrow:
-			case vana::skills::night_walker::poison_bomb:
-			case vana::skills::corsair::rapid_fire:
-			case vana::skills::fp_arch_mage::big_bang:
-			case vana::skills::il_arch_mage::big_bang:
-			case vana::skills::bishop::big_bang:
+			case constant::skill::gunslinger::grenade:
+			case constant::skill::brawler::corkscrew_blow:
+			case constant::skill::thunder_breaker::corkscrew_blow:
+			case constant::skill::bowmaster::hurricane:
+			case constant::skill::wind_archer::hurricane:
+			case constant::skill::marksman::piercing_arrow:
+			case constant::skill::night_walker::poison_bomb:
+			case constant::skill::corsair::rapid_fire:
+			case constant::skill::fp_arch_mage::big_bang:
+			case constant::skill::il_arch_mage::big_bang:
+			case constant::skill::bishop::big_bang:
 				attack.is_charge_skill = true;
 				attack.charge = reader.get<game_charge_time>();
 				break;
@@ -1067,16 +1066,16 @@ auto player_handler::compile_attack(ref_ptr<player> player, packet_reader &reade
 		attack.cash_star_pos = cs_star;
 		reader.unk<uint8_t>(); // 0x00 = AoE?
 		if (!shadow_meso) {
-			if (player->get_active_buffs()->has_shadow_stars() && skill_id != vana::skills::night_lord::taunt) {
+			if (player->get_active_buffs()->has_shadow_stars() && skill_id != constant::skill::night_lord::taunt) {
 				attack.star_id = reader.get<int32_t>();
 			}
 			else if (cs_star > 0) {
-				if (item *item = player->get_inventory()->get_item(inventories::cash, cs_star)) {
+				if (item *item = player->get_inventory()->get_item(constant::inventory::cash, cs_star)) {
 					attack.star_id = item->get_id();
 				}
 			}
 			else if (star_slot > 0) {
-				if (item *item = player->get_inventory()->get_item(inventories::use, star_slot)) {
+				if (item *item = player->get_inventory()->get_item(constant::inventory::use, star_slot)) {
 					attack.star_id = item->get_id();
 				}
 			}
@@ -1113,7 +1112,7 @@ auto player_handler::compile_attack(ref_ptr<player> player, packet_reader &reade
 	}
 	attack.player_pos = reader.get<point>();
 
-	if (skill_id == vana::skills::night_walker::poison_bomb) {
+	if (skill_id == constant::skill::night_walker::poison_bomb) {
 		attack.projectile_pos = reader.get<point>();
 	}
 	return attack;

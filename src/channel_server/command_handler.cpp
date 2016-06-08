@@ -153,7 +153,7 @@ auto command_handler::handle_admin_command(ref_ptr<player> player, packet_reader
 			if (hide) {
 				auto result = buffs::add_buff(
 					player,
-					vana::skills::super_gm::hide,
+					constant::skill::super_gm::hide,
 					1,
 					0);
 
@@ -166,7 +166,7 @@ auto command_handler::handle_admin_command(ref_ptr<player> player, packet_reader
 				skills::stop_skill(
 					player,
 					buff_source::from_skill(
-						vana::skills::super_gm::hide,
+						constant::skill::super_gm::hide,
 						1));
 			}
 			break;
@@ -266,7 +266,7 @@ auto command_handler::handle_admin_command(ref_ptr<player> player, packet_reader
 			player->send(packets::player::show_message(player->get_map()->get_player_names(), packets::player::notice_types::notice));
 			break;
 		case admin_opcodes::snow:
-			player->get_map()->create_weather(player, true, reader.get<int32_t>(), items::snowy_snow, "");
+			player->get_map()->create_weather(player, true, reader.get<int32_t>(), constant::item::snowy_snow, "");
 			break;
 		case admin_opcodes::var_set_get: {
 			int8_t type = reader.get<int8_t>();

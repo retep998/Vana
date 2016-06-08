@@ -16,7 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_mod_functions.hpp"
-#include "common/skill_constants.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/maps.hpp"
 #include "channel_server/player.hpp"
@@ -47,8 +46,8 @@ auto player_mod_functions::mod_mesos(ref_ptr<player> player, const game_chat &ar
 
 auto player_mod_functions::heal(ref_ptr<player> player, const game_chat &args) -> chat_result {
 	player->get_active_buffs()->use_player_dispel();
-	player->get_active_buffs()->remove_debuff(mob_skills::seduce);
-	player->get_active_buffs()->remove_debuff(mob_skills::crazy_skull);
+	player->get_active_buffs()->remove_debuff(constant::mob_skill::seduce);
+	player->get_active_buffs()->remove_debuff(constant::mob_skill::crazy_skull);
 	player->get_stats()->set_hp(player->get_stats()->get_max_hp());
 	player->get_stats()->set_mp(player->get_stats()->get_max_mp());
 	return chat_result::handled_display;
@@ -87,9 +86,9 @@ auto player_mod_functions::mod_luk(ref_ptr<player> player, const game_chat &args
 }
 
 auto player_mod_functions::max_stats(ref_ptr<player> player, const game_chat &args) -> chat_result {
-	player->get_stats()->set_fame(stats::max_fame);
-	player->get_stats()->set_max_hp(stats::max_max_hp);
-	player->get_stats()->set_max_mp(stats::max_max_mp);
+	player->get_stats()->set_fame(constant::stat::max_fame);
+	player->get_stats()->set_max_hp(constant::stat::max_max_hp);
+	player->get_stats()->set_max_mp(constant::stat::max_max_mp);
 	auto max = std::numeric_limits<game_stat>::max();
 	player->get_stats()->set_str(max);
 	player->get_stats()->set_dex(max);

@@ -16,7 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "summon.hpp"
-#include "common/skill_constants.hpp"
 #include "common/skill_data_provider.hpp"
 #include "channel_server/channel_server.hpp"
 
@@ -31,38 +30,38 @@ summon::summon(game_summon_id id, game_skill_id summon_id, game_skill_level leve
 {
 	m_action_type = attack;
 	switch (summon_id) {
-		case vana::skills::ranger::puppet:
-		case vana::skills::sniper::puppet:
-		case vana::skills::wind_archer::puppet:
+		case constant::skill::ranger::puppet:
+		case constant::skill::sniper::puppet:
+		case constant::skill::wind_archer::puppet:
 			m_action_type = do_nothing;
 			m_hp = channel_server::get_instance().get_skill_data_provider().get_skill(summon_id, level)->x;
 			// Intentional fallthrough
-		case vana::skills::outlaw::octopus:
-		case vana::skills::corsair::wrath_of_the_octopi:
+		case constant::skill::outlaw::octopus:
+		case constant::skill::corsair::wrath_of_the_octopi:
 			m_movement_type = fixed;
 			break;
-		case vana::skills::priest::summon_dragon:
-		case vana::skills::ranger::silver_hawk:
-		case vana::skills::sniper::golden_eagle:
-		case vana::skills::bowmaster::phoenix:
-		case vana::skills::marksman::frostprey:
+		case constant::skill::priest::summon_dragon:
+		case constant::skill::ranger::silver_hawk:
+		case constant::skill::sniper::golden_eagle:
+		case constant::skill::bowmaster::phoenix:
+		case constant::skill::marksman::frostprey:
 			m_movement_type = fly_close;
 			break;
-		case vana::skills::outlaw::gaviota:
+		case constant::skill::outlaw::gaviota:
 			m_movement_type = fly_far;
 			break;
-		case vana::skills::dark_knight::beholder:
+		case constant::skill::dark_knight::beholder:
 			m_action_type = beholder;
 			// Intentional fallthrough
-		case vana::skills::bishop::bahamut:
-		case vana::skills::fp_arch_mage::elquines:
-		case vana::skills::il_arch_mage::ifrit:
-		case vana::skills::dawn_warrior::soul:
-		case vana::skills::blaze_wizard::flame:
-		case vana::skills::blaze_wizard::ifrit:
-		case vana::skills::wind_archer::storm:
-		case vana::skills::night_walker::darkness:
-		case vana::skills::thunder_breaker::lightning:
+		case constant::skill::bishop::bahamut:
+		case constant::skill::fp_arch_mage::elquines:
+		case constant::skill::il_arch_mage::ifrit:
+		case constant::skill::dawn_warrior::soul:
+		case constant::skill::blaze_wizard::flame:
+		case constant::skill::blaze_wizard::ifrit:
+		case constant::skill::wind_archer::storm:
+		case constant::skill::night_walker::darkness:
+		case constant::skill::thunder_breaker::lightning:
 			m_movement_type = follow;
 			break;
 		default:

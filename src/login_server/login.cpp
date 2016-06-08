@@ -17,9 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "login.hpp"
 #include "common/algorithm.hpp"
+#include "common/constant/character.hpp"
+#include "common/constant/gender.hpp"
 #include "common/database.hpp"
 #include "common/file_time.hpp"
-#include "common/game_constants.hpp"
 #include "common/hash_utilities.hpp"
 #include "common/packet_reader.hpp"
 #include "common/randomizer.hpp"
@@ -40,11 +41,11 @@ auto login::login_user(ref_ptr<user> user_value, packet_reader &reader) -> void 
 	string username = reader.get<string>();
 	string password = reader.get<string>();
 
-	if (!ext::in_range_inclusive<size_t>(username.size(), characters::min_name_size, characters::max_name_size)) {
+	if (!ext::in_range_inclusive<size_t>(username.size(), constant::character::min_name_size, constant::character::max_name_size)) {
 		// Hacking
 		return;
 	}
-	if (!ext::in_range_inclusive<size_t>(password.size(), characters::min_password_size, characters::max_password_size)) {
+	if (!ext::in_range_inclusive<size_t>(password.size(), constant::character::min_password_size, constant::character::max_password_size)) {
 		// Hacking
 		return;
 	}
@@ -202,7 +203,7 @@ auto login::set_gender(ref_ptr<user> user_value, packet_reader &reader) -> void 
 	if (reader.get<int8_t>() == 1) {
 		// get<bool> candidate?
 		game_gender_id gender = reader.get<game_gender_id>();
-		if (gender != gender::male && gender != gender::female) {
+		if (gender != constant::gender::male && gender != constant::gender::female) {
 			// Hacking
 			return;
 		}

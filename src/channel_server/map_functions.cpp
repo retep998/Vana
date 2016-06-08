@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "map_functions.hpp"
 #include "common/algorithm.hpp"
-#include "common/mob_constants.hpp"
 #include "common/map_position.hpp"
 #include "common/string_utilities.hpp"
 #include "channel_server/channel_server.hpp"
@@ -193,7 +192,7 @@ auto map_functions::list_portals(ref_ptr<player> player, const game_chat &args) 
 		game_coord y = row.get<game_coord>(6);
 
 		str << row.get<game_map_id>(0) << " : " << row.get<string>(1);
-		if (destination != vana::maps::no_map) {
+		if (destination != constant::map::no_map) {
 			str << " (destination " << destination;
 			if (destination_label.is_initialized()) {
 				string label = destination_label.get();
@@ -437,7 +436,7 @@ auto map_functions::zakum(ref_ptr<player> player, const game_chat &args) -> chat
 }
 
 auto map_functions::horntail(ref_ptr<player> player, const game_chat &args) -> chat_result {
-	player->get_map()->spawn_mob(mobs::summon_horntail, player->get_pos());
+	player->get_map()->spawn_mob(constant::mob::summon_horntail, player->get_pos());
 	channel_server::get_instance().log(log_type::gm_command, [&](out_stream &log) {
 		log << "GM " << player->get_name()
 			<< " spawned Horntail on map " << player->get_map_id();

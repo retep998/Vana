@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/mob_constants.hpp"
 #include "common/mob_data_provider.hpp"
 #include "common/point.hpp"
 #include "common/timer/container_holder.hpp"

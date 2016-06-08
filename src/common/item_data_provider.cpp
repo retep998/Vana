@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/buff_data_provider.hpp"
 #include "common/database.hpp"
 #include "common/equip_data_provider.hpp"
-#include "common/game_constants.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/initialize_common.hpp"
 #include "common/randomizer.hpp"
@@ -409,7 +408,7 @@ auto item_data_provider::scroll_item(const equip_data_provider &provider, game_i
 		if (equip->get_slots() > 0) {
 			succeed = 0;
 			if (gm_scroller || randomizer::percentage<uint16_t>() < item_info.success) {
-				provider.set_equip_stats(equip, items::stat_variance::chaos_normal, gm_scroller, false);
+				provider.set_equip_stats(equip, stat_variance::chaos_normal, gm_scroller, false);
 
 				equip->inc_scrolls();
 				succeed = 1;

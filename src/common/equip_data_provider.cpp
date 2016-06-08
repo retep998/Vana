@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "equip_data_provider.hpp"
+#include "common/constant/job/track.hpp"
 #include "common/database.hpp"
-#include "common/game_constants.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/initialize_common.hpp"
 #include "common/randomizer.hpp"
@@ -91,19 +91,19 @@ auto equip_data_provider::load_equips() -> void {
 		});
 		utilities::str::run_flags(row.get<opt_string>("req_job"), [&equip](const string &cmp) {
 			if (cmp == "common") equip.valid_jobs.push_back(-1);
-			else if (cmp == "beginner") equip.valid_jobs.push_back(jobs::job_tracks::beginner);
-			else if (cmp == "warrior") equip.valid_jobs.push_back(jobs::job_tracks::warrior);
-			else if (cmp == "magician") equip.valid_jobs.push_back(jobs::job_tracks::magician);
-			else if (cmp == "bowman") equip.valid_jobs.push_back(jobs::job_tracks::bowman);
-			else if (cmp == "thief") equip.valid_jobs.push_back(jobs::job_tracks::thief);
-			else if (cmp == "pirate") equip.valid_jobs.push_back(jobs::job_tracks::pirate);
+			else if (cmp == "beginner") equip.valid_jobs.push_back(constant::job::track::beginner);
+			else if (cmp == "warrior") equip.valid_jobs.push_back(constant::job::track::warrior);
+			else if (cmp == "magician") equip.valid_jobs.push_back(constant::job::track::magician);
+			else if (cmp == "bowman") equip.valid_jobs.push_back(constant::job::track::bowman);
+			else if (cmp == "thief") equip.valid_jobs.push_back(constant::job::track::thief);
+			else if (cmp == "pirate") equip.valid_jobs.push_back(constant::job::track::pirate);
 		});
 
 		m_equip_info[item_id] = equip;
 	}
 }
 
-auto equip_data_provider::set_equip_stats(item *equip, items::stat_variance policy, bool is_gm, bool is_item_initialization) const -> void {
+auto equip_data_provider::set_equip_stats(item *equip, stat_variance policy, bool is_gm, bool is_item_initialization) const -> void {
 	const equip_info &ei = get_equip_info(equip->get_id());
 	if (is_item_initialization) {
 		equip->set_slots(ei.slots);
@@ -112,18 +112,18 @@ auto equip_data_provider::set_equip_stats(item *equip, items::stat_variance poli
 	auto getStat = [policy, is_item_initialization, is_gm](int16_t base_equip_amount, int16_t equip_amount) -> int16_t {
 		int16_t amount = is_item_initialization ? base_equip_amount : equip_amount;
 
-		if (amount == 0 || policy == items::stat_variance::none) {
+		if (amount == 0 || policy == stat_variance::none) {
 			return amount;
 		}
 
 		bool increase_only = false;
-		if (policy == items::stat_variance::only_increase_with_great_chance) {
+		if (policy == stat_variance::only_increase_with_great_chance) {
 			if (!is_gm && randomizer::rand<int8_t>(10, 1) <= 3) {
 				return amount;
 			}
 			increase_only = true;
 		}
-		else if (policy == items::stat_variance::only_increase_with_amazing_chance) {
+		else if (policy == stat_variance::only_increase_with_amazing_chance) {
 			if (!is_gm && randomizer::rand<int8_t>(10, 1) == 1) {
 				return amount;
 			}
@@ -132,13 +132,13 @@ auto equip_data_provider::set_equip_stats(item *equip, items::stat_variance poli
 
 		int16_t variance = -1;
 		switch (policy) {
-			case items::stat_variance::gachapon:
+			case stat_variance::gachapon:
 				variance = std::min<int16_t>(amount / 5 + 1, 7);
 				break;
-			case items::stat_variance::chaos_normal:
+			case stat_variance::chaos_normal:
 				variance = 5;
 				break;
-			case items::stat_variance::chaos_high:
+			case stat_variance::chaos_high:
 				variance = 7;
 				break;
 			default:

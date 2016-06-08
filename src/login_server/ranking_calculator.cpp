@@ -16,11 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ranking_calculator.hpp"
+#include "common/constant/job/beginner_jobs.hpp"
+#include "common/constant/job/id.hpp"
+#include "common/constant/job/track.hpp"
 #include "common/database.hpp"
-#include "common/game_constants.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/initialize_common.hpp"
-#include "common/job_constants.hpp"
 #include "common/stop_watch.hpp"
 #include "common/string_utilities.hpp"
 #include "common/timer/timer.hpp"
@@ -78,10 +79,10 @@ auto ranking_calculator::all() -> void {
 		<< "	AND u.admin IS NULL "
 		<< "	AND ("
 		<< "		("
-		<< "			c.job IN (" << utilities::str::delimit(",", jobs::beginners::jobs) << ")"
+		<< "			c.job IN (" << utilities::str::delimit(",", constant::job::beginner_jobs) << ")"
 		<< "			AND c.level > 9"
 		<< "		)"
-		<< "		OR c.job NOT IN (" << utilities::str::delimit(",", jobs::beginners::jobs) << ")"
+		<< "		OR c.job NOT IN (" << utilities::str::delimit(",", constant::job::beginner_jobs) << ")"
 		<< "	) "
 		<< "ORDER BY c.overall_cpos DESC",
 		soci::into(out.char_id),
@@ -271,7 +272,7 @@ auto ranking_calculator::job(vector<rank_player> &v) -> void {
 	});
 
 	// We will iterate through each job track
-	for (const auto &job_track : jobs::job_tracks::job_tracks) {
+	for (const auto &job_track : constant::job::track::all) {
 		game_player_level last_level = 0;
 		time_t last_time = 0;
 		game_experience last_exp = 0;
@@ -286,11 +287,11 @@ auto ranking_calculator::job(vector<rank_player> &v) -> void {
 			// These exceptions have beginner jobs that are not in their tracks ID-wise
 			// Which means we also need to account for them within the tracks they aren't supposed to be in as well
 			switch (job_track) {
-				case jobs::job_tracks::legend: valid = (p.job_stat != jobs::job_ids::evan && p.job_stat != jobs::job_ids::mercedes && is_track); break;
-				case jobs::job_tracks::evan: valid = (p.job_stat == jobs::job_ids::evan || is_track); break;
-				case jobs::job_tracks::mercedes: valid = (p.job_stat == jobs::job_ids::mercedes || is_track); break;
-				case jobs::job_tracks::citizen: valid = (p.job_stat != jobs::job_ids::demon_slayer && is_track); break;
-				case jobs::job_tracks::demon_slayer: valid = (p.job_stat == jobs::job_ids::demon_slayer || is_track); break;
+				case constant::job::track::legend: valid = (p.job_stat != constant::job::id::evan && p.job_stat != constant::job::id::mercedes && is_track); break;
+				case constant::job::track::evan: valid = (p.job_stat == constant::job::id::evan || is_track); break;
+				case constant::job::track::mercedes: valid = (p.job_stat == constant::job::id::mercedes || is_track); break;
+				case constant::job::track::citizen: valid = (p.job_stat != constant::job::id::demon_slayer && is_track); break;
+				case constant::job::track::demon_slayer: valid = (p.job_stat == constant::job::id::demon_slayer || is_track); break;
 				default: valid = is_track;
 			}
 

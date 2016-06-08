@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "player_storage.hpp"
 #include "common/algorithm.hpp"
 #include "common/database.hpp"
-#include "common/game_constants.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/misc_utilities.hpp"
 #include "channel_server/channel_server.hpp"
@@ -48,7 +47,7 @@ auto player_storage::take_item(game_storage_slot slot) -> void {
 }
 
 auto player_storage::set_slots(game_storage_slot slots) -> void {
-	m_slots = ext::constrain_range(slots, inventories::min_slots_storage, inventories::max_slots_storage);
+	m_slots = ext::constrain_range(slots, constant::inventory::min_slots_storage, constant::inventory::max_slots_storage);
 }
 
 auto player_storage::add_item(item *item) -> void {

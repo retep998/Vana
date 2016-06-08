@@ -40,7 +40,7 @@ namespace quest_opcodes {
 	};
 }
 
-auto quests::give_item(ref_ptr<player> player, game_item_id item_id, game_slot_qty amount, items::stat_variance variance_policy) -> result {
+auto quests::give_item(ref_ptr<player> player, game_item_id item_id, game_slot_qty amount, stat_variance variance_policy) -> result {
 	if (amount > 0) {
 		if (!player->get_inventory()->has_open_slots_for(item_id, amount)) {
 			return result::failure;

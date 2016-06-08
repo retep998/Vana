@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/point.hpp"
 #include "common/quest_data_provider.hpp"
 #include "common/randomizer.hpp"
-#include "common/skill_constants.hpp"
 #include "common/skill_data_provider.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/drop.hpp"
@@ -152,7 +151,7 @@ auto drop_handler::do_drops(game_player_id player_id, game_map_id map_id, int32_
 				item f = game_logic_utilities::is_equip(item_id) ?
 					item{channel_server::get_instance().get_equip_data_provider(),
 						item_id,
-						items::stat_variance::normal,
+						stat_variance::normal,
 						player != nullptr && player->has_gm_benefits()} :
 					item{item_id, amount};
 

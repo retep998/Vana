@@ -354,7 +354,7 @@ auto instance::mark_for_delete() -> void {
 }
 
 auto instance::respawn_mobs(game_map_id map_id) -> void {
-	if (map_id == vana::maps::no_map) {
+	if (map_id == constant::map::no_map) {
 		for (const auto &map : m_maps) {
 			map->respawn(spawn_types::mob);
 		}
@@ -365,7 +365,7 @@ auto instance::respawn_mobs(game_map_id map_id) -> void {
 }
 
 auto instance::respawn_reactors(game_map_id map_id) -> void {
-	if (map_id == vana::maps::no_map) {
+	if (map_id == constant::map::no_map) {
 		for (const auto &map : m_maps) {
 			map->respawn(spawn_types::reactor);
 		}

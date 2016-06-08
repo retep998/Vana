@@ -90,7 +90,7 @@ auto player_pets::save() -> void {
 
 auto player_pets::pet_info_packet(packet_builder &builder) -> void {
 	item *it;
-	for (int8_t i = 0; i < inventories::max_pet_count; i++) {
+	for (int8_t i = 0; i < constant::inventory::max_pet_count; i++) {
 		if (pet *pet = get_summoned(i)) {
 			builder.add<int8_t>(1);
 			builder.add<game_item_id>(pet->get_item_id());
@@ -101,12 +101,12 @@ auto player_pets::pet_info_packet(packet_builder &builder) -> void {
 			builder.unk<int16_t>();
 			int16_t slot = 0;
 			switch (i) {
-				case 0: slot = equip_slots::pet_equip1;
-				case 1: slot = equip_slots::pet_equip2;
-				case 2: slot = equip_slots::pet_equip3;
+				case 0: slot = constant::equip_slot::pet_equip1;
+				case 1: slot = constant::equip_slot::pet_equip2;
+				case 2: slot = constant::equip_slot::pet_equip3;
 			}
 
-			it = m_player->get_inventory()->get_item(inventories::equip, slot);
+			it = m_player->get_inventory()->get_item(constant::inventory::equip, slot);
 			builder.add<game_item_id>(it != nullptr ? it->get_id() : 0);
 		}
 	}
@@ -114,7 +114,7 @@ auto player_pets::pet_info_packet(packet_builder &builder) -> void {
 }
 
 auto player_pets::connect_packet(packet_builder &builder) -> void {
-	for (int8_t i = 0; i < inventories::max_pet_count; i++) {
+	for (int8_t i = 0; i < constant::inventory::max_pet_count; i++) {
 		if (pet *pet = get_summoned(i)) {
 			builder.add<int64_t>(pet->get_id()); //pet->get_cash_id() != 0 ? pet->get_cash_id() : pet->get_id());
 		}

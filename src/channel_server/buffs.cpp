@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/algorithm.hpp"
 #include "common/buff_data_provider.hpp"
 #include "common/game_logic_utilities.hpp"
-#include "common/skill_constants.hpp"
 #include "common/skill_data_provider.hpp"
 #include "channel_server/buffs_packet.hpp"
 #include "channel_server/channel_server.hpp"
@@ -40,11 +39,11 @@ auto buffs::add_buff(ref_ptr<player> player, game_skill_id skill_id, game_skill_
 	auto skill = source.get_skill_data(channel_server::get_instance().get_skill_data_provider());
 	seconds time = skill->buff_time;
 	switch (skill_id) {
-		case vana::skills::dragon_knight::dragon_roar:
+		case constant::skill::dragon_knight::dragon_roar:
 			time = seconds{skill->y};
 			break;
-		case vana::skills::super_gm::hide:
-			time = vana::buffs::max_buff_time;
+		case constant::skill::super_gm::hide:
+			time = constant::buff::max_buff_time;
 			break;
 	}
 
@@ -145,11 +144,11 @@ auto buffs::preprocess_buff(ref_ptr<player> player, const buff_source &source, c
 	if (source.get_type() == buff_source_type::item) {
 		game_item_id item_id = source.get_item_id();
 		switch (item_id) {
-			case items::beholder_hex_wdef:
-			case items::beholder_hex_mdef:
-			case items::beholder_hex_acc:
-			case items::beholder_hex_avo:
-			case items::beholder_hex_watk: {
+			case constant::item::beholder_hex_wdef:
+			case constant::item::beholder_hex_mdef:
+			case constant::item::beholder_hex_acc:
+			case constant::item::beholder_hex_avo:
+			case constant::item::beholder_hex_watk: {
 				buff_info data = summon_handler::make_buff(player, item_id);
 				buff parsed{data};
 				return preprocess_buff(player, source, time, parsed);
@@ -274,7 +273,7 @@ auto buffs::get_value(ref_ptr<player> player, const buff_source &source, const s
 				case buff_skill_value::special_processing: {
 					switch (skill_id) {
 						// This unusual skill has two "values"
-						case mob_skills::poison: {
+						case constant::mob_skill::poison: {
 							packet_builder builder;
 							builder.add<int16_t>(static_cast<int16_t>(skill->x));
 							builder.add<int16_t>(skill_id);
@@ -314,18 +313,18 @@ auto buffs::get_value(ref_ptr<player> player, const buff_source &source, const s
 
 				case buff_skill_value::special_processing:
 					switch (skill_id) {
-						case vana::skills::crusader::combo_attack:
-						case vana::skills::dawn_warrior::combo_attack:
+						case constant::skill::crusader::combo_attack:
+						case constant::skill::dawn_warrior::combo_attack:
 							return buff_packet_value::from_value(
 								buff_value_size,
 								player->get_active_buffs()->get_combo() + 1
 							);
-						case vana::skills::night_lord::shadow_stars:
+						case constant::skill::night_lord::shadow_stars:
 							return buff_packet_value::from_value(
 								buff_value_size,
 								(player->get_inventory()->do_shadow_stars() % 10000) + 1
 							);
-						case vana::skills::super_gm::hide:
+						case constant::skill::super_gm::hide:
 							// TODO FIXME BUFFS
 							return buff_packet_value::from_value(buff_value_size, 1);
 					}
@@ -391,7 +390,7 @@ auto buffs::get_value(ref_ptr<player> player, const buff_source &source, const s
 					return buff_packet_value::from_value(
 						buff_value_size,
 						skill->morph +
-						(player->get_gender() == gender::male ? 0 : 100)
+						(player->get_gender() == constant::gender::male ? 0 : 100)
 					);
 			}
 

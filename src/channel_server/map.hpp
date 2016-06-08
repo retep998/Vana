@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "common/constant/map.hpp"
 #include "common/foothold_info.hpp"
 #include "common/id_pool.hpp"
-#include "common/map_constants.hpp"
 #include "common/point.hpp"
 #include "common/portal_info.hpp"
 #include "common/rect.hpp"
@@ -62,7 +62,7 @@ namespace vana {
 		struct mystic_door_open_result {
 			mystic_door_open_result(mystic_door_result result) :
 				result{result},
-				town_id{vana::maps::no_map},
+				town_id{constant::map::no_map},
 				portal{nullptr}
 			{
 			}

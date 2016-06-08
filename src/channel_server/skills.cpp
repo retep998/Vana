@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
 #include "common/randomizer.hpp"
-#include "common/skill_constants.hpp"
 #include "common/skill_data_provider.hpp"
 #include "common/time_utilities.hpp"
 #include "common/timer/timer.hpp"
@@ -68,13 +67,13 @@ auto skills::cancel_skill(ref_ptr<player> player, packet_reader &reader) -> void
 	// Handle "standing" skills here, otherwise dispatch to buffs
 
 	switch (identifier) {
-		case vana::skills::bowmaster::hurricane:
-		case vana::skills::wind_archer::hurricane:
-		case vana::skills::marksman::piercing_arrow:
-		case vana::skills::fp_arch_mage::big_bang:
-		case vana::skills::il_arch_mage::big_bang:
-		case vana::skills::bishop::big_bang:
-		case vana::skills::corsair::rapid_fire:
+		case constant::skill::bowmaster::hurricane:
+		case constant::skill::wind_archer::hurricane:
+		case constant::skill::marksman::piercing_arrow:
+		case constant::skill::fp_arch_mage::big_bang:
+		case constant::skill::il_arch_mage::big_bang:
+		case constant::skill::bishop::big_bang:
+		case constant::skill::corsair::rapid_fire:
 			player->send_map(packets::skills::end_charge_or_stationary_skill(player->get_id(), player->get_charge_or_stationary_skill()));
 			player->set_charge_or_stationary_skill(charge_or_stationary_skill_data{});
 			return;
@@ -102,7 +101,7 @@ auto skills::stop_skill(ref_ptr<player> player, const buff_source &source, bool 
 
 	buffs::end_buff(player, source, from_timer);
 
-	if (source.get_skill_id() == vana::skills::super_gm::hide) {
+	if (source.get_skill_id() == constant::skill::super_gm::hide) {
 		player->send(packets::gm::end_hide());
 		player->get_map()->gm_hide_change(player);
 	}
@@ -149,7 +148,7 @@ auto skills::use_skill(ref_ptr<player> player_value, packet_reader &reader) -> v
 	}
 
 	auto skill = channel_server::get_instance().get_skill_data_provider().get_skill(skill_id, level);
-	if (skill_id == vana::skills::priest::mystic_door) {
+	if (skill_id == constant::skill::priest::mystic_door) {
 		point origin = reader.get<point>();
 		mystic_door_result result = player_value->get_skills()->open_mystic_door(origin, skill->buff_time);
 		if (result == mystic_door_result::hacking) {
@@ -168,17 +167,17 @@ auto skills::use_skill(ref_ptr<player> player_value, packet_reader &reader) -> v
 	}
 
 	switch (skill_id) {
-		case vana::skills::priest::mystic_door:
+		case constant::skill::priest::mystic_door:
 			// Prevent the default case from executing, there's no packet data left for it
 			break;
-		case vana::skills::brawler::mp_recovery: {
+		case constant::skill::brawler::mp_recovery: {
 			game_health mod_hp = player_value->get_stats()->get_max_hp() * skill->x / 100;
 			game_health heal_mp = mod_hp * skill->y / 100;
 			player_value->get_stats()->modify_hp(-mod_hp);
 			player_value->get_stats()->modify_mp(heal_mp);
 			break;
 		}
-		case vana::skills::shadower::smokescreen: {
+		case constant::skill::shadower::smokescreen: {
 			point origin = reader.get<point>();
 			mist *m = new mist{
 				player_value->get_map_id(),
@@ -189,15 +188,15 @@ auto skills::use_skill(ref_ptr<player> player_value, packet_reader &reader) -> v
 				level};
 			break;
 		}
-		case vana::skills::corsair::battleship:
+		case constant::skill::corsair::battleship:
 			// TODO FIXME hacking? Remove?
 			if (player_value->get_active_buffs()->get_battleship_hp() == 0) {
 				player_value->get_active_buffs()->reset_battleship_hp();
 			}
 			break;
-		case vana::skills::crusader::armor_crash:
-		case vana::skills::white_knight::magic_crash:
-		case vana::skills::dragon_knight::power_crash: {
+		case constant::skill::crusader::armor_crash:
+		case constant::skill::white_knight::magic_crash:
+		case constant::skill::dragon_knight::power_crash: {
 			// Might be CRC
 			reader.unk<uint32_t>();
 			uint8_t mobs = reader.get<uint8_t>();
@@ -211,9 +210,9 @@ auto skills::use_skill(ref_ptr<player> player_value, packet_reader &reader) -> v
 			}
 			break;
 		}
-		case vana::skills::hero::monster_magnet:
-		case vana::skills::paladin::monster_magnet:
-		case vana::skills::dark_knight::monster_magnet: {
+		case constant::skill::hero::monster_magnet:
+		case constant::skill::paladin::monster_magnet:
+		case constant::skill::dark_knight::monster_magnet: {
 			int32_t mobs = reader.get<int32_t>();
 			for (int32_t k = 0; k < mobs; k++) {
 				game_map_object map_mob_id = reader.get<game_map_object>();
@@ -223,21 +222,21 @@ auto skills::use_skill(ref_ptr<player> player_value, packet_reader &reader) -> v
 			direction = reader.get<uint8_t>();
 			break;
 		}
-		case vana::skills::fp_wizard::slow:
-		case vana::skills::il_wizard::slow:
-		case vana::skills::blaze_wizard::slow:
-		case vana::skills::page::threaten:
+		case constant::skill::fp_wizard::slow:
+		case constant::skill::il_wizard::slow:
+		case constant::skill::blaze_wizard::slow:
+		case constant::skill::page::threaten:
 			// Might be CRC
 			reader.unk<uint32_t>();
 			// Intentional fallthrough
-		case vana::skills::fp_mage::seal:
-		case vana::skills::il_mage::seal:
-		case vana::skills::blaze_wizard::seal:
-		case vana::skills::priest::doom:
-		case vana::skills::hermit::shadow_web:
-		case vana::skills::night_walker::shadow_web:
-		case vana::skills::shadower::ninja_ambush:
-		case vana::skills::night_lord::ninja_ambush: {
+		case constant::skill::fp_mage::seal:
+		case constant::skill::il_mage::seal:
+		case constant::skill::blaze_wizard::seal:
+		case constant::skill::priest::doom:
+		case constant::skill::hermit::shadow_web:
+		case constant::skill::night_walker::shadow_web:
+		case constant::skill::shadower::ninja_ambush:
+		case constant::skill::night_lord::ninja_ambush: {
 			uint8_t mobs = reader.get<uint8_t>();
 			for (uint8_t k = 0; k < mobs; k++) {
 				if (auto mob = player_value->get_map()->get_mob(reader.get<int32_t>())) {
@@ -246,21 +245,21 @@ auto skills::use_skill(ref_ptr<player> player_value, packet_reader &reader) -> v
 			}
 			break;
 		}
-		case vana::skills::bishop::heros_will:
-		case vana::skills::il_arch_mage::heros_will:
-		case vana::skills::fp_arch_mage::heros_will:
-		case vana::skills::dark_knight::heros_will:
-		case vana::skills::hero::heros_will:
-		case vana::skills::paladin::heros_will:
-		case vana::skills::night_lord::heros_will:
-		case vana::skills::shadower::heros_will:
-		case vana::skills::bowmaster::heros_will:
-		case vana::skills::marksman::heros_will:
-		case vana::skills::buccaneer::heros_will:
-		case vana::skills::corsair::heros_will:
-			player_value->get_active_buffs()->remove_debuff(mob_skills::seduce);
+		case constant::skill::bishop::heros_will:
+		case constant::skill::il_arch_mage::heros_will:
+		case constant::skill::fp_arch_mage::heros_will:
+		case constant::skill::dark_knight::heros_will:
+		case constant::skill::hero::heros_will:
+		case constant::skill::paladin::heros_will:
+		case constant::skill::night_lord::heros_will:
+		case constant::skill::shadower::heros_will:
+		case constant::skill::bowmaster::heros_will:
+		case constant::skill::marksman::heros_will:
+		case constant::skill::buccaneer::heros_will:
+		case constant::skill::corsair::heros_will:
+			player_value->get_active_buffs()->remove_debuff(constant::mob_skill::seduce);
 			break;
-		case vana::skills::priest::dispel: {
+		case constant::skill::priest::dispel: {
 			int8_t affected = reader.get<int8_t>();
 			player_value->get_active_buffs()->use_player_dispel();
 			if (party *party = player_value->get_party()) {
@@ -289,7 +288,7 @@ auto skills::use_skill(ref_ptr<player> player_value, packet_reader &reader) -> v
 			}
 			break;
 		}
-		case vana::skills::cleric::heal: {
+		case constant::skill::cleric::heal: {
 			uint16_t heal_rate = skill->hp_prop;
 			if (heal_rate > 100) {
 				heal_rate = 100;
@@ -319,39 +318,39 @@ auto skills::use_skill(ref_ptr<player> player_value, packet_reader &reader) -> v
 			}
 			break;
 		}
-		case vana::skills::fighter::rage:
-		case vana::skills::dawn_warrior::rage:
-		case vana::skills::spearman::iron_will:
-		case vana::skills::spearman::hyper_body:
-		case vana::skills::fp_wizard::meditation:
-		case vana::skills::il_wizard::meditation:
-		case vana::skills::blaze_wizard::meditation:
-		case vana::skills::cleric::bless:
-		case vana::skills::priest::holy_symbol:
-		case vana::skills::bishop::resurrection:
-		case vana::skills::bishop::holy_shield:
-		case vana::skills::bowmaster::sharp_eyes:
-		case vana::skills::marksman::sharp_eyes:
-		case vana::skills::assassin::haste:
-		case vana::skills::night_walker::haste:
-		case vana::skills::hermit::meso_up:
-		case vana::skills::bandit::haste:
-		case vana::skills::buccaneer::speed_infusion:
-		case vana::skills::thunder_breaker::speed_infusion:
-		case vana::skills::buccaneer::time_leap:
-		case vana::skills::hero::maple_warrior:
-		case vana::skills::paladin::maple_warrior:
-		case vana::skills::dark_knight::maple_warrior:
-		case vana::skills::fp_arch_mage::maple_warrior:
-		case vana::skills::il_arch_mage::maple_warrior:
-		case vana::skills::bishop::maple_warrior:
-		case vana::skills::bowmaster::maple_warrior:
-		case vana::skills::marksman::maple_warrior:
-		case vana::skills::night_lord::maple_warrior:
-		case vana::skills::shadower::maple_warrior:
-		case vana::skills::buccaneer::maple_warrior:
-		case vana::skills::corsair::maple_warrior: {
-			if (skill_id == vana::skills::buccaneer::time_leap) {
+		case constant::skill::fighter::rage:
+		case constant::skill::dawn_warrior::rage:
+		case constant::skill::spearman::iron_will:
+		case constant::skill::spearman::hyper_body:
+		case constant::skill::fp_wizard::meditation:
+		case constant::skill::il_wizard::meditation:
+		case constant::skill::blaze_wizard::meditation:
+		case constant::skill::cleric::bless:
+		case constant::skill::priest::holy_symbol:
+		case constant::skill::bishop::resurrection:
+		case constant::skill::bishop::holy_shield:
+		case constant::skill::bowmaster::sharp_eyes:
+		case constant::skill::marksman::sharp_eyes:
+		case constant::skill::assassin::haste:
+		case constant::skill::night_walker::haste:
+		case constant::skill::hermit::meso_up:
+		case constant::skill::bandit::haste:
+		case constant::skill::buccaneer::speed_infusion:
+		case constant::skill::thunder_breaker::speed_infusion:
+		case constant::skill::buccaneer::time_leap:
+		case constant::skill::hero::maple_warrior:
+		case constant::skill::paladin::maple_warrior:
+		case constant::skill::dark_knight::maple_warrior:
+		case constant::skill::fp_arch_mage::maple_warrior:
+		case constant::skill::il_arch_mage::maple_warrior:
+		case constant::skill::bishop::maple_warrior:
+		case constant::skill::bowmaster::maple_warrior:
+		case constant::skill::marksman::maple_warrior:
+		case constant::skill::night_lord::maple_warrior:
+		case constant::skill::shadower::maple_warrior:
+		case constant::skill::buccaneer::maple_warrior:
+		case constant::skill::corsair::maple_warrior: {
+			if (skill_id == constant::skill::buccaneer::time_leap) {
 				player_value->get_skills()->remove_all_cooldowns();
 			}
 			if (party *party = player_value->get_party()) {
@@ -362,7 +361,7 @@ auto skills::use_skill(ref_ptr<player> player_value, packet_reader &reader) -> v
 						party_member->send(packets::skills::show_skill(party_member->get_id(), skill_id, level, direction, true, true));
 						party_member->send_map(packets::skills::show_skill(party_member->get_id(), skill_id, level, direction, true));
 						buffs::add_buff(party_member, skill_id, level, 0);
-						if (skill_id == vana::skills::buccaneer::time_leap) {
+						if (skill_id == constant::skill::buccaneer::time_leap) {
 							party_member->get_skills()->remove_all_cooldowns();
 						}
 					}
@@ -371,19 +370,19 @@ auto skills::use_skill(ref_ptr<player> player_value, packet_reader &reader) -> v
 			break;
 		}
 
-		case vana::skills::beginner::echo_of_hero:
-		case vana::skills::noblesse::echo_of_hero:
-		case vana::skills::super_gm::haste:
-		case vana::skills::super_gm::holy_symbol:
-		case vana::skills::super_gm::bless:
-		case vana::skills::super_gm::hyper_body:
-		case vana::skills::super_gm::heal_plus_dispel:
-		case vana::skills::super_gm::resurrection: {
+		case constant::skill::beginner::echo_of_hero:
+		case constant::skill::noblesse::echo_of_hero:
+		case constant::skill::super_gm::haste:
+		case constant::skill::super_gm::holy_symbol:
+		case constant::skill::super_gm::bless:
+		case constant::skill::super_gm::hyper_body:
+		case constant::skill::super_gm::heal_plus_dispel:
+		case constant::skill::super_gm::resurrection: {
 			uint8_t players = reader.get<uint8_t>();
 			function<bool(ref_ptr<player>)> do_action;
 			function<void(ref_ptr<player>)> action;
 			switch (skill_id) {
-				case vana::skills::super_gm::heal_plus_dispel:
+				case constant::skill::super_gm::heal_plus_dispel:
 					do_action = [](ref_ptr<player> target) { return !target->get_stats()->is_dead(); };
 					action = [](ref_ptr<player> target) {
 						target->get_stats()->set_hp(target->get_stats()->get_max_hp());
@@ -391,7 +390,7 @@ auto skills::use_skill(ref_ptr<player> player_value, packet_reader &reader) -> v
 						target->get_active_buffs()->use_player_dispel();
 					};
 					break;
-				case vana::skills::super_gm::resurrection:
+				case constant::skill::super_gm::resurrection:
 					do_action = [](ref_ptr<player> target) { return target->get_stats()->is_dead(); };
 					action = [](ref_ptr<player> target) {
 						target->get_stats()->set_hp(target->get_stats()->get_max_hp());
@@ -428,7 +427,7 @@ auto skills::use_skill(ref_ptr<player> player_value, packet_reader &reader) -> v
 	player_value->send_map(packets::skills::show_skill(player_value->get_id(), skill_id, level, direction));
 
 	if (buffs::add_buff(player_value, skill_id, level, added_info) == result::successful) {
-		if (skill_id == vana::skills::super_gm::hide) {
+		if (skill_id == constant::skill::super_gm::hide) {
 			player_value->send(packets::gm::begin_hide());
 			player_value->get_map()->gm_hide_change(player_value);
 		}
@@ -486,7 +485,7 @@ auto skills::apply_skill_costs(ref_ptr<player> player, game_skill_id skill_id, g
 		}
 		inventory::take_item(player, item, skill->item_count);
 	}
-	if (cool_time.count() > 0 && skill_id != vana::skills::corsair::battleship) {
+	if (cool_time.count() > 0 && skill_id != constant::skill::corsair::battleship) {
 		if (is_cooling(player, skill_id)) {
 			return result::failure;
 		}
@@ -509,7 +508,7 @@ auto skills::apply_skill_costs(ref_ptr<player> player, game_skill_id skill_id, g
 }
 
 auto skills::use_attack_skill(ref_ptr<player> player, game_skill_id skill_id) -> result {
-	if (skill_id != vana::skills::all::regular_attack) {
+	if (skill_id != constant::skill::all::regular_attack) {
 		game_skill_level level = player->get_skills()->get_skill_level(skill_id);
 		if (!channel_server::get_instance().get_skill_data_provider().is_valid_skill(skill_id) || level == 0) {
 			return result::failure;
@@ -521,7 +520,7 @@ auto skills::use_attack_skill(ref_ptr<player> player, game_skill_id skill_id) ->
 
 auto skills::use_attack_skill_ranged(ref_ptr<player> player, game_skill_id skill_id, game_inventory_slot projectile_pos, game_inventory_slot cash_projectile_pos, game_item_id projectile_id) -> result {
 	game_skill_level level = 0;
-	if (skill_id != vana::skills::all::regular_attack) {
+	if (skill_id != constant::skill::all::regular_attack) {
 		level = player->get_skills()->get_skill_level(skill_id);
 		if (!channel_server::get_instance().get_skill_data_provider().is_valid_skill(skill_id) || level == 0) {
 			return result::failure;
@@ -536,8 +535,8 @@ auto skills::use_attack_skill_ranged(ref_ptr<player> player, game_skill_id skill
 	}
 
 	switch (game_logic_utilities::get_job_track(player->get_stats()->get_job())) {
-		case jobs::job_tracks::bowman:
-		case jobs::job_tracks::wind_archer:
+		case constant::job::track::bowman:
+		case constant::job::track::wind_archer:
 			if (player->get_active_buffs()->has_soul_arrow()) {
 				return result::successful;
 			}
@@ -545,18 +544,18 @@ auto skills::use_attack_skill_ranged(ref_ptr<player> player, game_skill_id skill
 				return result::failure;
 			}
 			break;
-		case jobs::job_tracks::thief:
-		case jobs::job_tracks::night_walker:
+		case constant::job::track::thief:
+		case constant::job::track::night_walker:
 			if (player->get_active_buffs()->has_shadow_stars()) {
 				return result::successful;
 			}
 			if (cash_projectile_pos > 0) {
-				item *cash_item = player->get_inventory()->get_item(inventories::cash, cash_projectile_pos);
+				item *cash_item = player->get_inventory()->get_item(constant::inventory::cash, cash_projectile_pos);
 				if (cash_item == nullptr || cash_item->get_id() != projectile_id) {
 					return result::failure;
 				}
 
-				item *projectile = player->get_inventory()->get_item(inventories::use, projectile_pos);
+				item *projectile = player->get_inventory()->get_item(constant::inventory::use, projectile_pos);
 				if (projectile == nullptr) {
 					return result::failure;
 				}
@@ -567,7 +566,7 @@ auto skills::use_attack_skill_ranged(ref_ptr<player> player, game_skill_id skill
 				return result::failure;
 			}
 			break;
-		case jobs::job_tracks::pirate:
+		case constant::job::track::pirate:
 			if (!game_logic_utilities::is_bullet(projectile_id)) {
 				return result::failure;
 			}
@@ -578,13 +577,13 @@ auto skills::use_attack_skill_ranged(ref_ptr<player> player, game_skill_id skill
 		return result::failure;
 	}
 
-	item *projectile = player->get_inventory()->get_item(inventories::use, projectile_pos);
+	item *projectile = player->get_inventory()->get_item(constant::inventory::use, projectile_pos);
 	if (projectile == nullptr || projectile->get_id() != projectile_id) {
 		return result::failure;
 	}
 
 	game_slot_qty hits = 1;
-	if (skill_id != vana::skills::all::regular_attack) {
+	if (skill_id != constant::skill::all::regular_attack) {
 		auto skill = channel_server::get_instance().get_skill_data_provider().get_skill(skill_id, level);
 		game_item_id optional_item = skill->optional_item;
 
@@ -592,7 +591,7 @@ auto skills::use_attack_skill_ranged(ref_ptr<player> player, game_skill_id skill
 			if (projectile->get_amount() < skill->item_count) {
 				return result::failure;
 			}
-			inventory::take_item_slot(player, inventories::use, projectile_pos, skill->item_count);
+			inventory::take_item_slot(player, constant::inventory::use, projectile_pos, skill->item_count);
 			return result::successful;
 		}
 
@@ -610,7 +609,7 @@ auto skills::use_attack_skill_ranged(ref_ptr<player> player, game_skill_id skill
 		return result::failure;
 	}
 
-	inventory::take_item_slot(player, inventories::use, projectile_pos, hits);
+	inventory::take_item_slot(player, constant::inventory::use, projectile_pos, hits);
 	return result::successful;
 }
 
@@ -655,7 +654,7 @@ auto skills::start_cooldown(ref_ptr<player> player, game_skill_id skill_id, seco
 auto skills::stop_cooldown(ref_ptr<player> player, game_skill_id skill_id) -> void {
 	player->get_skills()->remove_cooldown(skill_id);
 	player->send(packets::skills::send_cooldown(skill_id, seconds{0}));
-	if (skill_id == vana::skills::corsair::battleship) {
+	if (skill_id == constant::skill::corsair::battleship) {
 		player->get_active_buffs()->reset_battleship_hp();
 	}
 

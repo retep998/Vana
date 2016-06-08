@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_monster_book.hpp"
 #include "common/database.hpp"
-#include "common/game_constants.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/item_data_provider.hpp"
 #include "channel_server/channel_server.hpp"
@@ -140,10 +139,10 @@ auto player_monster_book::connect_packet(packet_builder &builder) -> void {
 
 auto player_monster_book::calculate_level() -> void {
 	int32_t size = get_size();
-	m_level = monster_cards::max_player_level;
-	for (int32_t i = 1; i < monster_cards::max_player_level; i++) {
+	m_level = constant::monster_card::max_player_level;
+	for (int32_t i = 1; i < constant::monster_card::max_player_level; i++) {
 		// We don't calculate for the last level because that includes all values above the second to last level
-		if (size < monster_cards::player_levels[i - 1]) {
+		if (size < constant::monster_card::player_levels[i - 1]) {
 			m_level = i;
 			break;
 		}
@@ -165,7 +164,7 @@ auto player_monster_book::get_card(int32_t card_id) -> monster_card * {
 
 auto player_monster_book::is_full(int32_t card_id) -> bool {
 	auto kvp = m_cards.find(card_id);
-	return kvp != std::end(m_cards) ? (kvp->second.level == monster_cards::max_card_level) : false;
+	return kvp != std::end(m_cards) ? (kvp->second.level == constant::monster_card::max_card_level) : false;
 }
 
 }

@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "common/constant/stat.hpp"
 #include "common/point.hpp"
 #include "common/types.hpp"
 #include "channel_server/movable_life.hpp"
@@ -63,7 +64,7 @@ namespace vana {
 
 			opt_int8_t m_index;
 			int8_t m_level = 1;
-			int8_t m_fullness = stats::max_fullness;
+			int8_t m_fullness = constant::stat::max_fullness;
 			int8_t m_inventory_slot = 0;
 			int16_t m_closeness = 0;
 			game_item_id m_item_id = 0;

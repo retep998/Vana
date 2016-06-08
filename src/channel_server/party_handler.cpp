@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "party_handler.hpp"
+#include "common/constant/party.hpp"
 #include "common/inter_helper.hpp"
 #include "common/packet_reader.hpp"
 #include "channel_server/channel_server.hpp"
@@ -38,7 +39,7 @@ auto party_handler::handle_request(ref_ptr<player> player, packet_reader &reader
 		case party_actions::join: {
 			game_party_id party_id = reader.get<game_party_id>();
 			if (party *party = channel_server::get_instance().get_player_data_provider().get_party(party_id)) {
-				if (party->get_members_count() == parties::max_members) {
+				if (party->get_members_count() == constant::party::max_members) {
 					player->send(packets::party::error(packets::party::errors::party_full));
 				}
 				else {

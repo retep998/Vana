@@ -132,6 +132,41 @@ namespace vana {
 		hacking,
 	};
 
+	enum class mob_elemental_attribute : std::int8_t {
+		normal,
+		immune,
+		strong,
+		weak,
+	};
+
+	enum class mob_control_status : std::int8_t {
+		normal = 1,
+		none = 5,
+	};
+
+	enum class mob_spawn_type {
+		spawn,
+		existing,
+	};
+
+	enum class job_type : std::int8_t {
+		adventurer = 0,
+		cygnus = 1,
+		legend = 2,
+		resistance = 3,
+		nova = 6,
+	};
+
+	enum class stat_variance {
+		none,
+		normal,
+		only_increase_with_great_chance,
+		only_increase_with_amazing_chance,
+		gachapon,
+		chaos_normal,
+		chaos_high,
+	};
+
 	using std::chrono::duration_cast;
 
 	// Miscellaneous utility types

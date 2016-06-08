@@ -16,7 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "chat_handler_functions.hpp"
-#include "common/job_constants.hpp"
 #include "channel_server/custom_functions.hpp"
 #include "channel_server/info_functions.hpp"
 #include "channel_server/map_functions.hpp"
@@ -34,12 +33,12 @@ case_insensitive_hash_map<chat_command, game_chat> chat_handler_functions::g_com
 
 const case_insensitive_hash_map<map_pair, game_chat> chat_handler_functions::g_map_associations = {
 	// These first maps are here purely for documentation purposes - they are computed by other means
-	{"town", {vana::maps::no_map, "Special"}},
-	{"return", {vana::maps::no_map, "Special"}},
-	{"here", {vana::maps::no_map, "Special"}},
-	{"back", {vana::maps::no_map, "Special"}},
+	{"town", {constant::map::no_map, "Special"}},
+	{"return", {constant::map::no_map, "Special"}},
+	{"here", {constant::map::no_map, "Special"}},
+	{"back", {constant::map::no_map, "Special"}},
 	// Actual maps
-	{"gm", {vana::maps::gm_map, "Special"}},
+	{"gm", {constant::map::gm_map, "Special"}},
 	{"fm", {910000000, "Special"}},
 	{"happyville", {209000000, "Special"}},
 	// Job-Related
@@ -669,7 +668,7 @@ auto chat_handler_functions::get_map(const game_chat &query, ref_ptr<player> pla
 	else if (lowercase_query == "town") map_id = player->get_map()->get_return_map();
 	else if (lowercase_query == "return") {
 		map_id = player->get_map()->get_forced_return();
-		if (map_id == vana::maps::no_map) map_id = player->get_map()->get_return_map();
+		if (map_id == constant::map::no_map) map_id = player->get_map()->get_return_map();
 	}
 	else {
 		auto kvp = g_map_associations.find(lowercase_query);
@@ -685,71 +684,71 @@ auto chat_handler_functions::get_map(const game_chat &query, ref_ptr<player> pla
 
 auto chat_handler_functions::get_job(const game_chat &query) -> game_job_id {
 	game_job_id job = -1;
-	if (query == "beginner") job = jobs::job_ids::beginner;
-	else if (query == "warrior") job = jobs::job_ids::swordsman;
-	else if (query == "fighter") job = jobs::job_ids::fighter;
-	else if (query == "sader") job = jobs::job_ids::crusader;
-	else if (query == "hero") job = jobs::job_ids::hero;
-	else if (query == "page") job = jobs::job_ids::page;
-	else if (query == "wk") job = jobs::job_ids::white_knight;
-	else if (query == "paladin") job = jobs::job_ids::paladin;
-	else if (query == "spearman") job = jobs::job_ids::spearman;
-	else if (query == "dk") job  = jobs::job_ids::dragon_knight;
-	else if (query == "drk") job = jobs::job_ids::dark_knight;
-	else if (query == "magician") job = jobs::job_ids::magician;
-	else if (query == "fpwiz") job = jobs::job_ids::fp_wizard;
-	else if (query == "fpmage") job = jobs::job_ids::fp_mage;
-	else if (query == "fparch") job = jobs::job_ids::fp_arch_mage;
-	else if (query == "ilwiz") job = jobs::job_ids::il_wizard;
-	else if (query == "ilmage") job = jobs::job_ids::il_mage;
-	else if (query == "ilarch") job = jobs::job_ids::il_arch_mage;
-	else if (query == "cleric") job = jobs::job_ids::cleric;
-	else if (query == "priest") job = jobs::job_ids::priest;
-	else if (query == "bishop") job = jobs::job_ids::bishop;
-	else if (query == "bowman") job = jobs::job_ids::archer;
-	else if (query == "hunter") job = jobs::job_ids::hunter;
-	else if (query == "ranger") job = jobs::job_ids::ranger;
-	else if (query == "bm") job = jobs::job_ids::bowmaster;
-	else if (query == "xbowman") job = jobs::job_ids::crossbowman;
-	else if (query == "sniper") job = jobs::job_ids::sniper;
-	else if (query == "marksman") job = jobs::job_ids::marksman;
-	else if (query == "thief") job = jobs::job_ids::rogue;
-	else if (query == "sin") job = jobs::job_ids::assassin;
-	else if (query == "hermit") job = jobs::job_ids::hermit;
-	else if (query == "nl") job = jobs::job_ids::night_lord;
-	else if (query == "dit") job = jobs::job_ids::bandit;
-	else if (query == "cb") job = jobs::job_ids::chief_bandit;
-	else if (query == "shadower") job = jobs::job_ids::shadower;
-	else if (query == "pirate") job = jobs::job_ids::pirate;
-	else if (query == "brawler") job = jobs::job_ids::brawler;
-	else if (query == "marauder") job = jobs::job_ids::marauder;
-	else if (query == "buccaneer") job = jobs::job_ids::buccaneer;
-	else if (query == "gunslinger") job = jobs::job_ids::gunslinger;
-	else if (query == "outlaw") job = jobs::job_ids::outlaw;
-	else if (query == "corsair") job = jobs::job_ids::corsair;
-	else if (query == "gm") job = jobs::job_ids::gm;
-	else if (query == "sgm") job = jobs::job_ids::super_gm;
-	else if (query == "noblesse") job = jobs::job_ids::noblesse;
-	else if (query == "dawn1") job = jobs::job_ids::dawn_warrior1;
-	else if (query == "dawn2") job = jobs::job_ids::dawn_warrior2;
-	else if (query == "dawn3") job = jobs::job_ids::dawn_warrior3;
-	else if (query == "dawn4") job = jobs::job_ids::dawn_warrior4;
-	else if (query == "blaze1") job = jobs::job_ids::blaze_wizard1;
-	else if (query == "blaze2") job = jobs::job_ids::blaze_wizard2;
-	else if (query == "blaze3") job = jobs::job_ids::blaze_wizard3;
-	else if (query == "blaze4") job = jobs::job_ids::blaze_wizard4;
-	else if (query == "wind1") job = jobs::job_ids::wind_archer1;
-	else if (query == "wind2") job = jobs::job_ids::wind_archer2;
-	else if (query == "wind3") job = jobs::job_ids::wind_archer3;
-	else if (query == "wind4") job = jobs::job_ids::wind_archer4;
-	else if (query == "night1") job = jobs::job_ids::night_walker1;
-	else if (query == "night2") job = jobs::job_ids::night_walker2;
-	else if (query == "night3") job = jobs::job_ids::night_walker3;
-	else if (query == "night4") job = jobs::job_ids::night_walker4;
-	else if (query == "thunder1") job = jobs::job_ids::thunder_breaker1;
-	else if (query == "thunder2") job = jobs::job_ids::thunder_breaker2;
-	else if (query == "thunder3") job = jobs::job_ids::thunder_breaker3;
-	else if (query == "thunder4") job = jobs::job_ids::thunder_breaker4;
+	if (query == "beginner") job = constant::job::id::beginner;
+	else if (query == "warrior") job = constant::job::id::swordsman;
+	else if (query == "fighter") job = constant::job::id::fighter;
+	else if (query == "sader") job = constant::job::id::crusader;
+	else if (query == "hero") job = constant::job::id::hero;
+	else if (query == "page") job = constant::job::id::page;
+	else if (query == "wk") job = constant::job::id::white_knight;
+	else if (query == "paladin") job = constant::job::id::paladin;
+	else if (query == "spearman") job = constant::job::id::spearman;
+	else if (query == "dk") job  = constant::job::id::dragon_knight;
+	else if (query == "drk") job = constant::job::id::dark_knight;
+	else if (query == "magician") job = constant::job::id::magician;
+	else if (query == "fpwiz") job = constant::job::id::fp_wizard;
+	else if (query == "fpmage") job = constant::job::id::fp_mage;
+	else if (query == "fparch") job = constant::job::id::fp_arch_mage;
+	else if (query == "ilwiz") job = constant::job::id::il_wizard;
+	else if (query == "ilmage") job = constant::job::id::il_mage;
+	else if (query == "ilarch") job = constant::job::id::il_arch_mage;
+	else if (query == "cleric") job = constant::job::id::cleric;
+	else if (query == "priest") job = constant::job::id::priest;
+	else if (query == "bishop") job = constant::job::id::bishop;
+	else if (query == "bowman") job = constant::job::id::archer;
+	else if (query == "hunter") job = constant::job::id::hunter;
+	else if (query == "ranger") job = constant::job::id::ranger;
+	else if (query == "bm") job = constant::job::id::bowmaster;
+	else if (query == "xbowman") job = constant::job::id::crossbowman;
+	else if (query == "sniper") job = constant::job::id::sniper;
+	else if (query == "marksman") job = constant::job::id::marksman;
+	else if (query == "thief") job = constant::job::id::rogue;
+	else if (query == "sin") job = constant::job::id::assassin;
+	else if (query == "hermit") job = constant::job::id::hermit;
+	else if (query == "nl") job = constant::job::id::night_lord;
+	else if (query == "dit") job = constant::job::id::bandit;
+	else if (query == "cb") job = constant::job::id::chief_bandit;
+	else if (query == "shadower") job = constant::job::id::shadower;
+	else if (query == "pirate") job = constant::job::id::pirate;
+	else if (query == "brawler") job = constant::job::id::brawler;
+	else if (query == "marauder") job = constant::job::id::marauder;
+	else if (query == "buccaneer") job = constant::job::id::buccaneer;
+	else if (query == "gunslinger") job = constant::job::id::gunslinger;
+	else if (query == "outlaw") job = constant::job::id::outlaw;
+	else if (query == "corsair") job = constant::job::id::corsair;
+	else if (query == "gm") job = constant::job::id::gm;
+	else if (query == "sgm") job = constant::job::id::super_gm;
+	else if (query == "noblesse") job = constant::job::id::noblesse;
+	else if (query == "dawn1") job = constant::job::id::dawn_warrior1;
+	else if (query == "dawn2") job = constant::job::id::dawn_warrior2;
+	else if (query == "dawn3") job = constant::job::id::dawn_warrior3;
+	else if (query == "dawn4") job = constant::job::id::dawn_warrior4;
+	else if (query == "blaze1") job = constant::job::id::blaze_wizard1;
+	else if (query == "blaze2") job = constant::job::id::blaze_wizard2;
+	else if (query == "blaze3") job = constant::job::id::blaze_wizard3;
+	else if (query == "blaze4") job = constant::job::id::blaze_wizard4;
+	else if (query == "wind1") job = constant::job::id::wind_archer1;
+	else if (query == "wind2") job = constant::job::id::wind_archer2;
+	else if (query == "wind3") job = constant::job::id::wind_archer3;
+	else if (query == "wind4") job = constant::job::id::wind_archer4;
+	else if (query == "night1") job = constant::job::id::night_walker1;
+	else if (query == "night2") job = constant::job::id::night_walker2;
+	else if (query == "night3") job = constant::job::id::night_walker3;
+	else if (query == "night4") job = constant::job::id::night_walker4;
+	else if (query == "thunder1") job = constant::job::id::thunder_breaker1;
+	else if (query == "thunder2") job = constant::job::id::thunder_breaker2;
+	else if (query == "thunder3") job = constant::job::id::thunder_breaker3;
+	else if (query == "thunder4") job = constant::job::id::thunder_breaker4;
 	else {
 		char *endptr;
 		job = static_cast<game_job_id>(strtol(query.c_str(), &endptr, 0));

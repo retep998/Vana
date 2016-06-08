@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "management_functions.hpp"
 #include "common/database.hpp"
 #include "common/exit_codes.hpp"
-#include "common/item_constants.hpp"
 #include "common/item_data_provider.hpp"
 #include "common/rates_config.hpp"
 #include "common/string_utilities.hpp"
@@ -404,7 +403,7 @@ auto management_functions::item(ref_ptr<player> player, const game_chat &args) -
 		if (channel_server::get_instance().get_item_data_provider().get_item_info(item_id) != nullptr) {
 			string count_string = matches[2];
 			uint16_t count = count_string.empty() ? 1 : atoi(count_string.c_str());
-			inventory::add_new_item(player, item_id, count, items::stat_variance::gachapon);
+			inventory::add_new_item(player, item_id, count, stat_variance::gachapon);
 		}
 		else {
 			chat_handler_functions::show_error(player, "Invalid item: " + raw_item);

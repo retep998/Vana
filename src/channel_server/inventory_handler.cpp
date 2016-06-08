@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/equip_data_provider.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/inter_header.hpp"
-#include "common/item_constants.hpp"
 #include "common/item_data_provider.hpp"
 #include "common/mob_data_provider.hpp"
 #include "common/npc_data_provider.hpp"
@@ -80,9 +79,9 @@ auto inventory_handler::move_item(ref_ptr<player> player, packet_reader &reader)
 			}
 		};
 		// Check if any label ring changed, so we can update the look of the apropos pet
-		test_pet_slot(equip_slots::pet_label_ring1, 0);
-		test_pet_slot(equip_slots::pet_label_ring2, 1);
-		test_pet_slot(equip_slots::pet_label_ring3, 2);
+		test_pet_slot(constant::equip_slot::pet_label_ring1, 0);
+		test_pet_slot(constant::equip_slot::pet_label_ring2, 1);
+		test_pet_slot(constant::equip_slot::pet_label_ring3, 2);
 
 		player->send_map(packets::inventory::update_player(player));
 	}
@@ -142,19 +141,19 @@ auto inventory_handler::use_item(ref_ptr<player> player, packet_reader &reader) 
 	game_inventory_slot slot = reader.get<game_inventory_slot>();
 	game_item_id item_id = reader.get<game_item_id>();
 	const game_slot_qty amount_used = 1;
-	if (player->get_stats()->is_dead() || player->get_inventory()->get_item_amount_by_slot(inventories::use, slot) < amount_used) {
+	if (player->get_stats()->is_dead() || player->get_inventory()->get_item_amount_by_slot(constant::inventory::use, slot) < amount_used) {
 		// Hacking
 		return;
 	}
 
-	item *item_value = player->get_inventory()->get_item(inventories::use, slot);
+	item *item_value = player->get_inventory()->get_item(constant::inventory::use, slot);
 	if (item_value == nullptr || item_value->get_id() != item_id) {
 		// Hacking
 		return;
 	}
 
 	if (!player->has_gm_benefits()) {
-		inventory::take_item_slot(player, inventories::use, slot, amount_used);
+		inventory::take_item_slot(player, constant::inventory::use, slot, amount_used);
 	}
 
 	inventory::use_item(player, item_id);
@@ -170,7 +169,7 @@ auto inventory_handler::use_skillbook(ref_ptr<player> player, packet_reader &rea
 	game_inventory_slot slot = reader.get<game_inventory_slot>();
 	game_item_id item_id = reader.get<game_item_id>();
 
-	item *item = player->get_inventory()->get_item(inventories::use, slot);
+	item *item = player->get_inventory()->get_item(constant::inventory::use, slot);
 	if (item == nullptr || item->get_id() != item_id) {
 		// Hacking
 		return;
@@ -198,7 +197,7 @@ auto inventory_handler::use_skillbook(ref_ptr<player> player, packet_reader &rea
 						succeed = true;
 					}
 
-					inventory::take_item_slot(player, inventories::use, slot, 1);
+					inventory::take_item_slot(player, constant::inventory::use, slot, 1);
 					break;
 				}
 			}
@@ -253,13 +252,13 @@ auto inventory_handler::use_summon_bag(ref_ptr<player> player, packet_reader &re
 		return;
 	}
 
-	item *inventory_item = player->get_inventory()->get_item(inventories::use, slot);
+	item *inventory_item = player->get_inventory()->get_item(constant::inventory::use, slot);
 	if (inventory_item == nullptr || inventory_item->get_id() != item_id) {
 		// Hacking
 		return;
 	}
 
-	inventory::take_item_slot(player, inventories::use, slot, 1);
+	inventory::take_item_slot(player, constant::inventory::use, slot, 1);
 
 	for (const auto &bag : *item_info) {
 		if (randomizer::percentage<uint32_t>() < bag.chance) {
@@ -275,7 +274,7 @@ auto inventory_handler::use_return_scroll(ref_ptr<player> player, packet_reader 
 	game_inventory_slot slot = reader.get<game_inventory_slot>();
 	game_item_id item_id = reader.get<game_item_id>();
 
-	item *item = player->get_inventory()->get_item(inventories::use, slot);
+	item *item = player->get_inventory()->get_item(constant::inventory::use, slot);
 	if (item == nullptr || item->get_id() != item_id) {
 		// Hacking
 		return;
@@ -286,10 +285,10 @@ auto inventory_handler::use_return_scroll(ref_ptr<player> player, packet_reader 
 		return;
 	}
 
-	inventory::take_item_slot(player, inventories::use, slot, 1);
+	inventory::take_item_slot(player, constant::inventory::use, slot, 1);
 
 	game_map_id map = info->move_to;
-	player->set_map(map == vana::maps::no_map ? player->get_map()->get_return_map() : map);
+	player->set_map(map == constant::map::no_map ? player->get_map()->get_return_map() : map);
 }
 
 auto inventory_handler::use_scroll(ref_ptr<player> player, packet_reader &reader) -> void {
@@ -299,8 +298,8 @@ auto inventory_handler::use_scroll(ref_ptr<player> player, packet_reader &reader
 	bool white_scroll = (reader.get<int16_t>() == 2);
 	bool legendary_spirit = reader.get<bool>();
 
-	item *scroll = player->get_inventory()->get_item(inventories::use, slot);
-	item *equip = player->get_inventory()->get_item(inventories::equip, equip_slot);
+	item *scroll = player->get_inventory()->get_item(constant::inventory::use, slot);
+	item *equip = player->get_inventory()->get_item(constant::inventory::equip, equip_slot);
 	if (scroll == nullptr || equip == nullptr) {
 		// Most likely hacking
 		return;
@@ -327,10 +326,10 @@ auto inventory_handler::use_scroll(ref_ptr<player> player, packet_reader &reader
 
 	if (succeed != -1) {
 		if (white_scroll) {
-			inventory::take_item(player, items::white_scroll, 1);
+			inventory::take_item(player, constant::item::white_scroll, 1);
 		}
 
-		inventory::take_item_slot(player, inventories::use, slot, 1);
+		inventory::take_item_slot(player, constant::inventory::use, slot, 1);
 		player->send_map(packets::inventory::use_scroll(player->get_id(), succeed, cursed, legendary_spirit));
 
 		if (!cursed) {
@@ -345,7 +344,7 @@ auto inventory_handler::use_scroll(ref_ptr<player> player, packet_reader &reader
 			ops.emplace_back(packets::inventory::operation_types::modify_slot, equip, equip_slot);
 			player->send(packets::inventory::inventory_operation(true, ops));
 
-			player->get_inventory()->delete_item(inventories::equip, equip_slot);
+			player->get_inventory()->delete_item(constant::inventory::equip, equip_slot);
 		}
 
 		player->send_map(packets::inventory::update_player(player));
@@ -362,7 +361,7 @@ auto inventory_handler::use_buff_item(ref_ptr<player> player, packet_reader &rea
 	reader.skip<game_tick_count>();
 	game_inventory_slot slot = reader.get<game_inventory_slot>();
 	game_item_id item_id = reader.get<game_item_id>();
-	item *item = player->get_inventory()->get_item(inventories::use, slot);
+	item *item = player->get_inventory()->get_item(constant::inventory::use, slot);
 	if (item == nullptr || item->get_id() != item_id) {
 		// Hacking
 		return;
@@ -393,7 +392,7 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 	game_inventory_slot item_slot = reader.get<game_inventory_slot>();
 	game_item_id item_id = reader.get<game_item_id>();
 
-	item *test = player->get_inventory()->get_item(inventories::cash, item_slot);
+	item *test = player->get_inventory()->get_item(constant::inventory::cash, item_slot);
 	if (test == nullptr || test->get_id() != item_id) {
 		// Hacking
 		return;
@@ -401,21 +400,21 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 
 	auto item_info = channel_server::get_instance().get_item_data_provider().get_item_info(item_id);
 	bool used = false;
-	if (game_logic_utilities::get_item_type(item_id) == items::types::weather_cash) {
+	if (game_logic_utilities::get_item_type(item_id) == constant::item::type::weather_cash) {
 		string message = reader.get<string>();
 		reader.skip<game_tick_count>();
 		if (message.length() <= 35) {
 			map *map = player->get_map();
 			message = player->get_name() + " 's message : " + message;
-			used = map->create_weather(player, false, items::weather_time, item_id, message);
+			used = map->create_weather(player, false, constant::item::weather_time, item_id, message);
 		}
 	}
-	else if (game_logic_utilities::get_item_type(item_id) == items::types::cash_pet_food) {
+	else if (game_logic_utilities::get_item_type(item_id) == constant::item::type::cash_pet_food) {
 		pet *pet = player->get_pets()->get_summoned(0);
 		if (pet != nullptr) {
-			if (pet->get_fullness() < stats::max_fullness) {
+			if (pet->get_fullness() < constant::stat::max_fullness) {
 				player->send(packets::pets::show_animation(player->get_id(), pet, 1));
-				pet->modify_fullness(stats::max_fullness, false);
+				pet->modify_fullness(constant::stat::max_fullness, false);
 				pet->add_closeness(100); // All cash pet food gives 100 closeness
 				used = true;
 			}
@@ -423,15 +422,15 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 	}
 	else {
 		switch (item_id) {
-			case items::teleport_rock:
-			case items::teleport_coke:
-			case items::vip_rock: // Only occurs when you actually try to move somewhere
+			case constant::item::teleport_rock:
+			case constant::item::teleport_coke:
+			case constant::item::vip_rock: // Only occurs when you actually try to move somewhere
 				used = handle_rock_teleport(player, item_id, reader);
 				break;
-			case items::first_job_sp_reset:
-			case items::second_job_sp_reset:
-			case items::third_job_sp_reset:
-			case items::fourth_job_sp_reset: {
+			case constant::item::first_job_sp_reset:
+			case constant::item::second_job_sp_reset:
+			case constant::item::third_job_sp_reset:
+			case constant::item::fourth_job_sp_reset: {
 				game_skill_id to_skill = reader.get<int32_t>();
 				game_skill_id from_skill = reader.get<int32_t>();
 				if (!player->get_skills()->add_skill_level(from_skill, -1, true)) {
@@ -445,7 +444,7 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 				used = true;
 				break;
 			}
-			case items::ap_reset: {
+			case constant::item::ap_reset: {
 				int32_t to_stat = reader.get<int32_t>();
 				int32_t from_stat = reader.get<int32_t>();
 				player->get_stats()->add_stat(to_stat, 1, true);
@@ -453,14 +452,14 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 				used = true;
 				break;
 			}
-			case items::megaphone: {
+			case constant::item::megaphone: {
 				string msg = player->get_medal_name() + " : " + reader.get<string>();
 				// In global, this sends to everyone on the current channel, not the map
 				channel_server::get_instance().get_player_data_provider().send(packets::inventory::show_megaphone(msg));
 				used = true;
 				break;
 			}
-			case items::super_megaphone: {
+			case constant::item::super_megaphone: {
 				string msg = player->get_medal_name() + " : " + reader.get<string>();
 				bool whisper = reader.get<bool>();
 				auto &builder = packets::inventory::show_super_megaphone(msg, whisper);
@@ -471,9 +470,9 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 				used = true;
 				break;
 			}
-			case items::diablo_messenger:
-			case items::cloud9_messenger:
-			case items::loveholic_messenger: {
+			case constant::item::diablo_messenger:
+			case constant::item::cloud9_messenger:
+			case constant::item::loveholic_messenger: {
 				string msg1 = reader.get<string>();
 				string msg2 = reader.get<string>();
 				string msg3 = reader.get<string>();
@@ -487,7 +486,7 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 				used = true;
 				break;
 			}
-			case items::item_megaphone: {
+			case constant::item::item_megaphone: {
 				string msg = player->get_medal_name() + " : " + reader.get<string>();
 				bool whisper = reader.get<bool>();
 				item *item = nullptr;
@@ -509,7 +508,7 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 				used = true;
 				break;
 			}
-			case items::art_megaphone: {
+			case constant::item::art_megaphone: {
 				int8_t lines = reader.get<int8_t>();
 				if (lines < 1 || lines > 3) {
 					// Hacking
@@ -530,7 +529,7 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 				used = true;
 				break;
 			}
-			case items::pet_name_tag: {
+			case constant::item::pet_name_tag: {
 				string name = reader.get<string>();
 				if (channel_server::get_instance().get_valid_char_data_provider().is_forbidden_name(name) ||
 					channel_server::get_instance().get_curse_data_provider().is_curse_word(name)) {
@@ -543,10 +542,10 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 				}
 				break;
 			}
-			case items::item_name_tag: {
+			case constant::item::item_name_tag: {
 				game_inventory_slot slot = reader.get<game_inventory_slot>();
 				if (slot != 0) {
-					item *item = player->get_inventory()->get_item(inventories::equip, slot);
+					item *item = player->get_inventory()->get_item(constant::inventory::equip, slot);
 					if (item == nullptr) {
 						// Hacking or failure, dunno
 						return;
@@ -560,8 +559,8 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 				}
 				break;
 			}
-			case items::scissors_of_karma:
-			case items::item_lock: {
+			case constant::item::scissors_of_karma:
+			case constant::item::item_lock: {
 				game_inventory inv = static_cast<game_inventory>(reader.get<int32_t>());
 				game_inventory_slot slot = static_cast<game_inventory_slot>(reader.get<int32_t>());
 				if (slot != 0) {
@@ -571,14 +570,14 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 						return;
 					}
 					switch (item_id) {
-						case items::item_lock:
+						case constant::item::item_lock:
 							if (item->has_lock()) {
 								// Hacking
 								return;
 							}
 							item->set_lock(true);
 							break;
-						case items::scissors_of_karma: {
+						case constant::item::scissors_of_karma: {
 							auto equip_info = channel_server::get_instance().get_item_data_provider().get_item_info(item->get_id());
 
 							if (!equip_info->karma_scissors) {
@@ -601,10 +600,10 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 				}
 				break;
 			}
-			case items::maple_tv_messenger:
-			case items::megassenger: {
+			case constant::item::maple_tv_messenger:
+			case constant::item::megassenger: {
 				bool has_receiver = (reader.get<int8_t>() == 3);
-				bool show_whisper = (item_id == items::megassenger ? reader.get<bool>() : false);
+				bool show_whisper = (item_id == constant::item::megassenger ? reader.get<bool>() : false);
 				auto receiver = channel_server::get_instance().get_player_data_provider().get_player(reader.get<string>());
 				int32_t time = 15;
 
@@ -616,9 +615,9 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 					string msg5 = reader.get<string>();
 					reader.skip<game_tick_count>();
 
-					channel_server::get_instance().get_maple_tvs().add_message(player, receiver, msg1, msg2, msg3, msg4, msg5, item_id - (item_id == items::megassenger ? 3 : 0), time);
+					channel_server::get_instance().get_maple_tvs().add_message(player, receiver, msg1, msg2, msg3, msg4, msg5, item_id - (item_id == constant::item::megassenger ? 3 : 0), time);
 
-					if (item_id == items::megassenger) {
+					if (item_id == constant::item::megassenger) {
 						auto &builder = packets::inventory::show_super_megaphone(player->get_medal_name() + " : " + msg1 + msg2 + msg3 + msg4 + msg5, show_whisper);
 						channel_server::get_instance().send_world(
 							vana::packets::prepend(builder, [](packet_builder &header) {
@@ -629,10 +628,10 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 				}
 				break;
 			}
-			case items::maple_tv_star_messenger:
-			case items::star_megassenger: {
+			case constant::item::maple_tv_star_messenger:
+			case constant::item::star_megassenger: {
 				int32_t time = 30;
-				bool show_whisper = (item_id == items::star_megassenger ? reader.get<bool>() : false);
+				bool show_whisper = (item_id == constant::item::star_megassenger ? reader.get<bool>() : false);
 				string msg1 = reader.get<string>();
 				string msg2 = reader.get<string>();
 				string msg3 = reader.get<string>();
@@ -640,9 +639,9 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 				string msg5 = reader.get<string>();
 				reader.skip<game_tick_count>();
 
-				channel_server::get_instance().get_maple_tvs().add_message(player, nullptr, msg1, msg2, msg3, msg4, msg5, item_id - (item_id == items::star_megassenger ? 3 : 0), time);
+				channel_server::get_instance().get_maple_tvs().add_message(player, nullptr, msg1, msg2, msg3, msg4, msg5, item_id - (item_id == constant::item::star_megassenger ? 3 : 0), time);
 
-				if (item_id == items::star_megassenger) {
+				if (item_id == constant::item::star_megassenger) {
 					auto &builder = packets::inventory::show_super_megaphone(player->get_medal_name() + " : " + msg1 + msg2 + msg3 + msg4 + msg5, show_whisper);
 					channel_server::get_instance().send_world(
 						vana::packets::prepend(builder, [](packet_builder &header) {
@@ -652,9 +651,9 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 				used = true;
 				break;
 			}
-			case items::maple_tv_heart_messenger:
-			case items::heart_megassenger: {
-				bool show_whisper = (item_id == items::heart_megassenger ? reader.get<bool>() : false);
+			case constant::item::maple_tv_heart_messenger:
+			case constant::item::heart_megassenger: {
+				bool show_whisper = (item_id == constant::item::heart_megassenger ? reader.get<bool>() : false);
 				string name = reader.get<string>();
 				auto receiver = channel_server::get_instance().get_player_data_provider().get_player(name);
 				int32_t time = 60;
@@ -667,9 +666,9 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 					string msg5 = reader.get<string>();
 					reader.skip<game_tick_count>();
 
-					channel_server::get_instance().get_maple_tvs().add_message(player, receiver, msg1, msg2, msg3, msg4, msg5, item_id - (item_id == items::heart_megassenger ? 3 : 0), time);
+					channel_server::get_instance().get_maple_tvs().add_message(player, receiver, msg1, msg2, msg3, msg4, msg5, item_id - (item_id == constant::item::heart_megassenger ? 3 : 0), time);
 
-					if (item_id == items::heart_megassenger) {
+					if (item_id == constant::item::heart_megassenger) {
 						auto &builder = packets::inventory::show_super_megaphone(player->get_medal_name() + " : " + msg1 + msg2 + msg3 + msg4 + msg5, show_whisper);
 						channel_server::get_instance().send_world(
 							vana::packets::prepend(builder, [](packet_builder &header) {
@@ -680,9 +679,9 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 				}
 				break;
 			}
-			case items::bronze_sack_of_mesos:
-			case items::silver_sack_of_mesos:
-			case items::gold_sack_of_mesos: {
+			case constant::item::bronze_sack_of_mesos:
+			case constant::item::silver_sack_of_mesos:
+			case constant::item::gold_sack_of_mesos: {
 				game_mesos mesos = item_info->mesos;
 				if (!player->get_inventory()->modify_mesos(mesos)) {
 					player->send(packets::inventory::send_mesobag_failed());
@@ -693,24 +692,24 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 				}
 				break;
 			}
-			case items::chalkboard:
-			case items::chalkboard2: {
+			case constant::item::chalkboard:
+			case constant::item::chalkboard2: {
 				string msg = reader.get<string>();
 				player->set_chalkboard(msg);
 				player->send_map(packets::inventory::send_chalkboard_update(player->get_id(), msg));
 				break;
 			}
-			case items::fungus_scroll:
-			case items::oinker_delight:
-			case items::zeta_nightmare:
+			case constant::item::fungus_scroll:
+			case constant::item::oinker_delight:
+			case constant::item::zeta_nightmare:
 				inventory::use_item(player, item_id);
 				used = true;
 				break;
-			case items::vicious_hammer: {
+			case constant::item::vicious_hammer: {
 				game_inventory inv = static_cast<game_inventory>(reader.get<int32_t>());
 				game_inventory_slot slot = static_cast<game_inventory_slot>(reader.get<int32_t>());
 				item *item = player->get_inventory()->get_item(inv, slot);
-				if (item == nullptr || item->get_hammers() == items::max_hammers || channel_server::get_instance().get_equip_data_provider().get_slots(item->get_id()) == 0) {
+				if (item == nullptr || item->get_hammers() == constant::item::max_hammers || channel_server::get_instance().get_equip_data_provider().get_slots(item->get_id()) == 0) {
 					// Hacking, probably
 					return;
 				}
@@ -721,7 +720,7 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 				used = true;
 				break;
 			}
-			case items::congratulatory_song:
+			case constant::item::congratulatory_song:
 				player->send_map(packets::inventory::play_cash_song(item_id, player->get_name()));
 				used = true;
 				break;
@@ -772,18 +771,18 @@ auto inventory_handler::handle_rock_functions(ref_ptr<player> player, packet_rea
 }
 
 auto inventory_handler::handle_rock_teleport(ref_ptr<player> player, game_item_id item_id, packet_reader &reader) -> bool {
-	if (item_id == items::special_teleport_rock) {
+	if (item_id == constant::item::special_teleport_rock) {
 		game_inventory_slot slot = reader.get<game_inventory_slot>();
 		game_item_id posted_item_id = reader.get<game_item_id>();
 
-		item *item = player->get_inventory()->get_item(inventories::use, slot);
+		item *item = player->get_inventory()->get_item(constant::inventory::use, slot);
 		if (item == nullptr || item->get_id() != item_id || item_id != posted_item_id) {
 			// Hacking
 			return false;
 		}
 	}
 
-	int8_t type = item_id != items::vip_rock ?
+	int8_t type = item_id != constant::item::vip_rock ?
 		packets::inventory::rock_types::regular :
 		packets::inventory::rock_types::vip;
 
@@ -842,7 +841,7 @@ auto inventory_handler::handle_rock_teleport(ref_ptr<player> player, game_item_i
 
 	reader.skip<game_tick_count>();
 
-	if (item_id == items::special_teleport_rock) {
+	if (item_id == constant::item::special_teleport_rock) {
 		if (used) {
 			inventory::take_item(player, item_id, 1);
 		}
@@ -859,7 +858,7 @@ auto inventory_handler::handle_hammer_time(ref_ptr<player> player) -> void {
 		return;
 	}
 	game_inventory_slot hammer_slot = player->get_inventory()->get_hammer_slot();
-	item *item = player->get_inventory()->get_item(inventories::equip, hammer_slot);
+	item *item = player->get_inventory()->get_item(constant::inventory::equip, hammer_slot);
 	player->send(packets::inventory::send_hammer_update());
 	player->send(packets::inventory::send_hulk_smash(hammer_slot, item));
 	player->get_inventory()->set_hammer_slot(-1);
@@ -868,7 +867,7 @@ auto inventory_handler::handle_hammer_time(ref_ptr<player> player) -> void {
 auto inventory_handler::handle_reward_item(ref_ptr<player> player, packet_reader &reader) -> void {
 	game_inventory_slot slot = reader.get<game_inventory_slot>();
 	game_item_id item_id = reader.get<game_item_id>();
-	item *reward_item_cons = player->get_inventory()->get_item(inventories::use, slot);
+	item *reward_item_cons = player->get_inventory()->get_item(constant::inventory::use, slot);
 	if (reward_item_cons == nullptr || reward_item_cons->get_id() != item_id) {
 		// Hacking or hacking failure
 		player->send(packets::inventory::blank_update());
@@ -900,7 +899,7 @@ auto inventory_handler::handle_script_item(ref_ptr<player> player, packet_reader
 	game_inventory_slot slot = reader.get<game_inventory_slot>();
 	game_item_id item_id = reader.get<game_item_id>();
 
-	item *item = player->get_inventory()->get_item(inventories::use, slot);
+	item *item = player->get_inventory()->get_item(constant::inventory::use, slot);
 	if (item == nullptr || item->get_id() != item_id) {
 		// Hacking or hacking failure
 		player->send(packets::inventory::blank_update());

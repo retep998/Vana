@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "player_packet_helper.hpp"
 #include "common/file_time.hpp"
 #include "common/game_logic_utilities.hpp"
-#include "common/item_constants.hpp"
 #include "common/time_utilities.hpp"
 #include "channel_server/inventory.hpp"
 #include "channel_server/pet.hpp"
@@ -121,7 +120,7 @@ PACKET_IMPL(add_player_display, ref_ptr<vana::channel_server::player> player) {
 		.add<game_hair_id>(player->get_hair());
 
 	player->get_inventory()->add_equipped_packet(builder);
-	for (int8_t i = 0; i < inventories::max_pet_count; i++) {
+	for (int8_t i = 0; i < constant::inventory::max_pet_count; i++) {
 		if (pet *pet = player->get_pets()->get_summoned(i)) {
 			builder.add<game_item_id>(pet->get_item_id());
 		}

@@ -17,13 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/map_constants.hpp"
+#include "common/constant/map.hpp"
 #include "common/types.hpp"
 #include <string>
 
 namespace vana {
 	struct banish_field_info {
-		game_map_id field = maps::no_map;
+		game_map_id field = constant::map::no_map;
 		string message;
 		string portal;
 	};

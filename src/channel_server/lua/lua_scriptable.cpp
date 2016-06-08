@@ -18,10 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "lua_scriptable.hpp"
 #include "common/algorithm.hpp"
 #include "common/beauty_data_provider.hpp"
-#include "common/game_constants.hpp"
+#include "common/constant/job/line.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/inter_header.hpp"
-#include "common/item_constants.hpp"
 #include "common/item_data_provider.hpp"
 #include "common/mcdb_version.hpp"
 #include "common/packet_wrapper.hpp"
@@ -347,8 +346,8 @@ auto lua_scriptable::set_environment_variables() -> void {
 	set<int32_t>("msg_notice", packets::player::notice_types::notice);
 	set<int32_t>("msg_box", packets::player::notice_types::box);
 
-	set<int32_t>("gender_male", gender::male);
-	set<int32_t>("gender_female", gender::female);
+	set<int32_t>("gender_male", constant::gender::male);
+	set<int32_t>("gender_female", constant::gender::female);
 
 	set<bool>("boat_docked", true);
 	set<bool>("boat_undocked", false);
@@ -361,18 +360,18 @@ auto lua_scriptable::set_environment_variables() -> void {
 	set<bool>("portal_enabled", true);
 	set<bool>("portal_disabled", false);
 
-	set<int8_t>("line_beginner", jobs::job_lines::beginner);
-	set<int8_t>("line_warrior", jobs::job_lines::warrior);
-	set<int8_t>("line_magician", jobs::job_lines::magician);
-	set<int8_t>("line_bowman", jobs::job_lines::bowman);
-	set<int8_t>("line_thief", jobs::job_lines::thief);
-	set<int8_t>("line_pirate", jobs::job_lines::pirate);
+	set<int8_t>("line_beginner", constant::job::line::beginner);
+	set<int8_t>("line_warrior", constant::job::line::warrior);
+	set<int8_t>("line_magician", constant::job::line::magician);
+	set<int8_t>("line_bowman", constant::job::line::bowman);
+	set<int8_t>("line_thief", constant::job::line::thief);
+	set<int8_t>("line_pirate", constant::job::line::pirate);
 
 	set<int8_t>("progression_second", 0);
 	set<int8_t>("progression_third", 1);
 	set<int8_t>("progression_fourth", 2);
 
-	set<game_item_id>("item_mesos", items::sack_of_money);
+	set<game_item_id>("item_mesos", constant::item::sack_of_money);
 
 	set<string>("locale_global", mcdb::locales::global);
 	set<string>("locale_korea", mcdb::locales::korea);
@@ -972,7 +971,7 @@ auto lua_exports::give_item_gachapon(lua_State *lua_vm) -> lua_return {
 	if (env.is(lua_vm, 2, lua::lua_type::number)) {
 		amount = env.get<game_slot_qty>(lua_vm, 2);
 	}
-	bool success = quests::give_item(get_player(lua_vm, env), item_id, amount, items::stat_variance::gachapon) == result::successful;
+	bool success = quests::give_item(get_player(lua_vm, env), item_id, amount, stat_variance::gachapon) == result::successful;
 	env.push<bool>(lua_vm, success);
 	return 1;
 }
@@ -2179,7 +2178,7 @@ auto lua_exports::remove_instance_player(lua_State *lua_vm) -> lua_return {
 
 auto lua_exports::respawn_instance_mobs(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
-	game_map_id map_id = vana::maps::no_map;
+	game_map_id map_id = constant::map::no_map;
 	if (env.is(lua_vm, 1, lua::lua_type::number)) {
 		map_id = env.get<game_map_id>(lua_vm, 1);
 	}
@@ -2189,7 +2188,7 @@ auto lua_exports::respawn_instance_mobs(lua_State *lua_vm) -> lua_return {
 
 auto lua_exports::respawn_instance_reactors(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
-	game_map_id map_id = vana::maps::no_map;
+	game_map_id map_id = constant::map::no_map;
 	if (env.is(lua_vm, 1, lua::lua_type::number)) {
 		map_id = env.get<game_map_id>(lua_vm, 1);
 	}

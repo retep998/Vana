@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mob_data_provider.hpp"
 #include "common/algorithm.hpp"
 #include "common/database.hpp"
-#include "common/game_constants.hpp"
 #include "common/initialize_common.hpp"
 #include "common/string_utilities.hpp"
 #include <iomanip>

@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/algorithm.hpp"
 #include "common/database.hpp"
 #include "common/initialize_common.hpp"
-#include "common/skill_constants.hpp"
+#include "common/constant/mob_skill.hpp"
 #include "common/string_utilities.hpp"
 #include <iomanip>
 #include <iostream>
@@ -150,7 +150,7 @@ auto skill_data_provider::load_mob_summons() -> void {
 		game_mob_skill_level level = row.get<game_mob_skill_level>("level");
 		game_mob_id mob_id = row.get<game_mob_id>("mobid");
 
-		m_mob_skills[mob_skills::summon][level].summons.push_back(mob_id);
+		m_mob_skills[constant::mob_skill::summon][level].summons.push_back(mob_id);
 	}
 }
 

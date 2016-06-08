@@ -60,7 +60,7 @@ auto active_trade::can_trade(ref_ptr<player> target, trade_info *unit) -> bool {
 		can_trade = false;
 	}
 	if (can_trade && unit->count > 0) {
-		array<game_trade_slot, inventories::count> totals = {0};
+		array<game_trade_slot, constant::inventory::count> totals = {0};
 		hash_map<game_item_id, game_slot_qty> added;
 		for (game_trade_slot i = 0; i < trade_info::trade_size; ++i) {
 			// Create item structure to determine needed slots among stackable items
@@ -124,7 +124,7 @@ auto active_trade::can_trade(ref_ptr<player> target, trade_info *unit) -> bool {
 				}
 			}
 		}
-		for (game_inventory i = 0; i < inventories::count; ++i) {
+		for (game_inventory i = 0; i < constant::inventory::count; ++i) {
 			// Determine if needed slots are available
 			if (totals[i] > 0) {
 				game_trade_slot incrementor = 0;

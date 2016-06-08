@@ -16,7 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "login_packet_helper.hpp"
-#include "common/item_constants.hpp"
+#include "common/constant/equip_slot.hpp"
+#include "common/constant/inventory.hpp"
 #include "login_server/characters.hpp"
 
 namespace vana {
@@ -63,7 +64,7 @@ PACKET_IMPL(add_character, const character &charc) {
 		.add<int8_t>(1)
 		.add<game_hair_id>(charc.hair);
 
-	game_item_id equips[inventories::equipped_slots][2] = {0};
+	game_item_id equips[constant::inventory::equipped_slots][2] = {0};
 	for (const auto &equip : charc.equips) {
 		game_inventory_slot slot = -equip.slot;
 		if (slot > 100) {
@@ -82,11 +83,11 @@ PACKET_IMPL(add_character, const character &charc) {
 			equips[slot][0] = equip.id;
 		}
 	}
-	for (uint8_t i = 0; i < inventories::equipped_slots; i++) {
+	for (uint8_t i = 0; i < constant::inventory::equipped_slots; i++) {
 		// Shown items
 		if (equips[i][0] > 0) {
 			builder.add<uint8_t>(i);
-			if (i == equip_slots::weapon && equips[i][1] > 0) {
+			if (i == constant::equip_slot::weapon && equips[i][1] > 0) {
 				// Normal weapons always here
 				builder.add<game_item_id>(equips[i][1]);
 			}
@@ -96,9 +97,9 @@ PACKET_IMPL(add_character, const character &charc) {
 		}
 	}
 	builder.add<int8_t>(-1);
-	for (uint8_t i = 0; i < inventories::equipped_slots; i++) {
+	for (uint8_t i = 0; i < constant::inventory::equipped_slots; i++) {
 		// Covered items
-		if (equips[i][1] > 0 && i != equip_slots::weapon) {
+		if (equips[i][1] > 0 && i != constant::equip_slot::weapon) {
 			builder.add<uint8_t>(i);
 			builder.add<game_item_id>(equips[i][1]);
 		}
@@ -106,7 +107,7 @@ PACKET_IMPL(add_character, const character &charc) {
 
 	builder
 		.add<int8_t>(-1)
-		.add<game_item_id>(equips[equip_slots::weapon][0]) // Cash weapon
+		.add<game_item_id>(equips[constant::equip_slot::weapon][0]) // Cash weapon
 		.add<int32_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(0)

@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/common_header.hpp"
 #include "common/database.hpp"
 #include "common/enum_utilities.hpp"
-#include "common/game_constants.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/item_data_provider.hpp"
 #include "common/packet_builder.hpp"
@@ -164,7 +163,7 @@ auto player::handle(packet_reader &reader) -> result {
 				case CMSG_SUMMON_MOVEMENT: summon_handler::move_summon(shared_from_this(), reader); break;
 				case CMSG_SUMMON_SKILL: summon_handler::summon_skill(shared_from_this(), reader); break;
 				case CMSG_TELEPORT_ROCK: inventory_handler::handle_rock_functions(shared_from_this(), reader); break;
-				case CMSG_TELEPORT_ROCK_USE: inventory_handler::handle_rock_teleport(shared_from_this(), items::special_teleport_rock, reader); break;
+				case CMSG_TELEPORT_ROCK_USE: inventory_handler::handle_rock_teleport(shared_from_this(), constant::item::special_teleport_rock, reader); break;
 				case CMSG_TOWN_SCROLL_USE: inventory_handler::use_return_scroll(shared_from_this(), reader); break;
 				case CMSG_USE_CHAIR: inventory_handler::use_chair(shared_from_this(), reader); break;
 				case CMSG_USE_REWARD_ITEM: inventory_handler::handle_reward_item(shared_from_this(), reader); break;
@@ -322,7 +321,7 @@ auto player::player_connect(packet_reader &reader) -> void {
 	// Inventory
 	m_mounts = make_owned_ptr<player_mounts>(this);
 	m_pets = make_owned_ptr<player_pets>(this);
-	array<game_inventory_slot_count, inventories::count> max_slots;
+	array<game_inventory_slot_count, constant::inventory::count> max_slots;
 	max_slots[0] = row.get<game_inventory_slot_count>("equip_slots");
 	max_slots[1] = row.get<game_inventory_slot_count>("use_slots");
 	max_slots[2] = row.get<game_inventory_slot_count>("setup_slots");
@@ -372,11 +371,11 @@ auto player::player_connect(packet_reader &reader) -> void {
 
 	if (is_gm() || is_admin()) {
 		if (first_connect) {
-			m_map = vana::maps::gm_map;
+			m_map = constant::map::gm_map;
 			m_map_pos = -1;
 		}
 	}
-	else if (maps::get_map(m_map)->get_forced_return() != vana::maps::no_map) {
+	else if (maps::get_map(m_map)->get_forced_return() != constant::map::no_map) {
 		m_map = maps::get_map(m_map)->get_forced_return();
 		m_map_pos = -1;
 	}
@@ -396,7 +395,7 @@ auto player::player_connect(packet_reader &reader) -> void {
 		send(packets::show_scrolling_header(config.scrolling_header));
 	}
 
-	for (int8_t i = 0; i < inventories::max_pet_count; i++) {
+	for (int8_t i = 0; i < constant::inventory::max_pet_count; i++) {
 		if (pet *pet = get_pets()->get_summoned(i)) {
 			pet->set_pos(maps::get_map(m_map)->get_spawn_point(m_map_pos)->pos);
 		}
@@ -469,7 +468,7 @@ auto player::internal_set_map(game_map_id map_id, game_portal_id portal_id, cons
 		set_chair(0);
 	}
 
-	for (int8_t i = 0; i < inventories::max_pet_count; i++) {
+	for (int8_t i = 0; i < constant::inventory::max_pet_count; i++) {
 		if (pet *pet = get_pets()->get_summoned(i)) {
 			pet->set_pos(pos);
 		}
@@ -519,7 +518,7 @@ auto player::set_map(game_map_id map_id, const portal_info * const portal, bool 
 
 auto player::get_medal_name() -> string {
 	out_stream ret;
-	if (game_item_id item_id = get_inventory()->get_equipped_id(equip_slots::medal)) {
+	if (game_item_id item_id = get_inventory()->get_equipped_id(constant::equip_slot::medal)) {
 		// Check if there's an item at that slot
 		ret << "<" << channel_server::get_instance().get_item_data_provider().get_item_info(item_id)->name << "> ";
 	}
@@ -617,17 +616,17 @@ auto player::change_skill_macros(packet_reader &reader) -> void {
 
 auto player::set_hair(game_hair_id id) -> void {
 	m_hair = id;
-	send(packets::player::update_stat(stats::hair, id));
+	send(packets::player::update_stat(constant::stat::hair, id));
 }
 
 auto player::set_face(game_face_id id) -> void {
 	m_face = id;
-	send(packets::player::update_stat(stats::face, id));
+	send(packets::player::update_stat(constant::stat::face, id));
 }
 
 auto player::set_skin(game_skin_id id) -> void {
 	m_skin = id;
-	send(packets::player::update_stat(stats::skin, id));
+	send(packets::player::update_stat(constant::stat::skin, id));
 }
 
 auto player::save_stats() -> void {
@@ -651,11 +650,11 @@ auto player::save_stats() -> void {
 	game_fame fame = s->get_fame();
 	game_experience exp = s->get_exp();
 	// Inventory
-	game_inventory_slot_count equip = i->get_max_slots(inventories::equip);
-	game_inventory_slot_count use = i->get_max_slots(inventories::use);
-	game_inventory_slot_count setup = i->get_max_slots(inventories::setup);
-	game_inventory_slot_count etc = i->get_max_slots(inventories::etc);
-	game_inventory_slot_count cash = i->get_max_slots(inventories::cash);
+	game_inventory_slot_count equip = i->get_max_slots(constant::inventory::equip);
+	game_inventory_slot_count use = i->get_max_slots(constant::inventory::use);
+	game_inventory_slot_count setup = i->get_max_slots(constant::inventory::setup);
+	game_inventory_slot_count etc = i->get_max_slots(constant::inventory::etc);
+	game_inventory_slot_count cash = i->get_max_slots(constant::inventory::cash);
 	game_mesos money = i->get_mesos();
 	// Other
 	int32_t raw_cover = get_monster_book()->get_cover();
@@ -787,16 +786,16 @@ auto player::has_gm_equip() const -> bool {
 		return this->get_inventory()->get_equipped_id(slot) == item_id;
 	};
 
-	if (equipped_utility(equip_slots::helm, items::gm_hat)) {
+	if (equipped_utility(constant::equip_slot::helm, constant::item::gm_hat)) {
 		return true;
 	}
-	if (equipped_utility(equip_slots::top, items::gm_top)) {
+	if (equipped_utility(constant::equip_slot::top, constant::item::gm_top)) {
 		return true;
 	}
-	if (equipped_utility(equip_slots::bottom, items::gm_bottom)) {
+	if (equipped_utility(constant::equip_slot::bottom, constant::item::gm_bottom)) {
 		return true;
 	}
-	if (equipped_utility(equip_slots::weapon, items::gm_weapon)) {
+	if (equipped_utility(constant::equip_slot::weapon, constant::item::gm_weapon)) {
 		return true;
 	}
 	return false;

@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "common/constant/inventory.hpp"
 #include "common/item.hpp"
-#include "common/item_constants.hpp"
 #include "common/types.hpp"
 #include <array>
 #include <string>
@@ -36,7 +36,7 @@ namespace vana {
 			NONCOPYABLE(player_inventory);
 			NO_DEFAULT_CONSTRUCTOR(player_inventory);
 		public:
-			player_inventory(player *player, const array<game_inventory_slot_count, inventories::count> &max_slots, game_mesos mesos);
+			player_inventory(player *player, const array<game_inventory_slot_count, constant::inventory::count> &max_slots, game_mesos mesos);
 			~player_inventory();
 
 			auto load() -> void;
@@ -92,9 +92,9 @@ namespace vana {
 			game_item_id m_auto_hp_pot_id = 0;
 			game_item_id m_auto_mp_pot_id = 0;
 			player *m_player = nullptr;
-			array<game_inventory_slot_count, inventories::count> m_max_slots;
-			array<array<game_item_id, 2>, inventories::equipped_slots> m_equipped; // Separate sets of slots for regular items and cash items
-			array<hash_map<game_inventory_slot, item *>, inventories::count> m_items;
+			array<game_inventory_slot_count, constant::inventory::count> m_max_slots;
+			array<array<game_item_id, 2>, constant::inventory::equipped_slots> m_equipped; // Separate sets of slots for regular items and cash items
+			array<hash_map<game_inventory_slot, item *>, constant::inventory::count> m_items;
 			vector<game_map_id> m_vip_locations;
 			vector<game_map_id> m_rock_locations;
 			vector<game_item_id> m_wishlist;

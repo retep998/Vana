@@ -16,7 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "party_packet.hpp"
-#include "common/game_constants.hpp"
 #include "common/inter_helper.hpp"
 #include "common/session.hpp"
 #include "common/wide_point.hpp"
@@ -91,8 +90,8 @@ PACKET_IMPL(create_party, vana::channel_server::party *party, ref_ptr<vana::chan
 	}
 	else {
 		builder
-			.add<game_map_id>(vana::maps::no_map)
-			.add<game_map_id>(vana::maps::no_map)
+			.add<game_map_id>(constant::map::no_map)
+			.add<game_map_id>(constant::map::no_map)
 			.add<point>(point{});
 	}
 	return builder;
@@ -169,7 +168,7 @@ PACKET_IMPL(silent_update, game_map_id target_map_id, vana::channel_server::part
 PACKET_IMPL(update_party, game_map_id target_map_id, vana::channel_server::party *party) {
 	packet_builder builder;
 	auto &members = party->get_members();
-	size_t offset = parties::max_members - members.size();
+	size_t offset = constant::party::max_members - members.size();
 	size_t i = 0;
 	game_channel_id channel_id = channel_server::get_instance().get_channel_id();
 	auto &provider = channel_server::get_instance().get_player_data_provider();
@@ -242,8 +241,8 @@ PACKET_IMPL(update_party, game_map_id target_map_id, vana::channel_server::party
 	for (const auto &kvp : members) {
 		if (kvp.second == nullptr) {
 			builder
-				.add<game_map_id>(vana::maps::no_map)
-				.add<game_map_id>(vana::maps::no_map)
+				.add<game_map_id>(constant::map::no_map)
+				.add<game_map_id>(constant::map::no_map)
 				.add<wide_point>(wide_point{-1, -1});
 		}
 		else if (ref_ptr<mystic_door> door = kvp.second->get_skills()->get_mystic_door()) {
@@ -254,15 +253,15 @@ PACKET_IMPL(update_party, game_map_id target_map_id, vana::channel_server::party
 		}
 		else {
 			builder
-				.add<game_map_id>(vana::maps::no_map)
-				.add<game_map_id>(vana::maps::no_map)
+				.add<game_map_id>(constant::map::no_map)
+				.add<game_map_id>(constant::map::no_map)
 				.add<wide_point>(wide_point{-1, -1});
 		}
 	}
 	for (i = 0; i < offset; i++) {
 		builder
-			.add<game_map_id>(vana::maps::no_map)
-			.add<game_map_id>(vana::maps::no_map)
+			.add<game_map_id>(constant::map::no_map)
+			.add<game_map_id>(constant::map::no_map)
 			.add<wide_point>(wide_point{-1, -1});
 	}
 	return builder;
@@ -277,8 +276,8 @@ PACKET_IMPL(update_door, uint8_t zero_based_player_index, ref_ptr<mystic_door> d
 
 	if (door == nullptr) {
 		builder
-			.add<game_map_id>(vana::maps::no_map)
-			.add<game_map_id>(vana::maps::no_map)
+			.add<game_map_id>(constant::map::no_map)
+			.add<game_map_id>(constant::map::no_map)
 			.add<wide_point>(wide_point{-1, -1});
 	}
 	else {

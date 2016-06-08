@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "inventory_packet.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/inter_header.hpp"
-#include "common/item_constants.hpp"
 #include "common/session.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/inventory.hpp"
@@ -284,7 +283,7 @@ PACKET_IMPL(send_rock_update, int8_t mode, int8_t type, const vector<game_map_id
 		.add<packet_header>(SMSG_TELEPORT_ROCK)
 		.add<int8_t>(mode)
 		.add<int8_t>(type)
-		.add_buffer(helpers::fill_rock_packet(maps, (type == rock_types::regular ? inventories::teleport_rock_max : inventories::vip_rock_max)));
+		.add_buffer(helpers::fill_rock_packet(maps, (type == rock_types::regular ? constant::inventory::teleport_rock_max : constant::inventory::vip_rock_max)));
 	return builder;
 }
 

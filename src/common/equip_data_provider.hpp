@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "common/item.hpp"
-#include "common/item_constants.hpp"
 #include "common/equip_info.hpp"
 #include "common/types.hpp"
 #include <unordered_map>
@@ -28,7 +27,7 @@ namespace vana {
 	public:
 		auto load_data() -> void;
 
-		auto set_equip_stats(item *equip, items::stat_variance policy, bool is_gm, bool is_item_initialization) const -> void;
+		auto set_equip_stats(item *equip, stat_variance policy, bool is_gm, bool is_item_initialization) const -> void;
 		auto can_equip(game_item_id item_id, game_gender_id gender, game_job_id job, game_stat str, game_stat dex, game_stat intt, game_stat luk, game_fame fame) const -> bool;
 		auto is_valid_slot(game_item_id equip_id, game_inventory_slot target) const -> bool;
 		auto get_slots(game_item_id equip_id) const -> int8_t;

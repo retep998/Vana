@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/algorithm.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/misc_utilities.hpp"
-#include "common/mob_constants.hpp"
 #include "common/packet_reader.hpp"
 #include "common/point.hpp"
 #include "common/randomizer.hpp"
@@ -174,22 +173,22 @@ auto mob_handler::handle_mob_status(game_player_id player_id, ref_ptr<mob> mob, 
 	if (mob->can_freeze()) {
 		// Freezing stuff
 		switch (skill_id) {
-			case vana::skills::il_wizard::cold_beam:
-			case vana::skills::il_mage::ice_strike:
-			case vana::skills::il_mage::element_composition:
-			case vana::skills::sniper::blizzard:
-			case vana::skills::il_arch_mage::blizzard:
-				statuses.emplace_back(status_effects::mob::freeze, status_effects::mob::freeze, skill_id, skill->buff_time);
+			case constant::skill::il_wizard::cold_beam:
+			case constant::skill::il_mage::ice_strike:
+			case constant::skill::il_mage::element_composition:
+			case constant::skill::sniper::blizzard:
+			case constant::skill::il_arch_mage::blizzard:
+				statuses.emplace_back(constant::status_effect::mob::freeze, constant::status_effect::mob::freeze, skill_id, skill->buff_time);
 				break;
-			case vana::skills::outlaw::ice_splitter:
-				if (auto elemental_boost = player->get_skills()->get_skill_info(vana::skills::corsair::elemental_boost)) {
+			case constant::skill::outlaw::ice_splitter:
+				if (auto elemental_boost = player->get_skills()->get_skill_info(constant::skill::corsair::elemental_boost)) {
 					y = elemental_boost->y;
 				}
-				statuses.emplace_back(status_effects::mob::freeze, status_effects::mob::freeze, skill_id, seconds{skill->buff_time.count() + y});
+				statuses.emplace_back(constant::status_effect::mob::freeze, constant::status_effect::mob::freeze, skill_id, seconds{skill->buff_time.count() + y});
 				break;
-			case vana::skills::fp_arch_mage::elquines:
-			case vana::skills::marksman::frostprey:
-				statuses.emplace_back(status_effects::mob::freeze, status_effects::mob::freeze, skill_id, seconds{skill->x});
+			case constant::skill::fp_arch_mage::elquines:
+			case constant::skill::marksman::frostprey:
+				statuses.emplace_back(constant::status_effect::mob::freeze, constant::status_effect::mob::freeze, skill_id, seconds{skill->x});
 				break;
 		}
 		if ((game_logic_utilities::is_sword(weapon) || game_logic_utilities::is_mace(weapon)) && player->get_active_buffs()->has_ice_charge()) {
@@ -198,24 +197,24 @@ auto mob_handler::handle_mob_status(game_player_id player_id, ref_ptr<mob> mob, 
 			auto &buff_source = source.get();
 			if (buff_source.get_type() != buff_source_type::skill) throw not_implemented_exception{"charge buff_source_type"};
 			auto skill = player->get_active_buffs()->get_buff_skill_info(buff_source);
-			statuses.emplace_back(status_effects::mob::freeze, status_effects::mob::freeze, buff_source.get_skill_id(), seconds{skill->y});
+			statuses.emplace_back(constant::status_effect::mob::freeze, constant::status_effect::mob::freeze, buff_source.get_skill_id(), seconds{skill->y});
 		}
 	}
 	if (mob->can_poison() && mob->get_hp() > 1) {
 		// Poisoning stuff
 		switch (skill_id) {
-			case vana::skills::all::regular_attack: // Venomous Star/Stab
-			case vana::skills::rogue::lucky_seven:
-			case vana::skills::hermit::avenger:
-			case vana::skills::night_lord::triple_throw:
-			case vana::skills::rogue::double_stab:
-			case vana::skills::rogue::disorder:
-			case vana::skills::bandit::savage_blow:
-			case vana::skills::chief_bandit::assaulter:
-			case vana::skills::shadower::assassinate:
-			case vana::skills::shadower::boomerang_step:
-			case vana::skills::night_walker::disorder:
-				if (player->get_skills()->has_venomous_weapon() && mob->get_venom_count() < status_effects::mob::max_venom_count) {
+			case constant::skill::all::regular_attack: // Venomous Star/Stab
+			case constant::skill::rogue::lucky_seven:
+			case constant::skill::hermit::avenger:
+			case constant::skill::night_lord::triple_throw:
+			case constant::skill::rogue::double_stab:
+			case constant::skill::rogue::disorder:
+			case constant::skill::bandit::savage_blow:
+			case constant::skill::chief_bandit::assaulter:
+			case constant::skill::shadower::assassinate:
+			case constant::skill::shadower::boomerang_step:
+			case constant::skill::night_walker::disorder:
+				if (player->get_skills()->has_venomous_weapon() && mob->get_venom_count() < constant::status_effect::mob::max_venom_count) {
 					// MAX = (18.5 * [STR + LUK] + DEX * 2) / 100 * Venom matk
 					// MIN = (8.0 * [STR + LUK] + DEX * 2) / 100 * Venom matk
 					game_skill_id v_skill = player->get_skills()->get_venomous_weapon();
@@ -229,27 +228,27 @@ auto mob_handler::handle_mob_status(game_player_id player_id, ref_ptr<mob> mob, 
 
 					damage = randomizer::rand<game_damage>(max_damage, min_damage);
 
-					for (int8_t counter = 0; ((counter < hits) && (mob->get_venom_count() < status_effects::mob::max_venom_count)); ++counter) {
+					for (int8_t counter = 0; ((counter < hits) && (mob->get_venom_count() < constant::status_effect::mob::max_venom_count)); ++counter) {
 						success = (randomizer::percentage<uint16_t>() < venom->prop);
 						if (success) {
-							statuses.emplace_back(status_effects::mob::venomous_weapon, damage, v_skill, venom->buff_time);
+							statuses.emplace_back(constant::status_effect::mob::venomous_weapon, damage, v_skill, venom->buff_time);
 							mob->add_status(player->get_id(), statuses);
 							statuses.clear();
 						}
 					}
 				}
 				break;
-			case vana::skills::fp_mage::poison_mist:
+			case constant::skill::fp_mage::poison_mist:
 				if (damage != 0) {
 					// The attack itself doesn't poison them
 					break;
 				}
-			case vana::skills::fp_wizard::poison_breath:
-			case vana::skills::fp_mage::element_composition:
-			case vana::skills::blaze_wizard::flame_gear:
-			case vana::skills::night_walker::poison_bomb:
+			case constant::skill::fp_wizard::poison_breath:
+			case constant::skill::fp_mage::element_composition:
+			case constant::skill::blaze_wizard::flame_gear:
+			case constant::skill::night_walker::poison_bomb:
 				if (success) {
-					statuses.emplace_back(status_effects::mob::poison, mob->get_max_hp() / (70 - level), skill_id, skill->buff_time);
+					statuses.emplace_back(constant::status_effect::mob::poison, mob->get_max_hp() / (70 - level), skill_id, skill->buff_time);
 				}
 				break;
 		}
@@ -257,93 +256,93 @@ auto mob_handler::handle_mob_status(game_player_id player_id, ref_ptr<mob> mob, 
 	if (!mob->is_boss()) {
 		// Seal, Stun, etc
 		switch (skill_id) {
-			case vana::skills::corsair::hypnotize:
-				statuses.emplace_back(status_effects::mob::hypnotize, 1, skill_id, skill->buff_time);
+			case constant::skill::corsair::hypnotize:
+				statuses.emplace_back(constant::status_effect::mob::hypnotize, 1, skill_id, skill->buff_time);
 				break;
-			case vana::skills::brawler::backspin_blow:
-			case vana::skills::brawler::double_uppercut:
-			case vana::skills::buccaneer::demolition:
-			case vana::skills::buccaneer::snatch:
-				statuses.emplace_back(status_effects::mob::stun, status_effects::mob::stun, skill_id, skill->buff_time);
+			case constant::skill::brawler::backspin_blow:
+			case constant::skill::brawler::double_uppercut:
+			case constant::skill::buccaneer::demolition:
+			case constant::skill::buccaneer::snatch:
+				statuses.emplace_back(constant::status_effect::mob::stun, constant::status_effect::mob::stun, skill_id, skill->buff_time);
 				break;
-			case vana::skills::hunter::arrow_bomb:
-			case vana::skills::crusader::sword_coma:
-			case vana::skills::dawn_warrior::coma:
-			case vana::skills::crusader::axe_coma:
-			case vana::skills::crusader::shout:
-			case vana::skills::white_knight::charge_blow:
-			case vana::skills::chief_bandit::assaulter:
-			case vana::skills::shadower::boomerang_step:
-			case vana::skills::gunslinger::blank_shot:
-			case vana::skills::night_lord::ninja_storm:
+			case constant::skill::hunter::arrow_bomb:
+			case constant::skill::crusader::sword_coma:
+			case constant::skill::dawn_warrior::coma:
+			case constant::skill::crusader::axe_coma:
+			case constant::skill::crusader::shout:
+			case constant::skill::white_knight::charge_blow:
+			case constant::skill::chief_bandit::assaulter:
+			case constant::skill::shadower::boomerang_step:
+			case constant::skill::gunslinger::blank_shot:
+			case constant::skill::night_lord::ninja_storm:
 				if (success) {
-					statuses.emplace_back(status_effects::mob::stun, status_effects::mob::stun, skill_id, skill->buff_time);
+					statuses.emplace_back(constant::status_effect::mob::stun, constant::status_effect::mob::stun, skill_id, skill->buff_time);
 				}
 				break;
-			case vana::skills::ranger::silver_hawk:
-			case vana::skills::sniper::golden_eagle:
+			case constant::skill::ranger::silver_hawk:
+			case constant::skill::sniper::golden_eagle:
 				if (success) {
-					statuses.emplace_back(status_effects::mob::stun, status_effects::mob::stun, skill_id, seconds{skill->x});
+					statuses.emplace_back(constant::status_effect::mob::stun, constant::status_effect::mob::stun, skill_id, seconds{skill->x});
 				}
 				break;
-			case vana::skills::fp_mage::seal:
-			case vana::skills::il_mage::seal:
-			case vana::skills::blaze_wizard::seal:
+			case constant::skill::fp_mage::seal:
+			case constant::skill::il_mage::seal:
+			case constant::skill::blaze_wizard::seal:
 				if (success) {
-					statuses.emplace_back(status_effects::mob::seal, status_effects::mob::seal, skill_id, skill->buff_time);
+					statuses.emplace_back(constant::status_effect::mob::seal, constant::status_effect::mob::seal, skill_id, skill->buff_time);
 				}
 				break;
-			case vana::skills::priest::doom:
+			case constant::skill::priest::doom:
 				if (success) {
-					statuses.emplace_back(status_effects::mob::doom, status_effects::mob::doom, skill_id, skill->buff_time);
+					statuses.emplace_back(constant::status_effect::mob::doom, constant::status_effect::mob::doom, skill_id, skill->buff_time);
 				}
 				break;
-			case vana::skills::hermit::shadow_web:
-			case vana::skills::night_walker::shadow_web:
+			case constant::skill::hermit::shadow_web:
+			case constant::skill::night_walker::shadow_web:
 				if (success) {
-					statuses.emplace_back(status_effects::mob::shadow_web, level, skill_id, skill->buff_time);
+					statuses.emplace_back(constant::status_effect::mob::shadow_web, level, skill_id, skill->buff_time);
 				}
 				break;
-			case vana::skills::fp_arch_mage::paralyze:
+			case constant::skill::fp_arch_mage::paralyze:
 				if (mob->can_poison()) {
-					statuses.emplace_back(status_effects::mob::freeze, status_effects::mob::freeze, skill_id, skill->buff_time);
+					statuses.emplace_back(constant::status_effect::mob::freeze, constant::status_effect::mob::freeze, skill_id, skill->buff_time);
 				}
 				break;
-			case vana::skills::il_arch_mage::ice_demon:
-			case vana::skills::fp_arch_mage::fire_demon:
-				statuses.emplace_back(status_effects::mob::poison, mob->get_max_hp() / (70 - level), skill_id, skill->buff_time);
-				statuses.emplace_back(status_effects::mob::freeze, status_effects::mob::freeze, skill_id, seconds{skill->x});
+			case constant::skill::il_arch_mage::ice_demon:
+			case constant::skill::fp_arch_mage::fire_demon:
+				statuses.emplace_back(constant::status_effect::mob::poison, mob->get_max_hp() / (70 - level), skill_id, skill->buff_time);
+				statuses.emplace_back(constant::status_effect::mob::freeze, constant::status_effect::mob::freeze, skill_id, seconds{skill->x});
 				break;
-			case vana::skills::shadower::taunt:
-			case vana::skills::night_lord::taunt:
+			case constant::skill::shadower::taunt:
+			case constant::skill::night_lord::taunt:
 				// I know, these status effect types make no sense, that's just how it works
-				statuses.emplace_back(status_effects::mob::magic_attack_up, 100 - skill->x, skill_id, skill->buff_time);
-				statuses.emplace_back(status_effects::mob::magic_defense_up, 100 - skill->x, skill_id, skill->buff_time);
+				statuses.emplace_back(constant::status_effect::mob::magic_attack_up, 100 - skill->x, skill_id, skill->buff_time);
+				statuses.emplace_back(constant::status_effect::mob::magic_defense_up, 100 - skill->x, skill_id, skill->buff_time);
 				break;
-			case vana::skills::outlaw::flamethrower:
-				if (auto elemental_boost = player->get_skills()->get_skill_info(vana::skills::corsair::elemental_boost)) {
+			case constant::skill::outlaw::flamethrower:
+				if (auto elemental_boost = player->get_skills()->get_skill_info(constant::skill::corsair::elemental_boost)) {
 					y = elemental_boost->x;
 				}
-				statuses.emplace_back(status_effects::mob::poison, damage * (5 + y) / 100, skill_id, skill->buff_time);
+				statuses.emplace_back(constant::status_effect::mob::poison, damage * (5 + y) / 100, skill_id, skill->buff_time);
 				break;
 		}
 	}
 	switch (skill_id) {
-		case vana::skills::shadower::ninja_ambush:
-		case vana::skills::night_lord::ninja_ambush:
+		case constant::skill::shadower::ninja_ambush:
+		case constant::skill::night_lord::ninja_ambush:
 			damage = 2 * (player->get_stats()->get_str(true) + player->get_stats()->get_luk(true)) * skill->damage / 100;
-			statuses.emplace_back(status_effects::mob::ninja_ambush, damage, skill_id, skill->buff_time);
+			statuses.emplace_back(constant::status_effect::mob::ninja_ambush, damage, skill_id, skill->buff_time);
 			break;
-		case vana::skills::rogue::disorder:
-		case vana::skills::night_walker::disorder:
-		case vana::skills::page::threaten:
-			statuses.emplace_back(status_effects::mob::watk, skill->x, skill_id, skill->buff_time);
-			statuses.emplace_back(status_effects::mob::wdef, skill->y, skill_id, skill->buff_time);
+		case constant::skill::rogue::disorder:
+		case constant::skill::night_walker::disorder:
+		case constant::skill::page::threaten:
+			statuses.emplace_back(constant::status_effect::mob::watk, skill->x, skill_id, skill->buff_time);
+			statuses.emplace_back(constant::status_effect::mob::wdef, skill->y, skill_id, skill->buff_time);
 			break;
-		case vana::skills::fp_wizard::slow:
-		case vana::skills::il_wizard::slow:
-		case vana::skills::blaze_wizard::slow:
-			statuses.emplace_back(status_effects::mob::speed, skill->x, skill_id, skill->buff_time);
+		case constant::skill::fp_wizard::slow:
+		case constant::skill::il_wizard::slow:
+		case constant::skill::blaze_wizard::slow:
+			statuses.emplace_back(constant::status_effect::mob::speed, skill->x, skill_id, skill->buff_time);
 			break;
 	}
 	if (game_logic_utilities::is_bow(weapon)) {
@@ -351,8 +350,8 @@ auto mob_handler::handle_mob_status(game_player_id player_id, ref_ptr<mob> mob, 
 		if (hamstring.is_initialized()) {
 			auto info = player->get_active_buffs()->get_buff_skill_info(hamstring.get());
 			// Only triggers if player has the buff
-			if (skill_id != vana::skills::bowmaster::phoenix && skill_id != vana::skills::ranger::silver_hawk) {
-				statuses.emplace_back(status_effects::mob::speed, info->x, vana::skills::bowmaster::hamstring, seconds{info->y});
+			if (skill_id != constant::skill::bowmaster::phoenix && skill_id != constant::skill::ranger::silver_hawk) {
+				statuses.emplace_back(constant::status_effect::mob::speed, info->x, constant::skill::bowmaster::hamstring, seconds{info->y});
 			}
 		}
 	}
@@ -361,8 +360,8 @@ auto mob_handler::handle_mob_status(game_player_id player_id, ref_ptr<mob> mob, 
 		if (blind.is_initialized()) {
 			auto info = player->get_active_buffs()->get_buff_skill_info(blind.get());
 			// Only triggers if player has the buff
-			if (skill_id != vana::skills::marksman::frostprey && skill_id != vana::skills::sniper::golden_eagle) {
-				statuses.emplace_back(status_effects::mob::acc, -(info->x), vana::skills::marksman::blind, seconds{info->y});
+			if (skill_id != constant::skill::marksman::frostprey && skill_id != constant::skill::sniper::golden_eagle) {
+				statuses.emplace_back(constant::status_effect::mob::acc, -(info->x), constant::skill::marksman::blind, seconds{info->y});
 			}
 		}
 	}

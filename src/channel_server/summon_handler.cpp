@@ -21,8 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/id_pool.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
-#include "common/skill_constants.hpp"
-#include "common/skill_constants.hpp"
 #include "common/skill_data_provider.hpp"
 #include "channel_server/buffs_packet.hpp"
 #include "channel_server/channel_server.hpp"
@@ -42,34 +40,34 @@ id_pool<game_summon_id> summon_handler::g_summon_ids;
 auto summon_handler::use_summon(ref_ptr<player> player, game_skill_id skill_id, game_skill_level level) -> void {
 	// Determine if any summons need to be removed and do it
 	switch (skill_id) {
-		case vana::skills::ranger::puppet:
-		case vana::skills::sniper::puppet:
-		case vana::skills::wind_archer::puppet:
+		case constant::skill::ranger::puppet:
+		case constant::skill::sniper::puppet:
+		case constant::skill::wind_archer::puppet:
 			player->get_summons()->for_each([player, skill_id](summon *summon) {
 				if (summon->get_skill_id() == skill_id) {
 					remove_summon(player, summon->get_id(), false, summon_messages::none);
 				}
 			});
 			break;
-		case vana::skills::ranger::silver_hawk:
-		case vana::skills::bowmaster::phoenix:
-		case vana::skills::sniper::golden_eagle:
-		case vana::skills::marksman::frostprey:
+		case constant::skill::ranger::silver_hawk:
+		case constant::skill::bowmaster::phoenix:
+		case constant::skill::sniper::golden_eagle:
+		case constant::skill::marksman::frostprey:
 			player->get_summons()->for_each([player, skill_id](summon *summon) {
 				if (!game_logic_utilities::is_puppet(summon->get_skill_id())) {
 					remove_summon(player, summon->get_id(), false, summon_messages::none);
 				}
 			});
 			break;
-		case vana::skills::outlaw::gaviota:
-		case vana::skills::outlaw::octopus:
-		case vana::skills::corsair::wrath_of_the_octopi: {
+		case constant::skill::outlaw::gaviota:
+		case constant::skill::outlaw::octopus:
+		case constant::skill::corsair::wrath_of_the_octopi: {
 			int8_t max_count = -1;
 			int8_t current_count = 0;
 			switch (skill_id) {
-				case vana::skills::outlaw::octopus: max_count = 2; break;
-				case vana::skills::corsair::wrath_of_the_octopi: max_count = 3; break;
-				case vana::skills::outlaw::gaviota: max_count = 4; break;
+				case constant::skill::outlaw::octopus: max_count = 2; break;
+				case constant::skill::corsair::wrath_of_the_octopi: max_count = 3; break;
+				case constant::skill::outlaw::gaviota: max_count = 4; break;
 			}
 
 			player->get_summons()->for_each([player, skill_id, &current_count](summon *summon) {
@@ -185,11 +183,11 @@ auto summon_handler::damage_summon(ref_ptr<player> player, packet_reader &reader
 auto summon_handler::make_buff(ref_ptr<player> player, game_item_id item_id) -> buff_info {
 	const auto &buff_data = channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect();
 	switch (item_id) {
-		case items::beholder_hex_watk: return buff_data.physical_attack;
-		case items::beholder_hex_wdef: return buff_data.physical_defense;
-		case items::beholder_hex_mdef: return buff_data.magic_defense;
-		case items::beholder_hex_acc: return buff_data.accuracy;
-		case items::beholder_hex_avo: return buff_data.avoid;
+		case constant::item::beholder_hex_watk: return buff_data.physical_attack;
+		case constant::item::beholder_hex_wdef: return buff_data.physical_defense;
+		case constant::item::beholder_hex_mdef: return buff_data.magic_defense;
+		case constant::item::beholder_hex_acc: return buff_data.accuracy;
+		case constant::item::beholder_hex_avo: return buff_data.avoid;
 	}
 	// Hacking?
 	throw std::invalid_argument{"invalid_argument"};
@@ -199,11 +197,11 @@ auto summon_handler::make_active_buff(ref_ptr<player> player, const buff_info &d
 	buff_packet_values buff;
 	buff.player.types[data.get_buff_byte()] = static_cast<uint8_t>(data.get_buff_type());
 	switch (item_id) {
-		case items::beholder_hex_wdef: buff.player.values.push_back(buff_packet_value::from_value(2, skill_info->w_def)); break;
-		case items::beholder_hex_mdef: buff.player.values.push_back(buff_packet_value::from_value(2, skill_info->m_def)); break;
-		case items::beholder_hex_acc: buff.player.values.push_back(buff_packet_value::from_value(2, skill_info->acc)); break;
-		case items::beholder_hex_avo: buff.player.values.push_back(buff_packet_value::from_value(2, skill_info->avo)); break;
-		case items::beholder_hex_watk: buff.player.values.push_back(buff_packet_value::from_value(2, skill_info->w_atk)); break;
+		case constant::item::beholder_hex_wdef: buff.player.values.push_back(buff_packet_value::from_value(2, skill_info->w_def)); break;
+		case constant::item::beholder_hex_mdef: buff.player.values.push_back(buff_packet_value::from_value(2, skill_info->m_def)); break;
+		case constant::item::beholder_hex_acc: buff.player.values.push_back(buff_packet_value::from_value(2, skill_info->acc)); break;
+		case constant::item::beholder_hex_avo: buff.player.values.push_back(buff_packet_value::from_value(2, skill_info->avo)); break;
+		case constant::item::beholder_hex_watk: buff.player.values.push_back(buff_packet_value::from_value(2, skill_info->w_atk)); break;
 	}
 	return buff;
 }
@@ -224,21 +222,21 @@ auto summon_handler::summon_skill(ref_ptr<player> player, packet_reader &reader)
 		return;
 	}
 	switch (skill_id) {
-		case vana::skills::dark_knight::hex_of_beholder: {
+		case constant::skill::dark_knight::hex_of_beholder: {
 			int8_t buff_id = reader.get<int8_t>();
 			if (buff_id < 0 || buff_id > ((level - 1) / 5)) {
 				// Hacking
 				return;
 			}
 
-			game_item_id item_id = items::beholder_hex_wdef + buff_id;
+			game_item_id item_id = constant::item::beholder_hex_wdef + buff_id;
 			seconds duration = skill_info->buff_time;
 			if (buffs::add_buff(player, item_id, duration) == result::failure) {
 				return;
 			}
 			break;
 		}
-		case vana::skills::dark_knight::aura_of_beholder:
+		case constant::skill::dark_knight::aura_of_beholder:
 			player->get_stats()->modify_hp(skill_info->hp_prop);
 			break;
 		default:
@@ -247,7 +245,7 @@ auto summon_handler::summon_skill(ref_ptr<player> player, packet_reader &reader)
 	}
 
 	player->send_map(packets::summon_skill(player->get_id(), skill_id, display, level), true);
-	player->send_map(packets::summon_skill_effect(player->get_id(), vana::skills::dark_knight::beholder, display, level));
+	player->send_map(packets::summon_skill_effect(player->get_id(), constant::skill::dark_knight::beholder, display, level));
 }
 
 }

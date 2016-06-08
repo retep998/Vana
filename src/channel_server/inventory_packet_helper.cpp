@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "inventory_packet_helper.hpp"
-#include "common/map_constants.hpp"
+#include "common/constant/map.hpp"
 
 namespace vana {
 namespace channel_server {
@@ -31,7 +31,7 @@ PACKET_IMPL(fill_rock_packet, const vector<game_map_id> &vec, size_t max_size) {
 		remaining++;
 	}
 	while (remaining <= max_size) {
-		builder.add<game_map_id>(vana::maps::no_map);
+		builder.add<game_map_id>(constant::map::no_map);
 		remaining++;
 	}
 	return builder;

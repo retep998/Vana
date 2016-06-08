@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "item.hpp"
+#include "common/constant/item/max_stat.hpp"
 #include "common/equip_data_provider.hpp"
 #include "common/game_logic_utilities.hpp"
-#include "common/item_constants.hpp"
 #include "common/misc_utilities.hpp"
 #include "common/soci_extensions.hpp"
 #include <soci.h>
@@ -40,7 +40,7 @@ item::item(game_item_id item_id, game_slot_qty amount) :
 {
 }
 
-item::item(const equip_data_provider &provider, game_item_id equip_id, items::stat_variance policy, bool is_gm) :
+item::item(const equip_data_provider &provider, game_item_id equip_id, stat_variance policy, bool is_gm) :
 	m_id{equip_id},
 	m_amount{1}
 {
@@ -76,23 +76,23 @@ item::item(item *item)
 }
 
 auto item::has_slip_prevention() const -> bool {
-	return test_flags(items::flags::spikes);
+	return test_flags(constant::item::flag::spikes);
 }
 
 auto item::has_warm_support() const -> bool {
-	return test_flags(items::flags::cold_protection);
+	return test_flags(constant::item::flag::cold_protection);
 }
 
 auto item::has_lock() const -> bool {
-	return test_flags(items::flags::lock);
+	return test_flags(constant::item::flag::lock);
 }
 
 auto item::has_karma() const -> bool {
-	return test_flags(items::flags::karma_scissors);
+	return test_flags(constant::item::flag::karma_scissors);
 }
 
 auto item::has_trade_block() const -> bool {
-	return test_flags(items::flags::trade_unavailable);
+	return test_flags(constant::item::flag::trade_unavailable);
 }
 
 auto item::test_flags(int16_t flags) const -> bool {
@@ -100,23 +100,23 @@ auto item::test_flags(int16_t flags) const -> bool {
 }
 
 auto item::set_prevent_slip(bool prevent) -> void {
-	modify_flags(prevent, items::flags::spikes);
+	modify_flags(prevent, constant::item::flag::spikes);
 }
 
 auto item::set_warm_support(bool warm) -> void {
-	modify_flags(warm, items::flags::cold_protection);
+	modify_flags(warm, constant::item::flag::cold_protection);
 }
 
 auto item::set_lock(bool lock) -> void {
-	modify_flags(lock, items::flags::lock);
+	modify_flags(lock, constant::item::flag::lock);
 }
 
 auto item::set_karma(bool karma) -> void {
-	modify_flags(karma, items::flags::karma_scissors);
+	modify_flags(karma, constant::item::flag::karma_scissors);
 }
 
 auto item::set_trade_block(bool block) -> void {
-	modify_flags(block, items::flags::trade_unavailable);
+	modify_flags(block, constant::item::flag::trade_unavailable);
 }
 
 auto item::modify_flags(bool add, int16_t flags) -> void {
@@ -129,63 +129,63 @@ auto item::modify_flags(bool add, int16_t flags) -> void {
 }
 
 auto item::set_str(game_stat strength) -> void {
-	m_str = test_stat(strength, items::max_stats::str);
+	m_str = test_stat(strength, constant::item::max_stat::str);
 }
 
 auto item::set_dex(game_stat dexterity) -> void {
-	m_dex = test_stat(dexterity, items::max_stats::dex);
+	m_dex = test_stat(dexterity, constant::item::max_stat::dex);
 }
 
 auto item::set_int(game_stat intelligence) -> void {
-	m_int = test_stat(intelligence, items::max_stats::intl);
+	m_int = test_stat(intelligence, constant::item::max_stat::intl);
 }
 
 auto item::set_luk(game_stat luck) -> void {
-	m_luk = test_stat(luck, items::max_stats::luk);
+	m_luk = test_stat(luck, constant::item::max_stat::luk);
 }
 
 auto item::set_hp(game_health hp) -> void {
-	m_hp = test_stat(hp, items::max_stats::hp);
+	m_hp = test_stat(hp, constant::item::max_stat::hp);
 }
 
 auto item::set_mp(game_health mp) -> void {
-	m_mp = test_stat(mp, items::max_stats::mp);
+	m_mp = test_stat(mp, constant::item::max_stat::mp);
 }
 
 auto item::set_watk(game_stat wAtk) -> void {
-	m_watk = test_stat(wAtk, items::max_stats::watk);
+	m_watk = test_stat(wAtk, constant::item::max_stat::watk);
 }
 
 auto item::set_wdef(game_stat wDef) -> void {
-	m_wdef = test_stat(wDef, items::max_stats::wdef);
+	m_wdef = test_stat(wDef, constant::item::max_stat::wdef);
 }
 
 auto item::set_matk(game_stat mAtk) -> void {
-	m_matk = test_stat(mAtk, items::max_stats::matk);
+	m_matk = test_stat(mAtk, constant::item::max_stat::matk);
 }
 
 auto item::set_mdef(game_stat mDef) -> void {
-	m_mdef = test_stat(mDef, items::max_stats::mdef);
+	m_mdef = test_stat(mDef, constant::item::max_stat::mdef);
 }
 
 auto item::set_accuracy(game_stat acc) -> void {
-	m_accuracy = test_stat(acc, items::max_stats::acc);
+	m_accuracy = test_stat(acc, constant::item::max_stat::acc);
 }
 
 auto item::set_avoid(game_stat avoid) -> void {
-	m_avoid = test_stat(avoid, items::max_stats::avoid);
+	m_avoid = test_stat(avoid, constant::item::max_stat::avoid);
 }
 
 auto item::set_hands(game_stat hands) -> void {
-	m_hands = test_stat(hands, items::max_stats::hands);
+	m_hands = test_stat(hands, constant::item::max_stat::hands);
 }
 
 auto item::set_jump(game_stat jump) -> void {
-	m_jump = test_stat(jump, items::max_stats::jump);
+	m_jump = test_stat(jump, constant::item::max_stat::jump);
 }
 
 auto item::set_speed(game_stat speed) -> void {
-	m_speed = test_stat(speed, items::max_stats::speed);
+	m_speed = test_stat(speed, constant::item::max_stat::speed);
 }
 
 auto item::test_stat(int16_t stat, int16_t max) -> int16_t {
@@ -319,7 +319,7 @@ auto item::initialize_item(const soci::row &row) -> void {
 	m_flags = flags.get(0);
 	m_expiration = expiration.is_initialized() ?
 		file_time{expiration.get()} :
-		items::no_expiration;
+		constant::item::no_expiration;
 	m_pet_id = pet_id.get(0);
 	m_name = name.get("");
 }
@@ -341,7 +341,7 @@ auto item::database_insert(database &db, const vector<item_db_record> &items) ->
 	static init_list<int16_t> nulls_int16 = {0};
 	static init_list<int32_t> nulls_int32 = {0};
 	static init_list<int64_t> nulls_int64 = {0};
-	static init_list<int64_t> nulls_expiration = {0, items::no_expiration.get_value()};
+	static init_list<int64_t> nulls_expiration = {0, constant::item::no_expiration.get_value()};
 	static init_list<string> nulls_string = {""};
 
 	using opt_game_stat = optional<game_stat>;
@@ -424,7 +424,7 @@ auto item::database_insert(database &db, const vector<item_db_record> &items) ->
 		amount = item->m_amount;
 		item_id = item->m_id;
 		inventory = game_logic_utilities::get_inventory(item_id);
-		bool equip = (inventory == inventories::equip);
+		bool equip = (inventory == constant::inventory::equip);
 		nullable_mode nulls = (equip ?
 			nullable_mode::null_if_found :
 			nullable_mode::force_null);

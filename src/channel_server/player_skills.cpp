@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "player_skills.hpp"
 #include "common/algorithm.hpp"
 #include "common/database.hpp"
-#include "common/game_constants.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/randomizer.hpp"
 #include "common/skill_data_provider.hpp"
@@ -271,12 +270,12 @@ auto player_skills::has_blessing_of_the_fairy() const -> bool {
 auto player_skills::get_elemental_amp() const -> game_skill_id {
 	game_skill_id skill_id = 0;
 	switch (m_player->get_stats()->get_job()) {
-		case jobs::job_ids::fp_mage:
-		case jobs::job_ids::fp_arch_mage: skill_id = vana::skills::fp_mage::element_amplification; break;
-		case jobs::job_ids::il_mage:
-		case jobs::job_ids::il_arch_mage: skill_id = vana::skills::il_mage::element_amplification; break;
-		case jobs::job_ids::blaze_wizard3:
-		case jobs::job_ids::blaze_wizard4: skill_id = vana::skills::blaze_wizard::element_amplification; break;
+		case constant::job::id::fp_mage:
+		case constant::job::id::fp_arch_mage: skill_id = constant::skill::fp_mage::element_amplification; break;
+		case constant::job::id::il_mage:
+		case constant::job::id::il_arch_mage: skill_id = constant::skill::il_mage::element_amplification; break;
+		case constant::job::id::blaze_wizard3:
+		case constant::job::id::blaze_wizard4: skill_id = constant::skill::blaze_wizard::element_amplification; break;
 	}
 	return skill_id;
 }
@@ -284,9 +283,9 @@ auto player_skills::get_elemental_amp() const -> game_skill_id {
 auto player_skills::get_achilles() const -> game_skill_id {
 	game_skill_id skill_id = 0;
 	switch (m_player->get_stats()->get_job()) {
-		case jobs::job_ids::hero: skill_id = vana::skills::hero::achilles; break;
-		case jobs::job_ids::paladin: skill_id = vana::skills::paladin::achilles; break;
-		case jobs::job_ids::dark_knight: skill_id = vana::skills::dark_knight::achilles; break;
+		case constant::job::id::hero: skill_id = constant::skill::hero::achilles; break;
+		case constant::job::id::paladin: skill_id = constant::skill::paladin::achilles; break;
+		case constant::job::id::dark_knight: skill_id = constant::skill::dark_knight::achilles; break;
 	}
 	return skill_id;
 }
@@ -294,11 +293,11 @@ auto player_skills::get_achilles() const -> game_skill_id {
 auto player_skills::get_energy_charge() const -> game_skill_id {
 	game_skill_id skill_id = 0;
 	switch (m_player->get_stats()->get_job()) {
-		case jobs::job_ids::marauder:
-		case jobs::job_ids::buccaneer: skill_id = vana::skills::marauder::energy_charge; break;
-		case jobs::job_ids::thunder_breaker2:
-		case jobs::job_ids::thunder_breaker3:
-		case jobs::job_ids::thunder_breaker4: skill_id = vana::skills::thunder_breaker::energy_charge; break;
+		case constant::job::id::marauder:
+		case constant::job::id::buccaneer: skill_id = constant::skill::marauder::energy_charge; break;
+		case constant::job::id::thunder_breaker2:
+		case constant::job::id::thunder_breaker3:
+		case constant::job::id::thunder_breaker4: skill_id = constant::skill::thunder_breaker::energy_charge; break;
 	}
 	return skill_id;
 }
@@ -306,9 +305,9 @@ auto player_skills::get_energy_charge() const -> game_skill_id {
 auto player_skills::get_advanced_combo() const -> game_skill_id {
 	game_skill_id skill_id = 0;
 	switch (m_player->get_stats()->get_job()) {
-		case jobs::job_ids::hero: skill_id = vana::skills::hero::advanced_combo_attack; break;
-		case jobs::job_ids::dawn_warrior3:
-		case jobs::job_ids::dawn_warrior4: skill_id = vana::skills::dawn_warrior::advanced_combo; break;
+		case constant::job::id::hero: skill_id = constant::skill::hero::advanced_combo_attack; break;
+		case constant::job::id::dawn_warrior3:
+		case constant::job::id::dawn_warrior4: skill_id = constant::skill::dawn_warrior::advanced_combo; break;
 	}
 	return skill_id;
 }
@@ -316,10 +315,10 @@ auto player_skills::get_advanced_combo() const -> game_skill_id {
 auto player_skills::get_alchemist() const -> game_skill_id {
 	game_skill_id skill_id = 0;
 	switch (m_player->get_stats()->get_job()) {
-		case jobs::job_ids::hermit:
-		case jobs::job_ids::night_lord: skill_id = vana::skills::hermit::alchemist; break;
-		case jobs::job_ids::night_walker3:
-		case jobs::job_ids::night_walker4: skill_id = vana::skills::night_walker::alchemist; break;
+		case constant::job::id::hermit:
+		case constant::job::id::night_lord: skill_id = constant::skill::hermit::alchemist; break;
+		case constant::job::id::night_walker3:
+		case constant::job::id::night_walker4: skill_id = constant::skill::night_walker::alchemist; break;
 	}
 	return skill_id;
 }
@@ -327,12 +326,12 @@ auto player_skills::get_alchemist() const -> game_skill_id {
 auto player_skills::get_hp_increase() const -> game_skill_id {
 	game_skill_id skill_id = 0;
 	switch (game_logic_utilities::get_job_track(m_player->get_stats()->get_job())) {
-		case jobs::job_tracks::warrior: skill_id = vana::skills::swordsman::improved_max_hp_increase; break;
-		case jobs::job_tracks::dawn_warrior: skill_id = vana::skills::dawn_warrior::max_hp_enhancement; break;
-		case jobs::job_tracks::thunder_breaker: skill_id = vana::skills::thunder_breaker::improve_max_hp; break;
-		case jobs::job_tracks::pirate:
-			if ((m_player->get_stats()->get_job() / 10) == (jobs::job_ids::brawler / 10)) {
-				skill_id = vana::skills::brawler::improve_max_hp;
+		case constant::job::track::warrior: skill_id = constant::skill::swordsman::improved_max_hp_increase; break;
+		case constant::job::track::dawn_warrior: skill_id = constant::skill::dawn_warrior::max_hp_enhancement; break;
+		case constant::job::track::thunder_breaker: skill_id = constant::skill::thunder_breaker::improve_max_hp; break;
+		case constant::job::track::pirate:
+			if ((m_player->get_stats()->get_job() / 10) == (constant::job::id::brawler / 10)) {
+				skill_id = constant::skill::brawler::improve_max_hp;
 			}
 			break;
 	}
@@ -342,38 +341,38 @@ auto player_skills::get_hp_increase() const -> game_skill_id {
 auto player_skills::get_mp_increase() const -> game_skill_id {
 	game_skill_id skill_id = 0;
 	switch (game_logic_utilities::get_job_track(m_player->get_stats()->get_job())) {
-		case jobs::job_tracks::magician: skill_id = vana::skills::magician::improved_max_mp_increase; break;
-		case jobs::job_tracks::blaze_wizard: skill_id = vana::skills::blaze_wizard::increasing_max_mp; break;
+		case constant::job::track::magician: skill_id = constant::skill::magician::improved_max_mp_increase; break;
+		case constant::job::track::blaze_wizard: skill_id = constant::skill::blaze_wizard::increasing_max_mp; break;
 	}
 	return skill_id;
 }
 
 auto player_skills::get_mastery() const -> game_skill_id {
 	game_skill_id mastery_id = 0;
-	switch (game_logic_utilities::get_item_type(m_player->get_inventory()->get_equipped_id(equip_slots::weapon))) {
-		case items::types::weapon_1h_sword:
-		case items::types::weapon_2h_sword:
+	switch (game_logic_utilities::get_item_type(m_player->get_inventory()->get_equipped_id(constant::equip_slot::weapon))) {
+		case constant::item::type::weapon_1h_sword:
+		case constant::item::type::weapon_2h_sword:
 			switch (m_player->get_stats()->get_job()) {
-				case jobs::job_ids::fighter:
-				case jobs::job_ids::crusader:
-				case jobs::job_ids::hero: mastery_id = vana::skills::fighter::sword_mastery; break;
-				case jobs::job_ids::page:
-				case jobs::job_ids::white_knight:
-				case jobs::job_ids::paladin: mastery_id = vana::skills::page::sword_mastery; break;
+				case constant::job::id::fighter:
+				case constant::job::id::crusader:
+				case constant::job::id::hero: mastery_id = constant::skill::fighter::sword_mastery; break;
+				case constant::job::id::page:
+				case constant::job::id::white_knight:
+				case constant::job::id::paladin: mastery_id = constant::skill::page::sword_mastery; break;
 			}
 			break;
-		case items::types::weapon_1h_axe:
-		case items::types::weapon_2h_axe: mastery_id = vana::skills::fighter::axe_mastery; break;
-		case items::types::weapon_1h_mace:
-		case items::types::weapon_2h_mace: mastery_id = vana::skills::page::bw_mastery; break;
-		case items::types::weapon_spear: mastery_id = vana::skills::spearman::spear_mastery; break;
-		case items::types::weapon_polearm: mastery_id = vana::skills::spearman::polearm_mastery; break;
-		case items::types::weapon_dagger: mastery_id = vana::skills::bandit::dagger_mastery; break;
-		case items::types::weapon_knuckle: mastery_id = vana::skills::brawler::knuckler_mastery; break;
-		case items::types::weapon_bow: mastery_id = vana::skills::hunter::bow_mastery; break;
-		case items::types::weapon_crossbow: mastery_id = vana::skills::crossbowman::crossbow_mastery; break;
-		case items::types::weapon_claw: mastery_id = vana::skills::assassin::claw_mastery; break;
-		case items::types::weapon_gun: mastery_id = vana::skills::gunslinger::gun_mastery; break;
+		case constant::item::type::weapon_1h_axe:
+		case constant::item::type::weapon_2h_axe: mastery_id = constant::skill::fighter::axe_mastery; break;
+		case constant::item::type::weapon_1h_mace:
+		case constant::item::type::weapon_2h_mace: mastery_id = constant::skill::page::bw_mastery; break;
+		case constant::item::type::weapon_spear: mastery_id = constant::skill::spearman::spear_mastery; break;
+		case constant::item::type::weapon_polearm: mastery_id = constant::skill::spearman::polearm_mastery; break;
+		case constant::item::type::weapon_dagger: mastery_id = constant::skill::bandit::dagger_mastery; break;
+		case constant::item::type::weapon_knuckle: mastery_id = constant::skill::brawler::knuckler_mastery; break;
+		case constant::item::type::weapon_bow: mastery_id = constant::skill::hunter::bow_mastery; break;
+		case constant::item::type::weapon_crossbow: mastery_id = constant::skill::crossbowman::crossbow_mastery; break;
+		case constant::item::type::weapon_claw: mastery_id = constant::skill::assassin::claw_mastery; break;
+		case constant::item::type::weapon_gun: mastery_id = constant::skill::gunslinger::gun_mastery; break;
 	}
 	return mastery_id;
 }
@@ -381,15 +380,15 @@ auto player_skills::get_mastery() const -> game_skill_id {
 auto player_skills::get_mp_eater() const -> game_skill_id {
 	game_skill_id skill_id = 0;
 	switch (m_player->get_stats()->get_job()) {
-		case jobs::job_ids::fp_wizard:
-		case jobs::job_ids::fp_mage:
-		case jobs::job_ids::fp_arch_mage: skill_id = vana::skills::fp_wizard::mp_eater; break;
-		case jobs::job_ids::il_wizard:
-		case jobs::job_ids::il_mage:
-		case jobs::job_ids::il_arch_mage: skill_id = vana::skills::il_wizard::mp_eater; break;
-		case jobs::job_ids::cleric:
-		case jobs::job_ids::priest:
-		case jobs::job_ids::bishop: skill_id = vana::skills::cleric::mp_eater; break;
+		case constant::job::id::fp_wizard:
+		case constant::job::id::fp_mage:
+		case constant::job::id::fp_arch_mage: skill_id = constant::skill::fp_wizard::mp_eater; break;
+		case constant::job::id::il_wizard:
+		case constant::job::id::il_mage:
+		case constant::job::id::il_arch_mage: skill_id = constant::skill::il_wizard::mp_eater; break;
+		case constant::job::id::cleric:
+		case constant::job::id::priest:
+		case constant::job::id::bishop: skill_id = constant::skill::cleric::mp_eater; break;
 	}
 	return skill_id;
 }
@@ -397,10 +396,10 @@ auto player_skills::get_mp_eater() const -> game_skill_id {
 auto player_skills::get_venomous_weapon() const -> game_skill_id {
 	game_skill_id skill_id = 0;
 	switch (m_player->get_stats()->get_job()) {
-		case jobs::job_ids::night_lord: skill_id = vana::skills::night_lord::venomous_star; break;
-		case jobs::job_ids::shadower: skill_id = vana::skills::shadower::venomous_stab; break;
-		case jobs::job_ids::night_walker3: 
-		case jobs::job_ids::night_walker4: skill_id = vana::skills::night_walker::venom; break;
+		case constant::job::id::night_lord: skill_id = constant::skill::night_lord::venomous_star; break;
+		case constant::job::id::shadower: skill_id = constant::skill::shadower::venomous_stab; break;
+		case constant::job::id::night_walker3: 
+		case constant::job::id::night_walker4: skill_id = constant::skill::night_walker::venom; break;
 	}
 	return skill_id;
 }
@@ -408,12 +407,12 @@ auto player_skills::get_venomous_weapon() const -> game_skill_id {
 auto player_skills::get_dark_sight_interruption_skill() const -> game_skill_id {
 	game_skill_id skill_id = 0;
 	switch (m_player->get_stats()->get_job()) {
-		case jobs::job_ids::night_walker2:
-		case jobs::job_ids::night_walker3:
-		case jobs::job_ids::night_walker4: skill_id = vana::skills::night_walker::vanish; break;
-		case jobs::job_ids::wind_archer2:
-		case jobs::job_ids::wind_archer3: 
-		case jobs::job_ids::wind_archer4: skill_id = vana::skills::wind_archer::wind_walk; break;
+		case constant::job::id::night_walker2:
+		case constant::job::id::night_walker3:
+		case constant::job::id::night_walker4: skill_id = constant::skill::night_walker::vanish; break;
+		case constant::job::id::wind_archer2:
+		case constant::job::id::wind_archer3: 
+		case constant::job::id::wind_archer4: skill_id = constant::skill::wind_archer::wind_walk; break;
 	}
 	return skill_id;
 }
@@ -421,10 +420,10 @@ auto player_skills::get_dark_sight_interruption_skill() const -> game_skill_id {
 auto player_skills::get_no_damage_skill() const -> game_skill_id {
 	game_skill_id skill_id = 0;
 	switch (m_player->get_stats()->get_job()) {
-		case jobs::job_ids::night_lord: skill_id = vana::skills::night_lord::shadow_shifter; break;
-		case jobs::job_ids::shadower: skill_id = vana::skills::shadower::shadow_shifter; break;
-		case jobs::job_ids::hero: skill_id = vana::skills::hero::guardian; break;
-		case jobs::job_ids::paladin: skill_id = vana::skills::paladin::guardian; break;
+		case constant::job::id::night_lord: skill_id = constant::skill::night_lord::shadow_shifter; break;
+		case constant::job::id::shadower: skill_id = constant::skill::shadower::shadow_shifter; break;
+		case constant::job::id::hero: skill_id = constant::skill::hero::guardian; break;
+		case constant::job::id::paladin: skill_id = constant::skill::paladin::guardian; break;
 	}
 	return skill_id;
 }
@@ -432,8 +431,8 @@ auto player_skills::get_no_damage_skill() const -> game_skill_id {
 auto player_skills::get_follow_the_lead() const -> game_skill_id {
 	game_skill_id skill_id = 0;
 	switch (game_logic_utilities::get_job_type(m_player->get_stats()->get_job())) {
-		case jobs::job_type::adventurer: skill_id = vana::skills::beginner::follow_the_lead; break;
-		case jobs::job_type::cygnus: skill_id = vana::skills::noblesse::follow_the_lead; break;
+		case job_type::adventurer: skill_id = constant::skill::beginner::follow_the_lead; break;
+		case job_type::cygnus: skill_id = constant::skill::noblesse::follow_the_lead; break;
 	}
 	return skill_id;
 }
@@ -441,8 +440,8 @@ auto player_skills::get_follow_the_lead() const -> game_skill_id {
 auto player_skills::get_legendary_spirit() const -> game_skill_id {
 	game_skill_id skill_id = 0;
 	switch (game_logic_utilities::get_job_type(m_player->get_stats()->get_job())) {
-		case jobs::job_type::adventurer: skill_id = vana::skills::beginner::legendary_spirit; break;
-		case jobs::job_type::cygnus: skill_id = vana::skills::noblesse::legendary_spirit; break;
+		case job_type::adventurer: skill_id = constant::skill::beginner::legendary_spirit; break;
+		case job_type::cygnus: skill_id = constant::skill::noblesse::legendary_spirit; break;
 	}
 	return skill_id;
 }
@@ -450,8 +449,8 @@ auto player_skills::get_legendary_spirit() const -> game_skill_id {
 auto player_skills::get_maker() const -> game_skill_id {
 	game_skill_id skill_id = 0;
 	switch (game_logic_utilities::get_job_type(m_player->get_stats()->get_job())) {
-		case jobs::job_type::adventurer: skill_id = vana::skills::beginner::maker; break;
-		case jobs::job_type::cygnus: skill_id = vana::skills::noblesse::maker; break;
+		case job_type::adventurer: skill_id = constant::skill::beginner::maker; break;
+		case job_type::cygnus: skill_id = constant::skill::noblesse::maker; break;
 	}
 	return skill_id;
 }
@@ -459,8 +458,8 @@ auto player_skills::get_maker() const -> game_skill_id {
 auto player_skills::get_blessing_of_the_fairy() const -> game_skill_id {
 	game_skill_id skill_id = 0;
 	switch (game_logic_utilities::get_job_type(m_player->get_stats()->get_job())) {
-		case jobs::job_type::adventurer: skill_id = vana::skills::beginner::blessing_of_the_fairy; break;
-		case jobs::job_type::cygnus: skill_id = vana::skills::noblesse::blessing_of_the_fairy; break;
+		case job_type::adventurer: skill_id = constant::skill::beginner::blessing_of_the_fairy; break;
+		case job_type::cygnus: skill_id = constant::skill::noblesse::blessing_of_the_fairy; break;
 	}
 	return skill_id;
 }
@@ -468,15 +467,15 @@ auto player_skills::get_blessing_of_the_fairy() const -> game_skill_id {
 auto player_skills::get_rechargeable_bonus() const -> game_slot_qty {
 	game_slot_qty bonus = 0;
 	switch (m_player->get_stats()->get_job()) {
-		case jobs::job_ids::assassin:
-		case jobs::job_ids::hermit:
-		case jobs::job_ids::night_lord: bonus = get_skill_level(vana::skills::assassin::claw_mastery) * 10; break;
-		case jobs::job_ids::gunslinger:
-		case jobs::job_ids::outlaw:
-		case jobs::job_ids::corsair: bonus = get_skill_level(vana::skills::gunslinger::gun_mastery) * 10; break;
-		case jobs::job_ids::night_walker2:
-		case jobs::job_ids::night_walker3:
-		case jobs::job_ids::night_walker4: bonus = get_skill_level(vana::skills::night_walker::claw_mastery) * 10; break;
+		case constant::job::id::assassin:
+		case constant::job::id::hermit:
+		case constant::job::id::night_lord: bonus = get_skill_level(constant::skill::assassin::claw_mastery) * 10; break;
+		case constant::job::id::gunslinger:
+		case constant::job::id::outlaw:
+		case constant::job::id::corsair: bonus = get_skill_level(constant::skill::gunslinger::gun_mastery) * 10; break;
+		case constant::job::id::night_walker2:
+		case constant::job::id::night_walker3:
+		case constant::job::id::night_walker4: bonus = get_skill_level(constant::skill::night_walker::claw_mastery) * 10; break;
 	}
 	return bonus;
 }
@@ -495,7 +494,7 @@ auto player_skills::remove_cooldown(game_skill_id skill_id) -> void {
 auto player_skills::remove_all_cooldowns() -> void {
 	auto dupe = m_cooldowns;
 	for (const auto &kvp : dupe) {
-		if (kvp.first != vana::skills::buccaneer::time_leap) {
+		if (kvp.first != constant::skill::buccaneer::time_leap) {
 			skills::stop_cooldown(ref_ptr<player>{m_player}, kvp.first);
 		}
 	}

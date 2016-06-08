@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "buffs_packet.hpp"
 #include "common/session.hpp"
-#include "common/skill_constants.hpp"
 #include "channel_server/buffs.hpp"
 #include "channel_server/buffs_packet_helper.hpp"
 #include "channel_server/maps.hpp"

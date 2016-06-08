@@ -292,8 +292,8 @@ auto player_quests::give_rewards(game_quest_id quest_id, bool start) -> result {
 	auto &quest_info = channel_server::get_instance().get_quest_data_provider().get_info(quest_id);
 
 	game_job_id job = m_player->get_stats()->get_job();
-	array<game_inventory, inventories::count> needed_slots = {0};
-	array<bool, inventories::count> chance_item = {false};
+	array<game_inventory, constant::inventory::count> needed_slots = {0};
+	array<bool, constant::inventory::count> chance_item = {false};
 
 	auto check_rewards = [this, &quest_id, &needed_slots, &chance_item](const quest_reward_info &info) -> iteration_result {
 		if (info.is_item) {
@@ -324,7 +324,7 @@ auto player_quests::give_rewards(game_quest_id quest_id, bool start) -> result {
 		return result::failure;
 	}
 
-	for (game_inventory i = 0; i < inventories::count; i++) {
+	for (game_inventory i = 0; i < constant::inventory::count; i++) {
 		if (needed_slots[i] != 0 && m_player->get_inventory()->get_open_slots_num(i + 1) < needed_slots[i]) {
 			m_player->send(packets::quests::quest_error(quest_id, packets::quests::error_no_item_space));
 			return result::failure;

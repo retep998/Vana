@@ -16,7 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_active_buffs.hpp"
-#include "common/game_constants.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/packet_reader.hpp"
 #include "common/randomizer.hpp"
@@ -122,25 +121,25 @@ auto player_active_buffs::add_buff(const buff_source &source, const buff &buff, 
 			game_skill_id skill_id = source.get_skill_id();
 			game_skill_level skill_level = source.get_skill_level();
 			switch (source.get_skill_id()) {
-				case vana::skills::beginner::monster_rider:
-				case vana::skills::noblesse::monster_rider: {
-					m_mount_item_id = m_player->get_inventory()->get_equipped_id(equip_slots::mount);
+				case constant::skill::beginner::monster_rider:
+				case constant::skill::noblesse::monster_rider: {
+					m_mount_item_id = m_player->get_inventory()->get_equipped_id(constant::equip_slot::mount);
 					if (m_mount_item_id == 0) {
 						// Hacking
 						return result::failure;
 					}
-					game_item_id saddle = m_player->get_inventory()->get_equipped_id(equip_slots::saddle);
+					game_item_id saddle = m_player->get_inventory()->get_equipped_id(constant::equip_slot::saddle);
 					if (saddle == 0) {
 						// Hacking
 						return result::failure;
 					}
 					break;
 				}
-				case vana::skills::corsair::battleship:
-					m_mount_item_id = items::battleship_mount;
+				case constant::skill::corsair::battleship:
+					m_mount_item_id = constant::item::battleship_mount;
 					break;
-				case vana::skills::hero::enrage:
-					if (m_combo != vana::skills::max_advanced_combo_orbs) {
+				case constant::skill::hero::enrage:
+					if (m_combo != constant::skill::max_advanced_combo_orbs) {
 						// Hacking
 						return result::failure;
 					}
@@ -413,25 +412,25 @@ auto player_active_buffs::remove_debuff(game_mob_skill_id skill_id) -> void {
 }
 
 auto player_active_buffs::use_debuff_healing_item(int32_t mask) -> void {
-	if ((mask & status_effects::player::seal) != 0) {
-		remove_debuff(mob_skills::seal);
+	if ((mask & constant::status_effect::player::seal) != 0) {
+		remove_debuff(constant::mob_skill::seal);
 	}
-	if ((mask & status_effects::player::poison) != 0) {
-		remove_debuff(mob_skills::poison);
+	if ((mask & constant::status_effect::player::poison) != 0) {
+		remove_debuff(constant::mob_skill::poison);
 	}
-	if ((mask & status_effects::player::curse) != 0) {
-		remove_debuff(mob_skills::curse);
+	if ((mask & constant::status_effect::player::curse) != 0) {
+		remove_debuff(constant::mob_skill::curse);
 	}
-	if ((mask & status_effects::player::darkness) != 0) {
-		remove_debuff(mob_skills::darkness);
+	if ((mask & constant::status_effect::player::darkness) != 0) {
+		remove_debuff(constant::mob_skill::darkness);
 	}
-	if ((mask & status_effects::player::weakness) != 0) {
-		remove_debuff(mob_skills::weakness);
+	if ((mask & constant::status_effect::player::weakness) != 0) {
+		remove_debuff(constant::mob_skill::weakness);
 	}
 }
 
 auto player_active_buffs::get_zombified_potency(int16_t base_potency) -> int16_t {
-	if ((m_debuff_mask & status_effects::player::zombify) != 0) {
+	if ((m_debuff_mask & constant::status_effect::player::zombify) != 0) {
 		return static_cast<int16_t>(
 			static_cast<int32_t>(base_potency)
 			* m_zombify_potency
@@ -441,26 +440,26 @@ auto player_active_buffs::get_zombified_potency(int16_t base_potency) -> int16_t
 }
 
 auto player_active_buffs::use_player_dispel() -> void {
-	remove_debuff(mob_skills::seal);
-	remove_debuff(mob_skills::slow);
-	remove_debuff(mob_skills::darkness);
-	remove_debuff(mob_skills::weakness);
-	remove_debuff(mob_skills::curse);
-	remove_debuff(mob_skills::poison);
+	remove_debuff(constant::mob_skill::seal);
+	remove_debuff(constant::mob_skill::slow);
+	remove_debuff(constant::mob_skill::darkness);
+	remove_debuff(constant::mob_skill::weakness);
+	remove_debuff(constant::mob_skill::curse);
+	remove_debuff(constant::mob_skill::poison);
 }
 
 auto player_active_buffs::calculate_debuff_mask_bit(game_mob_skill_id skill_id) const -> int32_t {
 	switch (skill_id) {
-		case mob_skills::seal: return status_effects::player::seal;
-		case mob_skills::darkness: return status_effects::player::darkness;
-		case mob_skills::weakness: return status_effects::player::weakness;
-		case mob_skills::stun: return status_effects::player::stun;
-		case mob_skills::curse: return status_effects::player::curse;
-		case mob_skills::poison: return status_effects::player::poison;
-		case mob_skills::slow: return status_effects::player::slow;
-		case mob_skills::seduce: return status_effects::player::seduce;
-		case mob_skills::zombify: return status_effects::player::zombify;
-		case mob_skills::crazy_skull: return status_effects::player::crazy_skull;
+		case constant::mob_skill::seal: return constant::status_effect::player::seal;
+		case constant::mob_skill::darkness: return constant::status_effect::player::darkness;
+		case constant::mob_skill::weakness: return constant::status_effect::player::weakness;
+		case constant::mob_skill::stun: return constant::status_effect::player::stun;
+		case constant::mob_skill::curse: return constant::status_effect::player::curse;
+		case constant::mob_skill::poison: return constant::status_effect::player::poison;
+		case constant::mob_skill::slow: return constant::status_effect::player::slow;
+		case constant::mob_skill::seduce: return constant::status_effect::player::seduce;
+		case constant::mob_skill::zombify: return constant::status_effect::player::zombify;
+		case constant::mob_skill::crazy_skull: return constant::status_effect::player::crazy_skull;
 	}
 	return 0;
 }
@@ -547,7 +546,7 @@ auto player_active_buffs::get_battleship_hp() const -> int32_t {
 }
 
 auto player_active_buffs::reset_battleship_hp() -> void {
-	game_skill_level ship_level = m_player->get_skills()->get_skill_level(vana::skills::corsair::battleship);
+	game_skill_level ship_level = m_player->get_skills()->get_skill_level(constant::skill::corsair::battleship);
 	game_player_level player_level = m_player->get_stats()->get_level();
 	m_battleship_hp = game_logic_utilities::get_battleship_hp(ship_level, player_level);
 }
@@ -641,9 +640,9 @@ auto player_active_buffs::get_berserk() const -> bool {
 }
 
 auto player_active_buffs::check_berserk(bool display) -> void {
-	if (m_player->get_stats()->get_job() == jobs::job_ids::dark_knight) {
+	if (m_player->get_stats()->get_job() == constant::job::id::dark_knight) {
 		// Berserk calculations
-		game_skill_id skill_id = vana::skills::dark_knight::berserk;
+		game_skill_id skill_id = constant::skill::dark_knight::berserk;
 		game_skill_level level = m_player->get_skills()->get_skill_level(skill_id);
 		if (level > 0) {
 			int16_t hp_percentage = m_player->get_stats()->get_max_hp() * channel_server::get_instance().get_skill_data_provider().get_skill(skill_id, level)->x / 100;
@@ -669,7 +668,7 @@ auto player_active_buffs::get_energy_charge_level() const -> int16_t {
 }
 
 auto player_active_buffs::increase_energy_charge_level(int8_t targets) -> void {
-	if (m_energy_charge == stats::max_energy_charge_level) {
+	if (m_energy_charge == constant::stat::max_energy_charge_level) {
 		// Buff is currently engaged
 		return;
 	}
@@ -680,9 +679,9 @@ auto player_active_buffs::increase_energy_charge_level(int8_t targets) -> void {
 		game_skill_id skill_id = m_player->get_skills()->get_energy_charge();
 		auto info = m_player->get_skills()->get_skill_info(skill_id);
 		m_energy_charge += info->x * targets;
-		m_energy_charge = std::min(m_energy_charge, stats::max_energy_charge_level);
+		m_energy_charge = std::min(m_energy_charge, constant::stat::max_energy_charge_level);
 
-		if (m_energy_charge == stats::max_energy_charge_level) {
+		if (m_energy_charge == constant::stat::max_energy_charge_level) {
 			buffs::add_buff(m_player, skill_id, m_player->get_skills()->get_skill_level(skill_id), 0);
 		}
 		else {
@@ -701,7 +700,7 @@ auto player_active_buffs::increase_energy_charge_level(int8_t targets) -> void {
 }
 
 auto player_active_buffs::decrease_energy_charge_level() -> void {
-	m_energy_charge -= stats::energy_charge_decay;
+	m_energy_charge -= constant::stat::energy_charge_decay;
 	m_energy_charge = std::max<int16_t>(m_energy_charge, 0);
 	if (m_energy_charge > 0) {
 		start_energy_charge_timer();
@@ -814,8 +813,8 @@ auto player_active_buffs::has_ice_charge() const -> bool {
 	if (buff_source.get_type() != buff_source_type::skill) throw not_implemented_exception{"ice charge buff_source_type"};
 	game_skill_id skill_id = buff_source.get_skill_id();
 	return
-		skill_id == vana::skills::white_knight::bw_ice_charge ||
-		skill_id == vana::skills::white_knight::sword_ice_charge;
+		skill_id == constant::skill::white_knight::bw_ice_charge ||
+		skill_id == constant::skill::white_knight::sword_ice_charge;
 }
 
 auto player_active_buffs::get_pickpocket_counter() -> int32_t {
@@ -828,7 +827,7 @@ auto player_active_buffs::has_infinity() const -> bool {
 }
 
 auto player_active_buffs::is_using_gm_hide() const -> bool {
-	return has_buff(buff_source_type::skill, vana::skills::super_gm::hide);
+	return has_buff(buff_source_type::skill, constant::skill::super_gm::hide);
 }
 
 auto player_active_buffs::has_shadow_partner() const -> bool {
@@ -852,7 +851,7 @@ auto player_active_buffs::has_holy_shield() const -> bool {
 }
 
 auto player_active_buffs::is_cursed() const -> bool {
-	return (m_debuff_mask & status_effects::player::curse) > 0;
+	return (m_debuff_mask & constant::status_effect::player::curse) > 0;
 }
 
 auto player_active_buffs::get_holy_symbol_rate() const -> int16_t {
@@ -976,10 +975,10 @@ auto player_active_buffs::take_damage(game_damage damage) -> void {
 		}
 	}
 
-	auto battleship_level = get_buff_level(buff_source_type::skill, vana::skills::corsair::battleship);
+	auto battleship_level = get_buff_level(buff_source_type::skill, constant::skill::corsair::battleship);
 	if (battleship_level > 0) {
 		m_battleship_hp -= damage / 10;
-		auto source = buff_source::from_skill(vana::skills::corsair::battleship, battleship_level);
+		auto source = buff_source::from_skill(constant::skill::corsair::battleship, battleship_level);
 
 		if (m_battleship_hp <= 0) {
 			m_battleship_hp = 0;
@@ -1100,7 +1099,7 @@ auto player_active_buffs::parse_transfer_packet(packet_reader &reader) -> void {
 			time_left);
 	}
 
-	if (m_energy_charge > 0 && m_energy_charge != stats::max_energy_charge_level) {
+	if (m_energy_charge > 0 && m_energy_charge != constant::stat::max_energy_charge_level) {
 		start_energy_charge_timer();
 	}
 
