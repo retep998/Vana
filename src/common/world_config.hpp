@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/config_file.hpp"
 #include "common/i_packet.hpp"
+#include "common/lua/config_file.hpp"
 #include "common/lua/lua_variant.hpp"
 #include "common/major_boss_config.hpp"
 #include "common/packet_builder.hpp"

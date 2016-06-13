@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 namespace vana {
+namespace lua {
 
 config_file::config_file(const string &filename) :
 	lua_environment{filename}
@@ -36,7 +37,7 @@ config_file::~config_file() {
 }
 
 auto config_file::handle_file_not_found(const string &filename) -> void {
-	std::cerr << "ERROR: Configuration file " << filename << " does not exist!" << std::endl;
+	std::cerr << "ERROR: Configuration file '" << filename << "' does not exist!" << std::endl;
 	exit(exit_code::config_file_missing);
 	throw config_exception{};
 }
@@ -149,4 +150,5 @@ auto config_file::get_connection_properties_config() -> owned_ptr<config_file> {
 	return env;
 }
 
+}
 }

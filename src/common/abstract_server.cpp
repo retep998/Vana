@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "abstract_server.hpp"
 #include "common/authentication_packet.hpp"
 #include "common/combo_loggers.hpp"
-#include "common/config_file.hpp"
 #include "common/connection_manager.hpp"
 #include "common/console_logger.hpp"
 #include "common/exit_codes.hpp"
@@ -26,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/hash_utilities.hpp"
 #include "common/log_config.hpp"
 #include "common/logger.hpp"
+#include "common/lua/config_file.hpp"
 #include "common/misc_utilities.hpp"
 #include "common/salting_config.hpp"
 #include "common/session.hpp"
@@ -51,7 +51,7 @@ auto abstract_server::initialize() -> result {
 
 	load_log_config();
 
-	auto config = config_file::get_connection_properties_config();
+	auto config = lua::config_file::get_connection_properties_config();
 	config->run();
 
 	m_inter_password = config->get<string>("inter_password");
@@ -85,7 +85,7 @@ auto abstract_server::initialize() -> result {
 
 	m_inter_server_config = config->get<inter_server_config>("");
 
-	auto salting = config_file::get_salting_config();
+	auto salting = lua::config_file::get_salting_config();
 	salting->run();
 
 	auto salting_conf = salting->get<salting_config>("");
@@ -106,7 +106,7 @@ auto abstract_server::initialize() -> result {
 }
 
 auto abstract_server::load_log_config() -> void {
-	auto conf = config_file::get_logger_config();
+	auto conf = lua::config_file::get_logger_config();
 	conf->run();
 
 	string prefix = get_log_prefix();

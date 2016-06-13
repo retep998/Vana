@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "database.hpp"
-#include "common/config_file.hpp"
 #include "common/db_config.hpp"
+#include "common/lua/config_file.hpp"
 #include <soci-mysql.h>
 
 namespace vana {
@@ -28,7 +28,7 @@ thread_local owned_ptr<database> database::m_datadb{nullptr};
 auto database::init_char_db() -> database & {
 	if (m_chardb != nullptr) throw std::logic_error{"Must not call init_char_db after the database is already initialized"};
 
-	auto config = config_file::get_database_config();
+	auto config = lua::config_file::get_database_config();
 	config->run();
 	db_config conf = config->get<db_config>("chardb");
 	m_chardb = make_owned_ptr<database>(conf, false);
@@ -95,14 +95,14 @@ auto database::table_exists(soci::session &sql, const string &schema, const stri
 }
 
 auto database::connect_char_db() -> void {
-	auto config = config_file::get_database_config();
+	auto config = lua::config_file::get_database_config();
 	config->run();
 	db_config conf = config->get<db_config>("chardb");
 	m_chardb = make_owned_ptr<database>(conf, true);
 }
 
 auto database::connect_data_db() -> void {
-	auto config = config_file::get_database_config();
+	auto config = lua::config_file::get_database_config();
 	config->run();
 	db_config conf = config->get<db_config>("datadb");
 	m_datadb = make_owned_ptr<database>(conf, true);

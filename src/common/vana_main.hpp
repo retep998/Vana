@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "common/abstract_server.hpp"
-#include "common/config_file.hpp"
 #include "common/exit_codes.hpp"
+#include "common/lua/config_file.hpp"
 #include "common/thread_pool.hpp"
 #include <asio.hpp>
 #include <botan/botan.h>
@@ -51,7 +51,10 @@ namespace vana {
 				server.shutdown();
 			}
 		}
-		catch (config_exception &) { }
+		catch (lua::config_exception &) {
+			// Code path intentionally blank
+			// Each vanilla config_exception has an associated message at the throw site
+		}
 		catch (std::exception &e) {
 			std::cerr << "PROGRAM ERROR: " << e.what() << std::endl;
 			exit(exit_code::program_exception);

@@ -132,9 +132,6 @@
     <ClCompile Include="src\common\tausworthe_generator.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\config_file.cpp">
-      <Filter>Configuration</Filter>
-    </ClCompile>
     <ClCompile Include="src\common\mysql_query_parser.cpp">
       <Filter>Database</Filter>
     </ClCompile>
@@ -279,6 +276,9 @@
     <ClCompile Include="src\common\data\provider\script.cpp">
       <Filter>data\provider</Filter>
     </ClCompile>
+    <ClCompile Include="src\common\lua\config_file.cpp">
+      <Filter>lua</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\common\file_utilities.hpp">
@@ -370,9 +370,6 @@
     </ClInclude>
     <ClInclude Include="src\common\soci_extensions.hpp">
       <Filter>Lib</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\config_file.hpp">
-      <Filter>Configuration</Filter>
     </ClInclude>
     <ClInclude Include="src\common\mysql_query_parser.hpp">
       <Filter>Database</Filter>
@@ -909,6 +906,9 @@
     </ClInclude>
     <ClInclude Include="src\common\data\locale.hpp">
       <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\lua\config_file.hpp">
+      <Filter>lua</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

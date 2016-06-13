@@ -128,6 +128,7 @@
     <ClCompile Include="src\common\block_cipher_iv.cpp" />
     <ClCompile Include="src\common\line.cpp" />
     <ClCompile Include="src\common\logger.cpp" />
+    <ClCompile Include="src\common\lua\config_file.cpp" />
     <ClCompile Include="src\common\lua\lua_environment.cpp" />
     <ClCompile Include="src\common\lua\lua_variant.cpp" />
     <ClCompile Include="src\common\packet_builder.cpp" />
@@ -154,7 +155,6 @@
     <ClCompile Include="src\common\timer\timer.cpp" />
     <ClCompile Include="src\common\timer\container.cpp" />
     <ClCompile Include="src\common\timer\thread.cpp" />
-    <ClCompile Include="src\common\config_file.cpp" />
     <ClCompile Include="src\common\database.cpp" />
     <ClCompile Include="src\common\packet_reader.cpp" />
     <ClCompile Include="src\common\authentication_packet.cpp" />
@@ -270,6 +270,7 @@
     <ClInclude Include="src\common\data\type\summon_bag_info.hpp" />
     <ClInclude Include="src\common\data\type\valid_item_type.hpp" />
     <ClInclude Include="src\common\finalization_pool.hpp" />
+    <ClInclude Include="src\common\lua\config_file.hpp" />
     <ClInclude Include="src\common\lua\lua_environment.hpp" />
     <ClInclude Include="src\common\lua\lua_type.hpp" />
     <ClInclude Include="src\common\lua\lua_variant.hpp" />
@@ -356,7 +357,6 @@
     <ClInclude Include="src\common\types.hpp" />
     <ClInclude Include="src\common\initialize_common.hpp" />
     <ClInclude Include="src\common\unix_time.hpp" />
-    <ClInclude Include="src\common\config_file.hpp" />
     <ClInclude Include="src\common\database.hpp" />
     <ClInclude Include="src\common\packet_reader.hpp" />
     <ClInclude Include="src\common\common_packet.hpp" />

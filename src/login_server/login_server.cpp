@@ -99,13 +99,13 @@ auto login_server::load_data() -> result {
 }
 
 auto login_server::load_config() -> result {
-	auto config = config_file::get_login_config();
+	auto config = lua::config_file::get_login_config();
 	config->run();
 	m_pin_enabled = config->get<bool>("pin");
 	m_port = config->get<connection_port>("port");
 	m_max_invalid_logins = config->get<int32_t>("invalid_login_threshold");
 
-	auto salting = config_file::get_salting_config();
+	auto salting = lua::config_file::get_salting_config();
 	salting->run();
 
 	auto salting_conf = salting->get<salting_config>("");
@@ -175,7 +175,7 @@ auto login_server::get_character_account_salting_policy() const -> const salt_co
 }
 
 auto login_server::load_worlds() -> void {
-	auto config = config_file::get_worlds_config();
+	auto config = lua::config_file::get_worlds_config();
 	config->run();
 
 	lua::lua_variant worlds_config = config->get<lua::lua_variant>("worlds");
