@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "salt_transformation_config.hpp"
+#include "salt_transformation.hpp"
 #include "common/bit_utilities.hpp"
 #include "common/salt_leftover_policy.hpp"
 #include "common/types.hpp"
@@ -24,14 +24,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 namespace vana {
+namespace config {
 
-salt_transformation_config::salt_transformation_config(salt_modify_policy policy, vector<lua::lua_variant> args) :
+salt_transformation::salt_transformation(salt_modify_policy policy, vector<lua::lua_variant> args) :
 	m_policy{policy},
 	m_args{args}
 {
 }
 
-auto salt_transformation_config::validate_args(salt_modify_policy policy, const vector<lua::lua_variant> &args) -> validity_result {
+auto salt_transformation::validate_args(salt_modify_policy policy, const vector<lua::lua_variant> &args) -> validity_result {
 	switch (policy) {
 		case salt_modify_policy::xor_byte_cipher: {
 			if (args.size() != 1) return validity_result::invalid;
@@ -164,7 +165,7 @@ auto salt_transformation_config::validate_args(salt_modify_policy policy, const 
 	return validity_result::valid;
 }
 
-auto salt_transformation_config::apply(string input) const -> string {
+auto salt_transformation::apply(string input) const -> string {
 	string ret;
 	switch (m_policy) {
 		case salt_modify_policy::xor_cipher: {
@@ -387,4 +388,5 @@ auto salt_transformation_config::apply(string input) const -> string {
 	return ret;
 }
 
+}
 }

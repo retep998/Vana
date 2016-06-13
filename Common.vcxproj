@@ -96,6 +96,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\common\client_ip.cpp" />
+    <ClCompile Include="src\common\config\password_transformation.cpp" />
+    <ClCompile Include="src\common\config\salt_transformation.cpp" />
     <ClCompile Include="src\common\connection_listener.cpp" />
     <ClCompile Include="src\common\console_logger.cpp" />
     <ClCompile Include="src\common\data\provider\beauty.cpp" />
@@ -134,7 +136,6 @@
     <ClCompile Include="src\common\packet_builder.cpp" />
     <ClCompile Include="src\common\packet_handler.cpp" />
     <ClCompile Include="src\common\packet_transformer.cpp" />
-    <ClCompile Include="src\common\password_transformation_config.cpp" />
     <ClCompile Include="src\common\common_packet.cpp" />
     <ClCompile Include="src\common\point.cpp" />
     <ClCompile Include="src\common\precompiled_header.cpp">
@@ -146,7 +147,6 @@
     <ClCompile Include="src\common\quest.cpp" />
     <ClCompile Include="src\common\ratio.cpp" />
     <ClCompile Include="src\common\rect.cpp" />
-    <ClCompile Include="src\common\salt_transformation_config.cpp" />
     <ClCompile Include="src\common\server_accepted_session.cpp" />
     <ClCompile Include="src\common\session.cpp" />
     <ClCompile Include="src\common\sql_logger.cpp" />
@@ -179,6 +179,18 @@
     <ClInclude Include="src\common\client_ip.hpp" />
     <ClInclude Include="src\common\combo_loggers.hpp" />
     <ClInclude Include="src\common\common_header.hpp" />
+    <ClInclude Include="src\common\config\database.hpp" />
+    <ClInclude Include="src\common\config\inter_server.hpp" />
+    <ClInclude Include="src\common\config\log.hpp" />
+    <ClInclude Include="src\common\config\major_boss.hpp" />
+    <ClInclude Include="src\common\config\password_transformation.hpp" />
+    <ClInclude Include="src\common\config\ping.hpp" />
+    <ClInclude Include="src\common\config\rates.hpp" />
+    <ClInclude Include="src\common\config\salting.hpp" />
+    <ClInclude Include="src\common\config\salt.hpp" />
+    <ClInclude Include="src\common\config\salt_size.hpp" />
+    <ClInclude Include="src\common\config\salt_transformation.hpp" />
+    <ClInclude Include="src\common\config\world.hpp" />
     <ClInclude Include="src\common\connection_listener.hpp" />
     <ClInclude Include="src\common\connection_listener_config.hpp" />
     <ClInclude Include="src\common\constants\alliance.hpp" />
@@ -275,14 +287,11 @@
     <ClInclude Include="src\common\lua\lua_type.hpp" />
     <ClInclude Include="src\common\lua\lua_variant.hpp" />
     <ClInclude Include="src\common\packet_handler.hpp" />
-    <ClInclude Include="src\common\ping_config.hpp" />
     <ClInclude Include="src\common\connection_type.hpp" />
     <ClInclude Include="src\common\encrypted_packet_transformer.hpp" />
     <ClInclude Include="src\common\enum_base.hpp" />
     <ClInclude Include="src\common\enum_utilities.hpp" />
-    <ClInclude Include="src\common\inter_server_config.hpp" />
     <ClInclude Include="src\common\console_logger.hpp" />
-    <ClInclude Include="src\common\db_config.hpp" />
     <ClInclude Include="src\common\exit_codes.hpp" />
     <ClInclude Include="src\common\external_ip.hpp" />
     <ClInclude Include="src\common\external_ip_resolver.hpp" />
@@ -301,9 +310,7 @@
     <ClInclude Include="src\common\item_db_information.hpp" />
     <ClInclude Include="src\common\item_db_record.hpp" />
     <ClInclude Include="src\common\line.hpp" />
-    <ClInclude Include="src\common\log_config.hpp" />
     <ClInclude Include="src\common\logger.hpp" />
-    <ClInclude Include="src\common\major_boss_config.hpp" />
     <ClInclude Include="src\common\make_unique.hpp" />
     <ClInclude Include="src\common\maple_version.hpp" />
     <ClInclude Include="src\common\mp_eater_data.hpp" />
@@ -311,7 +318,6 @@
     <ClInclude Include="src\common\optional.hpp" />
     <ClInclude Include="src\common\packet_builder.hpp" />
     <ClInclude Include="src\common\packet_wrapper.hpp" />
-    <ClInclude Include="src\common\password_transformation_config.hpp" />
     <ClInclude Include="src\common\player_data.hpp" />
     <ClInclude Include="src\common\party_data.hpp" />
     <ClInclude Include="src\common\point.hpp" />
@@ -323,18 +329,13 @@
     <ClInclude Include="src\common\quest_requests_data.hpp" />
     <ClInclude Include="src\common\quest_rewards_data.hpp" />
     <ClInclude Include="src\common\quest_state_data.hpp" />
-    <ClInclude Include="src\common\rates_config.hpp" />
     <ClInclude Include="src\common\ratio.hpp" />
     <ClInclude Include="src\common\rect.hpp" />
     <ClInclude Include="src\common\respawnable.hpp" />
     <ClInclude Include="src\common\return_damage_data.hpp" />
-    <ClInclude Include="src\common\salt_config.hpp" />
-    <ClInclude Include="src\common\salting_config.hpp" />
     <ClInclude Include="src\common\salt_leftover_policy.hpp" />
     <ClInclude Include="src\common\salt_modify_policy.hpp" />
-    <ClInclude Include="src\common\salt_size_config.hpp" />
     <ClInclude Include="src\common\salt_size_policy.hpp" />
-    <ClInclude Include="src\common\salt_transformation_config.hpp" />
     <ClInclude Include="src\common\salt_policy.hpp" />
     <ClInclude Include="src\common\server_accepted_session.hpp" />
     <ClInclude Include="src\common\shared_array.hpp" />
@@ -381,7 +382,6 @@
     <ClInclude Include="src\common\variables.hpp" />
     <ClInclude Include="src\common\database_updater.hpp" />
     <ClInclude Include="src\common\wide_point.hpp" />
-    <ClInclude Include="src\common\world_config.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -23,13 +23,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace vana {
 	class packet_reader;
-	struct world_config;
+	namespace config {
+		struct world;
+	}
 
 	namespace world_server {
 		namespace packets {
 			namespace interserver {
 				PACKET(connect, game_channel_id channel, connection_port port);
-				PACKET(rehash_config, const world_config &config);
+				PACKET(rehash_config, const vana::config::world &config);
 			}
 		}
 	}

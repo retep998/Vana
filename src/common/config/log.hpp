@@ -22,19 +22,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 namespace vana {
-	struct log_config {
-		bool log = false;
-		int32_t destination = 0;
-		uint32_t buffer_size = 20;
-		string format;
-		string time_format;
-		string file;
-	};
+	namespace config {
+		struct log {
+			bool perform = false;
+			int32_t destination = 0;
+			uint32_t buffer_size = 20;
+			string format;
+			string time_format;
+			string file;
+		};
+	}
 
 	template <>
-	struct lua::lua_serialize<log_config> {
-		auto read(lua_environment &config, const string &prefix) -> log_config {
-			log_config ret;
+	struct lua::lua_serialize<config::log> {
+		auto read(lua_environment &config, const string &prefix) -> config::log {
+			config::log ret;
 
 			lua_variant obj = config.get<lua_variant>(prefix);
 			config.validate_object(lua_type::table, obj, prefix);
@@ -50,8 +52,8 @@ namespace vana {
 				if (key == "log") {
 					has_log = true;
 					config.validate_value(lua_type::boolean, kvp.second, key, prefix);
-					ret.log = kvp.second.as<bool>();
-					if (!ret.log) break;
+					ret.perform = kvp.second.as<bool>();
+					if (!ret.perform) break;
 				}
 				else if (key == "destination") {
 					has_destination = true;
@@ -78,7 +80,7 @@ namespace vana {
 			}
 
 			config.required(has_log, "log", prefix);
-			if (ret.log) {
+			if (ret.perform) {
 				config.required(has_destination, "destination", prefix);
 				config.required(has_format, "format", prefix);
 			}

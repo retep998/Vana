@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "connection_manager.hpp"
+#include "common/config/inter_server.hpp"
 #include "common/connection_listener.hpp"
 #include "common/connection_listener_config.hpp"
 #include "common/encrypted_packet_transformer.hpp"
 #include "common/exit_codes.hpp"
-#include "common/inter_server_config.hpp"
 #include "common/misc_utilities.hpp"
 #include "common/session.hpp"
 #include "common/thread_pool.hpp"
@@ -53,7 +53,7 @@ auto connection_manager::listen(const connection_listener_config &config, handle
 	listener->begin_accept();
 }
 
-auto connection_manager::connect(const ip &destination, connection_port port, const ping_config &ping, server_type source_type, handler_creator handler_creator) -> pair<result, ref_ptr<session>> {
+auto connection_manager::connect(const ip &destination, connection_port port, const config::ping &ping, server_type source_type, handler_creator handler_creator) -> pair<result, ref_ptr<session>> {
 	asio::ip::address end_address;
 	if (destination.get_type() == ip::type::ipv4) {
 		end_address = asio::ip::address_v4{destination.as_ipv4()};

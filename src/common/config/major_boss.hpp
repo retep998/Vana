@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "common/lua/config_file.hpp"
 #include "common/i_packet.hpp"
 #include "common/packet_builder.hpp"
 #include "common/packet_reader.hpp"
@@ -24,17 +25,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 namespace vana {
-	struct major_boss_config {
-		int16_t attempts = 0;
-		vector<game_channel_id> channels;
-	};
+	namespace config {
+		struct major_boss {
+			int16_t attempts = 0;
+			vector<game_channel_id> channels;
+		};
+	}
 
 	template <>
-	struct lua::lua_variant_into<major_boss_config> {
-		auto transform(lua_environment &config, const lua_variant &obj, const string &prefix) -> major_boss_config {
+	struct lua::lua_variant_into<config::major_boss> {
+		auto transform(lua_environment &config, const lua_variant &obj, const string &prefix) -> config::major_boss {
 			config.validate_object(lua_type::table, obj, prefix);
 		
-			major_boss_config ret;
+			config::major_boss ret;
 
 			auto &values = obj.as<hash_map<lua_variant, lua_variant>>();
 			for (const auto &value : values) {
@@ -61,14 +64,14 @@ namespace vana {
 	};
 
 	template <>
-	struct packet_serialize<major_boss_config> {
-		auto read(packet_reader &reader) -> major_boss_config {
-			major_boss_config ret;
+	struct packet_serialize<config::major_boss> {
+		auto read(packet_reader &reader) -> config::major_boss {
+			config::major_boss ret;
 			ret.attempts = reader.get<int16_t>();
 			ret.channels = reader.get<vector<game_channel_id>>();
 			return ret;
 		}
-		auto write(packet_builder &builder, const major_boss_config &obj) -> void {
+		auto write(packet_builder &builder, const config::major_boss &obj) -> void {
 			builder.add<int16_t>(obj.attempts);
 			builder.add<vector<game_channel_id>>(obj.channels);
 		}

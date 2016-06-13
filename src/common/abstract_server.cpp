@@ -18,16 +18,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "abstract_server.hpp"
 #include "common/authentication_packet.hpp"
 #include "common/combo_loggers.hpp"
+#include "common/config/log.hpp"
+#include "common/config/salting.hpp"
 #include "common/connection_manager.hpp"
 #include "common/console_logger.hpp"
 #include "common/exit_codes.hpp"
 #include "common/file_logger.hpp"
 #include "common/hash_utilities.hpp"
-#include "common/log_config.hpp"
 #include "common/logger.hpp"
 #include "common/lua/config_file.hpp"
 #include "common/misc_utilities.hpp"
-#include "common/salting_config.hpp"
 #include "common/session.hpp"
 #include "common/sql_logger.hpp"
 #include "common/thread_pool.hpp"
@@ -83,12 +83,12 @@ auto abstract_server::initialize() -> result {
 		m_external_ips.push_back(external_ip{ip, mask});
 	}
 
-	m_inter_server_config = config->get<inter_server_config>("");
+	m_inter_server_config = config->get<config::inter_server>("");
 
 	auto salting = lua::config_file::get_salting_config();
 	salting->run();
 
-	auto salting_conf = salting->get<salting_config>("");
+	auto salting_conf = salting->get<config::salting>("");
 	m_salting_policy = salting_conf.interserver;
 
 	if (load_config() == result::failure) {
@@ -110,9 +110,9 @@ auto abstract_server::load_log_config() -> void {
 	conf->run();
 
 	string prefix = get_log_prefix();
-	log_config log;
-	log = conf->get<log_config>(prefix);
-	if (log.log) {
+	config::log log;
+	log = conf->get<config::log>(prefix);
+	if (log.perform) {
 		create_logger(log);
 	}
 }
@@ -130,11 +130,11 @@ auto abstract_server::get_inter_password() const -> string {
 	return hash_utilities::hash_password(m_inter_password, m_salt, m_salting_policy);
 }
 
-auto abstract_server::get_interserver_salting_policy() const -> const salt_config & {
+auto abstract_server::get_interserver_salting_policy() const -> const config::salt & {
 	return m_salting_policy;
 }
 
-auto abstract_server::get_inter_server_config() const -> const inter_server_config & {
+auto abstract_server::get_inter_server_config() const -> const config::inter_server & {
 	return m_inter_server_config;
 }
 
@@ -155,7 +155,7 @@ auto abstract_server::send_auth(ref_ptr<session> session) const -> void {
 			m_external_ips));
 }
 
-auto abstract_server::create_logger(const log_config &conf) -> void {
+auto abstract_server::create_logger(const config::log &conf) -> void {
 	const string &time_format = conf.time_format;
 	const string &format = conf.format;
 	const string &file = conf.file;

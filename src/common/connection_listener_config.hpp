@@ -17,15 +17,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "common/config/ping.hpp"
 #include "common/connection_type.hpp"
 #include "common/ip.hpp"
-#include "common/ping_config.hpp"
 #include "common/types.hpp"
 #include <string>
 
 namespace vana {
 	struct connection_listener_config {
-		ping_config ping;
+		config::ping ping;
 		bool encrypt;
 		connection_type type;
 		string subversion;
@@ -33,7 +33,7 @@ namespace vana {
 		ip::type ip_type;
 
 		connection_listener_config(
-			const ping_config &ping,
+			const config::ping &ping,
 			bool encrypt,
 			connection_type type,
 			string subversion,

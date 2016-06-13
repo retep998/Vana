@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "common/config/world.hpp"
 #include "common/types.hpp"
-#include "common/world_config.hpp"
 #include "login_server/channel.hpp"
 #include <memory>
 #include <functional>
@@ -43,7 +43,7 @@ namespace vana {
 			auto set_port(connection_port port) -> void;
 			auto set_player_load(int32_t load) -> void;
 			auto set_session(ref_ptr<login_server_accepted_session> session) -> void;
-			auto set_configuration(const world_config &config) -> void;
+			auto set_configuration(const config::world &config) -> void;
 			auto set_event_message(const string &message) -> void;
 			auto run_channel_function(function<void (channel *)> func) -> void;
 			auto clear_channels() -> void;
@@ -64,14 +64,14 @@ namespace vana {
 			auto get_name() const -> string;
 			auto get_event_message() const -> string;
 			auto get_channel(game_channel_id id) -> channel *;
-			auto get_config() const -> const world_config &;
+			auto get_config() const -> const config::world &;
 		private:
 			bool m_connected = false;
 			optional<game_world_id> m_id;
 			connection_port m_port = 0;
 			int32_t m_player_load = 0;
 			ref_ptr<login_server_accepted_session> m_session;
-			world_config m_config;
+			config::world m_config;
 			hash_map<game_channel_id, ref_ptr<channel>> m_channels;
 		};
 	}

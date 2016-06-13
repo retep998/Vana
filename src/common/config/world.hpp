@@ -17,47 +17,49 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "common/config/major_boss.hpp"
+#include "common/config/rates.hpp"
 #include "common/i_packet.hpp"
 #include "common/lua/config_file.hpp"
 #include "common/lua/lua_variant.hpp"
-#include "common/major_boss_config.hpp"
 #include "common/packet_builder.hpp"
 #include "common/packet_reader.hpp"
-#include "common/rates_config.hpp"
 #include "common/types.hpp"
 #include <string>
 #include <vector>
 
 namespace vana {
-	struct world_config {
-		bool default_gm_chat_mode = true;
-		game_world_id id = 0;
-		int8_t ribbon = 0;
-		connection_port base_port = 7100;
-		game_player_level max_multi_level = 1;
-		game_storage_slot default_storage_slots = 4;
-		game_stat max_stats = 999;
-		int32_t default_chars = 3;
-		int32_t max_chars = 6;
-		int32_t max_player_load = 1000;
-		seconds fame_time = seconds{24 * 60 * 60};
-		seconds fame_reset_time = seconds{24 * 60 * 60 * 30};
-		seconds map_unload_time = seconds{30 * 60};
-		game_channel_id max_channels = 19;
-		string event_message;
-		string scrolling_header;
-		string name;
-		rates_config rates;
-		major_boss_config pianus;
-		major_boss_config papulatus;
-		major_boss_config zakum;
-		major_boss_config horntail;
-		major_boss_config pinkbean;
-	};
+	namespace config {
+		struct world {
+			bool default_gm_chat_mode = true;
+			game_world_id id = 0;
+			int8_t ribbon = 0;
+			connection_port base_port = 7100;
+			game_player_level max_multi_level = 1;
+			game_storage_slot default_storage_slots = 4;
+			game_stat max_stats = 999;
+			int32_t default_chars = 3;
+			int32_t max_chars = 6;
+			int32_t max_player_load = 1000;
+			seconds fame_time = seconds{24 * 60 * 60};
+			seconds fame_reset_time = seconds{24 * 60 * 60 * 30};
+			seconds map_unload_time = seconds{30 * 60};
+			game_channel_id max_channels = 19;
+			string event_message;
+			string scrolling_header;
+			string name;
+			rates rates;
+			major_boss pianus;
+			major_boss papulatus;
+			major_boss zakum;
+			major_boss horntail;
+			major_boss pinkbean;
+		};
+	}
 
 	template <>
-	struct lua::lua_variant_into<world_config> {
-		auto expand_major_boss(const world_config &config, major_boss_config &boss) -> void {
+	struct lua::lua_variant_into<config::world> {
+		auto expand_major_boss(const config::world &config, config::major_boss &boss) -> void {
 			if (boss.channels.size() == 1 && boss.channels[0] == -1) {
 				boss.channels.clear();
 				for (game_channel_id i = 1; i <= config.max_channels; i++) {
@@ -66,10 +68,10 @@ namespace vana {
 			}
 		}
 
-		auto transform(lua_environment &config, const lua_variant &obj, const string &prefix) -> world_config {
+		auto transform(lua_environment &config, const lua_variant &obj, const string &prefix) -> config::world {
 			config.validate_object(lua_type::table, obj, prefix);
 		
-			world_config ret;
+			config::world ret;
 
 			auto &values = obj.as<hash_map<lua_variant, lua_variant>>();
 			bool has_name = false;
@@ -157,32 +159,32 @@ namespace vana {
 				}
 				else if (key == "rates") {
 					if (config.validate_value(lua_type::table, value.second, key, prefix, true) == lua_type::nil) continue;
-					ret.rates = value.second.into<rates_config>(config, prefix + "." + key);
+					ret.rates = value.second.into<config::rates>(config, prefix + "." + key);
 				}
 				else if (key == "pianus") {
 					has_pianus = true;
 					if (config.validate_value(lua_type::table, value.second, key, prefix, true) == lua_type::nil) continue;
-					ret.pianus = value.second.into<major_boss_config>(config, prefix + "." + key);
+					ret.pianus = value.second.into<config::major_boss>(config, prefix + "." + key);
 				}
 				else if (key == "papulatus") {
 					has_papulatus = true;
 					if (config.validate_value(lua_type::table, value.second, key, prefix, true) == lua_type::nil) continue;
-					ret.papulatus = value.second.into<major_boss_config>(config, prefix + "." + key);
+					ret.papulatus = value.second.into<config::major_boss>(config, prefix + "." + key);
 				}
 				else if (key == "zakum") {
 					has_zakum = true;
 					if (config.validate_value(lua_type::table, value.second, key, prefix, true) == lua_type::nil) continue;
-					ret.zakum = value.second.into<major_boss_config>(config, prefix + "." + key);
+					ret.zakum = value.second.into<config::major_boss>(config, prefix + "." + key);
 				}
 				else if (key == "horntail") {
 					has_horntail = true;
 					if (config.validate_value(lua_type::table, value.second, key, prefix, true) == lua_type::nil) continue;
-					ret.horntail = value.second.into<major_boss_config>(config, prefix + "." + key);
+					ret.horntail = value.second.into<config::major_boss>(config, prefix + "." + key);
 				}
 				else if (key == "pinkbean") {
 					has_pinkbean = true;
 					if (config.validate_value(lua_type::table, value.second, key, prefix, true) == lua_type::nil) continue;
-					ret.pinkbean = value.second.into<major_boss_config>(config, prefix + "." + key);
+					ret.pinkbean = value.second.into<config::major_boss>(config, prefix + "." + key);
 				}
 			}
 
@@ -201,9 +203,9 @@ namespace vana {
 	};
 
 	template <>
-	struct packet_serialize<world_config> {
-		auto read(packet_reader &reader) -> world_config {
-			world_config ret;
+	struct packet_serialize<config::world> {
+		auto read(packet_reader &reader) -> config::world {
+			config::world ret;
 			ret.id = reader.get<game_world_id>();
 			ret.base_port = reader.get<connection_port>();
 			ret.default_gm_chat_mode = reader.get<bool>();
@@ -221,15 +223,15 @@ namespace vana {
 			ret.event_message = reader.get<string>();
 			ret.scrolling_header = reader.get<string>();
 			ret.name = reader.get<string>();
-			ret.rates = reader.get<rates_config>();
-			ret.pianus = reader.get<major_boss_config>();
-			ret.papulatus = reader.get<major_boss_config>();
-			ret.zakum = reader.get<major_boss_config>();
-			ret.horntail = reader.get<major_boss_config>();
-			ret.pinkbean = reader.get<major_boss_config>();
+			ret.rates = reader.get<config::rates>();
+			ret.pianus = reader.get<config::major_boss>();
+			ret.papulatus = reader.get<config::major_boss>();
+			ret.zakum = reader.get<config::major_boss>();
+			ret.horntail = reader.get<config::major_boss>();
+			ret.pinkbean = reader.get<config::major_boss>();
 			return ret;
 		}
-		auto write(packet_builder &builder, const world_config &obj) -> void {
+		auto write(packet_builder &builder, const config::world &obj) -> void {
 			builder.add<game_world_id>(obj.id);
 			builder.add<connection_port>(obj.base_port);
 			builder.add<bool>(obj.default_gm_chat_mode);
@@ -247,12 +249,12 @@ namespace vana {
 			builder.add<string>(obj.event_message);
 			builder.add<string>(obj.scrolling_header);
 			builder.add<string>(obj.name);
-			builder.add<rates_config>(obj.rates);
-			builder.add<major_boss_config>(obj.pianus);
-			builder.add<major_boss_config>(obj.papulatus);
-			builder.add<major_boss_config>(obj.zakum);
-			builder.add<major_boss_config>(obj.horntail);
-			builder.add<major_boss_config>(obj.pinkbean);
+			builder.add<config::rates>(obj.rates);
+			builder.add<config::major_boss>(obj.pianus);
+			builder.add<config::major_boss>(obj.papulatus);
+			builder.add<config::major_boss>(obj.zakum);
+			builder.add<config::major_boss>(obj.horntail);
+			builder.add<config::major_boss>(obj.pinkbean);
 		}
 	};
 }

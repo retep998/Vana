@@ -97,13 +97,13 @@ auto world_server::on_disconnect_from_login() -> void {
 	}
 }
 
-auto world_server::rehash_config(const world_config &config) -> void {
+auto world_server::rehash_config(const config::world &config) -> void {
 	m_config = config;
 	m_default_rates = config.rates;
 	m_channels.send(packets::interserver::rehash_config(config));
 }
 
-auto world_server::established_login_connection(game_world_id world_id, connection_port port, const world_config &conf) -> void {
+auto world_server::established_login_connection(game_world_id world_id, connection_port port, const config::world &conf) -> void {
 	m_world_id = world_id;
 
 	log(log_type::server_connect, [&](out_stream &str) {
@@ -120,33 +120,33 @@ auto world_server::established_login_connection(game_world_id world_id, connecti
 	display_launch_time();
 }
 
-auto world_server::set_rates(const rates_config &rates) -> void {
+auto world_server::set_rates(const config::rates &rates) -> void {
 	m_config.rates = rates;
 	m_channels.send(packets::interserver::config::set_rates(rates));
 }
 
 auto world_server::reset_rates(int32_t flags) -> void {
-	if ((flags & rates_config::types::all) == rates_config::types::all) {
+	if ((flags & config::rate_type::all) == config::rate_type::all) {
 		set_rates(m_default_rates);
 	}
 	else {
-		rates_config new_rates = m_config.rates;
-		if ((flags & rates_config::types::mob_exp_rate) == rates_config::types::mob_exp_rate) {
+		config::rates new_rates = m_config.rates;
+		if ((flags & config::rate_type::mob_exp_rate) == config::rate_type::mob_exp_rate) {
 			new_rates.mob_exp_rate = m_default_rates.mob_exp_rate;
 		}
-		if ((flags & rates_config::types::quest_exp_rate) == rates_config::types::quest_exp_rate) {
+		if ((flags & config::rate_type::quest_exp_rate) == config::rate_type::quest_exp_rate) {
 			new_rates.quest_exp_rate = m_default_rates.quest_exp_rate;
 		}
-		if ((flags & rates_config::types::drop_rate) == rates_config::types::drop_rate) {
+		if ((flags & config::rate_type::drop_rate) == config::rate_type::drop_rate) {
 			new_rates.drop_rate = m_default_rates.drop_rate;
 		}
-		if ((flags & rates_config::types::drop_meso) == rates_config::types::drop_meso) {
+		if ((flags & config::rate_type::drop_meso) == config::rate_type::drop_meso) {
 			new_rates.drop_meso = m_default_rates.drop_meso;
 		}
-		if ((flags & rates_config::types::global_drop_rate) == rates_config::types::global_drop_rate) {
+		if ((flags & config::rate_type::global_drop_rate) == config::rate_type::global_drop_rate) {
 			new_rates.global_drop_rate = m_default_rates.global_drop_rate;
 		}
-		if ((flags & rates_config::types::global_drop_meso) == rates_config::types::global_drop_meso) {
+		if ((flags & config::rate_type::global_drop_meso) == config::rate_type::global_drop_meso) {
 			new_rates.global_drop_meso = m_default_rates.global_drop_meso;
 		}
 		set_rates(new_rates);
@@ -181,7 +181,7 @@ auto world_server::make_channel_port(game_channel_id channel_id) const -> connec
 	return m_port + channel_id + 1;
 }
 
-auto world_server::get_config() -> const world_config & {
+auto world_server::get_config() -> const config::world & {
 	return m_config;
 }
 

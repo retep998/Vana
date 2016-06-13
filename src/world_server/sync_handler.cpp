@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "sync_handler.hpp"
+#include "common/config/rates.hpp"
 #include "common/database.hpp"
 #include "common/inter_header.hpp"
 #include "common/inter_helper.hpp"
 #include "common/packet_reader.hpp"
-#include "common/rates_config.hpp"
 #include "common/session.hpp"
 #include "world_server/channel.hpp"
 #include "world_server/channels.hpp"
@@ -48,7 +48,7 @@ auto sync_handler::handle(ref_ptr<login_server_session> session, packet_reader &
 
 auto sync_handler::handle_config_sync(packet_reader &reader) -> void {
 	switch (reader.get<protocol_sync>()) {
-		case sync::config::rate_set: world_server::get_instance().set_rates(reader.get<rates_config>()); break;
+		case sync::config::rate_set: world_server::get_instance().set_rates(reader.get<config::rates>()); break;
 		case sync::config::rate_reset: world_server::get_instance().reset_rates(reader.get<int32_t>()); break;
 		case sync::config::scrolling_header: world_server::get_instance().set_scrolling_header(reader.get<string>()); break;
 		default: throw not_implemented_exception{"config_sync type"};

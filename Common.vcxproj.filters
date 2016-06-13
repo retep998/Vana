@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Configuration">
-      <UniqueIdentifier>{3ceab430-1c37-4086-9019-31cc885dd1b6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Connection">
       <UniqueIdentifier>{141f19d0-b99a-489a-8871-97bdb6db4f5c}</UniqueIdentifier>
     </Filter>
@@ -69,6 +66,9 @@
     </Filter>
     <Filter Include="data\provider">
       <UniqueIdentifier>{24377bf1-2a17-4767-b277-b3ae0195974e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="config">
+      <UniqueIdentifier>{3ceab430-1c37-4086-9019-31cc885dd1b6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -171,12 +171,6 @@
     <ClCompile Include="src\common\hash_utilities.cpp">
       <Filter>Encryption</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\salt_transformation_config.cpp">
-      <Filter>Configuration</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\password_transformation_config.cpp">
-      <Filter>Configuration</Filter>
-    </ClCompile>
     <ClCompile Include="src\common\point.cpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClCompile>
@@ -278,6 +272,12 @@
     </ClCompile>
     <ClCompile Include="src\common\lua\config_file.cpp">
       <Filter>lua</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\config\password_transformation.cpp">
+      <Filter>config</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\config\salt_transformation.cpp">
+      <Filter>config</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -468,39 +468,6 @@
     <ClInclude Include="src\common\salt_policy.hpp">
       <Filter>Encryption</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\world_config.hpp">
-      <Filter>Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\log_config.hpp">
-      <Filter>Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\db_config.hpp">
-      <Filter>Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\inter_server_config.hpp">
-      <Filter>Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\rates_config.hpp">
-      <Filter>Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\major_boss_config.hpp">
-      <Filter>Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\salt_config.hpp">
-      <Filter>Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\salting_config.hpp">
-      <Filter>Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\salt_transformation_config.hpp">
-      <Filter>Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\password_transformation_config.hpp">
-      <Filter>Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\salt_size_config.hpp">
-      <Filter>Configuration</Filter>
-    </ClInclude>
     <ClInclude Include="src\common\salt_size_policy.hpp">
       <Filter>Encryption</Filter>
     </ClInclude>
@@ -591,9 +558,6 @@
     </ClInclude>
     <ClInclude Include="src\common\connection_listener_config.hpp">
       <Filter>Connection</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\ping_config.hpp">
-      <Filter>Configuration</Filter>
     </ClInclude>
     <ClInclude Include="src\common\packet_transformer.hpp">
       <Filter>Encryption</Filter>
@@ -909,6 +873,42 @@
     </ClInclude>
     <ClInclude Include="src\common\lua\config_file.hpp">
       <Filter>lua</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\config\database.hpp">
+      <Filter>config</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\config\inter_server.hpp">
+      <Filter>config</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\config\log.hpp">
+      <Filter>config</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\config\major_boss.hpp">
+      <Filter>config</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\config\password_transformation.hpp">
+      <Filter>config</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\config\ping.hpp">
+      <Filter>config</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\config\rates.hpp">
+      <Filter>config</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\config\salt.hpp">
+      <Filter>config</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\config\salt_size.hpp">
+      <Filter>config</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\config\salt_transformation.hpp">
+      <Filter>config</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\config\salting.hpp">
+      <Filter>config</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\config\world.hpp">
+      <Filter>config</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

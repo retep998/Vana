@@ -24,11 +24,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace vana {
 	namespace soci = ::soci;
-	struct db_config;
+	namespace config {
+		struct database;
+	}
 
 	class database {
 	public:
-		database(const db_config &conf, bool include_database);
+		database(const config::database &conf, bool include_database);
 
 		static auto get_char_db() -> database &;
 		static auto get_data_db() -> database &;
@@ -51,7 +53,7 @@ namespace vana {
 
 		static auto connect_char_db() -> void;
 		static auto connect_data_db() -> void;
-		static auto build_connection_string(const db_config &conf, bool include_database) -> string;
+		static auto build_connection_string(const config::database &conf, bool include_database) -> string;
 
 		static thread_local owned_ptr<database> m_chardb;
 		static thread_local owned_ptr<database> m_datadb;

@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "world_server_session_handler.hpp"
+#include "common/config/world.hpp"
 #include "common/data/provider/beauty.hpp"
 #include "common/data/provider/drop.hpp"
 #include "common/data/provider/item.hpp"
@@ -29,7 +30,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
 #include "common/session.hpp"
-#include "common/world_config.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/map_data_provider.hpp"
 #include "channel_server/player.hpp"
@@ -47,7 +47,7 @@ auto world_server_session_handler::connect(ref_ptr<world_server_session> session
 	game_channel_id channel = reader.get<game_channel_id>();
 	if (channel != -1) {
 		connection_port port = reader.get<connection_port>();
-		world_config conf = reader.get<world_config>();
+		config::world conf = reader.get<config::world>();
 		channel_server::get_instance().established_world_connection(channel, port, conf);
 	}
 	else {

@@ -17,27 +17,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "common/config/password_transformation.hpp"
+#include "common/config/salt_transformation.hpp"
 #include "common/lua/config_file.hpp"
 #include "common/lua/lua_variant.hpp"
-#include "common/password_transformation_config.hpp"
 #include "common/salt_size_policy.hpp"
-#include "common/salt_transformation_config.hpp"
 #include "common/types.hpp"
 #include <string>
 #include <vector>
 
 namespace vana {
-	struct salt_size_config {
-		salt_size_policy policy = salt_size_policy::fixed;
-		int32_t size = 10;
-		int32_t min = -1;
-		int32_t max = -1;
-	};
+	namespace config {
+		struct salt_size {
+			salt_size_policy policy = salt_size_policy::fixed;
+			int32_t size = 10;
+			int32_t min = -1;
+			int32_t max = -1;
+		};
+	}
 
 	template <>
-	struct lua::lua_variant_into<salt_size_config> {
-		auto transform(lua_environment &config, const lua_variant &src, const string &prefix) -> salt_size_config {
-			salt_size_config ret;
+	struct lua::lua_variant_into<config::salt_size> {
+		auto transform(lua_environment &config, const lua_variant &src, const string &prefix) -> config::salt_size {
+			config::salt_size ret;
 
 			if (!src.is_any_of({ lua_type::number, lua_type::table })) {
 				config.error(prefix + " must be a valid Lua number or a table");

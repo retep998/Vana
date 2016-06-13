@@ -28,7 +28,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace vana {
 	class packet_builder;
 	class packet_reader;
-	struct rates_config;
+	namespace config {
+		struct rates;
+	}
 
 	namespace world_server {
 		namespace packets {
@@ -36,7 +38,7 @@ namespace vana {
 				PACKET(send_sync_data, function<void(packet_builder &)> build_sync_data);
 
 				namespace config {
-					PACKET(set_rates, const rates_config &rates);
+					PACKET(set_rates, const vana::config::rates &rates);
 					PACKET(scrolling_header, const string &message);
 				}
 				namespace party {

@@ -195,7 +195,7 @@ auto channel_server::on_disconnect_from_world() -> void {
 	}
 }
 
-auto channel_server::established_world_connection(game_channel_id channel_id, connection_port port, const world_config &config) -> void {
+auto channel_server::established_world_connection(game_channel_id channel_id, connection_port port, const config::world &config) -> void {
 	m_channel_id = channel_id;
 
 	log(log_type::server_connect, [&](out_stream &str) {
@@ -209,7 +209,7 @@ auto channel_server::established_world_connection(game_channel_id channel_id, co
 	display_launch_time();
 }
 
-auto channel_server::get_config() const -> const world_config & {
+auto channel_server::get_config() const -> const config::world & {
 	return m_config;
 }
 
@@ -329,21 +329,21 @@ auto channel_server::set_scrolling_header(const string &message) -> void {
 }
 
 auto channel_server::modify_rate(int32_t rate_type, int32_t new_value) -> void {
-	rates_config current_rates = m_config.rates;
-	if (rate_type & rates_config::types::mob_exp_rate) current_rates.mob_exp_rate = new_value;
-	if (rate_type & rates_config::types::quest_exp_rate) current_rates.quest_exp_rate = new_value;
-	if (rate_type & rates_config::types::drop_rate) current_rates.drop_rate = new_value;
-	if (rate_type & rates_config::types::drop_meso) current_rates.drop_meso = new_value;
-	if (rate_type & rates_config::types::global_drop_rate) current_rates.global_drop_rate = new_value;
-	if (rate_type & rates_config::types::global_drop_meso) current_rates.global_drop_meso = new_value;
+	config::rates current_rates = m_config.rates;
+	if (rate_type & config::rate_type::mob_exp_rate) current_rates.mob_exp_rate = new_value;
+	if (rate_type & config::rate_type::quest_exp_rate) current_rates.quest_exp_rate = new_value;
+	if (rate_type & config::rate_type::drop_rate) current_rates.drop_rate = new_value;
+	if (rate_type & config::rate_type::drop_meso) current_rates.drop_meso = new_value;
+	if (rate_type & config::rate_type::global_drop_rate) current_rates.global_drop_rate = new_value;
+	if (rate_type & config::rate_type::global_drop_meso) current_rates.global_drop_meso = new_value;
 	send_world(packets::interserver::config::modify_rates(current_rates));
 }
 
-auto channel_server::set_rates(const rates_config &rates) -> void {
+auto channel_server::set_rates(const config::rates &rates) -> void {
 	m_config.rates = rates;
 }
 
-auto channel_server::set_config(const world_config &config) -> void {
+auto channel_server::set_config(const config::world &config) -> void {
 	set_scrolling_header(config.scrolling_header);
 	if (config.map_unload_time != m_config.map_unload_time) {
 		map::set_map_unload_time(config.map_unload_time);

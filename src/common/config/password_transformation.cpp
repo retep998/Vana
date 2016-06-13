@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "password_transformation_config.hpp"
+#include "password_transformation.hpp"
 #include "common/salt_leftover_policy.hpp"
 #include "common/types.hpp"
 #include <cstdlib>
@@ -23,14 +23,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 namespace vana {
+namespace config {
 
-password_transformation_config::password_transformation_config(salt_policy policy, vector<lua::lua_variant> args) :
+password_transformation::password_transformation(salt_policy policy, vector<lua::lua_variant> args) :
 	m_policy{policy},
 	m_args{args}
 {
 }
 
-auto password_transformation_config::validate_args(salt_policy policy, const vector<lua::lua_variant> &args) -> validity_result {
+auto password_transformation::validate_args(salt_policy policy, const vector<lua::lua_variant> &args) -> validity_result {
 	switch (policy) {
 		case salt_policy::append:
 		case salt_policy::prepend: {
@@ -62,7 +63,7 @@ auto password_transformation_config::validate_args(salt_policy policy, const vec
 	return validity_result::valid;
 }
 
-auto password_transformation_config::apply(string input, string salt) const -> string {
+auto password_transformation::apply(string input, string salt) const -> string {
 	string ret;
 	switch (m_policy) {
 		case salt_policy::append:
@@ -164,4 +165,5 @@ auto password_transformation_config::apply(string input, string salt) const -> s
 	return ret;
 }
 
+}
 }

@@ -16,13 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "login_server.hpp"
+#include "common/config/major_boss.hpp"
+#include "common/config/rates.hpp"
+#include "common/config/salting.hpp"
 #include "common/connection_listener_config.hpp"
 #include "common/connection_manager.hpp"
 #include "common/initialize_common.hpp"
-#include "common/major_boss_config.hpp"
 #include "common/maple_version.hpp"
-#include "common/rates_config.hpp"
-#include "common/salting_config.hpp"
 #include "common/server_type.hpp"
 #include "login_server/login_server_accept_packet.hpp"
 #include "login_server/ranking_calculator.hpp"
@@ -108,7 +108,7 @@ auto login_server::load_config() -> result {
 	auto salting = lua::config_file::get_salting_config();
 	salting->run();
 
-	auto salting_conf = salting->get<salting_config>("");
+	auto salting_conf = salting->get<config::salting>("");
 	m_account_salting_policy = salting_conf.account;
 	m_account_salt_size = salting_conf.account_salt_size;
 
@@ -166,11 +166,11 @@ auto login_server::get_worlds() -> worlds & {
 	return m_worlds;
 }
 
-auto login_server::get_character_account_salt_size() const -> const salt_size_config & {
+auto login_server::get_character_account_salt_size() const -> const config::salt_size & {
 	return m_account_salt_size;
 }
 
-auto login_server::get_character_account_salting_policy() const -> const salt_config & {
+auto login_server::get_character_account_salting_policy() const -> const config::salt & {
 	return m_account_salting_policy;
 }
 
@@ -185,7 +185,7 @@ auto login_server::load_worlds() -> void {
 
 	auto &map = worlds_config.as<ord_map<int32_t, lua::lua_variant>>();
 	for (const auto &world_conf : map) {
-		auto current_config = world_conf.second.into<world_config>(*config, "worlds." + std::to_string(world_conf.first));
+		auto current_config = world_conf.second.into<config::world>(*config, "worlds." + std::to_string(world_conf.first));
 
 		world *world_value = m_worlds.get_world(current_config.id);
 		bool added = (world_value == nullptr);

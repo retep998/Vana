@@ -27,8 +27,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 namespace vana {
-	struct rates_config {
-		struct types {
+	namespace config {
+		struct rates {
+			static const int32_t consistent_rate_between_global_and_regular = -1;
+
+			int32_t mob_exp_rate = 1;
+			int32_t quest_exp_rate = 1;
+			int32_t drop_meso = 1;
+			int32_t drop_rate = 1;
+			int32_t global_drop_rate = consistent_rate_between_global_and_regular;
+			int32_t global_drop_meso = consistent_rate_between_global_and_regular;
+
+			auto is_global_drop_consistent_with_regular_drop_rate() const -> bool {
+				return global_drop_rate == consistent_rate_between_global_and_regular;
+			}
+
+			auto is_global_drop_meso_consistent_with_regular_drop_meso_rate() const -> bool {
+				return global_drop_meso == consistent_rate_between_global_and_regular;
+			}
+		};
+
+		struct rate_type {
 			static const int32_t mob_exp_rate = 0x01;
 			static const int32_t quest_exp_rate = 0x02;
 			static const int32_t drop_meso = 0x04;
@@ -48,31 +67,14 @@ namespace vana {
 				global_drop_rate |
 				global_drop_meso;
 		};
-
-		static const int32_t consistent_rate_between_global_and_regular = -1;
-
-		int32_t mob_exp_rate = 1;
-		int32_t quest_exp_rate = 1;
-		int32_t drop_meso = 1;
-		int32_t drop_rate = 1;
-		int32_t global_drop_rate = consistent_rate_between_global_and_regular;
-		int32_t global_drop_meso = consistent_rate_between_global_and_regular;
-
-		auto is_global_drop_consistent_with_regular_drop_rate() const -> bool {
-			return global_drop_rate == consistent_rate_between_global_and_regular;
-		}
-
-		auto is_global_drop_meso_consistent_with_regular_drop_meso_rate() const -> bool {
-			return global_drop_meso == consistent_rate_between_global_and_regular;
-		}
-	};
+	}
 
 	template <>
-	struct lua::lua_variant_into<rates_config> {
-		auto transform(lua_environment &config, const lua_variant &obj, const string &prefix) -> rates_config {
+	struct lua::lua_variant_into<config::rates> {
+		auto transform(lua_environment &config, const lua_variant &obj, const string &prefix) -> config::rates {
 			config.validate_object(lua_type::table, obj, prefix);
 		
-			rates_config ret;
+			config::rates ret;
 
 			auto &values = obj.as<hash_map<lua_variant, lua_variant>>();
 			for (const auto &value : values) {
@@ -110,9 +112,9 @@ namespace vana {
 	};
 
 	template <>
-	struct packet_serialize<rates_config> {
-		auto read(packet_reader &reader) -> rates_config {
-			rates_config ret;
+	struct packet_serialize<config::rates> {
+		auto read(packet_reader &reader) -> config::rates {
+			config::rates ret;
 			ret.mob_exp_rate = reader.get<int32_t>();
 			ret.quest_exp_rate = reader.get<int32_t>();
 			ret.drop_rate = reader.get<int32_t>();
@@ -121,7 +123,7 @@ namespace vana {
 			ret.global_drop_meso = reader.get<int32_t>();
 			return ret;
 		}
-		auto write(packet_builder &builder, const rates_config &obj) -> void {
+		auto write(packet_builder &builder, const config::rates &obj) -> void {
 			builder.add<int32_t>(obj.mob_exp_rate);
 			builder.add<int32_t>(obj.quest_exp_rate);
 			builder.add<int32_t>(obj.drop_rate);

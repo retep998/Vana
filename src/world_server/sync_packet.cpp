@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "sync_packet.hpp"
+#include "common/config/rates.hpp"
 #include "common/constant/map.hpp"
 #include "common/inter_header.hpp"
 #include "common/inter_helper.hpp"
 #include "common/packet_reader.hpp"
-#include "common/rates_config.hpp"
 #include "common/session.hpp"
 #include "common/time_utilities.hpp"
 #include "world_server/channel.hpp"
@@ -52,13 +52,13 @@ PACKET_IMPL(config::scrolling_header, const string &message) {
 	return builder;
 }
 
-PACKET_IMPL(config::set_rates, const rates_config &rates) {
+PACKET_IMPL(config::set_rates, const vana::config::rates &rates) {
 	packet_builder builder;
 	builder
 		.add<packet_header>(IMSG_SYNC)
 		.add<protocol_sync>(sync::sync_types::config)
 		.add<protocol_sync>(sync::config::rate_set)
-		.add<rates_config>(rates);
+		.add<vana::config::rates>(rates);
 	return builder;
 }
 

@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "common/decoder.hpp"
+#include "common/config/ping.hpp"
 #include "common/connection_type.hpp"
 #include "common/ip.hpp"
 #include "common/packet_transformer.hpp"
-#include "common/ping_config.hpp"
 #include "common/shared_array.hpp"
 #include "common/timer/container_holder.hpp"
 #include "common/types.hpp"
@@ -66,7 +66,7 @@ namespace vana {
 		auto get_socket() -> asio::ip::tcp::socket &;
 		auto get_codec() -> packet_transformer &;
 		auto get_buffer() -> utilities::misc::shared_array<unsigned char> &;
-		auto start(const ping_config &ping, ref_ptr<packet_transformer> transformer) -> void;
+		auto start(const config::ping &ping, ref_ptr<packet_transformer> transformer) -> void;
 		auto send(const unsigned char *buf, int32_t len, bool encrypt = true) -> void;
 		auto ping() -> void;
 		auto base_handle_request(packet_reader &reader) -> void;

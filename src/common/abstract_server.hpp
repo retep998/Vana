@@ -17,13 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "common/config/inter_server.hpp"
+#include "common/config/log.hpp"
+#include "common/config/salt.hpp"
 #include "common/connection_manager.hpp"
 #include "common/external_ip.hpp"
-#include "common/inter_server_config.hpp"
 #include "common/ip.hpp"
-#include "common/log_config.hpp"
 #include "common/logger.hpp"
-#include "common/salt_config.hpp"
 #include "common/types.hpp"
 #include <memory>
 #include <string>
@@ -31,8 +31,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace vana {
 	class session;
-	struct log_config;
-
 	class abstract_server {
 	public:
 		virtual ~abstract_server() = default;
@@ -45,7 +43,7 @@ namespace vana {
 		auto log(log_type type, const char *message) -> void;
 		auto get_server_type() const -> server_type;
 		auto get_inter_password() const -> string;
-		auto get_interserver_salting_policy() const -> const salt_config &;
+		auto get_interserver_salting_policy() const -> const config::salt &;
 	protected:
 		abstract_server(server_type type);
 		virtual auto load_config() -> result;
@@ -54,22 +52,22 @@ namespace vana {
 		virtual auto make_log_identifier() const -> opt_string = 0;
 		virtual auto get_log_prefix() const -> string = 0;
 
-		auto get_inter_server_config() const -> const inter_server_config &;
+		auto get_inter_server_config() const -> const config::inter_server &;
 		auto send_auth(ref_ptr<session> session) const -> void;
 		auto display_launch_time() const -> void;
 		auto build_log_identifier(function<void(out_stream &)> produce_id) const -> opt_string;
 		auto get_connection_manager() -> connection_manager & { return m_connection_manager; }
 	private:
 		auto load_log_config() -> void;
-		auto create_logger(const log_config &conf) -> void;
+		auto create_logger(const config::log &conf) -> void;
 
 		server_type m_server_type = server_type::none;
 		time_point m_start_time;
 		string m_inter_password;
 		string m_salt;
 		owned_ptr<base_logger> m_logger;
-		inter_server_config m_inter_server_config;
-		salt_config m_salting_policy;
+		config::inter_server m_inter_server_config;
+		config::salt m_salting_policy;
 		ip_matrix m_external_ips;
 		connection_manager m_connection_manager;
 	};

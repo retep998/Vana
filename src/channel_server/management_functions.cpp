@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "management_functions.hpp"
+#include "common/config/rates.hpp"
 #include "common/data/provider/item.hpp"
 #include "common/database.hpp"
 #include "common/exit_codes.hpp"
-#include "common/rates_config.hpp"
 #include "common/string_utilities.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/inventory.hpp"
@@ -775,16 +775,16 @@ auto management_functions::rates(ref_ptr<player> player, const game_chat &args) 
 		else if (type == "reset") {
 			if (classification.empty()) {
 				chat_handler_functions::show_info(player, "Sent request to reset all rates");
-				channel_server::get_instance().send_world(packets::interserver::config::reset_rates(rates_config::types::all));
+				channel_server::get_instance().send_world(packets::interserver::config::reset_rates(config::rate_type::all));
 			}
 			else {
 				int32_t rate_type = 0;
-				if (classification == "mobexp") rate_type = rates_config::types::mob_exp_rate;
-				else if (classification == "drop") rate_type = rates_config::types::drop_rate;
-				else if (classification == "dropmeso") rate_type = rates_config::types::drop_meso;
-				else if (classification == "questexp") rate_type = rates_config::types::quest_exp_rate;
-				else if (classification == "globaldrop") rate_type = rates_config::types::global_drop_rate;
-				else if (classification == "globaldropmeso") rate_type = rates_config::types::global_drop_meso;
+				if (classification == "mobexp") rate_type = config::rate_type::mob_exp_rate;
+				else if (classification == "drop") rate_type = config::rate_type::drop_rate;
+				else if (classification == "dropmeso") rate_type = config::rate_type::drop_meso;
+				else if (classification == "questexp") rate_type = config::rate_type::quest_exp_rate;
+				else if (classification == "globaldrop") rate_type = config::rate_type::global_drop_rate;
+				else if (classification == "globaldropmeso") rate_type = config::rate_type::global_drop_meso;
 				chat_handler_functions::show_info(player, "Sent request to reset specified rate");
 				channel_server::get_instance().send_world(packets::interserver::config::reset_rates(rate_type));
 			}
@@ -795,15 +795,15 @@ auto management_functions::rates(ref_ptr<player> player, const game_chat &args) 
 			}
 
 			int32_t rate_type = 0;
-			if (classification == "mobexp") rate_type = rates_config::types::mob_exp_rate;
-			else if (classification == "drop") rate_type = rates_config::types::drop_rate;
-			else if (classification == "dropmeso") rate_type = rates_config::types::drop_meso;
-			else if (classification == "questexp") rate_type = rates_config::types::quest_exp_rate;
-			else if (classification == "globaldrop") rate_type = rates_config::types::global_drop_rate;
-			else if (classification == "globaldropmeso") rate_type = rates_config::types::global_drop_meso;
+			if (classification == "mobexp") rate_type = config::rate_type::mob_exp_rate;
+			else if (classification == "drop") rate_type = config::rate_type::drop_rate;
+			else if (classification == "dropmeso") rate_type = config::rate_type::drop_meso;
+			else if (classification == "questexp") rate_type = config::rate_type::quest_exp_rate;
+			else if (classification == "globaldrop") rate_type = config::rate_type::global_drop_rate;
+			else if (classification == "globaldropmeso") rate_type = config::rate_type::global_drop_meso;
 			int32_t new_amount = value.empty() ?
-				((rate_type & rates_config::types::global) != 0 ?
-					rates_config::consistent_rate_between_global_and_regular :
+				((rate_type & config::rate_type::global) != 0 ?
+					config::rates::consistent_rate_between_global_and_regular :
 					1) :
 				atoi(value.c_str());
 

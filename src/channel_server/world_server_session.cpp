@@ -16,12 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "world_server_session.hpp"
+#include "common/config/world.hpp"
 #include "common/exit_codes.hpp"
 #include "common/inter_header.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
 #include "common/server_type.hpp"
-#include "common/world_config.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/party_handler.hpp"
 #include "channel_server/player_data_provider.hpp"
@@ -48,7 +48,7 @@ auto world_server_session::handle(packet_reader &reader) -> result {
 		}
 		case IMSG_TO_ALL_PLAYERS: channel_server::get_instance().get_player_data_provider().send(vana::packets::identity(reader)); break;
 		case IMSG_REFRESH_DATA: world_server_session_handler::reload_mcdb(reader); break;
-		case IMSG_REHASH_CONFIG: channel_server::get_instance().set_config(reader.get<world_config>()); break;
+		case IMSG_REHASH_CONFIG: channel_server::get_instance().set_config(reader.get<config::world>()); break;
 		case IMSG_SYNC: sync_handler::handle(reader); break;
 		default: return result::failure;
 	}

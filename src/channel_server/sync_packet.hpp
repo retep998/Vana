@@ -25,7 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 namespace vana {
-	struct rates_config;
+	namespace config {
+		struct rates;
+	}
 
 	namespace channel_server {
 		class player;
@@ -35,7 +37,7 @@ namespace vana {
 				namespace config {
 					PACKET(scrolling_header, const string &message);
 					PACKET(reset_rates, int32_t flags);
-					PACKET(modify_rates, const rates_config &rates);
+					PACKET(modify_rates, const vana::config::rates &rates);
 				}
 				namespace player {
 					PACKET(change_channel, ref_ptr<vana::channel_server::player> info, game_channel_id channel);

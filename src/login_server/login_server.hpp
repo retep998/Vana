@@ -18,12 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "common/abstract_server.hpp"
+#include "common/config/salt.hpp"
+#include "common/config/salt_size.hpp"
 #include "common/data/provider/curse.hpp"
 #include "common/data/provider/equip.hpp"
 #include "common/data/provider/valid_char.hpp"
 #include "common/finalization_pool.hpp"
-#include "common/salt_config.hpp"
-#include "common/salt_size_config.hpp"
 #include "common/types.hpp"
 #include "login_server/login_server_accepted_session.hpp"
 #include "login_server/worlds.hpp"
@@ -40,8 +40,8 @@ namespace vana {
 			auto get_equip_data_provider() const -> const data::provider::equip &;
 			auto get_curse_data_provider() const -> const data::provider::curse &;
 			auto get_worlds() -> worlds &;
-			auto get_character_account_salt_size() const -> const salt_size_config &;
-			auto get_character_account_salting_policy() const -> const salt_config &;
+			auto get_character_account_salt_size() const -> const config::salt_size &;
+			auto get_character_account_salting_policy() const -> const config::salt &;
 			auto finalize_user(ref_ptr<user> user_value) -> void;
 			auto finalize_server_session(ref_ptr<login_server_accepted_session> session) -> void;
 		protected:
@@ -56,8 +56,8 @@ namespace vana {
 			bool m_pin_enabled = false;
 			connection_port m_port = 0;
 			int32_t m_max_invalid_logins = 0;
-			salt_size_config m_account_salt_size;
-			salt_config m_account_salting_policy;
+			config::salt_size m_account_salt_size;
+			config::salt m_account_salting_policy;
 			data::provider::valid_char m_valid_char_data_provider;
 			data::provider::equip m_equip_data_provider;
 			data::provider::curse m_curse_data_provider;

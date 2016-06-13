@@ -34,14 +34,16 @@ namespace vana {
 	class connection_listener;
 	class packet_handler;
 	struct connection_listener_config;
-	struct ping_config;
+	namespace config {
+		struct ping;
+	}
 
 	class connection_manager {
 	public:
 		connection_manager(abstract_server *server);
 		~connection_manager();
 		auto listen(const connection_listener_config &listener, handler_creator handler_creator) -> void;
-		auto connect(const ip &destination, connection_port port, const ping_config &ping, server_type source_type, handler_creator handler_creator) -> pair<result, ref_ptr<session>>;
+		auto connect(const ip &destination, connection_port port, const config::ping &ping, server_type source_type, handler_creator handler_creator) -> pair<result, ref_ptr<session>>;
 		auto run() -> void;
 		auto stop() -> void;
 		auto stop(ref_ptr<session> session) -> void;

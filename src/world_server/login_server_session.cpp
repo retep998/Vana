@@ -32,7 +32,7 @@ namespace world_server {
 auto login_server_session::handle(packet_reader &reader) -> result {
 	switch (reader.get<packet_header>()) {
 		case IMSG_WORLD_CONNECT: login_server_connect_handler::connect(shared_from_this(), reader); break;
-		case IMSG_REHASH_CONFIG: world_server::get_instance().rehash_config(reader.get<world_config>()); break;
+		case IMSG_REHASH_CONFIG: world_server::get_instance().rehash_config(reader.get<config::world>()); break;
 		case IMSG_TO_CHANNEL: {
 			game_channel_id channel_id = reader.get<game_channel_id>();
 			world_server::get_instance().get_channels().send(channel_id, packets::identity(reader));

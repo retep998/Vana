@@ -22,19 +22,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 namespace vana {
-	struct db_config {
-		connection_port port = 0;
-		string database;
-		string table_prefix;
-		string host;
-		string username;
-		string password;
-	};
+	namespace config {
+		struct database {
+			connection_port port = 0;
+			string db;
+			string table_prefix;
+			string host;
+			string username;
+			string password;
+		};
+	}
 
 	template <>
-	struct lua::lua_serialize<db_config> {
-		auto read(lua_environment &config, const string &prefix) -> db_config {
-			db_config ret;
+	struct lua::lua_serialize<config::database> {
+		auto read(lua_environment &config, const string &prefix) -> config::database {
+			config::database ret;
 
 			lua_variant obj = config.get<lua_variant>(prefix);
 			config.validate_object(lua_type::table, obj, prefix);
@@ -51,7 +53,7 @@ namespace vana {
 				if (key == "database") {
 					has_db = true;
 					config.validate_value(lua_type::string, kvp.second, key, prefix);
-					ret.database = kvp.second.as<string>();
+					ret.db = kvp.second.as<string>();
 				}
 				else if (key == "host") {
 					has_host = true;

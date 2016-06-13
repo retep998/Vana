@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "login_server_connect_handler.hpp"
+#include "common/config/world.hpp"
 #include "common/exit_codes.hpp"
 #include "common/packet_reader.hpp"
-#include "common/world_config.hpp"
 #include "world_server/channels.hpp"
 #include "world_server/login_server_session.hpp"
 #include "world_server/player_data_provider.hpp"
@@ -33,7 +33,7 @@ auto login_server_connect_handler::connect(ref_ptr<login_server_session> session
 	game_world_id world_id = reader.get<game_world_id>();
 	if (world_id != -1) {
 		connection_port port = reader.get<connection_port>();
-		world_config conf = reader.get<world_config>();
+		config::world conf = reader.get<config::world>();
 		world_server::get_instance().established_login_connection(world_id, port, conf);
 	}
 	else {

@@ -17,26 +17,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "common/config/salt.hpp"
+#include "common/config/salt_size.hpp"
+#include "common/config/salt_transformation.hpp"
 #include "common/lua/config_file.hpp"
-#include "common/salt_config.hpp"
 #include "common/salt_policy.hpp"
-#include "common/salt_size_config.hpp"
-#include "common/salt_transformation_config.hpp"
 #include "common/types.hpp"
 #include <string>
 #include <vector>
 
 namespace vana {
-	struct salting_config {
-		salt_size_config account_salt_size;
-		salt_config account;
-		salt_config interserver;	
-	};
+	namespace config {
+		struct salting {
+			salt_size account_salt_size;
+			salt account;
+			salt interserver;	
+		};
+	}
 
 	template <>
-	struct lua::lua_serialize<salting_config> {
-		auto read(lua_environment &config, const string &prefix) -> salting_config {
-			salting_config ret;
+	struct lua::lua_serialize<config::salting> {
+		auto read(lua_environment &config, const string &prefix) -> config::salting {
+			config::salting ret;
 
 			lua_variant account = config.get<lua_variant>("account");
 			config.validate_object(lua_type::table, account, "account");
@@ -49,14 +51,14 @@ namespace vana {
 				string key = kvp.first.as<string>();
 				if (key == "salt_size") {
 					has_salt_size = true;
-					ret.account_salt_size = kvp.second.into<salt_size_config>(config, prefix + "." + key);
+					ret.account_salt_size = kvp.second.into<config::salt_size>(config, prefix + "." + key);
 				}
 			}
 
 			config.required(has_salt_size, "salt_size", "account");
 
-			ret.account = config.get<salt_config>("account");
-			ret.interserver = config.get<salt_config>("interserver");
+			ret.account = config.get<config::salt>("account");
+			ret.interserver = config.get<config::salt>("interserver");
 
 			return ret;
 		}

@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "database.hpp"
-#include "common/db_config.hpp"
+#include "common/config/database.hpp"
 #include "common/lua/config_file.hpp"
 #include <soci-mysql.h>
 
@@ -30,22 +30,22 @@ auto database::init_char_db() -> database & {
 
 	auto config = lua::config_file::get_database_config();
 	config->run();
-	db_config conf = config->get<db_config>("chardb");
+	config::database conf = config->get<config::database>("chardb");
 	m_chardb = make_owned_ptr<database>(conf, false);
 	auto &sql = m_chardb->get_session();
 
-	if (!schema_exists(sql, conf.database)) {
-		sql.once << "CREATE DATABASE " << conf.database;
+	if (!schema_exists(sql, conf.db)) {
+		sql.once << "CREATE DATABASE " << conf.db;
 	}
 
 	m_chardb.release();
 	return get_char_db();
 }
 
-database::database(const db_config &conf, bool include_database) {
+database::database(const config::database &conf, bool include_database) {
 	m_session = make_owned_ptr<soci::session>(soci::mysql, build_connection_string(conf, include_database));
 	m_session->reconnect();
-	m_schema = conf.database;
+	m_schema = conf.db;
 	m_table_prefix = conf.table_prefix;
 }
 
@@ -97,22 +97,22 @@ auto database::table_exists(soci::session &sql, const string &schema, const stri
 auto database::connect_char_db() -> void {
 	auto config = lua::config_file::get_database_config();
 	config->run();
-	db_config conf = config->get<db_config>("chardb");
+	config::database conf = config->get<config::database>("chardb");
 	m_chardb = make_owned_ptr<database>(conf, true);
 }
 
 auto database::connect_data_db() -> void {
 	auto config = lua::config_file::get_database_config();
 	config->run();
-	db_config conf = config->get<db_config>("datadb");
+	config::database conf = config->get<config::database>("datadb");
 	m_datadb = make_owned_ptr<database>(conf, true);
 }
 
-auto database::build_connection_string(const db_config &conf, bool include_database) -> string {
+auto database::build_connection_string(const config::database &conf, bool include_database) -> string {
 	out_stream str;
 
 	if (include_database) {
-		str << "dbname=" << conf.database << " ";
+		str << "dbname=" << conf.db << " ";
 	}
 
 	str

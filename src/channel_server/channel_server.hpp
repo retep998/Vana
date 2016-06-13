@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "common/abstract_server.hpp"
+#include "common/config/world.hpp"
 #include "common/data/provider/beauty.hpp"
 #include "common/data/provider/buff.hpp"
 #include "common/data/provider/curse.hpp"
@@ -35,7 +36,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/finalization_pool.hpp"
 #include "common/ip.hpp"
 #include "common/types.hpp"
-#include "common/world_config.hpp"
 #include "channel_server/event_data_provider.hpp"
 #include "channel_server/instances.hpp"
 #include "channel_server/login_server_session.hpp"
@@ -49,7 +49,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace vana {
 	class packet_builder;
-	struct rates_config;
+	namespace config {
+		struct rates;
+	}
 
 	namespace channel_server {
 		class map;
@@ -59,14 +61,14 @@ namespace vana {
 		public:
 			auto shutdown() -> void override;
 			auto connect_to_world(game_world_id world_id, connection_port port, const ip &ip) -> result;
-			auto established_world_connection(game_channel_id channel_id, connection_port port, const world_config &config) -> void;
+			auto established_world_connection(game_channel_id channel_id, connection_port port, const config::world &config) -> void;
 
 			// TODO FIXME api
 			// Eyeball these for potential refactoring - they involve world<->channel operations and I don't want to dig into that now
 			auto set_scrolling_header(const string &message) -> void;
 			auto modify_rate(int32_t rate_type, int32_t new_value) -> void;
-			auto set_config(const world_config &config) -> void;
-			auto set_rates(const rates_config &rates) -> void;
+			auto set_config(const config::world &config) -> void;
+			auto set_rates(const config::rates &rates) -> void;
 
 			auto reload_data(const string &args) -> void;
 
@@ -98,7 +100,7 @@ namespace vana {
 			auto get_world_id() const -> game_world_id;
 			auto get_channel_id() const -> game_channel_id;
 			auto get_online_id() const -> int32_t;
-			auto get_config() const -> const world_config &;
+			auto get_config() const -> const config::world &;
 			auto send_world(const packet_builder &builder) -> void;
 			auto on_connect_to_login(ref_ptr<login_server_session> session) -> void;
 			auto on_disconnect_from_login() -> void;
@@ -116,7 +118,7 @@ namespace vana {
 			connection_port m_world_port = 0;
 			connection_port m_port = 0;
 			ip m_world_ip;
-			world_config m_config;
+			config::world m_config;
 			ref_ptr<world_server_session> m_world_connection;
 			ref_ptr<login_server_session> m_login_connection;
 			finalization_pool<player> m_session_pool;

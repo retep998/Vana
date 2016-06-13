@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "hash_utilities.hpp"
-#include "common/salt_config.hpp"
-#include "common/salt_size_config.hpp"
+#include "common/config/salt.hpp"
+#include "common/config/salt_size.hpp"
 #include <botan/filters.h>
 #include <botan/pipe.h>
 
@@ -34,11 +34,11 @@ auto hash_password(const string &password) -> string {
 	return pipe.read_all_as_string();
 }
 
-auto hash_password(const string &password, const string &raw_salt, const salt_config &conf) -> string {
+auto hash_password(const string &password, const string &raw_salt, const config::salt &conf) -> string {
 	return hash_password(salt_password(password, raw_salt, conf));
 }
 
-auto salt_password(const string &password, const string &raw_salt, const salt_config &conf) -> string {
+auto salt_password(const string &password, const string &raw_salt, const config::salt &conf) -> string {
 	string finalized_salt = raw_salt;
 	for (const auto &policy : conf.modify_policies) {
 		finalized_salt = policy.apply(finalized_salt);
@@ -47,7 +47,7 @@ auto salt_password(const string &password, const string &raw_salt, const salt_co
 	return conf.policy.apply(password, finalized_salt);
 }
 
-auto generate_salt(const salt_size_config &conf) -> string {
+auto generate_salt(const config::salt_size &conf) -> string {
 	int32_t length = 0;
 	switch (conf.policy) {
 		case salt_size_policy::fixed:

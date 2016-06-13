@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "sync_packet.hpp"
+#include "common/config/rates.hpp"
 #include "common/inter_header.hpp"
 #include "common/inter_helper.hpp"
-#include "common/rates_config.hpp"
 #include "common/session.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/party.hpp"
@@ -49,13 +49,13 @@ PACKET_IMPL(config::reset_rates, int32_t flags) {
 	return builder;
 }
 
-PACKET_IMPL(config::modify_rates, const rates_config &rates) {
+PACKET_IMPL(config::modify_rates, const vana::config::rates &rates) {
 	packet_builder builder;
 	builder
 		.add<packet_header>(IMSG_SYNC)
 		.add<protocol_sync>(sync::sync_types::config)
 		.add<protocol_sync>(sync::config::rate_set)
-		.add<rates_config>(rates);
+		.add<vana::config::rates>(rates);
 	return builder;
 }
 

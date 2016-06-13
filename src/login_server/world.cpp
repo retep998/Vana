@@ -46,7 +46,7 @@ auto world::set_session(ref_ptr<login_server_accepted_session> session) -> void 
 	m_session = session;
 }
 
-auto world::set_configuration(const world_config &config) -> void {
+auto world::set_configuration(const config::world &config) -> void {
 	m_config = config;
 }
 
@@ -130,7 +130,7 @@ auto world::get_channel(game_channel_id id) -> channel * {
 		nullptr;
 }
 
-auto world::get_config() const -> const world_config & {
+auto world::get_config() const -> const config::world & {
 	return m_config;
 }
 

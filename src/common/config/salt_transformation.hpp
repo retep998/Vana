@@ -19,40 +19,43 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "common/lua/config_file.hpp"
 #include "common/lua/lua_variant.hpp"
-#include "common/salt_policy.hpp"
+#include "common/salt_modify_policy.hpp"
 #include "common/types.hpp"
 #include <string>
 #include <vector>
 
 namespace vana {
-	class lua::lua_variant;
+	namespace lua {
+		class lua_variant;
+	}
 
-	class password_transformation_config {
-	public:
-		password_transformation_config(salt_policy policy, vector<lua::lua_variant> args);
+	namespace config {
+		class salt_transformation {
+		public:
+			salt_transformation(salt_modify_policy policy, vector<lua::lua_variant> args);
 
-		auto static validate_args(salt_policy policy, const vector<lua::lua_variant> &args) -> validity_result;
-		auto apply(string input, string salt) const -> string;
-	private:
-		password_transformation_config() = default;
+			auto static validate_args(salt_modify_policy policy, const vector<lua::lua_variant> &args) -> validity_result;
+			auto apply(string input) const -> string;
+		private:
+			salt_transformation() = default;
+			friend struct lua::lua_variant_into<salt_transformation>;
 
-		friend struct lua::lua_variant_into<password_transformation_config>;
-
-		salt_policy m_policy;
-		vector<lua::lua_variant> m_args;
-	};
+			salt_modify_policy m_policy = salt_modify_policy::none;
+			vector<lua::lua_variant> m_args;
+		};
+	}
 
 	template <>
-	struct lua::lua_variant_into<password_transformation_config> {
-		auto transform(lua_environment &config, const lua_variant &src, const string &prefix) -> password_transformation_config {
-			password_transformation_config ret;
+	struct lua::lua_variant_into<config::salt_transformation> {
+		auto transform(lua_environment &config, const lua_variant &src, const string &prefix) -> config::salt_transformation {
+			config::salt_transformation ret;
 
 			config.validate_object(lua_type::table, src, prefix);
 
 			auto map = src.as<hash_map<lua_variant, lua_variant>>();
 			bool has_type = false;
 			bool has_args = false;
-			salt_policy salt_policy_data;
+			salt_modify_policy salt_policy_data;
 			lua_variant args;
 			for (const auto &kvp : map) {
 				config.validate_key(lua_type::string, kvp.first, prefix);
@@ -61,7 +64,7 @@ namespace vana {
 				if (key == "type") {
 					has_type = true;
 					config.validate_value(lua_type::number, kvp.second, key, prefix);
-					salt_policy_data = static_cast<salt_policy>(kvp.second.as<int32_t>());
+					salt_policy_data = static_cast<salt_modify_policy>(kvp.second.as<int32_t>());
 				}
 				else if (key == "args") {
 					has_args = true;
@@ -76,8 +79,8 @@ namespace vana {
 			ret.m_policy = salt_policy_data;
 			ret.m_args = args.as<vector<lua_variant>>();
 
-			if (password_transformation_config::validate_args(ret.m_policy, ret.m_args) == validity_result::invalid) {
-				config.error("Arguments for password transformation " + prefix + " are invalid. Please consult the documentation.");
+			if (config::salt_transformation::validate_args(ret.m_policy, ret.m_args) == validity_result::invalid) {
+				config.error("Arguments for salt transformation " + prefix + " are invalid. Please consult the documentation.");
 			}
 
 			return ret;

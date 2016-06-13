@@ -80,7 +80,7 @@ auto session::ping() -> void {
 	send(packets::ping());
 }
 
-auto session::start(const ping_config &ping, ref_ptr<packet_transformer> transformer) -> void {
+auto session::start(const config::ping &ping, ref_ptr<packet_transformer> transformer) -> void {
 	// TODO FIXME support IPv6
 	auto &addr = m_socket.remote_endpoint().address();
 	if (addr.is_v4()) {

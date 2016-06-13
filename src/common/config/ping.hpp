@@ -21,17 +21,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/types.hpp"
 
 namespace vana {
-	struct ping_config {
-		bool enable = true;
-		milliseconds initial_delay = milliseconds{60000};
-		milliseconds interval = milliseconds{30000};
-		int32_t timeout_ping_count = 4;
-	};
+	namespace config {
+		struct ping {
+			bool enable = true;
+			milliseconds initial_delay = milliseconds{60000};
+			milliseconds interval = milliseconds{30000};
+			int32_t timeout_ping_count = 4;
+		};
+	}
 
 	template <>
-	struct lua::lua_serialize<ping_config> {
-		auto read(lua::lua_environment &config, const string &prefix) -> ping_config {
-			ping_config ret;
+	struct lua::lua_serialize<config::ping> {
+		auto read(lua::lua_environment &config, const string &prefix) -> config::ping {
+			config::ping ret;
 
 			lua_variant obj = config.get<lua_variant>(prefix);
 			config.validate_object(lua_type::table, obj, prefix);

@@ -17,26 +17,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "common/config/password_transformation.hpp"
+#include "common/config/salt_transformation.hpp"
 #include "common/lua/config_file.hpp"
-#include "common/password_transformation_config.hpp"
 #include "common/salt_policy.hpp"
-#include "common/salt_transformation_config.hpp"
 #include "common/types.hpp"
 #include <string>
 #include <vector>
 
 namespace vana {
-	class lua::lua_variant;
+	namespace lua {
+		class lua_variant;
+	}
 
-	struct salt_config {
-		password_transformation_config policy = {salt_policy::prepend, vector<lua::lua_variant>{}};
-		vector<salt_transformation_config> modify_policies;
-	};
+	namespace config {
+		struct salt {
+			password_transformation policy = {salt_policy::prepend, vector<lua::lua_variant>{}};
+			vector<salt_transformation> modify_policies;
+		};
+	}
 
 	template <>
-	struct lua::lua_serialize<salt_config> {
-		auto read(lua_environment &config, const string &prefix) -> salt_config {
-			salt_config ret;
+	struct lua::lua_serialize<config::salt> {
+		auto read(lua_environment &config, const string &prefix) -> config::salt {
+			config::salt ret;
 
 			lua_variant obj = config.get<lua_variant>(prefix);
 			config.validate_object(lua_type::table, obj, prefix);
@@ -65,11 +69,11 @@ namespace vana {
 			config.required(has_salt_policy, "salt", prefix);
 			config.required(has_salt_modify_policy, "salt_modify", prefix);
 
-			ret.policy = salt_policy.into<password_transformation_config>(config, prefix + ".salt");
+			ret.policy = salt_policy.into<config::password_transformation>(config, prefix + ".salt");
 		
 			auto modifiers = salt_modify_policy.as<vector<lua_variant>>();
 			for (const auto &modifier : modifiers) {
-				ret.modify_policies.push_back(modifier.into<salt_transformation_config>(config, prefix + ".salt_modify"));
+				ret.modify_policies.push_back(modifier.into<config::salt_transformation>(config, prefix + ".salt_modify"));
 			}
 			return ret;
 		}

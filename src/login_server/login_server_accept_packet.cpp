@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "login_server_accept_packet.hpp"
+#include "common/config/world.hpp"
 #include "common/inter_header.hpp"
 #include "common/inter_helper.hpp"
-#include "common/world_config.hpp"
 #include "login_server/world.hpp"
 
 namespace vana {
@@ -32,7 +32,7 @@ PACKET_IMPL(connect, world *world_value) {
 		.add<packet_header>(IMSG_WORLD_CONNECT)
 		.add<game_world_id>(world_value->get_id().get(-1))
 		.add<connection_port>(world_value->get_port())
-		.add<world_config>(world_value->get_config());
+		.add<config::world>(world_value->get_config());
 	return builder;
 }
 
@@ -73,7 +73,7 @@ PACKET_IMPL(rehash_config, world *world_value) {
 	packet_builder builder;
 	builder
 		.add<packet_header>(IMSG_REHASH_CONFIG)
-		.add<world_config>(world_value->get_config());
+		.add<config::world>(world_value->get_config());
 	return builder;
 }
 
