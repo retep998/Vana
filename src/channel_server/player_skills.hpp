@@ -44,7 +44,7 @@ namespace vana {
 			NONCOPYABLE(player_skills);
 			NO_DEFAULT_CONSTRUCTOR(player_skills);
 		public:
-			player_skills(player *player);
+			player_skills(ref_ptr<player> player);
 
 			auto load() -> void;
 			auto save(bool save_cooldowns = false) -> void;
@@ -102,7 +102,7 @@ namespace vana {
 		private:
 			auto has_skill(game_skill_id skill_id) const -> bool;
 
-			player *m_player = nullptr;
+			view_ptr<player> m_player;
 			hash_map<game_skill_id, player_skill_info> m_skills;
 			hash_map<game_skill_id, seconds> m_cooldowns;
 			ref_ptr<mystic_door> m_mystic_door;

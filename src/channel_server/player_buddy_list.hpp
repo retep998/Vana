@@ -49,7 +49,7 @@ namespace vana {
 			NONCOPYABLE(player_buddy_list);
 			NO_DEFAULT_CONSTRUCTOR(player_buddy_list);
 		public:
-			player_buddy_list(player *player);
+			player_buddy_list(ref_ptr<player> player);
 
 			auto add_buddy(const string &name, const string &group, bool invite = true) -> uint8_t;
 			auto remove_buddy(game_player_id char_id) -> void;
@@ -68,7 +68,7 @@ namespace vana {
 			auto load() -> void;
 
 			bool m_sent_request = false;
-			player *m_player = nullptr;
+			view_ptr<player> m_player;
 			queue<buddy_invite> m_pending_buddies;
 			hash_map<game_player_id, ref_ptr<buddy>> m_buddies;
 		};

@@ -300,7 +300,7 @@ auto player::player_connect(packet_reader &reader) -> void {
 
 	// Stats
 	m_stats = make_owned_ptr<player_stats>(
-		this,
+		shared_from_this(),
 		row.get<game_player_level>("level"),
 		row.get<game_job_id>("job"),
 		row.get<game_fame>("fame"),
@@ -319,23 +319,23 @@ auto player::player_connect(packet_reader &reader) -> void {
 	);
 
 	// Inventory
-	m_mounts = make_owned_ptr<player_mounts>(this);
-	m_pets = make_owned_ptr<player_pets>(this);
+	m_mounts = make_owned_ptr<player_mounts>(shared_from_this());
+	m_pets = make_owned_ptr<player_pets>(shared_from_this());
 	array<game_inventory_slot_count, constant::inventory::count> max_slots;
 	max_slots[0] = row.get<game_inventory_slot_count>("equip_slots");
 	max_slots[1] = row.get<game_inventory_slot_count>("use_slots");
 	max_slots[2] = row.get<game_inventory_slot_count>("setup_slots");
 	max_slots[3] = row.get<game_inventory_slot_count>("etc_slots");
 	max_slots[4] = row.get<game_inventory_slot_count>("cash_slots");
-	m_inventory = make_owned_ptr<player_inventory>(this, max_slots, row.get<game_mesos>("mesos"));
-	m_storage = make_owned_ptr<player_storage>(this);
+	m_inventory = make_owned_ptr<player_inventory>(shared_from_this(), max_slots, row.get<game_mesos>("mesos"));
+	m_storage = make_owned_ptr<player_storage>(shared_from_this());
 
 	// Skills
-	m_skills = make_owned_ptr<player_skills>(this);
+	m_skills = make_owned_ptr<player_skills>(shared_from_this());
 
 	// Buffs/summons
-	m_active_buffs = make_owned_ptr<player_active_buffs>(this);
-	m_summons = make_owned_ptr<player_summons>(this);
+	m_active_buffs = make_owned_ptr<player_active_buffs>(shared_from_this());
+	m_summons = make_owned_ptr<player_summons>(shared_from_this());
 
 	bool first_connect = !has_transfer_packet;
 	auto &config = channel.get_config();
@@ -351,10 +351,10 @@ auto player::player_connect(packet_reader &reader) -> void {
 	provider.player_established(id);
 
 	// The rest
-	m_variables = make_owned_ptr<player_variables>(this);
-	m_buddy_list = make_owned_ptr<player_buddy_list>(this);
-	m_quests = make_owned_ptr<player_quests>(this);
-	m_monster_book = make_owned_ptr<player_monster_book>(this);
+	m_variables = make_owned_ptr<player_variables>(shared_from_this());
+	m_buddy_list = make_owned_ptr<player_buddy_list>(shared_from_this());
+	m_quests = make_owned_ptr<player_quests>(shared_from_this());
+	m_monster_book = make_owned_ptr<player_monster_book>(shared_from_this());
 
 	opt_int32_t book_cover = row.get<opt_int32_t>("book_cover");
 	get_monster_book()->set_cover(book_cover.get(0));

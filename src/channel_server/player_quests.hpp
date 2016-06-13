@@ -65,7 +65,7 @@ namespace vana {
 			NONCOPYABLE(player_quests);
 			NO_DEFAULT_CONSTRUCTOR(player_quests);
 		public:
-			player_quests(player *player);
+			player_quests(ref_ptr<player> player);
 
 			auto load() -> void;
 			auto save() -> void;
@@ -84,7 +84,7 @@ namespace vana {
 		private:
 			auto give_rewards(game_quest_id quest_id, bool start) -> result;
 
-			player *m_player = nullptr;
+			view_ptr<player> m_player;
 			hash_map<game_mob_id, vector<game_quest_id>> m_mob_to_quest_mapping;
 			ord_map<game_quest_id, active_quest> m_quests;
 			ord_map<game_quest_id, file_time> m_completed;

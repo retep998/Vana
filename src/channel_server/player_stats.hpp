@@ -45,7 +45,7 @@ namespace vana {
 			NONCOPYABLE(player_stats);
 			NO_DEFAULT_CONSTRUCTOR(player_stats);
 		public:
-			player_stats(player *player,
+			player_stats(ref_ptr<player> player,
 				game_player_level level,
 				game_job_id job,
 				game_fame fame,
@@ -153,7 +153,7 @@ namespace vana {
 
 			bonus_set m_equip_bonuses;
 			bonus_set m_buff_bonuses;
-			player *m_player = nullptr;
+			view_ptr<player> m_player;
 			ord_map<int16_t, equip_bonus> m_equip_stats;
 		};
 	}

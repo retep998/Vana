@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace vana {
 namespace channel_server {
 
-player_mounts::player_mounts(player *player) :
+player_mounts::player_mounts(ref_ptr<player> player) :
 	m_player{player}
 {
 	load();
@@ -31,51 +31,57 @@ player_mounts::player_mounts(player *player) :
 auto player_mounts::save() -> void {
 	auto &db = database::get_char_db();
 	auto &sql = db.get_session();
-	game_player_id char_id = m_player->get_id();
-	game_item_id item_id = 0;
-	int16_t exp = 0;
-	uint8_t tiredness = 0;
-	uint8_t level = 0;
+	if (auto player = m_player.lock()) {
+		game_player_id char_id = player->get_id();
+		game_item_id item_id = 0;
+		int16_t exp = 0;
+		uint8_t tiredness = 0;
+		uint8_t level = 0;
 
-	sql.once << "DELETE FROM " << db.make_table("mounts") << " WHERE character_id = :char",
-		soci::use(char_id, "char");
+		sql.once << "DELETE FROM " << db.make_table("mounts") << " WHERE character_id = :char",
+			soci::use(char_id, "char");
 
-	if (m_mounts.size() > 0) {
-		soci::statement st = (sql.prepare
-			<< "INSERT INTO " << db.make_table("mounts") << " "
-			<< "VALUES (:char, :item, :exp, :level, :tiredness) ",
-			soci::use(char_id, "char"),
-			soci::use(item_id, "item"),
-			soci::use(exp, "exp"),
-			soci::use(level, "level"),
-			soci::use(tiredness, "tiredness"));
+		if (m_mounts.size() > 0) {
+			soci::statement st = (sql.prepare
+				<< "INSERT INTO " << db.make_table("mounts") << " "
+				<< "VALUES (:char, :item, :exp, :level, :tiredness) ",
+				soci::use(char_id, "char"),
+				soci::use(item_id, "item"),
+				soci::use(exp, "exp"),
+				soci::use(level, "level"),
+				soci::use(tiredness, "tiredness"));
 
-		for (const auto &kvp : m_mounts) {
-			const mount_data &c = kvp.second;
-			item_id = kvp.first;
-			exp = c.exp;
-			level = c.level;
-			tiredness = c.tiredness;
-			st.execute(true);
+			for (const auto &kvp : m_mounts) {
+				const mount_data &c = kvp.second;
+				item_id = kvp.first;
+				exp = c.exp;
+				level = c.level;
+				tiredness = c.tiredness;
+				st.execute(true);
+			}
 		}
 	}
+	else throw invalid_operation_exception{"This should never be thrown"};
 }
 
 auto player_mounts::load() -> void {
 	auto &db = database::get_char_db();
 	auto &sql = db.get_session();
-	game_player_id char_id = m_player->get_id();
+	if (auto player = m_player.lock()) {
+		game_player_id char_id = player->get_id();
 
-	soci::rowset<> rs = (sql.prepare << "SELECT m.* FROM " << db.make_table("mounts") << " m WHERE m.character_id = :char ",
-		soci::use(char_id, "char"));
+		soci::rowset<> rs = (sql.prepare << "SELECT m.* FROM " << db.make_table("mounts") << " m WHERE m.character_id = :char ",
+			soci::use(char_id, "char"));
 
-	for (const auto &row : rs) {
-		mount_data c;
-		c.exp = row.get<int16_t>("exp");
-		c.level = row.get<int8_t>("level");
-		c.tiredness = row.get<int8_t>("tiredness");
-		m_mounts[row.get<game_item_id>("mount_id")] = c;
+		for (const auto &row : rs) {
+			mount_data c;
+			c.exp = row.get<int16_t>("exp");
+			c.level = row.get<int8_t>("level");
+			c.tiredness = row.get<int8_t>("tiredness");
+			m_mounts[row.get<game_item_id>("mount_id")] = c;
+		}
 	}
+	else throw invalid_operation_exception{"This should never be thrown"};
 }
 
 auto player_mounts::get_current_exp() -> int16_t {
@@ -135,28 +141,34 @@ auto player_mounts::set_current_tiredness(int8_t tiredness) -> void {
 }
 
 auto player_mounts::mount_info_packet(packet_builder &builder) -> void {
-	if (get_current_mount() > 0 && m_player->get_inventory()->get_equipped_id(constant::equip_slot::saddle) != 0) {
-		builder.add<bool>(true);
-		builder.add<int32_t>(get_current_level());
-		builder.add<int32_t>(get_current_exp());
-		builder.add<int32_t>(get_current_tiredness());
+	if (auto player = m_player.lock()) {
+		if (get_current_mount() > 0 && player->get_inventory()->get_equipped_id(constant::equip_slot::saddle) != 0) {
+			builder.add<bool>(true);
+			builder.add<int32_t>(get_current_level());
+			builder.add<int32_t>(get_current_exp());
+			builder.add<int32_t>(get_current_tiredness());
+		}
+		else {
+			builder.add<bool>(false);
+		}
 	}
-	else {
-		builder.add<bool>(false);
-	}
+	else throw invalid_operation_exception{"This should never be thrown"};
 }
 
 auto player_mounts::mount_info_map_spawn_packet(packet_builder &builder) -> void {
-	if (get_current_mount() > 0 && m_player->get_inventory()->get_equipped_id(constant::equip_slot::saddle) != 0) {
-		builder.add<int32_t>(get_current_level());
-		builder.add<int32_t>(get_current_exp());
-		builder.add<int32_t>(get_current_tiredness());
+	if (auto player = m_player.lock()) {
+		if (get_current_mount() > 0 && player->get_inventory()->get_equipped_id(constant::equip_slot::saddle) != 0) {
+			builder.add<int32_t>(get_current_level());
+			builder.add<int32_t>(get_current_exp());
+			builder.add<int32_t>(get_current_tiredness());
+		}
+		else {
+			builder.add<int32_t>(0);
+			builder.add<int32_t>(0);
+			builder.add<int32_t>(0);
+		}
 	}
-	else {
-		builder.add<int32_t>(0);
-		builder.add<int32_t>(0);
-		builder.add<int32_t>(0);
-	}
+	else throw invalid_operation_exception{"This should never be thrown"};
 }
 
 }

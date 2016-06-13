@@ -36,7 +36,7 @@ namespace vana {
 			NONCOPYABLE(player_mounts);
 			NO_DEFAULT_CONSTRUCTOR(player_mounts);
 		public:
-			player_mounts(player *player);
+			player_mounts(ref_ptr<player> player);
 
 			auto save() -> void;
 			auto load() -> void;
@@ -60,7 +60,7 @@ namespace vana {
 			auto get_mount_tiredness(game_item_id id) -> int8_t;
 		private:
 			game_item_id m_current_mount = 0;
-			player *m_player = nullptr;
+			view_ptr<player> m_player;
 			hash_map<game_item_id, mount_data> m_mounts;
 		};
 	}

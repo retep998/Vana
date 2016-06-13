@@ -31,41 +31,47 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace vana {
 namespace channel_server {
 
-player_summons::player_summons(player *player) :
+player_summons::player_summons(ref_ptr<player> player) :
 	m_player{player}
 {
 }
 
 auto player_summons::add_summon(summon *summon, seconds time) -> void {
-	game_summon_id summon_id = summon->get_id();
-	vana::timer::id id{vana::timer::type::buff_timer, summon_id, 1};
-	vana::timer::timer::create(
-		[this, summon_id](const time_point &now) {
-			summon_handler::remove_summon(
-				ref_ptr<player>{m_player},
-				summon_id,
-				false,
-				summon_messages::out_of_time,
-				true);
-		},
-		id,
-		m_player->get_timer_container(),
-		time);
+	if (auto player = m_player.lock()) {
+		game_summon_id summon_id = summon->get_id();
+		vana::timer::id id{vana::timer::type::buff_timer, summon_id, 1};
+		vana::timer::timer::create(
+			[player, summon_id](const time_point &now) {
+				summon_handler::remove_summon(
+					player,
+					summon_id,
+					false,
+					summon_messages::out_of_time,
+					true);
+			},
+			id,
+			player->get_timer_container(),
+			time);
 
-	m_summons.push_back(summon);
+		m_summons.push_back(summon);
+	}
+	else throw invalid_operation_exception{"This should never be thrown"};
 }
 
 auto player_summons::remove_summon(game_summon_id summon_id, bool from_timer) -> void {
-	summon *value = get_summon(summon_id);
-	if (value != nullptr) {
-		if (!from_timer) {
-			vana::timer::id id{vana::timer::type::buff_timer, summon_id, 1};
-			m_player->get_timer_container()->remove_timer(id);
+	if (auto player = m_player.lock()) {
+		summon *value = get_summon(summon_id);
+		if (value != nullptr) {
+			if (!from_timer) {
+				vana::timer::id id{vana::timer::type::buff_timer, summon_id, 1};
+				player->get_timer_container()->remove_timer(id);
+			}
+			ext::remove_element(m_summons, value);
+			delete value;
+			summon_handler::g_summon_ids.release(summon_id);
 		}
-		ext::remove_element(m_summons, value);
-		delete value;
-		summon_handler::g_summon_ids.release(summon_id);
 	}
+	else throw invalid_operation_exception{"This should never be thrown"};
 }
 
 auto player_summons::get_summon(game_summon_id summon_id) -> summon * {
@@ -86,20 +92,26 @@ auto player_summons::for_each(function<void(summon *)> func) -> void {
 
 auto player_summons::changed_map() -> void {
 	auto copy = m_summons;
-	for (auto &summon : copy) {
-		if (summon->get_movement_type() == summon::fixed) {
-			summon_handler::remove_summon(
-				ref_ptr<player>{m_player},
-				summon->get_id(),
-				false,
-				summon_messages::none);
+	if (auto player = m_player.lock()) {
+		for (auto &summon : copy) {
+			if (summon->get_movement_type() == summon::fixed) {
+				summon_handler::remove_summon(
+					player,
+					summon->get_id(),
+					false,
+					summon_messages::none);
+			}
 		}
 	}
+	else throw invalid_operation_exception{"This should never be thrown"};
 }
 
 auto player_summons::get_summon_time_remaining(game_summon_id summon_id) const -> seconds {
 	vana::timer::id id{vana::timer::type::buff_timer, summon_id, 1};
-	return m_player->get_timer_container()->get_remaining_time<seconds>(id);
+	if (auto player = m_player.lock()) {
+		return player->get_timer_container()->get_remaining_time<seconds>(id);
+	}
+	else throw invalid_operation_exception{"This should never be thrown"};
 }
 
 auto player_summons::get_transfer_packet() const -> packet_builder {
@@ -121,16 +133,19 @@ auto player_summons::get_transfer_packet() const -> packet_builder {
 auto player_summons::parse_transfer_packet(packet_reader &reader) -> void {
 	uint8_t size = reader.get<uint8_t>();
 	if (size > 0) {
-		for (uint8_t i = 0; i < size; ++i) {
-			game_skill_id skill_id = reader.get<game_skill_id>();
-			seconds time_left = reader.get<seconds>();
-			game_skill_level level = reader.get<game_skill_level>();
+		if (auto player = m_player.lock()) {
+			for (uint8_t i = 0; i < size; ++i) {
+				game_skill_id skill_id = reader.get<game_skill_id>();
+				seconds time_left = reader.get<seconds>();
+				game_skill_level level = reader.get<game_skill_level>();
 
-			summon *value = new summon{summon_handler::g_summon_ids.lease(), skill_id, level, m_player->is_facing_left(), m_player->get_pos()};
-			value->set_pos(m_player->get_pos());
-			add_summon(value, time_left);
-			m_player->send_map(packets::show_summon(m_player->get_id(), value, false));
+				summon *value = new summon{summon_handler::g_summon_ids.lease(), skill_id, level, player->is_facing_left(), player->get_pos()};
+				value->set_pos(player->get_pos());
+				add_summon(value, time_left);
+				player->send_map(packets::show_summon(player->get_id(), value, false));
+			}
 		}
+		else throw invalid_operation_exception{"This should never be thrown"};
 	}
 }
 

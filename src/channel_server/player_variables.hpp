@@ -27,11 +27,11 @@ namespace vana {
 			NONCOPYABLE(player_variables);
 			NO_DEFAULT_CONSTRUCTOR(player_variables);
 		public:
-			player_variables(player *player);
+			player_variables(ref_ptr<player> player);
 			auto save() -> void;
 			auto load() -> void;
 		private:
-			player *m_player = nullptr;
+			view_ptr<player> m_player;
 		};
 	}
 }

@@ -22,48 +22,54 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace vana {
 namespace channel_server {
 
-player_variables::player_variables(player *player) :
+player_variables::player_variables(ref_ptr<player> player) :
 	m_player{player}
 {
 	load();
 }
 
 auto player_variables::save() -> void {
-	auto &db = database::get_char_db();
-	auto &sql = db.get_session();
-	game_player_id char_id = m_player->get_id();
+	if (auto player = m_player.lock()) {
+		auto &db = database::get_char_db();
+		auto &sql = db.get_session();
+		game_player_id char_id = player->get_id();
 
-	sql.once << "DELETE FROM " << db.make_table("character_variables") << " WHERE character_id = :char",
-		soci::use(char_id, "char");
+		sql.once << "DELETE FROM " << db.make_table("character_variables") << " WHERE character_id = :char",
+			soci::use(char_id, "char");
 
-	if (m_variables.size() > 0) {
-		string key = "";
-		string value = "";
+		if (m_variables.size() > 0) {
+			string key = "";
+			string value = "";
 
-		soci::statement st = (sql.prepare
-			<< "INSERT INTO " << db.make_table("character_variables") << " "
-			<< "VALUES (:char, :key, :value)",
-			soci::use(char_id, "char"),
-			soci::use(key, "key"),
-			soci::use(value, "value"));
+			soci::statement st = (sql.prepare
+				<< "INSERT INTO " << db.make_table("character_variables") << " "
+				<< "VALUES (:char, :key, :value)",
+				soci::use(char_id, "char"),
+				soci::use(key, "key"),
+				soci::use(value, "value"));
 
-		for (const auto &kvp : m_variables) {
-			key = kvp.first;
-			value = kvp.second;
-			st.execute(true);
+			for (const auto &kvp : m_variables) {
+				key = kvp.first;
+				value = kvp.second;
+				st.execute(true);
+			}
 		}
 	}
+	else throw invalid_operation_exception{"This should never be thrown"};
 }
 
 auto player_variables::load() -> void {
-	auto &db = database::get_char_db();
-	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("character_variables") << " WHERE character_id = :char",
-		soci::use(m_player->get_id(), "char"));
+	if (auto player = m_player.lock()) {
+		auto &db = database::get_char_db();
+		auto &sql = db.get_session();
+		soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("character_variables") << " WHERE character_id = :char",
+			soci::use(player->get_id(), "char"));
 
-	for (const auto &row : rs) {
-		m_variables[row.get<string>("key")] = row.get<string>("value");
+		for (const auto &row : rs) {
+			m_variables[row.get<string>("key")] = row.get<string>("value");
+		}
 	}
+	else throw invalid_operation_exception{"This should never be thrown"};
 }
 
 }

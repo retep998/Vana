@@ -32,7 +32,7 @@ namespace vana {
 			NONCOPYABLE(player_summons);
 			NO_DEFAULT_CONSTRUCTOR(player_summons);
 		public:
-			player_summons(player *player);
+			player_summons(ref_ptr<player> player);
 
 			auto get_summon(game_summon_id summon_id) -> summon *;
 			auto add_summon(summon *summon, seconds time) -> void;
@@ -45,7 +45,7 @@ namespace vana {
 		private:
 			auto get_summon_time_remaining(game_summon_id summon_id) const -> seconds;
 
-			player *m_player = nullptr;
+			view_ptr<player> m_player;
 			vector<summon *> m_summons;
 		};
 	}

@@ -46,7 +46,7 @@ namespace vana {
 			NONCOPYABLE(player_active_buffs);
 			NO_DEFAULT_CONSTRUCTOR(player_active_buffs);
 		public:
-			player_active_buffs(player *player);
+			player_active_buffs(ref_ptr<player> player);
 
 			// Buff handling
 			auto translate_to_source(int32_t buff_id) const -> data::type::buff_source;
@@ -162,7 +162,7 @@ namespace vana {
 			int32_t m_battleship_hp = 0;
 			game_map_object m_marked_mob = 0;
 			uint32_t m_debuff_mask = 0;
-			ref_ptr<player> m_player = nullptr;
+			view_ptr<player> m_player;
 			vector<local_buff_info> m_buffs;
 		};
 	}

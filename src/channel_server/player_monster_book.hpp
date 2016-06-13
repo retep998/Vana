@@ -39,7 +39,7 @@ namespace vana {
 			NONCOPYABLE(player_monster_book);
 			NO_DEFAULT_CONSTRUCTOR(player_monster_book);
 		public:
-			player_monster_book(player *player);
+			player_monster_book(ref_ptr<player> player);
 
 			auto load() -> void;
 			auto save() -> void;
@@ -63,7 +63,7 @@ namespace vana {
 			int32_t m_normal_count = 0;
 			int32_t m_level = 1;
 			int32_t m_cover = 0;
-			player *m_player = nullptr;
+			view_ptr<player> m_player;
 			hash_map<game_item_id, monster_card> m_cards;
 		};
 	}

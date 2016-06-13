@@ -30,7 +30,7 @@ namespace vana {
 			NONCOPYABLE(player_storage);
 			NO_DEFAULT_CONSTRUCTOR(player_storage);
 		public:
-			player_storage(player *player);
+			player_storage(ref_ptr<player> player);
 			~player_storage();
 
 			auto set_slots(game_storage_slot slots) -> void;
@@ -58,7 +58,7 @@ namespace vana {
 			game_mesos m_mesos = 0;
 			int32_t m_char_slots = 0;
 			vector<item *> m_items;
-			player *m_player = nullptr;
+			view_ptr<player> m_player;
 		};
 	}
 }

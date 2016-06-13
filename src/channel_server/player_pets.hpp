@@ -31,7 +31,7 @@ namespace vana {
 			NONCOPYABLE(player_pets);
 			NO_DEFAULT_CONSTRUCTOR(player_pets);
 		public:
-			player_pets(player *player);
+			player_pets(ref_ptr<player> player);
 
 			auto save() -> void;
 			auto pet_info_packet(packet_builder &builder) -> void;
@@ -43,7 +43,7 @@ namespace vana {
 			auto add_pet(pet *pet) -> void;
 			auto set_summoned(int8_t index, game_pet_id pet_id) -> void;
 		private:
-			player *m_player = nullptr;
+			view_ptr<player> m_player;
 			hash_map<game_pet_id, pet *> m_pets;
 			hash_map<int8_t, game_pet_id> m_summoned;
 		};

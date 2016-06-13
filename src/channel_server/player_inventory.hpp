@@ -36,7 +36,7 @@ namespace vana {
 			NONCOPYABLE(player_inventory);
 			NO_DEFAULT_CONSTRUCTOR(player_inventory);
 		public:
-			player_inventory(player *player, const array<game_inventory_slot_count, constant::inventory::count> &max_slots, game_mesos mesos);
+			player_inventory(ref_ptr<player> player, const array<game_inventory_slot_count, constant::inventory::count> &max_slots, game_mesos mesos);
 			~player_inventory();
 
 			auto load() -> void;
@@ -91,7 +91,7 @@ namespace vana {
 			game_mesos m_mesos = 0;
 			game_item_id m_auto_hp_pot_id = 0;
 			game_item_id m_auto_mp_pot_id = 0;
-			player *m_player = nullptr;
+			view_ptr<player> m_player;
 			array<game_inventory_slot_count, constant::inventory::count> m_max_slots;
 			array<array<game_item_id, 2>, constant::inventory::equipped_slots> m_equipped; // Separate sets of slots for regular items and cash items
 			array<hash_map<game_inventory_slot, item *>, constant::inventory::count> m_items;

@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace vana {
 namespace channel_server {
 
-player_pets::player_pets(player *player) :
+player_pets::player_pets(ref_ptr<player> player) :
 	m_player{player}
 {
 }
@@ -89,28 +89,31 @@ auto player_pets::save() -> void {
 }
 
 auto player_pets::pet_info_packet(packet_builder &builder) -> void {
-	item *it;
-	for (int8_t i = 0; i < constant::inventory::max_pet_count; i++) {
-		if (pet *pet = get_summoned(i)) {
-			builder.add<int8_t>(1);
-			builder.add<game_item_id>(pet->get_item_id());
-			builder.add<string>(pet->get_name());
-			builder.add<int8_t>(pet->get_level());
-			builder.add<int16_t>(pet->get_closeness());
-			builder.add<int8_t>(pet->get_fullness());
-			builder.unk<int16_t>();
-			int16_t slot = 0;
-			switch (i) {
-				case 0: slot = constant::equip_slot::pet_equip1;
-				case 1: slot = constant::equip_slot::pet_equip2;
-				case 2: slot = constant::equip_slot::pet_equip3;
-			}
+	if (auto player = m_player.lock()) {
+		item *it;
+		for (int8_t i = 0; i < constant::inventory::max_pet_count; i++) {
+			if (pet *pet = get_summoned(i)) {
+				builder.add<int8_t>(1);
+				builder.add<game_item_id>(pet->get_item_id());
+				builder.add<string>(pet->get_name());
+				builder.add<int8_t>(pet->get_level());
+				builder.add<int16_t>(pet->get_closeness());
+				builder.add<int8_t>(pet->get_fullness());
+				builder.unk<int16_t>();
+				int16_t slot = 0;
+				switch (i) {
+					case 0: slot = constant::equip_slot::pet_equip1;
+					case 1: slot = constant::equip_slot::pet_equip2;
+					case 2: slot = constant::equip_slot::pet_equip3;
+				}
 
-			it = m_player->get_inventory()->get_item(constant::inventory::equip, slot);
-			builder.add<game_item_id>(it != nullptr ? it->get_id() : 0);
+				it = player->get_inventory()->get_item(constant::inventory::equip, slot);
+				builder.add<game_item_id>(it != nullptr ? it->get_id() : 0);
+			}
 		}
+		builder.add<int8_t>(0); // End of pets / start of taming mob
 	}
-	builder.add<int8_t>(0); // End of pets / start of taming mob
+	else throw invalid_operation_exception{"This should never be thrown"};
 }
 
 auto player_pets::connect_packet(packet_builder &builder) -> void {

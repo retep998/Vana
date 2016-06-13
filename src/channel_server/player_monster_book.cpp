@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace vana {
 namespace channel_server {
 
-player_monster_book::player_monster_book(player *player) :
+player_monster_book::player_monster_book(ref_ptr<player> player) :
 	m_player{player}
 {
 	load();
@@ -35,48 +35,54 @@ player_monster_book::player_monster_book(player *player) :
 auto player_monster_book::load() -> void {
 	auto &db = database::get_char_db();
 	auto &sql = db.get_session();
-	game_player_id char_id = m_player->get_id();
+	if (auto player = m_player.lock()) {
+		game_player_id char_id = player->get_id();
 
-	soci::rowset<> rs = (sql.prepare
-		<< "SELECT b.card_id, b.level "
-		<< "FROM " << db.make_table("monster_book") << " b "
-		<< "WHERE b.character_id = :char "
-		<< "ORDER BY b.card_id ASC",
-		soci::use(char_id, "char"));
+		soci::rowset<> rs = (sql.prepare
+			<< "SELECT b.card_id, b.level "
+			<< "FROM " << db.make_table("monster_book") << " b "
+			<< "WHERE b.character_id = :char "
+			<< "ORDER BY b.card_id ASC",
+			soci::use(char_id, "char"));
 
-	for (const auto &row : rs) {
-		add_card(row.get<game_item_id>("card_id"), row.get<uint8_t>("level"), true);
+		for (const auto &row : rs) {
+			add_card(row.get<game_item_id>("card_id"), row.get<uint8_t>("level"), true);
+		}
+
+		calculate_level();
 	}
-
-	calculate_level();
+	else throw invalid_operation_exception{"This should never be thrown"};
 }
 
 auto player_monster_book::save() -> void {
 	auto &db = database::get_char_db();
 	auto &sql = db.get_session();
-	game_player_id char_id = m_player->get_id();
+	if (auto player = m_player.lock()) {
+		game_player_id char_id = player->get_id();
 
-	sql.once << "DELETE FROM " << db.make_table("monster_book") << " WHERE character_id = :char",
-		soci::use(char_id, "char");
+		sql.once << "DELETE FROM " << db.make_table("monster_book") << " WHERE character_id = :char",
+			soci::use(char_id, "char");
 
-	if (m_cards.size() > 0) {
-		game_item_id card_id = 0;
-		uint8_t level = 0;
+		if (m_cards.size() > 0) {
+			game_item_id card_id = 0;
+			uint8_t level = 0;
 
-		soci::statement st = (sql.prepare
-			<< "INSERT INTO " << db.make_table("monster_book") << " "
-			<< "VALUES (:char, :card, :level) ",
-			soci::use(char_id, "char"),
-			soci::use(card_id, "card"),
-			soci::use(level, "level"));
+			soci::statement st = (sql.prepare
+				<< "INSERT INTO " << db.make_table("monster_book") << " "
+				<< "VALUES (:char, :card, :level) ",
+				soci::use(char_id, "char"),
+				soci::use(card_id, "card"),
+				soci::use(level, "level"));
 
-		for (const auto &kvp : m_cards) {
-			const monster_card &c = kvp.second;
-			card_id = c.id;
-			level = c.level;
-			st.execute(true);
+			for (const auto &kvp : m_cards) {
+				const monster_card &c = kvp.second;
+				card_id = c.id;
+				level = c.level;
+				st.execute(true);
+			}
 		}
 	}
+	else throw invalid_operation_exception{"This should never be thrown"};
 }
 
 auto player_monster_book::get_card_level(int32_t card_id) -> uint8_t {
