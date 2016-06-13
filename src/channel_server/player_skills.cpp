@@ -17,10 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_skills.hpp"
 #include "common/algorithm.hpp"
+#include "common/data/provider/skill.hpp"
 #include "common/database.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/randomizer.hpp"
-#include "common/skill_data_provider.hpp"
 #include "common/timer/id.hpp"
 #include "common/timer/timer.hpp"
 #include "channel_server/channel_server.hpp"
@@ -210,7 +210,7 @@ auto player_skills::get_max_skill_level(game_skill_id skill_id) const -> game_sk
 	return 0;
 }
 
-auto player_skills::get_skill_info(game_skill_id skill_id) const -> const skill_level_info * const {
+auto player_skills::get_skill_info(game_skill_id skill_id) const -> const data::type::skill_level_info * const {
 	auto skill = ext::find_value_ptr(m_skills, skill_id);
 	return skill == nullptr ? nullptr : channel_server::get_instance().get_skill_data_provider().get_skill(skill_id, skill->level);
 }

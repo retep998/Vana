@@ -16,12 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "summon_handler.hpp"
-#include "common/buff_data_provider.hpp"
+#include "common/data/provider/buff.hpp"
+#include "common/data/provider/skill.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/id_pool.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
-#include "common/skill_data_provider.hpp"
 #include "channel_server/buffs_packet.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/map.hpp"
@@ -180,7 +180,7 @@ auto summon_handler::damage_summon(ref_ptr<player> player, packet_reader &reader
 	}
 }
 
-auto summon_handler::make_buff(ref_ptr<player> player, game_item_id item_id) -> buff_info {
+auto summon_handler::make_buff(ref_ptr<player> player, game_item_id item_id) -> data::type::buff_info {
 	const auto &buff_data = channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect();
 	switch (item_id) {
 		case constant::item::beholder_hex_watk: return buff_data.physical_attack;
@@ -193,7 +193,7 @@ auto summon_handler::make_buff(ref_ptr<player> player, game_item_id item_id) -> 
 	throw std::invalid_argument{"invalid_argument"};
 }
 
-auto summon_handler::make_active_buff(ref_ptr<player> player, const buff_info &data, game_item_id item_id, const skill_level_info *skill_info) -> buff_packet_values {
+auto summon_handler::make_active_buff(ref_ptr<player> player, const data::type::buff_info &data, game_item_id item_id, const data::type::skill_level_info *skill_info) -> buff_packet_values {
 	buff_packet_values buff;
 	buff.player.types[data.get_buff_byte()] = static_cast<uint8_t>(data.get_buff_type());
 	switch (item_id) {

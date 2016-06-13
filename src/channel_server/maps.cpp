@@ -42,7 +42,7 @@ auto maps::unload_map(game_map_id map_id) -> void {
 	channel_server::get_instance().unload_map(map_id);
 }
 
-auto maps::use_portal(ref_ptr<player> player, const portal_info * const portal) -> void {
+auto maps::use_portal(ref_ptr<player> player, const data::type::portal_info * const portal) -> void {
 	if (portal->disabled) {
 		player->send(packets::map::portal_blocked());
 		player->send(packets::player::show_message("the portal is closed for now.", packets::player::notice_types::red));
@@ -56,7 +56,7 @@ auto maps::use_portal(ref_ptr<player> player, const portal_info * const portal) 
 			return;
 		}
 
-		string filename = channel_server::get_instance().get_script_data_provider().build_script_path(script_types::portal, portal->script);
+		string filename = channel_server::get_instance().get_script_data_provider().build_script_path(data::type::script_types::portal, portal->script);
 
 		if (utilities::file::exists(filename)) {
 			lua::lua_portal lua_env = {filename, player->get_id(), player->get_map_id(), portal};
@@ -85,7 +85,7 @@ auto maps::use_portal(ref_ptr<player> player, const portal_info * const portal) 
 			player->send(packets::map::portal_blocked());
 			return;
 		}
-		const portal_info * const next_portal = to_map->get_portal(portal->to_name);
+		const data::type::portal_info * const next_portal = to_map->get_portal(portal->to_name);
 		player->set_map(portal->to_map, next_portal);
 	}
 }
@@ -117,7 +117,7 @@ auto maps::use_portal(ref_ptr<player> player, packet_reader &reader) -> void {
 			if (to_map == nullptr) {
 				return;
 			}
-			const portal_info * const portal = to_map->get_portal(portal_name);
+			const data::type::portal_info * const portal = to_map->get_portal(portal_name);
 			if (portal == nullptr) {
 				return;
 			}
@@ -146,7 +146,7 @@ auto maps::use_scripted_portal(ref_ptr<player> player, packet_reader &reader) ->
 	reader.skip<game_portal_count>();
 	string portal_name = reader.get<string>();
 
-	const portal_info * const portal = player->get_map()->get_portal(portal_name);
+	const data::type::portal_info * const portal = player->get_map()->get_portal(portal_name);
 	if (portal == nullptr) {
 		return;
 	}

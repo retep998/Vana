@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "management_functions.hpp"
+#include "common/data/provider/item.hpp"
 #include "common/database.hpp"
 #include "common/exit_codes.hpp"
-#include "common/item_data_provider.hpp"
 #include "common/rates_config.hpp"
 #include "common/string_utilities.hpp"
 #include "channel_server/channel_server.hpp"
@@ -72,7 +72,7 @@ auto management_functions::user_warp(ref_ptr<player> player, const game_chat &ar
 				player->set_map(map_id, mystic_door::portal_id, pos);
 			}
 			else {
-				const portal_info * const destination_portal = map->query_portal_name(raw_portal);
+				const data::type::portal_info * const destination_portal = map->query_portal_name(raw_portal);
 
 				if (!raw_portal.empty() && destination_portal == nullptr) {
 					chat_handler_functions::show_error(player, "Invalid portal: " + raw_portal);
@@ -237,7 +237,7 @@ auto management_functions::warp(ref_ptr<player> player_value, const game_chat &a
 			return chat_result::handled_display;
 		}
 
-		const portal_info * const destination_portal = destination->query_portal_name(portal);
+		const data::type::portal_info * const destination_portal = destination->query_portal_name(portal);
 		if (portal_specified && destination_portal == nullptr) {
 			chat_handler_functions::show_error(player_value, "Invalid destination portal: " + (single_argument_destination ? raw_map : (only_source ? optional : more_optional)));
 			return chat_result::handled_display;
@@ -478,7 +478,7 @@ auto management_functions::add_npc(ref_ptr<player> player, const game_chat &args
 		auto &provider = channel_server::get_instance().get_npc_data_provider();
 		game_npc_id npc_id = atoi(args.c_str());
 		if (provider.is_valid_npc_id(npc_id)) {
-			npc_spawn_info npc;
+			data::type::npc_spawn_info npc;
 			npc.id = npc_id;
 			npc.foothold = 0;
 			npc.pos = player->get_pos();

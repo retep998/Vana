@@ -98,7 +98,7 @@ auto instance::remove_all_players() -> void {
 	}
 }
 
-auto instance::move_all_players(game_map_id map_id, bool respect_instances, const portal_info * const portal) -> void {
+auto instance::move_all_players(game_map_id map_id, bool respect_instances, const data::type::portal_info * const portal) -> void {
 	if (!maps::get_map(map_id)) {
 		return;
 	}

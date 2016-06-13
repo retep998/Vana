@@ -586,7 +586,7 @@ auto mob::choose_random_skill(ref_ptr<player> player, game_mob_skill_id &skill_i
 		return;
 	}
 
-	vector<const mob_skill_info *> viable_skills;
+	vector<const data::type::mob_skill_info *> viable_skills;
 	auto &skills = channel_server::get_instance().get_mob_data_provider().get_skills(get_mob_id_or_link());
 	for (const auto &info : skills) {
 		bool stop = false;
@@ -744,7 +744,7 @@ auto mob::use_anticipated_skill() -> result {
 			if (auto banish_info = channel.get_skill_data_provider().get_banish_data(get_mob_id())) {
 				game_map_id field = banish_info->field;
 				string message = banish_info->message;
-				const portal_info * const portal = maps::get_map(field)->query_portal_name(banish_info->portal);
+				const data::type::portal_info * const portal = maps::get_map(field)->query_portal_name(banish_info->portal);
 
 				auto func = [&message, &field, &portal](ref_ptr<player> player) {
 					if (!message.empty()) {

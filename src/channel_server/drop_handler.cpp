@@ -16,15 +16,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "drop_handler.hpp"
-#include "common/drop_data_provider.hpp"
+#include "common/data/provider/drop.hpp"
+#include "common/data/provider/item.hpp"
+#include "common/data/provider/quest.hpp"
+#include "common/data/provider/skill.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/item.hpp"
-#include "common/item_data_provider.hpp"
 #include "common/packet_reader.hpp"
 #include "common/point.hpp"
-#include "common/quest_data_provider.hpp"
 #include "common/randomizer.hpp"
-#include "common/skill_data_provider.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/drop.hpp"
 #include "channel_server/drops_packet.hpp"
@@ -75,14 +75,14 @@ auto drop_handler::do_drops(game_player_id player_id, game_map_id map_id, int32_
 	}
 
 	if (dropping_level != 0 && global_drops.size() != 0) {
-		drop_info d;
+		data::type::drop_info d;
 		int8_t continent = channel.get_map_data_provider().get_continent(map_id).get(0);
 
 		if (global_drop_rate > 0) {
 			for (const auto &global_drop : global_drops) {
 				if (dropping_level >= global_drop.min_level && dropping_level <= global_drop.max_level) {
 					if (global_drop.continent == 0 || (continent == global_drop.continent)) {
-						d = drop_info{};
+						d = data::type::drop_info{};
 						d.is_global = true;
 						d.chance = global_drop.chance;
 						d.is_mesos = global_drop.is_mesos;

@@ -16,12 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "reactor_handler.hpp"
+#include "common/data/provider/reactor.hpp"
+#include "common/data/provider/script.hpp"
 #include "common/file_utilities.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/packet_reader.hpp"
 #include "common/point.hpp"
-#include "common/reactor_data_provider.hpp"
-#include "common/script_data_provider.hpp"
 #include "common/time_utilities.hpp"
 #include "common/timer/thread.hpp"
 #include "common/timer/timer.hpp"
@@ -59,7 +59,7 @@ auto reactor_handler::hit_reactor(ref_ptr<player> player, packet_reader &reader)
 			}
 			else {
 				auto &channel = channel_server::get_instance();
-				string filename = channel.get_script_data_provider().get_script(&channel, reactor->get_reactor_id(), script_types::reactor);
+				string filename = channel.get_script_data_provider().get_script(&channel, reactor->get_reactor_id(), data::type::script_types::reactor);
 
 				if (utilities::file::exists(filename)) {
 					lua::lua_reactor{filename, player->get_id(), id, reactor->get_map_id()};
@@ -97,7 +97,7 @@ struct reaction {
 		reactor->set_state(state, true);
 		drop->remove_drop();
 		auto &channel = channel_server::get_instance();
-		string filename = channel.get_script_data_provider().get_script(&channel, reactor->get_reactor_id(), script_types::reactor);
+		string filename = channel.get_script_data_provider().get_script(&channel, reactor->get_reactor_id(), data::type::script_types::reactor);
 		// TODO FIXME reactor
 		// Not sure if this reactor identifier dispatch is correct
 		lua::lua_reactor{filename, player->get_id(), static_cast<game_map_object>(map::make_reactor_id(reactor->get_id())), reactor->get_map_id()};

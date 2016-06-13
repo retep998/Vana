@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "map.hpp"
 #include "common/algorithm.hpp"
+#include "common/data/provider/npc.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/misc_utilities.hpp"
-#include "common/npc_data_provider.hpp"
 #include "common/packet_wrapper.hpp"
 #include "common/randomizer.hpp"
 #include "common/session.hpp"
@@ -116,25 +116,27 @@ auto map::make_reactor_id() -> game_map_object {
 }
 
 // Data initialization
-auto map::add_foothold(const foothold_info &foothold) -> void {
+auto map::add_foothold(const data::type::foothold_info &foothold) -> void {
 	m_footholds.push_back(foothold);
 	if (m_infer_size_from_footholds) {
 		m_real_dimensions = m_real_dimensions.combine(foothold.line.make_rect());
 	}
 }
 
-auto map::add_seat(const seat_info &seat) -> void {
-	m_seats[seat.id] = seat;
+auto map::add_seat(const data::type::seat_info &seat) -> void {
+	map_seat record;
+	record.info = seat;
+	m_seats[seat.id] = record;
 }
 
-auto map::add_reactor_spawn(const reactor_spawn_info &spawn) -> void {
+auto map::add_reactor_spawn(const data::type::reactor_spawn_info &spawn) -> void {
 	m_reactor_spawns.push_back(spawn);
 	m_reactor_spawns[m_reactor_spawns.size() - 1].spawned = true;
 	reactor *value = new reactor{get_id(), spawn.id, spawn.pos, spawn.faces_left};
 	send(packets::spawn_reactor(value));
 }
 
-auto map::add_mob_spawn(const mob_spawn_info &spawn) -> void {
+auto map::add_mob_spawn(const data::type::mob_spawn_info &spawn) -> void {
 	m_mob_spawns.push_back(spawn);
 	m_mob_spawns[m_mob_spawns.size() - 1].spawned = true;
 	auto info = channel_server::get_instance().get_mob_data_provider().get_mob_info(spawn.id);
@@ -145,7 +147,7 @@ auto map::add_mob_spawn(const mob_spawn_info &spawn) -> void {
 	spawn_mob(m_mob_spawns.size() - 1, spawn);
 }
 
-auto map::add_portal(const portal_info &portal) -> void {
+auto map::add_portal(const data::type::portal_info &portal) -> void {
 	if (portal.name == "sp") {
 		m_spawn_points[portal.id] = portal;
 	}
@@ -353,7 +355,7 @@ auto map::get_num_reactors() const -> size_t {
 }
 
 auto map::remove_reactor(size_t id) -> void {
-	reactor_spawn_info &info = m_reactor_spawns[id];
+	data::type::reactor_spawn_info &info = m_reactor_spawns[id];
 	if (info.time >= 0) {
 		// We don't want to respawn -1s, leave that to some script
 		time_point reactor_respawn = utilities::time::get_now_with_time_added(seconds{info.time});
@@ -380,7 +382,7 @@ auto map::find_floor(const point &pos, point &floor_pos, game_coord start_height
 	game_coord y = pos.y + start_height_modifier;
 	game_coord closest_value = std::numeric_limits<game_coord>::max();
 	bool any_found = false;
-	foothold_info const * found_foothold = nullptr;
+	data::type::foothold_info const * found_foothold = nullptr;
 
 	for (const auto &foothold : m_footholds) {
 		const line &line = foothold.line;
@@ -432,7 +434,7 @@ auto map::find_random_floor_pos() -> point {
 }
 
 auto map::find_random_floor_pos(const rect &area) -> point {
-	vector<const foothold_info *> valid_footholds;
+	vector<const data::type::foothold_info *> valid_footholds;
 	rect inside_map_area = area.intersection(m_real_dimensions);
 	for (const auto &foothold : m_footholds) {
 		// Vertical lines can't be "floors"
@@ -524,12 +526,12 @@ auto map::get_position_at_foothold(game_foothold_id id) -> point {
 }
 
 // Portals
-auto map::get_portal(const string &name) const -> const portal_info * const {
+auto map::get_portal(const string &name) const -> const data::type::portal_info * const {
 	auto portal = m_portals.find(name);
 	return portal != std::end(m_portals) ? &portal->second : nullptr;
 }
 
-auto map::get_spawn_point(game_portal_id portal_id) const -> const portal_info * const {
+auto map::get_spawn_point(game_portal_id portal_id) const -> const data::type::portal_info * const {
 	game_portal_id id = portal_id != -1 ?
 		portal_id :
 		randomizer::rand<game_portal_id>(static_cast<game_portal_id>(m_spawn_points.size()) - 1);
@@ -538,7 +540,7 @@ auto map::get_spawn_point(game_portal_id portal_id) const -> const portal_info *
 	return &iter->second;
 }
 
-auto map::query_portal_name(const string &name, ref_ptr<player> player) const -> const portal_info * const {
+auto map::query_portal_name(const string &name, ref_ptr<player> player) const -> const data::type::portal_info * const {
 	return name.empty() ?
 		nullptr :
 		(name == "sp" ?
@@ -552,11 +554,11 @@ auto map::set_portal_state(const string &name, bool enabled) -> void {
 	m_portals[name].disabled = !enabled;
 }
 
-auto map::get_nearest_spawn_point(const point &pos) const -> const portal_info * const {
+auto map::get_nearest_spawn_point(const point &pos) const -> const data::type::portal_info * const {
 	game_portal_id id = -1;
 	int32_t distance = 200000;
 	for (const auto &kvp : m_spawn_points) {
-		const portal_info &info = kvp.second;
+		const data::type::portal_info &info = kvp.second;
 		int32_t cmp = info.pos - pos;
 		if (cmp < distance) {
 			id = kvp.first;
@@ -609,14 +611,14 @@ auto map::get_mystic_door_portal(ref_ptr<player> player, uint8_t zero_based_part
 		return mystic_door_open_result{mystic_door_result::no_space};
 	}
 
-	const portal_info * const portal = &m_door_points[zero_based_party_index];
+	const data::type::portal_info * const portal = &m_door_points[zero_based_party_index];
 	return mystic_door_open_result{get_id(), portal};
 }
 
 // NPCs
 auto map::remove_npc(size_t index) -> void {
 	if (is_valid_npc_index(index)) {
-		npc_spawn_info npc = m_npc_spawns[index];
+		data::type::npc_spawn_info npc = m_npc_spawns[index];
 		game_map_object id = make_npc_id();
 		send(packets::npc::show_npc(npc, id, false));
 		send(packets::npc::control_npc(npc, id, false));
@@ -624,7 +626,7 @@ auto map::remove_npc(size_t index) -> void {
 	}
 }
 
-auto map::add_npc(const npc_spawn_info &npc) -> game_map_object {
+auto map::add_npc(const data::type::npc_spawn_info &npc) -> game_map_object {
 	m_npc_spawns.push_back(npc);
 	game_map_object id = make_npc_id();
 	send(packets::npc::show_npc(npc, id));
@@ -641,7 +643,7 @@ auto map::is_valid_npc_index(size_t id) const -> bool {
 	return id < m_npc_spawns.size();
 }
 
-auto map::get_npc(size_t id) const -> npc_spawn_info {
+auto map::get_npc(size_t id) const -> data::type::npc_spawn_info {
 	return m_npc_spawns[id];
 }
 
@@ -665,7 +667,7 @@ auto map::spawn_mob(game_mob_id mob_id, const point &pos, game_foothold_id footh
 	return value;
 }
 
-auto map::spawn_mob(int32_t spawn_id, const mob_spawn_info &info) -> ref_ptr<mob> {
+auto map::spawn_mob(int32_t spawn_id, const data::type::mob_spawn_info &info) -> ref_ptr<mob> {
 	game_map_object id = m_object_ids.lease();
 
 	ref_ptr<mob> no_owner = nullptr;
@@ -837,7 +839,7 @@ auto map::mob_death(ref_ptr<mob> mob_value, bool from_explosion) -> void {
 
 		int32_t spawn_id = mob_value->get_spawn_id();
 		if (spawn_id >= 0) {
-			mob_spawn_info &spawn = m_mob_spawns[spawn_id];
+			data::type::mob_spawn_info &spawn = m_mob_spawns[spawn_id];
 			if (spawn.time != -1) {
 				// Add spawn point to respawns if mob was spawned by a spawn point
 				// Randomly spawn between 1x and 2x the spawn time
@@ -856,7 +858,7 @@ auto map::mob_death(ref_ptr<mob> mob_value, bool from_explosion) -> void {
 	}
 }
 
-auto map::mob_summon_skill_used(ref_ptr<mob> mob, const mob_skill_level_info * const skill) -> void {
+auto map::mob_summon_skill_used(ref_ptr<mob> mob, const data::type::mob_skill_level_info * const skill) -> void {
 	if (m_mobs.size() > 50) {
 		return;
 	}
@@ -1015,6 +1017,7 @@ auto map::seat_occupied(game_seat_id id) -> bool {
 		// Hacking
 		return true;
 	}
+
 	return seat->second.occupant != nullptr;
 }
 
@@ -1024,7 +1027,8 @@ auto map::player_seated(game_seat_id id, ref_ptr<player> player) -> void {
 		// Hacking
 		return;
 	}
-	seat->second.occupant = player;
+
+	seat->second.occupant = player.get();
 }
 
 // Mists
@@ -1084,7 +1088,7 @@ auto map::respawn(int8_t types) -> void {
 	if (types & spawn_types::mob) {
 		m_mob_respawns.clear();
 		for (size_t spawn_id = 0; spawn_id < m_mob_spawns.size(); spawn_id++) {
-			mob_spawn_info &info = m_mob_spawns[spawn_id];
+			data::type::mob_spawn_info &info = m_mob_spawns[spawn_id];
 			if (!info.spawned) {
 				info.spawned = true;
 				spawn_mob(spawn_id, info);

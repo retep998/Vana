@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "lua_npc.hpp"
-#include "common/script_data_provider.hpp"
+#include "common/data/provider/script.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/npc.hpp"
 #include "channel_server/player.hpp"
@@ -126,10 +126,10 @@ auto lua_exports::run_npc_npc(lua_State *lua_vm) -> lua_return {
 	if (env.is(lua_vm, 2, lua_type::string)) {
 		// We already have our script name
 		string specified = env.get<string>(lua_vm, 2);
-		script = channel.get_script_data_provider().build_script_path(script_types::npc, specified);
+		script = channel.get_script_data_provider().build_script_path(data::type::script_types::npc, specified);
 	}
 	else {
-		script = channel.get_script_data_provider().get_script(&channel, npc_id, script_types::npc);
+		script = channel.get_script_data_provider().get_script(&channel, npc_id, data::type::script_types::npc);
 	}
 	get_npc(lua_vm, env)->set_end_script(npc_id, script);
 	return 0;

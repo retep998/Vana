@@ -251,7 +251,7 @@ auto party::is_within_level_range(game_player_level low_bound, game_player_level
 
 auto party::warp_all_members(game_map_id map_id, const string &portal_name) -> void {
 	if (map *destination = maps::get_map(map_id)) {
-		const portal_info * const destination_portal = destination->query_portal_name(portal_name);
+		const data::type::portal_info * const destination_portal = destination->query_portal_name(portal_name);
 		run_function([&](ref_ptr<player> test) {
 			test->set_map(map_id, destination_portal);
 		});

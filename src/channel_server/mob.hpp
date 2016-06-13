@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/mob_data_provider.hpp"
+#include "common/data/provider/mob.hpp"
 #include "common/point.hpp"
 #include "common/timer/container_holder.hpp"
 #include "common/types.hpp"
@@ -29,8 +29,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace vana {
 	class packet_builder;
-	struct mob_skill_info;
-	struct mob_skill_level_info;
 	struct mp_eater_data;
 
 	namespace channel_server {
@@ -144,7 +142,7 @@ namespace vana {
 			time_point m_last_skill_use;
 			view_ptr<mob> m_owner;
 			view_ptr<mob> m_sponge;
-			const ref_ptr<mob_info> m_info;
+			const ref_ptr<data::type::mob_info> m_info;
 			vector<ref_ptr<player>> m_markers;
 			ord_map<int32_t, status_info> m_statuses;
 			hash_map<game_player_id, uint64_t> m_damages;

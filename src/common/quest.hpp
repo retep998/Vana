@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/quest_request_info.hpp"
-#include "common/quest_reward_info.hpp"
+#include "common/data/type/quest_request_info.hpp"
+#include "common/data/type/quest_reward_info.hpp"
 #include "common/quest_state_data.hpp"
 #include "common/types.hpp"
 #include <functional>
@@ -29,19 +29,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 namespace vana {
+	namespace data {
+		namespace provider {
+			class quest;
+		}
+	}
+
 	class quest {
 	public:
 		auto get_next_quest() const -> game_quest_id;
 		auto get_quest_id() const -> game_quest_id;
-		auto for_each_request(bool start, function<iteration_result (const quest_request_info &)> func) const -> completion_result;
-		auto for_each_reward(bool start, game_job_id job, function<iteration_result (const quest_reward_info &)> func) const -> completion_result;
+		auto for_each_request(bool start, function<iteration_result (const data::type::quest_request_info &)> func) const -> completion_result;
+		auto for_each_reward(bool start, game_job_id job, function<iteration_result (const data::type::quest_reward_info &)> func) const -> completion_result;
 	private:
-		friend class quest_data_provider;
+		friend class data::provider::quest;
 
 		auto set_next_quest(game_quest_id quest_id) -> void;
 		auto set_quest_id(game_quest_id quest_id) -> void;
-		auto add_reward(bool start, const quest_reward_info &info, game_job_id job = -1) -> void;
-		auto add_request(bool start, const quest_request_info &info) -> void;
+		auto add_reward(bool start, const data::type::quest_reward_info &info, game_job_id job = -1) -> void;
+		auto add_request(bool start, const data::type::quest_request_info &info) -> void;
 
 		quest_state_data m_begin_state;
 		quest_state_data m_end_state;

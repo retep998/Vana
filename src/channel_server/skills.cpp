@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "skills.hpp"
+#include "common/data/provider/skill.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
 #include "common/randomizer.hpp"
-#include "common/skill_data_provider.hpp"
 #include "common/time_utilities.hpp"
 #include "common/timer/timer.hpp"
 #include "channel_server/buffs.hpp"
@@ -82,16 +82,16 @@ auto skills::cancel_skill(ref_ptr<player> player, packet_reader &reader) -> void
 	stop_skill(player, player->get_active_buffs()->translate_to_source(identifier));
 }
 
-auto skills::stop_skill(ref_ptr<player> player, const buff_source &source, bool from_timer) -> void {
+auto skills::stop_skill(ref_ptr<player> player, const data::type::buff_source &source, bool from_timer) -> void {
 	switch (source.get_type()) {
-		case buff_source_type::item:
-		case buff_source_type::skill:
+		case data::type::buff_source_type::item:
+		case data::type::buff_source_type::skill:
 			if (source.get_skill_level() == 0) {
 				// Hacking
 				return;
 			}
 			break;
-		case buff_source_type::mob_skill:
+		case data::type::buff_source_type::mob_skill:
 			if (source.get_mob_skill_level() == 0) {
 				// Hacking
 				return;
@@ -613,7 +613,7 @@ auto skills::use_attack_skill_ranged(ref_ptr<player> player, game_skill_id skill
 	return result::successful;
 }
 
-auto skills::heal(ref_ptr<player> player, int64_t value, const buff_source &source) -> void {
+auto skills::heal(ref_ptr<player> player, int64_t value, const data::type::buff_source &source) -> void {
 	if (player->get_stats()->get_hp() < player->get_stats()->get_max_hp() && player->get_stats()->get_hp() > 0) {
 		game_health val = static_cast<game_health>(value);
 		player->get_stats()->modify_hp(val);
@@ -621,9 +621,9 @@ auto skills::heal(ref_ptr<player> player, int64_t value, const buff_source &sour
 	}
 }
 
-auto skills::hurt(ref_ptr<player> player, int64_t value, const buff_source &source) -> void {
+auto skills::hurt(ref_ptr<player> player, int64_t value, const data::type::buff_source &source) -> void {
 	game_health val = static_cast<game_health>(value);
-	if (source.get_type() != buff_source_type::skill) throw not_implemented_exception{"hurt buff_source_type"};
+	if (source.get_type() != data::type::buff_source_type::skill) throw not_implemented_exception{"hurt buff_source_type"};
 	if (player->get_stats()->get_hp() - val > 1) {
 		player->get_stats()->modify_hp(-val);
 		player->send_map(packets::skills::show_skill_effect(player->get_id(), source.get_skill_id()));

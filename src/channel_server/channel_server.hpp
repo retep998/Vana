@@ -18,23 +18,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "common/abstract_server.hpp"
-#include "common/beauty_data_provider.hpp"
-#include "common/buff_data_provider.hpp"
-#include "common/curse_data_provider.hpp"
-#include "common/drop_data_provider.hpp"
-#include "common/equip_data_provider.hpp"
+#include "common/data/provider/beauty.hpp"
+#include "common/data/provider/buff.hpp"
+#include "common/data/provider/curse.hpp"
+#include "common/data/provider/drop.hpp"
+#include "common/data/provider/equip.hpp"
+#include "common/data/provider/item.hpp"
+#include "common/data/provider/mob.hpp"
+#include "common/data/provider/npc.hpp"
+#include "common/data/provider/quest.hpp"
+#include "common/data/provider/reactor.hpp"
+#include "common/data/provider/script.hpp"
+#include "common/data/provider/skill.hpp"
+#include "common/data/provider/shop.hpp"
+#include "common/data/provider/valid_char.hpp"
 #include "common/finalization_pool.hpp"
 #include "common/ip.hpp"
-#include "common/item_data_provider.hpp"
-#include "common/mob_data_provider.hpp"
-#include "common/npc_data_provider.hpp"
-#include "common/quest_data_provider.hpp"
-#include "common/reactor_data_provider.hpp"
-#include "common/script_data_provider.hpp"
-#include "common/skill_data_provider.hpp"
-#include "common/shop_data_provider.hpp"
 #include "common/types.hpp"
-#include "common/valid_char_data_provider.hpp"
 #include "common/world_config.hpp"
 #include "channel_server/event_data_provider.hpp"
 #include "channel_server/instances.hpp"
@@ -70,20 +70,20 @@ namespace vana {
 
 			auto reload_data(const string &args) -> void;
 
-			auto get_valid_char_data_provider() const -> const valid_char_data_provider &;
-			auto get_equip_data_provider() const -> const equip_data_provider &;
-			auto get_curse_data_provider() const -> const curse_data_provider &;
-			auto get_npc_data_provider() const -> const npc_data_provider &;
-			auto get_mob_data_provider() const -> const mob_data_provider &;
-			auto get_beauty_data_provider() const -> const beauty_data_provider &;
-			auto get_drop_data_provider() const -> const drop_data_provider &;
-			auto get_skill_data_provider() const -> const skill_data_provider &;
-			auto get_shop_data_provider() const -> const shop_data_provider &;
-			auto get_script_data_provider() const -> const script_data_provider &;
-			auto get_reactor_data_provider() const -> const reactor_data_provider &;
-			auto get_item_data_provider() const -> const item_data_provider &;
-			auto get_quest_data_provider() const -> const quest_data_provider &;
-			auto get_buff_data_provider() const -> const buff_data_provider &;
+			auto get_valid_char_data_provider() const -> const data::provider::valid_char &;
+			auto get_equip_data_provider() const -> const data::provider::equip &;
+			auto get_curse_data_provider() const -> const data::provider::curse &;
+			auto get_npc_data_provider() const -> const data::provider::npc &;
+			auto get_mob_data_provider() const -> const data::provider::mob &;
+			auto get_beauty_data_provider() const -> const data::provider::beauty &;
+			auto get_drop_data_provider() const -> const data::provider::drop &;
+			auto get_skill_data_provider() const -> const data::provider::skill &;
+			auto get_shop_data_provider() const -> const data::provider::shop &;
+			auto get_script_data_provider() const -> const data::provider::script &;
+			auto get_reactor_data_provider() const -> const data::provider::reactor &;
+			auto get_item_data_provider() const -> const data::provider::item &;
+			auto get_quest_data_provider() const -> const data::provider::quest &;
+			auto get_buff_data_provider() const -> const data::provider::buff &;
 			auto get_event_data_provider() const -> const event_data_provider &;
 			auto get_map_data_provider() const -> const map_data_provider &;
 			auto get_player_data_provider() -> player_data_provider &;
@@ -121,20 +121,20 @@ namespace vana {
 			ref_ptr<login_server_session> m_login_connection;
 			finalization_pool<player> m_session_pool;
 
-			valid_char_data_provider m_valid_char_data_provider;
-			equip_data_provider m_equip_data_provider;
-			curse_data_provider m_curse_data_provider;
-			npc_data_provider m_npc_data_provider;
-			mob_data_provider m_mob_data_provider;
-			beauty_data_provider m_beauty_data_provider;
-			drop_data_provider m_drop_data_provider;
-			skill_data_provider m_skill_data_provider;
-			shop_data_provider m_shop_data_provider;
-			script_data_provider m_script_data_provider;
-			reactor_data_provider m_reactor_data_provider;
-			item_data_provider m_item_data_provider;
-			quest_data_provider m_quest_data_provider;
-			buff_data_provider m_buff_data_provider;
+			data::provider::valid_char m_valid_char_data_provider;
+			data::provider::equip m_equip_data_provider;
+			data::provider::curse m_curse_data_provider;
+			data::provider::npc m_npc_data_provider;
+			data::provider::mob m_mob_data_provider;
+			data::provider::beauty m_beauty_data_provider;
+			data::provider::drop m_drop_data_provider;
+			data::provider::skill m_skill_data_provider;
+			data::provider::shop m_shop_data_provider;
+			data::provider::script m_script_data_provider;
+			data::provider::reactor m_reactor_data_provider;
+			data::provider::item m_item_data_provider;
+			data::provider::quest m_quest_data_provider;
+			data::provider::buff m_buff_data_provider;
 			event_data_provider m_event_data_provider;
 			map_data_provider m_map_data_provider;
 			player_data_provider m_player_data_provider;

@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_quests.hpp"
 #include "common/algorithm.hpp"
+#include "common/data/provider/quest.hpp"
 #include "common/database.hpp"
 #include "common/game_logic_utilities.hpp"
-#include "common/quest_data_provider.hpp"
 #include "common/randomizer.hpp"
 #include "common/time_utilities.hpp"
 #include "channel_server/channel_server.hpp"
@@ -170,7 +170,7 @@ auto player_quests::add_quest(game_quest_id quest_id, game_npc_id npc_id) -> voi
 	m_quests[quest_id] = quest;
 
 	auto &quest_info = channel_server::get_instance().get_quest_data_provider().get_info(quest_id);
-	quest_info.for_each_request(false, [&](const quest_request_info &info) -> iteration_result {
+	quest_info.for_each_request(false, [&](const data::type::quest_request_info &info) -> iteration_result {
 		if (info.is_mob) {
 			quest.kills[info.id] = 0;
 			m_mob_to_quest_mapping[info.id].push_back(quest_id);
@@ -197,7 +197,7 @@ auto player_quests::update_quest_mob(game_mob_id mob_id) -> void {
 		auto &quest_info = channel_server::get_instance().get_quest_data_provider().get_info(quest_id);
 		bool possibly_completed = false;
 		bool any_update = false;
-		quest_info.for_each_request(false, [&](const quest_request_info &info) -> iteration_result {
+		quest_info.for_each_request(false, [&](const data::type::quest_request_info &info) -> iteration_result {
 			if (info.is_mob && info.id == mob_id && quest.kills[info.id] < info.count) {
 				quest.kills[info.id]++;
 				any_update = true;
@@ -220,7 +220,7 @@ auto player_quests::update_quest_mob(game_mob_id mob_id) -> void {
 auto player_quests::check_done(active_quest &quest) -> void {
 	auto &quest_info = channel_server::get_instance().get_quest_data_provider().get_info(quest.id);
 
-	quest.done = completion_result::complete == quest_info.for_each_request(false, [&](const quest_request_info &info) -> iteration_result {
+	quest.done = completion_result::complete == quest_info.for_each_request(false, [&](const data::type::quest_request_info &info) -> iteration_result {
 		if (info.is_mob) {
 			if (quest.kills[info.id] < info.count) {
 				return iteration_result::stop_iterating;
@@ -247,7 +247,7 @@ auto player_quests::finish_quest(game_quest_id quest_id, game_npc_id npc_id) -> 
 		return;
 	}
 
-	quest_info.for_each_request(false, [&](const quest_request_info &info) -> iteration_result {
+	quest_info.for_each_request(false, [&](const data::type::quest_request_info &info) -> iteration_result {
 		if (info.is_mob) {
 			auto &mapping = m_mob_to_quest_mapping[info.id];
 			if (mapping.size() == 1) {
@@ -274,7 +274,7 @@ auto player_quests::item_drop_allowed(game_item_id item_id, game_quest_id quest_
 	}
 	auto &info = channel_server::get_instance().get_quest_data_provider().get_info(quest_id);
 	game_slot_qty quest_amount = 0;
-	info.for_each_request(false, [&quest_amount, item_id](const quest_request_info &info) -> iteration_result {
+	info.for_each_request(false, [&quest_amount, item_id](const data::type::quest_request_info &info) -> iteration_result {
 		if (info.is_item && info.id == item_id) {
 			quest_amount += info.count;
 		}
@@ -295,7 +295,7 @@ auto player_quests::give_rewards(game_quest_id quest_id, bool start) -> result {
 	array<game_inventory, constant::inventory::count> needed_slots = {0};
 	array<bool, constant::inventory::count> chance_item = {false};
 
-	auto check_rewards = [this, &quest_id, &needed_slots, &chance_item](const quest_reward_info &info) -> iteration_result {
+	auto check_rewards = [this, &quest_id, &needed_slots, &chance_item](const data::type::quest_reward_info &info) -> iteration_result {
 		if (info.is_item) {
 			game_inventory inv = game_logic_utilities::get_inventory(info.id) - 1;
 			if (info.count > 0) {
@@ -331,10 +331,10 @@ auto player_quests::give_rewards(game_quest_id quest_id, bool start) -> result {
 		}
 	}
 
-	vector<quest_reward_info> items;
+	vector<data::type::quest_reward_info> items;
 	int32_t chance = 0;
 	auto ref_player = ref_ptr<player>{m_player};
-	quest_info.for_each_reward(start, job, [this, ref_player, &chance, &items](const quest_reward_info &info) -> iteration_result {
+	quest_info.for_each_reward(start, job, [this, ref_player, &chance, &items](const data::type::quest_reward_info &info) -> iteration_result {
 		if (info.is_item && info.prop > 0) {
 			chance += info.prop;
 			items.push_back(info);

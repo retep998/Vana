@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "initialize_common.hpp"
 #include "common/abstract_server.hpp"
+#include "common/data/version.hpp"
 #include "common/database.hpp"
 #include "common/database_updater.hpp"
 #include "common/exit_codes.hpp"
 #include "common/maple_version.hpp"
-#include "common/mcdb_version.hpp"
 #include "common/time_utilities.hpp"
 #include <cstdio>
 #include <iomanip>
@@ -59,18 +59,18 @@ auto check_mcdb_version(abstract_server *server) -> result {
 		return result::failure;
 	}
 
-	int32_t version = row.get<int32_t>("version");
-	int32_t subversion = row.get<int32_t>("subversion");
+	int32_t major_version = row.get<int32_t>("version");
+	int32_t minor_version = row.get<int32_t>("subversion");
 	game_version maple_version = row.get<game_version>("maple_version");
 	bool test_server = row.get<bool>("test_server");
 	string maple_locale = row.get<string>("maple_locale");
 
-	if (version != mcdb::major_version || subversion != mcdb::sub_version) {
+	if (major_version != data::version::major || minor_version != data::version::minor) {
 		server->log(log_type::critical_error, [&](out_stream &str) {
 			str
 				<< "MCDB version incompatible." << std::endl
-				<< "Vana: " << mcdb::major_version << "." << mcdb::sub_version << std::endl
-				<< "MCDB: " << version << "." << subversion;
+				<< "Vana: " << data::version::major << "." << data::version::minor << std::endl
+				<< "MCDB: " << major_version << "." << minor_version;
 		});
 		exit(exit_code::mcdb_incompatible);
 		return result::failure;
@@ -84,11 +84,11 @@ auto check_mcdb_version(abstract_server *server) -> result {
 		return loc;
 	};
 
-	if (maple_locale != mcdb::locale || test_server != mcdb::is_test_server) {
+	if (maple_locale != data::version::locale || test_server != data::version::is_test_server) {
 		server->log(log_type::critical_error, [&](out_stream &str) {
 			str
 			<< "Your MCDB is designed for different locale." << std::endl
-			<< "Vana: " << make_locale(mcdb::locale, mcdb::is_test_server) << std::endl
+			<< "Vana: " << make_locale(data::version::locale, data::version::is_test_server) << std::endl
 			<< "MCDB: " << make_locale(maple_locale, test_server);
 		});
 		exit(exit_code::mcdb_locale_incompatible);

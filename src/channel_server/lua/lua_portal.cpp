@@ -25,7 +25,7 @@ namespace vana {
 namespace channel_server {
 namespace lua {
 
-lua_portal::lua_portal(const string &filename, game_player_id player_id, game_map_id map_id, const portal_info * const portal) :
+lua_portal::lua_portal(const string &filename, game_player_id player_id, game_map_id map_id, const data::type::portal_info * const portal) :
 	lua_scriptable{filename, player_id}
 {
 	set<game_portal_id>("system_portal_id", portal->id);

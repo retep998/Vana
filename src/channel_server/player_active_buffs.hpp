@@ -17,7 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/buff_info.hpp"
+#include "common/data/type/buff_info.hpp"
+#include "common/data/type/buff_source_type.hpp"
 #include "common/i_packet.hpp"
 #include "common/types.hpp"
 #include "channel_server/buffs.hpp"
@@ -32,7 +33,11 @@ namespace vana {
 	namespace timer {
 		class container;
 	}
-	struct skill_level_info;
+	namespace data {
+		namespace type {
+			struct skill_level_info;
+		}
+	}
 
 	namespace channel_server {
 		class player;
@@ -44,14 +49,14 @@ namespace vana {
 			player_active_buffs(player *player);
 
 			// Buff handling
-			auto translate_to_source(int32_t buff_id) const -> buff_source;
-			auto add_buff(const buff_source &source, const buff &buff, const seconds &time) -> result;
-			auto remove_buff(const buff_source &source, const buff &buff, bool from_timer = false) -> void;
+			auto translate_to_source(int32_t buff_id) const -> data::type::buff_source;
+			auto add_buff(const data::type::buff_source &source, const data::type::buff &buff, const seconds &time) -> result;
+			auto remove_buff(const data::type::buff_source &source, const data::type::buff &buff, bool from_timer = false) -> void;
 			auto remove_buffs() -> void;
 			auto dispel_buffs() -> void;
 
 			// Buff info
-			auto get_buff_skill_info(const buff_source &source) const -> const skill_level_info * const;
+			auto get_buff_skill_info(const data::type::buff_source &source) const -> const data::type::skill_level_info * const;
 			auto get_map_buff_values() -> buff_packet_structure;
 
 			// Debuffs
@@ -94,27 +99,27 @@ namespace vana {
 			auto has_shadow_partner() const -> bool;
 			auto has_shadow_stars() const -> bool;
 			auto has_soul_arrow() const -> bool;
-			auto has_buff(buff_source_type type, int32_t buff_id) const -> bool;
+			auto has_buff(data::type::buff_source_type type, int32_t buff_id) const -> bool;
 			auto is_using_gm_hide() const -> bool;
 			auto is_cursed() const -> bool;
 			auto get_holy_symbol_rate() const -> int16_t;
 			auto get_mount_item_id() const -> game_item_id;
-			auto get_holy_symbol_source() const -> optional<buff_source>;
-			auto get_power_stance_source() const -> optional<buff_source>;
-			auto get_hyper_body_hp_source() const -> optional<buff_source>;
-			auto get_hyper_body_mp_source() const -> optional<buff_source>;
-			auto get_magic_guard_source() const -> optional<buff_source>;
-			auto get_meso_guard_source() const -> optional<buff_source>;
-			auto get_meso_up_source() const -> optional<buff_source>;
-			auto get_homing_beacon_source() const -> optional<buff_source>;
-			auto get_combo_source() const -> optional<buff_source>;
-			auto get_charge_source() const -> optional<buff_source>;
-			auto get_dark_sight_source() const -> optional<buff_source>;
-			auto get_pickpocket_source() const -> optional<buff_source>;
-			auto get_hamstring_source() const -> optional<buff_source>;
-			auto get_blind_source() const -> optional<buff_source>;
-			auto get_concentrate_source() const -> optional<buff_source>;
-			auto get_buff_source(const buff_info &buff) const -> optional<buff_source>;
+			auto get_holy_symbol_source() const -> optional<data::type::buff_source>;
+			auto get_power_stance_source() const -> optional<data::type::buff_source>;
+			auto get_hyper_body_hp_source() const -> optional<data::type::buff_source>;
+			auto get_hyper_body_mp_source() const -> optional<data::type::buff_source>;
+			auto get_magic_guard_source() const -> optional<data::type::buff_source>;
+			auto get_meso_guard_source() const -> optional<data::type::buff_source>;
+			auto get_meso_up_source() const -> optional<data::type::buff_source>;
+			auto get_homing_beacon_source() const -> optional<data::type::buff_source>;
+			auto get_combo_source() const -> optional<data::type::buff_source>;
+			auto get_charge_source() const -> optional<data::type::buff_source>;
+			auto get_dark_sight_source() const -> optional<data::type::buff_source>;
+			auto get_pickpocket_source() const -> optional<data::type::buff_source>;
+			auto get_hamstring_source() const -> optional<data::type::buff_source>;
+			auto get_blind_source() const -> optional<data::type::buff_source>;
+			auto get_concentrate_source() const -> optional<data::type::buff_source>;
+			auto get_buff_source(const data::type::buff_info &buff) const -> optional<data::type::buff_source>;
 			auto end_morph() -> void;
 			auto swap_weapon() -> void;
 			auto take_damage(game_damage damage) -> void;
@@ -123,28 +128,28 @@ namespace vana {
 			auto parse_transfer_packet(packet_reader &reader) -> void;
 		private:
 			struct local_buff_info {
-				buff raw;
-				buff_source_type type;
+				data::type::buff raw;
+				data::type::buff_source_type type;
 				int32_t identifier;
 				int32_t level;
 
-				auto to_source() const -> buff_source;
+				auto to_source() const -> data::type::buff_source;
 			};
 
-			auto translate_to_packet(const buff_source &source) const -> int32_t;
-			auto has_buff(const buff_info &buff) const -> bool;
+			auto translate_to_packet(const data::type::buff_source &source) const -> int32_t;
+			auto has_buff(const data::type::buff_info &buff) const -> bool;
 			auto has_buff(uint8_t bit_position) const -> bool;
-			auto get_buff(uint8_t bit_position) const -> optional<buff_source>;
-			auto get_buff_level(buff_source_type type, int32_t buff_id) const -> game_skill_level;
-			auto get_buff_seconds_remaining(buff_source_type type, int32_t buff_id) const -> seconds;
-			auto get_buff_seconds_remaining(const buff_source &source) const -> seconds;
+			auto get_buff(uint8_t bit_position) const -> optional<data::type::buff_source>;
+			auto get_buff_level(data::type::buff_source_type type, int32_t buff_id) const -> game_skill_level;
+			auto get_buff_seconds_remaining(data::type::buff_source_type type, int32_t buff_id) const -> seconds;
+			auto get_buff_seconds_remaining(const data::type::buff_source &source) const -> seconds;
 			auto calculate_debuff_mask_bit(game_mob_skill_id skill_id) const -> int32_t;
 			auto decrease_energy_charge_level() -> void;
 			auto start_energy_charge_timer() -> void;
 			auto stop_energy_charge_timer() -> void;
 			auto stop_booster() -> void;
 			auto stop_bullet_skills() -> void;
-			auto stop_skill(const buff_source &source) -> void;
+			auto stop_skill(const data::type::buff_source &source) -> void;
 			auto set_combo(uint8_t combo) -> void;
 
 			bool m_berserk = false;

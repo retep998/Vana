@@ -27,15 +27,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace vana {
 	class database;
-	class equip_data_provider;
 	class soci::row;
+
+	namespace data {
+		namespace provider {
+			class equip;
+		}
+	}
 
 	class item {
 	public:
 		item() = default;
 		item(const soci::row &row);
 		item(game_item_id item_id, game_slot_qty amount);
-		item(const equip_data_provider &provider, game_item_id equip_id, stat_variance policy, bool is_gm);
+		item(const data::provider::equip &provider, game_item_id equip_id, stat_variance policy, bool is_gm);
 		item(item *item);
 
 		auto has_warm_support() const -> bool;

@@ -21,10 +21,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 namespace vana {
-	class buff_info;
 	class packet_reader;
-	struct skill_level_info;
 	template <typename TIdentifier> class id_pool;
+	namespace data {
+		namespace type {
+			class buff_info;
+			struct skill_level_info;
+		}
+	}
 
 	namespace channel_server {
 		class player;
@@ -46,8 +50,8 @@ namespace vana {
 			auto show_summons(ref_ptr<player> from_player, ref_ptr<player> to_player) -> void;
 			auto move_summon(ref_ptr<player> player, packet_reader &reader) -> void;
 			auto damage_summon(ref_ptr<player> player, packet_reader &reader) -> void;
-			auto make_buff(ref_ptr<player> player, game_item_id item_id) -> buff_info;
-			auto make_active_buff(ref_ptr<player> player, const buff_info &data, game_item_id item_id, const skill_level_info *skill_info) -> buff_packet_values;
+			auto make_buff(ref_ptr<player> player, game_item_id item_id) -> data::type::buff_info;
+			auto make_active_buff(ref_ptr<player> player, const data::type::buff_info &data, game_item_id item_id, const data::type::skill_level_info *skill_info) -> buff_packet_values;
 			auto summon_skill(ref_ptr<player> player, packet_reader &reader) -> void;
 		}
 	}

@@ -150,15 +150,15 @@ auto login_server::get_invalid_login_threshold() const -> int32_t {
 	return m_max_invalid_logins;
 }
 
-auto login_server::get_valid_char_data_provider() const -> const valid_char_data_provider & {
+auto login_server::get_valid_char_data_provider() const -> const data::provider::valid_char & {
 	return m_valid_char_data_provider;
 }
 
-auto login_server::get_equip_data_provider() const -> const equip_data_provider & {
+auto login_server::get_equip_data_provider() const -> const data::provider::equip & {
 	return m_equip_data_provider;
 }
 
-auto login_server::get_curse_data_provider() const -> const curse_data_provider & {
+auto login_server::get_curse_data_provider() const -> const data::provider::curse & {
 	return m_curse_data_provider;
 }
 

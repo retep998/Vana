@@ -17,12 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "mob_handler.hpp"
 #include "common/algorithm.hpp"
+#include "common/data/provider/skill.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/misc_utilities.hpp"
 #include "common/packet_reader.hpp"
 #include "common/point.hpp"
 #include "common/randomizer.hpp"
-#include "common/skill_data_provider.hpp"
 #include "common/time_utilities.hpp"
 #include "common/timer/timer.hpp"
 #include "channel_server/channel_server.hpp"
@@ -195,7 +195,7 @@ auto mob_handler::handle_mob_status(game_player_id player_id, ref_ptr<mob> mob, 
 			// Ice charges
 			auto source = player->get_active_buffs()->get_charge_source();
 			auto &buff_source = source.get();
-			if (buff_source.get_type() != buff_source_type::skill) throw not_implemented_exception{"charge buff_source_type"};
+			if (buff_source.get_type() != data::type::buff_source_type::skill) throw not_implemented_exception{"charge buff_source_type"};
 			auto skill = player->get_active_buffs()->get_buff_skill_info(buff_source);
 			statuses.emplace_back(constant::status_effect::mob::freeze, constant::status_effect::mob::freeze, buff_source.get_skill_id(), seconds{skill->y});
 		}

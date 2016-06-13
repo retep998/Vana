@@ -17,14 +17,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/quest_reward_info.hpp"
+#include "common/data/type/quest_reward_info.hpp"
 #include "common/types.hpp"
 #include <unordered_map>
 #include <vector>
 
 namespace vana {
 	struct quest_rewards_data {
-		vector<quest_reward_info> universal;
-		hash_map<game_job_id, vector<quest_reward_info>> job;
+		vector<data::type::quest_reward_info> universal;
+		hash_map<game_job_id, vector<data::type::quest_reward_info>> job;
 	};
 }

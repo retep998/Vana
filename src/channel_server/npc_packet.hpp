@@ -22,8 +22,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace vana {
 	class packet_reader;
-	struct npc_spawn_info;
 	struct shop_data;
+	namespace data {
+		namespace type {
+			struct npc_spawn_info;
+		}
+	}
 
 	namespace channel_server {
 		class player;
@@ -53,8 +57,8 @@ namespace vana {
 					};
 				}
 
-				PACKET(show_npc, const npc_spawn_info &npc, game_map_object id, bool show = true);
-				PACKET(control_npc, const npc_spawn_info &npc, game_map_object id, bool show = true);
+				PACKET(show_npc, const data::type::npc_spawn_info &npc, game_map_object id, bool show = true);
+				PACKET(control_npc, const data::type::npc_spawn_info &npc, game_map_object id, bool show = true);
 				PACKET(animate_npc, packet_reader &reader);
 				PACKET(show_npc_effect, int32_t index, bool show = false);
 				PACKET(bought, uint8_t msg);

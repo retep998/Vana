@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "npc_handler.hpp"
+#include "common/data/provider/item.hpp"
+#include "common/data/provider/npc.hpp"
+#include "common/data/provider/shop.hpp"
 #include "common/game_logic_utilities.hpp"
-#include "common/item_data_provider.hpp"
-#include "common/npc_data_provider.hpp"
 #include "common/packet_reader.hpp"
-#include "common/shop_data_provider.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/inventory.hpp"
 #include "channel_server/inventory_packet.hpp"
@@ -59,7 +59,7 @@ auto npc_handler::handle_npc(ref_ptr<player> player, packet_reader &reader) -> v
 		return;
 	}
 
-	npc_spawn_info npcs = player->get_map()->get_npc(npc_id);
+	data::type::npc_spawn_info npcs = player->get_map()->get_npc(npc_id);
 	if (player->get_npc() == nullptr && npc::has_script(npcs.id, 0, false)) {
 		npc *value = new npc{npcs.id, player, npcs.pos};
 		value->run();

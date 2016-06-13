@@ -16,19 +16,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "inventory_handler.hpp"
-#include "common/curse_data_provider.hpp"
-#include "common/equip_data_provider.hpp"
+#include "common/data/provider/curse.hpp"
+#include "common/data/provider/equip.hpp"
+#include "common/data/provider/item.hpp"
+#include "common/data/provider/mob.hpp"
+#include "common/data/provider/npc.hpp"
+#include "common/data/provider/script.hpp"
+#include "common/data/provider/shop.hpp"
+#include "common/data/provider/valid_char.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/inter_header.hpp"
-#include "common/item_data_provider.hpp"
-#include "common/mob_data_provider.hpp"
-#include "common/npc_data_provider.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
 #include "common/randomizer.hpp"
-#include "common/script_data_provider.hpp"
-#include "common/shop_data_provider.hpp"
-#include "common/valid_char_data_provider.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/drop.hpp"
 #include "channel_server/inventory.hpp"
@@ -907,7 +907,7 @@ auto inventory_handler::handle_script_item(ref_ptr<player> player, packet_reader
 	}
 
 	auto &channel = channel_server::get_instance();
-	string script_name = channel.get_script_data_provider().get_script(&channel, item_id, script_types::item);
+	string script_name = channel.get_script_data_provider().get_script(&channel, item_id, data::type::script_types::item);
 	if (script_name.empty()) {
 		// Hacking or no script for item found
 		player->send(packets::inventory::blank_update());

@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "npc.hpp"
+#include "common/data/provider/script.hpp"
 #include "common/file_utilities.hpp"
-#include "common/script_data_provider.hpp"
 #include "common/session.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/lua/lua_npc.hpp"
@@ -55,7 +55,7 @@ auto npc::has_script(int32_t npc_id, game_quest_id quest_id, bool start) -> bool
 	string script = "";
 	auto &channel = channel_server::get_instance();
 	if (quest_id == 0) {
-		script = channel.get_script_data_provider().get_script(&channel, npc_id, script_types::npc);
+		script = channel.get_script_data_provider().get_script(&channel, npc_id, data::type::script_types::npc);
 	}
 	else {
 		script = channel.get_script_data_provider().get_quest_script(&channel, quest_id, start ? 0 : 1);
@@ -66,7 +66,7 @@ auto npc::has_script(int32_t npc_id, game_quest_id quest_id, bool start) -> bool
 auto npc::get_script(game_quest_id quest_id, bool start) -> string {
 	auto &channel = channel_server::get_instance();
 	if (quest_id == 0) {
-		return channel.get_script_data_provider().get_script(&channel, m_npc_id, script_types::npc);
+		return channel.get_script_data_provider().get_script(&channel, m_npc_id, data::type::script_types::npc);
 	}
 	return channel.get_script_data_provider().get_quest_script(&channel, quest_id, start ? 0 : 1);
 }

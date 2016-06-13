@@ -21,10 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 namespace vana {
-	class buff_source;
 	class packet_reader;
-	struct mob_skill_level_info;
-	struct skill_level_info;
+	namespace data {
+		namespace type {
+			class buff_source;
+		}
+	}
 
 	namespace channel_server {
 		class party;
@@ -38,9 +40,9 @@ namespace vana {
 			auto apply_skill_costs(ref_ptr<player> player, game_skill_id skill_id, game_skill_level level, bool elemental_amp = false) -> result;
 			auto use_attack_skill(ref_ptr<player> player, game_skill_id skill_id) -> result;
 			auto use_attack_skill_ranged(ref_ptr<player> player, game_skill_id skill_id, game_inventory_slot projectile_pos, game_inventory_slot cash_projectile_pos, game_item_id projectile_id) -> result;
-			auto heal(ref_ptr<player> player, int64_t value, const buff_source &source) -> void;
-			auto hurt(ref_ptr<player> player, int64_t value, const buff_source &source) -> void;
-			auto stop_skill(ref_ptr<player> player, const buff_source &source, bool from_timer = false) -> void;
+			auto heal(ref_ptr<player> player, int64_t value, const data::type::buff_source &source) -> void;
+			auto hurt(ref_ptr<player> player, int64_t value, const data::type::buff_source &source) -> void;
+			auto stop_skill(ref_ptr<player> player, const data::type::buff_source &source, bool from_timer = false) -> void;
 			auto start_cooldown(ref_ptr<player> player, game_skill_id skill_id, seconds cool_time, bool initial_load = false) -> void;
 			auto stop_cooldown(ref_ptr<player> player, game_skill_id skill_id) -> void;
 			auto is_cooling(ref_ptr<player> player, game_skill_id skill_id) -> bool;

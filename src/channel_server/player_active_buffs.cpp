@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_active_buffs.hpp"
+#include "common/data/provider/skill.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/packet_reader.hpp"
 #include "common/randomizer.hpp"
-#include "common/skill_data_provider.hpp"
 #include "common/time_utilities.hpp"
 #include "common/timer/container.hpp"
 #include "common/timer/timer.hpp"
@@ -35,39 +35,39 @@ namespace vana {
 namespace channel_server {
 
 struct buff_run_action {
-	buff_run_action(buff_source source) :
+	buff_run_action(data::type::buff_source source) :
 		source{source}
 	{
 	}
 
 	auto operator()(const time_point &now) -> void {
 		switch (act) {
-			case buff_action::heal: skills::heal(player, value, source); break;
-			case buff_action::hurt: skills::hurt(player, value, source); break;
+			case data::type::buff_action::heal: skills::heal(player, value, source); break;
+			case data::type::buff_action::hurt: skills::hurt(player, value, source); break;
 			default: throw not_implemented_exception{"action type"};
 		}
 	}
 
 	int64_t value = 0;
-	buff_source source;
+	data::type::buff_source source;
 	ref_ptr<player> player = nullptr;
-	buff_action act;
+	data::type::buff_action act;
 };
 
-auto player_active_buffs::local_buff_info::to_source() const -> buff_source {
+auto player_active_buffs::local_buff_info::to_source() const -> data::type::buff_source {
 	switch (type) {
-		case buff_source_type::item:
-			return buff_source::from_item(identifier);
-		case buff_source_type::skill:
-			return buff_source::from_skill(
+		case data::type::buff_source_type::item:
+			return data::type::buff_source::from_item(identifier);
+		case data::type::buff_source_type::skill:
+			return data::type::buff_source::from_skill(
 				static_cast<game_skill_id>(identifier),
 				static_cast<game_skill_level>(level));
-		case buff_source_type::mob_skill:
-			return buff_source::from_mob_skill(
+		case data::type::buff_source_type::mob_skill:
+			return data::type::buff_source::from_mob_skill(
 				static_cast<game_mob_skill_id>(identifier),
 				static_cast<game_mob_skill_level>(level));
 	}
-	throw not_implemented_exception{"buff_source_type"};
+	throw not_implemented_exception{"data::type::buff_source_type"};
 }
 
 player_active_buffs::player_active_buffs(player *player) :
@@ -76,30 +76,30 @@ player_active_buffs::player_active_buffs(player *player) :
 }
 
 // Buff skills
-auto player_active_buffs::translate_to_source(int32_t buff_id) const -> buff_source {
+auto player_active_buffs::translate_to_source(int32_t buff_id) const -> data::type::buff_source {
 	if (buff_id < 0) {
-		return buff_source::from_item(-buff_id);
+		return data::type::buff_source::from_item(-buff_id);
 	}
 	if (game_logic_utilities::is_mob_skill(buff_id)) {
-		return buff_source::from_mob_skill(
+		return data::type::buff_source::from_mob_skill(
 			buff_id,
-			static_cast<game_mob_skill_level>(get_buff_level(buff_source_type::mob_skill, buff_id)));
+			static_cast<game_mob_skill_level>(get_buff_level(data::type::buff_source_type::mob_skill, buff_id)));
 	}
-	return buff_source::from_skill(
+	return data::type::buff_source::from_skill(
 		buff_id,
-		static_cast<game_skill_level>(get_buff_level(buff_source_type::skill, buff_id)));
+		static_cast<game_skill_level>(get_buff_level(data::type::buff_source_type::skill, buff_id)));
 }
 
-auto player_active_buffs::translate_to_packet(const buff_source &source) const -> int32_t {
+auto player_active_buffs::translate_to_packet(const data::type::buff_source &source) const -> int32_t {
 	switch (source.get_type()) {
-		case buff_source_type::item: return -source.get_id();
-		case buff_source_type::skill: return source.get_id();
-		case buff_source_type::mob_skill: return (source.get_mob_skill_level() << 16) | source.get_id();
+		case data::type::buff_source_type::item: return -source.get_id();
+		case data::type::buff_source_type::skill: return source.get_id();
+		case data::type::buff_source_type::mob_skill: return (source.get_mob_skill_level() << 16) | source.get_id();
 	}
-	throw not_implemented_exception{"buff_source_type"};
+	throw not_implemented_exception{"data::type::buff_source_type"};
 }
 
-auto player_active_buffs::add_buff(const buff_source &source, const buff &buff, const seconds &time) -> result {
+auto player_active_buffs::add_buff(const data::type::buff_source &source, const data::type::buff &buff, const seconds &time) -> result {
 	bool has_timer = true;
 	bool displaces = true;
 	const auto &basics = channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect();
@@ -108,16 +108,16 @@ auto player_active_buffs::add_buff(const buff_source &source, const buff &buff, 
 	auto mob_skill = source.get_mob_skill_data(skill_provider);
 
 	switch (source.get_type()) {
-		case buff_source_type::item:
+		case data::type::buff_source_type::item:
 			// Intentionally blank
 			break;
-		case buff_source_type::mob_skill: {
+		case data::type::buff_source_type::mob_skill: {
 			game_mob_skill_id skill_id = source.get_mob_skill_id();
 			int32_t mask_bit = calculate_debuff_mask_bit(skill_id);
 			m_debuff_mask |= mask_bit;
 			break;
 		}
-		case buff_source_type::skill: {
+		case data::type::buff_source_type::skill: {
 			game_skill_id skill_id = source.get_skill_id();
 			game_skill_level skill_level = source.get_skill_level();
 			switch (source.get_skill_id()) {
@@ -148,7 +148,7 @@ auto player_active_buffs::add_buff(const buff_source &source, const buff &buff, 
 
 			break;
 		}
-		default: throw not_implemented_exception{"buff_source_type"};
+		default: throw not_implemented_exception{"data::type::buff_source_type"};
 	}
 
 	// Extract any useful bits for us
@@ -161,20 +161,20 @@ auto player_active_buffs::add_buff(const buff_source &source, const buff &buff, 
 			m_combo = 0;
 		}
 		else if (info == basics.zombify) {
-			if (mob_skill == nullptr) throw not_implemented_exception{"zombify buff_source_type"};
+			if (mob_skill == nullptr) throw not_implemented_exception{"zombify data::type::buff_source_type"};
 			m_zombify_potency = mob_skill->x;
 		}
 		else if (info == basics.maple_warrior) {
-			if (skill == nullptr) throw not_implemented_exception{"maple warrior buff_source_type"};
+			if (skill == nullptr) throw not_implemented_exception{"maple warrior data::type::buff_source_type"};
 			// Take into account Maple Warrior for tracking stats if things are equippable, damage calculations, etc.
 			m_player->get_stats()->set_maple_warrior(skill->x);
 		}
 		else if (info == basics.hyper_body_hp) {
-			if (skill == nullptr) throw not_implemented_exception{"hyper body h_p buff_source_type"};
+			if (skill == nullptr) throw not_implemented_exception{"hyper body h_p data::type::buff_source_type"};
 			m_player->get_stats()->set_hyper_body_hp(skill->x);
 		}
 		else if (info == basics.hyper_body_mp) {
-			if (skill == nullptr) throw not_implemented_exception{"hyper body m_p buff_source_type"};
+			if (skill == nullptr) throw not_implemented_exception{"hyper body m_p data::type::buff_source_type"};
 			m_player->get_stats()->set_hyper_body_mp(skill->y);
 		}
 	}
@@ -221,7 +221,7 @@ auto player_active_buffs::add_buff(const buff_source &source, const buff &buff, 
 			}
 
 			if (displaced_bits.size() > 0) {
-				vector<buff_info> applicable;
+				vector<data::type::buff_info> applicable;
 				vector<uint8_t> displaced_act_bit_positions;
 
 				for (const auto &existing_info : existing_buff_info) {
@@ -299,10 +299,10 @@ auto player_active_buffs::add_buff(const buff_source &source, const buff &buff, 
 	local.type = source.get_type();
 	local.identifier = source.get_id();
 	switch (source.get_type()) {
-		case buff_source_type::item:
-		case buff_source_type::skill: local.level = source.get_skill_level(); break;
-		case buff_source_type::mob_skill: local.level = source.get_mob_skill_level(); break;
-		default: throw not_implemented_exception{"buff_source_type"};
+		case data::type::buff_source_type::item:
+		case data::type::buff_source_type::skill: local.level = source.get_skill_level(); break;
+		case data::type::buff_source_type::mob_skill: local.level = source.get_mob_skill_level(); break;
+		default: throw not_implemented_exception{"data::type::buff_source_type"};
 	}
 
 	m_buffs.push_back(local);
@@ -318,7 +318,7 @@ auto player_active_buffs::add_buff(const buff_source &source, const buff &buff, 
 	return result::successful;
 }
 
-auto player_active_buffs::remove_buff(const buff_source &source, const buff &buff, bool from_timer) -> void {
+auto player_active_buffs::remove_buff(const data::type::buff_source &source, const data::type::buff &buff, bool from_timer) -> void {
 	if (!from_timer) {
 		vana::timer::id id{vana::timer::type::buff_timer, static_cast<int32_t>(source.get_type()), source.get_id()};
 		m_player->get_timer_container()->remove_timer(id);
@@ -340,35 +340,35 @@ auto player_active_buffs::remove_buff(const buff_source &source, const buff &buf
 				m_player->get_timer_container()->remove_timer(act_id);
 			}
 
-			for (const auto &buff_info : info.raw.get_buff_info()) {
-				if (buff_info == basics.mount) {
+			for (const auto &info_from_raw : info.raw.get_buff_info()) {
+				if (info_from_raw == basics.mount) {
 					m_mount_item_id = 0;
 				}
-				else if (buff_info == basics.energy_charge) {
+				else if (info_from_raw == basics.energy_charge) {
 					m_energy_charge = 0;
 				}
-				else if (buff_info == basics.combo) {
+				else if (info_from_raw == basics.combo) {
 					m_combo = 0;
 				}
-				else if (buff_info == basics.zombify) {
+				else if (info_from_raw == basics.zombify) {
 					m_zombify_potency = 0;
 				}
-				else if (buff_info == basics.homing_beacon) {
+				else if (info_from_raw == basics.homing_beacon) {
 					reset_homing_beacon_mob();
 				}
-				else if (buff_info == basics.maple_warrior) {
+				else if (info_from_raw == basics.maple_warrior) {
 					m_player->get_stats()->set_maple_warrior(0);
 				}
-				else if (buff_info == basics.hyper_body_hp) {
+				else if (info_from_raw == basics.hyper_body_hp) {
 					m_player->get_stats()->set_hyper_body_hp(0);
 				}
-				else if (buff_info == basics.hyper_body_mp) {
+				else if (info_from_raw == basics.hyper_body_mp) {
 					m_player->get_stats()->set_hyper_body_mp(0);
 				}
 			}
 
 			switch (info.type) {
-				case buff_source_type::mob_skill: {
+				case data::type::buff_source_type::mob_skill: {
 					game_mob_skill_id skill_id = source.get_mob_skill_id();
 					int32_t mask_bit = calculate_debuff_mask_bit(skill_id);
 					m_debuff_mask -= mask_bit;
@@ -389,12 +389,12 @@ auto player_active_buffs::remove_buffs() -> void {
 	}
 }
 
-auto player_active_buffs::get_buff_seconds_remaining(buff_source_type type, int32_t buff_id) const -> seconds {
+auto player_active_buffs::get_buff_seconds_remaining(data::type::buff_source_type type, int32_t buff_id) const -> seconds {
 	vana::timer::id id{vana::timer::type::buff_timer, static_cast<int32_t>(type), buff_id};
 	return m_player->get_timer_container()->get_remaining_time<seconds>(id);
 }
 
-auto player_active_buffs::get_buff_seconds_remaining(const buff_source &source) const -> seconds {
+auto player_active_buffs::get_buff_seconds_remaining(const data::type::buff_source &source) const -> seconds {
 	return get_buff_seconds_remaining(source.get_type(), source.get_id());
 }
 
@@ -404,9 +404,9 @@ auto player_active_buffs::remove_debuff(game_mob_skill_id skill_id) -> void {
 	if ((m_debuff_mask & mask_bit) != 0) {
 		skills::stop_skill(
 			m_player,
-			buff_source::from_mob_skill(
+			data::type::buff_source::from_mob_skill(
 				skill_id,
-				get_buff_level(buff_source_type::mob_skill, skill_id)),
+				get_buff_level(data::type::buff_source_type::mob_skill, skill_id)),
 			false);
 	}
 }
@@ -469,7 +469,7 @@ auto player_active_buffs::get_map_buff_values() -> buff_packet_structure {
 	auto &basics = buff_provider.get_buffs_by_effect();
 	buff_packet_structure result;
 
-	using tuple_type = tuple<uint8_t, const buff_info *, buff_source>;
+	using tuple_type = tuple<uint8_t, const data::type::buff_info *, data::type::buff_source>;
 	vector<tuple_type> map_buffs;
 
 	for (const auto &buff : m_buffs) {
@@ -504,7 +504,7 @@ auto player_active_buffs::get_map_buff_values() -> buff_packet_structure {
 }
 
 // Active skill levels
-auto player_active_buffs::get_buff_level(buff_source_type type, int32_t buff_id) const -> game_skill_level {
+auto player_active_buffs::get_buff_level(data::type::buff_source_type type, int32_t buff_id) const -> game_skill_level {
 	for (const auto &buff : m_buffs) {
 		if (buff.type != type) continue;
 		if (buff.identifier != buff_id) continue;
@@ -513,12 +513,12 @@ auto player_active_buffs::get_buff_level(buff_source_type type, int32_t buff_id)
 	return 0;
 }
 
-auto player_active_buffs::get_buff_skill_info(const buff_source &source) const -> const skill_level_info * const {
-	if (source.get_type() != buff_source_type::skill) throw std::invalid_argument{"source must be buff_source_type::skill"};
+auto player_active_buffs::get_buff_skill_info(const data::type::buff_source &source) const -> const data::type::skill_level_info * const {
+	if (source.get_type() != data::type::buff_source_type::skill) throw std::invalid_argument{"source must be data::type::buff_source_type::skill"};
 	return source.get_skill_data(channel_server::get_instance().get_skill_data_provider());
 }
 
-auto player_active_buffs::stop_skill(const buff_source &source) -> void {
+auto player_active_buffs::stop_skill(const data::type::buff_source &source) -> void {
 	skills::stop_skill(m_player, source);
 }
 
@@ -528,9 +528,9 @@ auto player_active_buffs::dispel_buffs() -> void {
 		return;
 	}
 
-	vector<buff_source> stop_skills;
+	vector<data::type::buff_source> stop_skills;
 	for (const auto &buff : m_buffs) {
-		if (buff.type == buff_source_type::skill) {
+		if (buff.type == data::type::buff_source_type::skill) {
 			stop_skills.push_back(buff.to_source());
 		}
 	}
@@ -686,8 +686,8 @@ auto player_active_buffs::increase_energy_charge_level(int8_t targets) -> void {
 		}
 		else {
 			start_energy_charge_timer();
-			buff_source source = buff_source::from_skill(skill_id, info->level);
-			buff buff{{channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect().energy_charge}};
+			data::type::buff_source source = data::type::buff_source::from_skill(skill_id, info->level);
+			data::type::buff buff{{channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect().energy_charge}};
 			m_player->send(
 				packets::add_buff(
 					m_player->get_id(),
@@ -708,8 +708,8 @@ auto player_active_buffs::decrease_energy_charge_level() -> void {
 
 	game_skill_id skill_id = m_player->get_skills()->get_energy_charge();
 	auto info = m_player->get_skills()->get_skill_info(skill_id);
-	buff_source source = buff_source::from_skill(skill_id, info->level);
-	buff buff{{channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect().energy_charge}};
+	data::type::buff_source source = data::type::buff_source::from_skill(skill_id, info->level);
+	data::type::buff buff{{channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect().energy_charge}};
 	m_player->send(
 		packets::add_buff(
 			m_player->get_id(),
@@ -767,7 +767,7 @@ auto player_active_buffs::stop_bullet_skills() -> void {
 	}
 }
 
-auto player_active_buffs::has_buff(buff_source_type type, int32_t buff_id) const -> bool {
+auto player_active_buffs::has_buff(data::type::buff_source_type type, int32_t buff_id) const -> bool {
 	for (const auto &buff : m_buffs) {
 		if (buff.type != type) continue;
 		if (buff.identifier != buff_id) continue;
@@ -776,7 +776,7 @@ auto player_active_buffs::has_buff(buff_source_type type, int32_t buff_id) const
 	return false;
 }
 
-auto player_active_buffs::has_buff(const buff_info &buff) const -> bool {
+auto player_active_buffs::has_buff(const data::type::buff_info &buff) const -> bool {
 	return has_buff(buff.get_bit_position());
 }
 
@@ -791,11 +791,11 @@ auto player_active_buffs::has_buff(uint8_t bit_position) const -> bool {
 	return false;
 }
 
-auto player_active_buffs::get_buff_source(const buff_info &buff) const -> optional<buff_source> {
+auto player_active_buffs::get_buff_source(const data::type::buff_info &buff) const -> optional<data::type::buff_source> {
 	return get_buff(buff.get_bit_position());
 }
 
-auto player_active_buffs::get_buff(uint8_t bit_position) const -> optional<buff_source> {
+auto player_active_buffs::get_buff(uint8_t bit_position) const -> optional<data::type::buff_source> {
 	for (const auto &buff : m_buffs) {
 		for (const auto &info : buff.raw.get_buff_info()) {
 			if (bit_position == info) {
@@ -803,14 +803,14 @@ auto player_active_buffs::get_buff(uint8_t bit_position) const -> optional<buff_
 			}
 		}
 	}
-	return optional<buff_source>{};
+	return optional<data::type::buff_source>{};
 }
 
 auto player_active_buffs::has_ice_charge() const -> bool {
 	auto source = get_charge_source();
 	if (!source.is_initialized()) return false;
 	auto &buff_source = source.get();
-	if (buff_source.get_type() != buff_source_type::skill) throw not_implemented_exception{"ice charge buff_source_type"};
+	if (buff_source.get_type() != data::type::buff_source_type::skill) throw not_implemented_exception{"ice charge data::type::buff_source_type"};
 	game_skill_id skill_id = buff_source.get_skill_id();
 	return
 		skill_id == constant::skill::white_knight::bw_ice_charge ||
@@ -827,7 +827,7 @@ auto player_active_buffs::has_infinity() const -> bool {
 }
 
 auto player_active_buffs::is_using_gm_hide() const -> bool {
-	return has_buff(buff_source_type::skill, constant::skill::super_gm::hide);
+	return has_buff(data::type::buff_source_type::skill, constant::skill::super_gm::hide);
 }
 
 auto player_active_buffs::has_shadow_partner() const -> bool {
@@ -859,75 +859,75 @@ auto player_active_buffs::get_holy_symbol_rate() const -> int16_t {
 	auto source = get_holy_symbol_source();
 	if (source.is_initialized()) {
 		auto &buff_source = source.get();
-		if (buff_source.get_type() != buff_source_type::skill) throw not_implemented_exception{"holy symbol buff_source_type"};
+		if (buff_source.get_type() != data::type::buff_source_type::skill) throw not_implemented_exception{"holy symbol data::type::buff_source_type"};
 		val = get_buff_skill_info(buff_source)->x;
 	}
 	return val;
 }
 
-auto player_active_buffs::get_magic_guard_source() const -> optional<buff_source> {
+auto player_active_buffs::get_magic_guard_source() const -> optional<data::type::buff_source> {
 	auto &basics = channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect();
 	return get_buff_source(basics.magic_guard);
 }
 
-auto player_active_buffs::get_meso_guard_source() const -> optional<buff_source> {
+auto player_active_buffs::get_meso_guard_source() const -> optional<data::type::buff_source> {
 	auto &basics = channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect();
 	return get_buff_source(basics.meso_guard);
 }
 
-auto player_active_buffs::get_meso_up_source() const -> optional<buff_source> {
+auto player_active_buffs::get_meso_up_source() const -> optional<data::type::buff_source> {
 	auto &basics = channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect();
 	return get_buff_source(basics.meso_up);
 }
 
-auto player_active_buffs::get_homing_beacon_source() const -> optional<buff_source> {
+auto player_active_buffs::get_homing_beacon_source() const -> optional<data::type::buff_source> {
 	auto &basics = channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect();
 	return get_buff_source(basics.homing_beacon);
 }
 
-auto player_active_buffs::get_combo_source() const -> optional<buff_source> {
+auto player_active_buffs::get_combo_source() const -> optional<data::type::buff_source> {
 	auto &basics = channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect();
 	return get_buff_source(basics.combo);
 }
 
-auto player_active_buffs::get_charge_source() const -> optional<buff_source> {
+auto player_active_buffs::get_charge_source() const -> optional<data::type::buff_source> {
 	auto &basics = channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect();
 	return get_buff_source(basics.charge);
 }
 
-auto player_active_buffs::get_dark_sight_source() const -> optional<buff_source> {
+auto player_active_buffs::get_dark_sight_source() const -> optional<data::type::buff_source> {
 	auto &basics = channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect();
 	auto dark_sight = get_buff_source(basics.dark_sight);
 	if (dark_sight.is_initialized()) return dark_sight;
 	return get_buff_source(basics.wind_walk);
 }
 
-auto player_active_buffs::get_pickpocket_source() const -> optional<buff_source> {
+auto player_active_buffs::get_pickpocket_source() const -> optional<data::type::buff_source> {
 	auto &basics = channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect();
 	return get_buff_source(basics.pickpocket);
 }
 
-auto player_active_buffs::get_hamstring_source() const -> optional<buff_source> {
+auto player_active_buffs::get_hamstring_source() const -> optional<data::type::buff_source> {
 	auto &basics = channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect();
 	return get_buff_source(basics.hamstring);
 }
 
-auto player_active_buffs::get_blind_source() const -> optional<buff_source> {
+auto player_active_buffs::get_blind_source() const -> optional<data::type::buff_source> {
 	auto &basics = channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect();
 	return get_buff_source(basics.blind);
 }
 
-auto player_active_buffs::get_concentrate_source() const -> optional<buff_source> {
+auto player_active_buffs::get_concentrate_source() const -> optional<data::type::buff_source> {
 	auto &basics = channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect();
 	return get_buff_source(basics.concentrate);
 }
 
-auto player_active_buffs::get_holy_symbol_source() const -> optional<buff_source> {
+auto player_active_buffs::get_holy_symbol_source() const -> optional<data::type::buff_source> {
 	auto &basics = channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect();
 	return get_buff_source(basics.holy_symbol);
 }
 
-auto player_active_buffs::get_power_stance_source() const -> optional<buff_source> {
+auto player_active_buffs::get_power_stance_source() const -> optional<data::type::buff_source> {
 	auto &basics = channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect();
 	auto ret = get_buff_source(basics.power_stance);
 	if (ret.is_initialized()) return ret;
@@ -935,12 +935,12 @@ auto player_active_buffs::get_power_stance_source() const -> optional<buff_sourc
 	return ret;
 }
 
-auto player_active_buffs::get_hyper_body_hp_source() const -> optional<buff_source> {
+auto player_active_buffs::get_hyper_body_hp_source() const -> optional<data::type::buff_source> {
 	auto &basics = channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect();
 	return get_buff_source(basics.hyper_body_hp);
 }
 
-auto player_active_buffs::get_hyper_body_mp_source() const -> optional<buff_source> {
+auto player_active_buffs::get_hyper_body_mp_source() const -> optional<data::type::buff_source> {
 	auto &basics = channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect();
 	return get_buff_source(basics.hyper_body_mp);
 }
@@ -970,15 +970,15 @@ auto player_active_buffs::take_damage(game_damage damage) -> void {
 	auto source = get_buff_source(basics.morph);
 	if (source.is_initialized()) {
 		auto &buff_source = source.get();
-		if (buff_source.get_type() == buff_source_type::item) {
+		if (buff_source.get_type() == data::type::buff_source_type::item) {
 			stop_skill(buff_source);
 		}
 	}
 
-	auto battleship_level = get_buff_level(buff_source_type::skill, constant::skill::corsair::battleship);
+	auto battleship_level = get_buff_level(data::type::buff_source_type::skill, constant::skill::corsair::battleship);
 	if (battleship_level > 0) {
 		m_battleship_hp -= damage / 10;
-		auto source = buff_source::from_skill(constant::skill::corsair::battleship, battleship_level);
+		auto source = data::type::buff_source::from_skill(constant::skill::corsair::battleship, battleship_level);
 
 		if (m_battleship_hp <= 0) {
 			m_battleship_hp = 0;
@@ -1015,17 +1015,17 @@ auto player_active_buffs::get_transfer_packet() const -> packet_builder {
 	for (const auto &buff : m_buffs) {
 		auto &raw = buff.raw;
 
-		builder.add<buff_source_type>(buff.type);
+		builder.add<data::type::buff_source_type>(buff.type);
 		builder.add<int32_t>(buff.identifier);
 		switch (buff.type) {
-			case buff_source_type::item:
-			case buff_source_type::skill:
+			case data::type::buff_source_type::item:
+			case data::type::buff_source_type::skill:
 				builder.add<game_skill_level>(buff.level);
 				break;
-			case buff_source_type::mob_skill:
+			case data::type::buff_source_type::mob_skill:
 				builder.add<game_mob_skill_level>(static_cast<game_mob_skill_level>(buff.level));
 				break;
-			default: throw not_implemented_exception{"buff_source_type"};
+			default: throw not_implemented_exception{"data::type::buff_source_type"};
 		}
 		builder.add<seconds>(get_buff_seconds_remaining(buff.type, buff.identifier));
 
@@ -1050,20 +1050,20 @@ auto player_active_buffs::parse_transfer_packet(packet_reader &reader) -> void {
 	// Current player skill/item buff info
 	size_t size = reader.get<uint16_t>();
 	for (size_t i = 0; i < size; ++i) {
-		buff_source_type type = reader.get<buff_source_type>();
+		data::type::buff_source_type type = reader.get<data::type::buff_source_type>();
 		int32_t identifier = reader.get<int32_t>();
 		int32_t level = 0;
 		switch (type) {
-			case buff_source_type::item:
-			case buff_source_type::skill: {
+			case data::type::buff_source_type::item:
+			case data::type::buff_source_type::skill: {
 				level = reader.get<game_skill_level>();
 				break;
 			}
-			case buff_source_type::mob_skill: {
+			case data::type::buff_source_type::mob_skill: {
 				level = reader.get<game_mob_skill_level>();
 				break;
 			}
-			default: throw not_implemented_exception{"buff_source_type"};
+			default: throw not_implemented_exception{"data::type::buff_source_type"};
 		}
 
 		local_buff_info buff;
@@ -1078,7 +1078,7 @@ auto player_active_buffs::parse_transfer_packet(packet_reader &reader) -> void {
 			valid_bits.push_back(reader.get<uint8_t>());
 		}
 
-		buff_source source = buff.to_source();
+		data::type::buff_source source = buff.to_source();
 		int32_t packet_skill_id = translate_to_packet(source);
 		buff.raw = buffs::preprocess_buff(
 			buffs::preprocess_buff(

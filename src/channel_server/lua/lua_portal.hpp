@@ -22,7 +22,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 
 namespace vana {
-	struct portal_info;
+	namespace data {
+		namespace type {
+			struct portal_info;
+		}
+	}
 
 	namespace channel_server {
 		namespace lua {
@@ -30,15 +34,13 @@ namespace vana {
 				NONCOPYABLE(lua_portal);
 				NO_DEFAULT_CONSTRUCTOR(lua_portal);
 			public:
-				lua_portal(const string &filename, game_player_id player_id, game_map_id map_id, const portal_info * const portal);
+				lua_portal(const string &filename, game_player_id player_id, game_map_id map_id, const data::type::portal_info * const portal);
 				auto player_warped() -> bool;
 				auto player_map_changed() -> bool;
 				auto portal_failed() -> bool;
 			};
 
 			namespace lua_exports {
-				auto get_portal(lua_State *lua_vm) -> const portal_info * const;
-
 				// Portal exports
 
 				// Portal

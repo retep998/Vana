@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "mist.hpp"
-#include "common/skill_data_provider.hpp"
+#include "common/data/provider/skill.hpp"
 #include "channel_server/maps.hpp"
 #include "channel_server/mob.hpp"
 #include "channel_server/player.hpp"

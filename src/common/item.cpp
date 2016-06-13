@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "item.hpp"
 #include "common/constant/item/max_stat.hpp"
-#include "common/equip_data_provider.hpp"
+#include "common/data/provider/equip.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/misc_utilities.hpp"
 #include "common/soci_extensions.hpp"
@@ -40,7 +40,7 @@ item::item(game_item_id item_id, game_slot_qty amount) :
 {
 }
 
-item::item(const equip_data_provider &provider, game_item_id equip_id, stat_variance policy, bool is_gm) :
+item::item(const data::provider::equip &provider, game_item_id equip_id, stat_variance policy, bool is_gm) :
 	m_id{equip_id},
 	m_amount{1}
 {

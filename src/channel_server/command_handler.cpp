@@ -17,10 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "command_handler.hpp"
 #include "common/algorithm.hpp"
+#include "common/data/provider/mob.hpp"
 #include "common/database.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/inter_header.hpp"
-#include "common/mob_data_provider.hpp"
 #include "common/packet_wrapper.hpp"
 #include "common/packet_reader.hpp"
 #include "channel_server/buffs.hpp"
@@ -165,7 +165,7 @@ auto command_handler::handle_admin_command(ref_ptr<player> player, packet_reader
 			else {
 				skills::stop_skill(
 					player,
-					buff_source::from_skill(
+					data::type::buff_source::from_skill(
 						constant::skill::super_gm::hide,
 						1));
 			}

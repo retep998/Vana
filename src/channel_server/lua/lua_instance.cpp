@@ -27,7 +27,7 @@ namespace channel_server {
 namespace lua {
 
 lua_instance::lua_instance(const string &name, game_player_id player_id) :
-	lua_scriptable{channel_server::get_instance().get_script_data_provider().build_script_path(script_types::instance, name), player_id}
+	lua_scriptable{channel_server::get_instance().get_script_data_provider().build_script_path(data::type::script_types::instance, name), player_id}
 {
 	set<string>("system_instance_name", name);
 

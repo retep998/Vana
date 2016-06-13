@@ -26,7 +26,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 namespace vana {
-	struct portal_info;
+	namespace data {
+		namespace type {
+			struct portal_info;
+		}
+	}
 
 	namespace channel_server {
 		class map;
@@ -59,7 +63,7 @@ namespace vana {
 			auto remove_player(ref_ptr<player> player) -> void;
 			auto remove_player(game_player_id id) -> void;
 			auto remove_all_players() -> void;
-			auto move_all_players(game_map_id map_id, bool respect_instances, const portal_info * const portal = nullptr) -> void;
+			auto move_all_players(game_map_id map_id, bool respect_instances, const data::type::portal_info * const portal = nullptr) -> void;
 			auto instance_has_players() const -> bool;
 			auto get_player_num() const -> size_t { return m_players.size(); }
 

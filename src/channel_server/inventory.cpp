@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "inventory.hpp"
+#include "common/data/provider/item.hpp"
+#include "common/data/provider/skill.hpp"
 #include "common/game_logic_utilities.hpp"
-#include "common/item_data_provider.hpp"
 #include "common/randomizer.hpp"
-#include "common/skill_data_provider.hpp"
 #include "channel_server/buffs.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/inventory_packet.hpp"

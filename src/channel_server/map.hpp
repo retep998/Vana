@@ -18,14 +18,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "common/constant/map.hpp"
-#include "common/foothold_info.hpp"
+#include "common/data/type/foothold_info.hpp"
+#include "common/data/type/mob_skill_level_info.hpp"
+#include "common/data/type/portal_info.hpp"
+#include "common/data/type/seat_info.hpp"
+#include "common/data/type/spawn_info.hpp"
 #include "common/id_pool.hpp"
 #include "common/point.hpp"
-#include "common/portal_info.hpp"
 #include "common/rect.hpp"
 #include "common/respawnable.hpp"
-#include "common/seat_info.hpp"
-#include "common/spawn_info.hpp"
 #include "common/timer/container_holder.hpp"
 #include "common/types.hpp"
 #include "channel_server/map_data_provider.hpp"
@@ -67,7 +68,7 @@ namespace vana {
 			{
 			}
 
-			mystic_door_open_result(game_map_id town_id, const portal_info * const portal) :
+			mystic_door_open_result(game_map_id town_id, const data::type::portal_info * const portal) :
 				result{mystic_door_result::success},
 				town_id{town_id},
 				portal{portal}
@@ -76,7 +77,12 @@ namespace vana {
 
 			mystic_door_result result;
 			game_map_id town_id;
-			const portal_info * const portal;
+			const data::type::portal_info * const portal;
+		};
+
+		struct map_seat {
+			data::type::seat_info info;
+			player *occupant = nullptr;
 		};
 
 		class map : public vana::timer::container_holder {
@@ -117,10 +123,10 @@ namespace vana {
 			auto player_seated(game_seat_id id, ref_ptr<player> player) -> void;
 
 			// Portals
-			auto get_portal(const string &name) const -> const portal_info * const;
-			auto get_spawn_point(game_portal_id portal_id = -1) const -> const portal_info * const;
-			auto get_nearest_spawn_point(const point &pos) const -> const portal_info * const;
-			auto query_portal_name(const string &name, ref_ptr<player> player = nullptr) const -> const portal_info * const;
+			auto get_portal(const string &name) const -> const data::type::portal_info * const;
+			auto get_spawn_point(game_portal_id portal_id = -1) const -> const data::type::portal_info * const;
+			auto get_nearest_spawn_point(const point &pos) const -> const data::type::portal_info * const;
+			auto query_portal_name(const string &name, ref_ptr<player> player = nullptr) const -> const data::type::portal_info * const;
 			auto set_portal_state(const string &name, bool enabled) -> void;
 			auto get_portal_names() const -> vector<string>;
 			auto get_town_mystic_door_portal(ref_ptr<player> player) const -> mystic_door_open_result;
@@ -142,10 +148,10 @@ namespace vana {
 			auto get_all_player_ids() const -> vector<game_player_id>;
 
 			// NPCs
-			auto add_npc(const npc_spawn_info &npc) -> game_map_object;
+			auto add_npc(const data::type::npc_spawn_info &npc) -> game_map_object;
 			auto remove_npc(size_t npc_index) -> void;
 			auto is_valid_npc_index(size_t npc_index) const -> bool;
-			auto get_npc(size_t npc_index) const -> npc_spawn_info;
+			auto get_npc(size_t npc_index) const -> data::type::npc_spawn_info;
 
 			// Mobs
 			auto add_webbed_mob(game_map_object map_mob_id) -> void;
@@ -156,13 +162,13 @@ namespace vana {
 			auto spawn_zakum(const point &pos, game_foothold_id foothold = 0) -> void;
 			auto convert_shell_to_normal(ref_ptr<mob> mob) -> void;
 			auto spawn_mob(game_mob_id mob_id, const point &pos, game_foothold_id foothold = 0, ref_ptr<mob> owner = nullptr, int8_t summon_effect = 0) -> ref_ptr<mob>;
-			auto spawn_mob(int32_t spawn_id, const mob_spawn_info &info) -> ref_ptr<mob>;
+			auto spawn_mob(int32_t spawn_id, const data::type::mob_spawn_info &info) -> ref_ptr<mob>;
 			auto kill_mobs(ref_ptr<player> player, bool distribute_exp_and_drops, game_mob_id mob_id = 0) -> int32_t;
 			auto count_mobs(game_mob_id mob_id = 0) -> int32_t;
 			auto get_mob(game_map_object map_mob_id) -> ref_ptr<mob>;
 			auto run_function_mobs(function<void(ref_ptr<const mob>)> func) -> void;
 			auto switch_controller(ref_ptr<mob> mob, ref_ptr<player> new_controller) -> void;
-			auto mob_summon_skill_used(ref_ptr<mob> mob, const mob_skill_level_info * const skill) -> void;
+			auto mob_summon_skill_used(ref_ptr<mob> mob, const data::type::mob_skill_level_info * const skill) -> void;
 
 			// Reactors
 			auto add_reactor(reactor *reactor) -> void;
@@ -206,11 +212,11 @@ namespace vana {
 			static int32_t s_map_unload_time/* = 0*/;
 
 			friend class map_data_provider;
-			auto add_foothold(const foothold_info &foothold) -> void;
-			auto add_seat(const seat_info &seat) -> void;
-			auto add_portal(const portal_info &portal) -> void;
-			auto add_mob_spawn(const mob_spawn_info &spawn) -> void;
-			auto add_reactor_spawn(const reactor_spawn_info &spawn) -> void;
+			auto add_foothold(const data::type::foothold_info &foothold) -> void;
+			auto add_seat(const data::type::seat_info &seat) -> void;
+			auto add_portal(const data::type::portal_info &portal) -> void;
+			auto add_mob_spawn(const data::type::mob_spawn_info &spawn) -> void;
+			auto add_reactor_spawn(const data::type::reactor_spawn_info &spawn) -> void;
 			auto add_time_mob(ref_ptr<time_mob> info) -> void;
 			auto check_spawn(time_point time) -> void;
 			auto check_shadow_web() -> void;
@@ -253,14 +259,14 @@ namespace vana {
 			recursive_mutex m_drops_mutex;
 			ref_ptr<map_info> m_info;
 			ref_ptr<time_mob> m_time_mob_info;
-			vector<foothold_info> m_footholds;
-			vector<reactor_spawn_info> m_reactor_spawns;
-			vector<npc_spawn_info> m_npc_spawns;
-			vector<mob_spawn_info> m_mob_spawns;
-			ord_map<game_seat_id, seat_info> m_seats;
-			hash_map<string, portal_info> m_portals;
-			hash_map<game_portal_id, portal_info> m_spawn_points;
-			vector<portal_info> m_door_points;
+			vector<data::type::foothold_info> m_footholds;
+			vector<data::type::reactor_spawn_info> m_reactor_spawns;
+			vector<data::type::npc_spawn_info> m_npc_spawns;
+			vector<data::type::mob_spawn_info> m_mob_spawns;
+			ord_map<game_seat_id, map_seat> m_seats;
+			hash_map<string, data::type::portal_info> m_portals;
+			hash_map<game_portal_id, data::type::portal_info> m_spawn_points;
+			vector<data::type::portal_info> m_door_points;
 			hash_map<string, point> m_reactor_positions;
 
 			// Shorter-lived objects

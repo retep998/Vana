@@ -213,59 +213,59 @@ auto channel_server::get_config() const -> const world_config & {
 	return m_config;
 }
 
-auto channel_server::get_valid_char_data_provider() const -> const valid_char_data_provider & {
+auto channel_server::get_valid_char_data_provider() const -> const data::provider::valid_char & {
 	return m_valid_char_data_provider;
 }
 
-auto channel_server::get_equip_data_provider() const -> const equip_data_provider & {
+auto channel_server::get_equip_data_provider() const -> const data::provider::equip & {
 	return m_equip_data_provider;
 }
 
-auto channel_server::get_curse_data_provider() const -> const curse_data_provider & {
+auto channel_server::get_curse_data_provider() const -> const data::provider::curse & {
 	return m_curse_data_provider;
 }
 
-auto channel_server::get_npc_data_provider() const -> const npc_data_provider & {
+auto channel_server::get_npc_data_provider() const -> const data::provider::npc & {
 	return m_npc_data_provider;
 }
 
-auto channel_server::get_mob_data_provider() const -> const mob_data_provider & {
+auto channel_server::get_mob_data_provider() const -> const data::provider::mob & {
 	return m_mob_data_provider;
 }
 
-auto channel_server::get_beauty_data_provider() const -> const beauty_data_provider & {
+auto channel_server::get_beauty_data_provider() const -> const data::provider::beauty & {
 	return m_beauty_data_provider;
 }
 
-auto channel_server::get_drop_data_provider() const -> const drop_data_provider & {
+auto channel_server::get_drop_data_provider() const -> const data::provider::drop & {
 	return m_drop_data_provider;
 }
 
-auto channel_server::get_skill_data_provider() const -> const skill_data_provider & {
+auto channel_server::get_skill_data_provider() const -> const data::provider::skill & {
 	return m_skill_data_provider;
 }
 
-auto channel_server::get_shop_data_provider() const -> const shop_data_provider & {
+auto channel_server::get_shop_data_provider() const -> const data::provider::shop & {
 	return m_shop_data_provider;
 }
 
-auto channel_server::get_script_data_provider() const -> const script_data_provider & {
+auto channel_server::get_script_data_provider() const -> const data::provider::script & {
 	return m_script_data_provider;
 }
 
-auto channel_server::get_reactor_data_provider() const -> const reactor_data_provider & {
+auto channel_server::get_reactor_data_provider() const -> const data::provider::reactor & {
 	return m_reactor_data_provider;
 }
 
-auto channel_server::get_item_data_provider() const -> const item_data_provider & {
+auto channel_server::get_item_data_provider() const -> const data::provider::item & {
 	return m_item_data_provider;
 }
 
-auto channel_server::get_quest_data_provider() const -> const quest_data_provider & {
+auto channel_server::get_quest_data_provider() const -> const data::provider::quest & {
 	return m_quest_data_provider;
 }
 
-auto channel_server::get_buff_data_provider() const -> const buff_data_provider & {
+auto channel_server::get_buff_data_provider() const -> const data::provider::buff & {
 	return m_buff_data_provider;
 }
 

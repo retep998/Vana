@@ -161,7 +161,7 @@ auto map_data_provider::load_seats(map *map, game_map_id link) -> void {
 		soci::use(link, "map"));
 
 	for (const auto &row : rs) {
-		seat_info chair;
+		data::type::seat_info chair;
 		game_seat_id id = row.get<game_seat_id>("seatid");
 		chair.pos = point{row.get<game_coord>("x_pos"), row.get<game_coord>("y_pos")};
 		chair.id = id;
@@ -177,7 +177,7 @@ auto map_data_provider::load_portals(map *map, game_map_id link) -> void {
 		soci::use(link, "map"));
 
 	for (const auto &row : rs) {
-		portal_info portal;
+		data::type::portal_info portal;
 		utilities::str::run_flags(row.get<opt_string>("flags"), [&portal](const string &cmp) {
 			if (cmp == "only_once") portal.only_once = true;
 		});
@@ -194,10 +194,10 @@ auto map_data_provider::load_portals(map *map, game_map_id link) -> void {
 }
 
 auto map_data_provider::load_map_life(map *map, game_map_id link) -> void {
-	npc_spawn_info npc;
-	mob_spawn_info spawn;
-	reactor_spawn_info reactor;
-	spawn_info life;
+	data::type::npc_spawn_info npc;
+	data::type::mob_spawn_info spawn;
+	data::type::reactor_spawn_info reactor;
+	data::type::spawn_info life;
 	string type;
 
 	auto &db = database::get_data_db();
@@ -206,7 +206,7 @@ auto map_data_provider::load_map_life(map *map, game_map_id link) -> void {
 		soci::use(link, "map"));
 
 	for (const auto &row : rs) {
-		life = spawn_info{};
+		life = data::type::spawn_info{};
 		utilities::str::run_flags(row.get<opt_string>("flags"), [&life](const string &cmp) {
 			if (cmp == "faces_left") life.faces_left = true;
 		});
@@ -218,19 +218,19 @@ auto map_data_provider::load_map_life(map *map, game_map_id link) -> void {
 		life.time = row.get<int32_t>("respawn_time");
 
 		if (type == "npc") {
-			npc = npc_spawn_info{};
+			npc = data::type::npc_spawn_info{};
 			npc.set_spawn_info(life);
 			npc.rx0 = row.get<game_coord>("min_click_pos");
 			npc.rx1 = row.get<game_coord>("max_click_pos");
 			map->add_npc(npc);
 		}
 		else if (type == "mob") {
-			spawn = mob_spawn_info{};
+			spawn = data::type::mob_spawn_info{};
 			spawn.set_spawn_info(life);
 			map->add_mob_spawn(spawn);
 		}
 		else if (type == "reactor") {
-			reactor = reactor_spawn_info{};
+			reactor = data::type::reactor_spawn_info{};
 			reactor.set_spawn_info(life);
 			reactor.name = row.get<string>("life_name");
 			map->add_reactor_spawn(reactor);
@@ -245,7 +245,7 @@ auto map_data_provider::load_footholds(map *map, game_map_id link) -> void {
 		soci::use(link, "map"));
 
 	for (const auto &row : rs) {
-		foothold_info foot;
+		data::type::foothold_info foot;
 		utilities::str::run_flags(row.get<opt_string>("flags"), [&foot](const string &cmp) {
 			if (cmp == "forbid_downward_jump") foot.forbid_jump_down = true;
 		});

@@ -17,10 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_inventory.hpp"
 #include "common/algorithm.hpp"
+#include "common/data/provider/equip.hpp"
+#include "common/data/provider/item.hpp"
 #include "common/database.hpp"
-#include "common/equip_data_provider.hpp"
 #include "common/game_logic_utilities.hpp"
-#include "common/item_data_provider.hpp"
 #include "common/misc_utilities.hpp"
 #include "common/time_utilities.hpp"
 #include "channel_server/channel_server.hpp"

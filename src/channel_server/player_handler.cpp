@@ -18,16 +18,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "player_handler.hpp"
 #include "common/algorithm.hpp"
 #include "common/attack_data.hpp"
+#include "common/data/provider/item.hpp"
+#include "common/data/provider/skill.hpp"
+#include "common/data/type/skill_type.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/inter_header.hpp"
-#include "common/item_data_provider.hpp"
 #include "common/mp_eater_data.hpp"
 #include "common/packet_wrapper.hpp"
 #include "common/randomizer.hpp"
 #include "common/packet_reader.hpp"
 #include "common/return_damage_data.hpp"
-#include "common/skill_data_provider.hpp"
-#include "common/skill_type.hpp"
 #include "common/time_utilities.hpp"
 #include "common/timer/timer.hpp"
 #include "common/wide_point.hpp"
@@ -471,7 +471,7 @@ auto player_handler::use_bomb_skill(ref_ptr<player> player, packet_reader &reade
 }
 
 auto player_handler::use_melee_attack(ref_ptr<player> player, packet_reader &reader) -> void {
-	attack_data attack = compile_attack(player, reader, skill_type::melee);
+	attack_data attack = compile_attack(player, reader, data::type::skill_type::melee);
 	if (attack.portals != player->get_portal_count()) {
 		// Usually evidence of hacking
 		return;
@@ -686,7 +686,7 @@ auto player_handler::use_melee_attack(ref_ptr<player> player, packet_reader &rea
 }
 
 auto player_handler::use_ranged_attack(ref_ptr<player> player, packet_reader &reader) -> void {
-	attack_data attack = compile_attack(player, reader, skill_type::ranged);
+	attack_data attack = compile_attack(player, reader, data::type::skill_type::ranged);
 	if (attack.portals != player->get_portal_count()) {
 		// Usually evidence of hacking
 		return;
@@ -819,7 +819,7 @@ auto player_handler::use_ranged_attack(ref_ptr<player> player, packet_reader &re
 }
 
 auto player_handler::use_spell_attack(ref_ptr<player> player, packet_reader &reader) -> void {
-	const attack_data &attack = compile_attack(player, reader, skill_type::magic);
+	const attack_data &attack = compile_attack(player, reader, data::type::skill_type::magic);
 	if (attack.portals != player->get_portal_count()) {
 		// Usually evidence of hacking
 		return;
@@ -904,7 +904,7 @@ auto player_handler::use_spell_attack(ref_ptr<player> player, packet_reader &rea
 }
 
 auto player_handler::use_energy_charge_attack(ref_ptr<player> player, packet_reader &reader) -> void {
-	attack_data attack = compile_attack(player, reader, skill_type::energy_charge);
+	attack_data attack = compile_attack(player, reader, data::type::skill_type::energy_charge);
 	game_skill_id mastery_id = player->get_skills()->get_mastery();
 	player->send_map(packets::players::use_energy_charge_attack(player->get_id(), mastery_id, player->get_skills()->get_skill_level(mastery_id), attack));
 
@@ -951,7 +951,7 @@ auto player_handler::use_energy_charge_attack(ref_ptr<player> player, packet_rea
 }
 
 auto player_handler::use_summon_attack(ref_ptr<player> player, packet_reader &reader) -> void {
-	attack_data attack = compile_attack(player, reader, skill_type::summon);
+	attack_data attack = compile_attack(player, reader, data::type::skill_type::summon);
 	summon *summon = player->get_summons()->get_summon(attack.summon_id);
 	if (summon == nullptr) {
 		// Hacking or some other form of tomfoolery
@@ -993,7 +993,7 @@ auto player_handler::use_summon_attack(ref_ptr<player> player, packet_reader &re
 	}
 }
 
-auto player_handler::compile_attack(ref_ptr<player> player, packet_reader &reader, skill_type skill_type) -> attack_data {
+auto player_handler::compile_attack(ref_ptr<player> player, packet_reader &reader, data::type::skill_type skill_type) -> attack_data {
 	attack_data attack;
 	int8_t targets = 0;
 	int8_t hits = 0;
@@ -1001,7 +1001,7 @@ auto player_handler::compile_attack(ref_ptr<player> player, packet_reader &reade
 	bool meso_explosion = false;
 	bool shadow_meso = false;
 
-	if (skill_type != skill_type::summon) {
+	if (skill_type != data::type::skill_type::summon) {
 		attack.portals = reader.get<uint8_t>();
 		uint8_t t_byte = reader.get<uint8_t>();
 		skill_id = reader.get<game_skill_id>();
@@ -1059,7 +1059,7 @@ auto player_handler::compile_attack(ref_ptr<player> player, packet_reader &reade
 		hits = 1;
 	}
 
-	if (skill_type == skill_type::ranged) {
+	if (skill_type == data::type::skill_type::ranged) {
 		game_inventory_slot star_slot = reader.get<game_inventory_slot>();
 		game_inventory_slot cs_star = reader.get<game_inventory_slot>();
 		attack.star_pos = star_slot;
@@ -1102,12 +1102,12 @@ auto player_handler::compile_attack(ref_ptr<player> player, packet_reader &reade
 			attack.damages[map_mob_id].push_back(damage);
 			attack.total_damage += damage;
 		}
-		if (skill_type != skill_type::summon) {
+		if (skill_type != data::type::skill_type::summon) {
 			reader.skip<game_checksum>();
 		}
 	}
 
-	if (skill_type == skill_type::ranged) {
+	if (skill_type == data::type::skill_type::ranged) {
 		attack.projectile_pos = reader.get<point>();
 	}
 	attack.player_pos = reader.get<point>();

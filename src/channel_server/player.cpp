@@ -17,10 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player.hpp"
 #include "common/common_header.hpp"
+#include "common/data/provider/item.hpp"
 #include "common/database.hpp"
 #include "common/enum_utilities.hpp"
 #include "common/game_logic_utilities.hpp"
-#include "common/item_data_provider.hpp"
 #include "common/packet_builder.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
@@ -235,7 +235,7 @@ auto player::on_disconnect() -> void {
 	// "Bug" in global, would be fixed here:
 	// When disconnecting and dead, you actually go back to forced return map before the death return map
 	// (that means that it's parsed while logging in, not while logging out)
-	if (const portal_info * const closest = cur_map->get_nearest_spawn_point(get_pos())) {
+	if (const data::type::portal_info * const closest = cur_map->get_nearest_spawn_point(get_pos())) {
 		m_map_pos = closest->id;
 	}
 
@@ -490,7 +490,7 @@ auto player::set_map(game_map_id map_id, game_portal_id portal_id, const point &
 	internal_set_map(map_id, portal_id, pos, true);
 }
 
-auto player::set_map(game_map_id map_id, const portal_info * const portal, bool is_instance) -> void {
+auto player::set_map(game_map_id map_id, const data::type::portal_info * const portal, bool is_instance) -> void {
 	if (!maps::get_map(map_id)) {
 		send(packets::map::portal_blocked());
 		return;
@@ -498,7 +498,7 @@ auto player::set_map(game_map_id map_id, const portal_info * const portal, bool 
 	map *old_map = maps::get_map(m_map);
 	map *new_map = maps::get_map(map_id);
 
-	const portal_info * const actual_portal = portal != nullptr ?
+	const data::type::portal_info * const actual_portal = portal != nullptr ?
 		portal :
 		new_map->get_spawn_point();
 

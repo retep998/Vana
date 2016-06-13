@@ -21,15 +21,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/constant/inventory.hpp"
 #include "common/constant/item.hpp"
 #include "common/constant/job/track.hpp"
-#include "common/curse_data_provider.hpp"
+#include "common/data/provider/curse.hpp"
+#include "common/data/provider/equip.hpp"
+#include "common/data/provider/valid_char.hpp"
 #include "common/client_ip.hpp"
 #include "common/database.hpp"
-#include "common/equip_data_provider.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/misc_utilities.hpp"
 #include "common/packet_reader.hpp"
 #include "common/session.hpp"
-#include "common/valid_char_data_provider.hpp"
 #include "login_server/login_packet.hpp"
 #include "login_server/login_server.hpp"
 #include "login_server/login_server_accept_packet.hpp"
@@ -245,7 +245,7 @@ auto characters::create_character(ref_ptr<user> user_value, packet_reader &reade
 	game_item_id weapon = reader.get<game_item_id>();
 	game_gender_id gender = reader.get<game_gender_id>();
 
-	if (!login_server::get_instance().get_valid_char_data_provider().is_valid_character(gender, hair, hair_color, face, skin, top, bottom, shoes, weapon, valid_char_data_provider::adventurer)) {
+	if (!login_server::get_instance().get_valid_char_data_provider().is_valid_character(gender, hair, hair_color, face, skin, top, bottom, shoes, weapon, data::provider::valid_char::adventurer)) {
 		// Hacking
 		user_value->disconnect();
 		return;

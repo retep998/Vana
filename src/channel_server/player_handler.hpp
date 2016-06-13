@@ -21,8 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace vana {
 	class packet_reader;
-	enum class skill_type;
 	struct attack_data;
+	namespace data {
+		namespace type {
+			enum class skill_type;
+		}
+	}
 
 	namespace channel_server {
 		class player;
@@ -44,7 +48,7 @@ namespace vana {
 			auto use_spell_attack(ref_ptr<player> player, packet_reader &reader) -> void;
 			auto use_energy_charge_attack(ref_ptr<player> player, packet_reader &reader) -> void;
 			auto use_summon_attack(ref_ptr<player> player, packet_reader &reader) -> void;
-			auto compile_attack(ref_ptr<player> player, packet_reader &reader, skill_type skill_type) -> attack_data;
+			auto compile_attack(ref_ptr<player> player, packet_reader &reader, data::type::skill_type skill_type) -> attack_data;
 		}
 	}
 }

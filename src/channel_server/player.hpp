@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "common/charge_or_stationary_skill_data.hpp"
+#include "common/data/provider/skill.hpp"
 #include "common/packet_handler.hpp"
-#include "common/skill_data_provider.hpp"
 #include "common/tausworthe_generator.hpp"
 #include "common/timer/container_holder.hpp"
 #include "channel_server/movable_life.hpp"
@@ -45,8 +45,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace vana {
 	class packet_builder;
 	class packet_reader;
-	struct portal_info;
 	struct split_packet_builder;
+	namespace data {
+		namespace type {
+			struct portal_info;
+		}
+	}
 
 	namespace channel_server {
 		class instance;
@@ -67,7 +71,7 @@ namespace vana {
 			auto set_map_chair(game_seat_id s) -> void { m_map_chair = s; }
 			auto set_face(game_face_id id) -> void;
 			auto set_hair(game_hair_id id) -> void;
-			auto set_map(game_map_id map_id, const portal_info * const portal = nullptr, bool is_instance = false) -> void;
+			auto set_map(game_map_id map_id, const data::type::portal_info * const portal = nullptr, bool is_instance = false) -> void;
 			auto set_map(game_map_id map_id, game_portal_id portal_id, const point &pos) -> void;
 			auto set_buddy_list_size(uint8_t size) -> void;
 			auto set_connection_time(int64_t newtime) -> void { m_online_time = newtime; }

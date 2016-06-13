@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "pet_handler.hpp"
-#include "common/item_data_provider.hpp"
+#include "common/data/provider/item.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
 #include "common/randomizer.hpp"

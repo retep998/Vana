@@ -29,7 +29,7 @@ namespace vana {
 		namespace maps {
 			auto get_map(game_map_id map_id) -> map *;
 			auto unload_map(game_map_id map_id) -> void;
-			auto use_portal(ref_ptr<player> player, const portal_info * const portal) -> void;
+			auto use_portal(ref_ptr<player> player, const data::type::portal_info * const portal) -> void;
 			auto use_portal(ref_ptr<player> player, packet_reader &reader) -> void;
 			auto use_scripted_portal(ref_ptr<player> player, packet_reader &reader) -> void;
 			auto add_player(ref_ptr<player> player, game_map_id map_id) -> void;

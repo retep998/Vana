@@ -10,14 +10,8 @@
     <Filter Include="Data Structures">
       <UniqueIdentifier>{450fb522-4e7d-4db6-9a62-c199384163ca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Data Structures\Data Provider">
-      <UniqueIdentifier>{87342cf5-a5b4-41e1-a5cc-254699ab7d5e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Data Loading">
       <UniqueIdentifier>{83919201-7757-496d-93bd-b76823bcb5ab}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Data Loading\MCDB">
-      <UniqueIdentifier>{5612baa9-cd7e-42ec-8dfd-b614c568bf29}</UniqueIdentifier>
     </Filter>
     <Filter Include="Database">
       <UniqueIdentifier>{7f88f4c5-3611-4887-871c-3defe2bced64}</UniqueIdentifier>
@@ -39,9 +33,6 @@
     </Filter>
     <Filter Include="Packets\Headers">
       <UniqueIdentifier>{3fb5cdff-e02c-4539-a3e4-a39004b525ab}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Data Structures\Buffs">
-      <UniqueIdentifier>{5a37ba2d-f8d3-41ff-a03e-3d544f0867f9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Data Structures\Geometry">
       <UniqueIdentifier>{eaf70071-4599-44a6-b113-02ac270b0bdf}</UniqueIdentifier>
@@ -70,11 +61,17 @@
     <Filter Include="constant\job">
       <UniqueIdentifier>{e5dd551a-650b-4075-8864-0cc9a3188f4c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="data">
+      <UniqueIdentifier>{5d47d3bf-22e1-40be-b7d6-147fe1b9609c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\type">
+      <UniqueIdentifier>{5c39460e-434c-4da5-b798-6f0f21bbdfff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\provider">
+      <UniqueIdentifier>{24377bf1-2a17-4767-b277-b3ae0195974e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\common\buff_data_provider.cpp">
-      <Filter>Data Loading</Filter>
-    </ClCompile>
     <ClCompile Include="src\common\initialize_common.cpp">
       <Filter>Data Loading</Filter>
     </ClCompile>
@@ -101,42 +98,6 @@
     </ClCompile>
     <ClCompile Include="src\common\variables.cpp">
       <Filter>Data Structures</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\beauty_data_provider.cpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\drop_data_provider.cpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\equip_data_provider.cpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\item_data_provider.cpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\mob_data_provider.cpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\npc_data_provider.cpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\quest_data_provider.cpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\reactor_data_provider.cpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\script_data_provider.cpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\shop_data_provider.cpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\skill_data_provider.cpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\valid_char_data_provider.cpp">
-      <Filter>Data Loading\MCDB</Filter>
     </ClCompile>
     <ClCompile Include="src\common\item.cpp">
       <Filter>Data Structures</Filter>
@@ -171,9 +132,6 @@
     <ClCompile Include="src\common\tausworthe_generator.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\curse_data_provider.cpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClCompile>
     <ClCompile Include="src\common\config_file.cpp">
       <Filter>Configuration</Filter>
     </ClCompile>
@@ -204,23 +162,11 @@
     </ClCompile>
     <ClCompile Include="src\common\exit_codes.cpp" />
     <ClCompile Include="src\common\vana_main.cpp" />
-    <ClCompile Include="src\common\buff.cpp">
-      <Filter>Data Structures\Buffs</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\buff_info.cpp">
-      <Filter>Data Structures\Buffs</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\buff_source.cpp">
-      <Filter>Data Structures\Buffs</Filter>
-    </ClCompile>
     <ClCompile Include="src\common\line.cpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="src\common\rect.cpp">
       <Filter>Data Structures\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\buff_map_info.cpp">
-      <Filter>Data Structures\Buffs</Filter>
     </ClCompile>
     <ClCompile Include="src\common\file_time.cpp">
       <Filter>Data Structures\Time</Filter>
@@ -279,6 +225,60 @@
     <ClCompile Include="src\common\timer\thread.cpp">
       <Filter>timer</Filter>
     </ClCompile>
+    <ClCompile Include="src\common\data\type\buff.cpp">
+      <Filter>data\type</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\type\buff_info.cpp">
+      <Filter>data\type</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\type\buff_map_info.cpp">
+      <Filter>data\type</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\type\buff_source.cpp">
+      <Filter>data\type</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\provider\valid_char.cpp">
+      <Filter>data\provider</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\provider\skill.cpp">
+      <Filter>data\provider</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\provider\beauty.cpp">
+      <Filter>data\provider</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\provider\shop.cpp">
+      <Filter>data\provider</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\provider\curse.cpp">
+      <Filter>data\provider</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\provider\item.cpp">
+      <Filter>data\provider</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\provider\equip.cpp">
+      <Filter>data\provider</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\provider\buff.cpp">
+      <Filter>data\provider</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\provider\drop.cpp">
+      <Filter>data\provider</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\provider\mob.cpp">
+      <Filter>data\provider</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\provider\npc.cpp">
+      <Filter>data\provider</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\provider\quest.cpp">
+      <Filter>data\provider</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\provider\reactor.cpp">
+      <Filter>data\provider</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\provider\script.cpp">
+      <Filter>data\provider</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\common\file_utilities.hpp">
@@ -316,45 +316,6 @@
     </ClInclude>
     <ClInclude Include="src\common\database.hpp">
       <Filter>Database</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\beauty_data_provider.hpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\valid_char_data_provider.hpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\drop_data_provider.hpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\equip_data_provider.hpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\item_data_provider.hpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\mob_data_provider.hpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\npc_data_provider.hpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\quest_data_provider.hpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\reactor_data_provider.hpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\script_data_provider.hpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\shop_data_provider.hpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\skill_data_provider.hpp">
-      <Filter>Data Loading\MCDB</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\buff_data_provider.hpp">
-      <Filter>Data Loading</Filter>
     </ClInclude>
     <ClInclude Include="src\common\initialize_common.hpp">
       <Filter>Data Loading</Filter>
@@ -409,9 +370,6 @@
     </ClInclude>
     <ClInclude Include="src\common\soci_extensions.hpp">
       <Filter>Lib</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\curse_data_provider.hpp">
-      <Filter>Data Loading\MCDB</Filter>
     </ClInclude>
     <ClInclude Include="src\common\config_file.hpp">
       <Filter>Configuration</Filter>
@@ -483,24 +441,6 @@
     <ClInclude Include="src\common\object_pool.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\buff.hpp">
-      <Filter>Data Structures\Buffs</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\buff_action.hpp">
-      <Filter>Data Structures\Buffs</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\buff_info.hpp">
-      <Filter>Data Structures\Buffs</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\buff_skill_value.hpp">
-      <Filter>Data Structures\Buffs</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\buff_source_type.hpp">
-      <Filter>Data Structures\Buffs</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\buff_source.hpp">
-      <Filter>Data Structures\Buffs</Filter>
-    </ClInclude>
     <ClInclude Include="src\common\line.hpp">
       <Filter>Data Structures\Geometry</Filter>
     </ClInclude>
@@ -512,12 +452,6 @@
     </ClInclude>
     <ClInclude Include="src\common\wide_point.hpp">
       <Filter>Data Structures\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\buff_info_by_effect.hpp">
-      <Filter>Data Structures\Buffs</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\buff_map_info.hpp">
-      <Filter>Data Structures\Buffs</Filter>
     </ClInclude>
     <ClInclude Include="src\common\unix_time.hpp">
       <Filter>Data Structures\Time</Filter>
@@ -585,7 +519,6 @@
     <ClInclude Include="src\common\server_type.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\mcdb_version.hpp" />
     <ClInclude Include="src\common\maple_version.hpp" />
     <ClInclude Include="src\common\player_data.hpp">
       <Filter>Data Structures</Filter>
@@ -599,77 +532,8 @@
     <ClInclude Include="src\common\guild_logo.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\spawn_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\seat_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\portal_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\foothold_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\scroll_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\skillbook_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\summon_bag_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\consume_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\card_map_range_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\item_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\pet_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\pet_interact_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\item_reward_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\drop_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\global_drop_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\equip_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\mob_attack_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\mob_attack_type.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\mob_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\mob_skill_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\skill_level_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\skill_type.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
     <ClInclude Include="src\common\attack_data.hpp">
       <Filter>Data Structures</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\banish_field_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
     <ClInclude Include="src\common\charge_or_stationary_skill_data.hpp">
       <Filter>Data Structures</Filter>
@@ -679,36 +543,6 @@
     </ClInclude>
     <ClInclude Include="src\common\return_damage_data.hpp">
       <Filter>Data Structures</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\mob_skill_level_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\morph_chance_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\morph_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\npc_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\reactor_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\reactor_state_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\script_types.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\shop_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\shop_item_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\valid_item_type.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
     <ClInclude Include="src\common\valid_class_data.hpp">
       <Filter>Data Structures</Filter>
@@ -728,9 +562,6 @@
     <ClInclude Include="src\common\item_db_record.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\quest_reward_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
-    </ClInclude>
     <ClInclude Include="src\common\quest_rewards_data.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
@@ -739,9 +570,6 @@
     </ClInclude>
     <ClInclude Include="src\common\quest_requests_data.hpp">
       <Filter>Data Structures</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\quest_request_info.hpp">
-      <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
     <ClInclude Include="src\common\preprocessor.hpp">
       <Filter>Lib</Filter>
@@ -904,6 +732,183 @@
     </ClInclude>
     <ClInclude Include="src\common\constant\item\cash\serial.hpp">
       <Filter>constant\item\cash</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\banish_field_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\buff.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\buff_action.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\buff_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\buff_info_by_effect.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\buff_map_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\buff_skill_value.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\buff_source.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\buff_source_type.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\card_map_range_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\consume_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\drop_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\equip_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\foothold_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\global_drop_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\item_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\item_reward_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\mob_attack_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\mob_attack_type.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\mob_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\mob_skill_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\mob_skill_level_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\morph_chance_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\morph_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\npc_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\pet_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\pet_interact_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\portal_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\quest_request_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\quest_reward_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\reactor_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\reactor_state_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\script_types.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\scroll_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\seat_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\shop_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\shop_item_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\skill_level_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\skill_type.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\skillbook_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\spawn_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\summon_bag_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\valid_item_type.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\provider\valid_char.hpp">
+      <Filter>data\provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\provider\skill.hpp">
+      <Filter>data\provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\provider\beauty.hpp">
+      <Filter>data\provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\provider\shop.hpp">
+      <Filter>data\provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\provider\curse.hpp">
+      <Filter>data\provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\provider\item.hpp">
+      <Filter>data\provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\provider\equip.hpp">
+      <Filter>data\provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\provider\buff.hpp">
+      <Filter>data\provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\provider\drop.hpp">
+      <Filter>data\provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\provider\mob.hpp">
+      <Filter>data\provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\provider\npc.hpp">
+      <Filter>data\provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\provider\quest.hpp">
+      <Filter>data\provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\provider\reactor.hpp">
+      <Filter>data\provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\provider\script.hpp">
+      <Filter>data\provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\version.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\locale.hpp">
+      <Filter>data</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

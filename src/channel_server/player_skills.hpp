@@ -23,7 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace vana {
 	class packet_builder;
 	enum class mystic_door_result;
-	struct skill_level_info;
+	namespace data {
+		namespace type {
+			struct skill_level_info;
+		}
+	}
 
 	namespace channel_server {
 		class mystic_door;
@@ -51,7 +55,7 @@ namespace vana {
 			auto get_skill_level(game_skill_id skill_id) const -> game_skill_level;
 			auto get_max_skill_level(game_skill_id skill_id) const -> game_skill_level;
 			auto set_max_skill_level(game_skill_id skill_id, game_skill_level max_level, bool send_packet = true) -> void;
-			auto get_skill_info(game_skill_id skill_id) const -> const skill_level_info * const;
+			auto get_skill_info(game_skill_id skill_id) const -> const data::type::skill_level_info * const;
 
 			auto has_elemental_amp() const -> bool;
 			auto has_energy_charge() const -> bool;

@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "npc_packet.hpp"
-#include "common/item_data_provider.hpp"
+#include "common/data/provider/item.hpp"
+#include "common/data/provider/shop.hpp"
 #include "common/packet_reader.hpp"
 #include "common/session.hpp"
-#include "common/shop_data_provider.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/maps.hpp"
 #include "channel_server/player.hpp"
@@ -30,7 +30,7 @@ namespace channel_server {
 namespace packets {
 namespace npc {
 
-PACKET_IMPL(show_npc, const npc_spawn_info &npc, game_map_object id, bool show) {
+PACKET_IMPL(show_npc, const data::type::npc_spawn_info &npc, game_map_object id, bool show) {
 	packet_builder builder;
 	builder
 		.add<packet_header>(SMSG_NPC_SHOW)
@@ -45,7 +45,7 @@ PACKET_IMPL(show_npc, const npc_spawn_info &npc, game_map_object id, bool show) 
 	return builder;
 }
 
-PACKET_IMPL(control_npc, const npc_spawn_info &npc, game_map_object id, bool show) {
+PACKET_IMPL(control_npc, const data::type::npc_spawn_info &npc, game_map_object id, bool show) {
 	packet_builder builder;
 	builder
 		.add<packet_header>(SMSG_NPC_CONTROL)

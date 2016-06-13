@@ -17,12 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/quest_request_info.hpp"
+#include "common/data/type/quest_request_info.hpp"
 #include "common/types.hpp"
 #include <vector>
 
 namespace vana {
 	struct quest_requests_data {
-		vector<quest_request_info> universal;
+		vector<data::type::quest_request_info> universal;
 	};
 }

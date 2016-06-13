@@ -17,16 +17,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "lua_scriptable.hpp"
 #include "common/algorithm.hpp"
-#include "common/beauty_data_provider.hpp"
 #include "common/constant/job/line.hpp"
+#include "common/data/provider/beauty.hpp"
+#include "common/data/provider/item.hpp"
+#include "common/data/provider/script.hpp"
+#include "common/data/provider/shop.hpp"
+#include "common/data/version.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "common/inter_header.hpp"
-#include "common/item_data_provider.hpp"
-#include "common/mcdb_version.hpp"
 #include "common/packet_wrapper.hpp"
 #include "common/randomizer.hpp"
-#include "common/script_data_provider.hpp"
-#include "common/shop_data_provider.hpp"
 #include "common/string_utilities.hpp"
 #include "common/time_utilities.hpp"
 #include "channel_server/channel_server.hpp"
@@ -373,20 +373,20 @@ auto lua_scriptable::set_environment_variables() -> void {
 
 	set<game_item_id>("item_mesos", constant::item::sack_of_money);
 
-	set<string>("locale_global", mcdb::locales::global);
-	set<string>("locale_korea", mcdb::locales::korea);
-	set<string>("locale_japan", mcdb::locales::japan);
-	set<string>("locale_china", mcdb::locales::china);
-	set<string>("locale_europe", mcdb::locales::europe);
-	set<string>("locale_thailand", mcdb::locales::thailand);
-	set<string>("locale_tawian", mcdb::locales::taiwan);
-	set<string>("locale_sea", mcdb::locales::sea);
-	set<string>("locale_brazil", mcdb::locales::brazil);
+	set<string>("locale_global", data::locale::global);
+	set<string>("locale_korea", data::locale::korea);
+	set<string>("locale_japan", data::locale::japan);
+	set<string>("locale_china", data::locale::china);
+	set<string>("locale_europe", data::locale::europe);
+	set<string>("locale_thailand", data::locale::thailand);
+	set<string>("locale_tawian", data::locale::taiwan);
+	set<string>("locale_sea", data::locale::sea);
+	set<string>("locale_brazil", data::locale::brazil);
 
 	set<game_version>("env_version", maple_version::version);
 	set<string>("env_subversion", maple_version::login_subversion);
-	set<bool>("env_is_test_server", mcdb::is_test_server);
-	set<string>("env_locale", mcdb::locale);
+	set<bool>("env_is_test_server", data::version::is_test_server);
+	set<string>("env_locale", data::version::locale);
 	set<string>("env_api_version", s_api_version);
 }
 
@@ -708,10 +708,10 @@ auto lua_exports::run_npc(lua_State *lua_vm) -> lua_return {
 	if (env.is(lua_vm, 2, lua::lua_type::string)) {
 		// We already have our script name
 		string specified = env.get<string>(lua_vm, 2);
-		script = channel.get_script_data_provider().build_script_path(script_types::npc, specified);
+		script = channel.get_script_data_provider().build_script_path(data::type::script_types::npc, specified);
 	}
 	else {
-		script = channel.get_script_data_provider().get_script(&channel, npc_id, script_types::npc);
+		script = channel.get_script_data_provider().get_script(&channel, npc_id, data::type::script_types::npc);
 	}
 	npc *value = new npc{npc_id, get_player(lua_vm, env), script};
 	value->run();
@@ -732,7 +732,7 @@ auto lua_exports::spawn_npc(lua_State *lua_vm) -> lua_return {
 	game_coord x = env.get<game_coord>(lua_vm, 3);
 	game_coord y = env.get<game_coord>(lua_vm, 4);
 
-	npc_spawn_info npc;
+	data::type::npc_spawn_info npc;
 	npc.id = npc_id;
 	npc.foothold = 0;
 	npc.pos = point{x, y};
@@ -1242,7 +1242,7 @@ auto lua_exports::is_active_item(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_item_id item = env.get<game_item_id>(lua_vm, 1);
 	bool has_buff = get_player(lua_vm, env)->get_active_buffs()->has_buff(
-		buff_source_type::item,
+		data::type::buff_source_type::item,
 		item);
 
 	env.push<bool>(lua_vm, has_buff);
@@ -1254,8 +1254,8 @@ auto lua_exports::is_active_skill(lua_State *lua_vm) -> lua_return {
 	game_skill_id skill = env.get<game_skill_id>(lua_vm, 1);
 	bool has_buff = get_player(lua_vm, env)->get_active_buffs()->has_buff(
 		game_logic_utilities::is_mob_skill(skill) ?
-			buff_source_type::mob_skill :
-			buff_source_type::skill,
+			data::type::buff_source_type::mob_skill :
+			data::type::buff_source_type::skill,
 		skill);
 	env.push<bool>(lua_vm, has_buff);
 	return 1;
@@ -1343,7 +1343,7 @@ auto lua_exports::set_map(lua_State *lua_vm) -> lua_return {
 		// Optional portal parameter
 		string to = env.get<string>(lua_vm, 2);
 		map *map = maps::get_map(map_id);
-		const portal_info * const destination_portal = map->query_portal_name(to);
+		const data::type::portal_info * const destination_portal = map->query_portal_name(to);
 		get_player(lua_vm, env)->set_map(map_id, destination_portal);
 		env.set<bool>(lua_vm, "player_map_changed", true);
 	}
@@ -2137,7 +2137,7 @@ auto lua_exports::move_all_players(lua_State *lua_vm) -> lua_return {
 		// Optional portal parameter
 		string to = env.get<string>(lua_vm, 2);
 		map *map = maps::get_map(map_id);
-		const portal_info * const destination_portal = map->query_portal_name(to);
+		const data::type::portal_info * const destination_portal = map->query_portal_name(to);
 		get_instance(lua_vm, env)->move_all_players(map_id, true, destination_portal);
 	}
 	else {
@@ -2154,7 +2154,7 @@ auto lua_exports::pass_players_between_instances(lua_State *lua_vm) -> lua_retur
 		// Optional portal parameter
 		string to = env.get<string>(lua_vm, 2);
 		map *map = maps::get_map(map_id);
-		const portal_info * const destination_portal = map->query_portal_name(to);
+		const data::type::portal_info * const destination_portal = map->query_portal_name(to);
 		get_instance(lua_vm, env)->move_all_players(map_id, false, destination_portal);
 	}
 	else {
