@@ -443,7 +443,7 @@ auto management_functions::reload(ref_ptr<player> player, const game_chat &args)
 		if (args == "items" || args == "drops" || args == "shops" ||
 			args == "mobs" || args == "beauty" || args == "scripts" ||
 			args == "skills" || args == "reactors" || args == "pets" ||
-			args == "quests" || args == "all") {
+			args == "quests" || args == "maps" || args == "all") {
 			channel_server::get_instance().send_world(packets::interserver::reload_mcdb(args));
 			chat_handler_functions::show_info(player, "Reloading message for " + args + " sent to all channels");
 		}

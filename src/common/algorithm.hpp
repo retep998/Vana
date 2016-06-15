@@ -84,6 +84,46 @@ namespace vana {
 			return find_value_ptr(*map, index);
 		}
 
+		template <typename TValue, typename TPred>
+		inline
+		auto find_value_ptr_if(const vector<TValue> *map, TPred pred) -> std::enable_if_t<std::is_pointer<TValue>::value, const TValue> {
+			if (map == nullptr) {
+				return nullptr;
+			}
+			return find_value_ptr_if(*map, pred);
+		}
+
+		template <typename TValue, typename TPred>
+		inline
+		auto find_value_ptr_if(const vector<TValue> &map, TPred pred) -> std::enable_if_t<std::is_pointer<TValue>::value, const TValue> {
+			auto end = std::cend(map);
+			auto iter = std::find_if(std::cbegin(map), end, pred);
+			if (iter == end) {
+				return nullptr;
+			}
+			return *iter;
+		}
+
+		template <typename TValue, typename TPred>
+		inline
+		auto find_value_ptr_if(const vector<TValue> *map, TPred pred) -> std::enable_if_t<!std::is_pointer<TValue>::value, const TValue * const> {
+			if (map == nullptr) {
+				return nullptr;
+			}
+			return find_value_ptr(*map, pred);
+		}
+
+		template <typename TValue, typename TPred>
+		inline
+		auto find_value_ptr_if(const vector<TValue> &map, TPred pred) -> std::enable_if_t<!std::is_pointer<TValue>::value, const TValue * const> {
+			auto end = std::cend(map);
+			auto iter = std::find_if(std::cbegin(map), end, pred);
+			if (iter == end) {
+				return nullptr;
+			}
+			return &*iter;
+		}
+
 		template <typename TKey, typename TValue>
 		inline
 		auto find_value_or_default(const hash_map<TKey, TValue> &map, const TKey &key, TValue default) -> TValue {

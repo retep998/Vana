@@ -128,6 +128,7 @@ auto channel_server::reload_data(const string &args) -> void {
 		m_skill_data_provider.load_data();
 		m_reactor_data_provider.load_data();
 		m_quest_data_provider.load_data();
+		m_map_data_provider.load_data();
 	}
 	else if (args == "items") m_item_data_provider.load_data(m_buff_data_provider);
 	else if (args == "drops") m_drop_data_provider.load_data();
@@ -137,7 +138,8 @@ auto channel_server::reload_data(const string &args) -> void {
 	else if (args == "scripts") m_script_data_provider.load_data();
 	else if (args == "skills") m_skill_data_provider.load_data();
 	else if (args == "reactors") m_reactor_data_provider.load_data();
-	else if (args == "quest") m_quest_data_provider.load_data();
+	else if (args == "quests") m_quest_data_provider.load_data();
+	else if (args == "maps") m_map_data_provider.load_data();
 }
 
 auto channel_server::make_log_identifier() const -> opt_string {
@@ -273,7 +275,7 @@ auto channel_server::get_event_data_provider() const -> const event_data_provide
 	return m_event_data_provider;
 }
 
-auto channel_server::get_map_data_provider() const -> const map_data_provider & {
+auto channel_server::get_map_data_provider() -> data::provider::map & {
 	return m_map_data_provider;
 }
 
@@ -294,11 +296,11 @@ auto channel_server::get_instances() -> instances & {
 }
 
 auto channel_server::get_map(int32_t map_id) -> map * {
-	return m_map_data_provider.get_map(map_id);
+	return m_map_factory.get_map(map_id);
 }
 
 auto channel_server::unload_map(int32_t map_id) -> void {
-	return m_map_data_provider.unload_map(map_id);
+	m_map_factory.unload_map(map_id);
 }
 
 auto channel_server::is_connected() const -> bool {

@@ -608,7 +608,7 @@ auto chat_handler_functions::initialize() -> void {
 	g_command_list["killmob"] = command.add_to_map();
 
 	command.command = &management_functions::reload;
-	command.syntax = "<${all | items | drops | mobs | beauty | shops | scripts | reactors | pets | quests | skills}>";
+	command.syntax = "<${all | items | drops | mobs | beauty | shops | scripts | reactors | pets | quests | maps | skills}>";
 	command.notes.push_back("Reloads data from the database");
 	g_command_list["reload"] = command.add_to_map();
 

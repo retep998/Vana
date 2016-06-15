@@ -216,18 +216,6 @@
     <ClCompile Include="src\common\timer\thread.cpp">
       <Filter>timer</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\data\type\buff.cpp">
-      <Filter>data\type</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\data\type\buff_info.cpp">
-      <Filter>data\type</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\data\type\buff_map_info.cpp">
-      <Filter>data\type</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\data\type\buff_source.cpp">
-      <Filter>data\type</Filter>
-    </ClCompile>
     <ClCompile Include="src\common\data\provider\valid_char.cpp">
       <Filter>data\provider</Filter>
     </ClCompile>
@@ -278,6 +266,21 @@
     </ClCompile>
     <ClCompile Include="src\common\config\salt_transformation.cpp">
       <Filter>config</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\provider\map.cpp">
+      <Filter>data\provider</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\type\buff.cpp">
+      <Filter>data\type</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\type\buff_info.cpp">
+      <Filter>data\type</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\type\buff_map_info.cpp">
+      <Filter>data\type</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\data\type\buff_source.cpp">
+      <Filter>data\type</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -694,135 +697,6 @@
     <ClInclude Include="src\common\constant\item\cash\serial.hpp">
       <Filter>constant\item\cash</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\data\type\banish_field_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\buff.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\buff_action.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\buff_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\buff_info_by_effect.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\buff_map_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\buff_skill_value.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\buff_source.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\buff_source_type.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\card_map_range_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\consume_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\drop_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\equip_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\foothold_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\global_drop_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\item_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\item_reward_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\mob_attack_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\mob_attack_type.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\mob_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\mob_skill_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\mob_skill_level_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\morph_chance_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\morph_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\npc_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\pet_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\pet_interact_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\portal_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\quest_request_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\quest_reward_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\reactor_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\reactor_state_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\script_types.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\scroll_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\seat_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\shop_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\shop_item_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\skill_level_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\skill_type.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\skillbook_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\spawn_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\summon_bag_info.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\data\type\valid_item_type.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
     <ClInclude Include="src\common\data\provider\valid_char.hpp">
       <Filter>data\provider</Filter>
     </ClInclude>
@@ -909,6 +783,150 @@
     </ClInclude>
     <ClInclude Include="src\common\config\world.hpp">
       <Filter>config</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\provider\map.hpp">
+      <Filter>data\provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\banish_field_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\buff.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\buff_action.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\buff_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\buff_info_by_effect.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\buff_map_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\buff_skill_value.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\buff_source.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\buff_source_type.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\card_map_range_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\consume_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\drop_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\equip_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\field_limit.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\foothold_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\global_drop_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\item_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\item_reward_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\map_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\mob_attack_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\mob_attack_type.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\mob_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\mob_skill_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\mob_skill_level_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\morph_chance_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\morph_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\npc_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\pet_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\pet_interact_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\portal_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\quest_request_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\quest_reward_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\reactor_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\reactor_state_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\script_types.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\scroll_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\seat_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\shop_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\shop_item_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\skill_level_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\skill_type.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\skillbook_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\spawn_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\summon_bag_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\time_mob_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\valid_item_type.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\map_link_info.hpp">
+      <Filter>data\type</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

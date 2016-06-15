@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/provider/drop.hpp"
 #include "common/data/provider/equip.hpp"
 #include "common/data/provider/item.hpp"
+#include "common/data/provider/map.hpp"
 #include "common/data/provider/mob.hpp"
 #include "common/data/provider/npc.hpp"
 #include "common/data/provider/quest.hpp"
@@ -39,7 +40,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "channel_server/event_data_provider.hpp"
 #include "channel_server/instances.hpp"
 #include "channel_server/login_server_session.hpp"
-#include "channel_server/map_data_provider.hpp"
+#include "channel_server/map_factory.hpp"
 #include "channel_server/maple_tvs.hpp"
 #include "channel_server/player_data_provider.hpp"
 #include "channel_server/trades.hpp"
@@ -87,8 +88,9 @@ namespace vana {
 			auto get_quest_data_provider() const -> const data::provider::quest &;
 			auto get_buff_data_provider() const -> const data::provider::buff &;
 			auto get_event_data_provider() const -> const event_data_provider &;
-			auto get_map_data_provider() const -> const map_data_provider &;
+			auto get_map_data_provider() -> data::provider::map &;
 			auto get_player_data_provider() -> player_data_provider &;
+			auto get_map_factory() const -> map_factory &;
 			auto get_trades() -> trades &;
 			auto get_maple_tvs() -> maple_tvs &;
 			auto get_instances() -> instances &;
@@ -137,9 +139,10 @@ namespace vana {
 			data::provider::item m_item_data_provider;
 			data::provider::quest m_quest_data_provider;
 			data::provider::buff m_buff_data_provider;
+			data::provider::map m_map_data_provider;
 			event_data_provider m_event_data_provider;
-			map_data_provider m_map_data_provider;
 			player_data_provider m_player_data_provider;
+			map_factory m_map_factory;
 			trades m_trades;
 			maple_tvs m_maple_tvs;
 			instances m_instances;

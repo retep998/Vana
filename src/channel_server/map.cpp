@@ -62,18 +62,12 @@ namespace channel_server {
 // Remove this crap once MSVC supports static initializers
 int32_t map::s_map_unload_time = 0;
 
-map::map(ref_ptr<map_info> info, game_map_id id) :
+map::map(ref_ptr<const data::type::map_info> info, game_map_id id) :
 	m_info{info},
 	m_id{id},
 	m_object_ids{1000},
 	m_music{info->default_music}
 {
-	// Dynamic loading, start the map timer once the object is created
-	vana::timer::timer::create(
-		[this](const time_point &now) { this->map_tick(now); },
-		vana::timer::id{vana::timer::type::map_timer, id},
-		get_timers(), seconds{0}, seconds{1});
-
 	point right_bottom = info->dimensions.right_bottom();
 	double map_height = std::max<double>(right_bottom.y - 450, 600);
 	double map_width = std::max<double>(right_bottom.x, 800);
@@ -84,6 +78,20 @@ map::map(ref_ptr<map_info> info, game_map_id id) :
 	if (!m_infer_size_from_footholds) {
 		m_real_dimensions = info->dimensions;
 	}
+
+	for (const auto &foothold : info->link_info->footholds) add_foothold(foothold);
+	for (const auto &mob : info->link_info->mobs) add_mob_spawn(mob);
+	for (const auto &npc : info->link_info->npcs) add_npc(npc);
+	for (const auto &portal : info->link_info->portals) add_portal(portal);
+	for (const auto &reactor : info->link_info->reactors) add_reactor_spawn(reactor);
+	for (const auto &seat : info->link_info->seats) add_seat(seat);
+	if (info->link_info->time_mob.is_initialized()) add_time_mob(info->link_info->time_mob.get());
+
+	// Dynamic loading, start the map timer once the object is created
+	vana::timer::timer::create(
+		[this](const time_point &now) { this->map_tick(now); },
+		vana::timer::id{vana::timer::type::map_timer, m_info->id},
+		get_timers(), seconds{0}, seconds{1});
 }
 
 // Map info
@@ -134,6 +142,7 @@ auto map::add_reactor_spawn(const data::type::reactor_spawn_info &spawn) -> void
 	m_reactor_spawns[m_reactor_spawns.size() - 1].spawned = true;
 	reactor *value = new reactor{get_id(), spawn.id, spawn.pos, spawn.faces_left};
 	send(packets::spawn_reactor(value));
+	add_reactor(value);
 }
 
 auto map::add_mob_spawn(const data::type::mob_spawn_info &spawn) -> void {
@@ -159,7 +168,7 @@ auto map::add_portal(const data::type::portal_info &portal) -> void {
 	}
 }
 
-auto map::add_time_mob(ref_ptr<time_mob> info) -> void {
+auto map::add_time_mob(data::type::time_mob_info info) -> void {
 	vana::timer::timer::create([this](const time_point &now) { this->check_time_mob_spawn(false); },
 		vana::timer::id{vana::timer::type::map_timer, get_id(), 1},
 		get_timers(), utilities::time::get_distance_to_next_occurring_second_of_hour(0), hours{1});
@@ -167,8 +176,6 @@ auto map::add_time_mob(ref_ptr<time_mob> info) -> void {
 	vana::timer::timer::create([this](const time_point &now) { this->check_time_mob_spawn(true); },
 		vana::timer::id{vana::timer::type::map_timer, get_id(), 2},
 		get_timers(), seconds{3}); // First check
-
-	m_time_mob_info = info;
 }
 
 // Players
@@ -1228,21 +1235,22 @@ auto map::map_tick(const time_point &now) -> void {
 
 auto map::check_time_mob_spawn(bool first_load) -> void {
 	int32_t c_hour = utilities::time::get_hour(false);
-	time_mob *tm = get_time_mob();
+	data::type::time_mob_info tm = m_info->link_info->time_mob.get();
+
 	if (first_load) {
-		if (c_hour >= tm->start_hour && c_hour < tm->end_hour) {
+		if (c_hour >= tm.start_hour && c_hour < tm.end_hour) {
 			point p = find_random_floor_pos();
-			m_time_mob = spawn_mob(tm->id, p, get_foothold_at_position(p), nullptr, 0)->get_map_mob_id();
-			send(packets::player::show_message(tm->message, packets::player::notice_types::blue));
+			m_time_mob = spawn_mob(tm.id, p, get_foothold_at_position(p), nullptr, 0)->get_map_mob_id();
+			send(packets::player::show_message(tm.message, packets::player::notice_types::blue));
 		}
 	}
 	else {
-		if (c_hour == tm->start_hour) {
+		if (c_hour == tm.start_hour) {
 			point p = find_random_floor_pos();
-			m_time_mob = spawn_mob(tm->id, p, get_foothold_at_position(p), nullptr, 0)->get_map_mob_id();
-			send(packets::player::show_message(tm->message, packets::player::notice_types::blue));
+			m_time_mob = spawn_mob(tm.id, p, get_foothold_at_position(p), nullptr, 0)->get_map_mob_id();
+			send(packets::player::show_message(tm.message, packets::player::notice_types::blue));
 		}
-		else if (c_hour == tm->end_hour && m_time_mob != 0) {
+		else if (c_hour == tm.end_hour && m_time_mob != 0) {
 			auto m = get_mob(m_time_mob);
 			m->kill();
 		}

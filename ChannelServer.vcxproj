@@ -178,7 +178,7 @@
     <ClCompile Include="src\channel_server\trades_packet.cpp" />
     <ClCompile Include="src\channel_server\buffs_packet_helper.cpp" />
     <ClCompile Include="src\channel_server\player_packet_helper.cpp" />
-    <ClCompile Include="src\channel_server\map_data_provider.cpp" />
+    <ClCompile Include="src\channel_server\map_factory.cpp" />
     <ClCompile Include="src\channel_server\world_server_session.cpp" />
     <ClCompile Include="src\channel_server\world_server_packet.cpp" />
     <ClCompile Include="src\channel_server\world_server_session_handler.cpp" />
@@ -288,7 +288,7 @@
     <ClInclude Include="src\channel_server\trades_packet.hpp" />
     <ClInclude Include="src\channel_server\buffs_packet_helper.hpp" />
     <ClInclude Include="src\channel_server\player_packet_helper.hpp" />
-    <ClInclude Include="src\channel_server\map_data_provider.hpp" />
+    <ClInclude Include="src\channel_server\map_factory.hpp" />
     <ClInclude Include="src\channel_server\world_server_session.hpp" />
     <ClInclude Include="src\channel_server\world_server_packet.hpp" />
     <ClInclude Include="src\channel_server\world_server_session_handler.hpp" />

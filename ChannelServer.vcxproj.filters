@@ -168,9 +168,6 @@
     <ClCompile Include="src\channel_server\player_packet_helper.cpp">
       <Filter>Packets\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="src\channel_server\map_data_provider.cpp">
-      <Filter>Data Loading</Filter>
-    </ClCompile>
     <ClCompile Include="src\channel_server\player.cpp">
       <Filter>Player</Filter>
     </ClCompile>
@@ -351,6 +348,9 @@
     <ClCompile Include="src\channel_server\lua\lua_scriptable.cpp">
       <Filter>lua</Filter>
     </ClCompile>
+    <ClCompile Include="src\channel_server\map_factory.cpp">
+      <Filter>Data Loading</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\channel_server\buffs.hpp">
@@ -412,9 +412,6 @@
     </ClInclude>
     <ClInclude Include="src\channel_server\trade.hpp">
       <Filter>ChannelServer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\channel_server\map_data_provider.hpp">
-      <Filter>Data Loading</Filter>
     </ClInclude>
     <ClInclude Include="src\channel_server\buddy_list_handler.hpp">
       <Filter>Handlers</Filter>
@@ -672,6 +669,9 @@
     </ClInclude>
     <ClInclude Include="src\channel_server\lua\lua_scriptable.hpp">
       <Filter>lua</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\map_factory.hpp">
+      <Filter>Data Loading</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

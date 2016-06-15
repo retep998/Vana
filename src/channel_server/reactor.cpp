@@ -30,7 +30,6 @@ reactor::reactor(game_map_id map_id, game_reactor_id reactor_id, const point &po
 	m_pos{pos},
 	m_faces_left{faces_left}
 {
-	maps::get_map(map_id)->add_reactor(this);
 }
 
 auto reactor::set_state(int8_t state, bool send_packet) -> void {

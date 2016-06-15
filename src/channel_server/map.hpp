@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "common/constant/map.hpp"
 #include "common/data/type/foothold_info.hpp"
+#include "common/data/type/map_info.hpp"
 #include "common/data/type/mob_skill_level_info.hpp"
 #include "common/data/type/portal_info.hpp"
 #include "common/data/type/seat_info.hpp"
@@ -29,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/respawnable.hpp"
 #include "common/timer/container_holder.hpp"
 #include "common/types.hpp"
-#include "channel_server/map_data_provider.hpp"
+#include "channel_server/map_factory.hpp"
 #include "channel_server/mob.hpp"
 #include <ctime>
 #include <functional>
@@ -89,7 +90,7 @@ namespace vana {
 			NONCOPYABLE(map);
 			NO_DEFAULT_CONSTRUCTOR(map);
 		public:
-			map(ref_ptr<map_info> info, game_map_id id);
+			map(ref_ptr<const data::type::map_info> info, game_map_id id);
 
 			auto boat_dock(bool is_docked) -> void;
 			static auto set_map_unload_time(seconds new_time) -> void;
@@ -211,13 +212,12 @@ namespace vana {
 			// Remove this crap comment once MSVC supports static initializers
 			static int32_t s_map_unload_time/* = 0*/;
 
-			friend class map_data_provider;
 			auto add_foothold(const data::type::foothold_info &foothold) -> void;
 			auto add_seat(const data::type::seat_info &seat) -> void;
 			auto add_portal(const data::type::portal_info &portal) -> void;
 			auto add_mob_spawn(const data::type::mob_spawn_info &spawn) -> void;
 			auto add_reactor_spawn(const data::type::reactor_spawn_info &spawn) -> void;
-			auto add_time_mob(ref_ptr<time_mob> info) -> void;
+			auto add_time_mob(data::type::time_mob_info info) -> void;
 			auto check_spawn(time_point time) -> void;
 			auto check_shadow_web() -> void;
 			auto check_mists() -> void;
@@ -228,7 +228,6 @@ namespace vana {
 			auto update_mob_control(ref_ptr<mob> mob, mob_spawn_type spawn = mob_spawn_type::existing, ref_ptr<player> display = nullptr) -> void;
 			auto map_tick(const time_point &now) -> void;
 			auto get_time_mob_id() const -> game_map_object { return m_time_mob; }
-			auto get_time_mob() const -> time_mob * { return m_time_mob_info.get(); }
 			auto get_mist(game_mist_id id) -> mist *;
 			auto find_controller(ref_ptr<mob> mob) -> ref_ptr<player>;
 			auto clear_mists(bool show_packet = true) -> void;
@@ -257,8 +256,7 @@ namespace vana {
 			id_pool<game_map_object> m_object_ids;
 			id_pool<game_mist_id> m_mist_ids;
 			recursive_mutex m_drops_mutex;
-			ref_ptr<map_info> m_info;
-			ref_ptr<time_mob> m_time_mob_info;
+			ref_ptr<const data::type::map_info> m_info;
 			vector<data::type::foothold_info> m_footholds;
 			vector<data::type::reactor_spawn_info> m_reactor_spawns;
 			vector<data::type::npc_spawn_info> m_npc_spawns;

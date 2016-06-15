@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "channel_server/instance.hpp"
 #include "channel_server/inventory.hpp"
 #include "channel_server/lua/lua_portal.hpp"
-#include "channel_server/map_data_provider.hpp"
 #include "channel_server/map_packet.hpp"
 #include "channel_server/pet_handler.hpp"
 #include "channel_server/player.hpp"
