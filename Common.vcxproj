@@ -64,9 +64,11 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
       <EnablePREfast>false</EnablePREfast>
-      <AdditionalOptions>/Zc:throwingNew %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:throwingNew /Zc:strictStrings %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>$(IntDir)%(RelativeDir)\</ObjectFileName>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
     <Lib>
       <AdditionalLibraryDirectories>$(LazurBeemz)/$(PlatformToolsetVersion)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -89,6 +91,7 @@
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
       <AdditionalOptions>/Zc:throwingNew %(AdditionalOptions)</AdditionalOptions>
       <ObjectFileName>$(IntDir)%(RelativeDir)\</ObjectFileName>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
     </ClCompile>
     <Lib>
       <AdditionalLibraryDirectories>$(LazurBeemz)/$(PlatformToolsetVersion)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
