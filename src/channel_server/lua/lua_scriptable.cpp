@@ -194,7 +194,7 @@ auto lua_scriptable::initialize() -> void {
 	expose("getJob", &lua_exports::get_job);
 	expose("getLevel", &lua_exports::get_level);
 	expose("getLuk", &lua_exports::get_luk);
-	expose("get_map", &lua_exports::get_map);
+	expose("getMap", &lua_exports::get_map);
 	expose("getMaxHp", &lua_exports::get_max_hp);
 	expose("getMaxMp", &lua_exports::get_max_mp);
 	expose("getMp", &lua_exports::get_mp);
