@@ -96,7 +96,7 @@ auto reactor::load_states() -> void {
 			}
 		}
 
-		if (!found) throw codepath_invalid_exception{};
+		if (!found) THROW_CODE_EXCEPTION(codepath_invalid_exception);
 	}
 }
 
@@ -121,7 +121,7 @@ auto reactor::load_trigger_skills() -> void {
 			}
 		}
 
-		if (!found) throw codepath_invalid_exception{};
+		if (!found) THROW_CODE_EXCEPTION(codepath_invalid_exception);
 	}
 }
 
@@ -140,7 +140,7 @@ auto reactor::get_reactor_data(game_reactor_id reactor_id, bool respect_link) co
 		}
 	}
 
-	throw codepath_invalid_exception{};
+	THROW_CODE_EXCEPTION(codepath_invalid_exception);
 }
 
 }

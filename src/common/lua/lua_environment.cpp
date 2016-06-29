@@ -239,7 +239,7 @@ auto lua_environment::validate_value(lua_type expected_type, const lua_variant &
 			case lua_type::number: representation = "number"; break;
 			case lua_type::string: representation = "string"; break;
 			case lua_type::table: representation = "table"; break;
-			default: throw not_implemented_exception{"LuaType"};
+			default: THROW_CODE_EXCEPTION(not_implemented_exception, "LuaType");
 		}
 		error("Key '" + key + "' on object " + prefix + " must have a " + representation + " value");
 	}
@@ -255,7 +255,7 @@ auto lua_environment::validate_key(lua_type expected_type, const lua_variant &v,
 			case lua_type::number: representation = "number"; break;
 			case lua_type::string: representation = "string"; break;
 			case lua_type::table: representation = "table"; break;
-			default: throw not_implemented_exception{"LuaType"};
+			default: THROW_CODE_EXCEPTION(not_implemented_exception, "LuaType");
 		}
 		error("Object " + prefix + " keys must be " + representation + "s");
 	}
@@ -270,7 +270,7 @@ auto lua_environment::validate_object(lua_type expected_type, const lua_variant 
 			case lua_type::number: representation = "number"; break;
 			case lua_type::string: representation = "string"; break;
 			case lua_type::table: representation = "table"; break;
-			default: throw not_implemented_exception{"LuaType"};
+			default: THROW_CODE_EXCEPTION(not_implemented_exception, "LuaType");
 		}
 		error("Object " + prefix + " must be a " + representation + " object");
 	}

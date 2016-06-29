@@ -55,7 +55,7 @@ auto player_summons::add_summon(summon *summon, seconds time) -> void {
 
 		m_summons.push_back(summon);
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_summons::remove_summon(game_summon_id summon_id, bool from_timer) -> void {
@@ -71,7 +71,7 @@ auto player_summons::remove_summon(game_summon_id summon_id, bool from_timer) ->
 			summon_handler::g_summon_ids.release(summon_id);
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_summons::get_summon(game_summon_id summon_id) -> summon * {
@@ -103,7 +103,7 @@ auto player_summons::changed_map() -> void {
 			}
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_summons::get_summon_time_remaining(game_summon_id summon_id) const -> seconds {
@@ -111,7 +111,7 @@ auto player_summons::get_summon_time_remaining(game_summon_id summon_id) const -
 	if (auto player = m_player.lock()) {
 		return player->get_timer_container()->get_remaining_time<seconds>(id);
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_summons::get_transfer_packet() const -> packet_builder {
@@ -145,7 +145,7 @@ auto player_summons::parse_transfer_packet(packet_reader &reader) -> void {
 				player->send_map(packets::show_summon(player->get_id(), value, false));
 			}
 		}
-		else throw invalid_operation_exception{"This should never be thrown"};
+		else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 	}
 }
 

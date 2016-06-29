@@ -93,7 +93,7 @@ auto player_stats::update_bonuses(bool update_equips, bool is_loading) -> void {
 			}
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 
 	if (m_hyper_body_x > 0) {
 		set_hyper_body_hp(m_hyper_body_x);
@@ -212,7 +212,7 @@ auto player_stats::set_level(game_player_level level) -> void {
 		player->send_map(packets::level_up(player->get_id()));
 		channel_server::get_instance().get_player_data_provider().update_player_level(player);
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::set_hp(game_health hp, bool send_packet) -> void {
@@ -221,7 +221,7 @@ auto player_stats::set_hp(game_health hp, bool send_packet) -> void {
 		if (auto player = m_player.lock()) {
 			player->send(packets::player::update_stat(constant::stat::hp, m_hp));
 		}
-		else throw invalid_operation_exception{"This should never be thrown"};
+		else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 	}
 	modified_hp();
 }
@@ -235,7 +235,7 @@ auto player_stats::modify_hp(int32_t hp_mod, bool send_packet) -> void {
 		if (auto player = m_player.lock()) {
 			player->send(packets::player::update_stat(constant::stat::hp, m_hp));
 		}
-		else throw invalid_operation_exception{"This should never be thrown"};
+		else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 	}
 	modified_hp();
 }
@@ -245,7 +245,7 @@ auto player_stats::damage_hp(int32_t damage_hp) -> void {
 	if (auto player = m_player.lock()) {
 		player->send(packets::player::update_stat(constant::stat::hp, m_hp));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 	modified_hp();
 }
 
@@ -265,7 +265,7 @@ auto player_stats::modified_hp() -> void {
 			});
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::set_mp(game_health mp, bool send_packet) -> void {
@@ -275,7 +275,7 @@ auto player_stats::set_mp(game_health mp, bool send_packet) -> void {
 		}
 		player->send(packets::player::update_stat(constant::stat::mp, m_mp, send_packet));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::modify_mp(int32_t mp_mod, bool send_packet) -> void {
@@ -287,7 +287,7 @@ auto player_stats::modify_mp(int32_t mp_mod, bool send_packet) -> void {
 		}
 		player->send(packets::player::update_stat(constant::stat::mp, m_mp, send_packet));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::damage_mp(int32_t damage_mp) -> void {
@@ -297,7 +297,7 @@ auto player_stats::damage_mp(int32_t damage_mp) -> void {
 		}
 		player->send(packets::player::update_stat(constant::stat::mp, m_mp, false));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::set_sp(game_stat sp) -> void {
@@ -305,7 +305,7 @@ auto player_stats::set_sp(game_stat sp) -> void {
 	if (auto player = m_player.lock()) {
 		player->send(packets::player::update_stat(constant::stat::sp, sp));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::set_ap(game_stat ap) -> void {
@@ -313,7 +313,7 @@ auto player_stats::set_ap(game_stat ap) -> void {
 	if (auto player = m_player.lock()) {
 		player->send(packets::player::update_stat(constant::stat::ap, ap));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::set_job(game_job_id job) -> void {
@@ -323,7 +323,7 @@ auto player_stats::set_job(game_job_id job) -> void {
 		player->send_map(packets::job_change(player->get_id()));
 		channel_server::get_instance().get_player_data_provider().update_player_job(player);
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::set_str(game_stat str) -> void {
@@ -331,7 +331,7 @@ auto player_stats::set_str(game_stat str) -> void {
 	if (auto player = m_player.lock()) {
 		player->send(packets::player::update_stat(constant::stat::str, str));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::set_dex(game_stat dex) -> void {
@@ -339,7 +339,7 @@ auto player_stats::set_dex(game_stat dex) -> void {
 	if (auto player = m_player.lock()) {
 		player->send(packets::player::update_stat(constant::stat::dex, dex));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::set_int(game_stat intl) -> void {
@@ -347,7 +347,7 @@ auto player_stats::set_int(game_stat intl) -> void {
 	if (auto player = m_player.lock()) {
 		player->send(packets::player::update_stat(constant::stat::intl, intl));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::set_luk(game_stat luk) -> void {
@@ -355,7 +355,7 @@ auto player_stats::set_luk(game_stat luk) -> void {
 	if (auto player = m_player.lock()) {
 		player->send(packets::player::update_stat(constant::stat::luk, luk));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::set_maple_warrior(int16_t mod) -> void {
@@ -374,7 +374,7 @@ auto player_stats::set_max_hp(game_health max_hp) -> void {
 	if (auto player = m_player.lock()) {
 		player->send(packets::player::update_stat(constant::stat::max_hp, m_max_hp));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 	modified_hp();
 }
 
@@ -383,7 +383,7 @@ auto player_stats::set_max_mp(game_health max_mp) -> void {
 	if (auto player = m_player.lock()) {
 		player->send(packets::player::update_stat(constant::stat::max_mp, m_max_mp));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::set_hyper_body_hp(int16_t mod) -> void {
@@ -399,7 +399,7 @@ auto player_stats::set_hyper_body_hp(int16_t mod) -> void {
 		}
 		player->get_active_buffs()->check_berserk();
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::set_hyper_body_mp(int16_t mod) -> void {
@@ -411,7 +411,7 @@ auto player_stats::set_hyper_body_mp(int16_t mod) -> void {
 			set_mp(get_mp());
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::modify_max_hp(game_health mod) -> void {
@@ -419,7 +419,7 @@ auto player_stats::modify_max_hp(game_health mod) -> void {
 	if (auto player = m_player.lock()) {
 		player->send(packets::player::update_stat(constant::stat::max_hp, m_max_hp));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::modify_max_mp(game_health mod) -> void {
@@ -427,7 +427,7 @@ auto player_stats::modify_max_mp(game_health mod) -> void {
 	if (auto player = m_player.lock()) {
 		player->send(packets::player::update_stat(constant::stat::max_mp, m_max_mp));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::set_exp(game_experience exp) -> void {
@@ -435,7 +435,7 @@ auto player_stats::set_exp(game_experience exp) -> void {
 	if (auto player = m_player.lock()) {
 		player->send(packets::player::update_stat(constant::stat::exp, m_exp));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::set_fame(game_fame fame) -> void {
@@ -443,7 +443,7 @@ auto player_stats::set_fame(game_fame fame) -> void {
 	if (auto player = m_player.lock()) {
 		player->send(packets::player::update_stat(constant::stat::fame, fame));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::lose_exp() -> void {
@@ -477,7 +477,7 @@ auto player_stats::lose_exp() -> void {
 			set_exp(exp);
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 // Level related functions
@@ -617,7 +617,7 @@ auto player_stats::give_exp(uint64_t exp, bool in_chat, bool white) -> void {
 		// By this point, the EXP should be a valid EXP in the range of 0 to game_experience max
 		set_exp(static_cast<game_experience>(cur_exp));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::add_stat(packet_reader &reader) -> void {
@@ -631,7 +631,7 @@ auto player_stats::add_stat(packet_reader &reader) -> void {
 		player->send(packets::stat_ok());
 		add_stat(type);
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::add_stat_multi(packet_reader &reader) -> void {
@@ -653,7 +653,7 @@ auto player_stats::add_stat_multi(packet_reader &reader) -> void {
 			add_stat(type, static_cast<int16_t>(value)); // Prefer a single cast to countless casts/modification down the line
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::add_stat(int32_t type, int16_t mod, bool is_reset) -> void {
@@ -769,7 +769,7 @@ auto player_stats::add_stat(int32_t type, int16_t mod, bool is_reset) -> void {
 		}
 		update_bonuses();
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::rand_hp() -> game_health {
@@ -784,14 +784,14 @@ auto player_stats::get_x(game_skill_id skill_id) -> int16_t {
 	if (auto player = m_player.lock()) {
 		return player->get_skills()->get_skill_info(skill_id)->x;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::get_y(game_skill_id skill_id) -> int16_t {
 	if (auto player = m_player.lock()) {
 		return player->get_skills()->get_skill_info(skill_id)->y;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_stats::ap_reset_hp(bool is_reset, bool is_subtract, int16_t val, int16_t s_val) -> int16_t {

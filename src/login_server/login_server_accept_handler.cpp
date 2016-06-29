@@ -36,7 +36,7 @@ auto login_server_accept_handler::register_channel(ref_ptr<login_server_accepted
 	const ip &ip_value = reader.get<ip>();
 	optional<game_world_id> world_id = session->get_world_id();
 	if (!world_id.is_initialized()) {
-		throw codepath_invalid_exception{"!world_id.is_initialized()"};
+		THROW_CODE_EXCEPTION(codepath_invalid_exception, "!world_id.is_initialized()");
 	}
 
 	chan->set_external_ip_information(ip_value, reader.get<vector<external_ip>>());
@@ -52,7 +52,7 @@ auto login_server_accept_handler::update_channel_pop(ref_ptr<login_server_accept
 	int32_t population = reader.get<int32_t>();
 	optional<game_world_id> world_id = session->get_world_id();
 	if (!world_id.is_initialized()) {
-		throw codepath_invalid_exception{"!world_id.is_initialized()"};
+		THROW_CODE_EXCEPTION(codepath_invalid_exception, "!world_id.is_initialized()");
 	}
 
 	auto &worlds = login_server::get_instance().get_worlds();
@@ -66,7 +66,7 @@ auto login_server_accept_handler::remove_channel(ref_ptr<login_server_accepted_s
 
 	optional<game_world_id> world_id = session->get_world_id();
 	if (!world_id.is_initialized()) {
-		throw codepath_invalid_exception{"!world_id.is_initialized()"};
+		THROW_CODE_EXCEPTION(codepath_invalid_exception, "!world_id.is_initialized()");
 	}
 
 	login_server::get_instance().get_worlds().get_world(world_id.get())->remove_channel(chan_id);

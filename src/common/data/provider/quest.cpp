@@ -92,7 +92,7 @@ auto quest::load_requests() -> void {
 				quest_request.quest_state = static_cast<int8_t>(count);
 			}
 			else {
-				throw not_implemented_exception{"request_type"};
+				THROW_CODE_EXCEPTION(not_implemented_exception, "request_type");
 			}
 		});
 
@@ -135,7 +135,7 @@ auto quest::load_required_jobs() -> void {
 			}
 		}
 
-		if (!found) throw codepath_invalid_exception{};
+		if (!found) THROW_CODE_EXCEPTION(codepath_invalid_exception);
 	}
 }
 
@@ -274,7 +274,7 @@ auto quest::load_rewards() -> void {
 						});
 					}
 					else {
-						throw not_implemented_exception{"job_tracks"};
+						THROW_CODE_EXCEPTION(not_implemented_exception, "job_tracks");
 					}
 				});
 
@@ -282,7 +282,7 @@ auto quest::load_rewards() -> void {
 			}
 		}
 
-		if (!found) throw codepath_invalid_exception{};
+		if (!found) THROW_CODE_EXCEPTION(codepath_invalid_exception);
 	}
 }
 
@@ -303,7 +303,7 @@ auto quest::get_info(game_quest_id quest_id) const -> const vana::quest & {
 		}
 	}
 
-	throw codepath_invalid_exception{};
+	THROW_CODE_EXCEPTION(codepath_invalid_exception);
 }
 
 }

@@ -74,7 +74,7 @@ auto shop::load_shops() -> void {
 			}
 		}
 
-		if (!found) throw codepath_invalid_exception{};
+		if (!found) THROW_CODE_EXCEPTION(codepath_invalid_exception);
 	}
 }
 
@@ -117,7 +117,7 @@ auto shop::load_user_shops() -> void {
 			}
 		}
 
-		if (!found) throw codepath_invalid_exception{};
+		if (!found) THROW_CODE_EXCEPTION(codepath_invalid_exception);
 	}
 }
 
@@ -166,7 +166,7 @@ auto shop::get_shop(game_shop_id id) const -> shop_data {
 		}
 	}
 
-	if (info == nullptr) throw codepath_invalid_exception{};
+	if (info == nullptr) THROW_CODE_EXCEPTION(codepath_invalid_exception);
 
 	shop_data ret;
 	ret.npc = info->npc;
@@ -186,7 +186,7 @@ auto shop::get_shop(game_shop_id id) const -> shop_data {
 			}
 		}
 
-		if (!found) throw codepath_invalid_exception{};
+		if (!found) THROW_CODE_EXCEPTION(codepath_invalid_exception);
 	}
 
 	return ret;
@@ -201,7 +201,7 @@ auto shop::get_shop_item(game_shop_id shop_id, uint16_t shop_index) const -> con
 		}
 	}
 
-	if (item == nullptr) throw codepath_invalid_exception{};
+	if (item == nullptr) THROW_CODE_EXCEPTION(codepath_invalid_exception);
 	return item;
 }
 
@@ -215,7 +215,7 @@ auto shop::get_recharge_cost(game_shop_id shop_id, game_item_id item_id, game_sl
 			break;
 		}
 	}
-	if (!found) throw codepath_invalid_exception{};
+	if (!found) THROW_CODE_EXCEPTION(codepath_invalid_exception);
 
 	found = false;
 	double recharge_cost = 1.;
@@ -232,7 +232,7 @@ auto shop::get_recharge_cost(game_shop_id shop_id, game_item_id item_id, game_sl
 		}
 	}
 
-	if (!found) throw codepath_invalid_exception{};
+	if (!found) THROW_CODE_EXCEPTION(codepath_invalid_exception);
 
 	return -1 * static_cast<game_mesos>(recharge_cost * amount);
 }

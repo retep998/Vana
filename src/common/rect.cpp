@@ -182,7 +182,7 @@ auto rect::intersects(const line &line) const -> bool {
 			y = y1 + (y2 - y1) * (m_left_top.x - x1) / (x1 - x2);
 		}
 		else {
-			throw codepath_invalid_exception{"If there are no bits set, that case should be taken care of earlier"};
+			THROW_CODE_EXCEPTION(codepath_invalid_exception, "If there are no bits set, that case should be taken care of earlier");
 		}
 
 		if (outside_result == test_result_pt1) {

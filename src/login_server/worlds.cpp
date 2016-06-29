@@ -50,7 +50,7 @@ auto worlds::show_world(ref_ptr<user> user_value) -> void {
 auto worlds::add_world(world *world_value) -> void {
 	optional<game_world_id> world_id = world_value->get_id();
 	if (!world_id.is_initialized()) {
-		throw codepath_invalid_exception{"!world_id.is_initialized()"};
+		THROW_CODE_EXCEPTION(codepath_invalid_exception, "!world_id.is_initialized()");
 	}
 	m_worlds[world_id.get()] = world_value;
 }
@@ -134,7 +134,7 @@ auto worlds::add_world_server(ref_ptr<login_server_accepted_session> session) ->
 
 	optional<game_world_id> world_id = world_value->get_id();
 	if (!world_id.is_initialized()) {
-		throw codepath_invalid_exception{"!world_id.is_initialized()"};
+		THROW_CODE_EXCEPTION(codepath_invalid_exception, "!world_id.is_initialized()");
 	}
 
 	game_world_id cached = world_id.get();
@@ -170,7 +170,7 @@ auto worlds::add_channel_server(ref_ptr<login_server_accepted_session> session) 
 
 	optional<game_world_id> world_id = valid_world->get_id();
 	if (!world_id.is_initialized()) {
-		throw codepath_invalid_exception{"!world_id.is_initialized()"};
+		THROW_CODE_EXCEPTION(codepath_invalid_exception, "!world_id.is_initialized()");
 	}
 
 	ip world_ip = valid_world->match_subnet(session->get_ip().get(ip{0}));

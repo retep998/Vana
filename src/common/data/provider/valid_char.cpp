@@ -122,7 +122,7 @@ auto valid_char::is_valid_item(int32_t id, const valid_class_data &items, data::
 		case data::type::valid_item_type::shoes: return ext::any_of(items.shoes, id_test);
 		case data::type::valid_item_type::weapon: return ext::any_of(items.weapons, id_test);
 	}
-	throw not_implemented_exception{"valid_item_type"};
+	THROW_CODE_EXCEPTION(not_implemented_exception, "valid_item_type");
 }
 
 auto valid_char::get_items(game_gender_id gender_id, int8_t class_id) const -> const valid_class_data & {

@@ -484,7 +484,7 @@ namespace vana {
 				case lua_type::string: push<string>(lua_vm, value.as<string>()); break;
 				case lua_type::number: push<double>(lua_vm, value.as<double>()); break;
 				case lua_type::table: push<hash_map<lua_variant, lua_variant>>(lua_vm, value.as<hash_map<lua_variant, lua_variant>>()); break;
-				default: throw not_implemented_exception{"lua_type"};
+				default: THROW_CODE_EXCEPTION(not_implemented_exception, "lua_type");
 			}
 		}
 
@@ -610,7 +610,7 @@ namespace vana {
 			if (is(lua_vm, key, lua_type::boolean)) return lua_variant{get<bool>(lua_vm, key)};
 			if (is(lua_vm, key, lua_type::nil)) return lua_variant{};
 			if (is(lua_vm, key, lua_type::table)) return lua_variant{get<hash_map<lua_variant, lua_variant>>(lua_vm, key)};
-			throw not_implemented_exception{"lua_type"};
+			THROW_CODE_EXCEPTION(not_implemented_exception, "lua_type");
 		}
 
 		template <typename TElement>
@@ -729,7 +729,7 @@ namespace vana {
 			if (is(lua_vm, index, lua_type::boolean)) return lua_variant{get<bool>(lua_vm, index)};
 			if (is(lua_vm, index, lua_type::nil)) return lua_variant{};
 			if (is(lua_vm, index, lua_type::table)) return lua_variant{get<hash_map<lua_variant, lua_variant>>(lua_vm, index)};
-			throw not_implemented_exception{"lua_type"};
+			THROW_CODE_EXCEPTION(not_implemented_exception, "lua_type");
 		}
 
 		template <typename TElement>

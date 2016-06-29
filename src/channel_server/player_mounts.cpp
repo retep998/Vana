@@ -61,7 +61,7 @@ auto player_mounts::save() -> void {
 			}
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_mounts::load() -> void {
@@ -81,7 +81,7 @@ auto player_mounts::load() -> void {
 			m_mounts[row.get<game_item_id>("mount_id")] = c;
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_mounts::get_current_exp() -> int16_t {
@@ -152,7 +152,7 @@ auto player_mounts::mount_info_packet(packet_builder &builder) -> void {
 			builder.add<bool>(false);
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_mounts::mount_info_map_spawn_packet(packet_builder &builder) -> void {
@@ -168,7 +168,7 @@ auto player_mounts::mount_info_map_spawn_packet(packet_builder &builder) -> void
 			builder.add<int32_t>(0);
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 }

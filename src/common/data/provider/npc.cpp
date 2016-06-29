@@ -58,7 +58,7 @@ auto npc::get_storage_cost(game_npc_id npc) const -> game_mesos {
 		}
 	}
 
-	throw codepath_invalid_exception{};
+	THROW_CODE_EXCEPTION(codepath_invalid_exception);
 }
 
 auto npc::is_maple_tv(game_npc_id npc) const -> bool {

@@ -441,7 +441,7 @@ auto lua_exports::obtain_set_variable_pair(lua_State *lua_vm, lua_environment &e
 		case lua::lua_type::boolean: ret.second = env.get<bool>(lua_vm, 2) ? "true" : "false"; break;
 		case lua::lua_type::number: ret.second = utilities::str::lexical_cast<string>(env.get<int32_t>(lua_vm, 2)); break;
 		case lua::lua_type::string: ret.second = env.get<string>(lua_vm, 2); break;
-		default: throw not_implemented_exception{"lua datatype"};
+		default: THROW_CODE_EXCEPTION(not_implemented_exception, "lua datatype");
 	}
 	return ret;
 }

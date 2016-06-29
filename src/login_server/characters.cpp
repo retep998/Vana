@@ -144,7 +144,7 @@ auto characters::show_characters(ref_ptr<user> user_value) -> void {
 	auto world_id = user_value->get_world_id();
 	game_account_id account_id = user_value->get_account_id();
 	if (!world_id.is_initialized()) {
-		throw codepath_invalid_exception{"!world_id.is_initialized()"};
+		THROW_CODE_EXCEPTION(codepath_invalid_exception, "!world_id.is_initialized()");
 	}
 
 	soci::rowset<> rs = (sql.prepare
@@ -200,7 +200,7 @@ auto characters::create_item(game_item_id item_id, ref_ptr<user> user_value, gam
 	game_inventory inventory = game_logic_utilities::get_inventory(item_id);
 	auto world_id = user_value->get_world_id();
 	if (!world_id.is_initialized()) {
-		throw codepath_invalid_exception{"!world_id.is_initialized()"};
+		THROW_CODE_EXCEPTION(codepath_invalid_exception, "!world_id.is_initialized()");
 	}
 	item_db_info info{slot, char_id, user_value->get_account_id(), world_id.get(), item::inventory};
 
@@ -260,7 +260,7 @@ auto characters::create_character(ref_ptr<user> user_value, packet_reader &reade
 	auto &sql = db.get_session();
 	optional<game_world_id> world_id = user_value->get_world_id();
 	if (!world_id.is_initialized()) {
-		throw codepath_invalid_exception{"!world_id.is_initialized()"};
+		THROW_CODE_EXCEPTION(codepath_invalid_exception, "!world_id.is_initialized()");
 	}
 
 	sql.once
@@ -374,7 +374,7 @@ auto characters::connect_game(ref_ptr<user> user_value, game_player_id char_id) 
 
 	auto world_id = user_value->get_world_id();
 	if (!world_id.is_initialized()) {
-		throw codepath_invalid_exception{"!world_id.is_initialized()"};
+		THROW_CODE_EXCEPTION(codepath_invalid_exception, "!world_id.is_initialized()");
 	}
 
 	auto world = login_server::get_instance().get_worlds().get_world(world_id.get());

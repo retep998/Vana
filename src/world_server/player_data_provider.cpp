@@ -194,14 +194,14 @@ auto player_data_provider::handle_sync(ref_ptr<world_server_accepted_session> se
 		case sync::sync_types::player: handle_player_sync(session, reader); break;
 		case sync::sync_types::party: handle_party_sync(reader); break;
 		case sync::sync_types::buddy: handle_buddy_sync(reader); break;
-		default: throw not_implemented_exception{"sync type"};
+		default: THROW_CODE_EXCEPTION(not_implemented_exception, "sync type");
 	}
 }
 
 auto player_data_provider::handle_sync(ref_ptr<login_server_session> session, protocol_sync type, packet_reader &reader) -> void {
 	switch (type) {
 		case sync::sync_types::player: handle_player_sync(session, reader); break;
-		default: throw not_implemented_exception{"sync type"};
+		default: THROW_CODE_EXCEPTION(not_implemented_exception, "sync type");
 	}
 }
 
@@ -212,7 +212,7 @@ auto player_data_provider::handle_player_sync(ref_ptr<world_server_accepted_sess
 		case sync::player::connect: handle_player_connect(session->get_channel(), reader); break;
 		case sync::player::disconnect: handle_player_disconnect(session->get_channel(), reader); break;
 		case sync::player::update_player: handle_player_update(reader); break;
-		default: throw not_implemented_exception{"player_sync type"};
+		default: THROW_CODE_EXCEPTION(not_implemented_exception, "player_sync type");
 	}
 }
 
@@ -220,7 +220,7 @@ auto player_data_provider::handle_player_sync(ref_ptr<login_server_session> sess
 	switch (reader.get<protocol_sync>()) {
 		case sync::player::character_created: handle_character_created(reader); break;
 		case sync::player::character_deleted: handle_character_deleted(reader); break;
-		default: throw not_implemented_exception{"player_sync type"};
+		default: THROW_CODE_EXCEPTION(not_implemented_exception, "player_sync type");
 	}
 }
 
@@ -233,7 +233,7 @@ auto player_data_provider::handle_party_sync(packet_reader &reader) -> void {
 		case party_actions::expel: handle_party_remove(player_id, reader.get<game_player_id>()); break;
 		case party_actions::join: handle_party_add(player_id, reader.get<game_party_id>()); break;
 		case party_actions::set_leader: handle_party_transfer(player_id, reader.get<game_player_id>()); break;
-		default: throw not_implemented_exception{"party_sync type"};
+		default: THROW_CODE_EXCEPTION(not_implemented_exception, "party_sync type");
 	}
 }
 
@@ -243,7 +243,7 @@ auto player_data_provider::handle_buddy_sync(packet_reader &reader) -> void {
 		case sync::buddy::accept_invite: accept_buddy_invite(reader); break;
 		case sync::buddy::remove_buddy: remove_buddy(reader); break;
 		case sync::buddy::readd_buddy: readd_buddy(reader); break;
-		default: throw not_implemented_exception{"buddy_sync type"};
+		default: THROW_CODE_EXCEPTION(not_implemented_exception, "buddy_sync type");
 	}
 }
 

@@ -68,7 +68,7 @@ auto player_buddy_list::load() -> void {
 			m_pending_buddies.push_back(invite);
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_buddy_list::add_buddy(const string &name, const string &group, bool invite) -> uint8_t {
@@ -181,7 +181,7 @@ auto player_buddy_list::add_buddy(const string &name, const string &group, bool 
 		player->send(packets::buddy::update(player, packets::buddy::action_types::add));
 		return packets::buddy::errors::none;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_buddy_list::remove_buddy(game_player_id char_id) -> void {
@@ -212,7 +212,7 @@ auto player_buddy_list::remove_buddy(game_player_id char_id) -> void {
 
 		player->send(packets::buddy::update(player, packets::buddy::action_types::remove));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_buddy_list::add_buddy(database &db, const soci::row &row) -> void {
@@ -269,7 +269,7 @@ auto player_buddy_list::add_buddy(database &db, const soci::row &row) -> void {
 			value->opposite_status = packets::buddy::opposite_status::unregistered;
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 
 	m_buddies[char_id] = value;
 }
@@ -313,7 +313,7 @@ auto player_buddy_list::check_for_pending_buddy() -> void {
 	if (auto player = m_player.lock()) {
 		player->send(packets::buddy::invitation(m_pending_buddies.front()));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 
 	m_sent_request = true;
 }
@@ -323,7 +323,7 @@ auto player_buddy_list::buddy_accepted(game_player_id buddy_id) -> void {
 	if (auto player = m_player.lock()) {
 		player->send(packets::buddy::update(player, packets::buddy::action_types::add));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_buddy_list::remove_pending_buddy(game_player_id id, bool accepted) -> void {
@@ -367,7 +367,7 @@ auto player_buddy_list::remove_pending_buddy(game_player_id id, bool accepted) -
 		m_sent_request = false;
 		check_for_pending_buddy();
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_buddy_list::get_buddy_ids() -> vector<game_player_id> {

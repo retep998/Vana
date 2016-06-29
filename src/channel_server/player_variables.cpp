@@ -55,7 +55,7 @@ auto player_variables::save() -> void {
 			}
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_variables::load() -> void {
@@ -69,7 +69,7 @@ auto player_variables::load() -> void {
 			m_variables[row.get<string>("key")] = row.get<string>("value");
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 }

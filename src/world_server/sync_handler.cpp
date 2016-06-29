@@ -51,7 +51,7 @@ auto sync_handler::handle_config_sync(packet_reader &reader) -> void {
 		case sync::config::rate_set: world_server::get_instance().set_rates(reader.get<config::rates>()); break;
 		case sync::config::rate_reset: world_server::get_instance().reset_rates(reader.get<int32_t>()); break;
 		case sync::config::scrolling_header: world_server::get_instance().set_scrolling_header(reader.get<string>()); break;
-		default: throw not_implemented_exception{"config_sync type"};
+		default: THROW_CODE_EXCEPTION(not_implemented_exception, "config_sync type");
 	}
 }
 

@@ -206,7 +206,7 @@ auto equip::get_equip_info(game_item_id equip_id) const -> const data::type::equ
 		}
 	}
 
-	throw codepath_invalid_exception{};
+	THROW_CODE_EXCEPTION(codepath_invalid_exception);
 }
 
 }

@@ -265,7 +265,7 @@ auto map::load_map_life(data::type::map_link_info &map) -> void {
 			reactor.name = row.get<string>("life_name");
 			map.reactors.push_back(reactor);
 		}
-		else throw not_implemented_exception();
+		else THROW_CODE_EXCEPTION(not_implemented_exception);
 	}
 }
 
@@ -335,7 +335,7 @@ auto map::get_map(game_map_id map_id) -> ref_ptr<const data::type::map_info> {
 		}
 	}
 
-	if (ptr == nullptr) throw codepath_invalid_exception{};
+	if (ptr == nullptr) THROW_CODE_EXCEPTION(codepath_invalid_exception);
 
 	if (ptr->link_info == nullptr) {
 		load_map(*ptr);

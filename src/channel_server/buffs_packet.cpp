@@ -39,14 +39,14 @@ SPLIT_PACKET_IMPL(add_buff, game_player_id player_id, int32_t buff_id, const sec
 			builder.player.add_buffer(val.builder);
 			continue;
 		}
-		if (val.type != buff_packet_value_type::value) throw not_implemented_exception{"buff_packet_value_type"};
+		if (val.type != buff_packet_value_type::value) THROW_CODE_EXCEPTION(not_implemented_exception, "buff_packet_value_type");
 
 		switch (val.value_size) {
 			case 1: builder.player.add<int8_t>(static_cast<int8_t>(val.value)); break;
 			case 2: builder.player.add<int16_t>(static_cast<int16_t>(val.value)); break;
 			case 4: builder.player.add<int32_t>(static_cast<int32_t>(val.value)); break;
 			case 8: builder.player.add<int64_t>(val.value); break;
-			default: throw not_implemented_exception{"value_size"};
+			default: THROW_CODE_EXCEPTION(not_implemented_exception, "value_size");
 		}
 		builder.player
 			.add<int32_t>(buff_id)

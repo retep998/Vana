@@ -44,7 +44,7 @@ namespace vana {
 				builder.add<uint32_t>(htonl(obj.m_ip.as_ipv4()));
 			}
 			else {
-				throw not_implemented_exception{"i_pv6"};
+				THROW_CODE_EXCEPTION(not_implemented_exception, "i_pv6");
 			}
 		}
 	};

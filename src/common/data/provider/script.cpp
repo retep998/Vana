@@ -141,7 +141,7 @@ auto script::resolve(data::type::script_type type) const -> const vector<pair<in
 		case data::type::script_type::npc: return m_npc_scripts;
 		case data::type::script_type::reactor: return m_reactor_scripts;
 	}
-	throw not_implemented_exception{"script_type"};
+	THROW_CODE_EXCEPTION(not_implemented_exception, "script_type");
 }
 
 auto script::resolve_path(data::type::script_type type) const -> string {
@@ -155,7 +155,7 @@ auto script::resolve_path(data::type::script_type type) const -> string {
 		case data::type::script_type::instance: return "instances";
 		case data::type::script_type::portal: return "portals";
 	}
-	throw not_implemented_exception{"script_type"};
+	THROW_CODE_EXCEPTION(not_implemented_exception, "script_type");
 }
 
 }

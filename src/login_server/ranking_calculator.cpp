@@ -229,7 +229,7 @@ auto ranking_calculator::world(vector<rank_player> &v) -> void {
 	login_server::get_instance().get_worlds().run_function([&v](vana::login_server::world *world_value) -> bool {
 		optional<game_world_id> world_id = world_value->get_id();
 		if (!world_id.is_initialized()) {
-			throw codepath_invalid_exception{"!world_id.is_initialized()"};
+			THROW_CODE_EXCEPTION(codepath_invalid_exception, "!world_id.is_initialized()");
 		}
 
 		game_player_level last_level = 0;

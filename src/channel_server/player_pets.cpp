@@ -113,7 +113,7 @@ auto player_pets::pet_info_packet(packet_builder &builder) -> void {
 		}
 		builder.add<int8_t>(0); // End of pets / start of taming mob
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_pets::connect_packet(packet_builder &builder) -> void {

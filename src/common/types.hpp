@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/case_insensitive_equals.hpp"
 #include "common/case_insensitive_hash.hpp"
 #include "common/make_unique.hpp"
+#include "common/preprocessor.hpp"
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -76,6 +77,36 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		explicit TypeName(const std::string &message) : BaseType{message.c_str()} { } \
 		explicit TypeName(const char *message = nullptr) : BaseType{message} { } \
 	};
+
+#define CODE_EXCEPTION(TypeName, BaseType) \
+	struct TypeName : public BaseType { \
+		int get_line() const { return m_line; } \
+		const char *get_file() const { return m_file; } \
+		TypeName(const char *file, int line, const std::string &message) : \
+			BaseType{message.c_str()}, \
+			m_file{file}, \
+			m_line{line} \
+		{ \
+		} \
+		TypeName(const char *file, int line, const char *message = nullptr) : \
+			BaseType{message}, \
+			m_file{file}, \
+			m_line{line} \
+		{ \
+		} \
+		private: \
+			int m_line; \
+			const char *m_file; \
+	};
+
+#define THROW_CODE_EXCEPTION_IMPL_2(TypeName, Message) \
+	throw TypeName{__FILE__, __LINE__, Message};
+
+#define THROW_CODE_EXCEPTION_IMPL_1(TypeName) \
+	throw TypeName{__FILE__, __LINE__};
+
+#define THROW_CODE_EXCEPTION(...) \
+	DISPATCH(THROW_CODE_EXCEPTION_IMPL_, __VA_ARGS__)
 
 namespace vana {
 	enum class handle_result {
@@ -305,13 +336,13 @@ namespace vana {
 
 	// Indicates that a code path is not implemented (intentionally) and there is a programming error afoot.
 	// Most frequently used with switch-cases on enumerations.
-	DEFAULT_EXCEPTION(not_implemented_exception, std::exception);
+	CODE_EXCEPTION(not_implemented_exception, std::exception);
 
 	// Indicates that generally, some operation has caused an invalid code path to manifest.
 	// It may be the result of invalid input or improper usage and the programmer should review to see which.
-	DEFAULT_EXCEPTION(invalid_operation_exception, std::exception);
+	CODE_EXCEPTION(invalid_operation_exception, std::exception);
 
 	// Indicates that specifically, this code path was never expected to be hit and there is a problem the programmer must address.
 	// Typically this will be high-level invariants that can't be expressed at an API level such as "a user connection will always have a world ID if they make it to character creation."
-	DEFAULT_EXCEPTION(codepath_invalid_exception, std::exception);
+	CODE_EXCEPTION(codepath_invalid_exception, std::exception);
 }

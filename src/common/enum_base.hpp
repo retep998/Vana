@@ -25,17 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 namespace vana {
-	struct invalid_enum_exception : public std::runtime_error {
-		explicit invalid_enum_exception(const std::string &message) :
-			std::runtime_error{message.c_str()}
-		{
-		}
-
-		explicit invalid_enum_exception(const char *message = nullptr) :
-			std::runtime_error{message}
-		{
-		}
-	};
+	DEFAULT_EXCEPTION(invalid_enum_exception, std::runtime_error);
 
 	template <typename TEnum, typename TUnderlying>
 	struct enum_caster {

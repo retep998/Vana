@@ -63,7 +63,7 @@ PACKET_IMPL(add_buff_map_values, const buff_packet_structure &buff) {
 			builder.add_buffer(buff_value.builder);
 			continue;
 		}
-		if (buff_value.type != buff_packet_value_type::value) throw not_implemented_exception{"buff_packet_value_type"};
+		if (buff_value.type != buff_packet_value_type::value) THROW_CODE_EXCEPTION(not_implemented_exception, "buff_packet_value_type");
 
 		switch (buff_value.value_size) {
 			case 1: builder.add<int8_t>(static_cast<int8_t>(buff_value.value)); break;

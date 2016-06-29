@@ -120,7 +120,7 @@ auto buffs::buff_may_apply(ref_ptr<player> player, const data::type::buff_source
 			return true;
 		}
 	}
-	throw not_implemented_exception{"data::type::buff_source_type"};
+	THROW_CODE_EXCEPTION(not_implemented_exception, "data::type::buff_source_type");
 }
 
 auto buffs::preprocess_buff(ref_ptr<player> player, game_skill_id skill_id, game_skill_level level, const seconds &time) -> data::type::buff {
@@ -257,7 +257,7 @@ auto buffs::get_value(ref_ptr<player> player, const data::type::buff_source &sou
 auto buffs::get_value(ref_ptr<player> player, const data::type::buff_source &source, const seconds &time, uint8_t bit_position, data::type::buff_skill_value value, uint8_t buff_value_size) -> buff_packet_value {
 	switch (source.get_type()) {
 		case data::type::buff_source_type::item: {
-			throw not_implemented_exception{"item data::type::buff_skill_value type"};
+			THROW_CODE_EXCEPTION(not_implemented_exception, "item data::type::buff_skill_value type");
 		}
 		case data::type::buff_source_type::mob_skill: {
 			game_mob_skill_id skill_id = source.get_mob_skill_id();
@@ -281,10 +281,10 @@ auto buffs::get_value(ref_ptr<player> player, const data::type::buff_source &sou
 							return buff_packet_value::from_packet(builder);
 						}
 					}
-					throw not_implemented_exception{"special_processing mob skill"};
+					THROW_CODE_EXCEPTION(not_implemented_exception, "special_processing mob skill");
 				}
 			}
-			throw not_implemented_exception{"mob data::type::buff_skill_value type"};
+			THROW_CODE_EXCEPTION(not_implemented_exception, "mob data::type::buff_skill_value type");
 		}
 		case data::type::buff_source_type::skill: {
 			game_skill_id skill_id = source.get_skill_id();
@@ -329,7 +329,7 @@ auto buffs::get_value(ref_ptr<player> player, const data::type::buff_source &sou
 							return buff_packet_value::from_value(buff_value_size, 1);
 					}
 
-					throw not_implemented_exception{"special_processing skill"};
+					THROW_CODE_EXCEPTION(not_implemented_exception, "special_processing skill");
 
 				case data::type::buff_skill_value::special_packet: {
 					auto &basics = channel_server::get_instance().get_buff_data_provider().get_buffs_by_effect();
@@ -353,7 +353,7 @@ auto buffs::get_value(ref_ptr<player> player, const data::type::buff_source &sou
 					else if (bit_position == basics.homing_beacon) {
 						builder.unk<int32_t>(1);
 					}
-					else throw not_implemented_exception{"special_packet skill"};
+					else THROW_CODE_EXCEPTION(not_implemented_exception, "special_packet skill");
 
 					builder.add<int32_t>(
 						bit_position == basics.energy_charge ?
@@ -394,11 +394,11 @@ auto buffs::get_value(ref_ptr<player> player, const data::type::buff_source &sou
 					);
 			}
 
-			throw not_implemented_exception{"skill data::type::buff_skill_value type"};
+			THROW_CODE_EXCEPTION(not_implemented_exception, "skill data::type::buff_skill_value type");
 		}
 	}
 
-	throw not_implemented_exception{"data::type::buff_source_type"};
+	THROW_CODE_EXCEPTION(not_implemented_exception, "data::type::buff_source_type");
 }
 
 }

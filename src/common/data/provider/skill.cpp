@@ -206,7 +206,7 @@ auto skill::load_mob_summons() -> void {
 			}
 		}
 
-		if (!any) throw codepath_invalid_exception{};
+		if (!any) THROW_CODE_EXCEPTION(codepath_invalid_exception);
 	}
 }
 
@@ -263,7 +263,7 @@ auto skill::get_max_level(game_skill_id skill_id) const -> game_skill_level {
 		}
 	}
 
-	throw codepath_invalid_exception{};
+	THROW_CODE_EXCEPTION(codepath_invalid_exception);
 }
 
 auto skill::get_skill(game_skill_id skill, game_skill_level level) const -> const data::type::skill_level_info * const {

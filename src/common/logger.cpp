@@ -187,7 +187,7 @@ auto base_logger::log_replacements::get_level_string(log_type type) -> string {
 		case log_type::unban: return "UNBAN";
 	}
 
-	throw not_implemented_exception{"LogType"};
+	THROW_CODE_EXCEPTION(not_implemented_exception, "LogType");
 }
 
 auto base_logger::log_replacements::get_server_type_string(server_type type) -> string {
@@ -198,7 +198,7 @@ auto base_logger::log_replacements::get_server_type_string(server_type type) -> 
 		case server_type::mts: return "MTS";
 		case server_type::world: return "World";
 	}
-	throw not_implemented_exception{"ServerType"};
+	THROW_CODE_EXCEPTION(not_implemented_exception, "ServerType");
 }
 
 }

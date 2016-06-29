@@ -51,7 +51,7 @@ auto player_monster_book::load() -> void {
 
 		calculate_level();
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_monster_book::save() -> void {
@@ -82,7 +82,7 @@ auto player_monster_book::save() -> void {
 			}
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_monster_book::get_card_level(int32_t card_id) -> uint8_t {

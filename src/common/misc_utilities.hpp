@@ -41,7 +41,7 @@ namespace vana {
 					case server_type::channel: return connection_type::channel;
 					case server_type::cash: return connection_type::cash;
 					case server_type::mts: return connection_type::mts;
-					default: throw not_implemented_exception{"server_type"};
+					default: THROW_CODE_EXCEPTION(not_implemented_exception, "server_type");
 				}
 			}
 
@@ -53,7 +53,7 @@ namespace vana {
 					case connection_type::channel: return server_type::channel;
 					case connection_type::cash: return server_type::cash;
 					case connection_type::mts: return server_type::mts;
-					default: throw not_implemented_exception{"connection_type"};
+					default: THROW_CODE_EXCEPTION(not_implemented_exception, "connection_type");
 				}
 			}
 

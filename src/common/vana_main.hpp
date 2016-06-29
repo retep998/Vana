@@ -51,6 +51,20 @@ namespace vana {
 				server.shutdown();
 			}
 		}
+#if DEBUG
+		catch (not_implemented_exception &e) {
+			std::cerr << "PROGRAM HIT UNIMPLEMENTED FEATURE AT " << e.get_file() << " L" << e.get_line() << ": " << e.what() << std::endl;
+			exit(exit_code::program_exception);
+		}
+		catch (invalid_operation_exception &e) {
+			std::cerr << "PROGRAM HIT INVALID OPERATION AT " << e.get_file() << " L" << e.get_line() << ": " << e.what() << std::endl;
+			exit(exit_code::program_exception);
+		}
+		catch (codepath_invalid_exception &e) {
+			std::cerr << "PROGRAM HIT INVALID CODE PATH AT " << e.get_file() << " L" << e.get_line() << ": " << e.what() << std::endl;
+			exit(exit_code::program_exception);
+		}
+#endif
 		catch (lua::config_exception &) {
 			// Code path intentionally blank
 			// Each vanilla config_exception has an associated message at the throw site

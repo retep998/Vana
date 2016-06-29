@@ -234,7 +234,7 @@ auto mob::get_mob_info(game_mob_id mob_id) const -> ref_ptr<const data::type::mo
 		}
 	}
 
-	throw codepath_invalid_exception{};
+	THROW_CODE_EXCEPTION(codepath_invalid_exception);
 }
 
 auto mob::get_mob_attack(game_mob_id mob_id, uint8_t index) const -> const data::type::mob_attack_info * const {
@@ -244,7 +244,7 @@ auto mob::get_mob_attack(game_mob_id mob_id, uint8_t index) const -> const data:
 		}
 	}
 
-	throw codepath_invalid_exception{};
+	THROW_CODE_EXCEPTION(codepath_invalid_exception);
 }
 
 auto mob::get_mob_skill(game_mob_id mob_id, uint8_t index) const -> const data::type::mob_skill_info * const {
@@ -254,7 +254,7 @@ auto mob::get_mob_skill(game_mob_id mob_id, uint8_t index) const -> const data::
 		}
 	}
 
-	throw codepath_invalid_exception{};
+	THROW_CODE_EXCEPTION(codepath_invalid_exception);
 }
 
 auto mob::get_skills(game_mob_id mob_id) const -> const vector<data::type::mob_skill_info> & {
@@ -264,7 +264,7 @@ auto mob::get_skills(game_mob_id mob_id) const -> const vector<data::type::mob_s
 		}
 	}
 
-	throw codepath_invalid_exception{};
+	THROW_CODE_EXCEPTION(codepath_invalid_exception);
 }
 
 }

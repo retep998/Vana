@@ -110,7 +110,7 @@ auto player_quests::save() -> void {
 			}
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_quests::load() -> void {
@@ -164,7 +164,7 @@ auto player_quests::load() -> void {
 			m_completed[row.get<game_quest_id>("quest_id")] = file_time{row.get<int64_t>("end_time")};
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_quests::add_quest(game_quest_id quest_id, game_npc_id npc_id) -> void {
@@ -188,7 +188,7 @@ auto player_quests::add_quest(game_quest_id quest_id, game_npc_id npc_id) -> voi
 		give_rewards(quest_id, true);
 		check_done(m_quests[quest_id]);
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_quests::update_quest_mob(game_mob_id mob_id) -> void {
@@ -226,7 +226,7 @@ auto player_quests::update_quest_mob(game_mob_id mob_id) -> void {
 			}
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_quests::check_done(active_quest &quest) -> void {
@@ -250,7 +250,7 @@ auto player_quests::check_done(active_quest &quest) -> void {
 			player->send(packets::quests::done_quest(quest.id));
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_quests::finish_quest(game_quest_id quest_id, game_npc_id npc_id) -> void {
@@ -283,7 +283,7 @@ auto player_quests::finish_quest(game_quest_id quest_id, game_npc_id npc_id) -> 
 		player->send(packets::quests::complete_quest(quest_id, npc_id, quest_info.get_next_quest()));
 		player->send_map(packets::quests::complete_quest_animation(player->get_id()));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_quests::item_drop_allowed(game_item_id item_id, game_quest_id quest_id) -> allow_quest_item_result {
@@ -306,7 +306,7 @@ auto player_quests::item_drop_allowed(game_item_id item_id, game_quest_id quest_
 
 		return allow_quest_item_result::allow;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_quests::give_rewards(game_quest_id quest_id, bool start) -> result {
@@ -420,7 +420,7 @@ auto player_quests::give_rewards(game_quest_id quest_id, bool start) -> result {
 
 		return result::successful;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_quests::remove_quest(game_quest_id quest_id) -> void {
@@ -429,7 +429,7 @@ auto player_quests::remove_quest(game_quest_id quest_id) -> void {
 		if (auto player = m_player.lock()) {
 			player->send(packets::quests::forfeit_quest(quest_id));
 		}
-		else throw invalid_operation_exception{"This should never be thrown"};
+		else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 	}
 }
 
@@ -471,7 +471,7 @@ auto player_quests::set_quest_data(game_quest_id id, const string &data) -> void
 	if (auto player = m_player.lock()) {
 		player->send(packets::quests::update_quest(quest));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_quests::get_quest_data(game_quest_id id) -> string {

@@ -44,7 +44,7 @@ struct buff_run_action {
 		switch (act) {
 			case data::type::buff_action::heal: skills::heal(player, value, source); break;
 			case data::type::buff_action::hurt: skills::hurt(player, value, source); break;
-			default: throw not_implemented_exception{"action type"};
+			default: THROW_CODE_EXCEPTION(not_implemented_exception, "action type");
 		}
 	}
 
@@ -67,7 +67,7 @@ auto player_active_buffs::local_buff_info::to_source() const -> data::type::buff
 				static_cast<game_mob_skill_id>(identifier),
 				static_cast<game_mob_skill_level>(level));
 	}
-	throw not_implemented_exception{"data::type::buff_source_type"};
+	THROW_CODE_EXCEPTION(not_implemented_exception, "data::type::buff_source_type");
 }
 
 player_active_buffs::player_active_buffs(ref_ptr<player> player) :
@@ -96,7 +96,7 @@ auto player_active_buffs::translate_to_packet(const data::type::buff_source &sou
 		case data::type::buff_source_type::skill: return source.get_id();
 		case data::type::buff_source_type::mob_skill: return (source.get_mob_skill_level() << 16) | source.get_id();
 	}
-	throw not_implemented_exception{"data::type::buff_source_type"};
+	THROW_CODE_EXCEPTION(not_implemented_exception, "data::type::buff_source_type");
 }
 
 auto player_active_buffs::add_buff(const data::type::buff_source &source, const data::type::buff &buff, const seconds &time) -> result {
@@ -148,7 +148,7 @@ auto player_active_buffs::add_buff(const data::type::buff_source &source, const 
 
 				break;
 			}
-			default: throw not_implemented_exception{"data::type::buff_source_type"};
+			default: THROW_CODE_EXCEPTION(not_implemented_exception, "data::type::buff_source_type");
 		}
 
 		// Extract any useful bits for us
@@ -161,20 +161,20 @@ auto player_active_buffs::add_buff(const data::type::buff_source &source, const 
 				m_combo = 0;
 			}
 			else if (info == basics.zombify) {
-				if (mob_skill == nullptr) throw not_implemented_exception{"zombify data::type::buff_source_type"};
+				if (mob_skill == nullptr) THROW_CODE_EXCEPTION(not_implemented_exception, "zombify data::type::buff_source_type");
 				m_zombify_potency = mob_skill->x;
 			}
 			else if (info == basics.maple_warrior) {
-				if (skill == nullptr) throw not_implemented_exception{"maple warrior data::type::buff_source_type"};
+				if (skill == nullptr) THROW_CODE_EXCEPTION(not_implemented_exception, "maple warrior data::type::buff_source_type");
 				// Take into account Maple Warrior for tracking stats if things are equippable, damage calculations, etc.
 				player->get_stats()->set_maple_warrior(skill->x);
 			}
 			else if (info == basics.hyper_body_hp) {
-				if (skill == nullptr) throw not_implemented_exception{"hyper body h_p data::type::buff_source_type"};
+				if (skill == nullptr) THROW_CODE_EXCEPTION(not_implemented_exception, "hyper body hp data::type::buff_source_type");
 				player->get_stats()->set_hyper_body_hp(skill->x);
 			}
 			else if (info == basics.hyper_body_mp) {
-				if (skill == nullptr) throw not_implemented_exception{"hyper body m_p data::type::buff_source_type"};
+				if (skill == nullptr) THROW_CODE_EXCEPTION(not_implemented_exception, "hyper body mp data::type::buff_source_type");
 				player->get_stats()->set_hyper_body_mp(skill->y);
 			}
 		}
@@ -302,7 +302,7 @@ auto player_active_buffs::add_buff(const data::type::buff_source &source, const 
 			case data::type::buff_source_type::item:
 			case data::type::buff_source_type::skill: local.level = source.get_skill_level(); break;
 			case data::type::buff_source_type::mob_skill: local.level = source.get_mob_skill_level(); break;
-			default: throw not_implemented_exception{"data::type::buff_source_type"};
+			default: THROW_CODE_EXCEPTION(not_implemented_exception, "data::type::buff_source_type");
 		}
 
 		m_buffs.push_back(local);
@@ -317,7 +317,7 @@ auto player_active_buffs::add_buff(const data::type::buff_source &source, const 
 
 		return result::successful;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_active_buffs::remove_buff(const data::type::buff_source &source, const data::type::buff &buff, bool from_timer) -> void {
@@ -384,7 +384,7 @@ auto player_active_buffs::remove_buff(const data::type::buff_source &source, con
 			}
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_active_buffs::remove_buffs() -> void {
@@ -399,7 +399,7 @@ auto player_active_buffs::get_buff_seconds_remaining(data::type::buff_source_typ
 	if (auto player = m_player.lock()) {
 		return player->get_timer_container()->get_remaining_time<seconds>(id);
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_active_buffs::get_buff_seconds_remaining(const data::type::buff_source &source) const -> seconds {
@@ -419,7 +419,7 @@ auto player_active_buffs::remove_debuff(game_mob_skill_id skill_id) -> void {
 				false);
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_active_buffs::use_debuff_healing_item(int32_t mask) -> void {
@@ -514,7 +514,7 @@ auto player_active_buffs::get_map_buff_values() -> buff_packet_structure {
 
 		return result;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 // Active skill levels
@@ -554,7 +554,7 @@ auto player_active_buffs::dispel_buffs() -> void {
 			skills::stop_skill(player, skill);
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 // Specific skill stuff
@@ -568,7 +568,7 @@ auto player_active_buffs::reset_battleship_hp() -> void {
 		game_player_level player_level = player->get_stats()->get_level();
 		m_battleship_hp = game_logic_utilities::get_battleship_hp(ship_level, player_level);
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_active_buffs::get_homing_beacon_mob() const -> game_map_object {
@@ -600,7 +600,7 @@ auto player_active_buffs::reset_homing_beacon_mob(game_map_object map_mob_id) ->
 			map->get_mob(map_mob_id)->add_marker(player);
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_active_buffs::reset_combo() -> void {
@@ -627,7 +627,7 @@ auto player_active_buffs::set_combo(uint8_t combo) -> void {
 					buffs::preprocess_buff(player, buff_source, time_left)),
 				0));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_active_buffs::add_combo() -> void {
@@ -656,7 +656,7 @@ auto player_active_buffs::add_combo() -> void {
 
 			set_combo(m_combo);
 		}
-		else throw invalid_operation_exception{"This should never be thrown"};
+		else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 	}
 }
 
@@ -692,7 +692,7 @@ auto player_active_buffs::check_berserk(bool display) -> void {
 			}
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_active_buffs::get_energy_charge_level() const -> int16_t {
@@ -730,7 +730,7 @@ auto player_active_buffs::increase_energy_charge_level(int8_t targets) -> void {
 						0));
 			}
 		}
-		else throw invalid_operation_exception{"This should never be thrown"};
+		else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 	}
 }
 
@@ -754,7 +754,7 @@ auto player_active_buffs::decrease_energy_charge_level() -> void {
 				buffs::convert_to_packet(player, source, seconds{0}, buff),
 				0));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_active_buffs::start_energy_charge_timer() -> void {
@@ -770,7 +770,7 @@ auto player_active_buffs::start_energy_charge_timer() -> void {
 			player->get_timer_container(),
 			seconds{10});
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_active_buffs::stop_energy_charge_timer() -> void {
@@ -779,7 +779,7 @@ auto player_active_buffs::stop_energy_charge_timer() -> void {
 		vana::timer::id id{vana::timer::type::energy_charge_timer, skill_id, m_energy_charge_timer_counter};
 		player->get_timer_container()->remove_timer(id);
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_active_buffs::stop_booster() -> void {
@@ -854,7 +854,7 @@ auto player_active_buffs::has_ice_charge() const -> bool {
 	auto source = get_charge_source();
 	if (!source.is_initialized()) return false;
 	auto &buff_source = source.get();
-	if (buff_source.get_type() != data::type::buff_source_type::skill) throw not_implemented_exception{"ice charge data::type::buff_source_type"};
+	if (buff_source.get_type() != data::type::buff_source_type::skill) THROW_CODE_EXCEPTION(not_implemented_exception, "ice charge data::type::buff_source_type");
 	game_skill_id skill_id = buff_source.get_skill_id();
 	return
 		skill_id == constant::skill::white_knight::bw_ice_charge ||
@@ -903,7 +903,7 @@ auto player_active_buffs::get_holy_symbol_rate() const -> int16_t {
 	auto source = get_holy_symbol_source();
 	if (source.is_initialized()) {
 		auto &buff_source = source.get();
-		if (buff_source.get_type() != data::type::buff_source_type::skill) throw not_implemented_exception{"holy symbol data::type::buff_source_type"};
+		if (buff_source.get_type() != data::type::buff_source_type::skill) THROW_CODE_EXCEPTION(not_implemented_exception, "holy symbol data::type::buff_source_type");
 		val = get_buff_skill_info(buff_source)->x;
 	}
 	return val;
@@ -1044,7 +1044,7 @@ auto player_active_buffs::take_damage(game_damage damage) -> void {
 					0);
 			}
 		}
-		else throw invalid_operation_exception{"This should never be thrown"};
+		else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 	}
 }
 
@@ -1072,7 +1072,7 @@ auto player_active_buffs::get_transfer_packet() const -> packet_builder {
 			case data::type::buff_source_type::mob_skill:
 				builder.add<game_mob_skill_level>(static_cast<game_mob_skill_level>(buff.level));
 				break;
-			default: throw not_implemented_exception{"data::type::buff_source_type"};
+			default: THROW_CODE_EXCEPTION(not_implemented_exception, "data::type::buff_source_type");
 		}
 		builder.add<seconds>(get_buff_seconds_remaining(buff.type, buff.identifier));
 
@@ -1111,7 +1111,7 @@ auto player_active_buffs::parse_transfer_packet(packet_reader &reader) -> void {
 					level = reader.get<game_mob_skill_level>();
 					break;
 				}
-				default: throw not_implemented_exception{"data::type::buff_source_type"};
+				default: THROW_CODE_EXCEPTION(not_implemented_exception, "data::type::buff_source_type");
 			}
 
 			local_buff_info buff;
@@ -1162,7 +1162,7 @@ auto player_active_buffs::parse_transfer_packet(packet_reader &reader) -> void {
 			player->get_stats()->set_hyper_body_mp(skill->y);
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 }

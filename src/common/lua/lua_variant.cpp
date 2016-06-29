@@ -46,7 +46,7 @@ lua_variant::lua_variant(const lua_variant &value) :
 			m_number = value.m_number;
 			break;
 		default:
-			throw not_implemented_exception{"lua_type"};
+			THROW_CODE_EXCEPTION(not_implemented_exception, "lua_type");
 	}
 }
 
@@ -97,7 +97,7 @@ auto lua_variant::operator =(const lua_variant &value) -> lua_variant & {
 			m_number = value.m_number;
 			break;
 		default:
-			throw not_implemented_exception{"lua_type"};
+			THROW_CODE_EXCEPTION(not_implemented_exception, "lua_type");
 	}
 	return *this;
 }

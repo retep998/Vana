@@ -99,7 +99,7 @@ auto player_inventory::load() -> void {
 			}
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_inventory::save() -> void {
@@ -160,7 +160,7 @@ auto player_inventory::save() -> void {
 
 		item::database_insert(db, v);
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_inventory::add_max_slots(game_inventory inventory, game_inventory_slot_count rows) -> void {
@@ -173,7 +173,7 @@ auto player_inventory::add_max_slots(game_inventory inventory, game_inventory_sl
 	if (auto player = m_player.lock()) {
 		player->send(packets::inventory::update_slots(inventory + 1, inv));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_inventory::set_mesos(game_mesos mesos, bool send_packet) -> void {
@@ -184,7 +184,7 @@ auto player_inventory::set_mesos(game_mesos mesos, bool send_packet) -> void {
 	if (auto player = m_player.lock()) {
 		player->send(packets::player::update_stat(constant::stat::mesos, m_mesos, send_packet));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_inventory::modify_mesos(game_mesos mod, bool send_packet) -> bool {
@@ -205,7 +205,7 @@ auto player_inventory::modify_mesos(game_mesos mod, bool send_packet) -> bool {
 	if (auto player = m_player.lock()) {
 		player->send(packets::player::update_stat(constant::stat::mesos, m_mesos, send_packet));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 
 	return true;
 }
@@ -224,7 +224,7 @@ auto player_inventory::add_item(game_inventory inv, game_inventory_slot slot, it
 		if (auto player = m_player.lock()) {
 			player->get_stats()->set_equip(slot, item, is_loading);
 		}
-		else throw invalid_operation_exception{"This should never be thrown"};
+		else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 	}
 }
 
@@ -251,7 +251,7 @@ auto player_inventory::delete_item(game_inventory inv, game_inventory_slot slot,
 			if (auto player = m_player.lock()) {
 				player->get_stats()->set_equip(slot, nullptr);
 			}
-			else throw invalid_operation_exception{"This should never be thrown"};
+			else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 		}
 		delete m_items[inv][slot];
 		m_items[inv].erase(slot);
@@ -278,7 +278,7 @@ auto player_inventory::set_item(game_inventory inv, game_inventory_slot slot, it
 			}
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_inventory::destroy_equipped_item(game_item_id item_id) -> void {
@@ -296,7 +296,7 @@ auto player_inventory::destroy_equipped_item(game_item_id item_id) -> void {
 			}
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_inventory::get_item_amount_by_slot(game_inventory inv, game_inventory_slot slot) -> game_slot_qty {
@@ -309,7 +309,7 @@ auto player_inventory::add_equipped(game_inventory_slot slot, game_item_id item_
 		if (auto player = m_player.lock()) {
 			player->get_mounts()->set_current_mount(item_id);
 		}
-		else throw invalid_operation_exception{"This should never be thrown"};
+		else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 	}
 
 	int8_t cash = game_logic_utilities::is_cash_slot(slot) ? 1 : 0;
@@ -420,7 +420,7 @@ auto player_inventory::do_shadow_stars() -> game_item_id {
 		}
 		return 0;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_inventory::add_rock_map(game_map_id map_id, int8_t type) -> void {
@@ -441,7 +441,7 @@ auto player_inventory::add_rock_map(game_map_id map_id, int8_t type) -> void {
 			player->send(packets::inventory::send_rock_update(mode, type, m_vip_locations));
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_inventory::del_rock_map(game_map_id map_id, int8_t type) -> void {
@@ -466,9 +466,9 @@ auto player_inventory::del_rock_map(game_map_id map_id, int8_t type) -> void {
 				}
 			}
 		}
-		else throw not_implemented_exception{};
+		else THROW_CODE_EXCEPTION(not_implemented_exception);
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_inventory::swap_items(int8_t inventory, int16_t slot1, int16_t slot2) -> void {
@@ -647,7 +647,7 @@ auto player_inventory::swap_items(int8_t inventory, int16_t slot1, int16_t slot2
 			}
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_inventory::ensure_rock_destination(game_map_id map_id) -> bool {
@@ -716,7 +716,7 @@ auto player_inventory::connect_packet(packet_builder &builder) -> void {
 			builder.add<int8_t>(0);
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_inventory::rock_packet(packet_builder &builder) -> void {
@@ -751,10 +751,10 @@ auto player_inventory::check_expired_items() -> void {
 			if (auto player = m_player.lock()) {
 				player->send(packets::inventory::send_item_expired(expired_item_ids));
 			}
-			else throw invalid_operation_exception{"This should never be thrown"};
+			else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 }

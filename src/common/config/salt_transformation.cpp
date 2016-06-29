@@ -160,7 +160,7 @@ auto salt_transformation::validate_args(salt_modify_policy policy, const vector<
 			}
 			break;
 		}
-		default: throw not_implemented_exception{"salt_modify_policy"};
+		default: THROW_CODE_EXCEPTION(not_implemented_exception, "salt_modify_policy");
 	}
 	return validity_result::valid;
 }
@@ -288,7 +288,7 @@ auto salt_transformation::apply(string input) const -> string {
 					case salt_modify_policy::subtract_cipher: ret[i] -= value; break;
 					case salt_modify_policy::multiply_cipher: ret[i] *= value; break;
 					case salt_modify_policy::divide_cipher: ret[i] /= value; break;
-					default: throw not_implemented_exception{"salt_modify_policy"};
+					default: THROW_CODE_EXCEPTION(not_implemented_exception, "salt_modify_policy");
 				}
 			}
 			break;
@@ -383,7 +383,7 @@ auto salt_transformation::apply(string input) const -> string {
 			}
 			break;
 		}
-		default: throw not_implemented_exception{"salt_modify_policy"};
+		default: THROW_CODE_EXCEPTION(not_implemented_exception, "salt_modify_policy");
 	}
 	return ret;
 }

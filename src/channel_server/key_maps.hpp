@@ -150,7 +150,7 @@ namespace vana {
 					type = key_map_type::menu;
 					break;
 				default:
-					throw not_implemented_exception{"key_map_action"};
+					THROW_CODE_EXCEPTION(not_implemented_exception, "key_map_action");
 			}
 		}
 

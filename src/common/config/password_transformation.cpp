@@ -58,7 +58,7 @@ auto password_transformation::validate_args(salt_policy policy, const vector<lua
 			break;
 		}
 		default:
-			throw not_implemented_exception{"salt_policy"};
+			THROW_CODE_EXCEPTION(not_implemented_exception, "salt_policy");
 	}
 	return validity_result::valid;
 }
@@ -160,7 +160,7 @@ auto password_transformation::apply(string input, string salt) const -> string {
 			break;
 		}
 		default:
-			throw not_implemented_exception{"salt_policy"};
+			THROW_CODE_EXCEPTION(not_implemented_exception, "salt_policy");
 	}
 	return ret;
 }

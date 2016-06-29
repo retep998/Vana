@@ -30,7 +30,7 @@ namespace vana {
 		// Minimum use count refers to the baseline number of usages in cases of mutual referencing
 		auto initialize(uint32_t unique_pool_seed, uint32_t minimum_use_count = 0) -> void {
 			if (m_initialized) {
-				throw invalid_operation_exception{"must only initialize once"};
+				THROW_CODE_EXCEPTION(invalid_operation_exception, "must only initialize once");
 			}
 
 			// Add 1 to the minimum use count in order to account for our copy
@@ -50,7 +50,7 @@ namespace vana {
 
 		auto store(ref_ptr<TObject> obj) -> void {
 			if (!m_initialized) {
-				throw invalid_operation_exception{"Must initialize before use"};
+				THROW_CODE_EXCEPTION(invalid_operation_exception, "Must initialize before use");
 			}
 
 			m_waiting.push_back(obj);

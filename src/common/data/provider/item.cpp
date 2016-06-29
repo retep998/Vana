@@ -255,7 +255,7 @@ auto item::load_map_ranges() -> void {
 			}
 		}
 
-		if (!found) throw codepath_invalid_exception{};
+		if (!found) THROW_CODE_EXCEPTION(codepath_invalid_exception);
 	}
 }
 

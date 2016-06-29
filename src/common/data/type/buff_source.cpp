@@ -77,7 +77,7 @@ auto buff_source::get_id() const -> int32_t {
 		case buff_source_type::skill: return m_skill_id;
 		case buff_source_type::mob_skill: return m_mob_skill_id;
 	}
-	throw not_implemented_exception{"BuffSourceType"};
+	THROW_CODE_EXCEPTION(not_implemented_exception, "BuffSourceType");
 }
 
 auto buff_source::get_item_data(const data::provider::item &provider) const -> const data::type::consume_info * const {

@@ -60,7 +60,7 @@ auto get_day_string(bool shortened, time_t ctime) -> string {
 		case 5: result = (shortened ? "Thu" : "Thursday"); break;
 		case 6: result = (shortened ? "Fri" : "Friday"); break;
 		case 7: result = (shortened ? "Sat" : "Saturday"); break;
-		default: throw not_implemented_exception{"day"};
+		default: THROW_CODE_EXCEPTION(not_implemented_exception, "day");
 	}
 	return result;
 }
@@ -80,7 +80,7 @@ auto get_month_string(bool shortened, time_t ctime) -> string {
 		case 10: result = (shortened ? "Oct" : "October"); break;
 		case 11: result = (shortened ? "Nov" : "November"); break;
 		case 12: result = (shortened ? "Dec" : "December"); break;
-		default: throw not_implemented_exception{"month"};
+		default: THROW_CODE_EXCEPTION(not_implemented_exception, "month");
 	}
 	return result;
 }

@@ -623,7 +623,7 @@ auto skills::heal(ref_ptr<player> player, int64_t value, const data::type::buff_
 
 auto skills::hurt(ref_ptr<player> player, int64_t value, const data::type::buff_source &source) -> void {
 	game_health val = static_cast<game_health>(value);
-	if (source.get_type() != data::type::buff_source_type::skill) throw not_implemented_exception{"hurt buff_source_type"};
+	if (source.get_type() != data::type::buff_source_type::skill) THROW_CODE_EXCEPTION(not_implemented_exception, "hurt buff_source_type");
 	if (player->get_stats()->get_hp() - val > 1) {
 		player->get_stats()->modify_hp(-val);
 		player->send_map(packets::skills::show_skill_effect(player->get_id(), source.get_skill_id()));

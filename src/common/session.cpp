@@ -64,7 +64,7 @@ auto session::get_type() const -> connection_type {
 }
 
 auto session::set_type(connection_type type) -> void {
-	if (m_type != connection_type::unknown) throw invalid_operation_exception{"Connection type may only be set once"};
+	if (m_type != connection_type::unknown) THROW_CODE_EXCEPTION(invalid_operation_exception, "Connection type may only be set once");
 	m_type = type;
 }
 
@@ -87,7 +87,7 @@ auto session::start(const config::ping &ping, ref_ptr<packet_transformer> transf
 		m_ip = ip{addr.to_v4().to_ulong()};
 	}
 	else {
-		throw not_implemented_exception{"i_pv6"};
+		THROW_CODE_EXCEPTION(not_implemented_exception, "i_pv6");
 	}
 
 	if (ping.enable) {
@@ -257,6 +257,17 @@ auto session::base_handle_request(packet_reader &reader) -> void {
 			disconnect();
 		}
 	}
+#if DEBUG
+	catch (not_implemented_exception &e) {
+		std::cerr << "SESSION HIT UNIMPLEMENTED FEATURE AT " << e.get_file() << " L" << e.get_line() << ": " << e.what() << std::endl;
+	}
+	catch (invalid_operation_exception &e) {
+		std::cerr << "SESSION HIT INVALID OPERATION AT " << e.get_file() << " L" << e.get_line() << ": " << e.what() << std::endl;
+	}
+	catch (codepath_invalid_exception &e) {
+		std::cerr << "SESSION HIT INVALID CODE PATH AT " << e.get_file() << " L" << e.get_line() << ": " << e.what() << std::endl;
+	}
+#endif
 	catch (std::exception &e) {
 		// TODO FIXME log?
 		std::cerr << "SESSION BASEHANDLEREQUEST ERROR: " << e.what() << std::endl;

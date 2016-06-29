@@ -89,7 +89,7 @@ auto player_storage::modify_mesos(game_mesos mod) -> bool {
 	if (auto player = m_player.lock()) {
 		player->send(packets::storage::change_mesos(get_slots(), m_mesos));
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 
 	return true;
 }
@@ -149,7 +149,7 @@ auto player_storage::load() -> void {
 			add_item(value);
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_storage::save() -> void {
@@ -189,7 +189,7 @@ auto player_storage::save() -> void {
 			item::database_insert(db, v);
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 }

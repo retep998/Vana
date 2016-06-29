@@ -114,7 +114,7 @@ auto player_skills::load() -> void {
 			m_skills[skill_id] = skill;
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::save(bool save_cooldowns) -> void {
@@ -165,7 +165,7 @@ auto player_skills::save(bool save_cooldowns) -> void {
 			}
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::add_skill_level(game_skill_id skill_id, game_skill_level amount, bool send_packet) -> bool {
@@ -189,7 +189,7 @@ auto player_skills::add_skill_level(game_skill_id skill_id, game_skill_level amo
 		}
 		return true;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::get_skill_level(game_skill_id skill_id) const -> game_skill_level {
@@ -205,7 +205,7 @@ auto player_skills::set_max_skill_level(game_skill_id skill_id, game_skill_level
 		if (auto player = m_player.lock()) {
 			player->get_skills()->add_skill_level(skill_id, 0);
 		}
-		else throw invalid_operation_exception{"This should never be thrown"};
+		else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 	}
 }
 
@@ -291,7 +291,7 @@ auto player_skills::get_elemental_amp() const -> game_skill_id {
 		}
 		return skill_id;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::get_achilles() const -> game_skill_id {
@@ -304,7 +304,7 @@ auto player_skills::get_achilles() const -> game_skill_id {
 		}
 		return skill_id;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::get_energy_charge() const -> game_skill_id {
@@ -319,7 +319,7 @@ auto player_skills::get_energy_charge() const -> game_skill_id {
 		}
 		return skill_id;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::get_advanced_combo() const -> game_skill_id {
@@ -332,7 +332,7 @@ auto player_skills::get_advanced_combo() const -> game_skill_id {
 		}
 		return skill_id;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::get_alchemist() const -> game_skill_id {
@@ -346,7 +346,7 @@ auto player_skills::get_alchemist() const -> game_skill_id {
 		}
 		return skill_id;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::get_hp_increase() const -> game_skill_id {
@@ -364,7 +364,7 @@ auto player_skills::get_hp_increase() const -> game_skill_id {
 		}
 		return skill_id;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::get_mp_increase() const -> game_skill_id {
@@ -376,7 +376,7 @@ auto player_skills::get_mp_increase() const -> game_skill_id {
 		}
 		return skill_id;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::get_mastery() const -> game_skill_id {
@@ -409,7 +409,7 @@ auto player_skills::get_mastery() const -> game_skill_id {
 		}
 		return mastery_id;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::get_mp_eater() const -> game_skill_id {
@@ -428,7 +428,7 @@ auto player_skills::get_mp_eater() const -> game_skill_id {
 		}
 		return skill_id;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::get_venomous_weapon() const -> game_skill_id {
@@ -442,7 +442,7 @@ auto player_skills::get_venomous_weapon() const -> game_skill_id {
 		}
 		return skill_id;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::get_dark_sight_interruption_skill() const -> game_skill_id {
@@ -458,7 +458,7 @@ auto player_skills::get_dark_sight_interruption_skill() const -> game_skill_id {
 		}
 		return skill_id;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::get_no_damage_skill() const -> game_skill_id {
@@ -472,7 +472,7 @@ auto player_skills::get_no_damage_skill() const -> game_skill_id {
 		}
 		return skill_id;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::get_follow_the_lead() const -> game_skill_id {
@@ -484,7 +484,7 @@ auto player_skills::get_follow_the_lead() const -> game_skill_id {
 		}
 		return skill_id;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::get_legendary_spirit() const -> game_skill_id {
@@ -496,7 +496,7 @@ auto player_skills::get_legendary_spirit() const -> game_skill_id {
 		}
 		return skill_id;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::get_maker() const -> game_skill_id {
@@ -508,7 +508,7 @@ auto player_skills::get_maker() const -> game_skill_id {
 		}
 		return skill_id;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::get_blessing_of_the_fairy() const -> game_skill_id {
@@ -520,7 +520,7 @@ auto player_skills::get_blessing_of_the_fairy() const -> game_skill_id {
 		}
 		return skill_id;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::get_rechargeable_bonus() const -> game_slot_qty {
@@ -539,7 +539,7 @@ auto player_skills::get_rechargeable_bonus() const -> game_slot_qty {
 		}
 		return bonus;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::add_cooldown(game_skill_id skill_id, seconds time) -> void {
@@ -562,7 +562,7 @@ auto player_skills::remove_all_cooldowns() -> void {
 			}
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::open_mystic_door(const point &pos, seconds door_time) -> mystic_door_result {
@@ -632,7 +632,7 @@ auto player_skills::open_mystic_door(const point &pos, seconds door_time) -> mys
 
 		return mystic_door_result::success;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::close_mystic_door(bool from_timer) -> void {
@@ -665,7 +665,7 @@ auto player_skills::close_mystic_door(bool from_timer) -> void {
 			}
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::get_mystic_door() const -> ref_ptr<mystic_door> {
@@ -717,7 +717,7 @@ auto player_skills::on_join_party(party *party, ref_ptr<player> player_value) ->
 			}
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::on_leave_party(party *party, ref_ptr<player> player_value, bool kicked) -> void {
@@ -769,7 +769,7 @@ auto player_skills::on_leave_party(party *party, ref_ptr<player> player_value, b
 			}
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::on_party_disband(party *party) -> void {
@@ -805,7 +805,7 @@ auto player_skills::on_party_disband(party *party) -> void {
 
 		m_mystic_door = new_door;
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::on_map_change() const -> void {
@@ -834,7 +834,7 @@ auto player_skills::on_map_change() const -> void {
 			current_player->send(packets::map::spawn_portal(m_mystic_door, map_id));
 		}
 	}
-	else throw invalid_operation_exception{"This should never be thrown"};
+	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
 auto player_skills::on_disconnect() -> void {

@@ -778,7 +778,7 @@ auto buff::is_buff(const data::type::buff_source &source) const -> bool {
 		case data::type::buff_source_type::item:
 			return ext::any_of(m_items, [&source](auto value) { return source.get_item_id() == value.first; });
 	}
-	throw not_implemented_exception{"buff_source_type"};
+	THROW_CODE_EXCEPTION(not_implemented_exception, "buff_source_type");
 }
 
 auto buff::is_debuff(const data::type::buff_source &source) const -> bool {
@@ -797,7 +797,7 @@ auto buff::get_info(const data::type::buff_source &source) const -> const data::
 		case data::type::buff_source_type::item:
 			return ext::find_value_ptr_if(m_items, [&source](auto value) { return value.first == source.get_item_id(); })->second;
 	}
-	throw not_implemented_exception{"buff_source_type"};
+	THROW_CODE_EXCEPTION(not_implemented_exception, "buff_source_type");
 }
 
 auto buff::get_buffs_by_effect() const -> const data::type::buff_info_by_effect & {

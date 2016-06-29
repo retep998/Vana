@@ -59,7 +59,7 @@ auto connection_manager::connect(const ip &destination, connection_port port, co
 		end_address = asio::ip::address_v4{destination.as_ipv4()};
 	}
 	else {
-		throw not_implemented_exception{"IPv6 unsupported"};
+		THROW_CODE_EXCEPTION(not_implemented_exception, "IPv6 unsupported");
 	}
 	asio::ip::tcp::endpoint endpoint{end_address, port};
 	asio::error_code error;
@@ -141,7 +141,7 @@ auto connection_manager::stop(ref_ptr<session> session) -> void {
 }
 
 auto connection_manager::start(ref_ptr<session> session) -> void {
-	if (m_stopping) throw codepath_invalid_exception{};
+	if (m_stopping) THROW_CODE_EXCEPTION(codepath_invalid_exception);
 	m_sessions.insert(session);
 }
 

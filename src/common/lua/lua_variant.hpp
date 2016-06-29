@@ -111,7 +111,7 @@ namespace vana {
 						case lua_type::boolean: return utilities::misc::hash_combinator(v.as<bool>() ? 0x55555555 : 1);
 						case lua_type::number: return utilities::misc::hash_combinator(v.as<double>());
 						case lua_type::string: return utilities::misc::hash_combinator(v.as<string>());
-						default: throw not_implemented_exception{"lua_type"};
+						default: THROW_CODE_EXCEPTION(not_implemented_exception, "lua_type");
 					}
 				}
 			};
@@ -126,7 +126,7 @@ namespace vana {
 						case lua_type::boolean: return l.as<bool>() == r.as<bool>();
 						case lua_type::number: return l.as<double>() == r.as<double>();
 						case lua_type::string: return l.as<string>() == r.as<string>();
-						default: throw not_implemented_exception{"lua_type"};
+						default: THROW_CODE_EXCEPTION(not_implemented_exception, "lua_type");
 					}
 				}
 			};
@@ -266,7 +266,7 @@ namespace vana {
 				case lua_type::boolean: return a.as<bool>() == b.as<bool>();
 				case lua_type::number: return a.as<double>() == b.as<double>();
 				case lua_type::string: return a.as<string>() == b.as<string>();
-				default: throw not_implemented_exception{"lua_type"};
+				default: THROW_CODE_EXCEPTION(not_implemented_exception, "lua_type");
 			}
 		}
 
@@ -283,7 +283,7 @@ namespace vana {
 				case lua_type::boolean: return false;
 				case lua_type::number: return a.as<double>() > b.as<double>();
 				case lua_type::string: return a.as<string>() > b.as<string>();
-				default: throw not_implemented_exception{"lua_type"};
+				default: THROW_CODE_EXCEPTION(not_implemented_exception, "lua_type");
 			}
 		}
 
@@ -300,7 +300,7 @@ namespace vana {
 				case lua_type::boolean: return false;
 				case lua_type::number: return a.as<double>() < b.as<double>();
 				case lua_type::string: return a.as<string>() < b.as<string>();
-				default: throw not_implemented_exception{"lua_type"};
+				default: THROW_CODE_EXCEPTION(not_implemented_exception, "lua_type");
 			}
 		}
 
