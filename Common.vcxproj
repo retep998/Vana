@@ -263,7 +263,7 @@
     <ClInclude Include="src\common\data\type\quest_reward_info.hpp" />
     <ClInclude Include="src\common\data\type\reactor_info.hpp" />
     <ClInclude Include="src\common\data\type\reactor_state_info.hpp" />
-    <ClInclude Include="src\common\data\type\script_types.hpp" />
+    <ClInclude Include="src\common\data\type\script_type.hpp" />
     <ClInclude Include="src\common\data\type\scroll_info.hpp" />
     <ClInclude Include="src\common\data\type\seat_info.hpp" />
     <ClInclude Include="src\common\data\type\shop_info.hpp" />

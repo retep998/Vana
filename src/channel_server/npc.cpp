@@ -55,7 +55,7 @@ auto npc::has_script(int32_t npc_id, game_quest_id quest_id, bool start) -> bool
 	string script = "";
 	auto &channel = channel_server::get_instance();
 	if (quest_id == 0) {
-		script = channel.get_script_data_provider().get_script(&channel, npc_id, data::type::script_types::npc);
+		script = channel.get_script_data_provider().get_script(&channel, npc_id, data::type::script_type::npc);
 	}
 	else {
 		script = channel.get_script_data_provider().get_quest_script(&channel, quest_id, start ? 0 : 1);
@@ -66,7 +66,7 @@ auto npc::has_script(int32_t npc_id, game_quest_id quest_id, bool start) -> bool
 auto npc::get_script(game_quest_id quest_id, bool start) -> string {
 	auto &channel = channel_server::get_instance();
 	if (quest_id == 0) {
-		return channel.get_script_data_provider().get_script(&channel, m_npc_id, data::type::script_types::npc);
+		return channel.get_script_data_provider().get_script(&channel, m_npc_id, data::type::script_type::npc);
 	}
 	return channel.get_script_data_provider().get_quest_script(&channel, quest_id, start ? 0 : 1);
 }

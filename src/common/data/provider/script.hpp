@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/data/type/script_types.hpp"
+#include "common/data/type/script_type.hpp"
 #include "common/types.hpp"
 #include <string>
 #include <unordered_map>
@@ -32,13 +32,13 @@ namespace vana {
 				auto load_data() -> void;
 
 				auto get_quest_script(abstract_server *server, game_quest_id quest_id, int8_t state) const -> string;
-				auto get_script(abstract_server *server, int32_t object_id, data::type::script_types type) const -> string;
+				auto get_script(abstract_server *server, int32_t object_id, data::type::script_type type) const -> string;
 				auto has_quest_script(game_quest_id quest_id, int8_t state) const -> bool;
-				auto has_script(int32_t object_id, data::type::script_types type) const -> bool;
-				auto build_script_path(data::type::script_types type, const string &location) const -> string;
+				auto has_script(int32_t object_id, data::type::script_type type) const -> bool;
+				auto build_script_path(data::type::script_type type, const string &location) const -> string;
 			private:
-				auto resolve(data::type::script_types type) const -> const vector<pair<int32_t, string>> &;
-				auto resolve_path(data::type::script_types type) const -> string;
+				auto resolve(data::type::script_type type) const -> const vector<pair<int32_t, string>> &;
+				auto resolve_path(data::type::script_type type) const -> string;
 
 				vector<pair<game_npc_id, string>> m_npc_scripts;
 				vector<pair<game_reactor_id, string>> m_reactor_scripts;

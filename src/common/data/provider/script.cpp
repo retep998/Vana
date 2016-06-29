@@ -67,7 +67,7 @@ auto script::load_data() -> void {
 	std::cout << "DONE" << std::endl;
 }
 
-auto script::get_script(abstract_server *server, int32_t object_id, data::type::script_types type) const -> string {
+auto script::get_script(abstract_server *server, int32_t object_id, data::type::script_type type) const -> string {
 	if (has_script(object_id, type)) {
 		auto &scripts = resolve(type);
 		for (const auto &script : scripts) {
@@ -98,7 +98,7 @@ auto script::get_quest_script(abstract_server *server, game_quest_id quest_id, i
 					continue;
 				}
 
-				string s = build_script_path(data::type::script_types::quest, script_state.second);
+				string s = build_script_path(data::type::script_type::quest, script_state.second);
 				if (utilities::file::exists(s)) {
 					return s;
 				}
@@ -112,15 +112,15 @@ auto script::get_quest_script(abstract_server *server, game_quest_id quest_id, i
 		}
 	}
 
-	return build_script_path(data::type::script_types::quest, std::to_string(quest_id) + (state == 0 ? "s" : "e"));
+	return build_script_path(data::type::script_type::quest, std::to_string(quest_id) + (state == 0 ? "s" : "e"));
 }
 
-auto script::build_script_path(data::type::script_types type, const string &location) const -> string {
+auto script::build_script_path(data::type::script_type type, const string &location) const -> string {
 	string s = "scripts/" + resolve_path(type) + "/" + location + ".lua";
 	return s;
 }
 
-auto script::has_script(int32_t object_id, data::type::script_types type) const -> bool {
+auto script::has_script(int32_t object_id, data::type::script_type type) const -> bool {
 	return ext::any_of(resolve(type), [object_id](pair<int32_t, string> value) -> bool {
 		return value.first == object_id;
 	});
@@ -133,29 +133,29 @@ auto script::has_quest_script(game_quest_id quest_id, int8_t state) const -> boo
 	});
 }
 
-auto script::resolve(data::type::script_types type) const -> const vector<pair<int32_t, string>> & {
+auto script::resolve(data::type::script_type type) const -> const vector<pair<int32_t, string>> & {
 	switch (type) {
-		case data::type::script_types::item: return m_item_scripts;
-		case data::type::script_types::map_entry: return m_map_entry_scripts;
-		case data::type::script_types::first_map_entry: return m_first_map_entry_scripts;
-		case data::type::script_types::npc: return m_npc_scripts;
-		case data::type::script_types::reactor: return m_reactor_scripts;
+		case data::type::script_type::item: return m_item_scripts;
+		case data::type::script_type::map_entry: return m_map_entry_scripts;
+		case data::type::script_type::first_map_entry: return m_first_map_entry_scripts;
+		case data::type::script_type::npc: return m_npc_scripts;
+		case data::type::script_type::reactor: return m_reactor_scripts;
 	}
-	throw not_implemented_exception{"script_types"};
+	throw not_implemented_exception{"script_type"};
 }
 
-auto script::resolve_path(data::type::script_types type) const -> string {
+auto script::resolve_path(data::type::script_type type) const -> string {
 	switch (type) {
-		case data::type::script_types::item: return "items";
-		case data::type::script_types::map_entry: return "map_entry";
-		case data::type::script_types::first_map_entry: return "first_map_entry";
-		case data::type::script_types::npc: return "npcs";
-		case data::type::script_types::reactor: return "reactors";
-		case data::type::script_types::quest: return "quests";
-		case data::type::script_types::instance: return "instances";
-		case data::type::script_types::portal: return "portals";
+		case data::type::script_type::item: return "items";
+		case data::type::script_type::map_entry: return "map_entry";
+		case data::type::script_type::first_map_entry: return "first_map_entry";
+		case data::type::script_type::npc: return "npcs";
+		case data::type::script_type::reactor: return "reactors";
+		case data::type::script_type::quest: return "quests";
+		case data::type::script_type::instance: return "instances";
+		case data::type::script_type::portal: return "portals";
 	}
-	throw not_implemented_exception{"script_types"};
+	throw not_implemented_exception{"script_type"};
 }
 
 }

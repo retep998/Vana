@@ -55,7 +55,7 @@ auto maps::use_portal(ref_ptr<player> player, const data::type::portal_info * co
 			return;
 		}
 
-		string filename = channel_server::get_instance().get_script_data_provider().build_script_path(data::type::script_types::portal, portal->script);
+		string filename = channel_server::get_instance().get_script_data_provider().build_script_path(data::type::script_type::portal, portal->script);
 
 		if (utilities::file::exists(filename)) {
 			lua::lua_portal lua_env = {filename, player->get_id(), player->get_map_id(), portal};

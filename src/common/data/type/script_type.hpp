@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace vana {
 	namespace data {
 		namespace type {
-			enum class script_types {
+			enum class script_type {
 				npc,
 				reactor,
 				quest,

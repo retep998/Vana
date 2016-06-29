@@ -126,10 +126,10 @@ auto lua_exports::run_npc_npc(lua_State *lua_vm) -> lua_return {
 	if (env.is(lua_vm, 2, lua_type::string)) {
 		// We already have our script name
 		string specified = env.get<string>(lua_vm, 2);
-		script = channel.get_script_data_provider().build_script_path(data::type::script_types::npc, specified);
+		script = channel.get_script_data_provider().build_script_path(data::type::script_type::npc, specified);
 	}
 	else {
-		script = channel.get_script_data_provider().get_script(&channel, npc_id, data::type::script_types::npc);
+		script = channel.get_script_data_provider().get_script(&channel, npc_id, data::type::script_type::npc);
 	}
 	get_npc(lua_vm, env)->set_end_script(npc_id, script);
 	return 0;

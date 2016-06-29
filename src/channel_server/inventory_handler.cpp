@@ -907,7 +907,7 @@ auto inventory_handler::handle_script_item(ref_ptr<player> player, packet_reader
 	}
 
 	auto &channel = channel_server::get_instance();
-	string script_name = channel.get_script_data_provider().get_script(&channel, item_id, data::type::script_types::item);
+	string script_name = channel.get_script_data_provider().get_script(&channel, item_id, data::type::script_type::item);
 	if (script_name.empty()) {
 		// Hacking or no script for item found
 		player->send(packets::inventory::blank_update());

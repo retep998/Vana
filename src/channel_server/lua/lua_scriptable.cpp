@@ -708,10 +708,10 @@ auto lua_exports::run_npc(lua_State *lua_vm) -> lua_return {
 	if (env.is(lua_vm, 2, lua::lua_type::string)) {
 		// We already have our script name
 		string specified = env.get<string>(lua_vm, 2);
-		script = channel.get_script_data_provider().build_script_path(data::type::script_types::npc, specified);
+		script = channel.get_script_data_provider().build_script_path(data::type::script_type::npc, specified);
 	}
 	else {
-		script = channel.get_script_data_provider().get_script(&channel, npc_id, data::type::script_types::npc);
+		script = channel.get_script_data_provider().get_script(&channel, npc_id, data::type::script_type::npc);
 	}
 	npc *value = new npc{npc_id, get_player(lua_vm, env), script};
 	value->run();

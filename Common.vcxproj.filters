@@ -889,9 +889,6 @@
     <ClInclude Include="src\common\data\type\reactor_state_info.hpp">
       <Filter>data\type</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\data\type\script_types.hpp">
-      <Filter>data\type</Filter>
-    </ClInclude>
     <ClInclude Include="src\common\data\type\scroll_info.hpp">
       <Filter>data\type</Filter>
     </ClInclude>
@@ -926,6 +923,9 @@
       <Filter>data\type</Filter>
     </ClInclude>
     <ClInclude Include="src\common\data\type\map_link_info.hpp">
+      <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\data\type\script_type.hpp">
       <Filter>data\type</Filter>
     </ClInclude>
   </ItemGroup>
