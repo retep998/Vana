@@ -130,7 +130,9 @@ const case_insensitive_hash_map<map_pair, game_chat> chat_handler_functions::g_m
 	{"altaire", {300000000, "Ludus Lake"}},
 	// Misc Ludus Lake
 	{"clocktower", {220050300, "Misc Ludus Lake"}},
+	{"kulan3", {221040200, "Misc Ludus Lake"}},
 	{"kulan5", {221040400, "Misc Ludus Lake"}},
+	{"boswell3", {221030300, "Misc Ludus Lake"}},
 	{"sharks", {230040400, "Misc Ludus Lake"}},
 	{"squids", {230040300, "Misc Ludus Lake"}},
 	{"gobies", {230040100, "Misc Ludus Lake"}},
