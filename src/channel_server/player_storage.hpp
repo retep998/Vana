@@ -37,7 +37,7 @@ namespace vana {
 			auto add_item(item *item) -> void;
 			auto take_item(game_storage_slot slot) -> void;
 			auto set_mesos(game_mesos mesos) -> void { m_mesos = mesos; }
-			auto change_mesos(game_mesos mesos) -> void;
+			auto modify_mesos(game_mesos mod) -> bool;
 
 			auto get_slots() const -> game_storage_slot { return m_slots; }
 			auto get_num_items() const -> game_storage_slot { return static_cast<game_storage_slot>(m_items.size()); }

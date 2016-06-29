@@ -71,12 +71,27 @@ auto player_storage::get_num_items(game_inventory inv) -> game_storage_slot {
 	return item_num;
 }
 
-auto player_storage::change_mesos(game_mesos mesos) -> void {
-	m_mesos -= mesos;
+auto player_storage::modify_mesos(game_mesos mod) -> bool {
+	if (mod < 0) {
+		if (-mod > m_mesos) {
+			return false;
+		}
+		m_mesos += mod;
+	}
+	else {
+		game_mesos meso_test = m_mesos + mod;
+		if (meso_test < 0) {
+			return false;
+		}
+		m_mesos = meso_test;
+	}
+
 	if (auto player = m_player.lock()) {
 		player->send(packets::storage::change_mesos(get_slots(), m_mesos));
 	}
 	else throw invalid_operation_exception{"This should never be thrown"};
+
+	return true;
 }
 
 auto player_storage::load() -> void {

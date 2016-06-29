@@ -348,9 +348,35 @@ auto npc_handler::use_storage(ref_ptr<player> player, packet_reader &reader) -> 
 		case shop_opcodes::meso_transaction: {
 			game_mesos mesos = reader.get<game_mesos>();
 			// Amount of mesos to remove. Deposits are negative, and withdrawals are positive
-			if (player->get_inventory()->modify_mesos(mesos)) {
-				player->get_storage()->change_mesos(mesos);
+			if (mesos < 0) {
+				// Transferring from inventory to storage
+				if (player->get_inventory()->get_mesos() < -mesos) {
+					// Hacking
+					return;
+				}
+
+				if (player->get_storage()->modify_mesos(-mesos)) {
+					player->get_inventory()->modify_mesos(mesos);
+				}
+				else {
+					// TODO FIXME error?
+				}
 			}
+			else {
+				// Transferring from storage to inventory
+				if (player->get_storage()->get_mesos() < mesos) {
+					// Hacking
+					return;
+				}
+
+				if (player->get_inventory()->modify_mesos(mesos)) {
+					player->get_storage()->modify_mesos(-mesos);
+				}
+				else {
+					// TODO FIXME error?
+				}
+			}
+
 			break;
 		}
 		case shop_opcodes::exit_storage:
