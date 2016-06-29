@@ -181,7 +181,7 @@ auto map_functions::list_portals(ref_ptr<player> player, const game_chat &args) 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT mp.id, mp.label, mp.destination, mp.destination_label, mp.script, mp.x_pos, mp.y_pos "
 		<< "FROM " << db.make_table("map_portals") << " mp "
-		<< "WHERE mp.mapid = :mapId",
+		<< "WHERE mp.mapid = :map_id",
 		soci::use(map_id, "map_id"));
 
 	auto format = [&map](const soci::row &row, out_stream &str) {
