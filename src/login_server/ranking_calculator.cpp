@@ -112,47 +112,47 @@ auto ranking_calculator::all() -> void {
 		fame(v);
 
 		game_player_id char_id = 0;
-		opt_int32_t o_fame = 0;
-		int32_t c_fame = 0;
-		opt_int32_t o_world = 0;
-		int32_t c_world = 0;
-		opt_int32_t o_job = 0;
-		int32_t c_job = 0;
-		opt_int32_t o_overall = 0;
-		int32_t c_overall = 0;
+		opt_int32_t original_fame_rank = 0;
+		int32_t current_fame_rank = 0;
+		opt_int32_t original_world_rank = 0;
+		int32_t current_world_rank = 0;
+		opt_int32_t original_job_rank = 0;
+		int32_t current_job_rank = 0;
+		opt_int32_t original_overall_rank = 0;
+		int32_t current_overall_rank = 0;
 
 		soci::statement st = (sql.prepare
 			<< "UPDATE " << db.make_table("characters") << " "
 			<< "SET "
-			<< "	fame_opos = :o_fame,"
-			<< "	fame_cpos = :c_fame,"
-			<< "	world_opos = :o_world,"
-			<< "	world_cpos = :c_world,"
-			<< "	job_opos = :o_job,"
-			<< "	job_cpos = :c_job,"
-			<< "	overall_opos = :o_overall,"
-			<< "	overall_cpos = :c_overall "
+			<< "	fame_opos = :original_fame_rank,"
+			<< "	fame_cpos = :current_fame_rank,"
+			<< "	world_opos = :original_world_rank,"
+			<< "	world_cpos = :current_world_rank,"
+			<< "	job_opos = :original_job_rank,"
+			<< "	job_cpos = :current_job_rank,"
+			<< "	overall_opos = :original_overall_rank,"
+			<< "	overall_cpos = :current_overall_rank "
 			<< "	WHERE character_id = :char",
 			soci::use(char_id, "char"),
-			soci::use(o_fame, "o_fame"),
-			soci::use(c_fame, "c_fame"),
-			soci::use(o_world, "o_world"),
-			soci::use(c_world, "c_world"),
-			soci::use(o_job, "o_job"),
-			soci::use(c_job, "c_job"),
-			soci::use(o_overall, "o_overall"),
-			soci::use(c_overall, "c_overall"));
+			soci::use(original_fame_rank, "original_fame_rank"),
+			soci::use(current_fame_rank, "current_fame_rank"),
+			soci::use(original_world_rank, "original_world_rank"),
+			soci::use(current_world_rank, "current_world_rank"),
+			soci::use(original_job_rank, "original_job_rank"),
+			soci::use(current_job_rank, "current_job_rank"),
+			soci::use(original_overall_rank, "original_overall_rank"),
+			soci::use(current_overall_rank, "current_overall_rank"));
 
 		for (const auto &p : v) {
 			char_id = p.char_id;
-			o_fame = p.fame.old_rank;
-			c_fame = p.fame.new_rank.get();
-			o_world = p.world.old_rank;
-			c_world = p.world.new_rank.get();
-			o_job = p.job.old_rank;
-			c_job = p.job.new_rank.get();
-			o_overall = p.overall.old_rank;
-			c_overall = p.overall.new_rank.get();
+			original_fame_rank = p.fame.old_rank;
+			current_fame_rank = p.fame.new_rank.get();
+			original_world_rank = p.world.old_rank;
+			current_world_rank = p.world.new_rank.get();
+			original_job_rank = p.job.old_rank;
+			current_job_rank = p.job.new_rank.get();
+			original_overall_rank = p.overall.old_rank;
+			current_overall_rank = p.overall.new_rank.get();
 			st.execute(true);
 		}
 	}
