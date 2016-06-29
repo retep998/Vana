@@ -56,5 +56,6 @@ namespace vana {
 		owned_ptr<asio::io_service::work> m_work;
 		asio::io_service m_io_service;
 		abstract_server *m_server;
+		bool m_stopping = false;
 	};
 }

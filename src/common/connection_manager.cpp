@@ -123,22 +123,25 @@ auto connection_manager::connect(const ip &destination, connection_port port, co
 }
 
 auto connection_manager::stop() -> void {
+	m_stopping = true;
 	for (auto &server : m_servers) {
 		server->stop();
 	}
 	m_servers.clear();
 
-	auto sessions = m_sessions;
-	for (auto &session : sessions) {
+	for (auto &session : m_sessions) {
 		session->disconnect();
 	}
+	m_sessions.clear();
 }
 
 auto connection_manager::stop(ref_ptr<session> session) -> void {
+	if (m_stopping) return;
 	m_sessions.erase(session);
 }
 
 auto connection_manager::start(ref_ptr<session> session) -> void {
+	if (m_stopping) throw codepath_invalid_exception{};
 	m_sessions.insert(session);
 }
 
