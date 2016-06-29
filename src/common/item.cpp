@@ -428,32 +428,50 @@ auto item::database_insert(database &db, const vector<item_db_record> &items) ->
 		nullable_mode nulls = (equip ?
 			nullable_mode::null_if_found :
 			nullable_mode::force_null);
-		nullable_mode required = (equip ?
-			nullable_mode::force_not_null :
-			nullable_mode::force_null);
 
-		slots = get_optional(item->m_slots, required, nulls_int8);
-		scrolls = get_optional(item->m_scrolls, required, nulls_int8);
-		str = get_optional(item->m_str, nulls, nulls_int16);
-		dex = get_optional(item->m_dex, nulls, nulls_int16);
-		intl = get_optional(item->m_int, nulls, nulls_int16);
-		luk = get_optional(item->m_luk, nulls, nulls_int16);
-		hp = get_optional(item->m_hp, nulls, nulls_int16);
-		mp = get_optional(item->m_mp, nulls, nulls_int16);
-		watk = get_optional(item->m_watk, nulls, nulls_int16);
-		matk = get_optional(item->m_matk, nulls, nulls_int16);
-		wdef = get_optional(item->m_wdef, nulls, nulls_int16);
-		mdef = get_optional(item->m_mdef, nulls, nulls_int16);
-		acc = get_optional(item->m_accuracy, nulls, nulls_int16);
-		avo = get_optional(item->m_avoid, nulls, nulls_int16);
-		hands = get_optional(item->m_hands, nulls, nulls_int16);
-		speed = get_optional(item->m_speed, nulls, nulls_int16);
-		jump = get_optional(item->m_jump, nulls, nulls_int16);
-		flags = get_optional(item->m_flags, nulls, nulls_int16);
-		hammers = get_optional(item->m_hammers, nulls, nulls_int32);
-		pet_id = get_optional(item->m_pet_id, nulls, nulls_int64);
-		name = get_optional(item->m_name, nulls, nulls_string);
-		expiration = get_optional(item->m_expiration.get_value(), nulls, nulls_expiration);
+		nullable_mode equip_only = equip ?
+			nullable_mode::null_if_found :
+			nullable_mode::force_null;
+
+		nullable_mode equip_only_required = equip ?
+			nullable_mode::force_not_null :
+			nullable_mode::force_null;
+
+		nullable_mode nonequip_only = equip ?
+			nullable_mode::force_null :
+			nullable_mode::null_if_found;
+
+		nullable_mode nonequip_only_required = equip ?
+			nullable_mode::force_null :
+			nullable_mode::force_not_null;
+
+		// Equip only
+		slots = get_optional(item->m_slots, equip_only_required, nulls_int8);
+		scrolls = get_optional(item->m_scrolls, equip_only_required, nulls_int8);
+		str = get_optional(item->m_str, equip_only, nulls_int16);
+		dex = get_optional(item->m_dex, equip_only, nulls_int16);
+		intl = get_optional(item->m_int, equip_only, nulls_int16);
+		luk = get_optional(item->m_luk, equip_only, nulls_int16);
+		hp = get_optional(item->m_hp, equip_only, nulls_int16);
+		mp = get_optional(item->m_mp, equip_only, nulls_int16);
+		watk = get_optional(item->m_watk, equip_only, nulls_int16);
+		matk = get_optional(item->m_matk, equip_only, nulls_int16);
+		wdef = get_optional(item->m_wdef, equip_only, nulls_int16);
+		mdef = get_optional(item->m_mdef, equip_only, nulls_int16);
+		acc = get_optional(item->m_accuracy, equip_only, nulls_int16);
+		avo = get_optional(item->m_avoid, equip_only, nulls_int16);
+		hands = get_optional(item->m_hands, equip_only, nulls_int16);
+		speed = get_optional(item->m_speed, equip_only, nulls_int16);
+		jump = get_optional(item->m_jump, equip_only, nulls_int16);
+		flags = get_optional(item->m_flags, equip_only, nulls_int16);
+		hammers = get_optional(item->m_hammers, equip_only, nulls_int32);
+
+		// Non-equip only
+		pet_id = get_optional(item->m_pet_id, nonequip_only, nulls_int64);
+
+		// All items
+		name = get_optional(item->m_name, nullable_mode::null_if_found, nulls_string);
+		expiration = get_optional(item->m_expiration.get_value(), nullable_mode::null_if_found, nulls_expiration);
 
 		st.execute(true);
 	}
