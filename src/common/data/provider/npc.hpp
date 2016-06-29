@@ -33,7 +33,7 @@ namespace vana {
 				auto is_guild_rank(game_npc_id npc) const -> bool;
 				auto is_valid_npc_id(game_npc_id npc) const -> bool;
 			private:
-				hash_map<game_npc_id, data::type::npc_info> m_data;
+				vector<data::type::npc_info> m_data;
 			};
 		}
 	}

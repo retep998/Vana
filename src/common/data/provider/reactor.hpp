@@ -34,7 +34,7 @@ namespace vana {
 				auto load_states() -> void;
 				auto load_trigger_skills() -> void;
 
-				hash_map<game_reactor_id, data::type::reactor_info> m_reactor_info;
+				vector<data::type::reactor_info> m_reactor_info;
 			};
 		}
 	}

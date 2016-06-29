@@ -36,7 +36,7 @@ namespace vana {
 				auto load_required_jobs() -> void;
 				auto load_rewards() -> void;
 
-				hash_map<game_quest_id, vana::quest> m_quests;
+				vector<vana::quest> m_quests;
 			};
 		}
 	}

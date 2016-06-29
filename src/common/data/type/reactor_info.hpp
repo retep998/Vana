@@ -30,6 +30,7 @@ namespace vana {
 				bool activate_by_touch = false;
 				int8_t max_states = 0;
 				game_reactor_id link = 0;
+				game_reactor_id id = 0;
 				hash_map<int8_t, vector<reactor_state_info>> states;
 			};
 		}

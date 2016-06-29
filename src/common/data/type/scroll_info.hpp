@@ -44,6 +44,7 @@ namespace vana {
 				game_stat speed = 0;
 				uint16_t success = 0;
 				uint16_t cursed = 0;
+				game_item_id item_id = 0;
 			};
 		}
 	}

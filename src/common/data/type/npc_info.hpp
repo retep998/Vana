@@ -25,6 +25,7 @@ namespace vana {
 			struct npc_info {
 				bool is_maple_tv = false;
 				bool is_guild_rank = false;
+				game_npc_id id = 0;
 				game_mesos storage_cost = 0;
 			};
 		}

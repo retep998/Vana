@@ -51,12 +51,16 @@ auto script::load_data() -> void {
 		int8_t modifier = row.get<int8_t>("helper");
 
 		utilities::str::run_enum(row.get<string>("script_type"), [&](const string &cmp) {
-			if (cmp == "npc") m_npc_scripts[object_id] = script;
-			else if (cmp == "reactor") m_reactor_scripts[object_id] = script;
-			else if (cmp == "map_enter") m_map_entry_scripts[object_id] = script;
-			else if (cmp == "map_first_enter") m_first_map_entry_scripts[object_id] = script;
-			else if (cmp == "item") m_item_scripts[object_id] = script;
-			else if (cmp == "quest") m_quest_scripts[static_cast<game_quest_id>(object_id)][modifier] = script;
+			if (cmp == "npc") m_npc_scripts.push_back(std::make_pair(object_id, script));
+			else if (cmp == "reactor") m_reactor_scripts.push_back(std::make_pair(object_id, script));
+			else if (cmp == "map_enter") m_map_entry_scripts.push_back(std::make_pair(object_id, script));
+			else if (cmp == "map_first_enter") m_first_map_entry_scripts.push_back(std::make_pair(object_id, script));
+			else if (cmp == "item") m_item_scripts.push_back(std::make_pair(object_id, script));
+			else if (cmp == "quest") {
+				vector<pair<int8_t, string>> value;
+				value.push_back(std::make_pair(modifier, script));
+				m_quest_scripts.push_back(std::make_pair(static_cast<game_quest_id>(object_id), value));
+			}
 		});
 	}
 
@@ -65,27 +69,49 @@ auto script::load_data() -> void {
 
 auto script::get_script(abstract_server *server, int32_t object_id, data::type::script_types type) const -> string {
 	if (has_script(object_id, type)) {
-		string s = build_script_path(type, resolve(type).find(object_id)->second);
-		if (utilities::file::exists(s)) {
-			return s;
-		}
+		auto &scripts = resolve(type);
+		for (const auto &script : scripts) {
+			if (script.first == object_id) {
+				string s = build_script_path(type, script.second);
+				if (utilities::file::exists(s)) {
+					return s;
+				}
 #ifdef DEBUG
-		else server->log(log_type::debug_error, "Missing script '" + s + "'");
+				server->log(log_type::debug_error, "Missing script '" + s + "'");
 #endif
+				break;
+			}
+		}
 	}
 	return build_script_path(type, std::to_string(object_id));
 }
 
 auto script::get_quest_script(abstract_server *server, game_quest_id quest_id, int8_t state) const -> string {
 	if (has_quest_script(quest_id, state)) {
-		string s = build_script_path(data::type::script_types::quest, m_quest_scripts.find(quest_id)->second.find(state)->second);
-		if (utilities::file::exists(s)) {
-			return s;
-		}
+		for (const auto &script : m_quest_scripts) {
+			if (script.first != quest_id) {
+				continue;
+			}
+
+			for (const auto &script_state : script.second) {
+				if (script_state.first != state) {
+					continue;
+				}
+
+				string s = build_script_path(data::type::script_types::quest, script_state.second);
+				if (utilities::file::exists(s)) {
+					return s;
+				}
 #ifdef DEBUG
-		else server->log(log_type::debug_error, "Missing quest script '" + s + "'");
+				server->log(log_type::debug_error, "Missing quest script '" + s + "'");
 #endif
+				break;
+			}
+
+			break;
+		}
 	}
+
 	return build_script_path(data::type::script_types::quest, std::to_string(quest_id) + (state == 0 ? "s" : "e"));
 }
 
@@ -95,14 +121,19 @@ auto script::build_script_path(data::type::script_types type, const string &loca
 }
 
 auto script::has_script(int32_t object_id, data::type::script_types type) const -> bool {
-	return ext::is_element(resolve(type), object_id);
+	return ext::any_of(resolve(type), [object_id](pair<int32_t, string> value) -> bool {
+		return value.first == object_id;
+	});
+
 }
 
 auto script::has_quest_script(game_quest_id quest_id, int8_t state) const -> bool {
-	return ext::is_element(m_quest_scripts, quest_id);
+	return ext::any_of(m_quest_scripts, [quest_id](pair<game_quest_id, vector<pair<int8_t, string>>> value) -> bool {
+		return value.first == quest_id;
+	});
 }
 
-auto script::resolve(data::type::script_types type) const -> const hash_map<int32_t, string> & {
+auto script::resolve(data::type::script_types type) const -> const vector<pair<int32_t, string>> & {
 	switch (type) {
 		case data::type::script_types::item: return m_item_scripts;
 		case data::type::script_types::map_entry: return m_map_entry_scripts;

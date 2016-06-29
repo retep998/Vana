@@ -68,7 +68,18 @@ auto mob::load_attacks() -> void {
 			else if (cmp == "area_effect_plus") mob_attack.attack_type = data::type::mob_attack_type::area_effect_plus;
 		});
 
-		m_attacks[mob_id].push_back(mob_attack);
+		bool found = false;
+		for (auto &mob : m_attacks) {
+			if (mob.first == mob_id) {
+				mob.second.push_back(mob_attack);
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			vector<data::type::mob_attack_info> new_value{mob_attack};
+			m_attacks.push_back(std::make_pair(mob_id, new_value));
+		}
 	}
 }
 
@@ -86,7 +97,18 @@ auto mob::load_skills() -> void {
 		mob_skill.level = row.get<game_mob_skill_level>("skill_level");
 		mob_skill.effect_after = milliseconds{row.get<int16_t>("effect_delay")};
 
-		m_skills[mob_id].push_back(mob_skill);
+		bool found = false;
+		for (auto &mob : m_skills) {
+			if (mob.first == mob_id) {
+				mob.second.push_back(mob_skill);
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			vector<data::type::mob_skill_info> new_value{mob_skill};
+			m_skills.push_back(std::make_pair(mob_id, new_value));
+		}
 	}
 }
 
@@ -100,7 +122,7 @@ auto mob::load_mobs() -> void {
 	for (const auto &row : rs) {
 		auto mob = make_ref_ptr<data::type::mob_info>();
 
-		game_mob_id mob_id = row.get<game_mob_id>("mobid");
+		mob->id = row.get<game_mob_id>("mobid");
 		mob->level = row.get<uint16_t>("mob_level");
 		mob->hp = row.get<uint32_t>("hp");
 		mob->mp = row.get<uint32_t>("mp");
@@ -166,9 +188,14 @@ auto mob::load_mobs() -> void {
 		mob->can_poison = (!mob->boss && mob->poison_attr != mob_elemental_attribute::immune && mob->poison_attr != mob_elemental_attribute::strong);
 
 		// Skill count relies on skills being loaded first
-		auto kvp = m_skills.find(mob_id);
-		mob->skill_count = kvp != m_skills.end() ? static_cast<uint8_t>(kvp->second.size()) : 0; 
-		m_mob_info[mob_id] = mob;
+		for (const auto &skill : m_skills) {
+			if (skill.first == mob->id) {
+				mob->skill_count = static_cast<uint8_t>(skill.second.size());
+				break;
+			}
+		}
+
+		m_mob_info.push_back(mob);
 	}
 }
 
@@ -181,30 +208,63 @@ auto mob::load_summons() -> void {
 		game_mob_id mob_id = row.get<game_mob_id>("mobid");
 		game_mob_id summon_id = row.get<game_mob_id>("summonid");
 
-		m_mob_info[mob_id]->summon.push_back(summon_id);
+		for (const auto &mob : m_mob_info) {
+			if (mob->id == mob_id) {
+				mob->summon.push_back(summon_id);
+				break;
+			}
+		}
 	}
 }
 
 auto mob::mob_exists(game_mob_id mob_id) const -> bool {
-	return ext::is_element(m_mob_info, mob_id);
+	for (const auto &mob : m_mob_info) {
+		if (mob->id == mob_id) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
-auto mob::get_mob_info(game_mob_id mob_id) const -> ref_ptr<data::type::mob_info> {
-	return m_mob_info.find(mob_id)->second;
+auto mob::get_mob_info(game_mob_id mob_id) const -> ref_ptr<const data::type::mob_info> {
+	for (const auto &info : m_mob_info) {
+		if (info->id == mob_id) {
+			return info;
+		}
+	}
+
+	throw codepath_invalid_exception{};
 }
 
 auto mob::get_mob_attack(game_mob_id mob_id, uint8_t index) const -> const data::type::mob_attack_info * const {
-	return ext::find_value_ptr(
-		ext::find_value_ptr(m_attacks, mob_id), index);
+	for (const auto &mob : m_attacks) {
+		if (mob.first == mob_id) {
+			return &mob.second[index];
+		}
+	}
+
+	throw codepath_invalid_exception{};
 }
 
 auto mob::get_mob_skill(game_mob_id mob_id, uint8_t index) const -> const data::type::mob_skill_info * const {
-	return ext::find_value_ptr(
-		ext::find_value_ptr(m_skills, mob_id), index);
+	for (const auto &mob : m_skills) {
+		if (mob.first == mob_id) {
+			return &mob.second[index];
+		}
+	}
+
+	throw codepath_invalid_exception{};
 }
 
 auto mob::get_skills(game_mob_id mob_id) const -> const vector<data::type::mob_skill_info> & {
-	return m_skills.find(mob_id)->second;
+	for (const auto &mob : m_skills) {
+		if (mob.first == mob_id) {
+			return mob.second;
+		}
+	}
+
+	throw codepath_invalid_exception{};
 }
 
 }

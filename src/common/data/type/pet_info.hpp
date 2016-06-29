@@ -32,6 +32,7 @@ namespace vana {
 				int32_t life = 0;
 				int32_t limited_life = 0;
 				game_item_id evolve_item = 0;
+				game_item_id item_id = 0;
 				string name;
 			};
 		}

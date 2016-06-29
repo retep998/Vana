@@ -25,6 +25,7 @@ namespace vana {
 	namespace data {
 		namespace type {
 			struct banish_field_info {
+				game_mob_id mob_id = 0;
 				game_map_id field = constant::map::no_map;
 				string message;
 				string portal;

@@ -41,8 +41,8 @@ namespace vana {
 				auto load_user_shops() -> void;
 				auto load_recharge_tiers() -> void;
 
-				hash_map<game_shop_id, data::type::shop_info> m_shops;
-				hash_map<int8_t, ord_map<game_item_id, double>> m_recharge_costs;
+				vector<data::type::shop_info> m_shops;
+				vector<pair<int8_t, vector<pair<game_item_id, double>>>> m_recharge_costs;
 			};
 		}
 	}

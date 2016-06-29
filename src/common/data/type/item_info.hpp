@@ -41,6 +41,7 @@ namespace vana {
 				game_experience exp = 0;
 				game_npc_id npc = 0;
 				game_mesos mesos = 0;
+				game_item_id id = 0;
 				string name;
 			};
 		}

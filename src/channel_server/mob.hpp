@@ -142,7 +142,7 @@ namespace vana {
 			time_point m_last_skill_use;
 			view_ptr<mob> m_owner;
 			view_ptr<mob> m_sponge;
-			const ref_ptr<data::type::mob_info> m_info;
+			const ref_ptr<const data::type::mob_info> m_info;
 			vector<ref_ptr<player>> m_markers;
 			ord_map<int32_t, status_info> m_statuses;
 			hash_map<game_player_id, uint64_t> m_damages;

@@ -46,11 +46,11 @@ namespace vana {
 				auto load_banish_data() -> void;
 				auto load_morphs() -> void;
 
-				hash_map<game_mob_skill_id, hash_map<game_mob_skill_level, data::type::mob_skill_level_info>> m_mob_skills;
-				hash_map<game_skill_id, hash_map<game_skill_level, data::type::skill_level_info>> m_skill_levels;
-				hash_map<game_skill_id, game_skill_level> m_skill_max_levels;
-				hash_map<game_skill_id, data::type::banish_field_info> m_banish_info;
-				hash_map<game_morph_id, data::type::morph_info> m_morph_info;
+				vector<pair<game_mob_skill_id, vector<data::type::mob_skill_level_info>>> m_mob_skills;
+				vector<pair<game_skill_id, vector<data::type::skill_level_info>>> m_skill_levels;
+				vector<pair<game_skill_id, game_skill_level>> m_skill_max_levels;
+				vector<data::type::banish_field_info> m_banish_info;
+				vector<data::type::morph_info> m_morph_info;
 			};
 		}
 	}

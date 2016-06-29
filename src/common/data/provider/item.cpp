@@ -64,31 +64,31 @@ auto item::load_items() -> void {
 		soci::use(string{"item"}, "item"));
 
 	for (const auto &row : rs) {
-		data::type::item_info item;
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&item](const string &cmp) {
-			if (cmp == "time_limited") item.time_limited = true;
-			else if (cmp == "cash_item") item.cash = true;
-			else if (cmp == "no_trade") item.no_trade = true;
-			else if (cmp == "no_sale") item.no_sale = true;
-			else if (cmp == "karma_scissorable") item.karma_scissors = true;
-			else if (cmp == "expire_on_logout") item.expire_on_logout = true;
-			else if (cmp == "block_pickup") item.block_pickup = true;
-			else if (cmp == "quest") item.quest = true;
+		data::type::item_info info;
+		utilities::str::run_flags(row.get<opt_string>("flags"), [&info](const string &cmp) {
+			if (cmp == "time_limited") info.time_limited = true;
+			else if (cmp == "cash_item") info.cash = true;
+			else if (cmp == "no_trade") info.no_trade = true;
+			else if (cmp == "no_sale") info.no_sale = true;
+			else if (cmp == "karma_scissorable") info.karma_scissors = true;
+			else if (cmp == "expire_on_logout") info.expire_on_logout = true;
+			else if (cmp == "block_pickup") info.block_pickup = true;
+			else if (cmp == "quest") info.quest = true;
 		});
 
-		game_item_id item_id = row.get<game_item_id>("itemid");
-		item.price = row.get<game_mesos>("price");
-		item.max_slot = row.get<game_slot_qty>("max_slot_quantity");
-		item.maker_level = row.get<game_skill_level>("level_for_maker");
-		item.max_obtainable = row.get<int32_t>("max_possession_count");
-		item.min_level = row.get<game_player_level>("min_level");
-		item.max_level = row.get<game_player_level>("max_level");
-		item.exp = row.get<game_experience>("experience");
-		item.mesos = row.get<game_mesos>("money");
-		item.npc = row.get<game_npc_id>("npc");
-		item.name = row.get<string>("label");
+		info.id = row.get<game_item_id>("itemid");
+		info.price = row.get<game_mesos>("price");
+		info.max_slot = row.get<game_slot_qty>("max_slot_quantity");
+		info.maker_level = row.get<game_skill_level>("level_for_maker");
+		info.max_obtainable = row.get<int32_t>("max_possession_count");
+		info.min_level = row.get<game_player_level>("min_level");
+		info.max_level = row.get<game_player_level>("max_level");
+		info.exp = row.get<game_experience>("experience");
+		info.mesos = row.get<game_mesos>("money");
+		info.npc = row.get<game_npc_id>("npc");
+		info.name = row.get<string>("label");
 
-		m_item_info[item_id] = item;
+		m_item_info.push_back(info);
 	}
 }
 
@@ -100,33 +100,33 @@ auto item::load_scrolls() -> void {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_scroll_data"));
 
 	for (const auto &row : rs) {
-		data::type::scroll_info item;
-		game_item_id item_id = row.get<game_item_id>("itemid");
-		item.success = row.get<uint16_t>("success");
-		item.cursed = row.get<uint16_t>("break_item");
-		item.str = row.get<game_stat>("istr");
-		item.dex = row.get<game_stat>("idex");
-		item.intl = row.get<game_stat>("iint");
-		item.luk = row.get<game_stat>("iluk");
-		item.hp = row.get<game_health>("ihp");
-		item.mp = row.get<game_health>("imp");
-		item.watk = row.get<game_stat>("iwatk");
-		item.matk = row.get<game_stat>("imatk");
-		item.wdef = row.get<game_stat>("iwdef");
-		item.mdef = row.get<game_stat>("imdef");
-		item.acc = row.get<game_stat>("iacc");
-		item.avo = row.get<game_stat>("iavo");
-		item.jump = row.get<game_stat>("ijump");
-		item.speed = row.get<game_stat>("ispeed");
+		data::type::scroll_info info;
+		info.item_id = row.get<game_item_id>("itemid");
+		info.success = row.get<uint16_t>("success");
+		info.cursed = row.get<uint16_t>("break_item");
+		info.str = row.get<game_stat>("istr");
+		info.dex = row.get<game_stat>("idex");
+		info.intl = row.get<game_stat>("iint");
+		info.luk = row.get<game_stat>("iluk");
+		info.hp = row.get<game_health>("ihp");
+		info.mp = row.get<game_health>("imp");
+		info.watk = row.get<game_stat>("iwatk");
+		info.matk = row.get<game_stat>("imatk");
+		info.wdef = row.get<game_stat>("iwdef");
+		info.mdef = row.get<game_stat>("imdef");
+		info.acc = row.get<game_stat>("iacc");
+		info.avo = row.get<game_stat>("iavo");
+		info.jump = row.get<game_stat>("ijump");
+		info.speed = row.get<game_stat>("ispeed");
 
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&item](const string &cmp) {
-			if (cmp == "rand_stat") item.rand_stat = true;
-			else if (cmp == "recover_slot") item.recover = 1;
-			else if (cmp == "warm_support") item.warm_support = true;
-			else if (cmp == "prevent_slip") item.prevent_slip = true;
+		utilities::str::run_flags(row.get<opt_string>("flags"), [&info](const string &cmp) {
+			if (cmp == "rand_stat") info.rand_stat = true;
+			else if (cmp == "recover_slot") info.recover = 1;
+			else if (cmp == "warm_support") info.warm_support = true;
+			else if (cmp == "prevent_slip") info.prevent_slip = true;
 		});
 
-		m_scroll_info[item_id] = item;
+		m_scroll_info.push_back(info);
 	}
 }
 
@@ -139,99 +139,99 @@ auto item::load_consumes(buff &provider) -> void {
 
 	hash_map<game_item_id, vector<data::type::morph_chance_info>> morph_data;
 	for (const auto &row : rs) {
-		data::type::morph_chance_info morph;
+		data::type::morph_chance_info info;
 		game_item_id item_id = row.get<game_item_id>("itemid");
-		morph.morph = row.get<game_morph_id>("morphid");
-		morph.chance = row.get<int8_t>("success");
+		info.morph = row.get<game_morph_id>("morphid");
+		info.chance = row.get<int8_t>("success");
 
-		morph_data[item_id].push_back(morph);
+		morph_data[item_id].push_back(info);
 	}
 
 	rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_consume_data"));
 
 	for (const auto &row : rs) {
-		data::type::consume_info item;
-		game_item_id item_id = row.get<game_item_id>("itemid");
-		item.effect = row.get<uint8_t>("effect");
-		item.hp = row.get<game_health>("hp");
-		item.mp = row.get<game_health>("mp");
-		item.hp_rate = row.get<int16_t>("hp_percentage");
-		item.mp_rate = row.get<int16_t>("mp_percentage");
-		item.move_to = row.get<game_map_id>("move_to");
-		item.dec_hunger = row.get<uint8_t>("decrease_hunger");
-		item.dec_fatigue = row.get<uint8_t>("decrease_fatigue");
-		item.cp = row.get<uint8_t>("carnival_points");
-		item.chance = row.get<uint16_t>("prob");
-		item.buff_time = seconds{row.get<int32_t>("buff_time")};
-		item.watk = row.get<game_stat>("weapon_attack");
-		item.matk = row.get<game_stat>("magic_attack");
-		item.wdef = row.get<game_stat>("weapon_defense");
-		item.mdef = row.get<game_stat>("magic_defense");
-		item.acc = row.get<game_stat>("accuracy");
-		item.avo = row.get<game_stat>("avoid");
-		item.speed = row.get<game_stat>("speed");
-		item.jump = row.get<game_stat>("jump");
+		data::type::consume_info info;
+		info.item_id = row.get<game_item_id>("itemid");
+		info.effect = row.get<uint8_t>("effect");
+		info.hp = row.get<game_health>("hp");
+		info.mp = row.get<game_health>("mp");
+		info.hp_rate = row.get<int16_t>("hp_percentage");
+		info.mp_rate = row.get<int16_t>("mp_percentage");
+		info.move_to = row.get<game_map_id>("move_to");
+		info.dec_hunger = row.get<uint8_t>("decrease_hunger");
+		info.dec_fatigue = row.get<uint8_t>("decrease_fatigue");
+		info.cp = row.get<uint8_t>("carnival_points");
+		info.chance = row.get<uint16_t>("prob");
+		info.buff_time = seconds{row.get<int32_t>("buff_time")};
+		info.watk = row.get<game_stat>("weapon_attack");
+		info.matk = row.get<game_stat>("magic_attack");
+		info.wdef = row.get<game_stat>("weapon_defense");
+		info.mdef = row.get<game_stat>("magic_defense");
+		info.acc = row.get<game_stat>("accuracy");
+		info.avo = row.get<game_stat>("avoid");
+		info.speed = row.get<game_stat>("speed");
+		info.jump = row.get<game_stat>("jump");
 
 		game_morph_id morph_id = row.get<game_morph_id>("morph");
 		if (morph_id != 0) {
 			data::type::morph_chance_info morph;
 			morph.morph = morph_id;
 			morph.chance = 100;
-			item.morphs.push_back(morph);
+			info.morphs.push_back(morph);
 		}
 		else {
-			auto iter = morph_data.find(item_id);
+			auto iter = morph_data.find(info.item_id);
 			if (iter != std::end(morph_data)) {
 				for (const auto &morph : iter->second) {
-					item.morphs.push_back(morph);
+					info.morphs.push_back(morph);
 				}
 			}
 		}
 
-		item.ice_resist = row.get<int16_t>("defense_vs_ice");
-		item.fire_resist = row.get<int16_t>("defense_vs_fire");
-		item.lightning_resist = row.get<int16_t>("defense_vs_lightning");
-		item.poison_resist = row.get<int16_t>("defense_vs_poison");
-		item.stun_def = row.get<int16_t>("defense_vs_stun");
-		item.darkness_def = row.get<int16_t>("defense_vs_darkness");
-		item.weakness_def = row.get<int16_t>("defense_vs_weakness");
-		item.seal_def = row.get<int16_t>("defense_vs_seal");
-		item.curse_def = row.get<int16_t>("defense_vs_curse");
+		info.ice_resist = row.get<int16_t>("defense_vs_ice");
+		info.fire_resist = row.get<int16_t>("defense_vs_fire");
+		info.lightning_resist = row.get<int16_t>("defense_vs_lightning");
+		info.poison_resist = row.get<int16_t>("defense_vs_poison");
+		info.stun_def = row.get<int16_t>("defense_vs_stun");
+		info.darkness_def = row.get<int16_t>("defense_vs_darkness");
+		info.weakness_def = row.get<int16_t>("defense_vs_weakness");
+		info.seal_def = row.get<int16_t>("defense_vs_seal");
+		info.curse_def = row.get<int16_t>("defense_vs_curse");
 
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&item](const string &cmp) {
-			if (cmp == "auto_consume") item.auto_consume = true;
-			else if (cmp == "party_item") item.party = true;
-			else if (cmp == "meso_up") item.meso_up = true;
-			else if (cmp == "ignore_physical_defense") item.ignore_wdef = true;
-			else if (cmp == "ignore_magical_defense") item.ignore_mdef = true;
-			else if (cmp == "no_mouse_cancel") item.mouse_cancel = false;
-			else if (cmp == "ignore_continent") item.ignore_continent = true;
-			else if (cmp == "ghost") item.ghost = true;
-			else if (cmp == "barrier") item.barrier = true;
-			else if (cmp == "prevent_drowning") item.prevent_drown = true;
-			else if (cmp == "prevent_freezing") item.prevent_freeze = true;
-			else if (cmp == "override_traction") item.override_traction = true;
-			else if (cmp == "drop_up_for_party") item.party_drop_up = true;
+		utilities::str::run_flags(row.get<opt_string>("flags"), [&info](const string &cmp) {
+			if (cmp == "auto_consume") info.auto_consume = true;
+			else if (cmp == "party_item") info.party = true;
+			else if (cmp == "meso_up") info.meso_up = true;
+			else if (cmp == "ignore_physical_defense") info.ignore_wdef = true;
+			else if (cmp == "ignore_magical_defense") info.ignore_mdef = true;
+			else if (cmp == "no_mouse_cancel") info.mouse_cancel = false;
+			else if (cmp == "ignore_continent") info.ignore_continent = true;
+			else if (cmp == "ghost") info.ghost = true;
+			else if (cmp == "barrier") info.barrier = true;
+			else if (cmp == "prevent_drowning") info.prevent_drown = true;
+			else if (cmp == "prevent_freezing") info.prevent_freeze = true;
+			else if (cmp == "override_traction") info.override_traction = true;
+			else if (cmp == "drop_up_for_party") info.party_drop_up = true;
 		});
 
-		utilities::str::run_flags(row.get<opt_string>("drop_up"), [&item, &row](const string &cmp) {
+		utilities::str::run_flags(row.get<opt_string>("drop_up"), [&info, &row](const string &cmp) {
 			if (cmp == "none") return;
 
-			item.drop_up = true;
-			if (cmp == "specific_item") item.drop_up_item = row.get<game_item_id>("drop_up_item");
-			else if (cmp == "item_range") item.drop_up_item_range = row.get<int16_t>("drop_up_item_range");
+			info.drop_up = true;
+			if (cmp == "specific_item") info.drop_up_item = row.get<game_item_id>("drop_up_item");
+			else if (cmp == "item_range") info.drop_up_item_range = row.get<int16_t>("drop_up_item_range");
 		});
 
-		utilities::str::run_flags(row.get<opt_string>("cure_ailments"), [&item](const string &cmp) {
-			if (cmp == "darkness") item.ailment |= 0x01;
-			else if (cmp == "poison") item.ailment |= 0x02;
-			else if (cmp == "curse") item.ailment |= 0x04;
-			else if (cmp == "seal") item.ailment |= 0x08;
-			else if (cmp == "weakness") item.ailment |= 0x10;
+		utilities::str::run_flags(row.get<opt_string>("cure_ailments"), [&info](const string &cmp) {
+			if (cmp == "darkness") info.ailment |= 0x01;
+			else if (cmp == "poison") info.ailment |= 0x02;
+			else if (cmp == "curse") info.ailment |= 0x04;
+			else if (cmp == "seal") info.ailment |= 0x08;
+			else if (cmp == "weakness") info.ailment |= 0x10;
 		});
 
-		provider.add_item_info(item_id, item);
-		m_consume_info[item_id] = item;
+		provider.add_item_info(info.item_id, info);
+		m_consume_info.push_back(info);
 	}
 }
 
@@ -241,18 +241,26 @@ auto item::load_map_ranges() -> void {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_monster_card_map_ranges"));
 
 	for (const auto &row : rs) {
-		data::type::card_map_range_info range;
+		data::type::card_map_range_info info;
 		game_item_id item_id = row.get<game_item_id>("itemid");
-		range.start_map = row.get<game_map_id>("start_map");
-		range.end_map = row.get<game_map_id>("end_map");
+		info.start_map = row.get<game_map_id>("start_map");
+		info.end_map = row.get<game_map_id>("end_map");
 
-		m_consume_info[item_id].map_ranges.push_back(range);
+		bool found = false;
+		for (auto &item : m_consume_info) {
+			if (item.item_id == item_id) {
+				found = true;
+				item.map_ranges.push_back(info);
+				break;
+			}
+		}
+
+		if (!found) throw codepath_invalid_exception{};
 	}
 }
 
 auto item::load_monster_card_data() -> void {
-	m_cards_to_mobs.clear();
-	m_mobs_to_cards.clear();
+	m_mob_to_card_mapping.clear();
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
@@ -262,8 +270,7 @@ auto item::load_monster_card_data() -> void {
 		game_item_id card_id = row.get<game_item_id>("cardid");
 		game_mob_id mob_id = row.get<game_mob_id>("mobid");
 
-		m_cards_to_mobs.emplace(card_id, mob_id);
-		m_mobs_to_cards.emplace(mob_id, card_id);
+		m_mob_to_card_mapping.emplace_back(card_id, mob_id);
 	}
 }
 
@@ -275,14 +282,27 @@ auto item::load_item_skills() -> void {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_skills"));
 
 	for (const auto &row : rs) {
-		data::type::skillbook_info book;
+		data::type::skillbook_info info;
 		game_item_id item_id = row.get<game_item_id>("itemid");
-		book.skill_id = row.get<game_skill_id>("skillid");
-		book.req_level = row.get<game_skill_level>("req_skill_level");
-		book.max_level = row.get<game_skill_level>("master_level");
-		book.chance = row.get<int8_t>("chance");
+		info.skill_id = row.get<game_skill_id>("skillid");
+		info.req_level = row.get<game_skill_level>("req_skill_level");
+		info.max_level = row.get<game_skill_level>("master_level");
+		info.chance = row.get<int8_t>("chance");
 
-		m_skillbooks[item_id].push_back(book);
+		bool found = false;
+		for (auto &book : m_skillbooks) {
+			if (book.first == item_id) {
+				found = true;
+				book.second.push_back(info);
+				break;
+			}
+		}
+
+		if (!found) {
+			vector<data::type::skillbook_info> current;
+			current.push_back(info);
+			m_skillbooks.emplace_back(item_id, current);
+		}
 	}
 }
 
@@ -294,12 +314,25 @@ auto item::load_summon_bags() -> void {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_summons"));
 
 	for (const auto &row : rs) {
-		data::type::summon_bag_info summon;
+		data::type::summon_bag_info info;
 		game_item_id item_id = row.get<game_item_id>("itemid");
-		summon.mob_id = row.get<game_mob_id>("mobid");
-		summon.chance = row.get<uint16_t>("chance");
+		info.mob_id = row.get<game_mob_id>("mobid");
+		info.chance = row.get<uint16_t>("chance");
 
-		m_summon_bags[item_id].push_back(summon);
+		bool found = false;
+		for (auto &summon : m_summon_bags) {
+			if (summon.first == item_id) {
+				found = true;
+				summon.second.push_back(info);
+				break;
+			}
+		}
+
+		if (!found) {
+			vector<data::type::summon_bag_info> current;
+			current.push_back(info);
+			m_summon_bags.emplace_back(item_id, current);
+		}
 	}
 }
 
@@ -311,14 +344,27 @@ auto item::load_item_rewards() -> void {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_reward_data"));
 
 	for (const auto &row : rs) {
-		data::type::item_reward_info reward;
+		data::type::item_reward_info info;
 		game_item_id item_id = row.get<game_item_id>("itemid");
-		reward.reward_id = row.get<game_item_id>("rewardid");
-		reward.prob = row.get<uint16_t>("prob");
-		reward.quantity = row.get<int16_t>("quantity");
-		reward.effect = row.get<string>("effect");
+		info.reward_id = row.get<game_item_id>("rewardid");
+		info.prob = row.get<uint16_t>("prob");
+		info.quantity = row.get<int16_t>("quantity");
+		info.effect = row.get<string>("effect");
 
-		m_item_rewards[item_id].push_back(reward);
+		bool found = false;
+		for (auto &reward : m_item_rewards) {
+			if (reward.first == item_id) {
+				found = true;
+				reward.second.push_back(info);
+				break;
+			}
+		}
+
+		if (!found) {
+			vector<data::type::item_reward_info> current;
+			current.push_back(info);
+			m_item_rewards.emplace_back(item_id, current);
+		}
 	}
 }
 
@@ -330,21 +376,21 @@ auto item::load_pets() -> void {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_pet_data"));
 
 	for (const auto &row : rs) {
-		data::type::pet_info pet;
-		game_item_id item_id = row.get<game_item_id>("itemid");
-		pet.name = row.get<string>("default_name");
-		pet.hunger = row.get<int32_t>("hunger");
-		pet.life = row.get<int32_t>("life");
-		pet.limited_life = row.get<int32_t>("limited_life");
-		pet.evolve_item = row.get<game_item_id>("evolution_item");
-		pet.evolve_level = row.get<int8_t>("req_level_for_evolution");
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&pet](const string &cmp) {
-			if (cmp == "no_revive") pet.no_revive = true;
-			else if (cmp == "no_move_to_cash_shop") pet.no_storing_in_cash_shop = true;
-			else if (cmp == "auto_react") pet.auto_react = true;
+		data::type::pet_info info;
+		info.item_id = row.get<game_item_id>("itemid");
+		info.name = row.get<string>("default_name");
+		info.hunger = row.get<int32_t>("hunger");
+		info.life = row.get<int32_t>("life");
+		info.limited_life = row.get<int32_t>("limited_life");
+		info.evolve_item = row.get<game_item_id>("evolution_item");
+		info.evolve_level = row.get<int8_t>("req_level_for_evolution");
+		utilities::str::run_flags(row.get<opt_string>("flags"), [&info](const string &cmp) {
+			if (cmp == "no_revive") info.no_revive = true;
+			else if (cmp == "no_move_to_cash_shop") info.no_storing_in_cash_shop = true;
+			else if (cmp == "auto_react") info.auto_react = true;
 		});
 
-		m_pet_info[item_id] = pet;
+		m_pet_info.push_back(info);
 	}
 }
 
@@ -356,39 +402,46 @@ auto item::load_pet_interactions() -> void {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_pet_interactions"));
 
 	for (const auto &row : rs) {
-		data::type::pet_interact_info interaction;
-		game_item_id item_id = row.get<game_item_id>("itemid");
-		int32_t command_id = row.get<int32_t>("command");
-		interaction.increase = row.get<int16_t>("closeness");
-		interaction.prob = row.get<uint32_t>("success");
+		data::type::pet_interact_info info;
+		info.item_id = row.get<game_item_id>("itemid");
+		info.command_id = row.get<int32_t>("command");
+		info.increase = row.get<int16_t>("closeness");
+		info.prob = row.get<uint32_t>("success");
 
-		m_pet_interact_info[item_id][command_id] = interaction;
+		m_pet_interact_info.push_back(info);
 	}
 }
 
 auto item::get_card_id(game_mob_id mob_id) const -> optional<game_item_id> {
-	auto kvp = m_mobs_to_cards.find(mob_id);
-	if (kvp == std::end(m_mobs_to_cards)) {
+	auto kvp =
+		ext::find_value_ptr_if(m_mob_to_card_mapping, [&mob_id](auto value) { return value.second == mob_id; });
+
+	if (kvp == nullptr) {
 		return {};
 	}
-	return kvp->second;
+	return kvp->first;
 }
 
 auto item::get_mob_id(game_item_id card_id) const -> optional<game_mob_id> {
-	auto kvp = m_cards_to_mobs.find(card_id);
-	if (kvp == std::end(m_cards_to_mobs)) {
+	auto kvp =
+		ext::find_value_ptr_if(m_mob_to_card_mapping, [&card_id](auto value) { return value.first == card_id; });
+
+	if (kvp == nullptr) {
 		return {};
 	}
 	return kvp->second;
 }
 
 auto item::scroll_item(const equip &provider, game_item_id scroll_id, vana::item *equip, bool white_scroll, bool gm_scroller, int8_t &succeed, bool &cursed) const -> hacking_result {
-	auto kvp = m_scroll_info.find(scroll_id);
-	if (kvp == std::end(m_scroll_info)) {
+	auto kvp = ext::find_value_ptr_if(
+		m_scroll_info,
+		[&scroll_id](auto value) { return value.item_id == scroll_id; });
+
+	if (kvp == nullptr) {
 		return hacking_result::definitely_hacking;
 	}
 
-	auto &item_info = kvp->second;
+	auto &item_info = *kvp;
 
 	bool scroll_takes_slot = !(item_info.prevent_slip || item_info.warm_support || item_info.recover);
 	if (scroll_takes_slot && equip->get_slots() == 0) {
@@ -476,32 +529,45 @@ auto item::scroll_item(const equip &provider, game_item_id scroll_id, vana::item
 }
 
 auto item::get_item_info(game_item_id item_id) const -> const data::type::item_info * const {
-	return ext::find_value_ptr(m_item_info, item_id);
+	return ext::find_value_ptr_if(
+		m_item_info,
+		[&item_id](auto value) { return value.id == item_id; });
 }
 
 auto item::get_consume_info(game_item_id item_id) const -> const data::type::consume_info * const {
-	return ext::find_value_ptr(m_consume_info, item_id);
+	return ext::find_value_ptr_if(
+		m_consume_info,
+		[&item_id](auto value) { return value.item_id == item_id; });
 }
 
 auto item::get_pet_info(game_item_id item_id) const -> const data::type::pet_info * const {
-	return ext::find_value_ptr(m_pet_info, item_id);
+	return ext::find_value_ptr_if(
+		m_pet_info,
+		[&item_id](auto value) { return value.item_id == item_id; });
 }
 
 auto item::get_interaction(game_item_id item_id, int32_t action) const -> const data::type::pet_interact_info * const {
-	return ext::find_value_ptr(
-		ext::find_value_ptr(m_pet_interact_info, item_id), action);
+	return ext::find_value_ptr_if(
+		m_pet_interact_info,
+		[&item_id, &action](auto value) { return value.item_id == item_id && value.command_id == action; });
 }
 
 auto item::get_item_skills(game_item_id item_id) const -> const vector<data::type::skillbook_info> * const {
-	return ext::find_value_ptr(m_skillbooks, item_id);
+	return &ext::find_value_ptr_if(
+		m_skillbooks,
+		[&item_id](auto value) { return value.first == item_id; })->second;
 }
 
 auto item::get_item_rewards(game_item_id item_id) const -> const vector<data::type::item_reward_info> * const {
-	return ext::find_value_ptr(m_item_rewards, item_id);
+	return &ext::find_value_ptr_if(
+		m_item_rewards,
+		[&item_id](auto value) { return value.first == item_id; })->second;
 }
 
 auto item::get_item_summons(game_item_id item_id) const -> const vector<data::type::summon_bag_info> * const {
-	return ext::find_value_ptr(m_summon_bags, item_id);
+	return &ext::find_value_ptr_if(
+		m_summon_bags,
+		[&item_id](auto value) { return value.first == item_id; })->second;
 }
 
 }

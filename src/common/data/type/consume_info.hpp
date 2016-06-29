@@ -69,6 +69,7 @@ namespace vana {
 				uint16_t chance = 0;
 				game_item_id drop_up_item = 0;
 				game_map_id move_to = 0;
+				game_item_id item_id = 0;
 				int32_t ailment = 0;
 				seconds buff_time = seconds{0};
 				vector<morph_chance_info> morphs;

@@ -52,8 +52,8 @@ auto skill::load_player_skills() -> void {
 	for (const auto &row : rs) {
 		game_skill_id skill_id = row.get<game_skill_id>("skillid");
 
-		m_skill_levels[skill_id] = hash_map<game_skill_level, data::type::skill_level_info>();
-		m_skill_max_levels[skill_id] = 1;
+		m_skill_levels.emplace_back(skill_id, vector<data::type::skill_level_info>{});
+		m_skill_max_levels.emplace_back(skill_id, 1);
 	}
 }
 
@@ -63,50 +63,75 @@ auto skill::load_player_skill_levels() -> void {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("skill_player_level_data"));
 
 	for (const auto &row : rs) {
-		data::type::skill_level_info level;
+		data::type::skill_level_info info;
 		game_skill_id skill_id = row.get<game_skill_id>("skillid");
 		game_skill_level skill_level = row.get<game_skill_level>("skill_level");
 
-		level.level = skill_level;
-		level.mob_count = row.get<int8_t>("mob_count");
-		level.hit_count = row.get<int8_t>("hit_count");
-		level.range = row.get<int16_t>("range");
-		level.buff_time = seconds{row.get<int32_t>("buff_time")};
-		level.mp = row.get<game_health>("mp_cost");
-		level.hp = row.get<game_health>("hp_cost");
-		level.damage = row.get<int16_t>("damage");
-		level.fixed_damage = row.get<game_damage>("fixed_damage");
-		level.critical_damage = row.get<uint8_t>("critical_damage");
-		level.mastery = row.get<int8_t>("mastery");
-		level.optional_item = row.get<game_item_id>("optional_item_cost");
-		level.item = row.get<game_item_id>("item_cost");
-		level.item_count = row.get<game_slot_qty>("item_count");
-		level.bullet_consume = row.get<game_slot_qty>("bullet_cost");
-		level.money_consume = row.get<int16_t>("money_cost");
-		level.x = row.get<int16_t>("x_property");
-		level.y = row.get<int16_t>("y_property");
-		level.speed = row.get<game_stat>("speed");
-		level.jump = row.get<game_stat>("jump");
-		level.str = row.get<game_stat>("str");
-		level.w_atk = row.get<game_stat>("weapon_atk");
-		level.w_def = row.get<game_stat>("weapon_def");
-		level.m_atk = row.get<game_stat>("magic_atk");
-		level.m_def = row.get<game_stat>("magic_def");
-		level.acc = row.get<game_stat>("accuracy");
-		level.avo = row.get<game_stat>("avoid");
-		level.hp_prop = row.get<uint16_t>("hp");
-		level.mp_prop = row.get<uint16_t>("mp");
-		level.prop = row.get<uint16_t>("prop");
-		level.morph = row.get<game_morph_id>("morph");
-		level.dimensions = rect{
+		info.level = skill_level;
+		info.mob_count = row.get<int8_t>("mob_count");
+		info.hit_count = row.get<int8_t>("hit_count");
+		info.range = row.get<int16_t>("range");
+		info.buff_time = seconds{row.get<int32_t>("buff_time")};
+		info.mp = row.get<game_health>("mp_cost");
+		info.hp = row.get<game_health>("hp_cost");
+		info.damage = row.get<int16_t>("damage");
+		info.fixed_damage = row.get<game_damage>("fixed_damage");
+		info.critical_damage = row.get<uint8_t>("critical_damage");
+		info.mastery = row.get<int8_t>("mastery");
+		info.optional_item = row.get<game_item_id>("optional_item_cost");
+		info.item = row.get<game_item_id>("item_cost");
+		info.item_count = row.get<game_slot_qty>("item_count");
+		info.bullet_consume = row.get<game_slot_qty>("bullet_cost");
+		info.money_consume = row.get<int16_t>("money_cost");
+		info.x = row.get<int16_t>("x_property");
+		info.y = row.get<int16_t>("y_property");
+		info.speed = row.get<game_stat>("speed");
+		info.jump = row.get<game_stat>("jump");
+		info.str = row.get<game_stat>("str");
+		info.w_atk = row.get<game_stat>("weapon_atk");
+		info.w_def = row.get<game_stat>("weapon_def");
+		info.m_atk = row.get<game_stat>("magic_atk");
+		info.m_def = row.get<game_stat>("magic_def");
+		info.acc = row.get<game_stat>("accuracy");
+		info.avo = row.get<game_stat>("avoid");
+		info.hp_prop = row.get<uint16_t>("hp");
+		info.mp_prop = row.get<uint16_t>("mp");
+		info.prop = row.get<uint16_t>("prop");
+		info.morph = row.get<game_morph_id>("morph");
+		info.dimensions = rect{
 			point{row.get<game_coord>("ltx"), row.get<game_coord>("lty")},
 			point{row.get<game_coord>("rbx"), row.get<game_coord>("rby")}
 		};
-		level.cool_time = seconds{row.get<int32_t>("cooldown_time")};
+		info.cool_time = seconds{row.get<int32_t>("cooldown_time")};
 
-		m_skill_levels[skill_id][skill_level] = level;
-		if (m_skill_max_levels.find(skill_id) == std::end(m_skill_max_levels) || m_skill_max_levels[skill_id] < skill_level) {
-			m_skill_max_levels[skill_id] = skill_level;
+		bool found = false;
+		for (auto &skill_level_value : m_skill_levels) {
+			if (skill_level_value.first == skill_id) {
+				found = true;
+				skill_level_value.second.push_back(info);
+				break;
+			}
+		}
+
+		if (!found) {
+			vector<data::type::skill_level_info> current;
+			current.push_back(info);
+			m_skill_levels.emplace_back(skill_id, current);
+		}
+
+		found = false;
+		for (auto &max_skill_level : m_skill_max_levels) {
+			if (max_skill_level.first == skill_id) {
+				found = true;
+				if (skill_level > max_skill_level.second) {
+					max_skill_level.second = skill_level;
+				}
+				break;
+			}
+		}
+
+		if (!found) {
+			m_skill_max_levels.emplace_back(skill_id, skill_level);
 		}
 	}
 }
@@ -139,7 +164,20 @@ auto skill::load_mob_skills() -> void {
 		mob_level.limit = row.get<int16_t>("summon_limit");
 		mob_level.summon_effect = row.get<int8_t>("summon_effect");
 
-		m_mob_skills[skill_id][level] = mob_level;
+		bool found = false;
+		for (auto &skill : m_mob_skills) {
+			if (skill.first == skill_id) {
+				found = true;
+				skill.second.push_back(mob_level);
+				break;
+			}
+		}
+
+		if (!found) {
+			vector<data::type::mob_skill_level_info> current;
+			current.push_back(mob_level);
+			m_mob_skills.emplace_back(skill_id, current);
+		}
 	}
 }
 
@@ -152,7 +190,23 @@ auto skill::load_mob_summons() -> void {
 		game_mob_skill_level level = row.get<game_mob_skill_level>("level");
 		game_mob_id mob_id = row.get<game_mob_id>("mobid");
 
-		m_mob_skills[constant::mob_skill::summon][level].summons.push_back(mob_id);
+		bool any = false;
+		for (auto &skill : m_mob_skills) {
+			if (skill.first != constant::mob_skill::summon) {
+				continue;
+			}
+
+			for (auto &skill_level : skill.second) {
+				if (skill_level.level != level) {
+					continue;
+				}
+
+				any = true;
+				skill_level.summons.push_back(mob_id);
+			}
+		}
+
+		if (!any) throw codepath_invalid_exception{};
 	}
 }
 
@@ -165,13 +219,12 @@ auto skill::load_banish_data() -> void {
 
 	for (const auto &row : rs) {
 		data::type::banish_field_info banish;
-		game_mob_id mob_id = row.get<game_mob_id>("mobid");
-
+		banish.mob_id = row.get<game_mob_id>("mobid");
 		banish.message = row.get<string>("message");
 		banish.field = row.get<game_map_id>("destination");
 		banish.portal = row.get<string>("portal");
 
-		m_banish_info[mob_id] = banish;
+		m_banish_info.push_back(banish);
 	}
 }
 
@@ -184,7 +237,7 @@ auto skill::load_morphs() -> void {
 
 	for (const auto &row : rs) {
 		data::type::morph_info morph;
-		game_morph_id morph_id = row.get<game_morph_id>("morphid");
+		morph.id = row.get<game_morph_id>("morphid");
 
 		utilities::str::run_flags(row.get<opt_string>("flags"), [&morph](const string &cmp) {
 			if (cmp == "superman") morph.superman = true;
@@ -195,34 +248,50 @@ auto skill::load_morphs() -> void {
 		morph.traction = row.get<double>("traction");
 		morph.swim = row.get<double>("swim");
 
-		m_morph_info[morph_id] = morph;
+		m_morph_info.push_back(morph);
 	}
 }
 
 auto skill::is_valid_skill(game_skill_id skill_id) const -> bool {
-	return ext::is_element(m_skill_levels, skill_id);
+	return ext::any_of(m_skill_levels, [&skill_id](auto value) { return value.first == skill_id; });
 }
 
 auto skill::get_max_level(game_skill_id skill_id) const -> game_skill_level {
-	return m_skill_max_levels.find(skill_id)->second;
+	for (const auto &skill : m_skill_max_levels) {
+		if (skill.first == skill_id) {
+			return skill.second;
+		}
+	}
+
+	throw codepath_invalid_exception{};
 }
 
 auto skill::get_skill(game_skill_id skill, game_skill_level level) const -> const data::type::skill_level_info * const {
-	return ext::find_value_ptr(
-		ext::find_value_ptr(m_skill_levels, skill), level);
+	auto skill_ptr = ext::find_value_ptr_if(m_skill_levels, [&skill](auto value) { return value.first == skill; });
+	if (skill_ptr == nullptr) return nullptr;
+	return ext::find_value_ptr_if(
+		skill_ptr->second,
+		[&level](auto value) { return value.level == level; });
 }
 
 auto skill::get_mob_skill(game_mob_skill_id skill, game_mob_skill_level level) const -> const data::type::mob_skill_level_info * const {
-	return ext::find_value_ptr(
-		ext::find_value_ptr(m_mob_skills, skill), level);
+	auto skill_ptr = ext::find_value_ptr_if(m_mob_skills, [&skill](auto value) { return value.first == skill; });
+	if (skill_ptr == nullptr) return nullptr;
+	return ext::find_value_ptr_if(
+		skill_ptr->second,
+		[&level](auto value) { return value.level == level; });
 }
 
 auto skill::get_banish_data(game_mob_id mob_id) const -> const data::type::banish_field_info * const {
-	return ext::find_value_ptr(m_banish_info, mob_id);
+	return ext::find_value_ptr_if(
+		m_banish_info,
+		[&mob_id](auto value) { return value.mob_id == mob_id; });
 }
 
 auto skill::get_morph_data(game_morph_id morph) const -> const data::type::morph_info * const {
-	return ext::find_value_ptr(m_morph_info, morph);
+	return ext::find_value_ptr_if(
+		m_morph_info,
+		[&morph](auto value) { return value.id == morph; });
 }
 
 }

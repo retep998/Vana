@@ -25,6 +25,7 @@ namespace vana {
 			struct drop_info {
 				bool is_global = false;
 				bool is_mesos = false;
+				int32_t dropper_id = 0;
 				game_item_id item_id = 0;
 				int32_t min_amount = 0;
 				int32_t max_amount = 0;

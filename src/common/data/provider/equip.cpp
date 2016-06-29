@@ -55,7 +55,7 @@ auto equip::load_equips() -> void {
 	for (const auto &row : rs) {
 		data::type::equip_info equip;
 
-		game_item_id item_id = row.get<game_item_id>("itemid");
+		equip.id = row.get<game_item_id>("itemid");
 		equip.attack_speed = row.get<int8_t>("attack_speed");
 		equip.healing = row.get<int8_t>("heal_hp");
 		equip.slots = row.get<int8_t>("scroll_slots");
@@ -101,7 +101,7 @@ auto equip::load_equips() -> void {
 			else if (cmp == "pirate") equip.valid_jobs.push_back(constant::job::track::pirate);
 		});
 
-		m_equip_info[item_id] = equip;
+		m_equip_info.push_back(equip);
 	}
 }
 
@@ -200,7 +200,13 @@ auto equip::get_slots(game_item_id equip_id) const -> int8_t {
 }
 
 auto equip::get_equip_info(game_item_id equip_id) const -> const data::type::equip_info & {
-	return m_equip_info.find(equip_id)->second;
+	for (const auto &equip : m_equip_info) {
+		if (equip.id == equip_id) {
+			return equip;
+		}
+	}
+
+	throw codepath_invalid_exception{};
 }
 
 }

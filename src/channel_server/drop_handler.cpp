@@ -44,9 +44,6 @@ namespace channel_server {
 auto drop_handler::do_drops(game_player_id player_id, game_map_id map_id, int32_t dropping_level, int32_t dropping_id, const point &origin, bool explosive, bool ffa, int32_t taunt, bool is_steal) -> void {
 	auto &channel = channel_server::get_instance();
 	auto &global_drops = channel.get_drop_data_provider().get_global_drops();
-	if (!channel.get_drop_data_provider().has_drops(dropping_id) && global_drops.size() == 0) {
-		return;
-	}
 
 	// Make a copy of the data so we can modify the object with global drops
 	auto drops = channel.get_drop_data_provider().get_drops(dropping_id);

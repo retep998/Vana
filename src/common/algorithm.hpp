@@ -146,6 +146,14 @@ namespace vana {
 			return map.erase(std::remove(std::begin(map), std::end(map), value), std::end(map));
 		}
 
+		template <typename TValue, typename TPred>
+		inline
+		auto remove_element_if(vector<TValue> &map, TPred pred) -> bool {
+			auto end = std::end(map);
+			auto removed_iter = std::remove_if(std::begin(map), end, pred);
+			return removed_iter != end;
+		}
+
 		template <typename TElement>
 		auto in_range_inclusive(const TElement val, const TElement min, const TElement max) -> bool {
 			return !(val < min || val > max);

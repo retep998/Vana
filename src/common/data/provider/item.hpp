@@ -65,16 +65,15 @@ namespace vana {
 				auto load_pets() -> void;
 				auto load_pet_interactions() -> void;
 
-				hash_map<game_item_id, data::type::item_info> m_item_info;
-				hash_map<game_item_id, data::type::scroll_info> m_scroll_info;
-				hash_map<game_item_id, data::type::consume_info> m_consume_info;
-				hash_map<game_item_id, vector<data::type::summon_bag_info>> m_summon_bags;
-				hash_map<game_item_id, vector<data::type::skillbook_info>> m_skillbooks;
-				hash_map<game_item_id, vector<data::type::item_reward_info>> m_item_rewards;
-				hash_map<game_item_id, data::type::pet_info> m_pet_info;
-				hash_map<game_item_id, hash_map<int32_t, data::type::pet_interact_info>> m_pet_interact_info;
-				hash_map<game_item_id, game_mob_id> m_cards_to_mobs;
-				hash_map<game_mob_id, game_item_id> m_mobs_to_cards;
+				vector<data::type::item_info> m_item_info;
+				vector<data::type::scroll_info> m_scroll_info;
+				vector<data::type::consume_info> m_consume_info;
+				vector<pair<game_item_id, vector<data::type::summon_bag_info>>> m_summon_bags;
+				vector<pair<game_item_id, vector<data::type::skillbook_info>>> m_skillbooks;
+				vector<pair<game_item_id, vector<data::type::item_reward_info>>> m_item_rewards;
+				vector<data::type::pet_info> m_pet_info;
+				vector<data::type::pet_interact_info> m_pet_interact_info;
+				vector<pair<game_item_id, game_mob_id>> m_mob_to_card_mapping;
 			};
 		}
 	}

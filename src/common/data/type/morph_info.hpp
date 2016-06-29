@@ -26,6 +26,7 @@ namespace vana {
 				bool superman = false;
 				uint8_t speed = 0;
 				uint8_t jump = 0;
+				game_morph_id id = 0;
 				double traction = 0.;
 				double swim = 0.;
 			};

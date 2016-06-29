@@ -34,7 +34,7 @@ namespace vana {
 				auto load_data() -> void;
 
 				auto mob_exists(game_mob_id mob_id) const -> bool;
-				auto get_mob_info(game_mob_id mob_id) const -> ref_ptr<data::type::mob_info>;
+				auto get_mob_info(game_mob_id mob_id) const -> ref_ptr<const data::type::mob_info>;
 				auto get_mob_attack(game_mob_id mob_id, uint8_t index) const -> const data::type::mob_attack_info * const;
 				auto get_mob_skill(game_mob_id mob_id, uint8_t index) const -> const data::type::mob_skill_info * const;
 				auto get_skills(game_mob_id mob_id) const -> const vector<data::type::mob_skill_info> &;
@@ -44,9 +44,9 @@ namespace vana {
 				auto load_skills() -> void;
 				auto load_summons() -> void;
 
-				hash_map<game_mob_id, ref_ptr<data::type::mob_info>> m_mob_info;
-				hash_map<game_mob_id, vector<data::type::mob_attack_info>> m_attacks;
-				hash_map<game_mob_id, vector<data::type::mob_skill_info>> m_skills;
+				vector<ref_ptr<data::type::mob_info>> m_mob_info;
+				vector<pair<game_mob_id, vector<data::type::mob_attack_info>>> m_attacks;
+				vector<pair<game_mob_id, vector<data::type::mob_skill_info>>> m_skills;
 			};
 		}
 	}

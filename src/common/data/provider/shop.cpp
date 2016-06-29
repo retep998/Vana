@@ -49,23 +49,32 @@ auto shop::load_shops() -> void {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("shop_data"));
 
 	for (const auto &row : rs) {
-		data::type::shop_info shop;
-		game_shop_id shop_id = row.get<game_shop_id>("shopid");
-		shop.npc = row.get<game_npc_id>("npcid");
-		shop.recharge_tier = row.get<int8_t>("recharge_tier");
-		m_shops[shop_id] = shop;
+		data::type::shop_info info;
+		info.id = row.get<game_shop_id>("shopid");
+		info.npc = row.get<game_npc_id>("npcid");
+		info.recharge_tier = row.get<int8_t>("recharge_tier");
+		m_shops.push_back(info);
 	}
 
 	rs = (sql.prepare << "SELECT * FROM " << db.make_table("shop_items") << " ORDER BY shopid, sort DESC");
 
 	for (const auto &row : rs) {
-		data::type::shop_item_info item;
+		data::type::shop_item_info info;
 		game_shop_id shop_id = row.get<game_shop_id>("shopid");
-		item.item_id = row.get<game_item_id>("itemid");
-		item.quantity = row.get<game_slot_qty>("quantity");
-		item.price = row.get<game_mesos>("price");
+		info.item_id = row.get<game_item_id>("itemid");
+		info.quantity = row.get<game_slot_qty>("quantity");
+		info.price = row.get<game_mesos>("price");
 
-		m_shops[shop_id].items.push_back(item);
+		bool found = false;
+		for (auto &shop : m_shops) {
+			if (shop.id == shop_id) {
+				found = true;
+				shop.items.push_back(info);
+				break;
+			}
+		}
+
+		if (!found) throw codepath_invalid_exception{};
 	}
 }
 
@@ -75,27 +84,40 @@ auto shop::load_user_shops() -> void {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("user_shop_data"));
 
 	for (const auto &row : rs) {
-		data::type::shop_info shop;
-		game_shop_id shop_id = row.get<game_shop_id>("shopid");
-		shop.npc = row.get<game_npc_id>("npcid");
-		shop.recharge_tier = row.get<int8_t>("recharge_tier");
-		if (m_shops.find(shop_id) != std::end(m_shops)) {
-			m_shops.erase(shop_id);
+		data::type::shop_info info;
+		info.id = row.get<game_shop_id>("shopid");
+		info.npc = row.get<game_npc_id>("npcid");
+		info.recharge_tier = row.get<int8_t>("recharge_tier");
+		
+		for (size_t i = 0; i < m_shops.size(); ++i) {
+			if (m_shops[i].id == info.id) {
+				m_shops.erase(std::begin(m_shops) + i);
+				break;
+			}
 		}
 
-		m_shops[shop_id] = shop;
+		m_shops.push_back(info);
 	}
 
 	rs = (sql.prepare << "SELECT * FROM " << db.make_table("user_shop_items") << " ORDER BY shopid, sort DESC");
 
 	for (const auto &row : rs) {
-		data::type::shop_item_info item;
+		data::type::shop_item_info info;
 		game_shop_id shop_id = row.get<game_shop_id>("shopid");
-		item.item_id = row.get<game_item_id>("itemid");
-		item.quantity = row.get<game_slot_qty>("quantity");
-		item.price = row.get<game_mesos>("price");
+		info.item_id = row.get<game_item_id>("itemid");
+		info.quantity = row.get<game_slot_qty>("quantity");
+		info.price = row.get<game_mesos>("price");
 
-		m_shops[shop_id].items.push_back(item);
+		bool found = false;
+		for (auto &shop : m_shops) {
+			if (shop.id == shop_id) {
+				found = true;
+				shop.items.push_back(info);
+				break;
+			}
+		}
+
+		if (!found) throw codepath_invalid_exception{};
 	}
 }
 
@@ -111,45 +133,108 @@ auto shop::load_recharge_tiers() -> void {
 		game_item_id item_id = row.get<game_item_id>("itemid");
 		double price = row.get<double>("price");
 
-		m_recharge_costs[recharge_tier][item_id] = price;
+		bool found = false;
+		for (auto &tier : m_recharge_costs) {
+			if (tier.first == recharge_tier) {
+				tier.second.push_back(std::make_pair(item_id, price));
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			vector<pair<game_item_id, double>> new_value{std::make_pair(item_id, price)};
+			m_recharge_costs.push_back(std::make_pair(recharge_tier, new_value));
+		}
 	}
 }
 
 auto shop::is_shop(game_shop_id id) const -> bool {
-	return ext::is_element(m_shops, id);
+	for (const auto &shop : m_shops) {
+		if (shop.id == id) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 auto shop::get_shop(game_shop_id id) const -> shop_data {
-	const auto &info = m_shops.find(id)->second;
+	const data::type::shop_info * info = nullptr;
+	for (const auto &shop : m_shops) {
+		if (shop.id == id) {
+			info = &shop;
+		}
+	}
+
+	if (info == nullptr) throw codepath_invalid_exception{};
 
 	shop_data ret;
-	ret.npc = info.npc;
-	for (const auto &item : info.items) {
+	ret.npc = info->npc;
+	for (const auto &item : info->items) {
 		ret.items.push_back(&item);
 	}
 
-	if (info.recharge_tier > 0) {
-		ret.rechargeables = m_recharge_costs.find(info.recharge_tier)->second;
+	if (info->recharge_tier > 0) {
+		bool found = false;
+		for (const auto &tier : m_recharge_costs) {
+			if (tier.first == info->recharge_tier) {
+				for (const auto &item : tier.second) {
+					ret.rechargeables[item.first] = item.second;
+				}
+				found = true;
+				break;
+			}
+		}
+
+		if (!found) throw codepath_invalid_exception{};
 	}
 
 	return ret;
 }
 
 auto shop::get_shop_item(game_shop_id shop_id, uint16_t shop_index) const -> const data::type::shop_item_info * const {
-	return ext::find_value_ptr(
-		ext::find_value_ptr(m_shops, shop_id)->items, shop_index);
+	const data::type::shop_item_info *item = nullptr;
+	for (const auto &shop : m_shops) {
+		if (shop.id == shop_id) {
+			item = &shop.items[shop_index];
+			break;
+		}
+	}
+
+	if (item == nullptr) throw codepath_invalid_exception{};
+	return item;
 }
 
 auto shop::get_recharge_cost(game_shop_id shop_id, game_item_id item_id, game_slot_qty amount) const -> game_mesos {
-	auto price = ext::find_value_ptr(
-		ext::find_value_ptr(m_recharge_costs,
-			ext::find_value_ptr(m_shops, shop_id)->recharge_tier), item_id);
+	int8_t recharge_tier = -1;
+	bool found = false;
+	for (const auto &shop : m_shops) {
+		if (shop.id == shop_id) {
+			recharge_tier = shop.recharge_tier;
+			found = true;
+			break;
+		}
+	}
+	if (!found) throw codepath_invalid_exception{};
 
-	if (price != nullptr) {
-		return -1 * static_cast<game_mesos>(*price * amount);
+	found = false;
+	double recharge_cost = 1.;
+	for (const auto &shop_cost : m_recharge_costs) {
+		if (shop_cost.first == recharge_tier) {
+			for (const auto &item_recharge_cost : shop_cost.second) {
+				if (item_recharge_cost.first == item_id) {
+					recharge_cost = item_recharge_cost.second;
+					found = true;
+					break;
+				}
+			}
+			break;
+		}
 	}
 
-	return 1;
+	if (!found) throw codepath_invalid_exception{};
+
+	return -1 * static_cast<game_mesos>(recharge_cost * amount);
 }
 
 }

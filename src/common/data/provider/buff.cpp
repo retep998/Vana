@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "buff.hpp"
+#include "common/algorithm.hpp"
 #include "common/constant/mob_skill.hpp"
 #include "common/constant/skill.hpp"
 #include "common/data/provider/item.hpp"
@@ -30,9 +31,12 @@ namespace data {
 namespace provider {
 
 auto buff::process_skills(data::type::buff value, const init_list<game_skill_id> &skills) -> void {
-	for (const auto &s : skills) {
-		if (m_buffs.find(s) != std::end(m_buffs)) throw std::invalid_argument{"skill is already present"};
-		m_buffs[s] = value;
+	for (const auto &skill_id : skills) {
+		for (const auto &existing : m_buffs) {
+			if (existing.first == skill_id) throw std::invalid_argument{"skill is already present"};
+		}
+
+		m_buffs.emplace_back(skill_id, value);
 	}
 }
 
@@ -588,16 +592,16 @@ auto buff::load_data() -> void {
 			constant::skill::corsair::battleship,
 		});
 
-	m_mob_skill_info[constant::mob_skill::stun] = data::type::buff{stun};
-	m_mob_skill_info[constant::mob_skill::poison] = data::type::buff{poison};
-	m_mob_skill_info[constant::mob_skill::seal] = data::type::buff{seal};
-	m_mob_skill_info[constant::mob_skill::darkness] = data::type::buff{darkness};
-	m_mob_skill_info[constant::mob_skill::weakness] = data::type::buff{weakness};
-	m_mob_skill_info[constant::mob_skill::curse] = data::type::buff{curse};
-	m_mob_skill_info[constant::mob_skill::slow] = data::type::buff{slow};
-	m_mob_skill_info[constant::mob_skill::seduce] = data::type::buff{seduce};
-	m_mob_skill_info[constant::mob_skill::crazy_skull] = data::type::buff{crazy_skull};
-	m_mob_skill_info[constant::mob_skill::zombify] = data::type::buff{zombify};
+	m_mob_skill_info.emplace_back(constant::mob_skill::stun, data::type::buff{stun});
+	m_mob_skill_info.emplace_back(constant::mob_skill::poison, data::type::buff{poison});
+	m_mob_skill_info.emplace_back(constant::mob_skill::seal, data::type::buff{seal});
+	m_mob_skill_info.emplace_back(constant::mob_skill::darkness, data::type::buff{darkness});
+	m_mob_skill_info.emplace_back(constant::mob_skill::weakness, data::type::buff{weakness});
+	m_mob_skill_info.emplace_back(constant::mob_skill::curse, data::type::buff{curse});
+	m_mob_skill_info.emplace_back(constant::mob_skill::slow, data::type::buff{slow});
+	m_mob_skill_info.emplace_back(constant::mob_skill::seduce, data::type::buff{seduce});
+	m_mob_skill_info.emplace_back(constant::mob_skill::crazy_skull, data::type::buff{crazy_skull});
+	m_mob_skill_info.emplace_back(constant::mob_skill::zombify, data::type::buff{zombify});
 
 	m_basics.physical_attack = physical_attack;
 	m_basics.physical_defense = physical_defense;
@@ -759,29 +763,39 @@ auto buff::add_item_info(game_item_id item_id, const data::type::consume_info &c
 	}
 
 	if (values.size() > 0) {
-		m_items[item_id] = data::type::buff{values};
+		m_items.emplace_back(item_id, data::type::buff{values});
 	}
 }
 
 auto buff::is_buff(const data::type::buff_source &source) const -> bool {
 	switch (source.get_type()) {
-		case data::type::buff_source_type::skill: return m_buffs.find(source.get_skill_id()) != std::end(m_buffs);
-		case data::type::buff_source_type::mob_skill: return m_mob_skill_info.find(source.get_mob_skill_id()) != std::end(m_mob_skill_info);
-		case data::type::buff_source_type::item: return m_items.find(source.get_item_id()) != std::end(m_items);
+		case data::type::buff_source_type::skill:
+			return ext::any_of(m_buffs, [&source](auto value) { return source.get_skill_id() == value.first; });
+
+		case data::type::buff_source_type::mob_skill:
+			return ext::any_of(m_mob_skill_info, [&source](auto value) { return source.get_mob_skill_id() == value.first; });
+
+		case data::type::buff_source_type::item:
+			return ext::any_of(m_items, [&source](auto value) { return source.get_item_id() == value.first; });
 	}
 	throw not_implemented_exception{"buff_source_type"};
 }
 
 auto buff::is_debuff(const data::type::buff_source &source) const -> bool {
 	if (source.get_type() != data::type::buff_source_type::mob_skill) return false;
-	return m_mob_skill_info.find(source.get_mob_skill_id()) != std::end(m_mob_skill_info);
+	return ext::any_of(m_mob_skill_info, [&source](auto value) { return source.get_mob_skill_id() == value.first; });
 }
 
 auto buff::get_info(const data::type::buff_source &source) const -> const data::type::buff & {
 	switch (source.get_type()) {
-		case data::type::buff_source_type::skill: return m_buffs.find(source.get_skill_id())->second;
-		case data::type::buff_source_type::mob_skill: return m_mob_skill_info.find(source.get_mob_skill_id())->second;
-		case data::type::buff_source_type::item: return m_items.find(source.get_item_id())->second;
+		case data::type::buff_source_type::skill:
+			return ext::find_value_ptr_if(m_buffs, [&source](auto value) { return value.first == source.get_skill_id(); })->second;
+
+		case data::type::buff_source_type::mob_skill:
+			return ext::find_value_ptr_if(m_mob_skill_info, [&source](auto value) { return value.first == source.get_mob_skill_id(); })->second;
+
+		case data::type::buff_source_type::item:
+			return ext::find_value_ptr_if(m_items, [&source](auto value) { return value.first == source.get_item_id(); })->second;
 	}
 	throw not_implemented_exception{"buff_source_type"};
 }

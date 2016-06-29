@@ -26,6 +26,7 @@ namespace vana {
 			struct shop_info {
 				int8_t recharge_tier = 0;
 				game_npc_id npc = 0;
+				game_shop_id id = 0;
 				vector<shop_item_info> items;
 			};
 		}

@@ -37,7 +37,7 @@ namespace vana {
 			private:
 				auto load_equips() -> void;
 
-				hash_map<game_item_id, data::type::equip_info> m_equip_info;
+				vector<data::type::equip_info> m_equip_info;
 			};
 		}
 	}

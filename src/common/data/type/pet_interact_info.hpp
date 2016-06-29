@@ -25,6 +25,8 @@ namespace vana {
 			struct pet_interact_info {
 				uint32_t prob = 0;
 				int16_t increase = 0;
+				game_item_id item_id = 0;
+				int32_t command_id = 0;
 			};
 		}
 	}

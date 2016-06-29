@@ -54,6 +54,7 @@ namespace vana {
 				game_stat required_int = 0;
 				game_stat required_luk = 0;
 				game_fame required_fame = 0;
+				game_item_id id = 0;
 				uint64_t valid_slots = 0;
 				double traction = 0.;
 				vector<int8_t> valid_jobs;

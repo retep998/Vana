@@ -46,7 +46,7 @@ auto reactor::load_reactors() -> void {
 
 	for (const auto &row : rs) {
 		data::type::reactor_info reactor;
-		game_reactor_id id = row.get<game_reactor_id>("reactorid");
+		reactor.id = row.get<game_reactor_id>("reactorid");
 		reactor.max_states = row.get<int8_t>("max_states");
 		reactor.link = row.get<game_reactor_id>("link");
 
@@ -55,7 +55,7 @@ auto reactor::load_reactors() -> void {
 			else if (cmp == "activate_by_touch") reactor.activate_by_touch = true;
 		});
 
-		m_reactor_info[id] = reactor;
+		m_reactor_info.push_back(reactor);
 	}
 }
 
@@ -87,7 +87,16 @@ auto reactor::load_states() -> void {
 			else if (cmp == "hit_by_item") state.type = 100;
 		});
 
-		m_reactor_info[id].states[state_id].push_back(state);
+		bool found = false;
+		for (auto &reactor : m_reactor_info) {
+			if (reactor.id == id) {
+				found = true;
+				reactor.states[state_id].push_back(state);
+				break;
+			}
+		}
+
+		if (!found) throw codepath_invalid_exception{};
 	}
 }
 
@@ -101,18 +110,37 @@ auto reactor::load_trigger_skills() -> void {
 		int8_t state = row.get<int8_t>("state");
 		game_skill_id skill_id = row.get<game_skill_id>("skillid");
 
-		for (size_t j = 0; j < m_reactor_info[id].states[state].size(); ++j) {
-			m_reactor_info[id].states[state][j].trigger_skills.push_back(skill_id);
+		bool found = false;
+		for (auto &reactor : m_reactor_info) {
+			if (reactor.id == id) {
+				found = true;
+				for (size_t j = 0; j < reactor.states[state].size(); ++j) {
+					reactor.states[state][j].trigger_skills.push_back(skill_id);
+				}
+				break;
+			}
 		}
+
+		if (!found) throw codepath_invalid_exception{};
 	}
 }
 
 auto reactor::get_reactor_data(game_reactor_id reactor_id, bool respect_link) const -> const data::type::reactor_info & {
-	auto kvp = m_reactor_info.find(reactor_id);
-	if (respect_link && kvp->second.link != 0) {
-		kvp = m_reactor_info.find(kvp->second.link);
+	for (const auto &reactor : m_reactor_info) {
+		if (reactor.id == reactor_id) {
+			if (!respect_link || reactor.link == 0) {
+				return reactor;
+			}
+
+			for (const auto &link : m_reactor_info) {
+				if (link.id == reactor.link) {
+					return link;
+				}
+			}
+		}
 	}
-	return kvp->second;
+
+	throw codepath_invalid_exception{};
 }
 
 }

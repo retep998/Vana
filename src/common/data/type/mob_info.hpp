@@ -65,6 +65,7 @@ namespace vana {
 				game_experience exp = 0;
 				uint32_t hp_recovery = 0;
 				uint32_t mp_recovery = 0;
+				game_mob_id id = 0;
 				double traction = 0.;
 				mob_elemental_attribute ice_attr = mob_elemental_attribute::normal;
 				mob_elemental_attribute fire_attr = mob_elemental_attribute::normal;

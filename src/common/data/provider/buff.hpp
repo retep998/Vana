@@ -43,9 +43,9 @@ namespace vana {
 				auto get_buffs_by_effect() const -> const data::type::buff_info_by_effect &;
 			private:
 				auto process_skills(data::type::buff value, const init_list<game_skill_id> &skills) -> void;
-				hash_map<game_skill_id, data::type::buff> m_buffs;
-				hash_map<game_item_id, data::type::buff> m_items;
-				hash_map<game_mob_skill_id, data::type::buff> m_mob_skill_info;
+				vector<pair<game_skill_id, data::type::buff>> m_buffs;
+				vector<pair<game_item_id, data::type::buff>> m_items;
+				vector<pair<game_mob_skill_id, data::type::buff>> m_mob_skill_info;
 				data::type::buff_info_by_effect m_basics;
 			};
 		}

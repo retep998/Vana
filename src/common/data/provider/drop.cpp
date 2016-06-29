@@ -40,10 +40,10 @@ auto drop::load_data() -> void {
 auto drop::load_drops() -> void {
 	m_drop_info.clear();
 
-	data::type::drop_info drop;
-	auto drop_flags = [&drop](const opt_string &flags) {
-		utilities::str::run_flags(flags, [&drop](const string &cmp) {
-			if (cmp == "is_mesos") drop.is_mesos = true;
+	data::type::drop_info info;
+	auto drop_flags = [&info](const opt_string &flags) {
+		utilities::str::run_flags(flags, [&info](const string &cmp) {
+			if (cmp == "is_mesos") info.is_mesos = true;
 		});
 	};
 
@@ -52,42 +52,67 @@ auto drop::load_drops() -> void {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("drop_data"));
 
 	for (const auto &row : rs) {
-		drop = data::type::drop_info{};
+		info = data::type::drop_info{};
 
 		int32_t dropper = row.get<int32_t>("dropperid");
-		drop.item_id = row.get<game_item_id>("itemid");
-		drop.min_amount = row.get<int32_t>("minimum_quantity");
-		drop.max_amount = row.get<int32_t>("maximum_quantity");
-		drop.quest_id = row.get<game_quest_id>("questid");
-		drop.chance = row.get<uint32_t>("chance");
+		info.item_id = row.get<game_item_id>("itemid");
+		info.min_amount = row.get<int32_t>("minimum_quantity");
+		info.max_amount = row.get<int32_t>("maximum_quantity");
+		info.quest_id = row.get<game_quest_id>("questid");
+		info.chance = row.get<uint32_t>("chance");
 		drop_flags(row.get<opt_string>("flags"));
 
-		m_drop_info[dropper].push_back(drop);
+		bool found = false;
+		for (auto &drop : m_drop_info) {
+			if (drop.first == dropper) {
+				found = true;
+				drop.second.push_back(info);
+				break;
+			}
+		}
+
+		if (!found) {
+			vector<data::type::drop_info> current;
+			current.push_back(info);
+			m_drop_info.emplace_back(dropper, current);
+		}
 	}
 
 	rs = (sql.prepare << "SELECT * FROM " << db.make_table("user_drop_data") << " ORDER BY dropperid");
 	int32_t last_dropper_id = -1;
-	bool dropped = false;
 
 	for (const auto &row : rs) {
-		drop = data::type::drop_info{};
+		info = data::type::drop_info{};
 
 		int32_t dropper = row.get<int32_t>("dropperid");
-		drop.item_id = row.get<game_item_id>("itemid");
-		drop.min_amount = row.get<int32_t>("minimum_quantity");
-		drop.max_amount = row.get<int32_t>("maximum_quantity");
-		drop.quest_id = row.get<game_quest_id>("questid");
-		drop.chance = row.get<uint32_t>("chance");
+		info.item_id = row.get<game_item_id>("itemid");
+		info.min_amount = row.get<int32_t>("minimum_quantity");
+		info.max_amount = row.get<int32_t>("maximum_quantity");
+		info.quest_id = row.get<game_quest_id>("questid");
+		info.chance = row.get<uint32_t>("chance");
 		drop_flags(row.get<opt_string>("flags"));
 
 		if (dropper != last_dropper_id) {
-			dropped = false;
+			// Check to see if a drop is required
+			bool removed = ext::remove_element_if(
+				m_drop_info,
+				[&dropper](auto value) {
+					return value.first == dropper;
+				});
+
+			if (removed) {
+				vector<data::type::drop_info> current;
+				m_drop_info.emplace_back(dropper, current);
+			}
 		}
-		if (!dropped && m_drop_info.find(dropper) != std::end(m_drop_info)) {
-			m_drop_info.erase(dropper);
-			dropped = true;
+
+		for (auto &drop : m_drop_info) {
+			if (drop.first == dropper) {
+				drop.second.push_back(info);
+				break;
+			}
 		}
-		m_drop_info[dropper].push_back(drop);
+
 		last_dropper_id = dropper;
 	}
 }
@@ -118,12 +143,15 @@ auto drop::load_global_drops() -> void {
 	}
 }
 
-auto drop::has_drops(int32_t object_id) const -> bool {
-	return ext::is_element(m_drop_info, object_id);
-}
-
 auto drop::get_drops(int32_t object_id) const -> const vector<data::type::drop_info> & {
-	return m_drop_info.find(object_id)->second;
+	for (const auto &drop : m_drop_info) {
+		if (drop.first == object_id) {
+			return drop.second;
+		}
+	}
+
+	static vector<data::type::drop_info> empty;
+	return empty;
 }
 
 auto drop::get_global_drops() const -> const vector<data::type::global_drop_info> & {

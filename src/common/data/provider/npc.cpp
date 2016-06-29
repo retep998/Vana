@@ -36,35 +36,58 @@ auto npc::load_data() -> void {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("npc_data"));
 
 	for (const auto &row : rs) {
-		data::type::npc_info npc;
-		game_npc_id id = row.get<game_npc_id>("npcid");
-		npc.storage_cost = row.get<game_mesos>("storage_cost");
+		data::type::npc_info info;
+		info.id = row.get<game_npc_id>("npcid");
+		info.storage_cost = row.get<game_mesos>("storage_cost");
 
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&npc](const string &cmp) {
-			if (cmp == "maple_tv") npc.is_maple_tv = true;
-			else if (cmp == "is_guild_rank") npc.is_guild_rank = true;
+		utilities::str::run_flags(row.get<opt_string>("flags"), [&info](const string &cmp) {
+			if (cmp == "maple_tv") info.is_maple_tv = true;
+			else if (cmp == "is_guild_rank") info.is_guild_rank = true;
 		});
 
-		m_data[id] = npc;
+		m_data.push_back(info);
 	}
 
 	std::cout << "DONE" << std::endl;
 }
 
 auto npc::get_storage_cost(game_npc_id npc) const -> game_mesos {
-	return m_data.find(npc)->second.storage_cost;
+	for (const auto &value : m_data) {
+		if (value.id == npc) {
+			return value.storage_cost;
+		}
+	}
+
+	throw codepath_invalid_exception{};
 }
 
 auto npc::is_maple_tv(game_npc_id npc) const -> bool {
-	return m_data.find(npc)->second.is_maple_tv;
+	for (const auto &value : m_data) {
+		if (value.id == npc) {
+			return value.is_maple_tv;
+		}
+	}
+
+	return false;
 }
 
 auto npc::is_guild_rank(game_npc_id npc) const -> bool {
-	return m_data.find(npc)->second.is_guild_rank;
+	for (const auto &value : m_data) {
+		if (value.id == npc) {
+			return value.is_guild_rank;
+		}
+	}
+
+	return false;
 }
 
 auto npc::is_valid_npc_id(game_npc_id npc) const -> bool {
-	return ext::is_element(m_data, npc);
+	for (const auto &value : m_data) {
+		if (value.id == npc) {
+			return true;
+		}
+	}
+	return false;
 }
 
 }

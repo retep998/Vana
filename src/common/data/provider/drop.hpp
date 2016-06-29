@@ -30,14 +30,13 @@ namespace vana {
 			public:
 				auto load_data() -> void;
 
-				auto has_drops(int32_t object_id) const -> bool;
 				auto get_drops(int32_t object_id) const -> const vector<data::type::drop_info> &;
 				auto get_global_drops() const -> const vector<data::type::global_drop_info> &;
 			private:
 				auto load_drops() -> void;
 				auto load_global_drops() -> void;
 
-				hash_map<int32_t, vector<data::type::drop_info>> m_drop_info;
+				vector<pair<int32_t, vector<data::type::drop_info>>> m_drop_info;
 				vector<data::type::global_drop_info> m_global_drops;
 			};
 		}
