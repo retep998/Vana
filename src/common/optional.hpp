@@ -52,8 +52,8 @@ namespace vana {
 				auto is_initialized() const -> bool { return m_initialized; }
 				auto get() const -> const TElement & { return get_casted_storage(); }
 				auto get() -> TElement & { return get_casted_storage(); }
-				auto get(const TElement &defaultValue) const -> const TElement & { return m_initialized ? get_casted_storage() : defaultValue; }
-				auto get(const TElement &defaultValue) -> TElement { return m_initialized ? get_casted_storage() : defaultValue; }
+				auto get(const TElement &default_value) const -> const TElement & { return m_initialized ? get_casted_storage() : default_value; }
+				auto get(const TElement &default_value) -> TElement { return m_initialized ? get_casted_storage() : default_value; }
 				auto reset() -> void { destroy(); }
 				auto operator =(TElement val) -> optional<TElement> & {
 					destroy();
@@ -116,6 +116,10 @@ namespace vana {
 			template <typename TElement>
 			auto operator !=(const optional<TElement> &lhs, const TElement &rhs) -> bool {
 				return !(lhs == rhs);
+			}
+			template <typename TElement>
+			auto operator !=(const TElement &lhs, const optional<TElement> &rhs) -> bool {
+				return !(rhs == lhs);
 			}
 		}
 	}
