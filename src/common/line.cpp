@@ -116,7 +116,7 @@ auto line::center() const -> point {
 	return point{
 		(pt2.x + pt1.x) / 2,
 		(pt2.y + pt1.y) / 2
-	};;
+	};
 }
 
 auto line::length() const -> int32_t {

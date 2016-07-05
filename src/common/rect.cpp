@@ -85,7 +85,7 @@ auto rect::center() const -> point {
 	return point{
 		(m_left_top.x + m_right_bottom.x) / 2,
 		(m_left_top.y + m_right_bottom.y) / 2
-	};;
+	};
 }
 
 auto rect::area() const -> int32_t {
