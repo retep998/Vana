@@ -29,6 +29,22 @@ auto point::is_origin() const -> bool {
 	return x == 0 && y == 0;
 }
 
+auto point::invert() const -> point {
+	return {y, x};
+}
+
+auto point::negate() const -> point {
+	return {-x, -y};
+}
+
+auto point::negate_x() const -> point {
+	return {-x, y};
+}
+
+auto point::negate_y() const -> point {
+	return {x, -y};
+}
+
 auto point::move(game_coord x, game_coord y) const -> point {
 	return point{this->x + x, this->y + y};
 }
@@ -39,6 +55,13 @@ auto point::move_x(game_coord x) const -> point {
 
 auto point::move_y(game_coord y) const -> point {
 	return point{this->x, this->y + y};
+}
+
+auto point::distance(const point &other) const -> int32_t {
+	return static_cast<int32_t>(
+		std::sqrt(
+			std::pow(static_cast<float>(x - other.x), 2) +
+			std::pow(static_cast<float>(y - other.y), 2)));
 }
 
 }

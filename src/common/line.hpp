@@ -40,6 +40,10 @@ namespace vana {
 		auto within_range_y(game_coord value_y) const -> bool;
 		auto interpolate_for_x(game_coord value_y) const -> optional<game_coord>;
 		auto interpolate_for_y(game_coord value_x) const -> optional<game_coord>;
+		auto invert() const -> line;
+		auto negate() const -> line;
+		auto negate_x() const -> line;
+		auto negate_y() const -> line;
 		auto move(game_coord offset_x, game_coord offset_y) const -> line;
 		auto move_x(game_coord offset) const -> line;
 		auto move_y(game_coord offset) const -> line;

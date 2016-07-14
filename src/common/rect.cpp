@@ -108,6 +108,10 @@ auto rect::width() const -> int32_t {
 	return std::abs(static_cast<int32_t>(m_right_bottom.x) - static_cast<int32_t>(m_left_top.x));
 }
 
+auto rect::is_square() const -> bool {
+	return height() == width();
+}
+
 auto rect::contains(const point &pos) const -> bool {
 	return
 		m_left_top.y <= pos.y && pos.y <= m_right_bottom.y &&

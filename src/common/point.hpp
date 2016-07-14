@@ -35,13 +35,16 @@ namespace vana {
 		point() = default;
 
 		auto is_origin() const -> bool;
+		auto invert() const -> point;
+		auto negate() const -> point;
+		auto negate_x() const -> point;
+		auto negate_y() const -> point;
 		auto move(game_coord x, game_coord y) const -> point;
 		auto move_x(game_coord x) const -> point;
 		auto move_y(game_coord y) const -> point;
+		auto distance(const point &other) const -> int32_t;
 
-		auto operator-(const point &p) const -> int32_t {
-			return static_cast<int32_t>(std::sqrt(std::pow(static_cast<float>(x - p.x), 2) + std::pow(static_cast<float>(y - p.y), 2)));
-		}
+		auto operator-(const point &p) const -> int32_t { return distance(p); }
 
 		game_coord x = 0;
 		game_coord y = 0;

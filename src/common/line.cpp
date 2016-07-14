@@ -91,6 +91,34 @@ auto line::interpolate_for_y(game_coord value_x) const -> optional<game_coord> {
 	return static_cast<game_coord>(difference + pt1.y);
 }
 
+auto line::invert() const -> line {
+	return line{
+		pt1.invert(),
+		pt2.invert()
+	};
+}
+
+auto line::negate() const -> line {
+	return line{
+		pt1.negate(),
+		pt2.negate()
+	};
+}
+
+auto line::negate_x() const -> line {
+	return line{
+		pt1.negate_x(),
+		pt2.negate_x()
+	};
+}
+
+auto line::negate_y() const -> line {
+	return line{
+		pt1.negate_y(),
+		pt2.negate_y()
+	};
+}
+
 auto line::move(game_coord offset_x, game_coord offset_y) const -> line {
 	return line{
 		pt1.move(offset_x, offset_y),

@@ -54,6 +54,7 @@ namespace vana {
 		auto hypotenuse() const -> int32_t;
 		auto height() const -> int32_t;
 		auto width() const -> int32_t;
+		auto is_square() const -> bool;
 		auto contains(const point &pos) const -> bool;
 		auto contains_any_part_of_line(const line &line) const -> bool;
 		auto contains_full_line(const line &line) const -> bool;

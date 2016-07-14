@@ -35,10 +35,6 @@ namespace vana {
 		wide_point(int32_t x, int32_t y) : x{x}, y{y} { }
 		wide_point() = default;
 
-		auto operator-(const wide_point &p) const -> int32_t {
-			return static_cast<int32_t>(std::sqrt(std::pow(static_cast<float>(x - p.x), 2) + std::pow(static_cast<float>(y - p.y), 2)));
-		}
-
 		int32_t x = 0;
 		int32_t y = 0;
 		friend auto operator <<(std::ostream &out, const wide_point &pos) -> std::ostream &;
