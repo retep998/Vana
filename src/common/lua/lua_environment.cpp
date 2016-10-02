@@ -262,17 +262,27 @@ auto lua_environment::validate_key(lua_type expected_type, const lua_variant &v,
 }
 
 auto lua_environment::validate_object(lua_type expected_type, const lua_variant &v, const string &prefix) -> void {
-	lua_type type = v.get_type();
-	if (type != expected_type) {
-		string representation;
-		switch (type) {
-			case lua_type::boolean: representation = "bool"; break;
-			case lua_type::number: representation = "number"; break;
-			case lua_type::string: representation = "string"; break;
-			case lua_type::table: representation = "table"; break;
+	lua_type found_type = v.get_type();
+	if (found_type != expected_type) {
+		string expectedRepresentation;
+		switch (expected_type) {
+			case lua_type::nil: expectedRepresentation = "nil"; break;
+			case lua_type::boolean: expectedRepresentation = "bool"; break;
+			case lua_type::number: expectedRepresentation = "number"; break;
+			case lua_type::string: expectedRepresentation = "string"; break;
+			case lua_type::table: expectedRepresentation = "table"; break;
 			default: THROW_CODE_EXCEPTION(not_implemented_exception, "LuaType");
 		}
-		error("Object " + prefix + " must be a " + representation + " object");
+		string foundRepresentation;
+		switch (found_type) {
+			case lua_type::nil: foundRepresentation = "nil"; break;
+			case lua_type::boolean: foundRepresentation = "bool"; break;
+			case lua_type::number: foundRepresentation = "number"; break;
+			case lua_type::string: foundRepresentation = "string"; break;
+			case lua_type::table: foundRepresentation = "table"; break;
+			default: THROW_CODE_EXCEPTION(not_implemented_exception, "LuaType");
+		}
+		error("Object " + prefix + " must be a " + expectedRepresentation + " object, found " + foundRepresentation);
 	}
 }
 
