@@ -8,10 +8,20 @@ inter_salt = "changeme";
 use_client_encryption = true;
 
 -- Ping inter-server connections? This should generally remain enabled, but it's useful for using a debugger
-use_inter_ping = true;
+inter_ping = {
+	["enabled"] = true,
+	["inital_delay"] = 60000,
+	["interval"] = 30000,
+	["timeout_ping_count"] = 4,
+};
 
 -- Ping clients? This should generally remain enabled, but it's useful for using a debugger
-use_client_ping = true;
+client_ping = {
+	["enabled"] = true,
+	["inital_delay"] = 60000,
+	["interval"] = 30000,
+	["timeout_ping_count"] = 4,
+};
 
 -- What IP and port should the server use to connect to the LoginServer?
 login_ip = "127.0.0.1";

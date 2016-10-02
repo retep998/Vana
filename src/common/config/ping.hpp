@@ -51,11 +51,11 @@ namespace vana {
 				}
 				else if (key == "initial_delay") {
 					if (config.validate_value(lua_type::number, kvp.second, key, prefix, true) == lua_type::nil) continue;
-					ret.initial_delay = milliseconds{kvp.second.as<int32_t>()};
+					ret.initial_delay = kvp.second.as<milliseconds>();
 				}
 				else if (key == "interval") {
 					if (config.validate_value(lua_type::number, kvp.second, key, prefix, true) == lua_type::nil) continue;
-					ret.interval = milliseconds{kvp.second.as<int32_t>()};
+					ret.interval = kvp.second.as<milliseconds>();
 				}
 				else if (key == "timeout_ping_count") {
 					if (config.validate_value(lua_type::number, kvp.second, key, prefix, true) == lua_type::nil) continue;
