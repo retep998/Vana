@@ -1,4 +1,4 @@
-add_subdirectory(Common)
-add_subdirectory(LoginServer)
-add_subdirectory(WorldServer)
-add_subdirectory(ChannelServer)
+add_subdirectory(common)
+add_subdirectory(login_server)
+add_subdirectory(world_server)
+add_subdirectory(channel_server)

@@ -26,6 +26,6 @@ include_directories(${LUA_INCLUDE_DIR})
 find_package(Botan REQUIRED)
 include_directories(${BOTAN_INCLUDE_DIR})
 
-include_directories(${CMAKE_SOURCE_DIR}/src/Common)
+include_directories(${CMAKE_SOURCE_DIR}/src/common)
 
 add_subdirectory(src)

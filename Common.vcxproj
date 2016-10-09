@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -13,19 +13,20 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CFFE2EE8-4188-4E42-B76C-8005041C2877}</ProjectGuid>
     <RootNamespace>Common</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <CLRSupport>false</CLRSupport>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -50,19 +51,24 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(MySqlDirectory32)\include;src\Common;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\core;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\backends\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\lua\include;$(LazurBeemz)\$(PlatformToolsetVersion)\Botan-$(BotanVersion)\build\include;$(LazurBeemz)\$(PlatformToolsetVersion)\boost_$(BoostVersion)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WIN32;MSVC;DEBUG;_DEBUG;X86;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src\;$(MySqlDirectory32)\include\;$(MySqlDirectory32)\include\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\core;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\backends\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\lua-$(LuaVersion)\src;$(LazurBeemz)\$(PlatformToolsetVersion)\Botan-$(BotanVersion)\build\include;$(LazurBeemz)\$(PlatformToolsetVersion)\asio-$(AsioVersion)\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WIN32;MSVC;DEBUG;_DEBUG;X86;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;_WIN32_WINNT=0x0601;_WINSOCK_DEPRECATED_NO_WARNINGS;ASIO_STANDALONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>PrecompiledHeader.hpp</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>precompiled_header.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ForcedIncludeFiles>PrecompiledHeader.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles>precompiled_header.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
       <EnablePREfast>false</EnablePREfast>
+      <AdditionalOptions>/Zc:throwingNew /Zc:strictStrings %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>$(IntDir)%(RelativeDir)\</ObjectFileName>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
     <Lib>
       <AdditionalLibraryDirectories>$(LazurBeemz)/$(PlatformToolsetVersion)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -72,189 +78,319 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(MySqlDirectory32)\include;src\Common;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\core;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\backends\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\lua\include;$(LazurBeemz)\$(PlatformToolsetVersion)\Botan-$(BotanVersion)\build\include;$(LazurBeemz)\$(PlatformToolsetVersion)\boost_$(BoostVersion)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WIN32;MSVC;NDEBUG;RELEASE;X86;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src\;$(MySqlDirectory32)\include\;$(MySqlDirectory32)\include\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\core;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\backends\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\lua-$(LuaVersion)\src;$(LazurBeemz)\$(PlatformToolsetVersion)\Botan-$(BotanVersion)\build\include;$(LazurBeemz)\$(PlatformToolsetVersion)\asio-$(AsioVersion)\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WIN32;MSVC;NDEBUG;RELEASE;X86;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;_WIN32_WINNT=0x0601;_WINSOCK_DEPRECATED_NO_WARNINGS;ASIO_STANDALONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>PrecompiledHeader.hpp</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>precompiled_header.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ForcedIncludeFiles>PrecompiledHeader.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles>precompiled_header.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <AdditionalOptions>/Zc:throwingNew %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileName>$(IntDir)%(RelativeDir)\</ObjectFileName>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
     </ClCompile>
     <Lib>
       <AdditionalLibraryDirectories>$(LazurBeemz)/$(PlatformToolsetVersion)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Common\AbstractServerAcceptConnection.cpp" />
-    <ClCompile Include="src\Common\AbstractServerConnection.cpp" />
-    <ClCompile Include="src\Common\ClientIp.cpp" />
-    <ClCompile Include="src\Common\ConsoleLogger.cpp" />
-    <ClCompile Include="src\Common\CurseDataProvider.cpp" />
-    <ClCompile Include="src\Common\ExitCodes.cpp" />
-    <ClCompile Include="src\Common\ExternalIp.cpp" />
-    <ClCompile Include="src\Common\ExternalIpResolver.cpp" />
-    <ClCompile Include="src\Common\FileLogger.cpp" />
-    <ClCompile Include="src\Common\Ip.cpp" />
-    <ClCompile Include="src\Common\Item.cpp" />
-    <ClCompile Include="src\Common\BlockCipherIv.cpp" />
-    <ClCompile Include="src\Common\Line.cpp" />
-    <ClCompile Include="src\Common\Logger.cpp" />
-    <ClCompile Include="src\Common\LuaEnvironment.cpp" />
-    <ClCompile Include="src\Common\NpcDataProvider.cpp" />
-    <ClCompile Include="src\Common\PacketBuilder.cpp" />
-    <ClCompile Include="src\Common\PingPacket.cpp" />
-    <ClCompile Include="src\Common\PrecompiledHeader.cpp">
+    <ClCompile Include="src\common\client_ip.cpp" />
+    <ClCompile Include="src\common\config\password_transformation.cpp" />
+    <ClCompile Include="src\common\config\salt_transformation.cpp" />
+    <ClCompile Include="src\common\connection_listener.cpp" />
+    <ClCompile Include="src\common\console_logger.cpp" />
+    <ClCompile Include="src\common\data\provider\beauty.cpp" />
+    <ClCompile Include="src\common\data\provider\buff.cpp" />
+    <ClCompile Include="src\common\data\provider\curse.cpp" />
+    <ClCompile Include="src\common\data\provider\drop.cpp" />
+    <ClCompile Include="src\common\data\provider\equip.cpp" />
+    <ClCompile Include="src\common\data\provider\item.cpp" />
+    <ClCompile Include="src\common\data\provider\map.cpp" />
+    <ClCompile Include="src\common\data\provider\mob.cpp" />
+    <ClCompile Include="src\common\data\provider\npc.cpp" />
+    <ClCompile Include="src\common\data\provider\quest.cpp" />
+    <ClCompile Include="src\common\data\provider\reactor.cpp" />
+    <ClCompile Include="src\common\data\provider\script.cpp" />
+    <ClCompile Include="src\common\data\provider\shop.cpp" />
+    <ClCompile Include="src\common\data\provider\skill.cpp" />
+    <ClCompile Include="src\common\data\provider\valid_char.cpp" />
+    <ClCompile Include="src\common\data\type\buff.cpp" />
+    <ClCompile Include="src\common\data\type\buff_info.cpp" />
+    <ClCompile Include="src\common\data\type\buff_map_info.cpp" />
+    <ClCompile Include="src\common\data\type\buff_source.cpp" />
+    <ClCompile Include="src\common\encrypted_packet_transformer.cpp" />
+    <ClCompile Include="src\common\exit_codes.cpp" />
+    <ClCompile Include="src\common\external_ip.cpp" />
+    <ClCompile Include="src\common\external_ip_resolver.cpp" />
+    <ClCompile Include="src\common\file_logger.cpp" />
+    <ClCompile Include="src\common\file_time.cpp" />
+    <ClCompile Include="src\common\hash_utilities.cpp" />
+    <ClCompile Include="src\common\ip.cpp" />
+    <ClCompile Include="src\common\item.cpp" />
+    <ClCompile Include="src\common\block_cipher_iv.cpp" />
+    <ClCompile Include="src\common\line.cpp" />
+    <ClCompile Include="src\common\logger.cpp" />
+    <ClCompile Include="src\common\lua\config_file.cpp" />
+    <ClCompile Include="src\common\lua\lua_environment.cpp" />
+    <ClCompile Include="src\common\lua\lua_variant.cpp" />
+    <ClCompile Include="src\common\packet_builder.cpp" />
+    <ClCompile Include="src\common\packet_handler.cpp" />
+    <ClCompile Include="src\common\packet_transformer.cpp" />
+    <ClCompile Include="src\common\common_packet.cpp" />
+    <ClCompile Include="src\common\point.cpp" />
+    <ClCompile Include="src\common\precompiled_header.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Common\BeautyDataProvider.cpp" />
-    <ClCompile Include="src\Common\BuffDataProvider.cpp" />
-    <ClCompile Include="src\Common\DropDataProvider.cpp" />
-    <ClCompile Include="src\Common\EquipDataProvider.cpp" />
-    <ClCompile Include="src\Common\InitializeCommon.cpp" />
-    <ClCompile Include="src\Common\ItemDataProvider.cpp" />
-    <ClCompile Include="src\Common\MobDataProvider.cpp" />
-    <ClCompile Include="src\Common\MySqlQueryParser.cpp" />
-    <ClCompile Include="src\Common\Quest.cpp" />
-    <ClCompile Include="src\Common\QuestDataProvider.cpp" />
-    <ClCompile Include="src\Common\ReactorDataProvider.cpp" />
-    <ClCompile Include="src\Common\Rect.cpp" />
-    <ClCompile Include="src\Common\ScriptDataProvider.cpp" />
-    <ClCompile Include="src\Common\Session.cpp" />
-    <ClCompile Include="src\Common\ShopDataProvider.cpp" />
-    <ClCompile Include="src\Common\SkillDataProvider.cpp" />
-    <ClCompile Include="src\Common\SqlLogger.cpp" />
-    <ClCompile Include="src\Common\TauswortheGenerator.cpp" />
-    <ClCompile Include="src\Common\ThreadPool.cpp" />
-    <ClCompile Include="src\Common\Timer.cpp" />
-    <ClCompile Include="src\Common\TimerContainer.cpp" />
-    <ClCompile Include="src\Common\TimerThread.cpp" />
-    <ClCompile Include="src\Common\ValidCharDataProvider.cpp" />
-    <ClCompile Include="src\Common\ConfigFile.cpp" />
-    <ClCompile Include="src\Common\Database.cpp" />
-    <ClCompile Include="src\Common\PacketReader.cpp" />
-    <ClCompile Include="src\Common\AuthenticationPacket.cpp" />
-    <ClCompile Include="src\Common\FileUtilities.cpp" />
-    <ClCompile Include="src\Common\MiscUtilities.cpp" />
-    <ClCompile Include="src\Common\Randomizer.cpp" />
-    <ClCompile Include="src\Common\StringUtilities.cpp" />
-    <ClCompile Include="src\Common\TimeUtilities.cpp" />
-    <ClCompile Include="src\Common\ConnectionManager.cpp" />
-    <ClCompile Include="src\Common\ServerClient.cpp" />
-    <ClCompile Include="src\Common\Decoder.cpp" />
-    <ClCompile Include="src\Common\AbstractConnection.cpp" />
-    <ClCompile Include="src\Common\AbstractServer.cpp" />
-    <ClCompile Include="src\Common\DatabaseUpdater.cpp" />
-    <ClCompile Include="src\Common\VanaMain.cpp" />
-    <ClCompile Include="src\Common\Variables.cpp" />
+    <ClCompile Include="src\common\initialize_common.cpp" />
+    <ClCompile Include="src\common\mysql_query_parser.cpp" />
+    <ClCompile Include="src\common\quest.cpp" />
+    <ClCompile Include="src\common\ratio.cpp" />
+    <ClCompile Include="src\common\rect.cpp" />
+    <ClCompile Include="src\common\server_accepted_session.cpp" />
+    <ClCompile Include="src\common\session.cpp" />
+    <ClCompile Include="src\common\sql_logger.cpp" />
+    <ClCompile Include="src\common\tausworthe_generator.cpp" />
+    <ClCompile Include="src\common\thread_pool.cpp" />
+    <ClCompile Include="src\common\timer\timer.cpp" />
+    <ClCompile Include="src\common\timer\container.cpp" />
+    <ClCompile Include="src\common\timer\thread.cpp" />
+    <ClCompile Include="src\common\database.cpp" />
+    <ClCompile Include="src\common\packet_reader.cpp" />
+    <ClCompile Include="src\common\authentication_packet.cpp" />
+    <ClCompile Include="src\common\file_utilities.cpp" />
+    <ClCompile Include="src\common\randomizer.cpp" />
+    <ClCompile Include="src\common\string_utilities.cpp" />
+    <ClCompile Include="src\common\time_utilities.cpp" />
+    <ClCompile Include="src\common\connection_manager.cpp" />
+    <ClCompile Include="src\common\decoder.cpp" />
+    <ClCompile Include="src\common\abstract_server.cpp" />
+    <ClCompile Include="src\common\database_updater.cpp" />
+    <ClCompile Include="src\common\vana_main.cpp" />
+    <ClCompile Include="src\common\variables.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Common\AbstractServerAcceptConnection.hpp" />
-    <ClInclude Include="src\Common\AbstractServerConnection.hpp" />
-    <ClInclude Include="src\Common\Algorithm.hpp" />
-    <ClInclude Include="src\Common\BitUtilities.hpp" />
-    <ClInclude Include="src\Common\CaseInsensitiveEquals.hpp" />
-    <ClInclude Include="src\Common\CaseInsensitiveHash.hpp" />
-    <ClInclude Include="src\Common\ClientIp.hpp" />
-    <ClInclude Include="src\Common\ComboLoggers.hpp" />
-    <ClInclude Include="src\Common\CommonHeader.hpp" />
-    <ClInclude Include="src\Common\Configuration.hpp" />
-    <ClInclude Include="src\Common\ConsoleLogger.hpp" />
-    <ClInclude Include="src\Common\CurseDataProvider.hpp" />
-    <ClInclude Include="src\Common\ExitCodes.hpp" />
-    <ClInclude Include="src\Common\ExternalIp.hpp" />
-    <ClInclude Include="src\Common\ExternalIpResolver.hpp" />
-    <ClInclude Include="src\Common\FileLogger.hpp" />
-    <ClInclude Include="src\Common\GameConstants.hpp" />
-    <ClInclude Include="src\Common\hash_combine.hpp" />
-    <ClInclude Include="src\Common\IdLooper.hpp" />
-    <ClInclude Include="src\Common\IdPool.hpp" />
-    <ClInclude Include="src\Common\InterHelper.hpp" />
-    <ClInclude Include="src\Common\Ip.hpp" />
-    <ClInclude Include="src\Common\IPacket.hpp" />
-    <ClInclude Include="src\Common\Item.hpp" />
-    <ClInclude Include="src\Common\ItemConstants.hpp" />
-    <ClInclude Include="src\Common\ItemDataObjects.hpp" />
-    <ClInclude Include="src\Common\BlockCipherIv.hpp" />
-    <ClInclude Include="src\Common\JobConstants.hpp" />
-    <ClInclude Include="src\Common\Line.hpp" />
-    <ClInclude Include="src\Common\Logger.hpp" />
-    <ClInclude Include="src\Common\LuaEnvironment.hpp" />
-    <ClInclude Include="src\Common\make_unique.hpp" />
-    <ClInclude Include="src\Common\MapConstants.hpp" />
-    <ClInclude Include="src\Common\MapleVersion.hpp" />
-    <ClInclude Include="src\Common\MapObjects.hpp" />
-    <ClInclude Include="src\Common\MobConstants.hpp" />
-    <ClInclude Include="src\Common\MobDataObjects.hpp" />
-    <ClInclude Include="src\Common\NpcDataProvider.hpp" />
-    <ClInclude Include="src\Common\ObjectPool.hpp" />
-    <ClInclude Include="src\Common\optional.hpp" />
-    <ClInclude Include="src\Common\PacketBuilder.hpp" />
-    <ClInclude Include="src\Common\PacketWrapper.hpp" />
-    <ClInclude Include="src\Common\PlayerObjects.hpp" />
-    <ClInclude Include="src\Common\Point.hpp" />
-    <ClInclude Include="src\Common\PrecompiledHeader.hpp" />
-    <ClInclude Include="src\Common\MySqlQueryParser.hpp" />
-    <ClInclude Include="src\Common\Quest.hpp" />
-    <ClInclude Include="src\Common\Rect.hpp" />
-    <ClInclude Include="src\Common\shared_array.hpp" />
-    <ClInclude Include="src\Common\SkillConstants.hpp" />
-    <ClInclude Include="src\Common\SkillDataObjects.hpp" />
-    <ClInclude Include="src\Common\SociExtensions.hpp" />
-    <ClInclude Include="src\Common\SplitPacketBuilder.hpp" />
-    <ClInclude Include="src\Common\SqlLogger.hpp" />
-    <ClInclude Include="src\Common\StopWatch.hpp" />
-    <ClInclude Include="src\Common\TauswortheGenerator.hpp" />
-    <ClInclude Include="src\Common\ThreadPool.hpp" />
-    <ClInclude Include="src\Common\Timer.hpp" />
-    <ClInclude Include="src\Common\TimerContainer.hpp" />
-    <ClInclude Include="src\Common\TimerContainerHolder.hpp" />
-    <ClInclude Include="src\Common\TimerId.hpp" />
-    <ClInclude Include="src\Common\TimerThread.hpp" />
-    <ClInclude Include="src\Common\TimerType.hpp" />
-    <ClInclude Include="src\Common\tokenizer.hpp" />
-    <ClInclude Include="src\Common\Types.hpp" />
-    <ClInclude Include="src\Common\BeautyDataProvider.hpp" />
-    <ClInclude Include="src\Common\BuffDataProvider.hpp" />
-    <ClInclude Include="src\Common\DropDataProvider.hpp" />
-    <ClInclude Include="src\Common\EquipDataProvider.hpp" />
-    <ClInclude Include="src\Common\InitializeCommon.hpp" />
-    <ClInclude Include="src\Common\ItemDataProvider.hpp" />
-    <ClInclude Include="src\Common\MobDataProvider.hpp" />
-    <ClInclude Include="src\Common\QuestDataProvider.hpp" />
-    <ClInclude Include="src\Common\ReactorDataProvider.hpp" />
-    <ClInclude Include="src\Common\ScriptDataProvider.hpp" />
-    <ClInclude Include="src\Common\ShopDataProvider.hpp" />
-    <ClInclude Include="src\Common\SkillDataProvider.hpp" />
-    <ClInclude Include="src\Common\ValidCharDataProvider.hpp" />
-    <ClInclude Include="src\Common\ConfigFile.hpp" />
-    <ClInclude Include="src\Common\Database.hpp" />
-    <ClInclude Include="src\Common\PacketReader.hpp" />
-    <ClInclude Include="src\Common\PingPacket.hpp" />
-    <ClInclude Include="src\Common\InterHeader.hpp" />
-    <ClInclude Include="src\Common\AuthenticationPacket.hpp" />
-    <ClInclude Include="src\Common\FileUtilities.hpp" />
-    <ClInclude Include="src\Common\GameLogicUtilities.hpp" />
-    <ClInclude Include="src\Common\MiscUtilities.hpp" />
-    <ClInclude Include="src\Common\Randomizer.hpp" />
-    <ClInclude Include="src\Common\StringUtilities.hpp" />
-    <ClInclude Include="src\Common\TimeUtilities.hpp" />
-    <ClInclude Include="src\Common\ConnectionManager.hpp" />
-    <ClInclude Include="src\Common\ServerClient.hpp" />
-    <ClInclude Include="src\Common\Session.hpp" />
-    <ClInclude Include="src\Common\Decoder.hpp" />
-    <ClInclude Include="src\Common\AbstractConnection.hpp" />
-    <ClInclude Include="src\Common\AbstractServer.hpp" />
-    <ClInclude Include="src\Common\GameObjects.hpp" />
-    <ClInclude Include="src\Common\VanaConstants.hpp" />
-    <ClInclude Include="src\Common\VanaMain.hpp" />
-    <ClInclude Include="src\Common\Variables.hpp" />
-    <ClInclude Include="src\Common\DatabaseUpdater.hpp" />
-    <ClInclude Include="src\Common\WidePoint.hpp" />
+    <ClInclude Include="src\common\algorithm.hpp" />
+    <ClInclude Include="src\common\attack_data.hpp" />
+    <ClInclude Include="src\common\bit_utilities.hpp" />
+    <ClInclude Include="src\common\case_insensitive_equals.hpp" />
+    <ClInclude Include="src\common\case_insensitive_hash.hpp" />
+    <ClInclude Include="src\common\charge_or_stationary_skill_data.hpp" />
+    <ClInclude Include="src\common\client_ip.hpp" />
+    <ClInclude Include="src\common\combo_loggers.hpp" />
+    <ClInclude Include="src\common\common_header.hpp" />
+    <ClInclude Include="src\common\config\database.hpp" />
+    <ClInclude Include="src\common\config\inter_server.hpp" />
+    <ClInclude Include="src\common\config\log.hpp" />
+    <ClInclude Include="src\common\config\major_boss.hpp" />
+    <ClInclude Include="src\common\config\password_transformation.hpp" />
+    <ClInclude Include="src\common\config\ping.hpp" />
+    <ClInclude Include="src\common\config\rates.hpp" />
+    <ClInclude Include="src\common\config\salting.hpp" />
+    <ClInclude Include="src\common\config\salt.hpp" />
+    <ClInclude Include="src\common\config\salt_size.hpp" />
+    <ClInclude Include="src\common\config\salt_transformation.hpp" />
+    <ClInclude Include="src\common\config\world.hpp" />
+    <ClInclude Include="src\common\connection_listener.hpp" />
+    <ClInclude Include="src\common\connection_listener_config.hpp" />
+    <ClInclude Include="src\common\constants\alliance.hpp" />
+    <ClInclude Include="src\common\constants\buddy.hpp" />
+    <ClInclude Include="src\common\constants\buff.hpp" />
+    <ClInclude Include="src\common\constants\character.hpp" />
+    <ClInclude Include="src\common\constants\equip_slot.hpp" />
+    <ClInclude Include="src\common\constants\guild.hpp" />
+    <ClInclude Include="src\common\constants\gender.hpp" />
+    <ClInclude Include="src\common\constants\inventory.hpp" />
+    <ClInclude Include="src\common\constants\item.hpp" />
+    <ClInclude Include="src\common\constants\item\scroll_type.hpp" />
+    <ClInclude Include="src\common\constants\item\type.hpp" />
+    <ClInclude Include="src\common\constants\job\id.hpp" />
+    <ClInclude Include="src\common\constants\job\beginner_jobs.hpp" />
+    <ClInclude Include="src\common\constants\job\line.hpp" />
+    <ClInclude Include="src\common\constants\job\progression.hpp" />
+    <ClInclude Include="src\common\constants\job\track.hpp" />
+    <ClInclude Include="src\common\constants\map.hpp" />
+    <ClInclude Include="src\common\constants\mob.hpp" />
+    <ClInclude Include="src\common\constants\mob_skill.hpp" />
+    <ClInclude Include="src\common\constants\monster_card.hpp" />
+    <ClInclude Include="src\common\constants\party.hpp" />
+    <ClInclude Include="src\common\constants\ship_kind.hpp" />
+    <ClInclude Include="src\common\constants\skill.hpp" />
+    <ClInclude Include="src\common\constants\stat.hpp" />
+    <ClInclude Include="src\common\constants\status_effect.hpp" />
+    <ClInclude Include="src\common\constant\item\cash\flag.hpp" />
+    <ClInclude Include="src\common\constant\item\cash\serial.hpp" />
+    <ClInclude Include="src\common\constant\item\flag.hpp" />
+    <ClInclude Include="src\common\constant\item\max_stat.hpp" />
+    <ClInclude Include="src\common\data\locale.hpp" />
+    <ClInclude Include="src\common\data\provider\map.hpp" />
+    <ClInclude Include="src\common\data\type\banish_field_info.hpp" />
+    <ClInclude Include="src\common\data\type\buff.hpp" />
+    <ClInclude Include="src\common\data\type\buff_action.hpp" />
+    <ClInclude Include="src\common\data\type\buff_info.hpp" />
+    <ClInclude Include="src\common\data\type\buff_info_by_effect.hpp" />
+    <ClInclude Include="src\common\data\type\buff_map_info.hpp" />
+    <ClInclude Include="src\common\data\type\buff_skill_value.hpp" />
+    <ClInclude Include="src\common\data\type\buff_source.hpp" />
+    <ClInclude Include="src\common\data\type\buff_source_type.hpp" />
+    <ClInclude Include="src\common\data\type\card_map_range_info.hpp" />
+    <ClInclude Include="src\common\data\type\consume_info.hpp" />
+    <ClInclude Include="src\common\data\type\drop_info.hpp" />
+    <ClInclude Include="src\common\data\type\equip_info.hpp" />
+    <ClInclude Include="src\common\data\type\field_limit.hpp" />
+    <ClInclude Include="src\common\data\type\foothold_info.hpp" />
+    <ClInclude Include="src\common\data\type\global_drop_info.hpp" />
+    <ClInclude Include="src\common\data\type\item_info.hpp" />
+    <ClInclude Include="src\common\data\type\item_reward_info.hpp" />
+    <ClInclude Include="src\common\data\type\map_info.hpp" />
+    <ClInclude Include="src\common\data\type\map_link_info.hpp" />
+    <ClInclude Include="src\common\data\type\mob_attack_info.hpp" />
+    <ClInclude Include="src\common\data\type\mob_attack_type.hpp" />
+    <ClInclude Include="src\common\data\type\mob_info.hpp" />
+    <ClInclude Include="src\common\data\type\mob_skill_info.hpp" />
+    <ClInclude Include="src\common\data\type\mob_skill_level_info.hpp" />
+    <ClInclude Include="src\common\data\type\morph_chance_info.hpp" />
+    <ClInclude Include="src\common\data\type\morph_info.hpp" />
+    <ClInclude Include="src\common\data\type\npc_info.hpp" />
+    <ClInclude Include="src\common\data\type\pet_info.hpp" />
+    <ClInclude Include="src\common\data\type\pet_interact_info.hpp" />
+    <ClInclude Include="src\common\data\type\portal_info.hpp" />
+    <ClInclude Include="src\common\data\type\quest_request_info.hpp" />
+    <ClInclude Include="src\common\data\type\quest_reward_info.hpp" />
+    <ClInclude Include="src\common\data\type\reactor_info.hpp" />
+    <ClInclude Include="src\common\data\type\reactor_state_info.hpp" />
+    <ClInclude Include="src\common\data\type\script_type.hpp" />
+    <ClInclude Include="src\common\data\type\scroll_info.hpp" />
+    <ClInclude Include="src\common\data\type\seat_info.hpp" />
+    <ClInclude Include="src\common\data\type\shop_info.hpp" />
+    <ClInclude Include="src\common\data\type\shop_item_info.hpp" />
+    <ClInclude Include="src\common\data\type\skillbook_info.hpp" />
+    <ClInclude Include="src\common\data\type\skill_level_info.hpp" />
+    <ClInclude Include="src\common\data\type\skill_type.hpp" />
+    <ClInclude Include="src\common\data\type\spawn_info.hpp" />
+    <ClInclude Include="src\common\data\type\summon_bag_info.hpp" />
+    <ClInclude Include="src\common\data\type\time_mob_info.hpp" />
+    <ClInclude Include="src\common\data\type\valid_item_type.hpp" />
+    <ClInclude Include="src\common\data\version.hpp" />
+    <ClInclude Include="src\common\data\provider\beauty.hpp" />
+    <ClInclude Include="src\common\data\provider\buff.hpp" />
+    <ClInclude Include="src\common\data\provider\curse.hpp" />
+    <ClInclude Include="src\common\data\provider\drop.hpp" />
+    <ClInclude Include="src\common\data\provider\equip.hpp" />
+    <ClInclude Include="src\common\data\provider\item.hpp" />
+    <ClInclude Include="src\common\data\provider\mob.hpp" />
+    <ClInclude Include="src\common\data\provider\npc.hpp" />
+    <ClInclude Include="src\common\data\provider\quest.hpp" />
+    <ClInclude Include="src\common\data\provider\reactor.hpp" />
+    <ClInclude Include="src\common\data\provider\script.hpp" />
+    <ClInclude Include="src\common\data\provider\shop.hpp" />
+    <ClInclude Include="src\common\data\provider\skill.hpp" />
+    <ClInclude Include="src\common\data\provider\valid_char.hpp" />
+    <ClInclude Include="src\common\finalization_pool.hpp" />
+    <ClInclude Include="src\common\lua\config_file.hpp" />
+    <ClInclude Include="src\common\lua\lua_environment.hpp" />
+    <ClInclude Include="src\common\lua\lua_type.hpp" />
+    <ClInclude Include="src\common\lua\lua_variant.hpp" />
+    <ClInclude Include="src\common\packet_handler.hpp" />
+    <ClInclude Include="src\common\connection_type.hpp" />
+    <ClInclude Include="src\common\encrypted_packet_transformer.hpp" />
+    <ClInclude Include="src\common\enum_base.hpp" />
+    <ClInclude Include="src\common\enum_utilities.hpp" />
+    <ClInclude Include="src\common\console_logger.hpp" />
+    <ClInclude Include="src\common\exit_codes.hpp" />
+    <ClInclude Include="src\common\external_ip.hpp" />
+    <ClInclude Include="src\common\external_ip_resolver.hpp" />
+    <ClInclude Include="src\common\file_logger.hpp" />
+    <ClInclude Include="src\common\file_time.hpp" />
+    <ClInclude Include="src\common\hash_utilities.hpp" />
+    <ClInclude Include="src\common\hash_combine.hpp" />
+    <ClInclude Include="src\common\id_looper.hpp" />
+    <ClInclude Include="src\common\id_pool.hpp" />
+    <ClInclude Include="src\common\inter_helper.hpp" />
+    <ClInclude Include="src\common\ip.hpp" />
+    <ClInclude Include="src\common\i_packet.hpp" />
+    <ClInclude Include="src\common\packet_transformer.hpp" />
+    <ClInclude Include="src\common\item.hpp" />
+    <ClInclude Include="src\common\block_cipher_iv.hpp" />
+    <ClInclude Include="src\common\item_db_information.hpp" />
+    <ClInclude Include="src\common\item_db_record.hpp" />
+    <ClInclude Include="src\common\line.hpp" />
+    <ClInclude Include="src\common\logger.hpp" />
+    <ClInclude Include="src\common\make_unique.hpp" />
+    <ClInclude Include="src\common\maple_version.hpp" />
+    <ClInclude Include="src\common\mp_eater_data.hpp" />
+    <ClInclude Include="src\common\object_pool.hpp" />
+    <ClInclude Include="src\common\optional.hpp" />
+    <ClInclude Include="src\common\packet_builder.hpp" />
+    <ClInclude Include="src\common\packet_wrapper.hpp" />
+    <ClInclude Include="src\common\player_data.hpp" />
+    <ClInclude Include="src\common\party_data.hpp" />
+    <ClInclude Include="src\common\point.hpp" />
+    <ClInclude Include="src\common\map_position.hpp" />
+    <ClInclude Include="src\common\precompiled_header.hpp" />
+    <ClInclude Include="src\common\mysql_query_parser.hpp" />
+    <ClInclude Include="src\common\preprocessor.hpp" />
+    <ClInclude Include="src\common\quest.hpp" />
+    <ClInclude Include="src\common\quest_requests_data.hpp" />
+    <ClInclude Include="src\common\quest_rewards_data.hpp" />
+    <ClInclude Include="src\common\quest_state_data.hpp" />
+    <ClInclude Include="src\common\ratio.hpp" />
+    <ClInclude Include="src\common\rect.hpp" />
+    <ClInclude Include="src\common\respawnable.hpp" />
+    <ClInclude Include="src\common\return_damage_data.hpp" />
+    <ClInclude Include="src\common\salt_leftover_policy.hpp" />
+    <ClInclude Include="src\common\salt_modify_policy.hpp" />
+    <ClInclude Include="src\common\salt_size_policy.hpp" />
+    <ClInclude Include="src\common\salt_policy.hpp" />
+    <ClInclude Include="src\common\server_accepted_session.hpp" />
+    <ClInclude Include="src\common\shared_array.hpp" />
+    <ClInclude Include="src\common\shop_data.hpp" />
+    <ClInclude Include="src\common\soci_extensions.hpp" />
+    <ClInclude Include="src\common\split_packet_builder.hpp" />
+    <ClInclude Include="src\common\sql_logger.hpp" />
+    <ClInclude Include="src\common\stop_watch.hpp" />
+    <ClInclude Include="src\common\tausworthe_generator.hpp" />
+    <ClInclude Include="src\common\thread_pool.hpp" />
+    <ClInclude Include="src\common\timer\run_result.hpp" />
+    <ClInclude Include="src\common\timer\timer.hpp" />
+    <ClInclude Include="src\common\timer\container.hpp" />
+    <ClInclude Include="src\common\timer\container_holder.hpp" />
+    <ClInclude Include="src\common\timer\id.hpp" />
+    <ClInclude Include="src\common\timer\thread.hpp" />
+    <ClInclude Include="src\common\timer\func.hpp" />
+    <ClInclude Include="src\common\timer\type.hpp" />
+    <ClInclude Include="src\common\tokenizer.hpp" />
+    <ClInclude Include="src\common\types.hpp" />
+    <ClInclude Include="src\common\initialize_common.hpp" />
+    <ClInclude Include="src\common\unix_time.hpp" />
+    <ClInclude Include="src\common\database.hpp" />
+    <ClInclude Include="src\common\packet_reader.hpp" />
+    <ClInclude Include="src\common\common_packet.hpp" />
+    <ClInclude Include="src\common\inter_header.hpp" />
+    <ClInclude Include="src\common\authentication_packet.hpp" />
+    <ClInclude Include="src\common\file_utilities.hpp" />
+    <ClInclude Include="src\common\game_logic_utilities.hpp" />
+    <ClInclude Include="src\common\misc_utilities.hpp" />
+    <ClInclude Include="src\common\randomizer.hpp" />
+    <ClInclude Include="src\common\string_utilities.hpp" />
+    <ClInclude Include="src\common\time_utilities.hpp" />
+    <ClInclude Include="src\common\connection_manager.hpp" />
+    <ClInclude Include="src\common\session.hpp" />
+    <ClInclude Include="src\common\decoder.hpp" />
+    <ClInclude Include="src\common\abstract_server.hpp" />
+    <ClInclude Include="src\common\guild_logo.hpp" />
+    <ClInclude Include="src\common\server_type.hpp" />
+    <ClInclude Include="src\common\valid_class_gender_data.hpp" />
+    <ClInclude Include="src\common\valid_class_data.hpp" />
+    <ClInclude Include="src\common\valid_look_data.hpp" />
+    <ClInclude Include="src\common\vana_main.hpp" />
+    <ClInclude Include="src\common\variables.hpp" />
+    <ClInclude Include="src\common\database_updater.hpp" />
+    <ClInclude Include="src\common\wide_point.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

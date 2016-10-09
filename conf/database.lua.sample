@@ -1,10 +1,20 @@
+-- Database configuration takes the form of a table
+-- Required keys:
+-- host: the host of the database service
+-- port: the port of the database service
+-- username: the username to connect to the database service with
+-- database: the schema in the database service that holds the appropriate tables
+-- Optional keys:
+-- password: the password to connect to the database service with
+-- table_prefix: the prefix on tables within the schema
+
 -- Character Database
 chardb = {
 	["host"] = "localhost",
 	["username"] = "root",
 	["password"] = "",
 	["table_prefix"] = "",
-	["database"] = "maplestory",
+	["database"] = "vana",
 	["port"] = 3306,
 };
 

@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2014 Vana Development Team
+Copyright (C) 2008-2016 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -265,7 +265,6 @@ else
 
 			addText("What would you like to do?\r\n");
 			addText(blue(choiceRef(choices)));
-
 			choice = askChoice();
 
 			if not verifyInstance(signupInstance) then

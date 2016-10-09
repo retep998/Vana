@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2014 Vana Development Team
+Copyright (C) 2008-2016 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -76,6 +76,20 @@ function transform(tbl, transformType, func)
 			append(result, value);
 		end
 		index = index + 1;
+	end
+	return result;
+end
+
+function extend(...)
+	local args = {...};
+	local result = { };
+	for i = 1, #args do
+		local tbl = args[i];
+		if type(tbl) == "table" then
+			for key, value in pairs(tbl) do
+				result[key] = value;
+			end
+		end
 	end
 	return result;
 end

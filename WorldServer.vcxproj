@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -19,13 +19,13 @@
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <CLRSupport>false</CLRSupport>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -49,18 +49,22 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(MySqlDirectory32)\include;src\Common;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\core;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\backends\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\lua\include;$(LazurBeemz)\$(PlatformToolsetVersion)\Botan-$(BotanVersion)\build\include;$(LazurBeemz)\$(PlatformToolsetVersion)\boost_$(BoostVersion)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WIN32;MSVC;DEBUG;_DEBUG;X86;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src\;$(MySqlDirectory32)\include\;$(MySqlDirectory32)\include\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\core;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\backends\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\lua-$(LuaVersion)\src;$(LazurBeemz)\$(PlatformToolsetVersion)\Botan-$(BotanVersion)\build\include;$(LazurBeemz)\$(PlatformToolsetVersion)\asio-$(AsioVersion)\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WIN32;MSVC;DEBUG;_DEBUG;X86;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;_WIN32_WINNT=0x0601;_WINSOCK_DEPRECATED_NO_WARNINGS;ASIO_STANDALONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>PrecompiledHeader.hpp</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>precompiled_header.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ForcedIncludeFiles>PrecompiledHeader.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles>precompiled_header.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <AdditionalOptions>/Zc:throwingNew /Zc:strictStrings %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileName>$(IntDir)%(RelativeDir)\</ObjectFileName>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
     <PreLinkEvent>
       <Command>
@@ -74,23 +78,27 @@
       <AssemblyDebug>true</AssemblyDebug>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalOptions>"notelemetry.obj" %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(MySqlDirectory32)\include;src\Common;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\core;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\backends\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\lua\include;$(LazurBeemz)\$(PlatformToolsetVersion)\Botan-$(BotanVersion)\build\include;$(LazurBeemz)\$(PlatformToolsetVersion)\boost_$(BoostVersion)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WIN32;MSVC;NDEBUG;RELEASE;X86;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src\;$(MySqlDirectory32)\include\;$(MySqlDirectory32)\include\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\core;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\backends\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\lua-$(LuaVersion)\src;$(LazurBeemz)\$(PlatformToolsetVersion)\Botan-$(BotanVersion)\build\include;$(LazurBeemz)\$(PlatformToolsetVersion)\asio-$(AsioVersion)\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WIN32;MSVC;NDEBUG;RELEASE;X86;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;_WIN32_WINNT=0x0601;_WINSOCK_DEPRECATED_NO_WARNINGS;ASIO_STANDALONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>PrecompiledHeader.hpp</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>precompiled_header.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ForcedIncludeFiles>PrecompiledHeader.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles>precompiled_header.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <AdditionalOptions>/Zc:throwingNew %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileName>$(IntDir)%(RelativeDir)\</ObjectFileName>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ws2_32.lib;libmysql.lib;libsoci_core.lib;libsoci_mysql.lib;lua.lib;botan.lib;common.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -101,39 +109,40 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalOptions>"notelemetry.obj" %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\WorldServer\Channel.cpp" />
-    <ClCompile Include="src\WorldServer\main_world.cpp" />
-    <ClCompile Include="src\WorldServer\PlayerDataProvider.cpp" />
-    <ClCompile Include="src\WorldServer\PrecompiledHeader.cpp">
+    <ClCompile Include="src\world_server\channel.cpp" />
+    <ClCompile Include="src\world_server\main_world.cpp" />
+    <ClCompile Include="src\world_server\player_data_provider.cpp" />
+    <ClCompile Include="src\world_server\precompiled_header.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\WorldServer\Channels.cpp" />
-    <ClCompile Include="src\WorldServer\SyncHandler.cpp" />
-    <ClCompile Include="src\WorldServer\SyncPacket.cpp" />
-    <ClCompile Include="src\WorldServer\WorldServer.cpp" />
-    <ClCompile Include="src\WorldServer\LoginServerConnection.cpp" />
-    <ClCompile Include="src\WorldServer\LoginServerConnectPacket.cpp" />
-    <ClCompile Include="src\WorldServer\WorldServerAcceptConnection.cpp" />
-    <ClCompile Include="src\WorldServer\WorldServerAcceptPacket.cpp" />
-    <ClCompile Include="src\WorldServer\LoginServerConnectHandler.cpp" />
+    <ClCompile Include="src\world_server\channels.cpp" />
+    <ClCompile Include="src\world_server\sync_handler.cpp" />
+    <ClCompile Include="src\world_server\sync_packet.cpp" />
+    <ClCompile Include="src\world_server\world_server.cpp" />
+    <ClCompile Include="src\world_server\login_server_session.cpp" />
+    <ClCompile Include="src\world_server\login_server_connect_packet.cpp" />
+    <ClCompile Include="src\world_server\world_server_accepted_session.cpp" />
+    <ClCompile Include="src\world_server\world_server_accept_packet.cpp" />
+    <ClCompile Include="src\world_server\login_server_connect_handler.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\WorldServer\Channel.hpp" />
-    <ClInclude Include="src\WorldServer\PlayerDataProvider.hpp" />
-    <ClInclude Include="src\WorldServer\PrecompiledHeader.hpp" />
-    <ClInclude Include="src\WorldServer\Channels.hpp" />
-    <ClInclude Include="src\WorldServer\SyncHandler.hpp" />
-    <ClInclude Include="src\WorldServer\SyncPacket.hpp" />
-    <ClInclude Include="src\WorldServer\WorldServer.hpp" />
-    <ClInclude Include="src\WorldServer\LoginServerConnection.hpp" />
-    <ClInclude Include="src\WorldServer\LoginServerConnectPacket.hpp" />
-    <ClInclude Include="src\WorldServer\WorldServerAcceptConnection.hpp" />
-    <ClInclude Include="src\WorldServer\WorldServerAcceptPacket.hpp" />
-    <ClInclude Include="src\WorldServer\LoginServerConnectHandler.hpp" />
+    <ClInclude Include="src\world_server\channel.hpp" />
+    <ClInclude Include="src\world_server\player_data_provider.hpp" />
+    <ClInclude Include="src\world_server\precompiled_header.hpp" />
+    <ClInclude Include="src\world_server\channels.hpp" />
+    <ClInclude Include="src\world_server\sync_handler.hpp" />
+    <ClInclude Include="src\world_server\sync_packet.hpp" />
+    <ClInclude Include="src\world_server\world_server.hpp" />
+    <ClInclude Include="src\world_server\login_server_session.hpp" />
+    <ClInclude Include="src\world_server\login_server_connect_packet.hpp" />
+    <ClInclude Include="src\world_server\world_server_accepted_session.hpp" />
+    <ClInclude Include="src\world_server\world_server_accept_packet.hpp" />
+    <ClInclude Include="src\world_server\login_server_connect_handler.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Common.vcxproj">

@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2014 Vana Development Team
+Copyright (C) 2008-2016 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -30,7 +30,7 @@ npc_text_purple = 4;
 npc_text_normal = 0;
 npc_text_bold = 1;
 
-function processTextColor(text, previous, directive)
+function internalProcessTextColor(text, previous, directive)
 	returnText = directive;
 	if text ~= nil then
 		returnText = returnText .. text;
@@ -46,7 +46,7 @@ function processTextColor(text, previous, directive)
 	return returnText;
 end
 
-function processTextQuality(text, previous, directive)
+function internalProcessTextQuality(text, previous, directive)
 	returnText = directive;
 	if text ~= nil then
 		returnText = returnText .. text;
@@ -60,46 +60,46 @@ function processTextQuality(text, previous, directive)
 end
 
 function black(text, previousColor)
-	return processTextColor(text, previousColor, "#k");
+	return internalProcessTextColor(text, previousColor, "#k");
 end
 
 function red(text, previousColor)
 	if previousColor == nil then
 		previousColor = npc_text_black;
 	end
-	return processTextColor(text, previousColor, "#r");
+	return internalProcessTextColor(text, previousColor, "#r");
 end
 
 function blue(text, previousColor)
 	if previousColor == nil then
 		previousColor = npc_text_black;
 	end
-	return processTextColor(text, previousColor, "#b");
+	return internalProcessTextColor(text, previousColor, "#b");
 end
 
 function green(text, previousColor)
 	if previousColor == nil then
 		previousColor = npc_text_black;
 	end
-	return processTextColor(text, previousColor, "#g");
+	return internalProcessTextColor(text, previousColor, "#g");
 end
 
 function purple(text, previousColor)
 	if previousColor == nil then
 		previousColor = npc_text_black;
 	end
-	return processTextColor(text, previousColor, "#d");
+	return internalProcessTextColor(text, previousColor, "#d");
 end
 
 function bold(text, previousQuality)
 	if previousQuality == nil then
 		previousQuality = npc_text_normal;
 	end
-	return processTextQuality(text, previousQuality, "#e");
+	return internalProcessTextQuality(text, previousQuality, "#e");
 end
 
 function normal(text, previousQuality)
-	return processTextQuality(text, previousQuality, "#n");
+	return internalProcessTextQuality(text, previousQuality, "#n");
 end
 
 function fileRef(text)

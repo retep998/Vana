@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2014 Vana Development Team
+Copyright (C) 2008-2016 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -97,22 +97,28 @@ if not isInstance(signupInstance) then
 				addText("Would you like to become the leader of the Horntail Expedition Squad?");
 				answer = askYesNo();
 
-				if answer == answer_yes then
-					if not isGm() and (not isPartyInLevelRange(80, 200) or getPartyMapCount() < 3) then
-						addText("Only the leader of the party that consists of 3 or more members is eligible to become the leader of the Horntail Expedition Squad.");
-						sendOk();
-					else
-						createInstance(signupInstance, 5 * 60, true);
-						initSignup(30);
-						showMapMessage(getName() .. " has been appointed the leader of the Horntail Expedition Squad. To those willing to participate in the Expedition Squad, APPLY NOW!", msg_blue);
+				if verifyInstance(signupInstance) then
+					-- Check again, make sure that no glitches occur... in theory
+					addText("The expedition squad is already active.");
+					sendOk();
+				else
+					if answer == answer_yes then
+						if not isGm() and (not isPartyInLevelRange(80, 200) or getPartyMapCount() < 3) then
+							addText("Only the leader of the party that consists of 3 or more members is eligible to become the leader of the Horntail Expedition Squad.");
+							sendOk();
+						else
+							createInstance(signupInstance, 5 * 60, true);
+							initSignup(30);
+							showMapMessage(getName() .. " has been appointed the leader of the Horntail Expedition Squad. To those willing to participate in the Expedition Squad, APPLY NOW!", msg_blue);
 
-						addText("You have been appointed the leader of the Horntail Expedition Squad. ");
-						addText("You'll now have 5 minutes to form the squad and have every member enter the mission.");
+							addText("You have been appointed the leader of the Horntail Expedition Squad. ");
+							addText("You'll now have 5 minutes to form the squad and have every member enter the mission.");
+							sendOk();
+						end
+					else
+						addText("Talk to me if you want to become the leader of the squad.");
 						sendOk();
 					end
-				else
-					addText("Talk to me if you want to become the leader of the squad.");
-					sendOk();
 				end
 			else
 				addText("Only the leader of the party with 3 or more members that are at least Level 80 is eligible to apply for the leader of the expedition squad.");
@@ -124,7 +130,7 @@ if not isInstance(signupInstance) then
 		sendOk();
 	end
 else
-	if getName() == getInstanceVariable("master") then
+	if isSignupMaster() then
 		if isEntered() then
 			if isAtHead() then
 				addText("The battle has already begun.");
@@ -175,7 +181,7 @@ else
 					end
 				end),
 				makeChoiceHandler(" Re-accept a member from the Suspended List", function()
-					if getBannedInstancePlayerCount() > 0 then
+					if getBannedCount() > 0 then
 						choices = getBannedList();
 						addText("Whose application are you willing to accept?\r\n");
 						addText(blue(choiceRef(choices)));

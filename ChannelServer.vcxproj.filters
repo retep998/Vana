@@ -37,616 +37,641 @@
     <Filter Include="Player">
       <UniqueIdentifier>{164396e1-e03b-4852-a4f4-a1db48bd34ca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scripting">
-      <UniqueIdentifier>{8121e5ce-8978-4b9e-ac5d-ae595156b19d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Packets\Headers">
       <UniqueIdentifier>{54fdf726-3161-438c-b0db-4221fff64580}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Inter-Server\Login">
+      <UniqueIdentifier>{fec8b288-0295-4f17-a679-ac4bb251ca91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lua">
+      <UniqueIdentifier>{8121e5ce-8978-4b9e-ac5d-ae595156b19d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\ChannelServer\Buffs.cpp">
+    <ClCompile Include="src\channel_server\buffs.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\Drop.cpp">
+    <ClCompile Include="src\channel_server\drop.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\Fame.cpp">
+    <ClCompile Include="src\channel_server\fame.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\Inventory.cpp">
+    <ClCompile Include="src\channel_server\inventory.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\KeyMaps.cpp">
+    <ClCompile Include="src\channel_server\key_maps.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\Map.cpp">
+    <ClCompile Include="src\channel_server\map.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\MapleTvs.cpp">
+    <ClCompile Include="src\channel_server\maple_tvs.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\Maps.cpp">
+    <ClCompile Include="src\channel_server\maps.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\Mist.cpp">
+    <ClCompile Include="src\channel_server\mist.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\Mob.cpp">
+    <ClCompile Include="src\channel_server\mob.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\Npc.cpp">
+    <ClCompile Include="src\channel_server\npc.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\Party.cpp">
+    <ClCompile Include="src\channel_server\party.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\Quests.cpp">
+    <ClCompile Include="src\channel_server\quests.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\SkillMacros.cpp">
+    <ClCompile Include="src\channel_server\skill_macros.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\Skills.cpp">
+    <ClCompile Include="src\channel_server\skills.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\Trade.cpp">
+    <ClCompile Include="src\channel_server\trade.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\Trades.cpp">
+    <ClCompile Include="src\channel_server\trades.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\BuddyListPacket.cpp">
+    <ClCompile Include="src\channel_server\buddy_list_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\BuffsPacket.cpp">
+    <ClCompile Include="src\channel_server\buffs_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\DropsPacket.cpp">
+    <ClCompile Include="src\channel_server\drops_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\FamePacket.cpp">
+    <ClCompile Include="src\channel_server\fame_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\GmPacket.cpp">
+    <ClCompile Include="src\channel_server\gm_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\InventoryPacket.cpp">
+    <ClCompile Include="src\channel_server\inventory_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\LevelsPacket.cpp">
+    <ClCompile Include="src\channel_server\levels_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\MapPacket.cpp">
+    <ClCompile Include="src\channel_server\map_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\MobsPacket.cpp">
+    <ClCompile Include="src\channel_server\mobs_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\MonsterBookPacket.cpp">
+    <ClCompile Include="src\channel_server\monster_book_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\NpcPacket.cpp">
+    <ClCompile Include="src\channel_server\npc_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\PetsPacket.cpp">
+    <ClCompile Include="src\channel_server\pets_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\PlayerPacket.cpp">
+    <ClCompile Include="src\channel_server\player_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\PlayersPacket.cpp">
+    <ClCompile Include="src\channel_server\players_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\QuestsPacket.cpp">
+    <ClCompile Include="src\channel_server\quests_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\ReactorPacket.cpp">
+    <ClCompile Include="src\channel_server\reactor_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\ServerPacket.cpp">
+    <ClCompile Include="src\channel_server\server_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\SkillsPacket.cpp">
+    <ClCompile Include="src\channel_server\skills_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\StoragePacket.cpp">
+    <ClCompile Include="src\channel_server\storage_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\SummonsPacket.cpp">
+    <ClCompile Include="src\channel_server\summons_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\TradesPacket.cpp">
+    <ClCompile Include="src\channel_server\trades_packet.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\BuffsPacketHelper.cpp">
+    <ClCompile Include="src\channel_server\buffs_packet_helper.cpp">
       <Filter>Packets\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\PlayerPacketHelper.cpp">
+    <ClCompile Include="src\channel_server\player_packet_helper.cpp">
       <Filter>Packets\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\MapDataProvider.cpp">
+    <ClCompile Include="src\channel_server\player.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\player_active_buffs.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\player_buddy_list.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\player_inventory.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\player_monster_book.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\player_mounts.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\player_pets.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\player_quests.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\player_skills.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\player_stats.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\player_storage.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\player_summons.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\player_variables.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\event_data_provider.cpp">
+      <Filter>Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\instance.cpp">
+      <Filter>Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\instances.cpp">
+      <Filter>Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\buddy_list_handler.cpp">
+      <Filter>Handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\drop_handler.cpp">
+      <Filter>Handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\inventory_handler.cpp">
+      <Filter>Handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\mob_handler.cpp">
+      <Filter>Handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\movement_handler.cpp">
+      <Filter>Handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\npc_handler.cpp">
+      <Filter>Handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\player_handler.cpp">
+      <Filter>Handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\trade_handler.cpp">
+      <Filter>Handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\pet.cpp">
+      <Filter>ChannelServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\pet_handler.cpp">
+      <Filter>Handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\party_handler.cpp">
+      <Filter>Handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\sync_packet.cpp">
+      <Filter>Inter-Server\Sync</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\sync_handler.cpp">
+      <Filter>Inter-Server\Sync</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\inventory_packet_helper.cpp">
+      <Filter>Packets\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\effect_packet.cpp">
+      <Filter>Packets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\reactor.cpp">
+      <Filter>ChannelServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\reactor_handler.cpp">
+      <Filter>Handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\main_channel.cpp" />
+    <ClCompile Include="src\channel_server\chat_handler.cpp">
+      <Filter>Handlers\Chat Handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\chat_handler_functions.cpp">
+      <Filter>Handlers\Chat Handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\command_handler.cpp">
+      <Filter>Handlers\Chat Handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\message_functions.cpp">
+      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\player_mod_functions.cpp">
+      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\custom_functions.cpp">
+      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\management_functions.cpp">
+      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\info_functions.cpp">
+      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\map_functions.cpp">
+      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\party_packet.cpp">
+      <Filter>Packets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\summon_handler.cpp">
+      <Filter>Handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\summon.cpp">
+      <Filter>ChannelServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\channel_server.cpp" />
+    <ClCompile Include="src\channel_server\precompiled_header.cpp" />
+    <ClCompile Include="src\channel_server\status_info.cpp">
+      <Filter>ChannelServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\maple_tv_packet.cpp">
+      <Filter>Packets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\player_data_provider.cpp">
+      <Filter>Inter-Server\Sync</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\mystic_door.cpp">
+      <Filter>ChannelServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\login_server_session.cpp">
+      <Filter>Inter-Server\Login</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\world_server_session.cpp">
+      <Filter>Inter-Server\World</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\world_server_session_handler.cpp">
+      <Filter>Inter-Server\World</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\world_server_packet.cpp">
+      <Filter>Inter-Server\World</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\login_server_session_handler.cpp">
+      <Filter>Inter-Server\Login</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\lua\lua_instance.cpp">
+      <Filter>lua</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\lua\lua_npc.cpp">
+      <Filter>lua</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\lua\lua_portal.cpp">
+      <Filter>lua</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\lua\lua_reactor.cpp">
+      <Filter>lua</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\lua\lua_scriptable.cpp">
+      <Filter>lua</Filter>
+    </ClCompile>
+    <ClCompile Include="src\channel_server\map_factory.cpp">
       <Filter>Data Loading</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\LuaInstance.cpp">
-      <Filter>Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\LuaNpc.cpp">
-      <Filter>Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\LuaPortal.cpp">
-      <Filter>Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\LuaReactor.cpp">
-      <Filter>Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\LuaScriptable.cpp">
-      <Filter>Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\Player.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\PlayerActiveBuffs.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\PlayerBuddyList.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\PlayerInventory.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\PlayerMonsterBook.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\PlayerMounts.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\PlayerPets.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\PlayerQuests.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\PlayerSkills.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\PlayerStats.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\PlayerStorage.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\PlayerSummons.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\PlayerVariables.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\EventDataProvider.cpp">
-      <Filter>Instance</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\Instance.cpp">
-      <Filter>Instance</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\Instances.cpp">
-      <Filter>Instance</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\BuddyListHandler.cpp">
-      <Filter>Handlers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\DropHandler.cpp">
-      <Filter>Handlers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\InventoryHandler.cpp">
-      <Filter>Handlers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\MobHandler.cpp">
-      <Filter>Handlers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\MovementHandler.cpp">
-      <Filter>Handlers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\NpcHandler.cpp">
-      <Filter>Handlers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\PlayerHandler.cpp">
-      <Filter>Handlers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\TradeHandler.cpp">
-      <Filter>Handlers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\Pet.cpp">
-      <Filter>ChannelServer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\PetHandler.cpp">
-      <Filter>Handlers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\PartyHandler.cpp">
-      <Filter>Handlers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\WorldServerConnectPacket.cpp">
-      <Filter>Inter-Server\World</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\WorldServerConnection.cpp">
-      <Filter>Inter-Server\World</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\WorldServerConnectHandler.cpp">
-      <Filter>Inter-Server\World</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\SyncPacket.cpp">
-      <Filter>Inter-Server\Sync</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\SyncHandler.cpp">
-      <Filter>Inter-Server\Sync</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\InventoryPacketHelper.cpp">
-      <Filter>Packets\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\EffectPacket.cpp">
-      <Filter>Packets</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\Reactor.cpp">
-      <Filter>ChannelServer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\ReactorHandler.cpp">
-      <Filter>Handlers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\main_channel.cpp" />
-    <ClCompile Include="src\ChannelServer\ChatHandler.cpp">
-      <Filter>Handlers\Chat Handlers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\ChatHandlerFunctions.cpp">
-      <Filter>Handlers\Chat Handlers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\CommandHandler.cpp">
-      <Filter>Handlers\Chat Handlers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\MessageFunctions.cpp">
-      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\PlayerModFunctions.cpp">
-      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\CustomFunctions.cpp">
-      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\ManagementFunctions.cpp">
-      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\InfoFunctions.cpp">
-      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\MapFunctions.cpp">
-      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\PartyPacket.cpp">
-      <Filter>Packets</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\SummonHandler.cpp">
-      <Filter>Handlers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\Summon.cpp">
-      <Filter>ChannelServer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\ChannelServer.cpp" />
-    <ClCompile Include="src\ChannelServer\PrecompiledHeader.cpp" />
-    <ClCompile Include="src\ChannelServer\StatusInfo.cpp">
-      <Filter>ChannelServer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\MapleTvPacket.cpp">
-      <Filter>Packets</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\PlayerDataProvider.cpp">
-      <Filter>Inter-Server\Sync</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\MysticDoor.cpp">
-      <Filter>ChannelServer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\ChannelServer\Buffs.hpp">
+    <ClInclude Include="src\channel_server\buffs.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\Trades.hpp">
+    <ClInclude Include="src\channel_server\trades.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\Drop.hpp">
+    <ClInclude Include="src\channel_server\drop.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\Fame.hpp">
+    <ClInclude Include="src\channel_server\fame.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\Inventory.hpp">
+    <ClInclude Include="src\channel_server\inventory.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\KeyMaps.hpp">
+    <ClInclude Include="src\channel_server\key_maps.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\Map.hpp">
+    <ClInclude Include="src\channel_server\map.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\MapleTvs.hpp">
+    <ClInclude Include="src\channel_server\maple_tvs.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\Maps.hpp">
+    <ClInclude Include="src\channel_server\maps.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\Mist.hpp">
+    <ClInclude Include="src\channel_server\mist.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\Mob.hpp">
+    <ClInclude Include="src\channel_server\mob.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\MovableLife.hpp">
+    <ClInclude Include="src\channel_server\movable_life.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\Npc.hpp">
+    <ClInclude Include="src\channel_server\npc.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\Party.hpp">
+    <ClInclude Include="src\channel_server\party.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\Pet.hpp">
+    <ClInclude Include="src\channel_server\pet.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\Quests.hpp">
+    <ClInclude Include="src\channel_server\quests.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\Reactor.hpp">
+    <ClInclude Include="src\channel_server\reactor.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\SkillMacros.hpp">
+    <ClInclude Include="src\channel_server\skill_macros.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\Skills.hpp">
+    <ClInclude Include="src\channel_server\skills.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\Trade.hpp">
+    <ClInclude Include="src\channel_server\trade.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\MapDataProvider.hpp">
+    <ClInclude Include="src\channel_server\buddy_list_handler.hpp">
+      <Filter>Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\trade_handler.hpp">
+      <Filter>Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\drop_handler.hpp">
+      <Filter>Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\inventory_handler.hpp">
+      <Filter>Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\mob_handler.hpp">
+      <Filter>Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\movement_handler.hpp">
+      <Filter>Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\npc_handler.hpp">
+      <Filter>Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\party_handler.hpp">
+      <Filter>Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\pet_handler.hpp">
+      <Filter>Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\player_handler.hpp">
+      <Filter>Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\reactor_handler.hpp">
+      <Filter>Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\event_data_provider.hpp">
+      <Filter>Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\instances.hpp">
+      <Filter>Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\instance.hpp">
+      <Filter>Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\sync_handler.hpp">
+      <Filter>Inter-Server\Sync</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\sync_packet.hpp">
+      <Filter>Inter-Server\Sync</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\buffs_packet_helper.hpp">
+      <Filter>Packets\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\player_packet_helper.hpp">
+      <Filter>Packets\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\inventory_packet_helper.hpp">
+      <Filter>Packets\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\buddy_list_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\trades_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\buffs_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\drops_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\effect_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\fame_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\gm_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\inventory_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\levels_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\map_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\mobs_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\monster_book_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\npc_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\pets_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\player_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\players_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\quests_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\reactor_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\server_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\skills_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\storage_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\summons_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\player.hpp">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\player_variables.hpp">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\player_active_buffs.hpp">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\player_buddy_list.hpp">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\player_inventory.hpp">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\player_monster_book.hpp">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\player_mounts.hpp">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\player_pets.hpp">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\player_quests.hpp">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\player_skills.hpp">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\player_stats.hpp">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\player_storage.hpp">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\player_summons.hpp">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\chat_handler.hpp">
+      <Filter>Handlers\Chat Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\chat_handler_functions.hpp">
+      <Filter>Handlers\Chat Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\command_handler.hpp">
+      <Filter>Handlers\Chat Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\message_functions.hpp">
+      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\player_mod_functions.hpp">
+      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\custom_functions.hpp">
+      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\management_functions.hpp">
+      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\info_functions.hpp">
+      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\map_functions.hpp">
+      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\party_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\summon_handler.hpp">
+      <Filter>Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\summon.hpp">
+      <Filter>ChannelServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\channel_server.hpp" />
+    <ClInclude Include="src\channel_server\status_info.hpp">
+      <Filter>ChannelServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\maple_tv_packet.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\player_data_provider.hpp">
+      <Filter>Inter-Server\Sync</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\cmsg_header.hpp">
+      <Filter>Packets\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\smsg_header.hpp">
+      <Filter>Packets\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\mystic_door.hpp">
+      <Filter>ChannelServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\precompiled_header.hpp" />
+    <ClInclude Include="src\channel_server\key_map_action.hpp">
+      <Filter>ChannelServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\key_map_key.hpp">
+      <Filter>ChannelServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\key_map_type.hpp">
+      <Filter>ChannelServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\login_server_session.hpp">
+      <Filter>Inter-Server\Login</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\world_server_session.hpp">
+      <Filter>Inter-Server\World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\world_server_session_handler.hpp">
+      <Filter>Inter-Server\World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\world_server_packet.hpp">
+      <Filter>Inter-Server\World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\login_server_session_handler.hpp">
+      <Filter>Inter-Server\Login</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\lua\lua_instance.hpp">
+      <Filter>lua</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\lua\lua_npc.hpp">
+      <Filter>lua</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\lua\lua_portal.hpp">
+      <Filter>lua</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\lua\lua_reactor.hpp">
+      <Filter>lua</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\lua\lua_scriptable.hpp">
+      <Filter>lua</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\map_factory.hpp">
       <Filter>Data Loading</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\BuddyListHandler.hpp">
-      <Filter>Handlers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\TradeHandler.hpp">
-      <Filter>Handlers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\DropHandler.hpp">
-      <Filter>Handlers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\InventoryHandler.hpp">
-      <Filter>Handlers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\MobHandler.hpp">
-      <Filter>Handlers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\MovementHandler.hpp">
-      <Filter>Handlers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\NpcHandler.hpp">
-      <Filter>Handlers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PartyHandler.hpp">
-      <Filter>Handlers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PetHandler.hpp">
-      <Filter>Handlers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PlayerHandler.hpp">
-      <Filter>Handlers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\ReactorHandler.hpp">
-      <Filter>Handlers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\EventDataProvider.hpp">
-      <Filter>Instance</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\Instances.hpp">
-      <Filter>Instance</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\Instance.hpp">
-      <Filter>Instance</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\SyncHandler.hpp">
-      <Filter>Inter-Server\Sync</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\SyncPacket.hpp">
-      <Filter>Inter-Server\Sync</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\WorldServerConnectHandler.hpp">
-      <Filter>Inter-Server\World</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\WorldServerConnectPacket.hpp">
-      <Filter>Inter-Server\World</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\WorldServerConnection.hpp">
-      <Filter>Inter-Server\World</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\BuffsPacketHelper.hpp">
-      <Filter>Packets\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PlayerPacketHelper.hpp">
-      <Filter>Packets\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\InventoryPacketHelper.hpp">
-      <Filter>Packets\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\BuddyListPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\TradesPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\BuffsPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\DropsPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\EffectPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\FamePacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\GmPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\InventoryPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\LevelsPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\MapPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\MobsPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\MonsterBookPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\NpcPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PetsPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PlayerPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PlayersPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\QuestsPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\ReactorPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\ServerPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\SkillsPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\StoragePacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\SummonsPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\Player.hpp">
-      <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PlayerVariables.hpp">
-      <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PlayerActiveBuffs.hpp">
-      <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PlayerBuddyList.hpp">
-      <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PlayerInventory.hpp">
-      <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PlayerMonsterBook.hpp">
-      <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PlayerMounts.hpp">
-      <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PlayerPets.hpp">
-      <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PlayerQuests.hpp">
-      <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PlayerSkills.hpp">
-      <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PlayerStats.hpp">
-      <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PlayerStorage.hpp">
-      <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PlayerSummons.hpp">
-      <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\LuaInstance.hpp">
-      <Filter>Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\LuaScriptable.hpp">
-      <Filter>Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\LuaNpc.hpp">
-      <Filter>Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\LuaPortal.hpp">
-      <Filter>Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\LuaReactor.hpp">
-      <Filter>Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\ChatHandler.hpp">
-      <Filter>Handlers\Chat Handlers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\ChatHandlerFunctions.hpp">
-      <Filter>Handlers\Chat Handlers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\CommandHandler.hpp">
-      <Filter>Handlers\Chat Handlers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\MessageFunctions.hpp">
-      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PlayerModFunctions.hpp">
-      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\CustomFunctions.hpp">
-      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\ManagementFunctions.hpp">
-      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\InfoFunctions.hpp">
-      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\MapFunctions.hpp">
-      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PartyPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\SummonHandler.hpp">
-      <Filter>Handlers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\Summon.hpp">
-      <Filter>ChannelServer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\ChannelServer.hpp" />
-    <ClInclude Include="src\ChannelServer\StatusInfo.hpp">
-      <Filter>ChannelServer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\MapleTvPacket.hpp">
-      <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PlayerDataProvider.hpp">
-      <Filter>Inter-Server\Sync</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\CmsgHeader.hpp">
-      <Filter>Packets\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\SmsgHeader.hpp">
-      <Filter>Packets\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\MysticDoor.hpp">
-      <Filter>ChannelServer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

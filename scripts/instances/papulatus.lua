@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2014 Vana Development Team
+Copyright (C) 2008-2016 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,18 +25,18 @@ function beginInstance()
 end
 
 function playerDisconnect(playerId, isPartyLeader)
-	cleanUpPap();
+	cleanUpPapulatus();
 end
 
 function changeMap(playerId, newMap, oldMap, isPartyLeader)
 	if not isInstanceMap(newMap) then
 		-- Player probably died, want to make sure this doesn't keep the room full
 		removeInstancePlayer(playerId);
-		cleanUpPap();
+		cleanUpPapulatus();
 	end
 end
 
-function cleanUpPap()
+function cleanUpPapulatus()
 	if getInstancePlayerCount() == 0 then
 		setReactorState(220080000, 2208001, 0);
 		setReactorState(220080000, 2208003, 0);

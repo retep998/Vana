@@ -18,72 +18,72 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\WorldServer\Channels.cpp">
+    <ClCompile Include="src\world_server\channels.cpp">
       <Filter>WorldServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\WorldServer\Channel.cpp">
+    <ClCompile Include="src\world_server\channel.cpp">
       <Filter>WorldServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\WorldServer\LoginServerConnectHandler.cpp">
+    <ClCompile Include="src\world_server\login_server_connect_handler.cpp">
       <Filter>Inter-Server\Login</Filter>
     </ClCompile>
-    <ClCompile Include="src\WorldServer\LoginServerConnection.cpp">
+    <ClCompile Include="src\world_server\login_server_connect_packet.cpp">
       <Filter>Inter-Server\Login</Filter>
     </ClCompile>
-    <ClCompile Include="src\WorldServer\LoginServerConnectPacket.cpp">
-      <Filter>Inter-Server\Login</Filter>
-    </ClCompile>
-    <ClCompile Include="src\WorldServer\WorldServerAcceptConnection.cpp">
+    <ClCompile Include="src\world_server\world_server_accept_packet.cpp">
       <Filter>Inter-Server\Channel</Filter>
     </ClCompile>
-    <ClCompile Include="src\WorldServer\WorldServerAcceptPacket.cpp">
+    <ClCompile Include="src\world_server\sync_handler.cpp">
+      <Filter>Inter-Server\Sync</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world_server\sync_packet.cpp">
+      <Filter>Inter-Server\Sync</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world_server\main_world.cpp" />
+    <ClCompile Include="src\world_server\precompiled_header.cpp" />
+    <ClCompile Include="src\world_server\world_server.cpp" />
+    <ClCompile Include="src\world_server\player_data_provider.cpp">
+      <Filter>Inter-Server\Sync</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world_server\login_server_session.cpp">
+      <Filter>Inter-Server\Login</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world_server\world_server_accepted_session.cpp">
       <Filter>Inter-Server\Channel</Filter>
-    </ClCompile>
-    <ClCompile Include="src\WorldServer\SyncHandler.cpp">
-      <Filter>Inter-Server\Sync</Filter>
-    </ClCompile>
-    <ClCompile Include="src\WorldServer\SyncPacket.cpp">
-      <Filter>Inter-Server\Sync</Filter>
-    </ClCompile>
-    <ClCompile Include="src\WorldServer\main_world.cpp" />
-    <ClCompile Include="src\WorldServer\PrecompiledHeader.cpp" />
-    <ClCompile Include="src\WorldServer\WorldServer.cpp" />
-    <ClCompile Include="src\WorldServer\PlayerDataProvider.cpp">
-      <Filter>Inter-Server\Sync</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\WorldServer\Channel.hpp">
+    <ClInclude Include="src\world_server\channel.hpp">
       <Filter>WorldServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\WorldServer\Channels.hpp">
+    <ClInclude Include="src\world_server\channels.hpp">
       <Filter>WorldServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\WorldServer\WorldServerAcceptConnection.hpp">
+    <ClInclude Include="src\world_server\world_server_accept_packet.hpp">
       <Filter>Inter-Server\Channel</Filter>
     </ClInclude>
-    <ClInclude Include="src\WorldServer\WorldServerAcceptPacket.hpp">
+    <ClInclude Include="src\world_server\login_server_connect_handler.hpp">
+      <Filter>Inter-Server\Login</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world_server\login_server_connect_packet.hpp">
+      <Filter>Inter-Server\Login</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world_server\sync_handler.hpp">
+      <Filter>Inter-Server\Sync</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world_server\sync_packet.hpp">
+      <Filter>Inter-Server\Sync</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world_server\precompiled_header.hpp" />
+    <ClInclude Include="src\world_server\world_server.hpp" />
+    <ClInclude Include="src\world_server\player_data_provider.hpp">
+      <Filter>Inter-Server\Sync</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world_server\login_server_session.hpp">
+      <Filter>Inter-Server\Login</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world_server\world_server_accepted_session.hpp">
       <Filter>Inter-Server\Channel</Filter>
-    </ClInclude>
-    <ClInclude Include="src\WorldServer\LoginServerConnectHandler.hpp">
-      <Filter>Inter-Server\Login</Filter>
-    </ClInclude>
-    <ClInclude Include="src\WorldServer\LoginServerConnectPacket.hpp">
-      <Filter>Inter-Server\Login</Filter>
-    </ClInclude>
-    <ClInclude Include="src\WorldServer\LoginServerConnection.hpp">
-      <Filter>Inter-Server\Login</Filter>
-    </ClInclude>
-    <ClInclude Include="src\WorldServer\SyncHandler.hpp">
-      <Filter>Inter-Server\Sync</Filter>
-    </ClInclude>
-    <ClInclude Include="src\WorldServer\SyncPacket.hpp">
-      <Filter>Inter-Server\Sync</Filter>
-    </ClInclude>
-    <ClInclude Include="src\WorldServer\PrecompiledHeader.hpp" />
-    <ClInclude Include="src\WorldServer\WorldServer.hpp" />
-    <ClInclude Include="src\WorldServer\PlayerDataProvider.hpp">
-      <Filter>Inter-Server\Sync</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
