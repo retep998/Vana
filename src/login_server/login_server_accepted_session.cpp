@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "login_server_accepted_session.hpp"
+#include "common/common_header.hpp"
 #include "common/inter_header.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
@@ -59,6 +60,14 @@ auto login_server_accepted_session::handle(packet_reader &reader) -> result {
 		case IMSG_TO_ALL_WORLDS: server.get_worlds().send(packets::identity(reader)); break;
 
 		case IMSG_REHASH_CONFIG: server.rehash_config(); break;
+
+		case CMSG_PONG:
+		case SMSG_PING:
+		case IMSG_PASSWORD:
+			/* Intentionally blank */
+			break;
+
+		default: return result::failure;
 	}
 	return result::successful;
 }

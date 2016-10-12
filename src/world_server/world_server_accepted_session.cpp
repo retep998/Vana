@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "world_server_accepted_session.hpp"
+#include "common/common_header.hpp"
 #include "common/inter_header.hpp"
 #include "common/misc_utilities.hpp"
 #include "common/packet_reader.hpp"
@@ -71,6 +72,14 @@ auto world_server_accepted_session::handle(packet_reader &reader) -> result {
 			break;
 		}
 		case IMSG_TO_ALL_CHANNELS: server.get_channels().send(vana::packets::identity(reader)); break;
+
+		case CMSG_PONG:
+		case SMSG_PING:
+		case IMSG_PASSWORD:
+			/* Intentionally blank */
+			break;
+
+		default: return result::failure;
 	}
 	return result::successful;
 }

@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "login_server_session.hpp"
+#include "common/common_header.hpp"
 #include "common/config/world.hpp"
 #include "common/exit_codes.hpp"
 #include "common/inter_header.hpp"
@@ -35,6 +36,12 @@ namespace channel_server {
 auto login_server_session::handle(packet_reader &reader) -> result {
 	switch (reader.get<packet_header>()) {
 		case IMSG_LOGIN_CHANNEL_CONNECT: login_server_session_handler::connect(shared_from_this(), reader); break;
+
+		case CMSG_PONG:
+		case SMSG_PING:
+			/* Intentionally blank */
+			break;
+
 		default: return result::failure;
 	}
 	return result::successful;
