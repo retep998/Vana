@@ -600,13 +600,19 @@ auto player_handler::use_melee_attack(ref_ptr<player> player, packet_reader &rea
 			uint8_t items = reader.get<int8_t>();
 			for (uint8_t i = 0; i < items; i++) {
 				game_map_object obj_id = reader.get<game_map_object>();
-				reader.unk<uint8_t>();
+				// TODO: Run this logic _after_ parsing it
+				reader.unk<uint8_t>(); // Not sure what this is for, but it isn't used?
 				if (drop *drop = map->get_drop(obj_id)) {
 					if (!drop->is_mesos()) {
 						// Hacking
 						return;
 					}
-					map->send(packets::drops::explode_drop(drop->get_id()));
+
+					// Note that officially there's also a main delay used for skills
+					// that depends on skillid (and would be 1000 in most cases) and
+					// other values (type of weapon used, active buffs)
+					int16_t delay = std::min(1000, 100 * (i % 5));
+					map->send(packets::drops::explode_drop(drop->get_id(), delay));
 					map->remove_drop(drop->get_id());
 					delete drop;
 				}
@@ -1088,11 +1094,14 @@ auto player_handler::compile_attack(ref_ptr<player> player, packet_reader &reade
 
 	for (int8_t i = 0; i < targets; ++i) {
 		game_map_object map_mob_id = reader.get<game_map_object>();
-		reader.unk<uint32_t>(); // Always 0x06, <two bytes of some kind>, 0x01
+		reader.skip<int8_t>(); // Hit action
+		reader.skip<int8_t>(); // 'Fore Action' (where bit 8 == facing left)
+		reader.skip<int8_t>(); // Frame index
+		reader.skip<int8_t>(); // Damage stats calculator index. Bit 8 == mob doomed
 		reader.skip<point>(); // Mob pos
 		reader.skip<point>(); // Damage pos
 		if (!meso_explosion) {
-			reader.skip<uint16_t>(); // Distance, I think
+			reader.skip<uint16_t>(); // Delay per hit
 		}
 		else {
 			hits = reader.get<int8_t>(); // Hits for Meso Explosion

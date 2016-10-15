@@ -28,11 +28,11 @@ namespace channel_server {
 namespace packets {
 namespace drops {
 
-PACKET_IMPL(show_drop, drop *drop, int8_t type, const point &origin) {
+PACKET_IMPL(show_drop, drop *drop, drop_spawn_types type, const point &origin, uint16_t delay) {
 	packet_builder builder;
 	builder
 		.add<packet_header>(SMSG_DROP_ITEM)
-		.add<int8_t>(type)
+		.add<int8_t>((int8_t)type)
 		.add<game_map_object>(drop->get_id())
 		.add<bool>(drop->is_mesos())
 		.add<int32_t>(drop->get_object_id())
@@ -41,27 +41,23 @@ PACKET_IMPL(show_drop, drop *drop, int8_t type, const point &origin) {
 		.add<point>(drop->get_pos())
 		.add<int32_t>(drop->get_time());
 
-	if (type != drop_types::show_existing) {
+	if (type != drop_spawn_types::show_existing) {
 		// Give the point of origin for things that are just being dropped
 		builder
 			.add<point>(origin)
-			.unk<int16_t>();
+			.unk<int16_t>(delay);
 	}
+
 	if (!drop->is_mesos()) {
 		builder.add<file_time>(constant::item::no_expiration);
 	}
+
 	builder.add<bool>(!drop->is_player_drop()); // Determines whether pets can pick item up or not
 	return builder;
 }
 
 PACKET_IMPL(take_drop, game_player_id player_id, game_map_object drop_id, int8_t pet_index) {
-	packet_builder builder;
-	builder
-		.add<packet_header>(SMSG_DROP_PICKUP)
-		.add<int8_t>(pet_index != -1 ? 5 : 2)
-		.add<game_map_object>(drop_id)
-		.add<game_player_id>(player_id);
-	return builder;
+	return remove_drop(drop_id, pet_index != -1 ? drop_despawn_types::loot_by_pet : drop_despawn_types::loot_by_user, player_id);
 }
 
 PACKET_IMPL(dont_take) {
@@ -72,23 +68,31 @@ PACKET_IMPL(dont_take) {
 	return builder;
 }
 
-PACKET_IMPL(remove_drop, game_map_object drop_id) {
+PACKET_IMPL(remove_drop, game_map_object drop_id, drop_despawn_types type, int32_t option) {
 	packet_builder builder;
 	builder
 		.add<packet_header>(SMSG_DROP_PICKUP)
-		.add<int8_t>(0)
+		.add<int8_t>((int8_t)type)
 		.add<game_map_object>(drop_id);
+
+	switch (type) {
+	case drop_despawn_types::loot_by_mob:
+	case drop_despawn_types::loot_by_user:
+	case drop_despawn_types::loot_by_pet:
+		// Option is either the mob (loot_by_mob) or the user (rest)
+		builder.add<game_map_object>(option);
+		break;
+
+	case drop_despawn_types::explode:
+		// Option is the delay before explode
+		builder.add<int16_t>(option);
+		break;
+	}
 	return builder;
 }
 
-PACKET_IMPL(explode_drop, game_map_object drop_id) {
-	packet_builder builder;
-	builder
-		.add<packet_header>(SMSG_DROP_PICKUP)
-		.add<int8_t>(4)
-		.add<game_map_object>(drop_id)
-		.add<int16_t>(655);
-	return builder;
+PACKET_IMPL(explode_drop, game_map_object drop_id, int16_t delay) {
+	return remove_drop(drop_id, drop_despawn_types::explode, delay);
 }
 
 PACKET_IMPL(drop_not_available_for_pickup) {
