@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/meso_inventory.hpp"
 #include "common/types.hpp"
+#include "common/util/meso_inventory.hpp"
 #include <vector>
 
 namespace vana {
@@ -38,7 +38,7 @@ namespace vana {
 			auto add_item(item *item) -> void;
 			auto take_item(game_storage_slot slot) -> void;
 			auto set_mesos(game_mesos mesos) -> void;
-			auto modify_mesos(game_mesos mod) -> meso_modify_result;
+			auto modify_mesos(game_mesos mod) -> vana::util::meso_modify_result;
 			auto can_modify_mesos(game_mesos mesos) const -> stack_result;
 
 			auto get_slots() const -> game_storage_slot { return m_slots; }
@@ -58,7 +58,7 @@ namespace vana {
 		private:
 			game_storage_slot m_slots = 0;
 			int32_t m_char_slots = 0;
-			meso_inventory m_mesos;
+			vana::util::meso_inventory m_mesos;
 			vector<item *> m_items;
 			view_ptr<player> m_player;
 		};

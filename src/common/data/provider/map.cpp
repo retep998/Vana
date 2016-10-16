@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "map.hpp"
 #include "common/algorithm.hpp"
 #include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/initialize_common.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/game_logic/map.hpp"
+#include "common/util/string.hpp"
 #include <iomanip>
 #include <iostream>
 #include <utility>
@@ -77,7 +77,7 @@ auto map::load_maps() -> void {
 		info->id = id;
 		info->link = link;
 
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&info](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("flags"), [&info](const string &cmp) {
 			if (cmp == "town") info->town = true;
 			else if (cmp == "clock") info->clock = true;
 			else if (cmp == "swim") info->swim = true;
@@ -89,11 +89,11 @@ auto map::load_maps() -> void {
 			else if (cmp == "shuffle_reactors") info->shuffle_reactors = true;
 		});
 
-		utilities::str::run_flags(row.get<opt_string>("field_type"), [&info](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("field_type"), [&info](const string &cmp) {
 			if (cmp == "force_map_equip") info->force_map_equip = true;
 		});
 
-		utilities::str::run_flags(row.get<opt_string>("field_limitations"), [&info](const string &cmp) mutable {
+		vana::util::str::run_flags(row.get<opt_string>("field_limitations"), [&info](const string &cmp) mutable {
 			if (cmp == "jump") info->limitations.jump = true;
 			else if (cmp == "movement_skills") info->limitations.movement_skills = true;
 			else if (cmp == "summoning_bag") info->limitations.summoning_bag = true;
@@ -208,7 +208,7 @@ auto map::load_portals(data::type::map_link_info &map) -> void {
 
 	for (const auto &row : rs) {
 		data::type::portal_info portal;
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&portal](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("flags"), [&portal](const string &cmp) {
 			if (cmp == "only_once") portal.only_once = true;
 		});
 
@@ -237,7 +237,7 @@ auto map::load_map_life(data::type::map_link_info &map) -> void {
 
 	for (const auto &row : rs) {
 		life = data::type::spawn_info{};
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&life](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("flags"), [&life](const string &cmp) {
 			if (cmp == "faces_left") life.faces_left = true;
 		});
 
@@ -277,7 +277,7 @@ auto map::load_footholds(data::type::map_link_info &map) -> void {
 
 	for (const auto &row : rs) {
 		data::type::foothold_info foot;
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&foot](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("flags"), [&foot](const string &cmp) {
 			if (cmp == "forbid_downward_jump") foot.forbid_jump_down = true;
 		});
 
@@ -313,7 +313,7 @@ auto map::load_map_time_mob(data::type::map_link_info &map) -> void {
 }
 
 auto map::get_continent(game_map_id map_id) -> opt_int8_t {
-	int8_t cluster = game_logic_utilities::get_map_cluster(map_id);
+	int8_t cluster = vana::util::game_logic::map::get_map_cluster(map_id);
 
 	owned_lock<mutex> l{m_load_mutex};
 	for (const auto &continent : m_continents) {

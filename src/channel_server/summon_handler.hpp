@@ -22,12 +22,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace vana {
 	class packet_reader;
-	template <typename TIdentifier> class id_pool;
 	namespace data {
 		namespace type {
 			class buff_info;
 			struct skill_level_info;
 		}
+	}
+	namespace util {
+		template <typename TIdentifier> class id_pool;
 	}
 
 	namespace channel_server {
@@ -43,7 +45,7 @@ namespace vana {
 		}
 
 		namespace summon_handler {
-			extern id_pool<game_summon_id> g_summon_ids;
+			extern vana::util::id_pool<game_summon_id> g_summon_ids;
 			auto use_summon(ref_ptr<player> player, game_skill_id skill_id, game_skill_level level) -> void;
 			auto remove_summon(ref_ptr<player> player, game_summon_id summon_id, bool packet_only, int8_t show_message, bool from_timer = false) -> void;
 			auto show_summon(ref_ptr<player> player) -> void;

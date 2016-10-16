@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/hash_combine.hpp"
 #include "common/lua/lua_type.hpp"
 #include "common/types.hpp"
+#include "common/util/hash_combine.hpp"
 #include <functional>
 #include <stdexcept>
 #include <type_traits>
@@ -107,10 +107,10 @@ namespace vana {
 			struct hash {
 				auto operator()(const lua_variant &v) const -> size_t {
 					switch (v.get_type()) {
-						case lua_type::nil: return utilities::misc::hash_combinator(0);
-						case lua_type::boolean: return utilities::misc::hash_combinator(v.as<bool>() ? 0x55555555 : 1);
-						case lua_type::number: return utilities::misc::hash_combinator(v.as<double>());
-						case lua_type::string: return utilities::misc::hash_combinator(v.as<string>());
+						case lua_type::nil: return vana::util::hash_combinator(0);
+						case lua_type::boolean: return vana::util::hash_combinator(v.as<bool>() ? 0x55555555 : 1);
+						case lua_type::number: return vana::util::hash_combinator(v.as<double>());
+						case lua_type::string: return vana::util::hash_combinator(v.as<string>());
 						default: THROW_CODE_EXCEPTION(not_implemented_exception, "lua_type");
 					}
 				}

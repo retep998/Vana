@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/id_pool.hpp"
 #include "common/timer/container_holder.hpp"
 #include "common/types.hpp"
+#include "common/util/id_pool.hpp"
 #include <memory>
 #include <unordered_map>
 
@@ -42,7 +42,7 @@ namespace vana {
 			auto timeout(ref_ptr<player> sender) -> void;
 			auto start_timeout(game_trade_id id, ref_ptr<player> sender) -> void;
 
-			id_pool<game_trade_id> m_trade_ids;
+			vana::util::id_pool<game_trade_id> m_trade_ids;
 			hash_map<game_trade_id, ref_ptr<active_trade>> m_trades;
 		};
 	}

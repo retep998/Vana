@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/type/buff_action.hpp"
 #include "common/data/type/buff_map_info.hpp"
 #include "common/data/type/buff_skill_value.hpp"
-#include "common/hash_combine.hpp"
 #include "common/types.hpp"
+#include "common/util/hash_combine.hpp"
 
 namespace vana {
 	namespace data {
@@ -195,7 +195,7 @@ namespace std {
 	template <>
 	struct hash<vana::data::type::buff_info> {
 		auto operator()(const vana::data::type::buff_info &v) const -> size_t {
-			return vana::utilities::misc::hash_combinator(v.get_bit_position());
+			return vana::util::hash_combinator(v.get_bit_position());
 		}
 	};
 }

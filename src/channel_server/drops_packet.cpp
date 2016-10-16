@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "drops_packet.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/session.hpp"
+#include "common/util/game_logic/inventory.hpp"
 #include "channel_server/drop.hpp"
 #include "channel_server/maps.hpp"
 #include "channel_server/player.hpp"
@@ -136,7 +136,7 @@ PACKET_IMPL(pickup_drop, game_map_object id, int32_t amount, bool is_mesos, int1
 	if (is_mesos) {
 		builder.add<int16_t>(cafe_bonus);
 	}
-	else if (game_logic_utilities::get_inventory(id) != constant::inventory::equip) {
+	else if (vana::util::game_logic::inventory::get_inventory(id) != constant::inventory::equip) {
 		builder.add<game_slot_qty>(static_cast<game_slot_qty>(amount));
 	}
 	if (!is_mesos) {

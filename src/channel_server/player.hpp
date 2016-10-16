@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/charge_or_stationary_skill_data.hpp"
 #include "common/data/provider/skill.hpp"
 #include "common/packet_handler.hpp"
-#include "common/tausworthe_generator.hpp"
 #include "common/timer/container_holder.hpp"
+#include "common/util/tausworthe_generator.hpp"
 #include "channel_server/movable_life.hpp"
 #include "channel_server/npc.hpp"
 #include "channel_server/player_active_buffs.hpp"
@@ -141,7 +141,7 @@ namespace vana {
 			auto get_storage() const -> player_storage * { return m_storage.get(); }
 			auto get_summons() const -> player_summons * { return m_summons.get(); }
 			auto get_variables() const -> player_variables * { return m_variables.get(); }
-			auto get_rand_stream() const -> tausworthe_generator * { return m_rand_stream.get(); }
+			auto get_rand_stream() const -> vana::util::tausworthe_generator * { return m_rand_stream.get(); }
 			auto get_timer_container() const -> ref_ptr<vana::timer::container> { return get_timers(); }
 
 			auto add_used_portal(game_portal_id portal_id) -> void { m_used_portals.insert(portal_id); }
@@ -214,7 +214,7 @@ namespace vana {
 			owned_ptr<player_storage> m_storage;
 			owned_ptr<player_summons> m_summons;
 			owned_ptr<player_variables> m_variables;
-			owned_ptr<tausworthe_generator> m_rand_stream;
+			owned_ptr<vana::util::tausworthe_generator> m_rand_stream;
 			hash_set<game_portal_id> m_used_portals;
 		};
 	}

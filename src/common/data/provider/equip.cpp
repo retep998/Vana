@@ -18,10 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "equip.hpp"
 #include "common/constant/job/track.hpp"
 #include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/initialize_common.hpp"
-#include "common/randomizer.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/randomizer.hpp"
+#include "common/util/string.hpp"
 #include <iomanip>
 #include <iostream>
 #include <random>
@@ -86,12 +85,12 @@ auto equip::load_equips() -> void {
 		equip.poison_damage = row.get<uint8_t>("inc_poison_damage");
 		equip.elemental_default = row.get<uint8_t>("elemental_default");
 		equip.traction = row.get<double>("traction");
-		equip.valid_slots = utilities::str::atoli(row.get<string>("equip_slot_flags").c_str());
+		equip.valid_slots = vana::util::str::atoli(row.get<string>("equip_slot_flags").c_str());
 
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&equip](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("flags"), [&equip](const string &cmp) {
 			if (cmp == "wear_trade_block") equip.trade_block_on_equip = true;
 		});
-		utilities::str::run_flags(row.get<opt_string>("req_job"), [&equip](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("req_job"), [&equip](const string &cmp) {
 			if (cmp == "common") equip.valid_jobs.push_back(-1);
 			else if (cmp == "beginner") equip.valid_jobs.push_back(constant::job::track::beginner);
 			else if (cmp == "warrior") equip.valid_jobs.push_back(constant::job::track::warrior);
@@ -121,13 +120,13 @@ auto equip::set_equip_stats(vana::item *equip, stat_variance policy, bool is_gm,
 
 			bool increase_only = false;
 			if (policy == stat_variance::only_increase_with_great_chance) {
-				if (!is_gm && randomizer::rand<int8_t>(10, 1) <= 3) {
+				if (!is_gm && vana::util::randomizer::rand<int8_t>(10, 1) <= 3) {
 					return amount;
 				}
 				increase_only = true;
 			}
 			else if (policy == stat_variance::only_increase_with_amazing_chance) {
-				if (!is_gm && randomizer::rand<int8_t>(10, 1) == 1) {
+				if (!is_gm && vana::util::randomizer::rand<int8_t>(10, 1) == 1) {
 					return amount;
 				}
 				increase_only = true;
@@ -154,14 +153,14 @@ auto equip::set_equip_stats(vana::item *equip, stat_variance policy, bool is_gm,
 				// This makes it like flipping 7 coins instead of rolling a single die
 
 				std::binomial_distribution<> dist{variance + 2, .5};
-				variance = randomizer::rand(dist) - 2;
+				variance = vana::util::randomizer::rand(dist) - 2;
 			}
 
 			if (variance <= 0) {
 				return amount;
 			}
 
-			if (is_gm || increase_only || randomizer::rand<bool>()) {
+			if (is_gm || increase_only || vana::util::randomizer::rand<bool>()) {
 				return amount + variance;
 			}
 

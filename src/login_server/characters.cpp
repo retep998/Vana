@@ -26,10 +26,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/provider/valid_char.hpp"
 #include "common/client_ip.hpp"
 #include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/misc_utilities.hpp"
 #include "common/packet_reader.hpp"
 #include "common/session.hpp"
+#include "common/util/game_logic/inventory.hpp"
+#include "common/util/game_logic/job.hpp"
+#include "common/util/misc.hpp"
 #include "login_server/login_packet.hpp"
 #include "login_server/login_server.hpp"
 #include "login_server/login_server_accept_packet.hpp"
@@ -88,7 +89,7 @@ auto characters::load_character(character &charc, const soci::row &row) -> void 
 	charc.map = row.get<game_map_id>("map");
 	charc.pos = row.get<int8_t>("pos");
 
-	if (game_logic_utilities::get_job_track(charc.job) == constant::job::track::gm) {
+	if (vana::util::game_logic::job::get_job_track(charc.job) == constant::job::track::gm) {
 		// GMs can't have their rank sent otherwise the client will crash
 		charc.world_rank = 0;
 		charc.world_rank_change = 0;
@@ -197,7 +198,7 @@ auto characters::check_character_name(ref_ptr<user> user_value, packet_reader &r
 
 auto characters::create_item(game_item_id item_id, ref_ptr<user> user_value, game_player_id char_id, game_inventory_slot slot, game_slot_qty amount) -> void {
 	auto &db = database::get_char_db();
-	game_inventory inventory = game_logic_utilities::get_inventory(item_id);
+	game_inventory inventory = vana::util::game_logic::inventory::get_inventory(item_id);
 	auto world_id = user_value->get_world_id();
 	if (!world_id.is_initialized()) {
 		THROW_CODE_EXCEPTION(codepath_invalid_exception, "!world_id.is_initialized()");

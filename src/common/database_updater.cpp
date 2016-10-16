@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/database.hpp"
 #include "common/exit_codes.hpp"
 #include "common/mysql_query_parser.hpp"
-#include "common/string_utilities.hpp"
-#include "common/tokenizer.hpp"
+#include "common/util/string.hpp"
+#include "common/util/tokenizer.hpp"
 #ifdef WIN32
 #include <filesystem>
 #else
@@ -137,7 +137,7 @@ auto database_updater::load_sql_files() const -> pair<size_t, ord_map<int32_t, s
 			continue;
 		}
 
-		size_t v = utilities::str::lexical_cast<size_t, string>(matches[1]);
+		size_t v = vana::util::str::lexical_cast<size_t, string>(matches[1]);
 
 		if (version < v) {
 			version = v;

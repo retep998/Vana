@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "common/data/type/buff_skill_value.hpp"
-#include "common/hash_combine.hpp"
 #include "common/types.hpp"
+#include "common/util/hash_combine.hpp"
 
 namespace vana {
 	namespace data {

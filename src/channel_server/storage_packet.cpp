@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "storage_packet.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/session.hpp"
+#include "common/util/game_logic/inventory.hpp"
 #include "channel_server/inventory.hpp"
 #include "channel_server/player.hpp"
 #include "channel_server/player_packet_helper.hpp"
@@ -64,7 +64,7 @@ PACKET_IMPL(add_item, ref_ptr<player> player, game_inventory inv) {
 
 	for (game_storage_slot i = 0; i < player->get_storage()->get_num_items(); i++) {
 		item *item = player->get_storage()->get_item(i);
-		if (game_logic_utilities::get_inventory(item->get_id()) == inv) {
+		if (vana::util::game_logic::inventory::get_inventory(item->get_id()) == inv) {
 			builder.add_buffer(helpers::add_item_info(0, item));
 		}
 	}
@@ -84,7 +84,7 @@ PACKET_IMPL(take_item, ref_ptr<player> player, int8_t inv) {
 
 	for (game_storage_slot i = 0; i < player->get_storage()->get_num_items(); i++) {
 		item *item = player->get_storage()->get_item(i);
-		if (game_logic_utilities::get_inventory(item->get_id()) == inv) {
+		if (vana::util::game_logic::inventory::get_inventory(item->get_id()) == inv) {
 			builder.add_buffer(helpers::add_item_info(0, item));
 		}
 	}

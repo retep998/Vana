@@ -18,14 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "map.hpp"
 #include "common/algorithm.hpp"
 #include "common/data/provider/npc.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/misc_utilities.hpp"
 #include "common/packet_wrapper.hpp"
-#include "common/randomizer.hpp"
 #include "common/session.hpp"
 #include "common/split_packet_builder.hpp"
-#include "common/time_utilities.hpp"
 #include "common/timer/timer.hpp"
+#include "common/util/misc.hpp"
+#include "common/util/randomizer.hpp"
+#include "common/util/time.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/drop.hpp"
 #include "channel_server/effect_packet.hpp"
@@ -171,7 +170,7 @@ auto map::add_portal(const data::type::portal_info &portal) -> void {
 auto map::add_time_mob(data::type::time_mob_info info) -> void {
 	vana::timer::timer::create([this](const time_point &now) { this->check_time_mob_spawn(false); },
 		vana::timer::id{vana::timer::type::map_timer, get_id(), 1},
-		get_timers(), utilities::time::get_distance_to_next_occurring_second_of_hour(0), hours{1});
+		get_timers(), vana::util::time::get_distance_to_next_occurring_second_of_hour(0), hours{1});
 
 	vana::timer::timer::create([this](const time_point &now) { this->check_time_mob_spawn(true); },
 		vana::timer::id{vana::timer::type::map_timer, get_id(), 2},
@@ -191,7 +190,7 @@ auto map::add_player(ref_ptr<player> player) -> void {
 		player->send(packets::gm::begin_hide());
 	}
 	if (m_timer.count() > 0) {
-		player->send(packets::map::show_timer(m_timer - duration_cast<seconds>(utilities::time::get_now() - m_timer_start)));
+		player->send(packets::map::show_timer(m_timer - duration_cast<seconds>(vana::util::time::get_now() - m_timer_start)));
 	}
 	else if (instance *inst = get_instance()) {
 		if (inst->show_timer()) {
@@ -294,7 +293,7 @@ auto map::run_function_players(const rect &dimensions, int16_t prop, int16_t cou
 	// Prevent iterator invalidation
 	auto copy = m_players;
 	for (const auto &player : copy) {
-		if (dimensions.contains(player->get_pos()) && randomizer::percentage<int16_t>() < prop) {
+		if (dimensions.contains(player->get_pos()) && vana::util::randomizer::percentage<int16_t>() < prop) {
 			success_func(player);
 			done++;
 		}
@@ -365,7 +364,7 @@ auto map::remove_reactor(size_t id) -> void {
 	data::type::reactor_spawn_info &info = m_reactor_spawns[id];
 	if (info.time >= 0) {
 		// We don't want to respawn -1s, leave that to some script
-		time_point reactor_respawn = utilities::time::get_now_with_time_added(seconds{info.time});
+		time_point reactor_respawn = vana::util::time::get_now_with_time_added(seconds{info.time});
 		m_reactor_respawns.emplace_back(id, reactor_respawn);
 	}
 }
@@ -452,8 +451,8 @@ auto map::find_random_floor_pos(const rect &area) -> point {
 
 	point left_top = inside_map_area.left_top();
 	point right_bottom = inside_map_area.right_bottom();
-	auto x_generate = [&right_bottom, &left_top]() -> game_coord { return randomizer::rand<game_coord>(right_bottom.x, left_top.x); };
-	auto y_generate = [&right_bottom, &left_top]() -> game_coord { return randomizer::rand<game_coord>(right_bottom.y, left_top.y); };
+	auto x_generate = [&right_bottom, &left_top]() -> game_coord { return vana::util::randomizer::rand<game_coord>(right_bottom.x, left_top.x); };
+	auto y_generate = [&right_bottom, &left_top]() -> game_coord { return vana::util::randomizer::rand<game_coord>(right_bottom.y, left_top.y); };
 
 	point ret;
 	if (valid_footholds.size() == 0) {
@@ -541,7 +540,7 @@ auto map::get_portal(const string &name) const -> const data::type::portal_info 
 auto map::get_spawn_point(game_portal_id portal_id) const -> const data::type::portal_info * const {
 	game_portal_id id = portal_id != -1 ?
 		portal_id :
-		randomizer::rand<game_portal_id>(static_cast<game_portal_id>(m_spawn_points.size()) - 1);
+		vana::util::randomizer::rand<game_portal_id>(static_cast<game_portal_id>(m_spawn_points.size()) - 1);
 
 	auto iter = m_spawn_points.find(id);
 	return &iter->second;
@@ -850,8 +849,8 @@ auto map::mob_death(ref_ptr<mob> mob_value, bool from_explosion) -> void {
 			if (spawn.time != -1) {
 				// Add spawn point to respawns if mob was spawned by a spawn point
 				// Randomly spawn between 1x and 2x the spawn time
-				seconds time_modifier = seconds{randomizer::twofold(spawn.time)};
-				time_point spawn_time = utilities::time::get_now_with_time_added<seconds>(time_modifier);
+				seconds time_modifier = seconds{vana::util::randomizer::twofold(spawn.time)};
+				time_point spawn_time = vana::util::time::get_now_with_time_added<seconds>(time_modifier);
 				m_mob_respawns.emplace_back(spawn_id, spawn_time);
 				spawn.spawned = false;
 			}
@@ -1218,7 +1217,7 @@ auto map::map_tick(const time_point &now) -> void {
 	clear_drops(now);
 	check_mists();
 
-	if (utilities::time::get_second() % 3 == 0) {
+	if (vana::util::time::get_second() % 3 == 0) {
 		check_shadow_web();
 	}
 	game_damage dps = m_info->damage_per_second;
@@ -1234,7 +1233,7 @@ auto map::map_tick(const time_point &now) -> void {
 }
 
 auto map::check_time_mob_spawn(bool first_load) -> void {
-	int32_t c_hour = utilities::time::get_hour(false);
+	int32_t c_hour = vana::util::time::get_hour(false);
 	data::type::time_mob_info tm = m_info->link_info->time_mob.get();
 
 	if (first_load) {
@@ -1259,11 +1258,11 @@ auto map::check_time_mob_spawn(bool first_load) -> void {
 
 auto map::set_map_timer(const seconds &timer) -> void {
 	if (timer.count() > 0 && m_timer.count() != 0) {
-		throw std::runtime_error{"Timer already executing on map " + utilities::str::lexical_cast<string>(get_id())};
+		throw std::runtime_error{"Timer already executing on map " + vana::util::str::lexical_cast<string>(get_id())};
 	}
 
 	m_timer = timer;
-	m_timer_start = utilities::time::get_now();
+	m_timer_start = vana::util::time::get_now();
 
 	send(packets::map::show_timer(timer));
 	if (timer.count() > 0) {

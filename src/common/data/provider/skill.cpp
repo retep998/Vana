@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/database.hpp"
 #include "common/initialize_common.hpp"
 #include "common/constant/mob_skill.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/string.hpp"
 #include <iomanip>
 #include <iostream>
 
@@ -239,7 +239,7 @@ auto skill::load_morphs() -> void {
 		data::type::morph_info morph;
 		morph.id = row.get<game_morph_id>("morphid");
 
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&morph](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("flags"), [&morph](const string &cmp) {
 			if (cmp == "superman") morph.superman = true;
 		});
 

@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "packet_builder.hpp"
 #include "common/packet_reader.hpp"
 #include "common/split_packet_builder.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/string.hpp"
 #include <cctype>
 #include <iomanip>
 #include <iostream>
@@ -103,7 +103,7 @@ auto packet_builder::get_buffer(size_t pos, size_t len) -> unsigned char * {
 }
 
 auto packet_builder::to_string() const -> string {
-	return utilities::str::bytes_to_hex(get_buffer(), get_size());
+	return vana::util::str::bytes_to_hex(get_buffer(), get_size());
 }
 
 }

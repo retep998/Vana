@@ -20,13 +20,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/constant/job/id.hpp"
 #include "common/constant/job/track.hpp"
 #include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/initialize_common.hpp"
-#include "common/stop_watch.hpp"
-#include "common/string_utilities.hpp"
 #include "common/timer/timer.hpp"
 #include "common/timer/thread.hpp"
-#include "common/time_utilities.hpp"
+#include "common/util/game_logic/job.hpp"
+#include "common/util/stop_watch.hpp"
+#include "common/util/string.hpp"
+#include "common/util/time.hpp"
 #include "login_server/login_server.hpp"
 #include "login_server/world.hpp"
 #include "login_server/worlds.hpp"
@@ -45,7 +45,7 @@ mutex ranking_calculator::g_rankings_mutex;
 auto ranking_calculator::set_timer() -> void {
 	//timer::timer::create([]() { ranking_calculator::run_thread(); },
 	//	timer::id{timer_type::rank_timer),
-	//	nullptr, utilities::time::get_distance_to_next_occurring_second_of_hour(0), hours{1});
+	//	nullptr, vana::util::time::get_distance_to_next_occurring_second_of_hour(0), hours{1});
 	// Calculate ranking every 1 hour, starting on the hour
 }
 
@@ -64,7 +64,7 @@ auto ranking_calculator::all() -> void {
 	}
 
 	std::cout << std::setw(initializing::output_width) << std::left << "Calculating rankings... " << std::endl;
-	stop_watch sw;
+	vana::util::stop_watch sw;
 
 	auto &db = database::get_char_db();
 	auto &sql = db.get_session();
@@ -79,10 +79,10 @@ auto ranking_calculator::all() -> void {
 		<< "	AND u.admin IS NULL "
 		<< "	AND ("
 		<< "		("
-		<< "			c.job IN (" << utilities::str::delimit(",", constant::job::beginner_jobs) << ")"
+		<< "			c.job IN (" << vana::util::str::delimit(",", constant::job::beginner_jobs) << ")"
 		<< "			AND c.level > 9"
 		<< "		)"
-		<< "		OR c.job NOT IN (" << utilities::str::delimit(",", constant::job::beginner_jobs) << ")"
+		<< "		OR c.job NOT IN (" << vana::util::str::delimit(",", constant::job::beginner_jobs) << ")"
 		<< "	) "
 		<< "ORDER BY c.overall_cpos DESC",
 		soci::into(out.char_id),
@@ -101,7 +101,7 @@ auto ranking_calculator::all() -> void {
 	statement.execute();
 
 	while (statement.fetch()) {
-		out.job_level_max = game_logic_utilities::get_max_level(out.job_stat);
+		out.job_level_max = vana::util::game_logic::job::get_max_level(out.job_stat);
 		v.push_back(out);
 	}
 
@@ -262,8 +262,8 @@ auto ranking_calculator::world(vector<rank_player> &v) -> void {
 
 auto ranking_calculator::job(vector<rank_player> &v) -> void {
 	std::sort(std::begin(v), std::end(v), [](const rank_player &t1, const rank_player &t2) -> bool {
-		int8_t job1 = game_logic_utilities::get_job_track(t1.job_stat);
-		int8_t job2 = game_logic_utilities::get_job_track(t2.job_stat);
+		int8_t job1 = vana::util::game_logic::job::get_job_track(t1.job_stat);
+		int8_t job2 = vana::util::game_logic::job::get_job_track(t2.job_stat);
 
 		if (job1 == job2) {
 			return base_compare(t1, t2);
@@ -282,7 +282,7 @@ auto ranking_calculator::job(vector<rank_player> &v) -> void {
 		for (size_t i = 0; i < v.size(); ++i) {
 			rank_player &p = v[i];
 			bool valid = false;
-			bool is_track = game_logic_utilities::get_job_track(p.job_stat) == job_track;
+			bool is_track = vana::util::game_logic::job::get_job_track(p.job_stat) == job_track;
 
 			// These exceptions have beginner jobs that are not in their tracks ID-wise
 			// Which means we also need to account for them within the tracks they aren't supposed to be in as well

@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "player_monster_book.hpp"
 #include "common/data/provider/item.hpp"
 #include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
+#include "common/util/game_logic/monster_card.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/monster_book_packet.hpp"
 #include "channel_server/player.hpp"
@@ -91,7 +91,7 @@ auto player_monster_book::get_card_level(int32_t card_id) -> uint8_t {
 
 auto player_monster_book::add_card(int32_t card_id, uint8_t level, bool initial_load) -> bool {
 	if (m_cards.find(card_id) == std::end(m_cards)) {
-		if (game_logic_utilities::is_special_card(card_id)) {
+		if (vana::util::game_logic::monster_card::is_special_card(card_id)) {
 			++m_special_count;
 		}
 		else {
@@ -138,7 +138,7 @@ auto player_monster_book::connect_packet(packet_builder &builder) -> void {
 
 	builder.add<uint16_t>(static_cast<uint16_t>(m_cards.size()));
 	for (const auto &kvp : m_cards) {
-		builder.add<int16_t>(game_logic_utilities::get_card_short_id(kvp.second.id));
+		builder.add<int16_t>(vana::util::game_logic::monster_card::get_card_short_id(kvp.second.id));
 		builder.add<int8_t>(kvp.second.level);
 	}
 }

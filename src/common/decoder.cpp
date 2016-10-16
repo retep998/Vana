@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "decoder.hpp"
-#include "common/bit_utilities.hpp"
 #include "common/common_header.hpp"
 #include "common/maple_version.hpp"
 #include "common/packet_builder.hpp"
-#include "common/randomizer.hpp"
+#include "common/util/bit.hpp"
+#include "common/util/randomizer.hpp"
 
 namespace vana {
 
@@ -49,11 +49,11 @@ auto decoder::encrypt(unsigned char *buffer, int32_t size, uint16_t header_len) 
 		a = 0;
 		for (j = size; j > 0; --j) {
 			c = buffer[size - j];
-			c = utilities::bit::rotate_left(c, 3);
+			c = vana::util::bit::rotate_left(c, 3);
 			c = static_cast<uint8_t>(c + j); // Guess this is supposed to be right?
 			c = c ^ a;
 			a = c;
-			c = utilities::bit::rotate_right(a, j);
+			c = vana::util::bit::rotate_right(a, j);
 			c = c ^ 0xFF;
 			c = c + 0x48;
 			buffer[size - j] = c;
@@ -61,12 +61,12 @@ auto decoder::encrypt(unsigned char *buffer, int32_t size, uint16_t header_len) 
 		a = 0;
 		for (j = size; j > 0; --j) {
 			c = buffer[j - 1];
-			c = utilities::bit::rotate_left(c, 4);
+			c = vana::util::bit::rotate_left(c, 4);
 			c = static_cast<uint8_t>(c + j); // Guess this is supposed to be right?
 			c = c ^ a;
 			a = c;
 			c = c ^ 0x13;
-			c = utilities::bit::rotate_right(c, 3);
+			c = vana::util::bit::rotate_right(c, 3);
 			buffer[j - 1] = c;
 		}
 	}
@@ -139,12 +139,12 @@ auto decoder::decrypt(unsigned char *buffer, int32_t size, uint16_t header_len) 
 		b = 0;
 		for (j = size; j > 0; j--) {
 			c = buffer[j - 1];
-			c = utilities::bit::rotate_left(c, 3);
+			c = vana::util::bit::rotate_left(c, 3);
 			c = c ^ 0x13;
 			a = c;
 			c = c ^ b;
 			c = static_cast<uint8_t>(c - j); // Guess this is supposed to be right?
-			c = utilities::bit::rotate_right(c, 4);
+			c = vana::util::bit::rotate_right(c, 4);
 			b = a;
 			buffer[j - 1] = c;
 		}
@@ -154,11 +154,11 @@ auto decoder::decrypt(unsigned char *buffer, int32_t size, uint16_t header_len) 
 			c = buffer[size - j];
 			c = c - 0x48;
 			c = c ^ 0xFF;
-			c = utilities::bit::rotate_left(c, j);
+			c = vana::util::bit::rotate_left(c, j);
 			a = c;
 			c = c ^ b;
 			c = static_cast<uint8_t>(c - j); // Guess this is supposed to be right?
-			c = utilities::bit::rotate_right(c, 3);
+			c = vana::util::bit::rotate_right(c, 3);
 			b = a;
 			buffer[size - j] = c;
 		}

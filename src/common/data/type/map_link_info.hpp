@@ -22,9 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/type/seat_info.hpp"
 #include "common/data/type/spawn_info.hpp"
 #include "common/data/type/time_mob_info.hpp"
-#include "common/optional.hpp"
 #include "common/rect.hpp"
 #include "common/types.hpp"
+#include "common/util/optional.hpp"
 #include <string>
 #include <vector>
 

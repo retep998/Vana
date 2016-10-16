@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "drop.hpp"
-#include "common/time_utilities.hpp"
+#include "common/util/time.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/drops_packet.hpp"
 #include "channel_server/maps.hpp"
@@ -54,7 +54,7 @@ auto drop::get_amount() -> game_slot_qty {
 }
 
 auto drop::do_drop(const point &origin) -> void {
-	set_dropped_at_time(utilities::time::get_now());
+	set_dropped_at_time(vana::util::time::get_now());
 	map *map = get_map();
 	map->add_drop(this);
 

@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/provider/shop.hpp"
 #include "common/packet_reader.hpp"
 #include "common/session.hpp"
+#include "common/util/game_logic/item.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/maps.hpp"
 #include "channel_server/player.hpp"
@@ -112,7 +113,7 @@ PACKET_IMPL(show_shop, const shop_data &shop, game_slot_qty rechargeable_bonus) 
 			.add<game_item_id>(item->item_id)
 			.add<game_mesos>(item->price);
 
-		if (game_logic_utilities::is_rechargeable(item->item_id)) {
+		if (vana::util::game_logic::item::is_rechargeable(item->item_id)) {
 			items_added.emplace(item->item_id);
 			double cost = 0.0;
 			if (shop.rechargeables.size() > 0) {
@@ -129,7 +130,7 @@ PACKET_IMPL(show_shop, const shop_data &shop, game_slot_qty rechargeable_bonus) 
 		}
 		auto item_info = channel_server::get_instance().get_item_data_provider().get_item_info(item->item_id);
 		game_slot_qty max_slot = item_info->max_slot;
-		if (game_logic_utilities::is_rechargeable(item->item_id)) {
+		if (vana::util::game_logic::item::is_rechargeable(item->item_id)) {
 			max_slot += rechargeable_bonus;
 		}
 		builder.add<game_slot_qty>(max_slot);

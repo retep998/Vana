@@ -21,15 +21,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/provider/item.hpp"
 #include "common/data/provider/skill.hpp"
 #include "common/data/type/skill_type.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/inter_header.hpp"
 #include "common/mp_eater_data.hpp"
 #include "common/packet_wrapper.hpp"
-#include "common/randomizer.hpp"
 #include "common/packet_reader.hpp"
 #include "common/return_damage_data.hpp"
-#include "common/time_utilities.hpp"
 #include "common/timer/timer.hpp"
+#include "common/util/randomizer.hpp"
+#include "common/util/time.hpp"
 #include "common/wide_point.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/drop.hpp"
@@ -378,7 +377,7 @@ auto player_handler::handle_special_skills(ref_ptr<player> player, packet_reader
 			// Maximum = (luk * 6.6 + dex) * 0.2 * (recovery% / 100 + 1)
 			// Minimum = (luk * 3.3 + dex) * 0.2 * (recovery% / 100 + 1)
 			// I used 66 / 10 and 2 / 10 respectively to get 6.6 and 0.2 without using floating points
-			player->get_stats()->modify_hp(randomizer::rand<int16_t>(maximum, minimum));
+			player->get_stats()->modify_hp(vana::util::randomizer::rand<int16_t>(maximum, minimum));
 			break;
 		}
 	}
@@ -515,7 +514,7 @@ auto player_handler::use_melee_attack(ref_ptr<player> player, packet_reader &rea
 		}
 		if (mob->has_weapon_reflection() && !reflect_applied) {
 			auto &reflect = mob->get_weapon_reflection().get();
-			int32_t amount = randomizer::range<int32_t>(reflect.val, reflect.reflection);
+			int32_t amount = vana::util::randomizer::range<int32_t>(reflect.val, reflect.reflection);
 			player->get_stats()->modify_hp(-amount);
 			reflect_applied = true;
 		}
@@ -527,7 +526,7 @@ auto player_handler::use_melee_attack(ref_ptr<player> player, packet_reader &rea
 				connected_hits++;
 				target_total += damage;
 			}
-			if (ppok && randomizer::percentage<uint16_t>() < picking->prop) {
+			if (ppok && vana::util::randomizer::percentage<uint16_t>() < picking->prop) {
 				 // Make sure this is a melee attack and not meso explosion, plus pickpocket being active
 				pp_damages.push_back(damage);
 			}
@@ -678,7 +677,7 @@ auto player_handler::use_melee_attack(ref_ptr<player> player, packet_reader &rea
 			if (skill_level > 0) {
 				x_property = channel_server::get_instance().get_skill_data_provider().get_skill(constant::skill::paladin::advanced_charge, skill_level)->x;
 			}
-			if ((x_property != 100) && (x_property == 0 || randomizer::percentage<int16_t>() > (x_property - 1))) {
+			if ((x_property != 100) && (x_property == 0 || vana::util::randomizer::percentage<int16_t>() > (x_property - 1))) {
 				player->get_active_buffs()->stop_charge();
 			}
 			break;
@@ -735,7 +734,7 @@ auto player_handler::use_ranged_attack(ref_ptr<player> player, packet_reader &re
 		}
 		if (mob->has_weapon_reflection() && !reflect_applied) {
 			auto &reflect = mob->get_weapon_reflection().get();
-			int32_t amount = randomizer::range<int32_t>(reflect.val, reflect.reflection);
+			int32_t amount = vana::util::randomizer::range<int32_t>(reflect.val, reflect.reflection);
 			player->get_stats()->modify_hp(-amount);
 			reflect_applied = true;
 		}
@@ -759,7 +758,7 @@ auto player_handler::use_ranged_attack(ref_ptr<player> player, packet_reader &re
 			if (skill_id == constant::skill::ranger::mortal_blow || skill_id == constant::skill::sniper::mortal_blow) {
 				auto sk = player->get_skills()->get_skill_info(skill_id);
 				int32_t hp_percentage = max_hp * sk->x / 100; // Percentage of HP required for Mortal Blow activation
-				if (mob->get_hp() < hp_percentage && randomizer::percentage<int16_t>() < sk->y) {
+				if (mob->get_hp() < hp_percentage && vana::util::randomizer::percentage<int16_t>() < sk->y) {
 					damage = mob->get_hp();
 				}
 			}
@@ -867,7 +866,7 @@ auto player_handler::use_spell_attack(ref_ptr<player> player, packet_reader &rea
 		}
 		if (mob->has_magic_reflection() && !reflect_applied) {
 			auto &reflect = mob->get_magic_reflection().get();
-			int32_t amount = randomizer::range<int32_t>(reflect.val, reflect.reflection);
+			int32_t amount = vana::util::randomizer::range<int32_t>(reflect.val, reflect.reflection);
 			player->get_stats()->modify_hp(-amount);
 			reflect_applied = true;
 		}
@@ -927,7 +926,7 @@ auto player_handler::use_energy_charge_attack(ref_ptr<player> player, packet_rea
 		}
 		if (mob->has_weapon_reflection() && !reflect_applied) {
 			auto &reflect = mob->get_weapon_reflection().get();
-			int32_t amount = randomizer::range<int32_t>(reflect.val, reflect.reflection);
+			int32_t amount = vana::util::randomizer::range<int32_t>(reflect.val, reflect.reflection);
 			player->get_stats()->modify_hp(-amount);
 			reflect_applied = true;
 		}

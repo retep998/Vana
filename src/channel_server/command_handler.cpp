@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/algorithm.hpp"
 #include "common/data/provider/mob.hpp"
 #include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/inter_header.hpp"
 #include "common/packet_wrapper.hpp"
 #include "common/packet_reader.hpp"
+#include "common/util/game_logic/inventory.hpp"
 #include "channel_server/buffs.hpp"
 #include "channel_server/chat_handler_functions.hpp"
 #include "channel_server/channel_server.hpp"
@@ -205,7 +205,7 @@ auto command_handler::handle_admin_command(ref_ptr<player> player, packet_reader
 		}
 		case admin_opcodes::destroy_first_item: {
 			game_inventory inv = reader.get<game_inventory>();
-			if (!game_logic_utilities::is_valid_inventory(inv)) {
+			if (!vana::util::game_logic::inventory::is_valid_inventory(inv)) {
 				return;
 			}
 			game_inventory_slot_count slots = player->get_inventory()->get_max_slots(inv);

@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/algorithm.hpp"
 #include "common/database.hpp"
 #include "common/initialize_common.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/string.hpp"
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -42,7 +42,7 @@ auto drop::load_drops() -> void {
 
 	data::type::drop_info info;
 	auto drop_flags = [&info](const opt_string &flags) {
-		utilities::str::run_flags(flags, [&info](const string &cmp) {
+		vana::util::str::run_flags(flags, [&info](const string &cmp) {
 			if (cmp == "is_mesos") info.is_mesos = true;
 		});
 	};
@@ -135,7 +135,7 @@ auto drop::load_global_drops() -> void {
 		drop.max_level = row.get<game_player_level>("maximum_level");
 		drop.quest_id = row.get<game_quest_id>("questid");
 		drop.chance = row.get<uint32_t>("chance");
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&drop](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("flags"), [&drop](const string &cmp) {
 			if (cmp == "is_mesos") drop.is_mesos = true;
 		});
 

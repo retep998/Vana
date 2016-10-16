@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/connection_manager.hpp"
 #include "common/encrypted_packet_transformer.hpp"
 #include "common/session.hpp"
-#include "common/thread_pool.hpp"
+#include "common/util/thread_pool.hpp"
 
 namespace vana {
 
@@ -56,8 +56,8 @@ void connection_listener::begin_accept() {
 				new_session->start(m_config.ping, make_ref_ptr<packet_transformer>());
 			}
 			else {
-				recv_iv = randomizer::rand<crypto_iv>();
-				send_iv = randomizer::rand<crypto_iv>();
+				recv_iv = vana::util::randomizer::rand<crypto_iv>();
+				send_iv = vana::util::randomizer::rand<crypto_iv>();
 				new_session->start(m_config.ping, make_ref_ptr<encrypted_packet_transformer>(recv_iv, send_iv));
 			}
 

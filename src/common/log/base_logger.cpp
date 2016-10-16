@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "base_logger.hpp"
 #include "common/server_type.hpp"
-#include "common/time_utilities.hpp"
+#include "common/util/time.hpp"
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -65,73 +65,73 @@ base_logger::replacement_args::replacement_args(vana::log::type type, base_logge
 
 base_logger::log_replacements::log_replacements() {
 	add("%yy", [](out_stream &stream, const replacement_args &args) {
-		stream << utilities::time::get_year(true, args.time);
+		stream << vana::util::time::get_year(true, args.time);
 	});
 	add("%YY", [](out_stream &stream, const replacement_args &args) {
-		stream << utilities::time::get_year(false, args.time);
+		stream << vana::util::time::get_year(false, args.time);
 	});
 	add("%mm", [](out_stream &stream, const replacement_args &args) {
-		stream << utilities::time::get_month(args.time);
+		stream << vana::util::time::get_month(args.time);
 	});
 	add("%MM", [](out_stream &stream, const replacement_args &args) {
-		stream << std::setw(2) << std::setfill('0') << utilities::time::get_month(args.time);
+		stream << std::setw(2) << std::setfill('0') << vana::util::time::get_month(args.time);
 	});
 	add("%oo", [](out_stream &stream, const replacement_args &args) {
-		stream << utilities::time::get_month_string(true, args.time);
+		stream << vana::util::time::get_month_string(true, args.time);
 	});
 	add("%OO", [](out_stream &stream, const replacement_args &args) {
-		stream << utilities::time::get_month_string(false, args.time);
+		stream << vana::util::time::get_month_string(false, args.time);
 	});
 	add("%dd", [](out_stream &stream, const replacement_args &args) {
-		stream << utilities::time::get_date(args.time);
+		stream << vana::util::time::get_date(args.time);
 	});
 	add("%DD", [](out_stream &stream, const replacement_args &args) {
-		stream << std::setw(2) << std::setfill('0') << utilities::time::get_date(args.time);
+		stream << std::setw(2) << std::setfill('0') << vana::util::time::get_date(args.time);
 	});
 	add("%aa", [](out_stream &stream, const replacement_args &args) {
-		stream << utilities::time::get_day_string(true, args.time);
+		stream << vana::util::time::get_day_string(true, args.time);
 	});
 	add("%AA", [](out_stream &stream, const replacement_args &args) {
-		stream << utilities::time::get_day_string(false, args.time);
+		stream << vana::util::time::get_day_string(false, args.time);
 	});
 	add("%hh", [](out_stream &stream, const replacement_args &args) {
-		stream << utilities::time::get_hour(true, args.time);
+		stream << vana::util::time::get_hour(true, args.time);
 	});
 	add("%HH", [](out_stream &stream, const replacement_args &args) {
-		stream << std::setw(2) << std::setfill('0') << utilities::time::get_hour(true, args.time);
+		stream << std::setw(2) << std::setfill('0') << vana::util::time::get_hour(true, args.time);
 	});
 	add("%mi", [](out_stream &stream, const replacement_args &args) {
-		stream << utilities::time::get_hour(false, args.time);
+		stream << vana::util::time::get_hour(false, args.time);
 	});
 	add("%MI", [](out_stream &stream, const replacement_args &args) {
-		stream << std::setw(2) << std::setfill('0') << utilities::time::get_hour(false, args.time);
+		stream << std::setw(2) << std::setfill('0') << vana::util::time::get_hour(false, args.time);
 	});
 	add("%ii", [](out_stream &stream, const replacement_args &args) {
-		stream << utilities::time::get_minute(args.time);
+		stream << vana::util::time::get_minute(args.time);
 	});
 	add("%II", [](out_stream &stream, const replacement_args &args) {
-		stream << std::setw(2) << std::setfill('0') << utilities::time::get_minute(args.time);
+		stream << std::setw(2) << std::setfill('0') << vana::util::time::get_minute(args.time);
 	});
 	add("%ss", [](out_stream &stream, const replacement_args &args) {
-		stream << utilities::time::get_second(args.time);
+		stream << vana::util::time::get_second(args.time);
 	});
 	add("%SS", [](out_stream &stream, const replacement_args &args) {
-		stream << std::setw(2) << std::setfill('0') << utilities::time::get_second(args.time);
+		stream << std::setw(2) << std::setfill('0') << vana::util::time::get_second(args.time);
 	});
 	add("%ww", [](out_stream &stream, const replacement_args &args) {
-		stream << !(utilities::time::get_hour(false, args.time) < 12) ? "pm" : "am";
+		stream << !(vana::util::time::get_hour(false, args.time) < 12) ? "pm" : "am";
 	});
 	add("%WW", [](out_stream &stream, const replacement_args &args) {
-		stream << !(utilities::time::get_hour(false, args.time) < 12) ? "PM" : "AM";
+		stream << !(vana::util::time::get_hour(false, args.time) < 12) ? "PM" : "AM";
 	});
 	add("%qq", [](out_stream &stream, const replacement_args &args) {
-		stream << !(utilities::time::get_hour(false, args.time) < 12) ? "p" : "a";
+		stream << !(vana::util::time::get_hour(false, args.time) < 12) ? "p" : "a";
 	});
 	add("%QQ", [](out_stream &stream, const replacement_args &args) {
-		stream << !(utilities::time::get_hour(false, args.time) < 12) ? "P" : "A";
+		stream << !(vana::util::time::get_hour(false, args.time) < 12) ? "P" : "A";
 	});
 	add("%zz", [](out_stream &stream, const replacement_args &args) {
-		stream << utilities::time::get_time_zone();
+		stream << vana::util::time::get_time_zone();
 	});
 	add("%id", [](out_stream &stream, const replacement_args &args) {
 		if (args.id.is_initialized()) {

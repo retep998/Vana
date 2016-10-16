@@ -18,9 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "npc.hpp"
 #include "common/algorithm.hpp"
 #include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/initialize_common.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/string.hpp"
 #include <iomanip>
 #include <iostream>
 
@@ -40,7 +39,7 @@ auto npc::load_data() -> void {
 		info.id = row.get<game_npc_id>("npcid");
 		info.storage_cost = row.get<game_mesos>("storage_cost");
 
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&info](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("flags"), [&info](const string &cmp) {
 			if (cmp == "maple_tv") info.is_maple_tv = true;
 			else if (cmp == "is_guild_rank") info.is_guild_rank = true;
 		});

@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/algorithm.hpp"
 #include "common/database.hpp"
 #include "common/initialize_common.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/string.hpp"
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
@@ -44,7 +44,7 @@ auto curse::load_data() -> void {
 }
 
 auto curse::is_curse_word(const string &cmp) const -> bool {
-	string c = utilities::str::remove_spaces(utilities::str::to_lower(cmp));
+	string c = vana::util::str::remove_spaces(vana::util::str::to_lower(cmp));
 	return ext::any_of(m_curse_words, [&c](const string &s) -> bool {
 		return c.find(s, 0) != string::npos;
 	});

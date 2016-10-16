@@ -17,12 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/id_pool.hpp"
 #include "common/inter_helper.hpp"
 #include "common/ip.hpp"
 #include "common/party_data.hpp"
 #include "common/player_data.hpp"
 #include "common/types.hpp"
+#include "common/util/id_pool.hpp"
 #include <functional>
 #include <memory>
 #include <string>
@@ -85,7 +85,7 @@ namespace vana {
 			auto remove_buddy(packet_reader &reader) -> void;
 			auto readd_buddy(packet_reader &reader) -> void;
 
-			id_pool<game_party_id> m_party_ids;
+			vana::util::id_pool<game_party_id> m_party_ids;
 			hash_map<game_player_id, game_channel_id> m_channel_switches;
 			hash_map<game_party_id, party_data> m_parties;
 			hash_map<game_player_id, player_data> m_players;

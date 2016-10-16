@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "reactor.hpp"
 #include "common/database.hpp"
 #include "common/initialize_common.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/string.hpp"
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -50,7 +50,7 @@ auto reactor::load_reactors() -> void {
 		reactor.max_states = row.get<int8_t>("max_states");
 		reactor.link = row.get<game_reactor_id>("link");
 
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&reactor](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("flags"), [&reactor](const string &cmp) {
 			if (cmp == "remove_in_field_set") reactor.remove_in_field_set = true;
 			else if (cmp == "activate_by_touch") reactor.activate_by_touch = true;
 		});
@@ -77,7 +77,7 @@ auto reactor::load_states() -> void {
 		state.next_state = row.get<int8_t>("next_state");
 		state.timeout = row.get<int32_t>("timeout");
 
-		utilities::str::run_enum(row.get<string>("event_type"), [&state](const string &cmp) {
+		vana::util::str::run_enum(row.get<string>("event_type"), [&state](const string &cmp) {
 			if (cmp == "plain_advance_state") state.type = 0;
 			else if (cmp == "no_clue") state.type = 0;
 			else if (cmp == "no_clue2") state.type = 0;

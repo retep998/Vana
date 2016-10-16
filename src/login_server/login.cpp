@@ -23,11 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/file_time.hpp"
 #include "common/hash_utilities.hpp"
 #include "common/packet_reader.hpp"
-#include "common/randomizer.hpp"
 #include "common/session.hpp"
-#include "common/string_utilities.hpp"
-#include "common/time_utilities.hpp"
 #include "common/unix_time.hpp"
+#include "common/util/randomizer.hpp"
+#include "common/util/string.hpp"
+#include "common/util/time.hpp"
 #include "login_server/login_packet.hpp"
 #include "login_server/login_server.hpp"
 #include "login_server/player_status.hpp"
@@ -263,7 +263,7 @@ auto login::check_pin(ref_ptr<user> user_value, packet_reader &reader) -> void {
 		user_value->set_status(player_status::ask_pin);
 	}
 	else if (act == 0x01) {
-		int32_t pin = utilities::str::lexical_cast<int32_t>(reader.get<string>());
+		int32_t pin = vana::util::str::lexical_cast<int32_t>(reader.get<string>());
 		opt_int32_t current = user_value->get_pin();
 		if (!current.is_initialized()) {
 			// Hacking
@@ -278,7 +278,7 @@ auto login::check_pin(ref_ptr<user> user_value, packet_reader &reader) -> void {
 		}
 	}
 	else if (act == 0x02) {
-		int32_t pin = utilities::str::lexical_cast<int32_t>(reader.get<string>());
+		int32_t pin = vana::util::str::lexical_cast<int32_t>(reader.get<string>());
 		auto current = user_value->get_pin();
 		if (!current.is_initialized()) {
 			// Hacking
@@ -306,7 +306,7 @@ auto login::register_pin(ref_ptr<user> user_value, packet_reader &reader) -> voi
 		}
 		return;
 	}
-	int32_t pin = utilities::str::lexical_cast<int32_t>(reader.get<string>());
+	int32_t pin = vana::util::str::lexical_cast<int32_t>(reader.get<string>());
 	user_value->set_status(player_status::not_logged_in);
 
 	auto &db = database::get_char_db();

@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "common/data/type/map_info.hpp"
-#include "common/optional.hpp"
 #include "common/types.hpp"
+#include "common/util/optional.hpp"
 #include <memory>
 #include <mutex>
 #include <string>

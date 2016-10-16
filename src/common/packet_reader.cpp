@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "packet_reader.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/string.hpp"
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
@@ -58,7 +58,7 @@ auto packet_reader::reset(int32_t len) -> packet_reader & {
 }
 
 auto packet_reader::to_string() const -> string {
-	return utilities::str::bytes_to_hex(get_buffer(), get_buffer_length());
+	return vana::util::str::bytes_to_hex(get_buffer(), get_buffer_length());
 }
 
 }

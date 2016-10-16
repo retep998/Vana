@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/database_updater.hpp"
 #include "common/exit_codes.hpp"
 #include "common/maple_version.hpp"
-#include "common/time_utilities.hpp"
+#include "common/util/time.hpp"
 #include <cstdio>
 #include <iomanip>
 #include <iostream>
@@ -140,7 +140,7 @@ auto check_schema_version(abstract_server *server, bool update) -> result {
 
 auto set_users_offline(abstract_server *server, int32_t online_id) -> void {
 	std::cout << "Resetting online status of players..." << std::endl;
-	time_point start_time = utilities::time::get_now();
+	time_point start_time = vana::util::time::get_now();
 
 	auto &db = database::get_char_db();
 	auto &sql = db.get_session();
@@ -153,7 +153,7 @@ auto set_users_offline(abstract_server *server, int32_t online_id) -> void {
 		<< "WHERE u.online = :online",
 		soci::use(online_id, "online");
 
-	auto loading_time = utilities::time::get_distance<milliseconds>(utilities::time::get_now(), start_time);
+	auto loading_time = vana::util::time::get_distance<milliseconds>(vana::util::time::get_now(), start_time);
 	std::cout << "Reset all accounts and players in " << std::setprecision(3) << loading_time / 1000.f << " seconds!" << std::endl << std::endl;
 }
 

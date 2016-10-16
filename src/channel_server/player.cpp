@@ -19,16 +19,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/common_header.hpp"
 #include "common/data/provider/item.hpp"
 #include "common/database.hpp"
-#include "common/enum_utilities.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/packet_builder.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
-#include "common/randomizer.hpp"
 #include "common/session.hpp"
 #include "common/split_packet_builder.hpp"
-#include "common/string_utilities.hpp"
-#include "common/time_utilities.hpp"
+#include "common/util/enum_cast.hpp"
+#include "common/util/randomizer.hpp"
+#include "common/util/string.hpp"
+#include "common/util/time.hpp"
 #include "channel_server/buddy_list_handler.hpp"
 #include "channel_server/buddy_list_packet.hpp"
 #include "channel_server/channel_server.hpp"
@@ -578,7 +577,7 @@ auto player::change_key(packet_reader &reader) -> void {
 		for (int32_t i = 0; i < how_many; i++) {
 			int32_t pos = reader.get<int32_t>();
 			key_map_type type;
-			if (enum_utilities::try_cast_from_underlying(reader.get<int8_t>(), type) != result::success) {
+			if (vana::util::enum_cast::try_cast_from_underlying(reader.get<int8_t>(), type) != result::success) {
 				// Probably hacking
 				return;
 			}
@@ -822,11 +821,11 @@ auto player::get_portal_count(bool add) -> game_portal_count {
 }
 
 auto player::initialize_rng(packet_builder &builder) -> void {
-	uint32_t seed1 = randomizer::rand<uint32_t>();
-	uint32_t seed2 = randomizer::rand<uint32_t>();
-	uint32_t seed3 = randomizer::rand<uint32_t>();
+	uint32_t seed1 = vana::util::randomizer::rand<uint32_t>();
+	uint32_t seed2 = vana::util::randomizer::rand<uint32_t>();
+	uint32_t seed3 = vana::util::randomizer::rand<uint32_t>();
 
-	m_rand_stream = make_owned_ptr<tausworthe_generator>(seed1, seed2, seed3);
+	m_rand_stream = make_owned_ptr<vana::util::tausworthe_generator>(seed1, seed2, seed3);
 
 	builder.add<uint32_t>(seed1);
 	builder.add<uint32_t>(seed2);

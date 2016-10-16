@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "thread.hpp"
-#include "common/thread_pool.hpp"
 #include "common/timer/timer.hpp"
 #include "common/timer/container.hpp"
-#include "common/time_utilities.hpp"
+#include "common/util/thread_pool.hpp"
+#include "common/util/time.hpp"
 #include <chrono>
 #include <functional>
 
@@ -29,10 +29,10 @@ namespace timer {
 thread::thread()
 {
 	m_container = make_ref_ptr<container>();
-	m_thread = thread_pool::lease(
+	m_thread = vana::util::thread_pool::lease(
 		[this](owned_lock<recursive_mutex> &lock) {
 			time_point wait_time = get_wait_time();
-			time_point now = utilities::time::get_now();
+			time_point now = vana::util::time::get_now();
 
 			while (wait_time <= now && m_timers.size() > 0) {
 				timer_pair top = m_timers.top();
@@ -83,7 +83,7 @@ auto thread::get_wait_time() const -> time_point {
 		return m_timers.top().first;
 	}
 
-	return utilities::time::get_now_with_time_added(milliseconds{1000000000});
+	return vana::util::time::get_now_with_time_added(milliseconds{1000000000});
 }
 
 }

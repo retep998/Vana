@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "skill_macros.hpp"
 #include "common/database.hpp"
-#include "common/misc_utilities.hpp"
+#include "common/util/misc.hpp"
 
 namespace vana {
 namespace channel_server {
@@ -35,7 +35,7 @@ auto skill_macros::load(game_player_id char_id) -> void {
 
 auto skill_macros::save(game_player_id char_id) -> void {
 	static init_list<game_skill_id> nulls = {0};
-	utilities::misc::nullable_mode null_mode = utilities::misc::nullable_mode::null_if_found;
+	vana::util::nullable_mode null_mode = vana::util::nullable_mode::null_if_found;
 
 	int8_t i = 0;
 	string name = "";
@@ -62,9 +62,9 @@ auto skill_macros::save(game_player_id char_id) -> void {
 		if (macro != nullptr) {
 			name = macro->name;
 			shout = macro->shout;
-			skill1 = utilities::misc::get_optional(macro->skill1, null_mode, nulls);
-			skill2 = utilities::misc::get_optional(macro->skill2, null_mode, nulls);
-			skill3 = utilities::misc::get_optional(macro->skill3, null_mode, nulls);
+			skill1 = vana::util::misc::get_optional(macro->skill1, null_mode, nulls);
+			skill2 = vana::util::misc::get_optional(macro->skill2, null_mode, nulls);
+			skill3 = vana::util::misc::get_optional(macro->skill3, null_mode, nulls);
 			st.execute(true);
 		}
 	}

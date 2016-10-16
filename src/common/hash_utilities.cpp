@@ -54,14 +54,14 @@ auto generate_salt(const config::salt_size &conf) -> string {
 			length = conf.size;
 			break;
 		case salt_size_policy::random:
-			length = randomizer::rand(conf.max, conf.min);
+			length = vana::util::randomizer::rand(conf.max, conf.min);
 			break;
 	}
 
 	// Explicitly using () constructor style here because {} produces different behavior
 	string salt(length, 0);
 	for (int32_t i = 0; i < length; i++) {
-		salt[i] = randomizer::rand<uint8_t>(255, 0);
+		salt[i] = vana::util::randomizer::rand<uint8_t>(255, 0);
 	}
 	return salt;
 }

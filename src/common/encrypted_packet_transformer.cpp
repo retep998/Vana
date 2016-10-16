@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "encrypted_packet_transformer.hpp"
-#include "common/bit_utilities.hpp"
 #include "common/common_header.hpp"
 #include "common/maple_version.hpp"
 #include "common/packet_builder.hpp"
-#include "common/randomizer.hpp"
+#include "common/util/bit.hpp"
+#include "common/util/randomizer.hpp"
 #include <botan/filters.h>
 #include <botan/lookup.h>
 #include <botan/pipe.h>
@@ -83,11 +83,11 @@ auto encrypted_packet_transformer::encrypt_packet(unsigned char *packet_data, in
 		a = 0;
 		for (j = real_packet_size; j > 0; --j) {
 			c = packet_data[real_packet_size - j];
-			c = utilities::bit::rotate_left(c, 3);
+			c = vana::util::bit::rotate_left(c, 3);
 			c = static_cast<uint8_t>(c + j); // Guess this is supposed to be right?
 			c = c ^ a;
 			a = c;
-			c = utilities::bit::rotate_right(a, j);
+			c = vana::util::bit::rotate_right(a, j);
 			c = c ^ 0xFF;
 			c = c + 0x48;
 			packet_data[real_packet_size - j] = c;
@@ -95,12 +95,12 @@ auto encrypted_packet_transformer::encrypt_packet(unsigned char *packet_data, in
 		a = 0;
 		for (j = real_packet_size; j > 0; --j) {
 			c = packet_data[j - 1];
-			c = utilities::bit::rotate_left(c, 4);
+			c = vana::util::bit::rotate_left(c, 4);
 			c = static_cast<uint8_t>(c + j); // Guess this is supposed to be right?
 			c = c ^ a;
 			a = c;
 			c = c ^ 0x13;
-			c = utilities::bit::rotate_right(c, 3);
+			c = vana::util::bit::rotate_right(c, 3);
 			packet_data[j - 1] = c;
 		}
 	}
@@ -173,12 +173,12 @@ auto encrypted_packet_transformer::decrypt_packet(unsigned char *packet_data, in
 		b = 0;
 		for (j = real_packet_size; j > 0; j--) {
 			c = packet_data[j - 1];
-			c = utilities::bit::rotate_left(c, 3);
+			c = vana::util::bit::rotate_left(c, 3);
 			c = c ^ 0x13;
 			a = c;
 			c = c ^ b;
 			c = static_cast<uint8_t>(c - j); // Guess this is supposed to be right?
-			c = utilities::bit::rotate_right(c, 4);
+			c = vana::util::bit::rotate_right(c, 4);
 			b = a;
 			packet_data[j - 1] = c;
 		}
@@ -188,11 +188,11 @@ auto encrypted_packet_transformer::decrypt_packet(unsigned char *packet_data, in
 			c = packet_data[real_packet_size - j];
 			c = c - 0x48;
 			c = c ^ 0xFF;
-			c = utilities::bit::rotate_left(c, j);
+			c = vana::util::bit::rotate_left(c, j);
 			a = c;
 			c = c ^ b;
 			c = static_cast<uint8_t>(c - j); // Guess this is supposed to be right?
-			c = utilities::bit::rotate_right(c, 3);
+			c = vana::util::bit::rotate_right(c, 3);
 			b = a;
 			packet_data[real_packet_size - j] = c;
 		}

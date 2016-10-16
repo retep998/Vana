@@ -19,9 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/algorithm.hpp"
 #include "common/data/provider/quest.hpp"
 #include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/randomizer.hpp"
-#include "common/time_utilities.hpp"
+#include "common/util/game_logic/inventory.hpp"
+#include "common/util/randomizer.hpp"
+#include "common/util/time.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/inventory.hpp"
 #include "channel_server/player.hpp"
@@ -319,7 +319,7 @@ auto player_quests::give_rewards(game_quest_id quest_id, bool start) -> result {
 
 		auto check_rewards = [this, &quest_id, &needed_slots, &chance_item, player](const data::type::quest_reward_info &info) -> iteration_result {
 			if (info.is_item) {
-				game_inventory inv = game_logic_utilities::get_inventory(info.id) - 1;
+				game_inventory inv = vana::util::game_logic::inventory::get_inventory(info.id) - 1;
 				if (info.count > 0) {
 					if (info.prop > 0 && !chance_item[inv]) {
 						chance_item[inv] = true;
@@ -397,7 +397,7 @@ auto player_quests::give_rewards(game_quest_id quest_id, bool start) -> result {
 		});
 
 		if (chance > 0) {
-			int32_t random = randomizer::rand<int32_t>(chance - 1);
+			int32_t random = vana::util::randomizer::rand<int32_t>(chance - 1);
 			chance = 0;
 			for (const auto &info : items) {
 				if (chance >= random) {

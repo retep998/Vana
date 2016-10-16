@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/timer/timer.hpp"
 #include "common/timer/container.hpp"
 #include "common/timer/thread.hpp"
-#include "common/time_utilities.hpp"
+#include "common/util/time.hpp"
 #include <memory>
 
 namespace vana {
@@ -40,7 +40,7 @@ timer::timer(const func f, const id &id, ref_ptr<container> container, const dur
 	m_function{f}
 {
 	m_repeat = repeat.count() != 0;
-	m_run_at = utilities::time::get_now_with_time_added(difference_from_now);
+	m_run_at = vana::util::time::get_now_with_time_added(difference_from_now);
 }
 
 auto timer::remove_from_container() const -> void {
@@ -60,7 +60,7 @@ auto timer::reset(const time_point &now) -> time_point {
 }
 
 auto timer::get_time_left() const -> duration {
-	return m_run_at - utilities::time::get_now();
+	return m_run_at - vana::util::time::get_now();
 }
 
 }

@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_packet_helper.hpp"
 #include "common/file_time.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/time_utilities.hpp"
+#include "common/util/game_logic/item.hpp"
+#include "common/util/time.hpp"
 #include "channel_server/inventory.hpp"
 #include "channel_server/pet.hpp"
 #include "channel_server/player.hpp"
@@ -43,7 +43,7 @@ PACKET_IMPL(add_item_info, game_inventory_slot slot, item *item, bool short_slot
 			builder.add<int8_t>(static_cast<int8_t>(slot));
 		}
 	}
-	bool equip = game_logic_utilities::is_equip(item->get_id());
+	bool equip = vana::util::game_logic::item::is_equip(item->get_id());
 	builder
 		.add<int8_t>(equip ? 1 : 2)
 		.add<game_item_id>(item->get_id());
@@ -103,7 +103,7 @@ PACKET_IMPL(add_item_info, game_inventory_slot slot, item *item, bool short_slot
 			.add<string>(item->get_name()) // Specially made by <IGN>
 			.add<int16_t>(item->get_flags());
 
-		if (game_logic_utilities::is_rechargeable(item->get_id())) {
+		if (vana::util::game_logic::item::is_rechargeable(item->get_id())) {
 			builder.add<int64_t>(0); // Might be rechargeable ID for internal tracking/duping tracking
 		}
 	}

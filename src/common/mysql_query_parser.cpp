@@ -16,16 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "mysql_query_parser.hpp"
-#include "common/file_utilities.hpp"
-#include "common/string_utilities.hpp"
-#include "common/tokenizer.hpp"
+#include "common/util/file.hpp"
+#include "common/util/string.hpp"
+#include "common/util/tokenizer.hpp"
 #include <fstream>
 
 namespace vana {
 namespace mysql_query_parser {
 
 auto parse_queries(const string &filename) -> vector<string> {
-	if (!utilities::file::exists(filename)) {
+	if (!vana::util::file::exists(filename)) {
 		throw std::runtime_error{"Query file doesn't exist: " + filename};
 	}
 
@@ -45,16 +45,16 @@ auto parse_queries(const string &filename) -> vector<string> {
 			content_stream << line << std::endl;
 		}
 
-		content = utilities::str::replace(content_stream.str(), "%%PREFIX%%", db.get_table_prefix());
+		content = vana::util::str::replace(content_stream.str(), "%%PREFIX%%", db.get_table_prefix());
 	}
 
 	// Parse each SQL statement
 	{
-		utilities::misc::tokenizer tokens{content, ";"};
+		vana::util::tokenizer tokens{content, ";"};
 
 		for (const auto &token : tokens) {
 			string q = token;
-			q = utilities::str::trim(q);
+			q = vana::util::str::trim(q);
 			if (!q.empty()) {
 				queries.push_back(q);
 			}

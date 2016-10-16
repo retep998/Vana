@@ -19,12 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/algorithm.hpp"
 #include "common/data/provider/equip.hpp"
 #include "common/data/provider/skill.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/inter_header.hpp"
-#include "common/misc_utilities.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
-#include "common/randomizer.hpp"
+#include "common/util/game_logic/job.hpp"
+#include "common/util/misc.hpp"
+#include "common/util/randomizer.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/instance.hpp"
 #include "channel_server/inventory.hpp"
@@ -448,7 +448,7 @@ auto player_stats::set_fame(game_fame fame) -> void {
 
 auto player_stats::lose_exp() -> void {
 	if (auto player = m_player.lock()) {
-		if (!game_logic_utilities::is_beginner_job(get_job()) && get_level() < game_logic_utilities::get_max_level(get_job()) && player->get_map_id() != constant::map::sorcerers_room) {
+		if (!vana::util::game_logic::job::is_beginner_job(get_job()) && get_level() < vana::util::game_logic::job::get_max_level(get_job()) && player->get_map_id() != constant::map::sorcerers_room) {
 			game_slot_qty charms = player->get_inventory()->get_item_amount(constant::item::safety_charm);
 			if (charms > 0) {
 				inventory::take_item(player, constant::item::safety_charm, 1);
@@ -463,7 +463,7 @@ auto player_stats::lose_exp() -> void {
 				exp_loss = 1;
 			}
 			else {
-				switch (game_logic_utilities::get_job_line(get_job())) {
+				switch (vana::util::game_logic::job::get_job_line(get_job())) {
 					case constant::job::line::magician:
 						exp_loss = 7;
 						break;
@@ -485,7 +485,7 @@ auto player_stats::give_exp(uint64_t exp, bool in_chat, bool white) -> void {
 	if (auto player = m_player.lock()) {
 		game_job_id full_job = get_job();
 		game_player_level level = get_level();
-		game_player_level job_max = game_logic_utilities::get_max_level(full_job);
+		game_player_level job_max = vana::util::game_logic::job::get_max_level(full_job);
 		if (level >= job_max) {
 			// Do not give EXP to characters of max level or over
 			return;
@@ -503,14 +503,14 @@ auto player_stats::give_exp(uint64_t exp, bool in_chat, bool white) -> void {
 		}
 
 		if (cur_exp >= get_exp(level)) {
-			bool cygnus = game_logic_utilities::is_cygnus(full_job);
+			bool cygnus = vana::util::game_logic::job::is_cygnus(full_job);
 			game_player_level levels_gained = 0;
 			game_player_level levels_max = channel_server::get_instance().get_config().max_multi_level;
 			game_stat ap_gain = 0;
 			game_stat sp_gain = 0;
 			game_health hp_gain = 0;
 			game_health mp_gain = 0;
-			int8_t job_line = game_logic_utilities::get_job_line(full_job);
+			int8_t job_line = vana::util::game_logic::job::get_job_line(full_job);
 			game_stat intl = get_int(true) / 10;
 			game_health x = 0; // X value for Improving *P Increase skills, cached, only needs to be set once
 
@@ -562,7 +562,7 @@ auto player_stats::give_exp(uint64_t exp, bool in_chat, bool white) -> void {
 						hp_gain += constant::stat::base_hp::gm;
 						mp_gain += constant::stat::base_mp::gm;
 				}
-				if (!game_logic_utilities::is_beginner_job(full_job)) {
+				if (!vana::util::game_logic::job::is_beginner_job(full_job)) {
 					sp_gain += constant::stat::sp_per_level;
 				}
 				if (level >= job_max) {
@@ -697,7 +697,7 @@ auto player_stats::add_stat(int32_t type, int16_t mod, bool is_reset) -> void {
 					// Hacking
 					return;
 				}
-				int8_t job = game_logic_utilities::get_job_track(get_job());
+				int8_t job = vana::util::game_logic::job::get_job_track(get_job());
 				game_health hp_gain = 0;
 				game_health mp_gain = 0;
 				game_health y = 0;
@@ -773,11 +773,11 @@ auto player_stats::add_stat(int32_t type, int16_t mod, bool is_reset) -> void {
 }
 
 auto player_stats::rand_hp() -> game_health {
-	return randomizer::rand<game_health>(constant::stat::base_hp::variation); // Max HP range per class (e.g. Beginner is 8-12)
+	return vana::util::randomizer::rand<game_health>(constant::stat::base_hp::variation); // Max HP range per class (e.g. Beginner is 8-12)
 }
 
 auto player_stats::rand_mp() -> game_health {
-	return randomizer::rand<game_health>(constant::stat::base_mp::variation); // Max MP range per class (e.g. Beginner is 6-8)
+	return vana::util::randomizer::rand<game_health>(constant::stat::base_mp::variation); // Max MP range per class (e.g. Beginner is 6-8)
 }
 
 auto player_stats::get_x(game_skill_id skill_id) -> int16_t {

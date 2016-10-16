@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/constant/skill.hpp"
 #include "common/data/provider/item.hpp"
 #include "common/data/type/buff_source.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/initialize_common.hpp"
 #include <iomanip>
 #include <iostream>

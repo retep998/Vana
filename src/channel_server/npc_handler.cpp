@@ -19,8 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/provider/item.hpp"
 #include "common/data/provider/npc.hpp"
 #include "common/data/provider/shop.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/packet_reader.hpp"
+#include "common/util/game_logic/inventory.hpp"
+#include "common/util/game_logic/item.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/inventory.hpp"
 #include "channel_server/inventory_packet.hpp"
@@ -210,9 +211,9 @@ auto npc_handler::use_shop(ref_ptr<player> player, packet_reader &reader) -> voi
 			game_inventory_slot slot = reader.get<game_inventory_slot>();
 			game_item_id item_id = reader.get<game_item_id>();
 			game_slot_qty amount = reader.get<game_slot_qty>();
-			game_inventory inv = game_logic_utilities::get_inventory(item_id);
+			game_inventory inv = vana::util::game_logic::inventory::get_inventory(item_id);
 			item *item = player->get_inventory()->get_item(inv, slot);
-			if (item == nullptr || item->get_id() != item_id || (!game_logic_utilities::is_rechargeable(item_id) && amount > item->get_amount())) {
+			if (item == nullptr || item->get_id() != item_id || (!vana::util::game_logic::item::is_rechargeable(item_id) && amount > item->get_amount())) {
 				// Hacking
 				player->send(packets::npc::bought(packets::npc::bought_messages::not_enough_in_stock));
 				return;
@@ -224,7 +225,7 @@ auto npc_handler::use_shop(ref_ptr<player> player, packet_reader &reader) -> voi
 				return;
 			}
 
-			if (game_logic_utilities::is_rechargeable(item_id)) {
+			if (vana::util::game_logic::item::is_rechargeable(item_id)) {
 				inventory::take_item_slot(player, inv, slot, item->get_amount(), true);
 			}
 			else {
@@ -236,7 +237,7 @@ auto npc_handler::use_shop(ref_ptr<player> player, packet_reader &reader) -> voi
 		case shop_opcodes::recharge: {
 			game_inventory_slot slot = reader.get<game_inventory_slot>();
 			item *item = player->get_inventory()->get_item(constant::inventory::use, slot);
-			if (item == nullptr || !game_logic_utilities::is_rechargeable(item->get_id())) {
+			if (item == nullptr || !vana::util::game_logic::item::is_rechargeable(item->get_id())) {
 				// Hacking
 				return;
 			}
@@ -247,7 +248,7 @@ auto npc_handler::use_shop(ref_ptr<player> player, packet_reader &reader) -> voi
 				get_item_info(item->get_id());
 
 			game_slot_qty max_slot = item_info->max_slot;
-			if (game_logic_utilities::is_rechargeable(item->get_id())) {
+			if (vana::util::game_logic::item::is_rechargeable(item->get_id())) {
 				max_slot += player->get_skills()->get_rechargeable_bonus();
 			}
 
@@ -312,13 +313,13 @@ auto npc_handler::use_storage(ref_ptr<player> player, packet_reader &reader) -> 
 				player->send(packets::storage::storage_full());
 				return;
 			}
-			game_inventory inv = game_logic_utilities::get_inventory(item_id);
+			game_inventory inv = vana::util::game_logic::inventory::get_inventory(item_id);
 			item *value = player->get_inventory()->get_item(inv, slot);
 			if (value == nullptr) {
 				// Hacking
 				return;
 			}
-			if (!game_logic_utilities::is_stackable(item_id)) {
+			if (!vana::util::game_logic::item::is_stackable(item_id)) {
 				amount = 1;
 			}
 			else if (amount <= 0 || amount > value->get_amount()) {
@@ -335,7 +336,7 @@ auto npc_handler::use_storage(ref_ptr<player> player, packet_reader &reader) -> 
 			}
 
 			player->get_storage()->add_item(
-				!game_logic_utilities::is_stackable(item_id) ?
+				!vana::util::game_logic::item::is_stackable(item_id) ?
 					new item{value} :
 					new item{item_id, amount});
 
@@ -347,7 +348,7 @@ auto npc_handler::use_storage(ref_ptr<player> player, packet_reader &reader) -> 
 				player,
 				inv,
 				slot,
-				game_logic_utilities::is_rechargeable(item_id) ?
+				vana::util::game_logic::item::is_rechargeable(item_id) ?
 					value->get_amount() :
 					amount,
 				true,

@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/algorithm.hpp"
 #include "common/database.hpp"
 #include "common/initialize_common.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/string.hpp"
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
@@ -57,10 +57,10 @@ auto mob::load_attacks() -> void {
 		mob_attack.disease = row.get<game_mob_skill_id>("mob_skillid");
 		mob_attack.level = row.get<game_mob_skill_level>("mob_skill_level");
 
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&mob_attack](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("flags"), [&mob_attack](const string &cmp) {
 			if (cmp == "deadly") mob_attack.deadly_attack = true;
 		});
-		utilities::str::run_enum(row.get<string>("attack_type"), [&mob_attack](const string &cmp) {
+		vana::util::str::run_enum(row.get<string>("attack_type"), [&mob_attack](const string &cmp) {
 			if (cmp == "normal") mob_attack.attack_type = data::type::mob_attack_type::normal;
 			else if (cmp == "projectile") mob_attack.attack_type = data::type::mob_attack_type::projectile;
 			else if (cmp == "single_target") mob_attack.attack_type = data::type::mob_attack_type::single_target;
@@ -153,7 +153,7 @@ auto mob::load_mobs() -> void {
 
 		auto get_element = [&row](const string &modifier) -> mob_elemental_attribute {
 			mob_elemental_attribute ret;
-			utilities::str::run_enum(row.get<string>(modifier), [&ret](const string &cmp) {
+			vana::util::str::run_enum(row.get<string>(modifier), [&ret](const string &cmp) {
 				if (cmp == "normal") ret = mob_elemental_attribute::normal;
 				else if (cmp == "immune") ret = mob_elemental_attribute::immune;
 				else if (cmp == "strong") ret = mob_elemental_attribute::strong;
@@ -169,7 +169,7 @@ auto mob::load_mobs() -> void {
 		mob->holy_attr = get_element("holy_modifier");
 		mob->non_elem_attr = get_element("nonelemental_modifier");
 
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&mob](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("flags"), [&mob](const string &cmp) {
 			if (cmp == "boss") mob->boss = true;
 			else if (cmp == "undead") mob->undead = true;
 			else if (cmp == "flying") mob->flying = true;

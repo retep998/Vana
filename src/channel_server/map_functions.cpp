@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "map_functions.hpp"
 #include "common/algorithm.hpp"
 #include "common/map_position.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/string.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/map.hpp"
 #include "channel_server/maps.hpp"
@@ -88,7 +88,7 @@ auto map_functions::kill_mob(ref_ptr<player> player, const game_chat &args) -> c
 		game_map_object mob_id = atoi(args.c_str());
 		auto mob = player->get_map()->get_mob(mob_id);
 		if (mob != nullptr) {
-			chat_handler_functions::show_info(player, "Killed mob with map mob ID " + args + ". Damage applied: " + utilities::str::lexical_cast<string>(mob->get_hp()));
+			chat_handler_functions::show_info(player, "Killed mob with map mob ID " + args + ". Damage applied: " + vana::util::str::lexical_cast<string>(mob->get_hp()));
 			mob->apply_damage(player->get_id(), mob->get_hp());
 		}
 		else {
@@ -234,7 +234,7 @@ auto map_functions::list_portals(ref_ptr<player> player, const game_chat &args) 
 	for (const auto &row : rs) {
 		string portal_label = row.get<string>(1);
 		if (filter.is_initialized()) {
-			if (utilities::str::no_case_compare(filter.get(), portal_label) != 0) {
+			if (vana::util::str::no_case_compare(filter.get(), portal_label) != 0) {
 				continue;
 			}
 		}
@@ -279,7 +279,7 @@ auto map_functions::list_players(ref_ptr<player> player_value, const game_chat &
 		str.str("");
 		str.clear();
 
-		str << utilities::str::to_upper(target->get_name())
+		str << vana::util::str::to_upper(target->get_name())
 			<< " (ID: " << target->get_id() << ", ";
 
 		if (party *party = target->get_party()) {

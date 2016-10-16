@@ -28,11 +28,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/log/base_logger.hpp"
 #include "common/log/sql_logger.hpp"
 #include "common/lua/config_file.hpp"
-#include "common/misc_utilities.hpp"
 #include "common/session.hpp"
-#include "common/thread_pool.hpp"
 #include "common/timer/thread.hpp"
-#include "common/time_utilities.hpp"
+#include "common/util/misc.hpp"
+#include "common/util/thread_pool.hpp"
+#include "common/util/time.hpp"
 #include <chrono>
 #include <ctime>
 #include <iomanip>
@@ -47,7 +47,7 @@ abstract_server::abstract_server(server_type type) :
 }
 
 auto abstract_server::initialize() -> result {
-	m_start_time = utilities::time::get_now();
+	m_start_time = vana::util::time::get_now();
 
 	load_log_config();
 
@@ -119,7 +119,7 @@ auto abstract_server::load_log_config() -> void {
 
 auto abstract_server::shutdown() -> void {
 	m_connection_manager.stop();
-	thread_pool::wait();
+	vana::util::thread_pool::wait();
 }
 
 auto abstract_server::get_server_type() const -> server_type {
@@ -150,7 +150,7 @@ auto abstract_server::init_complete() -> void {
 auto abstract_server::send_auth(ref_ptr<session> session) const -> void {
 	session->send(
 		packets::send_password(
-			utilities::misc::get_server_type(session->get_type()),
+			vana::util::misc::get_server_type(session->get_type()),
 			get_inter_password(),
 			m_external_ips));
 }
@@ -196,7 +196,7 @@ auto abstract_server::build_log_identifier(function<void(out_stream &)> produce_
 }
 
 auto abstract_server::display_launch_time() const -> void {
-	auto loading_time = utilities::time::get_distance<milliseconds>(utilities::time::get_now(), m_start_time);
+	auto loading_time = vana::util::time::get_distance<milliseconds>(vana::util::time::get_now(), m_start_time);
 	std::cout << "Started in " << std::setprecision(3) << loading_time / 1000.f << " seconds!" << std::endl << std::endl;
 }
 

@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "common/constant/inventory.hpp"
 #include "common/item.hpp"
-#include "common/meso_inventory.hpp"
 #include "common/types.hpp"
+#include "common/util/meso_inventory.hpp"
 #include <array>
 #include <string>
 #include <unordered_map>
@@ -49,9 +49,9 @@ namespace vana {
 			auto wishlist_info_packet(packet_builder &builder) -> void;
 
 			auto set_mesos(game_mesos mesos, bool send_packet = false) -> void;
-			auto modify_mesos(game_mesos mod, bool allow_partial = false, bool send_packet = false) -> meso_modify_result;
-			auto add_mesos(game_mesos mod, bool allow_partial = false, bool send_packet = false) -> meso_modify_result;
-			auto take_mesos(game_mesos mod, bool allow_partial = false, bool send_packet = false) -> meso_modify_result;
+			auto modify_mesos(game_mesos mod, bool allow_partial = false, bool send_packet = false) -> vana::util::meso_modify_result;
+			auto add_mesos(game_mesos mod, bool allow_partial = false, bool send_packet = false) -> vana::util::meso_modify_result;
+			auto take_mesos(game_mesos mod, bool allow_partial = false, bool send_packet = false) -> vana::util::meso_modify_result;
 			auto add_max_slots(game_inventory inventory, game_inventory_slot_count rows) -> void;
 			auto add_item(game_inventory inv, game_inventory_slot slot, item *item, bool send_packet_loading = false) -> void;
 			auto delete_item(game_inventory inv, game_inventory_slot slot, bool update_amount = true) -> void;
@@ -65,7 +65,7 @@ namespace vana {
 			auto get_max_slots(game_inventory inv) const -> game_inventory_slot_count;
 			auto get_mesos() const -> game_mesos;
 			auto has_any_mesos() const -> bool;
-			auto can_accept(const meso_inventory &other) const -> stack_result;
+			auto can_accept(const vana::util::meso_inventory &other) const -> stack_result;
 			auto can_modify_mesos(game_mesos mesos) const -> stack_result;
 			auto can_add_mesos(game_mesos mesos) const -> stack_result;
 			auto can_take_mesos(game_mesos mesos) const -> stack_result;
@@ -94,13 +94,13 @@ namespace vana {
 			auto check_expired_items() -> void;
 		private:
 			auto add_equipped(game_inventory_slot slot, game_item_id item_id) -> void;
-			auto modify_mesos_internal(meso_modify_result query, bool send_packet) -> meso_modify_result;
+			auto modify_mesos_internal(vana::util::meso_modify_result query, bool send_packet) -> vana::util::meso_modify_result;
 
 			game_inventory_slot m_hammer = -1;
 			game_item_id m_auto_hp_pot_id = 0;
 			game_item_id m_auto_mp_pot_id = 0;
 			view_ptr<player> m_player;
-			meso_inventory m_mesos;
+			vana::util::meso_inventory m_mesos;
 			array<game_inventory_slot_count, constant::inventory::count> m_max_slots;
 			array<array<game_item_id, 2>, constant::inventory::equipped_slots> m_equipped; // Separate sets of slots for regular items and cash items
 			array<hash_map<game_inventory_slot, item *>, constant::inventory::count> m_items;

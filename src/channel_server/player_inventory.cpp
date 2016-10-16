@@ -20,9 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/provider/equip.hpp"
 #include "common/data/provider/item.hpp"
 #include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/misc_utilities.hpp"
-#include "common/time_utilities.hpp"
+#include "common/util/game_logic/inventory.hpp"
+#include "common/util/game_logic/item.hpp"
+#include "common/util/misc.hpp"
+#include "common/util/time.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/inventory.hpp"
 #include "channel_server/inventory_packet.hpp"
@@ -184,19 +185,19 @@ auto player_inventory::set_mesos(game_mesos mesos, bool send_packet) -> void {
 	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
-auto player_inventory::modify_mesos(game_mesos mod, bool allow_partial, bool send_packet) -> meso_modify_result {
+auto player_inventory::modify_mesos(game_mesos mod, bool allow_partial, bool send_packet) -> vana::util::meso_modify_result {
 	return modify_mesos_internal(m_mesos.modify_mesos(mod, allow_partial), send_packet);
 }
 
-auto player_inventory::add_mesos(game_mesos mod, bool allow_partial, bool send_packet) -> meso_modify_result {
+auto player_inventory::add_mesos(game_mesos mod, bool allow_partial, bool send_packet) -> vana::util::meso_modify_result {
 	return modify_mesos_internal(m_mesos.add_mesos(mod, allow_partial), send_packet);
 }
 
-auto player_inventory::take_mesos(game_mesos mod, bool allow_partial, bool send_packet) -> meso_modify_result {
+auto player_inventory::take_mesos(game_mesos mod, bool allow_partial, bool send_packet) -> vana::util::meso_modify_result {
 	return modify_mesos_internal(m_mesos.take_mesos(mod, allow_partial), send_packet);
 }
 
-auto player_inventory::modify_mesos_internal(meso_modify_result query, bool send_packet) -> meso_modify_result {
+auto player_inventory::modify_mesos_internal(vana::util::meso_modify_result query, bool send_packet) -> vana::util::meso_modify_result {
 	if (query.get_result() == stack_result::none) {
 		return query;
 	}
@@ -228,7 +229,7 @@ auto player_inventory::add_item(game_inventory inv, game_inventory_slot slot, it
 }
 
 auto player_inventory::get_item(game_inventory inv, game_inventory_slot slot) -> item * {
-	if (!game_logic_utilities::is_valid_inventory(inv)) {
+	if (!vana::util::game_logic::inventory::is_valid_inventory(inv)) {
 		return nullptr;
 	}
 	inv -= 1;
@@ -310,7 +311,7 @@ auto player_inventory::has_any_mesos() const -> bool {
 	return m_mesos.has_any();
 }
 
-auto player_inventory::can_accept(const meso_inventory &other) const -> stack_result {
+auto player_inventory::can_accept(const vana::util::meso_inventory &other) const -> stack_result {
 	return m_mesos.can_accept(other);
 }
 
@@ -347,8 +348,8 @@ auto player_inventory::add_equipped(game_inventory_slot slot, game_item_id item_
 		else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 	}
 
-	int8_t cash = game_logic_utilities::is_cash_slot(slot) ? 1 : 0;
-	m_equipped[game_logic_utilities::strip_cash_slot(slot)][cash] = item_id;
+	int8_t cash = vana::util::game_logic::inventory::is_cash_slot(slot) ? 1 : 0;
+	m_equipped[vana::util::game_logic::inventory::strip_cash_slot(slot)][cash] = item_id;
 }
 
 auto player_inventory::get_equipped_id(game_inventory_slot slot, bool cash) -> game_item_id {
@@ -399,8 +400,8 @@ auto player_inventory::is_equipped_item(game_item_id item_id) -> bool {
 
 auto player_inventory::has_open_slots_for(game_item_id item_id, game_slot_qty amount, bool can_stack) -> bool {
 	game_slot_qty required = 0;
-	game_inventory inv = game_logic_utilities::get_inventory(item_id);
-	if (!game_logic_utilities::is_stackable(item_id)) {
+	game_inventory inv = vana::util::game_logic::inventory::get_inventory(item_id);
+	if (!vana::util::game_logic::item::is_stackable(item_id)) {
 		required = amount; // These aren't stackable
 	}
 	else {
@@ -448,7 +449,7 @@ auto player_inventory::do_shadow_stars() -> game_item_id {
 			if (item == nullptr) {
 				continue;
 			}
-			if (game_logic_utilities::is_star(item->get_id()) && item->get_amount() >= constant::item::shadow_stars_cost) {
+			if (vana::util::game_logic::item::is_star(item->get_id()) && item->get_amount() >= constant::item::shadow_stars_cost) {
 				inventory::take_item_slot(player, constant::inventory::use, s, constant::item::shadow_stars_cost);
 				return item->get_id();
 			}
@@ -518,8 +519,8 @@ auto player_inventory::swap_items(int8_t inventory, int16_t slot1, int16_t slot2
 			}
 
 			game_item_id item_id1 = item1->get_id();
-			game_inventory_slot stripped_slot1 = game_logic_utilities::strip_cash_slot(slot1);
-			game_inventory_slot stripped_slot2 = game_logic_utilities::strip_cash_slot(slot2);
+			game_inventory_slot stripped_slot1 = vana::util::game_logic::inventory::strip_cash_slot(slot1);
+			game_inventory_slot stripped_slot2 = vana::util::game_logic::inventory::strip_cash_slot(slot2);
 			if (!channel_server::get_instance().get_equip_data_provider().is_valid_slot(item_id1, stripped_slot2)) {
 				// Hacking
 				return;
@@ -546,16 +547,16 @@ auto player_inventory::swap_items(int8_t inventory, int16_t slot1, int16_t slot2
 			bool top = (stripped_slot2 == constant::equip_slot::top);
 			bool bottom = (stripped_slot2 == constant::equip_slot::bottom);
 
-			if (weapon && game_logic_utilities::is2h_weapon(item_id1) && get_equipped_id(constant::equip_slot::shield) != 0) {
+			if (weapon && vana::util::game_logic::item::is2h_weapon(item_id1) && get_equipped_id(constant::equip_slot::shield) != 0) {
 				old_slot = -constant::equip_slot::shield;
 			}
-			else if (shield && game_logic_utilities::is2h_weapon(get_equipped_id(constant::equip_slot::weapon))) {
+			else if (shield && vana::util::game_logic::item::is2h_weapon(get_equipped_id(constant::equip_slot::weapon))) {
 				old_slot = -constant::equip_slot::weapon;
 			}
-			else if (top && game_logic_utilities::is_overall(item_id1) && get_equipped_id(constant::equip_slot::bottom) != 0) {
+			else if (top && vana::util::game_logic::item::is_overall(item_id1) && get_equipped_id(constant::equip_slot::bottom) != 0) {
 				old_slot = -constant::equip_slot::bottom;
 			}
-			else if (bottom && game_logic_utilities::is_overall(get_equipped_id(constant::equip_slot::top))) {
+			else if (bottom && vana::util::game_logic::item::is_overall(get_equipped_id(constant::equip_slot::top))) {
 				old_slot = -constant::equip_slot::top;
 			}
 			if (old_slot != 0) {
@@ -642,7 +643,7 @@ auto player_inventory::swap_items(int8_t inventory, int16_t slot1, int16_t slot2
 
 			game_item_id item_id1 = item1->get_id();
 			game_item_id item_id2 = item2 == nullptr ? 0 : item2->get_id();
-			if (item2 != nullptr && item_id1 == item_id2 && game_logic_utilities::is_stackable(item_id1)) {
+			if (item2 != nullptr && item_id1 == item_id2 && vana::util::game_logic::item::is_stackable(item_id1)) {
 				auto item_info = channel_server::get_instance().get_item_data_provider().get_item_info(item_id1);
 				game_slot_qty max_slot = item_info->max_slot;
 

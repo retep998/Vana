@@ -21,11 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/provider/map.hpp"
 #include "common/data/provider/quest.hpp"
 #include "common/data/provider/skill.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/item.hpp"
 #include "common/packet_reader.hpp"
 #include "common/point.hpp"
-#include "common/randomizer.hpp"
+#include "common/util/game_logic/item.hpp"
+#include "common/util/randomizer.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/drop.hpp"
 #include "channel_server/drops_packet.hpp"
@@ -98,7 +98,7 @@ auto drop_handler::do_drops(game_player_id player_id, game_map_id map_id, int32_
 		return;
 	}
 
-	randomizer::shuffle(drops);
+	vana::util::randomizer::shuffle(drops);
 	game_coord mod = explosive ? 35 : 25;
 	for (const auto &drop_info : drops) {
 		if (drop_info.is_mesos && meso_rate == 0) {
@@ -108,7 +108,7 @@ auto drop_handler::do_drops(game_player_id player_id, game_map_id map_id, int32_
 			continue;
 		}
 
-		game_slot_qty amount = static_cast<game_slot_qty>(randomizer::rand<int32_t>(drop_info.max_amount, drop_info.min_amount));
+		game_slot_qty amount = static_cast<game_slot_qty>(vana::util::randomizer::rand<int32_t>(drop_info.max_amount, drop_info.min_amount));
 		drop *value = nullptr;
 		uint32_t chance = drop_info.chance;
 
@@ -122,7 +122,7 @@ auto drop_handler::do_drops(game_player_id player_id, game_map_id map_id, int32_
 				drop_rate;
 		}
 
-		if (randomizer::rand<uint32_t>(999999) < chance) {
+		if (vana::util::randomizer::rand<uint32_t>(999999) < chance) {
 			pos.x = origin.x + ((drop_pos_counter % 2) ?
 				(mod * (drop_pos_counter + 1) / 2) :
 				-(mod * (drop_pos_counter / 2)));
@@ -145,7 +145,7 @@ auto drop_handler::do_drops(game_player_id player_id, game_map_id map_id, int32_
 					}
 				}
 
-				item f = game_logic_utilities::is_equip(item_id) ?
+				item f = vana::util::game_logic::item::is_equip(item_id) ?
 					item{channel_server::get_instance().get_equip_data_provider(),
 						item_id,
 						stat_variance::normal,
@@ -318,7 +318,7 @@ auto drop_handler::loot_item(ref_ptr<player> player_value, packet_reader &reader
 		item drop_item = drop->get_item();
 		auto cons = channel_server::get_instance().get_item_data_provider().get_consume_info(drop_item.get_id());
 		if (cons != nullptr && cons->auto_consume) {
-			if (game_logic_utilities::is_monster_card(drop->get_object_id())) {
+			if (vana::util::game_logic::item::is_monster_card(drop->get_object_id())) {
 				player_value->send(packets::drops::pickup_drop_special(drop->get_object_id()));
 				inventory::use_item(player_value, drop_item.get_id());
 				player_value->send(packets::drops::dont_take());

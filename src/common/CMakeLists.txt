@@ -46,6 +46,14 @@ file(GLOB COMMON_TIMER_SRC timer\*.cpp)
 file(GLOB COMMON_TIMER_HDR timer\*.hpp)
 source_group("common\\timer" FILES ${COMMON_TIMER_SRC} ${COMMON_TIMER_HDR})
 
+file(GLOB COMMON_UTIL_SRC util\*.cpp)
+file(GLOB COMMON_UTIL_HDR util\*.hpp)
+source_group("common\\util" FILES ${COMMON_UTIL_SRC} ${COMMON_UTIL_HDR})
+
+file(GLOB COMMON_UTIL_GAME_LOGIC_SRC util\*.cpp)
+file(GLOB COMMON_UTIL_GAME_LOGIC_HDR util\*.hpp)
+source_group("common\\util\\game_logic" FILES ${COMMON_UTIL_GAME_LOGIC_SRC} ${COMMON_UTIL_GAME_LOGIC_HDR})
+
 add_library(common STATIC
 	${COMMON_SRC} ${COMMON_HDR}
 	${COMMON_CONFIG_SRC} ${COMMON_CONFIG_HDR}
@@ -59,4 +67,6 @@ add_library(common STATIC
 	${COMMON_LOG_SRC} ${COMMON_LOG_HDR}
 	${COMMON_LUA_SRC} ${COMMON_LUA_HDR}
 	${COMMON_TIMER_SRC} ${COMMON_TIMER_HDR}
+	${COMMON_UTIL_SRC} ${COMMON_UTIL_HDR}
+	${COMMON_UTIL_GAME_LOGIC_SRC} ${COMMON_UTIL_GAME_LOGIC_HDR}
 )

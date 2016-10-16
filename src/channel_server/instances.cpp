@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "instances.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/string.hpp"
 #include <algorithm>
 
 namespace vana {

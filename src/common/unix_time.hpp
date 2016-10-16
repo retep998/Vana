@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/hash_combine.hpp"
 #include "common/types.hpp"
+#include "common/util/hash_combine.hpp"
 
 namespace vana {
 	// Thin wrapper around time_t so we could write a SOCI extension for it
@@ -157,7 +157,7 @@ namespace std {
 	template <>
 	struct hash<vana::unix_time> {
 		auto operator()(const vana::unix_time &v) const -> size_t {
-			return vana::utilities::misc::hash_combinator(static_cast<time_t>(v));
+			return vana::util::hash_combinator(static_cast<time_t>(v));
 		}
 	};
 }

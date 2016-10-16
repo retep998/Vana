@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/provider/item.hpp"
 #include "common/database.hpp"
 #include "common/exit_codes.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/string.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/inventory.hpp"
 #include "channel_server/maps.hpp"
@@ -41,7 +41,7 @@ auto management_functions::user_warp(ref_ptr<player> player, const game_chat &ar
 		string raw_map = matches[1];
 		string raw_portal = matches[2];
 		if (raw_map.empty()) {
-			chat_handler_functions::show_info(player, "Current map: " + utilities::str::lexical_cast<string>(player->get_map_id()));
+			chat_handler_functions::show_info(player, "Current map: " + vana::util::str::lexical_cast<string>(player->get_map_id()));
 			return chat_result::handled_display;
 		}
 
@@ -56,14 +56,14 @@ auto management_functions::user_warp(ref_ptr<player> player, const game_chat &ar
 				string x_position = matches[1];
 				string y_position = matches[2];
 				point pos{
-					utilities::str::lexical_cast<game_coord>(x_position),
-					utilities::str::lexical_cast<game_coord>(y_position)
+					vana::util::str::lexical_cast<game_coord>(x_position),
+					vana::util::str::lexical_cast<game_coord>(y_position)
 				};
 				player->set_map(map_id, mystic_door::portal_id, pos);
 			}
 			else if (!raw_portal.empty() && chat_handler_functions::run_regex_pattern(raw_portal, R"(\[(\d+)\])", matches) == match_result::any_matches) {
 				string foothold_id = matches[1];
-				game_foothold_id foothold = utilities::str::lexical_cast<game_foothold_id>(foothold_id);
+				game_foothold_id foothold = vana::util::str::lexical_cast<game_foothold_id>(foothold_id);
 				if (!map->is_valid_foothold(foothold) || map->is_vertical_foothold(foothold)) {
 					chat_handler_functions::show_error(player, "Invalid foothold: " + foothold_id);
 					return chat_result::handled_display;
@@ -342,7 +342,7 @@ auto management_functions::lag(ref_ptr<player> player, const game_chat &args) ->
 	if (chat_handler_functions::run_regex_pattern(args, R"((\w+))", matches) == match_result::any_matches) {
 		string target = matches[1];
 		if (auto p = channel_server::get_instance().get_player_data_provider().get_player(target)) {
-			chat_handler_functions::show_info(player, p->get_name() + "'s lag: " + utilities::str::lexical_cast<string>(p->get_latency().count()) + "ms");
+			chat_handler_functions::show_info(player, p->get_name() + "'s lag: " + vana::util::str::lexical_cast<string>(p->get_latency().count()) + "ms");
 		}
 		else {
 			chat_handler_functions::show_error(player, "Invalid player: " + target);
@@ -485,7 +485,7 @@ auto management_functions::add_npc(ref_ptr<player> player, const game_chat &args
 			npc.rx0 = npc.pos.x - 50;
 			npc.rx1 = npc.pos.x + 50;
 			game_map_object id = player->get_map()->add_npc(npc);
-			chat_handler_functions::show_info(player, "Spawned NPC " + args + " with object ID " + utilities::str::lexical_cast<string>(id));
+			chat_handler_functions::show_info(player, "Spawned NPC " + args + " with object ID " + vana::util::str::lexical_cast<string>(id));
 		}
 		else {
 			chat_handler_functions::show_error(player, "Invalid NPC ID: " + args);
@@ -523,7 +523,7 @@ auto management_functions::kill(ref_ptr<player> player_value, const game_chat &a
 				p->get_stats()->set_hp(0);
 				return true;
 			});
-			chat_handler_functions::show_info(player_value, "Killed " + utilities::str::lexical_cast<string>(kills) + " players in the current map");
+			chat_handler_functions::show_info(player_value, "Killed " + vana::util::str::lexical_cast<string>(kills) + " players in the current map");
 		}
 		else if (args == "gm" || args == "players") {
 			proceed = false;
@@ -534,7 +534,7 @@ auto management_functions::kill(ref_ptr<player> player_value, const game_chat &a
 				}
 				return false;
 			});
-			chat_handler_functions::show_info(player_value, "Killed " + utilities::str::lexical_cast<string>(kills) + " " + (args == "gm" ? "GMs" : "players") + " in the current map");
+			chat_handler_functions::show_info(player_value, "Killed " + vana::util::str::lexical_cast<string>(kills) + " " + (args == "gm" ? "GMs" : "players") + " in the current map");
 		}
 		if (proceed) {
 			if (args == "me") {
@@ -752,7 +752,7 @@ auto management_functions::rates(ref_ptr<player> player, const game_chat &args) 
 		string value = matches[3];
 		if (type == "view") {
 			auto display = [player](const string &type, int32_t rate) {
-				chat_handler_functions::show_info(player, type + " rate: " + utilities::str::lexical_cast<string>(rate) + "x");
+				chat_handler_functions::show_info(player, type + " rate: " + vana::util::str::lexical_cast<string>(rate) + "x");
 			};
 
 			chat_handler_functions::show_info(player, "Current Rates");

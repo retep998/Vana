@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "world.hpp"
 #include "common/packet_builder.hpp"
-#include "common/randomizer.hpp"
+#include "common/util/randomizer.hpp"
 #include "login_server/login_server_accepted_session.hpp"
 
 namespace vana {
@@ -93,7 +93,7 @@ auto world::get_port() const -> connection_port {
 }
 
 auto world::get_random_channel() const -> game_channel_id {
-	return randomizer::select(m_channels)->first;
+	return vana::util::randomizer::select(m_channels)->first;
 }
 
 auto world::get_max_channels() const -> game_channel_id {

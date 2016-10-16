@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "event_data_provider.hpp"
 #include "common/initialize_common.hpp"
 #include "common/timer/timer.hpp"
-#include "common/time_utilities.hpp"
+#include "common/util/time.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/instance.hpp"
 #include "channel_server/instances.hpp"
@@ -64,11 +64,11 @@ auto event_data_provider::load_instances() -> void {
 	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Instances... ";
 
 	// Most common intervals with boats
-	time_point now = utilities::time::get_now();
-	seconds nearest_four = utilities::time::get_distance_to_next_minute_mark(4, now);
-	seconds nearest_five = utilities::time::get_distance_to_next_minute_mark(5, now);
-	seconds nearest_ten = utilities::time::get_distance_to_next_minute_mark(10, now);
-	seconds nearest_fifteen = utilities::time::get_distance_to_next_minute_mark(15, now);
+	time_point now = vana::util::time::get_now();
+	seconds nearest_four = vana::util::time::get_distance_to_next_minute_mark(4, now);
+	seconds nearest_five = vana::util::time::get_distance_to_next_minute_mark(5, now);
+	seconds nearest_ten = vana::util::time::get_distance_to_next_minute_mark(10, now);
+	seconds nearest_fifteen = vana::util::time::get_distance_to_next_minute_mark(15, now);
 
 	start_instance("ludiToKftBoarding", nearest_four, minutes{4});
 	start_instance("kftToLudiBoarding", nearest_four, minutes{4});

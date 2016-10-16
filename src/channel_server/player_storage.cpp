@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "player_storage.hpp"
 #include "common/algorithm.hpp"
 #include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/misc_utilities.hpp"
+#include "common/util/game_logic/inventory.hpp"
+#include "common/util/misc.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/inventory.hpp"
 #include "channel_server/player.hpp"
@@ -55,10 +55,10 @@ auto player_storage::set_slots(game_storage_slot slots) -> void {
 }
 
 auto player_storage::add_item(item *item) -> void {
-	game_inventory inv = game_logic_utilities::get_inventory(item->get_id());
+	game_inventory inv = vana::util::game_logic::inventory::get_inventory(item->get_id());
 	game_storage_slot i;
 	for (i = 0; i < m_items.size(); ++i) {
-		if (game_logic_utilities::get_inventory(m_items[i]->get_id()) > inv) {
+		if (vana::util::game_logic::inventory::get_inventory(m_items[i]->get_id()) > inv) {
 			break;
 		}
 	}
@@ -68,14 +68,14 @@ auto player_storage::add_item(item *item) -> void {
 auto player_storage::get_num_items(game_inventory inv) -> game_storage_slot {
 	game_storage_slot item_num = 0;
 	for (game_storage_slot i = 0; i < m_items.size(); ++i) {
-		if (game_logic_utilities::get_inventory(m_items[i]->get_id()) == inv) {
+		if (vana::util::game_logic::inventory::get_inventory(m_items[i]->get_id()) == inv) {
 			item_num++;
 		}
 	}
 	return item_num;
 }
 
-auto player_storage::modify_mesos(game_mesos mod) -> meso_modify_result {
+auto player_storage::modify_mesos(game_mesos mod) -> vana::util::meso_modify_result {
 	auto query = m_mesos.modify_mesos(mod);
 	if (query.get_result() == stack_result::none) {
 		return query;

@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "chat_handler.hpp"
 #include "common/packet_reader.hpp"
 #include "common/session.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/string.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/chat_handler_functions.hpp"
 #include "channel_server/map.hpp"

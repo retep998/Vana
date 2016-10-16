@@ -17,10 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_summons.hpp"
 #include "common/algorithm.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/packet_reader.hpp"
 #include "common/timer/timer.hpp"
-#include "common/time_utilities.hpp"
+#include "common/util/time.hpp"
 #include "channel_server/map.hpp"
 #include "channel_server/player.hpp"
 #include "channel_server/summon.hpp"

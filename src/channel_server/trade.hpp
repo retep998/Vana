@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/meso_inventory.hpp"
 #include "common/types.hpp"
+#include "common/util/meso_inventory.hpp"
 #include <array>
 #include <memory>
 
@@ -40,7 +40,7 @@ namespace vana {
 
 			bool accepted = false;
 			game_trade_slot count = 0;
-			meso_inventory mesos;
+			vana::util::meso_inventory mesos;
 			array<item *, trade_size> items;
 		};
 
