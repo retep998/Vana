@@ -102,7 +102,7 @@ auto abstract_server::initialize() -> result {
 
 	m_connection_manager.run();
 
-	return result::successful;
+	return result::success;
 }
 
 auto abstract_server::load_log_config() -> void {
@@ -140,7 +140,7 @@ auto abstract_server::get_inter_server_config() const -> const config::inter_ser
 
 auto abstract_server::load_config() -> result {
 	// Intentionally left blank
-	return result::successful;
+	return result::success;
 }
 
 auto abstract_server::init_complete() -> void {

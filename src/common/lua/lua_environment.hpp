@@ -385,7 +385,7 @@ namespace vana {
 				return result::failure;
 			}
 
-			return result::successful;
+			return result::success;
 		}
 
 		template <typename THead, typename ... TTail>

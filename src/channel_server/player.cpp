@@ -200,7 +200,7 @@ auto player::handle(packet_reader &reader) -> result {
 		return result::failure;
 	}
 
-	return result::successful;
+	return result::success;
 }
 
 auto player::on_disconnect() -> void {
@@ -578,7 +578,7 @@ auto player::change_key(packet_reader &reader) -> void {
 		for (int32_t i = 0; i < how_many; i++) {
 			int32_t pos = reader.get<int32_t>();
 			key_map_type type;
-			if (enum_utilities::try_cast_from_underlying(reader.get<int8_t>(), type) != result::successful) {
+			if (enum_utilities::try_cast_from_underlying(reader.get<int8_t>(), type) != result::success) {
 				// Probably hacking
 				return;
 			}

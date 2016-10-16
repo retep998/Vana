@@ -281,7 +281,7 @@ auto drop_handler::loot_item(ref_ptr<player> player_value, packet_reader &reader
 					return result::failure;
 				default: THROW_CODE_EXCEPTION(not_implemented_exception, "stack_result");
 			}
-			return result::successful;
+			return result::success;
 		};
 
 		if (player_value->get_party() != nullptr && !drop->is_player_drop()) {

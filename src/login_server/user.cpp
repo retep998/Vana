@@ -67,7 +67,7 @@ auto user::handle(packet_reader &reader) -> result {
 		return result::failure;
 	}
 
-	return result::successful;
+	return result::success;
 }
 
 auto user::on_disconnect() -> void {

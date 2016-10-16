@@ -260,7 +260,7 @@ auto party::warp_all_members(game_map_id map_id, const string &portal_name) -> v
 
 auto party::check_footholds(int8_t member_count, const vector<vector<game_foothold_id>> &footholds) -> result {
 	// Determines if the players are properly arranged (i.e. 5 people on 5 barrels in Kerning PQ)
-	result winner = result::successful;
+	result winner = result::success;
 	int8_t members_on_footholds = 0;
 	hash_set<size_t> foothold_groups_used;
 
@@ -289,7 +289,7 @@ auto party::check_footholds(int8_t member_count, const vector<vector<game_footho
 			break;
 		}
 	}
-	if (winner == result::successful && members_on_footholds != member_count) {
+	if (winner == result::success && members_on_footholds != member_count) {
 		// Not all the foothold groups were indexed
 		winner = result::failure;
 	}
@@ -298,7 +298,7 @@ auto party::check_footholds(int8_t member_count, const vector<vector<game_footho
 
 auto party::verify_footholds(const vector<vector<game_foothold_id>> &footholds) -> result {
 	// Determines if the players match your selected footholds
-	result winner = result::successful;
+	result winner = result::success;
 	hash_set<size_t> foothold_groups_used;
 
 	for (size_t group = 0; group < footholds.size(); group++) {
@@ -325,8 +325,8 @@ auto party::verify_footholds(const vector<vector<game_foothold_id>> &footholds) 
 			break;
 		}
 	}
-	if (winner == result::successful) {
-		winner = foothold_groups_used.size() == footholds.size() ? result::successful : result::failure;
+	if (winner == result::success) {
+		winner = foothold_groups_used.size() == footholds.size() ? result::success : result::failure;
 	}
 	return winner;
 }

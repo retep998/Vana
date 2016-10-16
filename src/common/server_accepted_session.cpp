@@ -55,7 +55,7 @@ auto server_accepted_session::handle(packet_reader &reader) -> result {
 		return result::failure;
 	}
 	reader.reset();
-	return result::successful;
+	return result::success;
 }
 
 auto server_accepted_session::authenticated(server_type type) -> void {

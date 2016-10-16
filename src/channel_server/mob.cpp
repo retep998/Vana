@@ -805,7 +805,7 @@ auto mob::use_anticipated_skill() -> result {
 		}
 	}
 
-	return result::successful;
+	return result::success;
 }
 
 auto mob::can_cast_skills() const -> bool {

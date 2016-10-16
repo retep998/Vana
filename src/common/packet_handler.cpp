@@ -48,7 +48,7 @@ auto packet_handler::get_latency() const -> milliseconds {
 }
 
 auto packet_handler::handle(packet_reader &reader) -> result {
-	return result::successful;
+	return result::success;
 }
 
 auto packet_handler::on_connect_base(ref_ptr<session> session) -> void {

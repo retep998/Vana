@@ -311,7 +311,7 @@ auto player_data_provider::check_player(game_player_id id, const ip &ip, bool &h
 		auto &test = kvp->second;
 		auto distance = utilities::time::get_distance<milliseconds>(utilities::time::get_now(), test.connect_time);
 		if (test.connect_ip == ip && distance < max_connection_milliseconds) {
-			result = result::successful;
+			result = result::success;
 			if (test.packet_size > 0) {
 				has_packet = true;
 			}

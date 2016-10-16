@@ -315,7 +315,7 @@ auto player_active_buffs::add_buff(const data::type::buff_source &source, const 
 				buffs::convert_to_packet(player, source, time, buff),
 				0));
 
-		return result::successful;
+		return result::success;
 	}
 	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }

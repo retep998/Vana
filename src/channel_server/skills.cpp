@@ -426,7 +426,7 @@ auto skills::use_skill(ref_ptr<player> player_value, packet_reader &reader) -> v
 
 	player_value->send_map(packets::skills::show_skill(player_value->get_id(), skill_id, level, direction));
 
-	if (buffs::add_buff(player_value, skill_id, level, added_info) == result::successful) {
+	if (buffs::add_buff(player_value, skill_id, level, added_info) == result::success) {
 		if (skill_id == constant::skill::super_gm::hide) {
 			player_value->send(packets::gm::begin_hide());
 			player_value->get_map()->gm_hide_change(player_value);
@@ -446,7 +446,7 @@ auto skills::apply_skill_costs(ref_ptr<player> player, game_skill_id skill_id, g
 		// Ensure we don't lock, but don't actually use anything
 		player->get_stats()->set_hp(player->get_stats()->get_hp(), true);
 		player->get_stats()->set_mp(player->get_stats()->get_mp(), true);
-		return result::successful;
+		return result::success;
 	}
 
 	auto skill = channel_server::get_instance().get_skill_data_provider().get_skill(skill_id, level);
@@ -503,7 +503,7 @@ auto skills::apply_skill_costs(ref_ptr<player> player, game_skill_id skill_id, g
 		}
 	}
 
-	return result::successful;
+	return result::success;
 }
 
 auto skills::use_attack_skill(ref_ptr<player> player, game_skill_id skill_id) -> result {
@@ -514,7 +514,7 @@ auto skills::use_attack_skill(ref_ptr<player> player, game_skill_id skill_id) ->
 		}
 		return apply_skill_costs(player, skill_id, level, true);
 	}
-	return result::successful;
+	return result::success;
 }
 
 auto skills::use_attack_skill_ranged(ref_ptr<player> player, game_skill_id skill_id, game_inventory_slot projectile_pos, game_inventory_slot cash_projectile_pos, game_item_id projectile_id) -> result {
@@ -530,14 +530,14 @@ auto skills::use_attack_skill_ranged(ref_ptr<player> player, game_skill_id skill
 	}
 
 	if (player->has_gm_benefits()) {
-		return result::successful;
+		return result::success;
 	}
 
 	switch (game_logic_utilities::get_job_track(player->get_stats()->get_job())) {
 		case constant::job::track::bowman:
 		case constant::job::track::wind_archer:
 			if (player->get_active_buffs()->has_soul_arrow()) {
-				return result::successful;
+				return result::success;
 			}
 			if (!game_logic_utilities::is_arrow(projectile_id)) {
 				return result::failure;
@@ -546,7 +546,7 @@ auto skills::use_attack_skill_ranged(ref_ptr<player> player, game_skill_id skill
 		case constant::job::track::thief:
 		case constant::job::track::night_walker:
 			if (player->get_active_buffs()->has_shadow_stars()) {
-				return result::successful;
+				return result::success;
 			}
 			if (cash_projectile_pos > 0) {
 				item *cash_item = player->get_inventory()->get_item(constant::inventory::cash, cash_projectile_pos);
@@ -591,7 +591,7 @@ auto skills::use_attack_skill_ranged(ref_ptr<player> player, game_skill_id skill
 				return result::failure;
 			}
 			inventory::take_item_slot(player, constant::inventory::use, projectile_pos, skill->item_count);
-			return result::successful;
+			return result::success;
 		}
 
 		game_slot_qty bullets = skill->bullet_consume;
@@ -609,7 +609,7 @@ auto skills::use_attack_skill_ranged(ref_ptr<player> player, game_skill_id skill
 	}
 
 	inventory::take_item_slot(player, constant::inventory::use, projectile_pos, hits);
-	return result::successful;
+	return result::success;
 }
 
 auto skills::heal(ref_ptr<player> player, int64_t value, const data::type::buff_source &source) -> void {

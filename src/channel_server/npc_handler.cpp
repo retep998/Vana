@@ -66,13 +66,13 @@ auto npc_handler::handle_npc(ref_ptr<player> player, packet_reader &reader) -> v
 		return;
 	}
 	if (player->get_shop() == 0) {
-		if (npc_handler::show_shop(player, npcs.id) == result::successful) {
+		if (npc_handler::show_shop(player, npcs.id) == result::success) {
 			return;
 		}
-		if (npc_handler::show_storage(player, npcs.id) == result::successful) {
+		if (npc_handler::show_storage(player, npcs.id) == result::success) {
 			return;
 		}
-		if (npc_handler::show_guild_rank(player, npcs.id) == result::successful) {
+		if (npc_handler::show_guild_rank(player, npcs.id) == result::success) {
 			return;
 		}
 	}
@@ -402,7 +402,7 @@ auto npc_handler::show_shop(ref_ptr<player> player, game_shop_id shop_id) -> res
 	if (channel_server::get_instance().get_shop_data_provider().is_shop(shop_id)) {
 		player->set_shop(shop_id);
 		player->send(packets::npc::show_shop(channel_server::get_instance().get_shop_data_provider().get_shop(shop_id), player->get_skills()->get_rechargeable_bonus()));
-		return result::successful;
+		return result::success;
 	}
 	return result::failure;
 }
@@ -411,7 +411,7 @@ auto npc_handler::show_storage(ref_ptr<player> player, game_npc_id npc_id) -> re
 	if (channel_server::get_instance().get_npc_data_provider().get_storage_cost(npc_id)) {
 		player->set_shop(npc_id);
 		player->send(packets::storage::show_storage(player, npc_id));
-		return result::successful;
+		return result::success;
 	}
 	return result::failure;
 }

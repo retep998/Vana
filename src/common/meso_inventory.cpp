@@ -70,7 +70,7 @@ auto meso_inventory::set_mesos(game_mesos new_mesos) -> result {
 	}
 
 	m_mesos = new_mesos;
-	return result::successful;
+	return result::success;
 }
 
 auto meso_inventory::add_mesos(game_mesos mesos, bool allow_partial) -> meso_modify_result {

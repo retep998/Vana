@@ -32,7 +32,7 @@ auto login_server_session_handler::connect(ref_ptr<login_server_session> session
 	if (world_id != -1) {
 		ip value = reader.get<ip>();
 		connection_port port = reader.get<connection_port>();
-		if (result::successful == channel_server::get_instance().connect_to_world(world_id, port, value)) {
+		if (result::success == channel_server::get_instance().connect_to_world(world_id, port, value)) {
 			show_log_and_exit = false;
 		}
 	}

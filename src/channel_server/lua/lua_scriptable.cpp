@@ -959,7 +959,7 @@ auto lua_exports::give_item(lua_State *lua_vm) -> lua_return {
 	if (env.is(lua_vm, 2, lua::lua_type::number)) {
 		amount = env.get<game_slot_qty>(lua_vm, 2);
 	}
-	bool success = quests::give_item(get_player(lua_vm, env), item_id, amount) == result::successful;
+	bool success = quests::give_item(get_player(lua_vm, env), item_id, amount) == result::success;
 	env.push<bool>(lua_vm, success);
 	return 1;
 }
@@ -971,7 +971,7 @@ auto lua_exports::give_item_gachapon(lua_State *lua_vm) -> lua_return {
 	if (env.is(lua_vm, 2, lua::lua_type::number)) {
 		amount = env.get<game_slot_qty>(lua_vm, 2);
 	}
-	bool success = quests::give_item(get_player(lua_vm, env), item_id, amount, stat_variance::gachapon) == result::successful;
+	bool success = quests::give_item(get_player(lua_vm, env), item_id, amount, stat_variance::gachapon) == result::success;
 	env.push<bool>(lua_vm, success);
 	return 1;
 }
@@ -979,7 +979,7 @@ auto lua_exports::give_item_gachapon(lua_State *lua_vm) -> lua_return {
 auto lua_exports::give_mesos(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_mesos mesos = env.get<game_mesos>(lua_vm, 1);
-	bool success = quests::give_mesos(get_player(lua_vm, env), mesos) == result::successful;
+	bool success = quests::give_mesos(get_player(lua_vm, env), mesos) == result::success;
 	env.push<bool>(lua_vm, success);
 	return 1;
 }
@@ -1226,7 +1226,7 @@ auto lua_exports::give_exp(lua_State *lua_vm) -> lua_return {
 auto lua_exports::give_fame(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_fame fame = env.get<game_fame>(lua_vm, 1);
-	bool success = quests::give_fame(get_player(lua_vm, env), fame) == result::successful;
+	bool success = quests::give_fame(get_player(lua_vm, env), fame) == result::success;
 	env.push<bool>(lua_vm, success);
 	return 1;
 }
@@ -1908,7 +1908,7 @@ auto lua_exports::check_party_footholds(lua_State *lua_vm) -> lua_return {
 		vector<vector<game_foothold_id>> footholds = env.get<vector<vector<game_foothold_id>>>(lua_vm, 2);
 		verified = p->check_footholds(member_count, footholds);
 	}
-	env.push<bool>(lua_vm, verified == result::successful);
+	env.push<bool>(lua_vm, verified == result::success);
 	return 1;
 }
 
@@ -1990,7 +1990,7 @@ auto lua_exports::verify_party_footholds(lua_State *lua_vm) -> lua_return {
 		vector<vector<game_foothold_id>> footholds = env.get<vector<vector<game_foothold_id>>>(lua_vm, 1);
 		verified = p->verify_footholds(footholds);
 	}
-	env.push<bool>(lua_vm, verified == result::successful);
+	env.push<bool>(lua_vm, verified == result::success);
 	return 1;
 }
 

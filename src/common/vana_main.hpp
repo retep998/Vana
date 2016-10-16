@@ -44,7 +44,7 @@ namespace vana {
 				server.shutdown();
 			});
 
-			if (server.initialize() == result::successful) {
+			if (server.initialize() == result::success) {
 				s.run();
 			}
 			else {

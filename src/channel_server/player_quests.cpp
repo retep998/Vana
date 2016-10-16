@@ -416,7 +416,7 @@ auto player_quests::give_rewards(game_quest_id quest_id, bool start) -> result {
 			}
 		}
 
-		return result::successful;
+		return result::success;
 	}
 	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }

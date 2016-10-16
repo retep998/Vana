@@ -157,7 +157,7 @@ auto command_handler::handle_admin_command(ref_ptr<player> player, packet_reader
 					1,
 					0);
 
-				if (result == result::successful) {
+				if (result == result::success) {
 					player->send(packets::gm::begin_hide());
 					player->get_map()->gm_hide_change(player);
 				}

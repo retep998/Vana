@@ -95,7 +95,7 @@ auto login_server::load_data() -> result {
 	ranking_calculator::set_timer();
 	display_launch_time();
 
-	return result::successful;
+	return result::success;
 }
 
 auto login_server::load_config() -> result {
@@ -114,7 +114,7 @@ auto login_server::load_config() -> result {
 
 	load_worlds();
 
-	return result::successful;
+	return result::success;
 }
 
 auto login_server::init_complete() -> void {

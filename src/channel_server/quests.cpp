@@ -56,7 +56,7 @@ auto quests::give_item(ref_ptr<player> player, game_item_id item_id, game_slot_q
 	}
 
 	player->send(packets::quests::give_item(item_id, amount));
-	return result::successful;
+	return result::success;
 }
 
 auto quests::give_mesos(ref_ptr<player> player, game_mesos amount) -> result {
@@ -65,13 +65,13 @@ auto quests::give_mesos(ref_ptr<player> player, game_mesos amount) -> result {
 	}
 
 	player->send(packets::quests::give_mesos(amount));
-	return result::successful;
+	return result::success;
 }
 
 auto quests::give_fame(ref_ptr<player> player, game_fame amount) -> result {
 	player->get_stats()->set_fame(player->get_stats()->get_fame() + amount);
 	player->send(packets::quests::give_fame(amount));
-	return result::successful;
+	return result::success;
 }
 
 auto quests::get_quest(ref_ptr<player> player, packet_reader &reader) -> void {

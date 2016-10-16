@@ -104,7 +104,7 @@ auto connection_manager::connect(const ip &destination, connection_port port, co
 
 					m_sessions.insert(new_session);
 
-					return std::make_pair(result::successful, new_session);
+					return std::make_pair(result::success, new_session);
 				}
 			}
 		}

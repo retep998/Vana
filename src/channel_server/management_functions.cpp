@@ -431,7 +431,7 @@ auto management_functions::shop(ref_ptr<player> player, const game_chat &args) -
 		else if (args == "pet") shop_id = 9999992;
 		else shop_id = atoi(args.c_str());
 
-		if (npc_handler::show_shop(player, shop_id) == result::successful) {
+		if (npc_handler::show_shop(player, shop_id) == result::success) {
 			return chat_result::handled_display;
 		}
 	}

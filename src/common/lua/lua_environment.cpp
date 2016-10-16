@@ -96,7 +96,7 @@ auto lua_environment::run() -> result {
 		}
 		return resume(0);
 	}
-	return result::successful;
+	return result::success;
 }
 
 auto lua_environment::resume(lua::lua_return pushed_arg_count) -> result {
@@ -110,7 +110,7 @@ auto lua_environment::resume(lua::lua_return pushed_arg_count) -> result {
 		handle_error(m_file, error);
 		return result::failure;
 	}
-	return result::successful;
+	return result::success;
 }
 
 auto lua_environment::handle_error(const string &filename, const string &error) -> void {

@@ -114,7 +114,7 @@ auto channel_server::load_data() -> result {
 	}
 
 	send_auth(result.second);
-	return result::successful;
+	return result::success;
 }
 
 auto channel_server::reload_data(const string &args) -> void {
@@ -172,7 +172,7 @@ auto channel_server::connect_to_world(game_world_id world_id, connection_port po
 	}
 
 	send_auth(result.second);
-	return result::successful;
+	return result::success;
 }
 
 auto channel_server::on_connect_to_login(ref_ptr<login_server_session> session) -> void {

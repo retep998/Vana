@@ -81,7 +81,7 @@ auto world_server_accepted_session::handle(packet_reader &reader) -> result {
 
 		default: return result::failure;
 	}
-	return result::successful;
+	return result::success;
 }
 
 auto world_server_accepted_session::authenticated(server_type type) -> void {

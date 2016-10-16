@@ -79,7 +79,7 @@ auto world_server::load_data() -> result {
 	}
 
 	send_auth(result.second);
-	return result::successful;
+	return result::success;
 }
 
 auto world_server::on_connect_to_login(ref_ptr<login_server_session> connection) -> void {

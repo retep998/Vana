@@ -104,7 +104,7 @@ auto check_mcdb_version(abstract_server *server) -> result {
 		});
 	}
 
-	return result::successful;
+	return result::success;
 }
 
 auto check_schema_version(abstract_server *server, bool update) -> result {
@@ -135,7 +135,7 @@ auto check_schema_version(abstract_server *server, bool update) -> result {
 		}
 	}
 
-	return result::successful;
+	return result::success;
 }
 
 auto set_users_offline(abstract_server *server, int32_t online_id) -> void {

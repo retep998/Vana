@@ -141,7 +141,7 @@ namespace vana {
 	};
 
 	enum class result {
-		successful,
+		success,
 		failure,
 	};
 
