@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_mounts.hpp"
-#include "common/database.hpp"
+#include "common/io/database.hpp"
 #include "channel_server/player.hpp"
 
 namespace vana {
@@ -29,7 +29,7 @@ player_mounts::player_mounts(ref_ptr<player> player) :
 }
 
 auto player_mounts::save() -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	if (auto player = m_player.lock()) {
 		game_player_id char_id = player->get_id();
@@ -65,7 +65,7 @@ auto player_mounts::save() -> void {
 }
 
 auto player_mounts::load() -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	if (auto player = m_player.lock()) {
 		game_player_id char_id = player->get_id();

@@ -19,9 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/algorithm.hpp"
 #include "common/constant/character.hpp"
 #include "common/constant/gender.hpp"
-#include "common/database.hpp"
 #include "common/file_time.hpp"
 #include "common/hash_utilities.hpp"
+#include "common/io/database.hpp"
 #include "common/packet_reader.hpp"
 #include "common/session.hpp"
 #include "common/unix_time.hpp"
@@ -50,7 +50,7 @@ auto login::login_user(ref_ptr<user> user_value, packet_reader &reader) -> void 
 		return;
 	}
 
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	soci::row row;
 
@@ -210,7 +210,7 @@ auto login::set_gender(ref_ptr<user> user_value, packet_reader &reader) -> void 
 
 		user_value->set_status(player_status::not_logged_in);
 
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		sql.once
 			<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
@@ -309,7 +309,7 @@ auto login::register_pin(ref_ptr<user> user_value, packet_reader &reader) -> voi
 	int32_t pin = vana::util::str::lexical_cast<int32_t>(reader.get<string>());
 	user_value->set_status(player_status::not_logged_in);
 
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 
 	sql.once

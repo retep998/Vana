@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/database.hpp"
+#include "common/io/database.hpp"
 #include "common/log/destination.hpp"
 #include "common/log/type.hpp"
 #include "common/server_type.hpp"

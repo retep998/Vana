@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_data_provider.hpp"
 #include "common/algorithm.hpp"
-#include "common/database.hpp"
 #include "common/inter_header.hpp"
 #include "common/inter_helper.hpp"
+#include "common/io/database.hpp"
 #include "common/packet_builder.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"

@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "reactor.hpp"
-#include "common/database.hpp"
 #include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
 #include "common/util/string.hpp"
 #include <iomanip>
 #include <iostream>
@@ -40,7 +40,7 @@ auto reactor::load_data() -> void {
 auto reactor::load_reactors() -> void {
 	m_reactor_info.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::reactor_data));
 
@@ -60,7 +60,7 @@ auto reactor::load_reactors() -> void {
 }
 
 auto reactor::load_states() -> void {
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::reactor_events) << " ORDER BY reactorId, state ASC");
 
@@ -101,7 +101,7 @@ auto reactor::load_states() -> void {
 }
 
 auto reactor::load_trigger_skills() -> void {
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::reactor_event_trigger_skills));
 

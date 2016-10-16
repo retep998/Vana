@@ -4,9 +4,6 @@
     <Filter Include="Data Structures">
       <UniqueIdentifier>{450fb522-4e7d-4db6-9a62-c199384163ca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Database">
-      <UniqueIdentifier>{7f88f4c5-3611-4887-871c-3defe2bced64}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Inter-Server">
       <UniqueIdentifier>{ee05f7d7-a4e3-43c8-a447-243f43321d17}</UniqueIdentifier>
     </Filter>
@@ -70,11 +67,11 @@
     <Filter Include="Connection">
       <UniqueIdentifier>{141f19d0-b99a-489a-8871-97bdb6db4f5c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="io">
+      <UniqueIdentifier>{fa2f0702-9ff4-4572-9335-816717d3b419}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\common\database.cpp">
-      <Filter>Database</Filter>
-    </ClCompile>
     <ClCompile Include="src\common\packet_reader.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
@@ -98,12 +95,6 @@
     </ClCompile>
     <ClCompile Include="src\common\quest.cpp">
       <Filter>Data Structures</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\mysql_query_parser.cpp">
-      <Filter>Database</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\database_updater.cpp">
-      <Filter>Database</Filter>
     </ClCompile>
     <ClCompile Include="src\common\abstract_server.cpp">
       <Filter>Connection</Filter>
@@ -282,13 +273,19 @@
     <ClCompile Include="src\common\data\initialize.cpp">
       <Filter>data</Filter>
     </ClCompile>
+    <ClCompile Include="src\common\io\database.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\io\database_updater.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\io\mysql_query_parser.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\common\packet_reader.hpp">
       <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\database.hpp">
-      <Filter>Database</Filter>
     </ClInclude>
     <ClInclude Include="src\common\variables.hpp">
       <Filter>Data Structures</Filter>
@@ -316,12 +313,6 @@
     </ClInclude>
     <ClInclude Include="src\common\soci_extensions.hpp">
       <Filter>Lib</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\mysql_query_parser.hpp">
-      <Filter>Database</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\database_updater.hpp">
-      <Filter>Database</Filter>
     </ClInclude>
     <ClInclude Include="src\common\abstract_server.hpp">
       <Filter>Connection</Filter>
@@ -967,6 +958,18 @@
     <ClInclude Include="src\common\exit_code.hpp" />
     <ClInclude Include="src\common\data\initialize.hpp">
       <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\io\database.hpp">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\io\database_updater.hpp">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\io\mysql_query_parser.hpp">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\io\version_check_result.hpp">
+      <Filter>io</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

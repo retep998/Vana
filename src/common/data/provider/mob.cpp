@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "mob.hpp"
 #include "common/algorithm.hpp"
-#include "common/database.hpp"
 #include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
 #include "common/util/string.hpp"
 #include <iomanip>
 #include <iostream>
@@ -43,7 +43,7 @@ auto mob::load_data() -> void {
 auto mob::load_attacks() -> void {
 	m_attacks.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::mob_attacks));
 
@@ -86,7 +86,7 @@ auto mob::load_attacks() -> void {
 auto mob::load_skills() -> void {
 	m_skills.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::mob_skills));
 
@@ -115,7 +115,7 @@ auto mob::load_skills() -> void {
 auto mob::load_mobs() -> void {
 	m_mob_info.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::mob_data));
 
@@ -200,7 +200,7 @@ auto mob::load_mobs() -> void {
 }
 
 auto mob::load_summons() -> void {
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::mob_summons));
 

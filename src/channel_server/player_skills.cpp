@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "player_skills.hpp"
 #include "common/algorithm.hpp"
 #include "common/data/provider/skill.hpp"
-#include "common/database.hpp"
+#include "common/io/database.hpp"
 #include "common/timer/id.hpp"
 #include "common/timer/timer.hpp"
 #include "common/util/game_logic/item.hpp"
@@ -46,7 +46,7 @@ player_skills::player_skills(ref_ptr<player> player) :
 
 auto player_skills::load() -> void {
 	if (auto player = m_player.lock()) {
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		player_skill_info skill;
 		game_player_id player_id = player->get_id();
@@ -123,7 +123,7 @@ auto player_skills::save(bool save_cooldowns) -> void {
 	if (auto player = m_player.lock()) {
 		using namespace soci;
 		game_player_id player_id = player->get_id();
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 
 		game_skill_id skill_id = 0;

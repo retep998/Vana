@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "info_functions.hpp"
-#include "common/database.hpp"
+#include "common/io/database.hpp"
 #include "common/map_position.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/maps.hpp"
@@ -94,7 +94,7 @@ auto info_functions::lookup(ref_ptr<player> player, const game_chat &args) -> ch
 			return chat_result::handled_display;
 		};
 
-		auto &db = database::get_data_db();
+		auto &db = vana::io::database::get_data_db();
 		auto &sql = db.get_session();
 		auto display_func = [&sql, &player](const soci::rowset<> &rs, function<void(const soci::row &row, out_stream &str)> format_message, const string &query) {
 			// Bug in the behavior of SOCI

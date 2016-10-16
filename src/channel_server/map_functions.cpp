@@ -176,7 +176,7 @@ auto map_functions::list_portals(ref_ptr<player> player, const game_chat &args) 
 		return chat_result::handled_display;
 	}
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT mp.id, mp.label, mp.destination, mp.destination_label, mp.script, mp.x_pos, mp.y_pos "
@@ -310,7 +310,7 @@ auto map_functions::list_reactors(ref_ptr<player> player, const game_chat &args)
 		return chat_result::handled_display;
 	}
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT ml.lifeid, sc.script, ml.x_pos, ml.y_pos, ml.foothold "
@@ -366,7 +366,7 @@ auto map_functions::list_npcs(ref_ptr<player> player, const game_chat &args) -> 
 		return chat_result::handled_display;
 	}
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT ml.lifeid, st.label, sc.script, ml.x_pos, ml.y_pos, ml.foothold "
@@ -449,7 +449,7 @@ auto map_functions::music(ref_ptr<player> player, const game_chat &args) -> chat
 		chat_handler_functions::show_info(player, "Current music: " + player->get_map()->get_music());
 	}
 	else {
-		auto &db = database::get_data_db();
+		auto &db = vana::io::database::get_data_db();
 		auto &sql = db.get_session();
 		string music;
 

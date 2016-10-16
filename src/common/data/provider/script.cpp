@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "script.hpp"
 #include "common/abstract_server.hpp"
 #include "common/algorithm.hpp"
-#include "common/database.hpp"
 #include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
 #include "common/util/file.hpp"
 #include "common/util/string.hpp"
 #include <iomanip>
@@ -41,7 +41,7 @@ auto script::load_data() -> void {
 	m_first_map_entry_scripts.clear();
 	m_item_scripts.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::scripts));
 

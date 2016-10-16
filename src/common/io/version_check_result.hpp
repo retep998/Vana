@@ -20,18 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/types.hpp"
 
 namespace vana {
-	namespace log {
-		enum class destination : int32_t {
-			none = 0x00,
-			file = 0x01,
-			console = 0x02,
-			sql = 0x04,
-			// If more constants are added, please add them to config_file.cpp as well
-			file_sql = file | sql,
-			file_console = file | console,
-			sql_console = sql | console,
-			file_sql_console = file | sql | console,
-			all = file_sql_console,
+	namespace io {
+		enum class version_check_result {
+			fully_updated,
+			needs_update,
+			database_unavailable,
 		};
 	}
 }

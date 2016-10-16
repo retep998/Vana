@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "drop.hpp"
 #include "common/algorithm.hpp"
-#include "common/database.hpp"
 #include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
 #include "common/util/string.hpp"
 #include <iomanip>
 #include <iostream>
@@ -47,7 +47,7 @@ auto drop::load_drops() -> void {
 		});
 	};
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::drop_data));
 
@@ -120,7 +120,7 @@ auto drop::load_drops() -> void {
 auto drop::load_global_drops() -> void {
 	m_global_drops.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::drop_global_data));
 

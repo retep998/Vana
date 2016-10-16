@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "fame.hpp"
-#include "common/database.hpp"
+#include "common/io/database.hpp"
 #include "common/packet_reader.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/fame_packet.hpp"
@@ -67,7 +67,7 @@ auto fame::can_fame(ref_ptr<player> player, game_player_id to) -> int32_t {
 }
 
 auto fame::add_fame_log(game_player_id from, game_player_id to) -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	sql.once
 		<< "INSERT INTO " << db.make_table(vana::table::fame_log) << " (from_character_id, to_character_id, fame_time) "
@@ -85,7 +85,7 @@ auto fame::get_last_fame_log(game_player_id from) -> search_result {
 		return search_result::not_found;
 	}
 
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	optional<unix_time> time;
 
@@ -112,7 +112,7 @@ auto fame::get_last_fame_sp_log(game_player_id from, game_player_id to) -> searc
 		return search_result::not_found;
 	}
 
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	optional<unix_time> time;
 

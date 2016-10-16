@@ -128,6 +128,9 @@
     <ClCompile Include="src\common\external_ip_resolver.cpp" />
     <ClCompile Include="src\common\file_time.cpp" />
     <ClCompile Include="src\common\hash_utilities.cpp" />
+    <ClCompile Include="src\common\io\database.cpp" />
+    <ClCompile Include="src\common\io\database_updater.cpp" />
+    <ClCompile Include="src\common\io\mysql_query_parser.cpp" />
     <ClCompile Include="src\common\ip.cpp" />
     <ClCompile Include="src\common\item.cpp" />
     <ClCompile Include="src\common\block_cipher_iv.cpp" />
@@ -148,7 +151,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\common\mysql_query_parser.cpp" />
     <ClCompile Include="src\common\quest.cpp" />
     <ClCompile Include="src\common\ratio.cpp" />
     <ClCompile Include="src\common\rect.cpp" />
@@ -157,12 +159,10 @@
     <ClCompile Include="src\common\timer\timer.cpp" />
     <ClCompile Include="src\common\timer\container.cpp" />
     <ClCompile Include="src\common\timer\thread.cpp" />
-    <ClCompile Include="src\common\database.cpp" />
     <ClCompile Include="src\common\packet_reader.cpp" />
     <ClCompile Include="src\common\authentication_packet.cpp" />
     <ClCompile Include="src\common\connection_manager.cpp" />
     <ClCompile Include="src\common\abstract_server.cpp" />
-    <ClCompile Include="src\common\database_updater.cpp" />
     <ClCompile Include="src\common\util\file.cpp" />
     <ClCompile Include="src\common\util\meso_inventory.cpp" />
     <ClCompile Include="src\common\util\randomizer.cpp" />
@@ -288,6 +288,10 @@
     <ClInclude Include="src\common\data\provider\shop.hpp" />
     <ClInclude Include="src\common\data\provider\skill.hpp" />
     <ClInclude Include="src\common\data\provider\valid_char.hpp" />
+    <ClInclude Include="src\common\io\database.hpp" />
+    <ClInclude Include="src\common\io\database_updater.hpp" />
+    <ClInclude Include="src\common\io\mysql_query_parser.hpp" />
+    <ClInclude Include="src\common\io\version_check_result.hpp" />
     <ClInclude Include="src\common\log\combo_loggers.hpp" />
     <ClInclude Include="src\common\log\console_logger.hpp" />
     <ClInclude Include="src\common\log\file_logger.hpp" />
@@ -327,7 +331,6 @@
     <ClInclude Include="src\common\point.hpp" />
     <ClInclude Include="src\common\map_position.hpp" />
     <ClInclude Include="src\common\precompiled_header.hpp" />
-    <ClInclude Include="src\common\mysql_query_parser.hpp" />
     <ClInclude Include="src\common\preprocessor.hpp" />
     <ClInclude Include="src\common\quest.hpp" />
     <ClInclude Include="src\common\quest_requests_data.hpp" />
@@ -356,7 +359,6 @@
     <ClInclude Include="src\common\timer\type.hpp" />
     <ClInclude Include="src\common\types.hpp" />
     <ClInclude Include="src\common\unix_time.hpp" />
-    <ClInclude Include="src\common\database.hpp" />
     <ClInclude Include="src\common\packet_reader.hpp" />
     <ClInclude Include="src\common\common_packet.hpp" />
     <ClInclude Include="src\common\inter_header.hpp" />
@@ -403,7 +405,6 @@
     <ClInclude Include="src\common\valid_look_data.hpp" />
     <ClInclude Include="src\common\vana_main.hpp" />
     <ClInclude Include="src\common\variables.hpp" />
-    <ClInclude Include="src\common\database_updater.hpp" />
     <ClInclude Include="src\common\wide_point.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

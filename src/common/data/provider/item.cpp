@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/provider/buff.hpp"
 #include "common/data/provider/equip.hpp"
 #include "common/data/provider/shop.hpp"
-#include "common/database.hpp"
 #include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
 #include "common/item.hpp"
 #include "common/util/game_logic/item.hpp"
 #include "common/util/randomizer.hpp"
@@ -55,7 +55,7 @@ auto item::load_data(buff &provider) -> void {
 auto item::load_items() -> void {
 	m_item_info.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT id.*, s.label "
@@ -95,7 +95,7 @@ auto item::load_items() -> void {
 auto item::load_scrolls() -> void {
 	m_scroll_info.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_scroll_data));
 
@@ -133,7 +133,7 @@ auto item::load_scrolls() -> void {
 auto item::load_consumes(buff &provider) -> void {
 	m_consume_info.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_random_morphs));
 
@@ -236,7 +236,7 @@ auto item::load_consumes(buff &provider) -> void {
 }
 
 auto item::load_map_ranges() -> void {
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_monster_card_map_ranges));
 
@@ -262,7 +262,7 @@ auto item::load_map_ranges() -> void {
 auto item::load_monster_card_data() -> void {
 	m_mob_to_card_mapping.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::monster_card_data));
 
@@ -277,7 +277,7 @@ auto item::load_monster_card_data() -> void {
 auto item::load_item_skills() -> void {
 	m_skillbooks.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_skills));
 
@@ -309,7 +309,7 @@ auto item::load_item_skills() -> void {
 auto item::load_summon_bags() -> void {
 	m_summon_bags.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_summons));
 
@@ -339,7 +339,7 @@ auto item::load_summon_bags() -> void {
 auto item::load_item_rewards() -> void {
 	m_item_rewards.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_reward_data));
 
@@ -371,7 +371,7 @@ auto item::load_item_rewards() -> void {
 auto item::load_pets() -> void {
 	m_pet_info.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_pet_data));
 
@@ -397,7 +397,7 @@ auto item::load_pets() -> void {
 auto item::load_pet_interactions() -> void {
 	m_pet_interact_info.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_pet_interactions));
 

@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_storage.hpp"
 #include "common/algorithm.hpp"
-#include "common/database.hpp"
+#include "common/io/database.hpp"
 #include "common/util/game_logic/inventory.hpp"
 #include "common/util/misc.hpp"
 #include "channel_server/channel_server.hpp"
@@ -95,7 +95,7 @@ auto player_storage::can_modify_mesos(game_mesos mesos) const -> stack_result {
 
 auto player_storage::load() -> void {
 	if (auto player = m_player.lock()) {
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		soci::row row;
 		game_account_id account_id = player->get_account_id();
@@ -158,7 +158,7 @@ auto player_storage::save() -> void {
 		game_account_id account_id = player->get_account_id();
 		game_player_id player_id = player->get_id();
 
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		sql.once
 			<< "UPDATE " << db.make_table(vana::table::storage) << " "

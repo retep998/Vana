@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "skill.hpp"
 #include "common/algorithm.hpp"
-#include "common/database.hpp"
 #include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
 #include "common/constant/mob_skill.hpp"
 #include "common/util/string.hpp"
 #include <iomanip>
@@ -45,7 +45,7 @@ auto skill::load_player_skills() -> void {
 	m_skill_levels.clear();
 	m_skill_max_levels.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::skill_player_data));
 
@@ -58,7 +58,7 @@ auto skill::load_player_skills() -> void {
 }
 
 auto skill::load_player_skill_levels() -> void {
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::skill_player_level_data));
 
@@ -139,7 +139,7 @@ auto skill::load_player_skill_levels() -> void {
 auto skill::load_mob_skills() -> void {
 	m_mob_skills.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::skill_mob_data));
 
@@ -182,7 +182,7 @@ auto skill::load_mob_skills() -> void {
 }
 
 auto skill::load_mob_summons() -> void {
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::skill_mob_summons));
 
@@ -213,7 +213,7 @@ auto skill::load_mob_summons() -> void {
 auto skill::load_banish_data() -> void {
 	m_banish_info.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::skill_mob_banish_data));
 
@@ -231,7 +231,7 @@ auto skill::load_banish_data() -> void {
 auto skill::load_morphs() -> void {
 	m_morph_info.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::morph_data));
 

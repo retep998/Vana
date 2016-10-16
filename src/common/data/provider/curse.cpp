@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "curse.hpp"
 #include "common/algorithm.hpp"
-#include "common/database.hpp"
 #include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
 #include "common/util/string.hpp"
 #include <algorithm>
 #include <iomanip>
@@ -32,7 +32,7 @@ auto curse::load_data() -> void {
 	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Curse Info...";
 
 	m_curse_words.clear();
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::curse_data));
 

@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "map.hpp"
 #include "common/algorithm.hpp"
-#include "common/database.hpp"
 #include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
 #include "common/util/game_logic/map.hpp"
 #include "common/util/string.hpp"
 #include <iomanip>
@@ -41,7 +41,7 @@ auto map::load_continents() -> void {
 	int8_t map_cluster;
 	int8_t continent;
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::map_continent_data));
 
@@ -65,7 +65,7 @@ auto map::load_maps() -> void {
 
 	decltype(m_maps) copy;
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::map_data));
 
@@ -185,7 +185,7 @@ auto map::load_map(data::type::map_info &map) -> void {
 }
 
 auto map::load_seats(data::type::map_link_info &map) -> void {
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::map_seats) << " WHERE mapid = :map",
 		soci::use(map.id, "map"));
@@ -201,7 +201,7 @@ auto map::load_seats(data::type::map_link_info &map) -> void {
 }
 
 auto map::load_portals(data::type::map_link_info &map) -> void {
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::map_portals) << " WHERE mapid = :map",
 		soci::use(map.id, "map"));
@@ -230,7 +230,7 @@ auto map::load_map_life(data::type::map_link_info &map) -> void {
 	data::type::spawn_info life;
 	string type;
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::map_life) << " WHERE mapid = :map",
 		soci::use(map.id, "map"));
@@ -270,7 +270,7 @@ auto map::load_map_life(data::type::map_link_info &map) -> void {
 }
 
 auto map::load_footholds(data::type::map_link_info &map) -> void {
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::map_footholds) << " WHERE mapid = :map",
 		soci::use(map.id, "map"));
@@ -295,7 +295,7 @@ auto map::load_footholds(data::type::map_link_info &map) -> void {
 }
 
 auto map::load_map_time_mob(data::type::map_link_info &map) -> void {
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::map_time_mob) << " WHERE mapid = :map",
 		soci::use(map.id, "map"));

@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "user.hpp"
-#include "common/database.hpp"
+#include "common/io/database.hpp"
 #include "common/packet_builder.hpp"
 #include "common/packet_reader.hpp"
 #include "login_server/characters.hpp"
@@ -76,7 +76,7 @@ auto user::on_disconnect() -> void {
 }
 
 auto user::set_online(bool online) -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	sql.once
 		<< "UPDATE " << db.make_table(vana::table::accounts) << " u "

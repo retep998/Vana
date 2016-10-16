@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "shop.hpp"
 #include "common/algorithm.hpp"
 #include "common/common_header.hpp"
-#include "common/database.hpp"
 #include "common/data/initialize.hpp"
 #include "common/data/provider/item.hpp"
+#include "common/io/database.hpp"
 #include "common/packet_builder.hpp"
 #include "common/session.hpp"
 #include <iomanip>
@@ -43,7 +43,7 @@ auto shop::load_data() -> void {
 auto shop::load_shops() -> void {
 	m_shops.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::shop_data));
 
@@ -78,7 +78,7 @@ auto shop::load_shops() -> void {
 }
 
 auto shop::load_user_shops() -> void {
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::user_shop_data));
 
@@ -123,7 +123,7 @@ auto shop::load_user_shops() -> void {
 auto shop::load_recharge_tiers() -> void {
 	m_recharge_costs.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::shop_recharge_data));
 

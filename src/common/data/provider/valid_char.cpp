@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "valid_char.hpp"
 #include "common/algorithm.hpp"
-#include "common/database.hpp"
 #include "common/constant/gender.hpp"
 #include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
 #include "common/util/game_logic/player.hpp"
 #include "common/util/string.hpp"
 #include <iomanip>
@@ -42,7 +42,7 @@ auto valid_char::load_data() -> void {
 auto valid_char::load_forbidden_names() -> void {
 	m_forbidden_names.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::character_forbidden_names));
 
@@ -55,7 +55,7 @@ auto valid_char::load_creation_items() -> void {
 	m_adventurer.clear();
 	m_cygnus.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::character_creation_data));
 

@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/algorithm.hpp"
 #include "common/data/provider/equip.hpp"
 #include "common/data/provider/item.hpp"
-#include "common/database.hpp"
+#include "common/io/database.hpp"
 #include "common/util/game_logic/inventory.hpp"
 #include "common/util/game_logic/item.hpp"
 #include "common/util/misc.hpp"
@@ -62,7 +62,7 @@ player_inventory::~player_inventory() {
 auto player_inventory::load() -> void {
 	if (auto player = m_player.lock()) {
 		using namespace soci;
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		game_player_id char_id = player->get_id();
 		string location = "inventory";
@@ -106,7 +106,7 @@ auto player_inventory::load() -> void {
 auto player_inventory::save() -> void {
 	if (auto player = m_player.lock()) {
 		using namespace soci;
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		game_player_id char_id = player->get_id();
 

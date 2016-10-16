@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <soci-mysql.h>
 
 namespace vana {
+namespace io {
 
 thread_local owned_ptr<database> database::m_chardb{nullptr};
 thread_local owned_ptr<database> database::m_datadb{nullptr};
@@ -124,4 +125,5 @@ auto database::build_connection_string(const config::database &conf, bool includ
 	return str.str();
 }
 
+}
 }

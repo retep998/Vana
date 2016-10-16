@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_variables.hpp"
-#include "common/database.hpp"
+#include "common/io/database.hpp"
 #include "channel_server/player.hpp"
 
 namespace vana {
@@ -30,7 +30,7 @@ player_variables::player_variables(ref_ptr<player> player) :
 
 auto player_variables::save() -> void {
 	if (auto player = m_player.lock()) {
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		game_player_id char_id = player->get_id();
 
@@ -60,7 +60,7 @@ auto player_variables::save() -> void {
 
 auto player_variables::load() -> void {
 	if (auto player = m_player.lock()) {
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::table::character_variables) << " WHERE character_id = :char",
 			soci::use(player->get_id(), "char"));

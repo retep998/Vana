@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "initialize.hpp"
 #include "common/abstract_server.hpp"
 #include "common/data/version.hpp"
-#include "common/database.hpp"
-#include "common/database_updater.hpp"
+#include "common/io/database.hpp"
+#include "common/io/database_updater.hpp"
 #include "common/exit_code.hpp"
 #include "common/maple_version.hpp"
 #include "common/util/time.hpp"
@@ -35,7 +35,7 @@ auto check_mcdb_version(abstract_server *server) -> result {
 	soci::row row;
 
 	try {
-		auto &db = database::get_data_db();
+		auto &db = vana::io::database::get_data_db();
 		auto &sql = db.get_session();
 		if (!db.table_exists(vana::data::table::mcdb_info)) {
 			server->log(vana::log::type::critical_error, vana::data::table::mcdb_info + " does not exist.");
@@ -109,17 +109,17 @@ auto check_mcdb_version(abstract_server *server) -> result {
 }
 
 auto check_schema_version(abstract_server *server, bool update) -> result {
-	database_updater db{server, update};
+	vana::io::database_updater db{server, update};
 
-	version_check_result check = db.check_version();
+	vana::io::version_check_result check = db.check_version();
 
-	if (check == version_check_result::database_unavailable) {
+	if (check == vana::io::version_check_result::database_unavailable) {
 		server->log(vana::log::type::critical_error, "Vana database is currently inaccessible.");
 		exit(exit_code::info_database_error);
 		return result::failure;
 	}
 
-	if (check == version_check_result::needs_update) {
+	if (check == vana::io::version_check_result::needs_update) {
 		if (!update) {
 			// Wrong version and we're not allowed to update, so let's quit
 			server->log(vana::log::type::critical_error, "Wrong version of database, please run LoginServer to update.");
@@ -143,7 +143,7 @@ auto set_users_offline(abstract_server *server, int32_t online_id) -> void {
 	std::cout << "Resetting online status of players..." << std::endl;
 	time_point start_time = vana::util::time::get_now();
 
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	sql.once
 		<< "UPDATE " << db.make_table(vana::table::accounts) << " u "

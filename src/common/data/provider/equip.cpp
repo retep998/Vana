@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "equip.hpp"
 #include "common/constant/job/track.hpp"
-#include "common/database.hpp"
 #include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
 #include "common/util/randomizer.hpp"
 #include "common/util/string.hpp"
 #include <iomanip>
@@ -41,7 +41,7 @@ auto equip::load_data() -> void {
 auto equip::load_equips() -> void {
 	m_equip_info.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	// Ugly hack to get the integers instead of scientific notation
 	// Note: This is MySQL's crappy behavior

@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "quest.hpp"
 #include "common/algorithm.hpp"
-#include "common/database.hpp"
 #include "common/constant/job/id.hpp"
 #include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
 #include "common/quest.hpp"
 #include "common/util/game_logic/player.hpp"
 #include "common/util/string.hpp"
@@ -45,7 +45,7 @@ auto quest::load_data() -> void {
 auto quest::load_quest_data() -> void {
 	m_quests.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::quest_data));
 
@@ -64,7 +64,7 @@ auto quest::load_requests() -> void {
 	// TODO FIXME quest
 	// Process the state when you add quest requests
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::quest_requests));
 
@@ -116,7 +116,7 @@ auto quest::load_requests() -> void {
 }
 
 auto quest::load_required_jobs() -> void {
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::quest_required_jobs));
 
@@ -140,7 +140,7 @@ auto quest::load_required_jobs() -> void {
 }
 
 auto quest::load_rewards() -> void {
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::quest_rewards));
 

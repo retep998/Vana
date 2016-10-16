@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_buddy_list.hpp"
 #include "common/algorithm.hpp"
-#include "common/database.hpp"
+#include "common/io/database.hpp"
 #include "common/util/misc.hpp"
 #include "common/util/string.hpp"
 #include "channel_server/buddy_list_packet.hpp"
@@ -36,7 +36,7 @@ player_buddy_list::player_buddy_list(ref_ptr<player> player) :
 }
 
 auto player_buddy_list::load() -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 
 	if (auto player = m_player.lock()) {
@@ -83,7 +83,7 @@ auto player_buddy_list::add_buddy(const string &name, const string &group, bool 
 			return packets::buddy::errors::user_does_not_exist;
 		}
 
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		soci::row row;
 
@@ -202,7 +202,7 @@ auto player_buddy_list::remove_buddy(game_player_id char_id) -> void {
 		channel_server::get_instance().send_world(packets::interserver::buddy::remove_buddy(player->get_id(), char_id));
 		m_buddies.erase(char_id);
 
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		sql.once
 			<< "DELETE FROM " << db.make_table(vana::table::buddylist) << " "
@@ -215,7 +215,7 @@ auto player_buddy_list::remove_buddy(game_player_id char_id) -> void {
 	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
-auto player_buddy_list::add_buddy(database &db, const soci::row &row) -> void {
+auto player_buddy_list::add_buddy(vana::io::database &db, const soci::row &row) -> void {
 	game_player_id char_id = row.get<game_player_id>("buddy_character_id");
 	int32_t row_id = row.get<int32_t>("id");
 	opt_string name = row.get<opt_string>("name");
@@ -350,7 +350,7 @@ auto player_buddy_list::remove_pending_buddy(game_player_id id, bool accepted) -
 				player->send(packets::buddy::error(error));
 			}
 
-			auto &db = database::get_char_db();
+			auto &db = vana::io::database::get_char_db();
 			auto &sql = db.get_session();
 			sql.once
 				<< "DELETE FROM " << db.make_table(vana::table::buddylist_pending) << " "

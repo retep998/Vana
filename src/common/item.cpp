@@ -324,14 +324,14 @@ auto item::initialize_item(const soci::row &row) -> void {
 	m_name = name.get("");
 }
 
-auto item::database_insert(database &db, const item_db_info &info) -> void {
+auto item::database_insert(vana::io::database &db, const item_db_info &info) -> void {
 	vector<item_db_record> v;
 	item_db_record r{info, this};
 	v.push_back(r);
 	item::database_insert(db, v);
 }
 
-auto item::database_insert(database &db, const vector<item_db_record> &items) -> void {
+auto item::database_insert(vana::io::database &db, const vector<item_db_record> &items) -> void {
 	using namespace soci;
 	auto &sql = db.get_session();
 	using vana::util::misc::get_optional;

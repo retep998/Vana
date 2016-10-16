@@ -16,14 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "skill_macros.hpp"
-#include "common/database.hpp"
+#include "common/io/database.hpp"
 #include "common/util/misc.hpp"
 
 namespace vana {
 namespace channel_server {
 
 auto skill_macros::load(game_player_id char_id) -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT s.* FROM " << db.make_table(vana::table::skill_macros) << " s WHERE s.character_id = :char",
 		soci::use(char_id, "char"));
@@ -44,7 +44,7 @@ auto skill_macros::save(game_player_id char_id) -> void {
 	optional<game_skill_id> skill2 = 0;
 	optional<game_skill_id> skill3 = 0;
 
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	soci::statement st = (sql.prepare
 		<< "REPLACE INTO " << db.make_table(vana::table::skill_macros) << " "

@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "player_data_provider.hpp"
 #include "common/algorithm.hpp"
 #include "common/constant/party.hpp"
-#include "common/database.hpp"
 #include "common/data/initialize.hpp"
 #include "common/inter_header.hpp"
 #include "common/inter_helper.hpp"
+#include "common/io/database.hpp"
 #include "common/packet_wrapper.hpp"
 #include "common/util/string.hpp"
 #include "world_server/channel.hpp"
@@ -63,7 +63,7 @@ auto player_data_provider::get_channel_connect_packet(packet_builder &builder) -
 auto player_data_provider::load_players(game_world_id world_id) -> void {
 	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Players... ";
 
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT c.character_id, c.name "
@@ -86,7 +86,7 @@ auto player_data_provider::load_player(game_player_id player_id) -> void {
 		return;
 	}
 
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT c.character_id, c.name "
@@ -533,7 +533,7 @@ auto player_data_provider::buddy_invite(packet_reader &reader) -> void {
 
 	if (!invitee.channel.is_initialized()) {
 		// Make new pending buddy in the database
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		sql.once
 			<< "INSERT INTO " << db.make_table(vana::table::buddylist_pending) << " "

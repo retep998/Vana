@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "player.hpp"
 #include "common/common_header.hpp"
 #include "common/data/provider/item.hpp"
-#include "common/database.hpp"
+#include "common/io/database.hpp"
 #include "common/packet_builder.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
@@ -267,7 +267,7 @@ auto player::player_connect(packet_reader &reader) -> void {
 	}
 
 	m_id = id;
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	soci::row row;
 	sql.once
@@ -662,7 +662,7 @@ auto player::save_stats() -> void {
 		cover = raw_cover;
 	}
 
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	sql.once
 		<< "UPDATE " << db.make_table(vana::table::characters) << " "
@@ -743,7 +743,7 @@ auto player::save_all(bool save_cooldowns) -> void {
 
 auto player::set_online(bool online) -> void {
 	int32_t online_id = online ? channel_server::get_instance().get_online_id() : 0;
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	sql.once
 		<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
@@ -758,7 +758,7 @@ auto player::set_online(bool online) -> void {
 }
 
 auto player::set_level_date() -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	sql.once << "UPDATE " << db.make_table(vana::table::characters) << " c SET c.time_level = NOW() WHERE c.character_id = :char",
 		soci::use(m_id, "char");

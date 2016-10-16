@@ -25,9 +25,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 namespace vana {
-	class database;
 	class packet_builder;
 	class soci::row;
+	namespace io {
+		class database;
+	}
 
 	namespace channel_server {
 		class player;
@@ -64,7 +66,7 @@ namespace vana {
 			auto buddy_accepted(game_player_id buddy_id) -> void;
 			auto remove_pending_buddy(game_player_id id, bool accepted) -> void;
 		private:
-			auto add_buddy(database &db, const soci::row &row) -> void;
+			auto add_buddy(vana::io::database &db, const soci::row &row) -> void;
 			auto load() -> void;
 
 			bool m_sent_request = false;

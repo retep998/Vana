@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "database_updater.hpp"
 #include "common/abstract_server.hpp"
-#include "common/database.hpp"
 #include "common/exit_code.hpp"
-#include "common/mysql_query_parser.hpp"
+#include "common/io/database.hpp"
+#include "common/io/mysql_query_parser.hpp"
 #include "common/util/string.hpp"
 #include "common/util/tokenizer.hpp"
 #ifdef WIN32
@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 namespace vana {
+namespace io {
 
 #ifdef WIN32
 namespace fs = std::tr2::sys;
@@ -89,7 +90,7 @@ auto database_updater::load_database_info() -> void {
 	}
 
 	try {
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		if (database::table_exists(sql, db.get_schema(), db.make_table(vana::table::vana_info))) {
 			sql.once
@@ -153,7 +154,7 @@ auto database_updater::load_sql_files() const -> pair<size_t, ord_map<int32_t, s
 }
 
 auto database_updater::create_info_table() -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	sql.once << "CREATE TABLE IF NOT EXISTS " << db.make_table(vana::table::vana_info) << " (version INT UNSIGNED)";
 	sql.once << "INSERT INTO " << db.make_table(vana::table::vana_info) << " VALUES (NULL)";
@@ -161,13 +162,13 @@ auto database_updater::create_info_table() -> void {
 
 // Set version number in the info table
 auto database_updater::update_info_table(size_t version) -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	sql.once << "UPDATE " << db.make_table(vana::table::vana_info) << " SET version = :version", soci::use(version, "version");
 }
 
 auto database_updater::run_queries(const string &filename) -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	vector<string> queries = mysql_query_parser::parse_queries(filename);
 
@@ -188,4 +189,5 @@ auto database_updater::run_queries(const string &filename) -> void {
 	}
 }
 
+}
 }

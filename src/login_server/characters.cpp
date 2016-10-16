@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "characters.hpp"
 #include "common/algorithm.hpp"
+#include "common/client_ip.hpp"
 #include "common/constant/equip_slot.hpp"
 #include "common/constant/inventory.hpp"
 #include "common/constant/item.hpp"
@@ -24,8 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/provider/curse.hpp"
 #include "common/data/provider/equip.hpp"
 #include "common/data/provider/valid_char.hpp"
-#include "common/client_ip.hpp"
-#include "common/database.hpp"
+#include "common/io/database.hpp"
 #include "common/packet_reader.hpp"
 #include "common/session.hpp"
 #include "common/util/game_logic/inventory.hpp"
@@ -44,7 +44,7 @@ namespace vana {
 namespace login_server {
 
 auto characters::load_equips(game_player_id id, vector<char_equip> &vec) -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT i.item_id, i.slot "
@@ -106,7 +106,7 @@ auto characters::load_character(character &charc, const soci::row &row) -> void 
 }
 
 auto characters::show_all_characters(ref_ptr<user> user_value) -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT * "
@@ -140,7 +140,7 @@ auto characters::show_all_characters(ref_ptr<user> user_value) -> void {
 }
 
 auto characters::show_characters(ref_ptr<user> user_value) -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	auto world_id = user_value->get_world_id();
 	game_account_id account_id = user_value->get_account_id();
@@ -197,7 +197,7 @@ auto characters::check_character_name(ref_ptr<user> user_value, packet_reader &r
 }
 
 auto characters::create_item(game_item_id item_id, ref_ptr<user> user_value, game_player_id char_id, game_inventory_slot slot, game_slot_qty amount) -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	game_inventory inventory = vana::util::game_logic::inventory::get_inventory(item_id);
 	auto world_id = user_value->get_world_id();
 	if (!world_id.is_initialized()) {
@@ -257,7 +257,7 @@ auto characters::create_character(ref_ptr<user> user_value, packet_reader &reade
 	game_stat intl = 4;
 	game_stat luk = 4;
 
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	optional<game_world_id> world_id = user_value->get_world_id();
 	if (!world_id.is_initialized()) {
@@ -322,7 +322,7 @@ auto characters::delete_character(ref_ptr<user> user_value, packet_reader &reade
 	};
 
 	uint8_t result = success;
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	optional<game_world_id> world_id;
 
@@ -416,7 +416,7 @@ auto characters::connect_game_world_from_view_all_characters(ref_ptr<user> user_
 	// And another to ensure that the world matches the expected world
 	optional<game_world_id> char_world_id;
 	optional<game_account_id> account_id;
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	sql.once
 		<< "SELECT world_id, account_id "
@@ -454,7 +454,7 @@ auto characters::connect_game_world_from_view_all_characters(ref_ptr<user> user_
 }
 
 auto characters::owner_check(ref_ptr<user> user_value, int32_t id) -> bool {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	opt_int32_t exists;
 
@@ -471,7 +471,7 @@ auto characters::owner_check(ref_ptr<user> user_value, int32_t id) -> bool {
 }
 
 auto characters::name_taken(const string &name) -> bool {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	opt_int32_t exists;
 

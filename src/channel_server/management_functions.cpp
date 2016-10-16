@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "management_functions.hpp"
 #include "common/config/rates.hpp"
 #include "common/data/provider/item.hpp"
-#include "common/database.hpp"
 #include "common/exit_code.hpp"
+#include "common/io/database.hpp"
 #include "common/util/string.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/inventory.hpp"
@@ -568,7 +568,7 @@ auto management_functions::ban(ref_ptr<player> player, const game_chat &args) ->
 		// Ban account
 		string expire{"2130-00-00 00:00:00"};
 
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		soci::statement st = (sql.prepare
 			<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
@@ -614,7 +614,7 @@ auto management_functions::temp_ban(ref_ptr<player> player, const game_chat &arg
 		int8_t reason = reason_string.empty() ? 1 : atoi(reason_string.c_str());
 
 		// Ban account
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		soci::statement st = (sql.prepare
 			<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
@@ -662,7 +662,7 @@ auto management_functions::ip_ban(ref_ptr<player> player, const game_chat &args)
 			int8_t reason = reason_string.empty() ? 1 : atoi(reason_string.c_str());
 
 			// IP ban
-			auto &db = database::get_char_db();
+			auto &db = vana::io::database::get_char_db();
 			auto &sql = db.get_session();
 			soci::statement st = (sql.prepare << "INSERT INTO " << db.make_table(vana::table::ip_bans) << " (ip) VALUES (:ip)",
 				soci::use(target_ip, "ip"));
@@ -695,7 +695,7 @@ auto management_functions::ip_ban(ref_ptr<player> player, const game_chat &args)
 auto management_functions::unban(ref_ptr<player> player, const game_chat &args) -> chat_result {
 	if (!args.empty()) {
 		// Unban account
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		soci::statement st = (sql.prepare
 			<< "UPDATE " << db.make_table(vana::table::accounts) << " u "

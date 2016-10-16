@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_monster_book.hpp"
 #include "common/data/provider/item.hpp"
-#include "common/database.hpp"
+#include "common/io/database.hpp"
 #include "common/util/game_logic/monster_card.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/monster_book_packet.hpp"
@@ -33,7 +33,7 @@ player_monster_book::player_monster_book(ref_ptr<player> player) :
 }
 
 auto player_monster_book::load() -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	if (auto player = m_player.lock()) {
 		game_player_id char_id = player->get_id();
@@ -55,7 +55,7 @@ auto player_monster_book::load() -> void {
 }
 
 auto player_monster_book::save() -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	if (auto player = m_player.lock()) {
 		game_player_id char_id = player->get_id();

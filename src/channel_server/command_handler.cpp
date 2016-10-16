@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "command_handler.hpp"
 #include "common/algorithm.hpp"
 #include "common/data/provider/mob.hpp"
-#include "common/database.hpp"
 #include "common/inter_header.hpp"
+#include "common/io/database.hpp"
 #include "common/packet_wrapper.hpp"
 #include "common/packet_reader.hpp"
 #include "common/util/game_logic/inventory.hpp"
@@ -238,7 +238,7 @@ auto command_handler::handle_admin_command(ref_ptr<player> player, packet_reader
 			int32_t length = reader.get<int32_t>();
 			game_chat reason_message = reader.get<game_chat>();
 			if (auto receiver = channel_server::get_instance().get_player_data_provider().get_player(victim)) {
-				auto &db = database::get_char_db();
+				auto &db = vana::io::database::get_char_db();
 				auto &sql = db.get_session();
 				sql.once
 					<< "UPDATE " << db.make_table(vana::table::accounts) << " u "

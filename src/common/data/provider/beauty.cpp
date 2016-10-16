@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "beauty.hpp"
 #include "common/algorithm.hpp"
 #include "common/constant/gender.hpp"
-#include "common/database.hpp"
 #include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
 #include "common/util/game_logic/player.hpp"
 #include "common/util/randomizer.hpp"
 #include <algorithm>
@@ -44,7 +44,7 @@ auto beauty::load_skins() -> void {
 	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Skins... ";
 	m_skins.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::character_skin_data) << " ORDER BY skinid ASC");
 
@@ -58,7 +58,7 @@ auto beauty::load_skins() -> void {
 auto beauty::load_hair() -> void {
 	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Hair... ";
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::character_hair_data) << " ORDER BY hairid ASC");
 
@@ -75,7 +75,7 @@ auto beauty::load_hair() -> void {
 auto beauty::load_faces() -> void {
 	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Faces... ";
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::character_face_data) << " ORDER BY faceid ASC");
 

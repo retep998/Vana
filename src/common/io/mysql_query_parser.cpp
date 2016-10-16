@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <fstream>
 
 namespace vana {
+namespace io {
 namespace mysql_query_parser {
 
 auto parse_queries(const string &filename) -> vector<string> {
@@ -34,7 +35,7 @@ auto parse_queries(const string &filename) -> vector<string> {
 
 	filestream.open(filename.c_str());
 
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	string content;
 	// Read whole file
 	{
@@ -64,5 +65,6 @@ auto parse_queries(const string &filename) -> vector<string> {
 	return queries;
 }
 
+}
 }
 }

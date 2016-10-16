@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "player_quests.hpp"
 #include "common/algorithm.hpp"
 #include "common/data/provider/quest.hpp"
-#include "common/database.hpp"
+#include "common/io/database.hpp"
 #include "common/util/game_logic/inventory.hpp"
 #include "common/util/randomizer.hpp"
 #include "common/util/time.hpp"
@@ -38,7 +38,7 @@ player_quests::player_quests(ref_ptr<player> player) :
 }
 
 auto player_quests::save() -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	if (auto player = m_player.lock()) {
 		game_player_id char_id = player->get_id();
@@ -114,7 +114,7 @@ auto player_quests::save() -> void {
 }
 
 auto player_quests::load() -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	if (auto player = m_player.lock()) {
 		game_player_id char_id = player->get_id();

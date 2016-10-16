@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "sql_logger.hpp"
-#include "common/database.hpp"
+#include "common/io/database.hpp"
 
 namespace vana {
 namespace log {
@@ -46,7 +46,7 @@ auto sql_logger::log(vana::log::type type, const opt_string &identifier, const s
 
 auto sql_logger::flush() -> void {
 	if (m_buffer.size() > 0) {
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		server_type_underlying type = static_cast<server_type_underlying>(get_server_type());
 		int32_t log_type = 0;

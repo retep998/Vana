@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "key_maps.hpp"
-#include "common/database.hpp"
+#include "common/io/database.hpp"
 
 namespace vana {
 namespace channel_server {
@@ -64,7 +64,7 @@ auto key_maps::default_map() -> void {
 }
 
 auto key_maps::load(game_player_id char_id) -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT k.* "
@@ -87,7 +87,7 @@ auto key_maps::save(game_player_id char_id) -> void {
 	int8_t type = 0;
 	int32_t action = 0;
 
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 
 	sql.once
