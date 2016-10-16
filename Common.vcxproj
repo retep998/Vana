@@ -161,7 +161,6 @@
     <ClCompile Include="src\common\packet_reader.cpp" />
     <ClCompile Include="src\common\authentication_packet.cpp" />
     <ClCompile Include="src\common\connection_manager.cpp" />
-    <ClCompile Include="src\common\decoder.cpp" />
     <ClCompile Include="src\common\abstract_server.cpp" />
     <ClCompile Include="src\common\database_updater.cpp" />
     <ClCompile Include="src\common\util\file.cpp" />
@@ -364,7 +363,6 @@
     <ClInclude Include="src\common\authentication_packet.hpp" />
     <ClInclude Include="src\common\connection_manager.hpp" />
     <ClInclude Include="src\common\session.hpp" />
-    <ClInclude Include="src\common\decoder.hpp" />
     <ClInclude Include="src\common\abstract_server.hpp" />
     <ClInclude Include="src\common\guild_logo.hpp" />
     <ClInclude Include="src\common\server_type.hpp" />

@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/decoder.hpp"
 #include "common/config/ping.hpp"
 #include "common/connection_type.hpp"
 #include "common/ip.hpp"

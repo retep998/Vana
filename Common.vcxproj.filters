@@ -96,9 +96,6 @@
     <ClCompile Include="src\common\authentication_packet.cpp">
       <Filter>Inter-Server</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\decoder.cpp">
-      <Filter>Connection</Filter>
-    </ClCompile>
     <ClCompile Include="src\common\session.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
@@ -313,9 +310,6 @@
     </ClInclude>
     <ClInclude Include="src\common\authentication_packet.hpp">
       <Filter>Inter-Server</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\decoder.hpp">
-      <Filter>Connection</Filter>
     </ClInclude>
     <ClInclude Include="src\common\session.hpp">
       <Filter>Connection</Filter>
