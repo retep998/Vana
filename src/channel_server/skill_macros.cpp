@@ -25,7 +25,7 @@ namespace channel_server {
 auto skill_macros::load(game_player_id char_id) -> void {
 	auto &db = database::get_char_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT s.* FROM " << db.make_table("skill_macros") << " s WHERE s.character_id = :char",
+	soci::rowset<> rs = (sql.prepare << "SELECT s.* FROM " << db.make_table(vana::table::skill_macros) << " s WHERE s.character_id = :char",
 		soci::use(char_id, "char"));
 
 	for (const auto &row : rs) {
@@ -47,7 +47,7 @@ auto skill_macros::save(game_player_id char_id) -> void {
 	auto &db = database::get_char_db();
 	auto &sql = db.get_session();
 	soci::statement st = (sql.prepare
-		<< "REPLACE INTO " << db.make_table("skill_macros") << " "
+		<< "REPLACE INTO " << db.make_table(vana::table::skill_macros) << " "
 		<< "VALUES (:char, :key, :name, :shout, :skill1, :skill2, :skill3)",
 		soci::use(char_id, "char"),
 		soci::use(i, "key"),

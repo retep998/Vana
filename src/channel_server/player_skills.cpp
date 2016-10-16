@@ -52,7 +52,7 @@ auto player_skills::load() -> void {
 
 		soci::rowset<> rs = (sql.prepare
 			<< "SELECT s.skill_id, s.points, s.max_level "
-			<< "FROM " << db.make_table("skills") << " s "
+			<< "FROM " << db.make_table(vana::table::skills) << " s "
 			<< "WHERE s.character_id = :char",
 			soci::use(player_id, "char"));
 
@@ -71,7 +71,7 @@ auto player_skills::load() -> void {
 
 		rs = (sql.prepare
 			<< "SELECT c.* "
-			<< "FROM " << db.make_table("cooldowns") << " c "
+			<< "FROM " << db.make_table(vana::table::cooldowns) << " c "
 			<< "WHERE c.character_id = :char",
 			soci::use(player_id, "char"));
 
@@ -96,7 +96,7 @@ auto player_skills::load() -> void {
 		// Some later versions lifted this restriction entirely
 		sql.once
 			<< "SELECT c.name, c.level "
-			<< "FROM " << db.make_table("characters") << " c "
+			<< "FROM " << db.make_table(vana::table::characters) << " c "
 			<< "WHERE c.world_id = :world AND c.account_id = :account AND c.character_id <> :char "
 			<< "ORDER BY c.level DESC "
 			<< "LIMIT 1 ",
@@ -128,7 +128,7 @@ auto player_skills::save(bool save_cooldowns) -> void {
 		game_skill_level level = 0;
 		game_skill_level max_level = 0;
 		statement st = (sql.prepare
-			<< "REPLACE INTO " << db.make_table("skills") << " VALUES (:player, :skill, :level, :max_level)",
+			<< "REPLACE INTO " << db.make_table(vana::table::skills) << " VALUES (:player, :skill, :level, :max_level)",
 			use(player_id, "player"),
 			use(skill_id, "skill"),
 			use(level, "level"),
@@ -145,13 +145,13 @@ auto player_skills::save(bool save_cooldowns) -> void {
 		}
 
 		if (save_cooldowns) {
-			sql.once << "DELETE FROM " << db.make_table("cooldowns") << " WHERE character_id = :char",
+			sql.once << "DELETE FROM " << db.make_table(vana::table::cooldowns) << " WHERE character_id = :char",
 				soci::use(player_id, "char");
 
 			if (m_cooldowns.size() > 0) {
 				int16_t remaining_time = 0;
 				st = (sql.prepare
-					<< "INSERT INTO " << db.make_table("cooldowns") << " (character_id, skill_id, remaining_time) "
+					<< "INSERT INTO " << db.make_table(vana::table::cooldowns) << " (character_id, skill_id, remaining_time) "
 					<< "VALUES (:char, :skill, :time)",
 					use(player_id, "char"),
 					use(skill_id, "skill"),

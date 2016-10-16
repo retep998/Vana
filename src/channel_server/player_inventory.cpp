@@ -68,8 +68,8 @@ auto player_inventory::load() -> void {
 
 		soci::rowset<> rs = (sql.prepare
 			<< "SELECT i.*, p.index, p.name AS pet_name, p.level, p.closeness, p.fullness "
-			<< "FROM " << db.make_table("items") << " i "
-			<< "LEFT OUTER JOIN " << db.make_table("pets") << " p ON i.pet_id = p.pet_id "
+			<< "FROM " << db.make_table(vana::table::items) << " i "
+			<< "LEFT OUTER JOIN " << db.make_table(vana::table::pets) << " p ON i.pet_id = p.pet_id "
 			<< "WHERE i.location = :location AND i.character_id = :char",
 			soci::use(player->get_id(), "char"),
 			soci::use(location, "location"));
@@ -84,7 +84,7 @@ auto player_inventory::load() -> void {
 			}
 		}
 
-		rs = (sql.prepare << "SELECT t.map_index, t.map_id FROM " << db.make_table("teleport_rock_locations") << " t WHERE t.character_id = :char",
+		rs = (sql.prepare << "SELECT t.map_index, t.map_id FROM " << db.make_table(vana::table::teleport_rock_locations) << " t WHERE t.character_id = :char",
 			soci::use(player->get_id(), "char"));
 
 		for (const auto &row : rs) {
@@ -109,7 +109,7 @@ auto player_inventory::save() -> void {
 		auto &sql = db.get_session();
 		game_player_id char_id = player->get_id();
 
-		sql.once << "DELETE FROM " << db.make_table("teleport_rock_locations") << " WHERE character_id = :char",
+		sql.once << "DELETE FROM " << db.make_table(vana::table::teleport_rock_locations) << " WHERE character_id = :char",
 			use(char_id, "char");
 
 		if (m_rock_locations.size() > 0 || m_vip_locations.size() > 0) {
@@ -117,7 +117,7 @@ auto player_inventory::save() -> void {
 			size_t rock_index = 0;
 
 			statement st = (sql.prepare
-				<< "INSERT INTO " << db.make_table("teleport_rock_locations") << " "
+				<< "INSERT INTO " << db.make_table(vana::table::teleport_rock_locations) << " "
 				<< "VALUES (:char, :i, :map)",
 				use(char_id, "char"),
 				use(map_id, "map"),
@@ -137,7 +137,7 @@ auto player_inventory::save() -> void {
 		}
 
 		sql.once
-			<< "DELETE FROM " << db.make_table("items") << " "
+			<< "DELETE FROM " << db.make_table(vana::table::items) << " "
 			<< "WHERE location = :inv AND character_id = :char",
 			use(char_id, "char"),
 			use(item::inventory, "inv");

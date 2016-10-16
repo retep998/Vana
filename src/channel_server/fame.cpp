@@ -70,7 +70,7 @@ auto fame::add_fame_log(game_player_id from, game_player_id to) -> void {
 	auto &db = database::get_char_db();
 	auto &sql = db.get_session();
 	sql.once
-		<< "INSERT INTO " << db.make_table("fame_log") << " (from_character_id, to_character_id, fame_time) "
+		<< "INSERT INTO " << db.make_table(vana::table::fame_log) << " (from_character_id, to_character_id, fame_time) "
 		<< "VALUES (:from, :to, NOW())",
 		soci::use(from, "from"),
 		soci::use(to, "to");
@@ -91,7 +91,7 @@ auto fame::get_last_fame_log(game_player_id from) -> search_result {
 
 	sql.once
 		<< "SELECT fame_time "
-		<< "FROM " << db.make_table("fame_log") << " "
+		<< "FROM " << db.make_table(vana::table::fame_log) << " "
 		<< "WHERE from_character_id = :from AND UNIX_TIMESTAMP(fame_time) > UNIX_TIMESTAMP() - :fame_time "
 		<< "ORDER BY fame_time DESC",
 		soci::use(from, "from"),
@@ -118,7 +118,7 @@ auto fame::get_last_fame_sp_log(game_player_id from, game_player_id to) -> searc
 
 	sql.once
 		<< "SELECT fame_time "
-		<< "FROM " << db.make_table("fame_log") << " "
+		<< "FROM " << db.make_table(vana::table::fame_log) << " "
 		<< "WHERE from_character_id = :from AND to_character_id = :to AND UNIX_TIMESTAMP(fame_time) > UNIX_TIMESTAMP() - :fame_reset_time "
 		<< "ORDER BY fame_time DESC",
 		soci::use(from, "from"),

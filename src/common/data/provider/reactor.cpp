@@ -42,7 +42,7 @@ auto reactor::load_reactors() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("reactor_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::reactor_data));
 
 	for (const auto &row : rs) {
 		data::type::reactor_info reactor;
@@ -62,7 +62,7 @@ auto reactor::load_reactors() -> void {
 auto reactor::load_states() -> void {
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("reactor_events") << " ORDER BY reactorId, state ASC");
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::reactor_events) << " ORDER BY reactorId, state ASC");
 
 	for (const auto &row : rs) {
 		data::type::reactor_state_info state;
@@ -103,7 +103,7 @@ auto reactor::load_states() -> void {
 auto reactor::load_trigger_skills() -> void {
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("reactor_event_trigger_skills"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::reactor_event_trigger_skills));
 
 	for (const auto &row : rs) {
 		game_reactor_id id = row.get<game_reactor_id>("reactorid");

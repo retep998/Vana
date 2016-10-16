@@ -40,7 +40,7 @@ auto player_monster_book::load() -> void {
 
 		soci::rowset<> rs = (sql.prepare
 			<< "SELECT b.card_id, b.level "
-			<< "FROM " << db.make_table("monster_book") << " b "
+			<< "FROM " << db.make_table(vana::table::monster_book) << " b "
 			<< "WHERE b.character_id = :char "
 			<< "ORDER BY b.card_id ASC",
 			soci::use(char_id, "char"));
@@ -60,7 +60,7 @@ auto player_monster_book::save() -> void {
 	if (auto player = m_player.lock()) {
 		game_player_id char_id = player->get_id();
 
-		sql.once << "DELETE FROM " << db.make_table("monster_book") << " WHERE character_id = :char",
+		sql.once << "DELETE FROM " << db.make_table(vana::table::monster_book) << " WHERE character_id = :char",
 			soci::use(char_id, "char");
 
 		if (m_cards.size() > 0) {
@@ -68,7 +68,7 @@ auto player_monster_book::save() -> void {
 			uint8_t level = 0;
 
 			soci::statement st = (sql.prepare
-				<< "INSERT INTO " << db.make_table("monster_book") << " "
+				<< "INSERT INTO " << db.make_table(vana::table::monster_book) << " "
 				<< "VALUES (:char, :card, :level) ",
 				soci::use(char_id, "char"),
 				soci::use(card_id, "card"),

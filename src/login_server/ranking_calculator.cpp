@@ -71,8 +71,8 @@ auto ranking_calculator::all() -> void {
 	rank_player out;
 	soci::statement statement = (sql.prepare
 		<< "SELECT c.character_id, c.exp, c.fame, c.job, c.level, c.world_id, c.time_level, c.fame_cpos, c.world_cpos, c.job_cpos, c.overall_cpos "
-		<< "FROM " << db.make_table("characters") << " c "
-		<< "INNER JOIN " << db.make_table("accounts") << " u ON u.account_id = c.account_id "
+		<< "FROM " << db.make_table(vana::table::characters) << " c "
+		<< "INNER JOIN " << db.make_table(vana::table::accounts) << " u ON u.account_id = c.account_id "
 		<< "WHERE "
 		<< "	(u.banned = 0 OR u.ban_expire >= NOW()) "
 		<< "	AND u.gm_level IS NULL "
@@ -122,7 +122,7 @@ auto ranking_calculator::all() -> void {
 		int32_t current_overall_rank = 0;
 
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << db.make_table("characters") << " "
+			<< "UPDATE " << db.make_table(vana::table::characters) << " "
 			<< "SET "
 			<< "	fame_opos = :original_fame_rank,"
 			<< "	fame_cpos = :current_fame_rank,"

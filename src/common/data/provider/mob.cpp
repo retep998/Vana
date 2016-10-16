@@ -45,7 +45,7 @@ auto mob::load_attacks() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("mob_attacks"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::mob_attacks));
 
 	for (const auto &row : rs) {
 		data::type::mob_attack_info mob_attack;
@@ -88,7 +88,7 @@ auto mob::load_skills() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("mob_skills"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::mob_skills));
 
 	for (const auto &row : rs) {
 		data::type::mob_skill_info mob_skill;
@@ -117,7 +117,7 @@ auto mob::load_mobs() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("mob_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::mob_data));
 
 	for (const auto &row : rs) {
 		auto mob = make_ref_ptr<data::type::mob_info>();
@@ -202,7 +202,7 @@ auto mob::load_mobs() -> void {
 auto mob::load_summons() -> void {
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("mob_summons"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::mob_summons));
 
 	for (const auto &row : rs) {
 		game_mob_id mob_id = row.get<game_mob_id>("mobid");

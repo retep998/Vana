@@ -39,7 +39,7 @@ pet::pet(player *player, item *item) :
 	auto &db = database::get_char_db();
 	auto &sql = db.get_session();
 
-	sql.once << "INSERT INTO " << db.make_table("pets") << " (name) VALUES (:name)",
+	sql.once << "INSERT INTO " << db.make_table(vana::table::pets) << " (name) VALUES (:name)",
 		soci::use(m_name, "name");
 
 	m_id = db.get_last_id<game_pet_id>();

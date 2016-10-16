@@ -273,8 +273,8 @@ auto player::player_connect(packet_reader &reader) -> void {
 	soci::row row;
 	sql.once
 		<< "SELECT c.*, u.gm_level, u.admin "
-		<< "FROM " << db.make_table("characters") << " c "
-		<< "INNER JOIN " << db.make_table("accounts") << " u ON c.account_id = u.account_id "
+		<< "FROM " << db.make_table(vana::table::characters) << " c "
+		<< "INNER JOIN " << db.make_table(vana::table::accounts) << " u ON c.account_id = u.account_id "
 		<< "WHERE c.character_id = :char",
 		soci::use(id, "char"),
 		soci::into(row);
@@ -666,7 +666,7 @@ auto player::save_stats() -> void {
 	auto &db = database::get_char_db();
 	auto &sql = db.get_session();
 	sql.once
-		<< "UPDATE " << db.make_table("characters") << " "
+		<< "UPDATE " << db.make_table(vana::table::characters) << " "
 		<< "SET "
 		<< "	level = :level, "
 		<< "	job = :job, "
@@ -747,8 +747,8 @@ auto player::set_online(bool online) -> void {
 	auto &db = database::get_char_db();
 	auto &sql = db.get_session();
 	sql.once
-		<< "UPDATE " << db.make_table("accounts") << " u "
-		<< "INNER JOIN " << db.make_table("characters") << " c ON u.account_id = c.account_id "
+		<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
+		<< "INNER JOIN " << db.make_table(vana::table::characters) << " c ON u.account_id = c.account_id "
 		<< "SET "
 		<< "	u.online = :online_id, "
 		<< "	c.online = :online "
@@ -761,7 +761,7 @@ auto player::set_online(bool online) -> void {
 auto player::set_level_date() -> void {
 	auto &db = database::get_char_db();
 	auto &sql = db.get_session();
-	sql.once << "UPDATE " << db.make_table("characters") << " c SET c.time_level = NOW() WHERE c.character_id = :char",
+	sql.once << "UPDATE " << db.make_table(vana::table::characters) << " c SET c.time_level = NOW() WHERE c.character_id = :char",
 		soci::use(m_id, "char");
 }
 

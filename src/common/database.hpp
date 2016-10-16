@@ -17,7 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "common/data/table.hpp"
 #include "common/soci_extensions.hpp"
+#include "common/table.hpp"
 #include "common/types.hpp"
 #include <memory>
 #include <string>

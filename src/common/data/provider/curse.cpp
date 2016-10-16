@@ -34,7 +34,7 @@ auto curse::load_data() -> void {
 	m_curse_words.clear();
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("curse_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::curse_data));
 
 	for (const auto &row : rs) {
 		m_curse_words.push_back(row.get<string>("word"));

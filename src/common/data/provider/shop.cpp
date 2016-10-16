@@ -46,7 +46,7 @@ auto shop::load_shops() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("shop_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::shop_data));
 
 	for (const auto &row : rs) {
 		data::type::shop_info info;
@@ -56,7 +56,7 @@ auto shop::load_shops() -> void {
 		m_shops.push_back(info);
 	}
 
-	rs = (sql.prepare << "SELECT * FROM " << db.make_table("shop_items") << " ORDER BY shopid, sort DESC");
+	rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::shop_items) << " ORDER BY shopid, sort DESC");
 
 	for (const auto &row : rs) {
 		data::type::shop_item_info info;
@@ -81,7 +81,7 @@ auto shop::load_shops() -> void {
 auto shop::load_user_shops() -> void {
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("user_shop_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::user_shop_data));
 
 	for (const auto &row : rs) {
 		data::type::shop_info info;
@@ -99,7 +99,7 @@ auto shop::load_user_shops() -> void {
 		m_shops.push_back(info);
 	}
 
-	rs = (sql.prepare << "SELECT * FROM " << db.make_table("user_shop_items") << " ORDER BY shopid, sort DESC");
+	rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::user_shop_items) << " ORDER BY shopid, sort DESC");
 
 	for (const auto &row : rs) {
 		data::type::shop_item_info info;
@@ -126,7 +126,7 @@ auto shop::load_recharge_tiers() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("shop_recharge_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::shop_recharge_data));
 
 	for (const auto &row : rs) {
 		int8_t recharge_tier = row.get<int8_t>("tierid");

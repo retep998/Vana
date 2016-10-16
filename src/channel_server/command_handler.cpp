@@ -241,8 +241,8 @@ auto command_handler::handle_admin_command(ref_ptr<player> player, packet_reader
 				auto &db = database::get_char_db();
 				auto &sql = db.get_session();
 				sql.once
-					<< "UPDATE " << db.make_table("accounts") << " u "
-					<< "INNER JOIN " << db.make_table("characters") << " c ON u.account_id = c.account_id "
+					<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
+					<< "INNER JOIN " << db.make_table(vana::table::characters) << " c ON u.account_id = c.account_id "
 					<< "SET "
 					<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL :expire DAY),"
 					<< "	u.ban_reason = :reason,"

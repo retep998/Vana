@@ -67,7 +67,7 @@ auto player_data_provider::load_players(game_world_id world_id) -> void {
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT c.character_id, c.name "
-		<< "FROM " << db.make_table("characters") << " c "
+		<< "FROM " << db.make_table(vana::table::characters) << " c "
 		<< "WHERE c.world_id = :world",
 		soci::use(world_id, "world"));
 
@@ -90,7 +90,7 @@ auto player_data_provider::load_player(game_player_id player_id) -> void {
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT c.character_id, c.name "
-		<< "FROM " << db.make_table("characters") << " c "
+		<< "FROM " << db.make_table(vana::table::characters) << " c "
 		<< "WHERE c.character_id = :char",
 		soci::use(player_id, "char"));
 
@@ -536,7 +536,7 @@ auto player_data_provider::buddy_invite(packet_reader &reader) -> void {
 		auto &db = database::get_char_db();
 		auto &sql = db.get_session();
 		sql.once
-			<< "INSERT INTO " << db.make_table("buddylist_pending") << " "
+			<< "INSERT INTO " << db.make_table(vana::table::buddylist_pending) << " "
 			<< "VALUES (:invitee, :name, :inviter)",
 			soci::use(invitee_id, "invitee"),
 			soci::use(inviter.name, "name"),

@@ -56,7 +56,7 @@ auto sql_logger::flush() -> void {
 		unix_time log_time;
 
 		soci::statement st = (sql.prepare
-			<< "INSERT INTO " << db.make_table("logs") << " (log_time, origin, info_type, identifier, message) "
+			<< "INSERT INTO " << db.make_table(vana::table::logs) << " (log_time, origin, info_type, identifier, message) "
 			<< "VALUES (:time, :origin, :info_type, :identifier, :message)",
 			soci::use(log_time, "time"),
 			soci::use(type, "origin"),

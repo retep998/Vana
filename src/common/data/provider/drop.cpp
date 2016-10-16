@@ -49,7 +49,7 @@ auto drop::load_drops() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("drop_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::drop_data));
 
 	for (const auto &row : rs) {
 		info = data::type::drop_info{};
@@ -78,7 +78,7 @@ auto drop::load_drops() -> void {
 		}
 	}
 
-	rs = (sql.prepare << "SELECT * FROM " << db.make_table("user_drop_data") << " ORDER BY dropperid");
+	rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::user_drop_data) << " ORDER BY dropperid");
 	int32_t last_dropper_id = -1;
 
 	for (const auto &row : rs) {
@@ -122,7 +122,7 @@ auto drop::load_global_drops() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("drop_global_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::drop_global_data));
 
 	for (const auto &row : rs) {
 		data::type::global_drop_info drop;

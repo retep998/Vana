@@ -34,7 +34,7 @@ auto player_variables::save() -> void {
 		auto &sql = db.get_session();
 		game_player_id char_id = player->get_id();
 
-		sql.once << "DELETE FROM " << db.make_table("character_variables") << " WHERE character_id = :char",
+		sql.once << "DELETE FROM " << db.make_table(vana::table::character_variables) << " WHERE character_id = :char",
 			soci::use(char_id, "char");
 
 		if (m_variables.size() > 0) {
@@ -42,7 +42,7 @@ auto player_variables::save() -> void {
 			string value = "";
 
 			soci::statement st = (sql.prepare
-				<< "INSERT INTO " << db.make_table("character_variables") << " "
+				<< "INSERT INTO " << db.make_table(vana::table::character_variables) << " "
 				<< "VALUES (:char, :key, :value)",
 				soci::use(char_id, "char"),
 				soci::use(key, "key"),
@@ -62,7 +62,7 @@ auto player_variables::load() -> void {
 	if (auto player = m_player.lock()) {
 		auto &db = database::get_char_db();
 		auto &sql = db.get_session();
-		soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("character_variables") << " WHERE character_id = :char",
+		soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::table::character_variables) << " WHERE character_id = :char",
 			soci::use(player->get_id(), "char"));
 
 		for (const auto &row : rs) {

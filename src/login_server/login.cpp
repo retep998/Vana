@@ -56,7 +56,7 @@ auto login::login_user(ref_ptr<user> user_value, packet_reader &reader) -> void 
 
 	sql.once
 		<< "SELECT u.* "
-		<< "FROM " << db.make_table("accounts") << " u "
+		<< "FROM " << db.make_table(vana::table::accounts) << " u "
 		<< "WHERE u.username = :user",
 		soci::use(username, "user"),
 		soci::into(row);
@@ -77,7 +77,7 @@ auto login::login_user(ref_ptr<user> user_value, packet_reader &reader) -> void 
 
 		sql.once
 			<< "SELECT i.ip_ban_id "
-			<< "FROM " << db.make_table("ip_bans") << " i "
+			<< "FROM " << db.make_table(vana::table::ip_bans) << " i "
 			<< "WHERE i.ip = :ip",
 			soci::use(ip, "ip"),
 			soci::into(ip_banned);
@@ -111,7 +111,7 @@ auto login::login_user(ref_ptr<user> user_value, packet_reader &reader) -> void 
 						hash_utilities::hash_password(password, salt.get(), salting_policy);
 
 					sql.once
-						<< "UPDATE " << db.make_table("accounts") << " u "
+						<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
 						<< "SET u.password = :password, u.salt = :salt "
 						<< "WHERE u.account_id = :account",
 						soci::use(hashed_password, "password"),
@@ -175,7 +175,7 @@ auto login::login_user(ref_ptr<user> user_value, packet_reader &reader) -> void 
 			time_t ban_time = quiet_ban.get();
 			if (time(nullptr) > ban_time) {
 				sql.once
-					<< "UPDATE " << db.make_table("accounts") << " u "
+					<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
 					<< "SET u.quiet_ban_expire = NULL, u.quiet_ban_reason = NULL "
 					<< "WHERE u.account_id = :account",
 					soci::use(account_id, "account");
@@ -213,7 +213,7 @@ auto login::set_gender(ref_ptr<user> user_value, packet_reader &reader) -> void 
 		auto &db = database::get_char_db();
 		auto &sql = db.get_session();
 		sql.once
-			<< "UPDATE " << db.make_table("accounts") << " u "
+			<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
 			<< "SET u.gender = :gender "
 			<< "WHERE u.account_id = :account",
 			soci::use(gender, "gender"),
@@ -313,7 +313,7 @@ auto login::register_pin(ref_ptr<user> user_value, packet_reader &reader) -> voi
 	auto &sql = db.get_session();
 
 	sql.once
-		<< "UPDATE " << db.make_table("accounts") << " u "
+		<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
 		<< "SET u.pin = :pin "
 		<< "WHERE u.account_id = :account",
 		soci::use(pin, "pin"),

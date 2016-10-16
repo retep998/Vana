@@ -60,7 +60,7 @@ auto player_pets::save() -> void {
 		game_pet_id pet_id = 0;
 
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << db.make_table("pets") << " "
+			<< "UPDATE " << db.make_table(vana::table::pets) << " "
 			<< "SET "
 			<< "	`index` = :index, "
 			<< "	name = :name, "

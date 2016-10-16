@@ -79,7 +79,7 @@ auto user::set_online(bool online) -> void {
 	auto &db = database::get_char_db();
 	auto &sql = db.get_session();
 	sql.once
-		<< "UPDATE " << db.make_table("accounts") << " u "
+		<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
 		<< "SET "
 		<< "	u.online = :online,"
 		<< "	u.last_login = NOW() "

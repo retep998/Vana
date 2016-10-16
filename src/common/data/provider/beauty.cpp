@@ -46,7 +46,7 @@ auto beauty::load_skins() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("character_skin_data") << " ORDER BY skinid ASC");
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::character_skin_data) << " ORDER BY skinid ASC");
 
 	for (const auto &row : rs) {
 		m_skins.push_back(row.get<game_skin_id>("skinid"));
@@ -60,7 +60,7 @@ auto beauty::load_hair() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("character_hair_data") << " ORDER BY hairid ASC");
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::character_hair_data) << " ORDER BY hairid ASC");
 
 	for (const auto &row : rs) {
 		game_gender_id gender_id = game_logic_utilities::get_gender_id(row.get<string>("gender"));
@@ -77,7 +77,7 @@ auto beauty::load_faces() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("character_face_data") << " ORDER BY faceid ASC");
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::character_face_data) << " ORDER BY faceid ASC");
 
 	for (const auto &row : rs) {
 		game_gender_id gender_id = game_logic_utilities::get_gender_id(row.get<string>("gender"));

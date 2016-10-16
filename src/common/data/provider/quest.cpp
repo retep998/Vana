@@ -47,7 +47,7 @@ auto quest::load_quest_data() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("quest_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::quest_data));
 
 	for (const auto &row : rs) {
 		vana::quest quest;
@@ -66,7 +66,7 @@ auto quest::load_requests() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("quest_requests"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::quest_requests));
 
 	for (const auto &row : rs) {
 		game_quest_id quest_id = row.get<game_quest_id>("questid");
@@ -118,7 +118,7 @@ auto quest::load_requests() -> void {
 auto quest::load_required_jobs() -> void {
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("quest_required_jobs"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::quest_required_jobs));
 
 	for (const auto &row : rs) {
 		game_quest_id quest_id = row.get<game_quest_id>("questid");
@@ -142,7 +142,7 @@ auto quest::load_required_jobs() -> void {
 auto quest::load_rewards() -> void {
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("quest_rewards"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::quest_rewards));
 
 	for (const auto &row : rs) {
 		game_quest_id quest_id = row.get<game_quest_id>("questid");

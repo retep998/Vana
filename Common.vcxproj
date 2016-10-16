@@ -228,6 +228,7 @@
     <ClInclude Include="src\common\constant\item\max_stat.hpp" />
     <ClInclude Include="src\common\data\locale.hpp" />
     <ClInclude Include="src\common\data\provider\map.hpp" />
+    <ClInclude Include="src\common\data\table.hpp" />
     <ClInclude Include="src\common\data\type\banish_field_info.hpp" />
     <ClInclude Include="src\common\data\type\buff.hpp" />
     <ClInclude Include="src\common\data\type\buff_action.hpp" />
@@ -353,6 +354,7 @@
     <ClInclude Include="src\common\split_packet_builder.hpp" />
     <ClInclude Include="src\common\sql_logger.hpp" />
     <ClInclude Include="src\common\stop_watch.hpp" />
+    <ClInclude Include="src\common\table.hpp" />
     <ClInclude Include="src\common\tausworthe_generator.hpp" />
     <ClInclude Include="src\common\thread_pool.hpp" />
     <ClInclude Include="src\common\timer\run_result.hpp" />

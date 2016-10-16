@@ -380,7 +380,7 @@ auto item::database_insert(database &db, const vector<item_db_record> &items) ->
 	opt_string name;
 
 	statement st = (sql.prepare
-		<< "INSERT INTO " << db.make_table("items") << " (character_id, inv, slot, location, account_id, world_id, item_id, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, hammers, pet_id, name, expiration) "
+		<< "INSERT INTO " << db.make_table(vana::table::items) << " (character_id, inv, slot, location, account_id, world_id, item_id, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, hammers, pet_id, name, expiration) "
 		<< "VALUES (:char, :inv, :slot, :location, :account, :world, :item_id, :amount, :slots, :scrolls, :str, :dex, :int, :luk, :hp, :mp, :watk, :matk, :wdef, :mdef, :acc, :avo, :hands, :speed, :jump, :flags, :hammers, :pet, :name, :expiration)",
 		use(player_id, "char"),
 		use(inventory, "inv"),

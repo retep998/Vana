@@ -104,7 +104,7 @@ auto player_storage::load() -> void {
 
 		sql.once
 			<< "SELECT s.slots, s.mesos, s.char_slots "
-			<< "FROM " << db.make_table("storage") << " s "
+			<< "FROM " << db.make_table(vana::table::storage) << " s "
 			<< "WHERE s.account_id = :account AND s.world_id = :world "
 			<< "LIMIT 1",
 			soci::use(account_id, "account"),
@@ -122,7 +122,7 @@ auto player_storage::load() -> void {
 			m_mesos = 0;
 			m_char_slots = config.default_chars;
 			sql.once
-				<< "INSERT INTO " << db.make_table("storage") << " (account_id, world_id, slots, mesos, char_slots) "
+				<< "INSERT INTO " << db.make_table(vana::table::storage) << " (account_id, world_id, slots, mesos, char_slots) "
 				<< "VALUES (:account, :world, :slots, :mesos, :chars)",
 				soci::use(account_id, "account"),
 				soci::use(world_id, "world"),
@@ -137,7 +137,7 @@ auto player_storage::load() -> void {
 
 		soci::rowset<> rs = (sql.prepare
 			<< "SELECT i.* "
-			<< "FROM " << db.make_table("items") << " i "
+			<< "FROM " << db.make_table(vana::table::items) << " i "
 			<< "WHERE i.location = :location AND i.account_id = :account AND i.world_id = :world "
 			<< "ORDER BY i.slot ASC",
 			soci::use(location, "location"),
@@ -162,7 +162,7 @@ auto player_storage::save() -> void {
 		auto &db = database::get_char_db();
 		auto &sql = db.get_session();
 		sql.once
-			<< "UPDATE " << db.make_table("storage") << " "
+			<< "UPDATE " << db.make_table(vana::table::storage) << " "
 			<< "SET slots = :slots, mesos = :mesos, char_slots = :chars "
 			<< "WHERE account_id = :account AND world_id = :world",
 			use(account_id, "account"),
@@ -172,7 +172,7 @@ auto player_storage::save() -> void {
 			use(m_char_slots, "chars");
 
 		sql.once
-			<< "DELETE FROM " << db.make_table("items") << " "
+			<< "DELETE FROM " << db.make_table(vana::table::items) << " "
 			<< "WHERE location = :location AND account_id = :account AND world_id = :world",
 			use(item::storage, "location"),
 			use(account_id, "account"),

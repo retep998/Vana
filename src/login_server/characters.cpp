@@ -47,7 +47,7 @@ auto characters::load_equips(game_player_id id, vector<char_equip> &vec) -> void
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT i.item_id, i.slot "
-		<< "FROM " << db.make_table("items") << " i "
+		<< "FROM " << db.make_table(vana::table::items) << " i "
 		<< "WHERE "
 		<< "	i.character_id = :id "
 		<< "	AND i.inv = :inv "
@@ -109,7 +109,7 @@ auto characters::show_all_characters(ref_ptr<user> user_value) -> void {
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT * "
-		<< "FROM " << db.make_table("characters") << " c "
+		<< "FROM " << db.make_table(vana::table::characters) << " c "
 		<< "WHERE c.account_id = :account ",
 		soci::use(user_value->get_account_id(), "account"));
 
@@ -149,7 +149,7 @@ auto characters::show_characters(ref_ptr<user> user_value) -> void {
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT * "
-		<< "FROM " << db.make_table("characters") << " c "
+		<< "FROM " << db.make_table(vana::table::characters) << " c "
 		<< "WHERE c.account_id = :account AND c.world_id = :world ",
 		soci::use(account_id, "account"),
 		soci::use(world_id.get(), "world"));
@@ -164,7 +164,7 @@ auto characters::show_characters(ref_ptr<user> user_value) -> void {
 	opt_int32_t max;
 	sql.once
 		<< "SELECT s.char_slots "
-		<< "FROM " << db.make_table("storage") << " s "
+		<< "FROM " << db.make_table(vana::table::storage) << " s "
 		<< "WHERE s.account_id = :account AND s.world_id = :world ",
 		soci::use(account_id, "account"),
 		soci::use(world_id.get(), "world"),
@@ -264,7 +264,7 @@ auto characters::create_character(ref_ptr<user> user_value, packet_reader &reade
 	}
 
 	sql.once
-		<< "INSERT INTO " << db.make_table("characters") << " (name, account_id, world_id, face, hair, skin, gender, str, dex, `int`, luk) "
+		<< "INSERT INTO " << db.make_table(vana::table::characters) << " (name, account_id, world_id, face, hair, skin, gender, str, dex, `int`, luk) "
 		<< "VALUES (:name, :account, :world, :face, :hair, :skin, :gender, :str, :dex, :int, :luk)",
 		soci::use(name, "name"),
 		soci::use(user_value->get_account_id(), "account"),
@@ -289,7 +289,7 @@ auto characters::create_character(ref_ptr<user> user_value, packet_reader &reade
 	soci::row row;
 	sql.once
 		<< "SELECT * "
-		<< "FROM " << db.make_table("characters") << " c "
+		<< "FROM " << db.make_table(vana::table::characters) << " c "
 		<< "WHERE c.character_id = :id",
 		soci::use(id, "id"),
 		soci::into(row);
@@ -327,7 +327,7 @@ auto characters::delete_character(ref_ptr<user> user_value, packet_reader &reade
 
 	sql.once
 		<< "SELECT world_id "
-		<< "FROM " << db.make_table("characters") << " c "
+		<< "FROM " << db.make_table(vana::table::characters) << " c "
 		<< "WHERE c.character_id = :char ",
 		soci::use(id, "char"),
 		soci::into(world_id);
@@ -348,10 +348,16 @@ auto characters::delete_character(ref_ptr<user> user_value, packet_reader &reade
 			return false;
 		});
 
-		sql.once << "DELETE p FROM " << db.make_table("pets") << " p INNER JOIN " << db.make_table("items") << " i ON p.pet_id = i.pet_id WHERE i.character_id = :char ",
+		sql.once
+			<< "DELETE p "
+			<< "FROM " << db.make_table(vana::table::pets) << " p "
+			<< "INNER JOIN " << db.make_table(vana::table::items) << " i ON p.pet_id = i.pet_id "
+			<< "WHERE i.character_id = :char ",
 			soci::use(id, "char");
 
-		sql.once << "DELETE FROM " << db.make_table("characters") << " WHERE character_id = :char ",
+		sql.once
+			<< "DELETE FROM " << db.make_table(vana::table::characters) << " "
+			<< "WHERE character_id = :char ",
 			soci::use(id, "char");
 	}
 	else {
@@ -413,7 +419,7 @@ auto characters::connect_game_world_from_view_all_characters(ref_ptr<user> user_
 	auto &sql = db.get_session();
 	sql.once
 		<< "SELECT world_id, account_id "
-		<< "FROM " << db.make_table("characters") << " c "
+		<< "FROM " << db.make_table(vana::table::characters) << " c "
 		<< "WHERE c.character_id = :char ",
 		soci::use(id, "char"),
 		soci::into(char_world_id),
@@ -453,7 +459,7 @@ auto characters::owner_check(ref_ptr<user> user_value, int32_t id) -> bool {
 
 	sql.once
 		<< "SELECT 1 "
-		<< "FROM " << db.make_table("characters") << " c "
+		<< "FROM " << db.make_table(vana::table::characters) << " c "
 		<< "WHERE c.character_id = :char AND c.account_id = :account "
 		<< "LIMIT 1 ",
 		soci::use(id, "char"),
@@ -470,7 +476,7 @@ auto characters::name_taken(const string &name) -> bool {
 
 	sql.once
 		<< "SELECT 1 "
-		<< "FROM " << db.make_table("characters") << " c "
+		<< "FROM " << db.make_table(vana::table::characters) << " c "
 		<< "WHERE c.name = :name "
 		<< "LIMIT 1",
 		soci::use(name, "name"),

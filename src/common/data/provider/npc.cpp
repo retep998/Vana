@@ -33,7 +33,7 @@ auto npc::load_data() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("npc_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::npc_data));
 
 	for (const auto &row : rs) {
 		data::type::npc_info info;

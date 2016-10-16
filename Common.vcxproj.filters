@@ -928,5 +928,9 @@
     <ClInclude Include="src\common\data\type\script_type.hpp">
       <Filter>data\type</Filter>
     </ClInclude>
+    <ClInclude Include="src\common\table.hpp" />
+    <ClInclude Include="src\common\data\table.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -91,10 +91,10 @@ auto database_updater::load_database_info() -> void {
 	try {
 		auto &db = database::get_char_db();
 		auto &sql = db.get_session();
-		if (database::table_exists(sql, db.get_schema(), db.make_table("vana_info"))) {
+		if (database::table_exists(sql, db.get_schema(), db.make_table(vana::table::vana_info))) {
 			sql.once
 				<< "SELECT version "
-				<< "FROM " << db.make_table("vana_info"),
+				<< "FROM " << db.make_table(vana::table::vana_info),
 				soci::into(version);
 
 			retrieved_data = sql.got_data();
@@ -155,15 +155,15 @@ auto database_updater::load_sql_files() const -> pair<size_t, ord_map<int32_t, s
 auto database_updater::create_info_table() -> void {
 	auto &db = database::get_char_db();
 	auto &sql = db.get_session();
-	sql.once << "CREATE TABLE IF NOT EXISTS " << db.make_table("vana_info") << " (version INT UNSIGNED)";
-	sql.once << "INSERT INTO " << db.make_table("vana_info") << " VALUES (NULL)";
+	sql.once << "CREATE TABLE IF NOT EXISTS " << db.make_table(vana::table::vana_info) << " (version INT UNSIGNED)";
+	sql.once << "INSERT INTO " << db.make_table(vana::table::vana_info) << " VALUES (NULL)";
 }
 
 // Set version number in the info table
 auto database_updater::update_info_table(size_t version) -> void {
 	auto &db = database::get_char_db();
 	auto &sql = db.get_session();
-	sql.once << "UPDATE " << db.make_table("vana_info") << " SET version = :version", soci::use(version, "version");
+	sql.once << "UPDATE " << db.make_table(vana::table::vana_info) << " SET version = :version", soci::use(version, "version");
 }
 
 auto database_updater::run_queries(const string &filename) -> void {

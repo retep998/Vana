@@ -68,7 +68,7 @@ auto key_maps::load(game_player_id char_id) -> void {
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT k.* "
-		<< "FROM " << db.make_table("keymap") << " k "
+		<< "FROM " << db.make_table(vana::table::keymap) << " k "
 		<< "WHERE k.character_id = :char",
 		soci::use(char_id, "char"));
 
@@ -91,12 +91,12 @@ auto key_maps::save(game_player_id char_id) -> void {
 	auto &sql = db.get_session();
 
 	sql.once
-		<< "DELETE FROM " << db.make_table("keymap") << " "
+		<< "DELETE FROM " << db.make_table(vana::table::keymap) << " "
 		<< "WHERE character_id = :char",
 		soci::use(char_id, "char");
 
 	soci::statement st = (sql.prepare
-		<< "INSERT INTO " << db.make_table("keymap") << " "
+		<< "INSERT INTO " << db.make_table(vana::table::keymap) << " "
 		<< "VALUES (:char, :key, :type, :action)",
 		soci::use(char_id, "char"),
 		soci::use(i, "key"),

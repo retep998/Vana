@@ -44,9 +44,9 @@ auto player_quests::save() -> void {
 		game_player_id char_id = player->get_id();
 		game_quest_id quest_id = 0;
 
-		sql.once << "DELETE FROM " << db.make_table("active_quests") << " WHERE character_id = :char",
+		sql.once << "DELETE FROM " << db.make_table(vana::table::active_quests) << " WHERE character_id = :char",
 			soci::use(char_id, "char");
-		sql.once << "DELETE FROM " << db.make_table("completed_quests") << " WHERE character_id = :char",
+		sql.once << "DELETE FROM " << db.make_table(vana::table::completed_quests) << " WHERE character_id = :char",
 			soci::use(char_id, "char");
 
 		if (m_quests.size() > 0) {
@@ -58,14 +58,14 @@ auto player_quests::save() -> void {
 			data = "";
 
 			soci::statement st = (sql.prepare
-				<< "INSERT INTO " << db.make_table("active_quests") << " (character_id, quest_id, data) "
+				<< "INSERT INTO " << db.make_table(vana::table::active_quests) << " (character_id, quest_id, data) "
 				<< "VALUES (:char, :quest, :data)",
 				soci::use(char_id, "char"),
 				soci::use(quest_id, "quest"),
 				soci::use(data, "data"));
 
 			soci::statement st_mobs = (sql.prepare
-				<< "INSERT INTO " << db.make_table("active_quests_mobs") << " (active_quest_id, mob_id, quantity_killed) "
+				<< "INSERT INTO " << db.make_table(vana::table::active_quests_mobs) << " (active_quest_id, mob_id, quantity_killed) "
 				<< "VALUES (:id, :mob, :killed)",
 				soci::use(id, "id"),
 				soci::use(mob_id, "mob"),
@@ -97,7 +97,7 @@ auto player_quests::save() -> void {
 			int64_t time = 0;
 
 			soci::statement st = (sql.prepare
-				<< "INSERT INTO " << db.make_table("completed_quests") << " "
+				<< "INSERT INTO " << db.make_table(vana::table::completed_quests) << " "
 				<< "VALUES (:char, :quest, :time)",
 				soci::use(char_id, "char"),
 				soci::use(quest_id, "quest"),
@@ -125,8 +125,8 @@ auto player_quests::load() -> void {
 
 		soci::rowset<> rs = (sql.prepare
 			<< "SELECT a.quest_id, am.mob_id, am.quantity_killed, a.data "
-			<< "FROM " << db.make_table("active_quests") << " a "
-			<< "LEFT OUTER JOIN " << db.make_table("active_quests_mobs") << " am ON am.active_quest_id = a.id "
+			<< "FROM " << db.make_table(vana::table::active_quests) << " a "
+			<< "LEFT OUTER JOIN " << db.make_table(vana::table::active_quests_mobs) << " am ON am.active_quest_id = a.id "
 			<< "WHERE a.character_id = :char ORDER BY a.quest_id ASC",
 			soci::use(char_id, "char"));
 
@@ -157,7 +157,7 @@ auto player_quests::load() -> void {
 			m_quests[previous] = cur_quest;
 		}
 
-		rs = (sql.prepare << "SELECT c.quest_id, c.end_time FROM " << db.make_table("completed_quests") << " c WHERE c.character_id = :char",
+		rs = (sql.prepare << "SELECT c.quest_id, c.end_time FROM " << db.make_table(vana::table::completed_quests) << " c WHERE c.character_id = :char",
 			soci::use(char_id, "char"));
 
 		for (const auto &row : rs) {

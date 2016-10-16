@@ -38,12 +38,12 @@ auto player_mounts::save() -> void {
 		uint8_t tiredness = 0;
 		uint8_t level = 0;
 
-		sql.once << "DELETE FROM " << db.make_table("mounts") << " WHERE character_id = :char",
+		sql.once << "DELETE FROM " << db.make_table(vana::table::mounts) << " WHERE character_id = :char",
 			soci::use(char_id, "char");
 
 		if (m_mounts.size() > 0) {
 			soci::statement st = (sql.prepare
-				<< "INSERT INTO " << db.make_table("mounts") << " "
+				<< "INSERT INTO " << db.make_table(vana::table::mounts) << " "
 				<< "VALUES (:char, :item, :exp, :level, :tiredness) ",
 				soci::use(char_id, "char"),
 				soci::use(item_id, "item"),
@@ -70,7 +70,7 @@ auto player_mounts::load() -> void {
 	if (auto player = m_player.lock()) {
 		game_player_id char_id = player->get_id();
 
-		soci::rowset<> rs = (sql.prepare << "SELECT m.* FROM " << db.make_table("mounts") << " m WHERE m.character_id = :char ",
+		soci::rowset<> rs = (sql.prepare << "SELECT m.* FROM " << db.make_table(vana::table::mounts) << " m WHERE m.character_id = :char ",
 			soci::use(char_id, "char"));
 
 		for (const auto &row : rs) {

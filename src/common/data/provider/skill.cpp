@@ -47,7 +47,7 @@ auto skill::load_player_skills() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("skill_player_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::skill_player_data));
 
 	for (const auto &row : rs) {
 		game_skill_id skill_id = row.get<game_skill_id>("skillid");
@@ -60,7 +60,7 @@ auto skill::load_player_skills() -> void {
 auto skill::load_player_skill_levels() -> void {
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("skill_player_level_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::skill_player_level_data));
 
 	for (const auto &row : rs) {
 		data::type::skill_level_info info;
@@ -141,7 +141,7 @@ auto skill::load_mob_skills() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("skill_mob_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::skill_mob_data));
 
 	for (const auto &row : rs) {
 		data::type::mob_skill_level_info mob_level;
@@ -184,7 +184,7 @@ auto skill::load_mob_skills() -> void {
 auto skill::load_mob_summons() -> void {
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("skill_mob_summons"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::skill_mob_summons));
 
 	for (const auto &row : rs) {
 		game_mob_skill_level level = row.get<game_mob_skill_level>("level");
@@ -215,7 +215,7 @@ auto skill::load_banish_data() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("skill_mob_banish_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::skill_mob_banish_data));
 
 	for (const auto &row : rs) {
 		data::type::banish_field_info banish;
@@ -233,7 +233,7 @@ auto skill::load_morphs() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("morph_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::morph_data));
 
 	for (const auto &row : rs) {
 		data::type::morph_info morph;

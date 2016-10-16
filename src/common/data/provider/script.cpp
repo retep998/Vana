@@ -43,7 +43,7 @@ auto script::load_data() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("scripts"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::scripts));
 
 	for (const auto &row : rs) {
 		int32_t object_id = row.get<int32_t>("objectid");

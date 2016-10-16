@@ -180,7 +180,7 @@ auto map_functions::list_portals(ref_ptr<player> player, const game_chat &args) 
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT mp.id, mp.label, mp.destination, mp.destination_label, mp.script, mp.x_pos, mp.y_pos "
-		<< "FROM " << db.make_table("map_portals") << " mp "
+		<< "FROM " << db.make_table(vana::data::table::map_portals) << " mp "
 		<< "WHERE mp.mapid = :map_id",
 		soci::use(map_id, "map_id"));
 
@@ -314,8 +314,8 @@ auto map_functions::list_reactors(ref_ptr<player> player, const game_chat &args)
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT ml.lifeid, sc.script, ml.x_pos, ml.y_pos, ml.foothold "
-		<< "FROM " << db.make_table("map_life") << " ml "
-		<< "LEFT OUTER JOIN " << db.make_table("scripts") << " sc ON sc.objectid = ml.lifeid AND sc.script_type = 'reactor' "
+		<< "FROM " << db.make_table(vana::data::table::map_life) << " ml "
+		<< "LEFT OUTER JOIN " << db.make_table(vana::data::table::scripts) << " sc ON sc.objectid = ml.lifeid AND sc.script_type = 'reactor' "
 		<< "WHERE ml.life_type = 'reactor' AND ml.mapid = :mapId",
 		soci::use(map_id, "map_id"));
 
@@ -370,9 +370,9 @@ auto map_functions::list_npcs(ref_ptr<player> player, const game_chat &args) -> 
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT ml.lifeid, st.label, sc.script, ml.x_pos, ml.y_pos, ml.foothold "
-		<< "FROM " << db.make_table("map_life") << " ml "
-		<< "INNER JOIN " << db.make_table("strings") << " st ON st.objectid = ml.lifeid AND st.object_type = 'npc' "
-		<< "LEFT OUTER JOIN " << db.make_table("scripts") << " sc ON sc.objectid = ml.lifeid AND sc.script_type = 'npc' "
+		<< "FROM " << db.make_table(vana::data::table::map_life) << " ml "
+		<< "INNER JOIN " << db.make_table(vana::data::table::strings) << " st ON st.objectid = ml.lifeid AND st.object_type = 'npc' "
+		<< "LEFT OUTER JOIN " << db.make_table(vana::data::table::scripts) << " sc ON sc.objectid = ml.lifeid AND sc.script_type = 'npc' "
 		<< "WHERE ml.life_type = 'npc' AND ml.mapid = :mapId",
 		soci::use(map_id, "map_id"));
 
@@ -459,7 +459,7 @@ auto map_functions::music(ref_ptr<player> player, const game_chat &args) -> chat
 		else {
 			sql
 				<< "SELECT m.default_bgm "
-				<< "FROM " << db.make_table("map_data") << " m "
+				<< "FROM " << db.make_table(vana::data::table::map_data) << " m "
 				<< "WHERE m.default_bgm = :q "
 				<< "LIMIT 1",
 				soci::use(args, "q"),

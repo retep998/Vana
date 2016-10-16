@@ -44,7 +44,7 @@ auto valid_char::load_forbidden_names() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("character_forbidden_names"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::character_forbidden_names));
 
 	for (const auto &row : rs) {
 		m_forbidden_names.push_back(row.get<string>("forbidden_name"));
@@ -57,7 +57,7 @@ auto valid_char::load_creation_items() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("character_creation_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::character_creation_data));
 
 	for (const auto &row : rs) {
 		game_gender_id gender_id = game_logic_utilities::get_gender_id(row.get<string>("gender"));

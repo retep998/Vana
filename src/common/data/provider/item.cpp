@@ -59,8 +59,8 @@ auto item::load_items() -> void {
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT id.*, s.label "
-		<< "FROM " << db.make_table("item_data") << " id "
-		<< "LEFT JOIN " << db.make_table("strings") << " s ON id.itemid = s.objectid AND s.object_type = :item",
+		<< "FROM " << db.make_table(vana::data::table::item_data) << " id "
+		<< "LEFT JOIN " << db.make_table(vana::data::table::strings) << " s ON id.itemid = s.objectid AND s.object_type = :item",
 		soci::use(string{"item"}, "item"));
 
 	for (const auto &row : rs) {
@@ -97,7 +97,7 @@ auto item::load_scrolls() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_scroll_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_scroll_data));
 
 	for (const auto &row : rs) {
 		data::type::scroll_info info;
@@ -135,7 +135,7 @@ auto item::load_consumes(buff &provider) -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_random_morphs"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_random_morphs));
 
 	hash_map<game_item_id, vector<data::type::morph_chance_info>> morph_data;
 	for (const auto &row : rs) {
@@ -147,7 +147,7 @@ auto item::load_consumes(buff &provider) -> void {
 		morph_data[item_id].push_back(info);
 	}
 
-	rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_consume_data"));
+	rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_consume_data));
 
 	for (const auto &row : rs) {
 		data::type::consume_info info;
@@ -238,7 +238,7 @@ auto item::load_consumes(buff &provider) -> void {
 auto item::load_map_ranges() -> void {
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_monster_card_map_ranges"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_monster_card_map_ranges));
 
 	for (const auto &row : rs) {
 		data::type::card_map_range_info info;
@@ -264,7 +264,7 @@ auto item::load_monster_card_data() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("monster_card_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::monster_card_data));
 
 	for (const auto &row : rs) {
 		game_item_id card_id = row.get<game_item_id>("cardid");
@@ -279,7 +279,7 @@ auto item::load_item_skills() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_skills"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_skills));
 
 	for (const auto &row : rs) {
 		data::type::skillbook_info info;
@@ -311,7 +311,7 @@ auto item::load_summon_bags() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_summons"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_summons));
 
 	for (const auto &row : rs) {
 		data::type::summon_bag_info info;
@@ -341,7 +341,7 @@ auto item::load_item_rewards() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_reward_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_reward_data));
 
 	for (const auto &row : rs) {
 		data::type::item_reward_info info;
@@ -373,7 +373,7 @@ auto item::load_pets() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_pet_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_pet_data));
 
 	for (const auto &row : rs) {
 		data::type::pet_info info;
@@ -399,7 +399,7 @@ auto item::load_pet_interactions() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_pet_interactions"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_pet_interactions));
 
 	for (const auto &row : rs) {
 		data::type::pet_interact_info info;

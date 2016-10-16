@@ -36,19 +36,19 @@ auto check_mcdb_version(abstract_server *server) -> result {
 	try {
 		auto &db = database::get_data_db();
 		auto &sql = db.get_session();
-		if (!db.table_exists("mcdb_info")) {
-			server->log(log_type::critical_error, "mcdb_info does not exist.");
+		if (!db.table_exists(vana::data::table::mcdb_info)) {
+			server->log(log_type::critical_error, vana::data::table::mcdb_info + " does not exist.");
 			exit(exit_code::mcdb_error);
 			return result::failure;
 		}
 
 		sql.once
 			<< "SELECT * "
-			<< "FROM " << db.make_table("mcdb_info"),
+			<< "FROM " << db.make_table(vana::data::table::mcdb_info),
 			soci::into(row);
 
 		if (!sql.got_data()) {
-			server->log(log_type::critical_error, "mcdb_info is empty.");
+			server->log(log_type::critical_error, vana::data::table::mcdb_info + " is empty.");
 			exit(exit_code::mcdb_error);
 			return result::failure;
 		}
@@ -145,8 +145,8 @@ auto set_users_offline(abstract_server *server, int32_t online_id) -> void {
 	auto &db = database::get_char_db();
 	auto &sql = db.get_session();
 	sql.once
-		<< "UPDATE " << db.make_table("accounts") << " u "
-		<< "INNER JOIN " << db.make_table("characters") << " c ON u.account_id = c.account_id "
+		<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
+		<< "INNER JOIN " << db.make_table(vana::table::characters) << " c ON u.account_id = c.account_id "
 		<< "SET "
 		<< "	u.online = 0,"
 		<< "	c.online = 0 "

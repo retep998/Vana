@@ -43,7 +43,7 @@ auto map::load_continents() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("map_continent_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::map_continent_data));
 
 	for (const auto &row : rs) {
 		map_cluster = row.get<int8_t>("map_cluster");
@@ -67,7 +67,7 @@ auto map::load_maps() -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("map_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::map_data));
 
 	for (const auto &row : rs) {
 		auto info = make_ref_ptr<data::type::map_info>();
@@ -187,7 +187,7 @@ auto map::load_map(data::type::map_info &map) -> void {
 auto map::load_seats(data::type::map_link_info &map) -> void {
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("map_seats") << " WHERE mapid = :map",
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::map_seats) << " WHERE mapid = :map",
 		soci::use(map.id, "map"));
 
 	for (const auto &row : rs) {
@@ -203,7 +203,7 @@ auto map::load_seats(data::type::map_link_info &map) -> void {
 auto map::load_portals(data::type::map_link_info &map) -> void {
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("map_portals") << " WHERE mapid = :map",
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::map_portals) << " WHERE mapid = :map",
 		soci::use(map.id, "map"));
 
 	for (const auto &row : rs) {
@@ -232,7 +232,7 @@ auto map::load_map_life(data::type::map_link_info &map) -> void {
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("map_life") << " WHERE mapid = :map",
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::map_life) << " WHERE mapid = :map",
 		soci::use(map.id, "map"));
 
 	for (const auto &row : rs) {
@@ -272,7 +272,7 @@ auto map::load_map_life(data::type::map_link_info &map) -> void {
 auto map::load_footholds(data::type::map_link_info &map) -> void {
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("map_footholds") << " WHERE mapid = :map",
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::map_footholds) << " WHERE mapid = :map",
 		soci::use(map.id, "map"));
 
 	for (const auto &row : rs) {
@@ -297,7 +297,7 @@ auto map::load_footholds(data::type::map_link_info &map) -> void {
 auto map::load_map_time_mob(data::type::map_link_info &map) -> void {
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("map_time_mob") << " WHERE mapid = :map",
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::map_time_mob) << " WHERE mapid = :map",
 		soci::use(map.id, "map"));
 
 	for (const auto &row : rs) {

@@ -50,7 +50,7 @@ auto equip::load_equips() -> void {
 	// We just use the string and send it to a translation function
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT *, REPLACE(FORMAT(equip_slots + 0, 0), \",\", \"\") AS equip_slot_flags "
-		<< "FROM " << db.make_table("item_equip_data"));
+		<< "FROM " << db.make_table(vana::data::table::item_equip_data));
 
 	for (const auto &row : rs) {
 		data::type::equip_info equip;

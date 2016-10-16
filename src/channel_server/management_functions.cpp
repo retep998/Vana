@@ -571,8 +571,8 @@ auto management_functions::ban(ref_ptr<player> player, const game_chat &args) ->
 		auto &db = database::get_char_db();
 		auto &sql = db.get_session();
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << db.make_table("accounts") << " u "
-			<< "INNER JOIN " << db.make_table("characters") << " c ON u.account_id = c.account_id "
+			<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
+			<< "INNER JOIN " << db.make_table(vana::table::characters) << " c ON u.account_id = c.account_id "
 			<< "SET "
 			<< "	u.banned = 1, "
 			<< "	u.ban_expire = :expire, "
@@ -617,8 +617,8 @@ auto management_functions::temp_ban(ref_ptr<player> player, const game_chat &arg
 		auto &db = database::get_char_db();
 		auto &sql = db.get_session();
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << db.make_table("accounts") << " u "
-			<< "INNER JOIN " << db.make_table("characters") << " c ON u.account_id = c.account_id "
+			<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
+			<< "INNER JOIN " << db.make_table(vana::table::characters) << " c ON u.account_id = c.account_id "
 			<< "SET "
 			<< "	u.banned = 1, "
 			<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL :expire DAY), "
@@ -664,7 +664,7 @@ auto management_functions::ip_ban(ref_ptr<player> player, const game_chat &args)
 			// IP ban
 			auto &db = database::get_char_db();
 			auto &sql = db.get_session();
-			soci::statement st = (sql.prepare << "INSERT INTO " << db.make_table("ip_bans") << " (ip) VALUES (:ip)",
+			soci::statement st = (sql.prepare << "INSERT INTO " << db.make_table(vana::table::ip_bans) << " (ip) VALUES (:ip)",
 				soci::use(target_ip, "ip"));
 
 			st.execute();
@@ -698,8 +698,8 @@ auto management_functions::unban(ref_ptr<player> player, const game_chat &args) 
 		auto &db = database::get_char_db();
 		auto &sql = db.get_session();
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << db.make_table("accounts") << " u "
-			<< "INNER JOIN " << db.make_table("characters") << " c ON u.account_id = c.account_id "
+			<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
+			<< "INNER JOIN " << db.make_table(vana::table::characters) << " c ON u.account_id = c.account_id "
 			<< "SET "
 			<< "	u.banned = 0, "
 			<< "	u.ban_reason = NULL, "
