@@ -205,7 +205,8 @@ auto inventory_handler::use_skillbook(ref_ptr<player> player, packet_reader &rea
 	}
 
 	if (skill_id != 0) {
-		player->send_map(packets::inventory::use_skillbook(player->get_id(), skill_id, new_max_level, true, succeed));
+		bool is_mastery_book = game_logic_utilities::get_item_type(item_id) == constant::item::type::item_mastery_book;
+		player->send_map(packets::inventory::use_skillbook(player->get_id(), is_mastery_book, skill_id, new_max_level, true, succeed));
 	}
 }
 

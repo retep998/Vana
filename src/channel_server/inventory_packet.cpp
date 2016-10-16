@@ -105,18 +105,20 @@ SPLIT_PACKET_IMPL(send_chalkboard_update, game_player_id player_id, const string
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(use_skillbook, game_player_id player_id, game_skill_id skill_id, int32_t new_max_level, bool use, bool succeed) {
+SPLIT_PACKET_IMPL(use_skillbook, game_player_id player_id, bool is_mastery_book, game_skill_id skill_id, int32_t new_max_level, bool use, bool succeed) {
 	split_packet_builder builder;
 	builder.player
 		.add<packet_header>(SMSG_SKILLBOOK)
 		.add<game_player_id>(player_id)
-		.add<int8_t>(1) // Number of skills? Maybe just padding or random boolean
+		.add<bool>(is_mastery_book)
 		.add<game_skill_id>(skill_id)
 		.add<int32_t>(new_max_level)
 		.add<bool>(use)
 		.add<bool>(succeed);
 
-	builder.map.add_buffer(builder.player);
+	if (use) {
+		builder.map.add_buffer(builder.player);
+	}
 	return builder;
 }
 

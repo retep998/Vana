@@ -59,6 +59,7 @@ namespace vana {
 					mount = 190,
 					item_arrow = 206,
 					item_star = 207,
+					item_mastery_book = 229,
 					item_bullet = 233,
 					item_monster_card = 238,
 					weather_cash = 512,
