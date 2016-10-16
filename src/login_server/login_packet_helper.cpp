@@ -55,11 +55,11 @@ PACKET_IMPL(add_character, const character &charc) {
 		.add<int32_t>(0) // Gachapon EXP
 		.add<game_map_id>(charc.map)
 		.add<int8_t>(charc.pos)
-		.add<int32_t>(0) // Unknown int32 added in .62
+		.unk<int32_t>() // Added in .62
 		.add<game_gender_id>(charc.gender)
 		.add<game_skin_id>(charc.skin)
 		.add<game_face_id>(charc.face)
-		.add<int8_t>(1)
+		.unk<int8_t>(1)
 		.add<game_hair_id>(charc.hair);
 
 	game_item_id equips[constant::inventory::equipped_slots][2] = {0};
