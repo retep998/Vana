@@ -37,7 +37,7 @@ auto login_server_connect_handler::connect(ref_ptr<login_server_session> session
 		world_server::get_instance().established_login_connection(world_id, port, conf);
 	}
 	else {
-		world_server::get_instance().log(log_type::critical_error, "No world to handle");
+		world_server::get_instance().log(vana::log::type::critical_error, "No world to handle");
 		exit(exit_code::server_connection_error);
 	}
 }

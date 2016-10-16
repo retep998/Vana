@@ -127,7 +127,7 @@ auto worlds::add_world_server(ref_ptr<login_server_accepted_session> session) ->
 	auto &server = login_server::get_instance();
 	if (world_value == nullptr) {
 		session->send(packets::interserver::no_more_world());
-		server.log(log_type::error, "No more worlds to assign.");
+		server.log(vana::log::type::error, "No more worlds to assign.");
 		session->disconnect();
 		return {};
 	}
@@ -144,7 +144,7 @@ auto worlds::add_world_server(ref_ptr<login_server_accepted_session> session) ->
 
 	session->send(packets::interserver::connect(world_value));
 
-	server.log(log_type::server_connect, [&](out_stream &log) {
+	server.log(vana::log::type::server_connect, [&](out_stream &log) {
 		log << "World " << static_cast<int32_t>(cached);
 	});
 
@@ -163,7 +163,7 @@ auto worlds::add_channel_server(ref_ptr<login_server_accepted_session> session) 
 
 	if (valid_world == nullptr) {
 		session->send(packets::interserver::connect_channel({}, {}, {}));
-		login_server::get_instance().log(log_type::error, "No more channels to assign.");
+		login_server::get_instance().log(vana::log::type::error, "No more channels to assign.");
 		session->disconnect();
 		return {};
 	}

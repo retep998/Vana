@@ -77,7 +77,7 @@ auto script::get_script(abstract_server *server, int32_t object_id, data::type::
 					return s;
 				}
 #ifdef DEBUG
-				server->log(log_type::debug_error, "Missing script '" + s + "'");
+				server->log(vana::log::type::debug_error, "Missing script '" + s + "'");
 #endif
 				break;
 			}
@@ -103,7 +103,7 @@ auto script::get_quest_script(abstract_server *server, game_quest_id quest_id, i
 					return s;
 				}
 #ifdef DEBUG
-				server->log(log_type::debug_error, "Missing quest script '" + s + "'");
+				server->log(vana::log::type::debug_error, "Missing quest script '" + s + "'");
 #endif
 				break;
 			}

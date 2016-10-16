@@ -336,7 +336,7 @@ auto player_buddy_list::remove_pending_buddy(game_player_id id, bool accepted) -
 		buddy_invite invite = m_pending_buddies.front();
 		if (invite.id != id) {
 			// Hacking
-			channel_server::get_instance().log(log_type::warning, [&](out_stream &log) {
+			channel_server::get_instance().log(vana::log::type::warning, [&](out_stream &log) {
 				log << "Player tried to accept a player with player ID " << id
 					<< " but the sent player ID was " << invite.id
 					<< ". Player: " << player->get_name();

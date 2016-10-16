@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/connection_manager.hpp"
 #include "common/decoder.hpp"
 #include "common/exit_codes.hpp"
-#include "common/logger.hpp"
+#include "common/log/base_logger.hpp"
 #include "common/packet_builder.hpp"
 #include "common/packet_handler.hpp"
 #include "common/packet_reader.hpp"
@@ -130,7 +130,7 @@ auto session::disconnect() -> void {
 	asio::error_code ec;
 	m_socket.close(ec);
 	if (ec) {
-		m_manager.get_server()->log(log_type::error, [&](out_stream &str) {
+		m_manager.get_server()->log(vana::log::type::error, [&](out_stream &str) {
 			str << "FAILURE TO CLOSE SESSION (" << ec.value() << "): " << ec.message();
 		});
 	}

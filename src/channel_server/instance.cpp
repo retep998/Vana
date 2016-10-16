@@ -46,7 +46,7 @@ instance::instance(const string &name, game_map_id map, game_player_id player_id
 	m_lua_instance = make_owned_ptr<lua::lua_instance>(name, player_id);
 
 	if (player_id != 0) {
-		channel_server::get_instance().log(log_type::instance_begin, [&](out_stream &log) { log << name << " started by player ID " << player_id; });
+		channel_server::get_instance().log(vana::log::type::instance_begin, [&](out_stream &log) { log << name << " started by player ID " << player_id; });
 	}
 	set_instance_timer(time, true);
 }

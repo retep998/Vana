@@ -17,15 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/logger.hpp"
+#include "common/log/base_logger.hpp"
 #include <string>
 
 namespace vana {
-	// Default logger/console
-	class console_logger : public base_logger {
-	public:
-		console_logger(const string &filename, const string &format, const string &time_format, server_type type, size_t buffer_size = 10);
+	namespace log {
+		// Default logger/console
+		class console_logger : public base_logger {
+		public:
+			console_logger(const string &filename, const string &format, const string &time_format, server_type type, size_t buffer_size = 10);
 
-		auto log(log_type type, const opt_string &identifier, const string &message) -> void override;
-	};
+			auto log(vana::log::type type, const opt_string &identifier, const string &message) -> void override;
+		};
+	}
 }

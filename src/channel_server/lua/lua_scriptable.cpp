@@ -394,7 +394,7 @@ auto lua_scriptable::handle_error(const string &filename, const string &error) -
 	auto &channel = channel_server::get_instance();
 	auto player = channel.get_player_data_provider().get_player(m_player_id);
 
-	channel.log(log_type::script_log, "script error in " + filename + ": " + error);
+	channel.log(vana::log::type::script_log, "script error in " + filename + ": " + error);
 	if (player == nullptr) {
 		return;
 	}
@@ -509,7 +509,7 @@ auto lua_exports::get_random_number(lua_State *lua_vm) -> lua_return {
 
 auto lua_exports::log(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
-	channel_server::get_instance().log(log_type::script_log, env.get<string>(lua_vm, 1));
+	channel_server::get_instance().log(vana::log::type::script_log, env.get<string>(lua_vm, 1));
 	return 0;
 }
 

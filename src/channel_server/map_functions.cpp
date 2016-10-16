@@ -428,7 +428,7 @@ auto map_functions::map_dimensions(ref_ptr<player> player, const game_chat &args
 
 auto map_functions::zakum(ref_ptr<player> player, const game_chat &args) -> chat_result {
 	player->get_map()->spawn_zakum(player->get_pos());
-	channel_server::get_instance().log(log_type::gm_command, [&](out_stream &log) {
+	channel_server::get_instance().log(vana::log::type::gm_command, [&](out_stream &log) {
 		log << "GM " << player->get_name()
 			<< " spawned Zakum on map " << player->get_map_id();
 	});
@@ -437,7 +437,7 @@ auto map_functions::zakum(ref_ptr<player> player, const game_chat &args) -> chat
 
 auto map_functions::horntail(ref_ptr<player> player, const game_chat &args) -> chat_result {
 	player->get_map()->spawn_mob(constant::mob::summon_horntail, player->get_pos());
-	channel_server::get_instance().log(log_type::gm_command, [&](out_stream &log) {
+	channel_server::get_instance().log(vana::log::type::gm_command, [&](out_stream &log) {
 		log << "GM " << player->get_name()
 			<< " spawned Horntail on map " << player->get_map_id();
 	});

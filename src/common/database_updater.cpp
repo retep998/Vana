@@ -116,7 +116,7 @@ auto database_updater::load_database_info() -> void {
 auto database_updater::load_sql_files() const -> pair<size_t, ord_map<int32_t, string>> {
 	fs::path full_path = fs::system_complete(fs::path{"sql"});
 	if (!fs::exists(full_path)) {
-		m_server->log(log_type::critical_error, "SQL files not found: " + full_path.generic_string());
+		m_server->log(vana::log::type::critical_error, "SQL files not found: " + full_path.generic_string());
 		exit(exit_code::sql_directory_not_found);
 		return make_pair(static_cast<size_t>(0), ord_map<int32_t, string>{});
 	}
@@ -177,7 +177,7 @@ auto database_updater::run_queries(const string &filename) -> void {
 			sql.once << query;
 		}
 		catch (soci::soci_error &e) {
-			m_server->log(log_type::critical_error, [&](out_stream &str) {
+			m_server->log(vana::log::type::critical_error, [&](out_stream &str) {
 				str <<
 					"QUERY ERROR: " << e.what() << std::endl <<
 					"File: " << filename << std::endl;

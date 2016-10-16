@@ -91,7 +91,7 @@ auto world_server::on_disconnect_from_login() -> void {
 
 	if (is_connected()) {
 		m_world_id = -1;
-		log(log_type::server_disconnect, "Disconnected from the LoginServer. Shutting down...");
+		log(vana::log::type::server_disconnect, "Disconnected from the LoginServer. Shutting down...");
 		get_channels().disconnect();
 		exit(exit_code::server_disconnection);
 	}
@@ -106,7 +106,7 @@ auto world_server::rehash_config(const config::world &config) -> void {
 auto world_server::established_login_connection(game_world_id world_id, connection_port port, const config::world &conf) -> void {
 	m_world_id = world_id;
 
-	log(log_type::server_connect, [&](out_stream &str) {
+	log(vana::log::type::server_connect, [&](out_stream &str) {
 		str << "Handling world " << static_cast<int32_t>(world_id);
 	});
 

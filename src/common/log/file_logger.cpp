@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sstream>
 
 namespace vana {
+namespace log {
 
 #ifdef WIN32
 namespace fs = std::tr2::sys;
@@ -47,7 +48,7 @@ file_logger::~file_logger() {
 	flush();
 }
 
-auto file_logger::log(log_type type, const opt_string &identifier, const string &message) -> void {
+auto file_logger::log(vana::log::type type, const opt_string &identifier, const string &message) -> void {
 	file_log file;
 	file.message = base_logger::format_log(get_format(), type, this, identifier, message);
 	file.file = base_logger::format_log(get_filename_format(), type, this, identifier, message);
@@ -71,4 +72,5 @@ auto file_logger::flush() -> void {
 	m_buffer.clear();
 }
 
+}
 }

@@ -50,7 +50,7 @@ auto world_server_session_handler::connect(ref_ptr<world_server_session> session
 		channel_server::get_instance().established_world_connection(channel, port, conf);
 	}
 	else {
-		channel_server::get_instance().log(log_type::critical_error, "no channel to handle");
+		channel_server::get_instance().log(vana::log::type::critical_error, "no channel to handle");
 		channel_server::get_instance().shutdown();
 	}
 }

@@ -17,27 +17,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/logger.hpp"
+#include "common/log/base_logger.hpp"
 #include <string>
 #include <vector>
 
 namespace vana {
-	struct file_log {
-		string message;
-		string file;
-	};
+	namespace log {
+		struct sql_log {
+			type type;
+			time_t time;
+			string message;
+			opt_string identifier;
+		};
 
-	class file_logger : public base_logger {
-	public:
-		file_logger(const string &filename, const string &format, const string &time_format, server_type type, size_t buffer_size = 10);
-		~file_logger();
+		class sql_logger : public base_logger {
+		public:
+			sql_logger(const string &filename, const string &format, const string &time_format, server_type type, size_t buffer_size = 10);
+			~sql_logger();
 
-		auto log(log_type type, const opt_string &identifier, const string &message) -> void override;
-		auto flush() -> void;
-		auto get_filename_format() const -> const string & { return m_filename_format; }
-	private:
-		string m_filename_format;
-		size_t m_buffer_size;
-		vector<file_log> m_buffer;
-	};
+			auto log(vana::log::type type, const opt_string &identifier, const string &message) -> void override;
+			auto flush() -> void;
+		private:
+			size_t m_buffer_size;
+			vector<sql_log> m_buffer;
+		};
+	}
 }

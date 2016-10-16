@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "logger.hpp"
+#include "base_logger.hpp"
 #include "common/server_type.hpp"
 #include "common/time_utilities.hpp"
 #include <iomanip>
@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 
 namespace vana {
+namespace log {
 
 base_logger::base_logger(const string &filename, const string &format, const string &time_format, server_type type, size_t buffer_size) :
 	m_format{format},
@@ -32,11 +33,11 @@ base_logger::base_logger(const string &filename, const string &format, const str
 {
 }
 
-auto base_logger::format_log(const string &format, log_type type, base_logger *logger, const opt_string &id, const string &message) -> string {
+auto base_logger::format_log(const string &format, vana::log::type type, base_logger *logger, const opt_string &id, const string &message) -> string {
 	return format_log(format, type, logger, time(nullptr), id, message);
 }
 
-auto base_logger::format_log(const string &format, log_type type, base_logger *logger, time_t time, const opt_string &id, const string &message) -> string {
+auto base_logger::format_log(const string &format, vana::log::type type, base_logger *logger, time_t time, const opt_string &id, const string &message) -> string {
 	string ret = format;
 	replacement_args args{type, logger, time, id, message};
 	static log_replacements replacements;
@@ -53,7 +54,7 @@ auto base_logger::format_log(const string &format, log_type type, base_logger *l
 	return ret;
 }
 
-base_logger::replacement_args::replacement_args(log_type type, base_logger *logger, time_t time, const opt_string &id, const string &msg) :
+base_logger::replacement_args::replacement_args(vana::log::type type, base_logger *logger, time_t time, const opt_string &id, const string &msg) :
 	type{type},
 	logger{logger},
 	time{time},
@@ -155,36 +156,36 @@ auto base_logger::log_replacements::add(const string &key, func func) -> void {
 	m_replacements.emplace(key, func);
 }
 
-auto base_logger::log_replacements::get_level_string(log_type type) -> string {
+auto base_logger::log_replacements::get_level_string(vana::log::type type) -> string {
 	switch (type) {
-		case log_type::info: return "INFO";
-		case log_type::warning: return "WARNING";
-		case log_type::debug: return "DEBUG";
-		case log_type::error: return "ERROR";
-		case log_type::debug_error: return "DEBUG ERROR";
-		case log_type::critical_error: return "CRITICAL ERROR";
-		case log_type::hacking: return "HACKING";
-		case log_type::server_connect: return "SERVER CONNECT";
-		case log_type::server_disconnect: return "SERVER DISCONNECT";
-		case log_type::server_auth_failure: return "SERVER AUTH FAILURE";
-		case log_type::login: return "LOGIN";
-		case log_type::login_auth_failure: return "USER AUTH FAILURE";
-		case log_type::logout: return "LOGOUT";
-		case log_type::client_error: return "CLIENT ERROR";
-		case log_type::gm_command: return "GM COMMAND";
-		case log_type::admin_command: return "ADMIN COMMAND";
-		case log_type::boss_kill: return "BOSS KILL";
-		case log_type::trade: return "TRADE";
-		case log_type::shop_transaction: return "SHOP";
-		case log_type::storage_transaction: return "STORAGE";
-		case log_type::instance_begin: return "INSTANCE";
-		case log_type::drop: return "DROP";
-		case log_type::chat: return "CHAT";
-		case log_type::whisper: return "WHISPER";
-		case log_type::malformed_packet: return "MALFORMED PACKET";
-		case log_type::script_log: return "SCRIPT";
-		case log_type::ban: return "BAN";
-		case log_type::unban: return "UNBAN";
+		case vana::log::type::info: return "INFO";
+		case vana::log::type::warning: return "WARNING";
+		case vana::log::type::debug: return "DEBUG";
+		case vana::log::type::error: return "ERROR";
+		case vana::log::type::debug_error: return "DEBUG ERROR";
+		case vana::log::type::critical_error: return "CRITICAL ERROR";
+		case vana::log::type::hacking: return "HACKING";
+		case vana::log::type::server_connect: return "SERVER CONNECT";
+		case vana::log::type::server_disconnect: return "SERVER DISCONNECT";
+		case vana::log::type::server_auth_failure: return "SERVER AUTH FAILURE";
+		case vana::log::type::login: return "LOGIN";
+		case vana::log::type::login_auth_failure: return "USER AUTH FAILURE";
+		case vana::log::type::logout: return "LOGOUT";
+		case vana::log::type::client_error: return "CLIENT ERROR";
+		case vana::log::type::gm_command: return "GM COMMAND";
+		case vana::log::type::admin_command: return "ADMIN COMMAND";
+		case vana::log::type::boss_kill: return "BOSS KILL";
+		case vana::log::type::trade: return "TRADE";
+		case vana::log::type::shop_transaction: return "SHOP";
+		case vana::log::type::storage_transaction: return "STORAGE";
+		case vana::log::type::instance_begin: return "INSTANCE";
+		case vana::log::type::drop: return "DROP";
+		case vana::log::type::chat: return "CHAT";
+		case vana::log::type::whisper: return "WHISPER";
+		case vana::log::type::malformed_packet: return "MALFORMED PACKET";
+		case vana::log::type::script_log: return "SCRIPT";
+		case vana::log::type::ban: return "BAN";
+		case vana::log::type::unban: return "UNBAN";
 	}
 
 	THROW_CODE_EXCEPTION(not_implemented_exception, "LogType");
@@ -201,4 +202,5 @@ auto base_logger::log_replacements::get_server_type_string(server_type type) -> 
 	THROW_CODE_EXCEPTION(not_implemented_exception, "ServerType");
 }
 
+}
 }

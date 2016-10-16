@@ -142,7 +142,7 @@ auto login::login_user(ref_ptr<user> user_value, packet_reader &reader) -> void 
 		}
 	}
 	else {
-		login_server::get_instance().log(log_type::login, [&](out_stream &log) {
+		login_server::get_instance().log(vana::log::type::login, [&](out_stream &log) {
 			log << username << " from IP " << ip;
 		});
 

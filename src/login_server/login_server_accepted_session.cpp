@@ -95,7 +95,7 @@ auto login_server_accepted_session::on_disconnect() -> void {
 		world_value->set_connected(false);
 		world_value->clear_channels();
 
-		server.log(log_type::server_disconnect, [&](out_stream &log) {
+		server.log(vana::log::type::server_disconnect, [&](out_stream &log) {
 			log << "World " << static_cast<int32_t>(m_world_id.get());
 		});
 	}

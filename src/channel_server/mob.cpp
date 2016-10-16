@@ -757,7 +757,7 @@ auto mob::use_anticipated_skill() -> result {
 			else {
 				game_player_id player_id = m_anticipated_skill_player_id;
 				game_mob_id mob_id = get_mob_id_or_link();
-				channel.log(log_type::hacking, [&](out_stream &str) {
+				channel.log(vana::log::type::hacking, [&](out_stream &str) {
 					str << "Likely hacking by player ID " << player_id << ". "
 						<< "SendToTown used on an invalid mob: " << mob_id;
 				});

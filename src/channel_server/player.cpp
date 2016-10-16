@@ -191,7 +191,7 @@ auto player::handle(packet_reader &reader) -> result {
 		// We may not process the structure properly
 
 		reader.reset();
-		channel_server::get_instance().log(log_type::malformed_packet, [&](out_stream &log) {
+		channel_server::get_instance().log(vana::log::type::malformed_packet, [&](out_stream &log) {
 			log << "Player ID: " << get_id()
 				<< "; Packet: " << reader
 				<< "; Error: " << e.what();
@@ -411,7 +411,7 @@ auto player::player_connect(packet_reader &reader) -> void {
 	provider.add_player(shared_from_this());
 	maps::add_player(shared_from_this(), m_map);
 
-	channel.log(log_type::info, [&](out_stream &log) {
+	channel.log(vana::log::type::info, [&](out_stream &log) {
 		log << m_name << " (" << m_id << ") connected from " << get_ip();
 	});
 

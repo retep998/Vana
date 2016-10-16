@@ -594,7 +594,7 @@ auto map::get_town_mystic_door_portal(ref_ptr<player> player, uint8_t zero_based
 
 	game_map_id town_id = m_info->return_map;
 	if (town_id == constant::map::no_map) {
-		channel_server::get_instance().log(log_type::hacking, [&](out_stream &str) {
+		channel_server::get_instance().log(vana::log::type::hacking, [&](out_stream &str) {
 			str << "Likely hacking by player ID " << player->get_id() << ". "
 				<< "Mystic Door used on a map that has no return map: " << m_id;
 		});

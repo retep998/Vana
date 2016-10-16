@@ -17,20 +17,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/logger.hpp"
+#include "common/database.hpp"
+#include "common/server_type.hpp"
+#include "common/types.hpp"
 #include <string>
-#include <vector>
+#include <unordered_map>
 
 namespace vana {
-	class sql_logger : public base_logger {
-	public:
-		sql_logger(const string &filename, const string &format, const string &time_format, server_type type, size_t buffer_size = 10);
-		~sql_logger();
-
-		auto log(log_type type, const opt_string &identifier, const string &message) -> void override;
-		auto flush() -> void;
-	private:
-		size_t m_buffer_size;
-		vector<log_message> m_buffer;
-	};
+	namespace log {
+		enum class destination : int32_t {
+			none = 0x00,
+			file = 0x01,
+			console = 0x02,
+			sql = 0x04,
+			// If more constants are added, please add them to config_file.cpp as well
+			file_sql = file | sql,
+			file_console = file | console,
+			sql_console = sql | console,
+			file_sql_console = file | sql | console,
+			all = file_sql_console,
+		};
+	}
 }

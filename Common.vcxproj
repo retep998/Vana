@@ -102,7 +102,6 @@
     <ClCompile Include="src\common\config\password_transformation.cpp" />
     <ClCompile Include="src\common\config\salt_transformation.cpp" />
     <ClCompile Include="src\common\connection_listener.cpp" />
-    <ClCompile Include="src\common\console_logger.cpp" />
     <ClCompile Include="src\common\data\provider\beauty.cpp" />
     <ClCompile Include="src\common\data\provider\buff.cpp" />
     <ClCompile Include="src\common\data\provider\curse.cpp" />
@@ -126,14 +125,16 @@
     <ClCompile Include="src\common\exit_codes.cpp" />
     <ClCompile Include="src\common\external_ip.cpp" />
     <ClCompile Include="src\common\external_ip_resolver.cpp" />
-    <ClCompile Include="src\common\file_logger.cpp" />
     <ClCompile Include="src\common\file_time.cpp" />
     <ClCompile Include="src\common\hash_utilities.cpp" />
     <ClCompile Include="src\common\ip.cpp" />
     <ClCompile Include="src\common\item.cpp" />
     <ClCompile Include="src\common\block_cipher_iv.cpp" />
     <ClCompile Include="src\common\line.cpp" />
-    <ClCompile Include="src\common\logger.cpp" />
+    <ClCompile Include="src\common\log\console_logger.cpp" />
+    <ClCompile Include="src\common\log\file_logger.cpp" />
+    <ClCompile Include="src\common\log\base_logger.cpp" />
+    <ClCompile Include="src\common\log\sql_logger.cpp" />
     <ClCompile Include="src\common\lua\config_file.cpp" />
     <ClCompile Include="src\common\lua\lua_environment.cpp" />
     <ClCompile Include="src\common\lua\lua_variant.cpp" />
@@ -154,7 +155,6 @@
     <ClCompile Include="src\common\rect.cpp" />
     <ClCompile Include="src\common\server_accepted_session.cpp" />
     <ClCompile Include="src\common\session.cpp" />
-    <ClCompile Include="src\common\sql_logger.cpp" />
     <ClCompile Include="src\common\tausworthe_generator.cpp" />
     <ClCompile Include="src\common\thread_pool.cpp" />
     <ClCompile Include="src\common\timer\timer.cpp" />
@@ -182,7 +182,6 @@
     <ClInclude Include="src\common\case_insensitive_hash.hpp" />
     <ClInclude Include="src\common\charge_or_stationary_skill_data.hpp" />
     <ClInclude Include="src\common\client_ip.hpp" />
-    <ClInclude Include="src\common\combo_loggers.hpp" />
     <ClInclude Include="src\common\common_header.hpp" />
     <ClInclude Include="src\common\config\database.hpp" />
     <ClInclude Include="src\common\config\inter_server.hpp" />
@@ -293,6 +292,13 @@
     <ClInclude Include="src\common\data\provider\skill.hpp" />
     <ClInclude Include="src\common\data\provider\valid_char.hpp" />
     <ClInclude Include="src\common\finalization_pool.hpp" />
+    <ClInclude Include="src\common\log\combo_loggers.hpp" />
+    <ClInclude Include="src\common\log\console_logger.hpp" />
+    <ClInclude Include="src\common\log\file_logger.hpp" />
+    <ClInclude Include="src\common\log\base_logger.hpp" />
+    <ClInclude Include="src\common\log\destination.hpp" />
+    <ClInclude Include="src\common\log\type.hpp" />
+    <ClInclude Include="src\common\log\sql_logger.hpp" />
     <ClInclude Include="src\common\lua\config_file.hpp" />
     <ClInclude Include="src\common\lua\lua_environment.hpp" />
     <ClInclude Include="src\common\lua\lua_type.hpp" />
@@ -304,11 +310,9 @@
     <ClInclude Include="src\common\encrypted_packet_transformer.hpp" />
     <ClInclude Include="src\common\enum_base.hpp" />
     <ClInclude Include="src\common\enum_utilities.hpp" />
-    <ClInclude Include="src\common\console_logger.hpp" />
     <ClInclude Include="src\common\exit_codes.hpp" />
     <ClInclude Include="src\common\external_ip.hpp" />
     <ClInclude Include="src\common\external_ip_resolver.hpp" />
-    <ClInclude Include="src\common\file_logger.hpp" />
     <ClInclude Include="src\common\file_time.hpp" />
     <ClInclude Include="src\common\hash_utilities.hpp" />
     <ClInclude Include="src\common\hash_combine.hpp" />
@@ -323,7 +327,6 @@
     <ClInclude Include="src\common\item_db_information.hpp" />
     <ClInclude Include="src\common\item_db_record.hpp" />
     <ClInclude Include="src\common\line.hpp" />
-    <ClInclude Include="src\common\logger.hpp" />
     <ClInclude Include="src\common\make_unique.hpp" />
     <ClInclude Include="src\common\maple_version.hpp" />
     <ClInclude Include="src\common\mp_eater_data.hpp" />
@@ -355,7 +358,6 @@
     <ClInclude Include="src\common\shop_data.hpp" />
     <ClInclude Include="src\common\soci_extensions.hpp" />
     <ClInclude Include="src\common\split_packet_builder.hpp" />
-    <ClInclude Include="src\common\sql_logger.hpp" />
     <ClInclude Include="src\common\stop_watch.hpp" />
     <ClInclude Include="src\common\table.hpp" />
     <ClInclude Include="src\common\tausworthe_generator.hpp" />

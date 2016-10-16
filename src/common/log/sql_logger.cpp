@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/database.hpp"
 
 namespace vana {
+namespace log {
 
 sql_logger::sql_logger(const string &filename, const string &format, const string &time_format, server_type type, size_t buffer_size) :
 	base_logger{filename, format, time_format, type, buffer_size},
@@ -31,8 +32,8 @@ sql_logger::~sql_logger() {
 	flush();
 }
 
-auto sql_logger::log(log_type type, const opt_string &identifier, const string &message) -> void {
-	log_message m;
+auto sql_logger::log(vana::log::type type, const opt_string &identifier, const string &message) -> void {
+	sql_log m;
 	m.type = type;
 	m.message = message;
 	m.time = time(nullptr);
@@ -76,4 +77,5 @@ auto sql_logger::flush() -> void {
 	}
 }
 
+}
 }

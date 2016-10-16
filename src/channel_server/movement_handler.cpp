@@ -133,7 +133,7 @@ auto movement_handler::parse_movement(movable_life *life, packet_reader &reader)
 				// This is a tough call
 				// Might be a packet processing issue, might be hacking
 				break_loop = true;
-				channel_server::get_instance().log(log_type::malformed_packet, [&](out_stream &str) {
+				channel_server::get_instance().log(vana::log::type::malformed_packet, [&](out_stream &str) {
 					str << "New type of movement: 0x" << std::hex << static_cast<int16_t>(type);
 				});
 				break;

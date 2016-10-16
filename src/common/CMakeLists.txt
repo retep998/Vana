@@ -34,6 +34,10 @@ file(GLOB COMMON_DATA_TYPE_SRC data\type\*.cpp)
 file(GLOB COMMON_DATA_TYPE_HDR data\type\*.hpp)
 source_group("common\\data\\type" FILES ${COMMON_DATA_TYPE_SRC} ${COMMON_DATA_TYPE_HDR})
 
+file(GLOB COMMON_LOG_SRC log\*.cpp)
+file(GLOB COMMON_LOG_HDR log\*.hpp)
+source_group("common\\log" FILES ${COMMON_LOG_SRC} ${COMMON_LOG_HDR})
+
 file(GLOB COMMON_LUA_SRC lua\*.cpp)
 file(GLOB COMMON_LUA_HDR lua\*.hpp)
 source_group("common\\lua" FILES ${COMMON_LUA_SRC} ${COMMON_LUA_HDR})
@@ -52,6 +56,7 @@ add_library(common STATIC
 	${COMMON_DATA_SRC} ${COMMON_DATA_HDR}
 	${COMMON_DATA_PROVIDER_SRC} ${COMMON_DATA_PROVIDER_HDR}
 	${COMMON_DATA_TYPE_SRC} ${COMMON_DATA_TYPE_HDR}
+	${COMMON_LOG_SRC} ${COMMON_LOG_HDR}
 	${COMMON_LUA_SRC} ${COMMON_LUA_HDR}
 	${COMMON_TIMER_SRC} ${COMMON_TIMER_HDR}
 )

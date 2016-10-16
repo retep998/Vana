@@ -359,7 +359,7 @@ auto management_functions::header(ref_ptr<player> player, const game_chat &args)
 
 auto management_functions::shutdown(ref_ptr<player> player, const game_chat &args) -> chat_result {
 	chat_handler_functions::show_info(player, "Shutting down the server");
-	channel_server::get_instance().log(log_type::gm_command, "GM shutdown the server. GM: " + player->get_name());
+	channel_server::get_instance().log(vana::log::type::gm_command, "GM shutdown the server. GM: " + player->get_name());
 	// TODO FIXME remove this or figure out a better way to post a shutdown than just doing the shutdown here
 	exit(exit_code::forced_by_gm);
 	return chat_result::handled_display;
@@ -587,7 +587,7 @@ auto management_functions::ban(ref_ptr<player> player, const game_chat &args) ->
 		if (st.get_affected_rows() > 0) {
 			string ban_message = target_name + " has been banned" + chat_handler_functions::get_ban_string(reason);
 			channel_server::get_instance().get_player_data_provider().send(packets::player::show_message(ban_message, packets::player::notice_types::notice));
-			channel_server::get_instance().log(log_type::gm_command, [&](out_stream &log) {
+			channel_server::get_instance().log(vana::log::type::gm_command, [&](out_stream &log) {
 				log << "GM " << player->get_name()
 					<< " banned a player with reason " << static_cast<int32_t>(reason)
 					<< ", player: " << target_name;
@@ -634,7 +634,7 @@ auto management_functions::temp_ban(ref_ptr<player> player, const game_chat &arg
 			string ban_message = target_name + " has been banned" + chat_handler_functions::get_ban_string(reason);
 			channel_server::get_instance().get_player_data_provider().send(packets::player::show_message(ban_message, packets::player::notice_types::notice));
 
-			channel_server::get_instance().log(log_type::gm_command, [&](out_stream &log) {
+			channel_server::get_instance().log(vana::log::type::gm_command, [&](out_stream &log) {
 				log << "GM " << player->get_name()
 					<< " temporary banned a player with reason " << static_cast<int32_t>(reason)
 					<< " for " << length
@@ -673,7 +673,7 @@ auto management_functions::ip_ban(ref_ptr<player> player, const game_chat &args)
 				string ban_message = target_name + " has been banned" + chat_handler_functions::get_ban_string(reason);
 
 				channel_server::get_instance().get_player_data_provider().send(packets::player::show_message(ban_message, packets::player::notice_types::notice));
-				channel_server::get_instance().log(log_type::gm_command, [&](out_stream &log) {
+				channel_server::get_instance().log(vana::log::type::gm_command, [&](out_stream &log) {
 					log << "GM " << player->get_name()
 						<< " IP banned a player with reason " << static_cast<int32_t>(reason)
 						<< ", player: " << target_name;
@@ -712,7 +712,7 @@ auto management_functions::unban(ref_ptr<player> player, const game_chat &args) 
 		if (st.get_affected_rows() > 0) {
 			string banMessage = args + " has been unbanned";
 			chat_handler_functions::show_info(player, banMessage);
-			channel_server::get_instance().log(log_type::gm_command, [&](out_stream &log) {
+			channel_server::get_instance().log(vana::log::type::gm_command, [&](out_stream &log) {
 				log << "GM " << player->get_name()
 					<< " unbanned a player: " << args;
 			});

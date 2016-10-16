@@ -21,20 +21,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sstream>
 
 namespace vana {
+namespace log {
 
 console_logger::console_logger(const string &filename, const string &format, const string &time_format, server_type type, size_t buffer_size) :
 	base_logger{filename, format, time_format, type, buffer_size}
 {
 }
 
-auto console_logger::log(log_type type, const opt_string &identifier, const string &message) -> void {
+auto console_logger::log(vana::log::type type, const opt_string &identifier, const string &message) -> void {
 	switch (type) {
-		case log_type::critical_error:
-		case log_type::debug_error:
-		case log_type::error:
-		case log_type::server_auth_failure:
-		case log_type::warning:
-		case log_type::malformed_packet:
+		case vana::log::type::critical_error:
+		case vana::log::type::debug_error:
+		case vana::log::type::error:
+		case vana::log::type::server_auth_failure:
+		case vana::log::type::warning:
+		case vana::log::type::malformed_packet:
 			std::cerr << base_logger::format_log(get_format(), type, this, identifier, message) << std::endl;
 			break;
 		default:
@@ -43,4 +44,5 @@ auto console_logger::log(log_type type, const opt_string &identifier, const stri
 	}
 }
 
+}
 }

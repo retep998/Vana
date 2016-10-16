@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/connection_manager.hpp"
 #include "common/external_ip.hpp"
 #include "common/ip.hpp"
-#include "common/logger.hpp"
+#include "common/log/base_logger.hpp"
 #include "common/types.hpp"
 #include <memory>
 #include <string>
@@ -38,9 +38,9 @@ namespace vana {
 		auto initialize() -> result;
 		virtual auto shutdown() -> void;
 
-		auto log(log_type type, const string &message) -> void;
-		auto log(log_type type, function<void(out_stream &)> produce_message) -> void;
-		auto log(log_type type, const char *message) -> void;
+		auto log(vana::log::type type, const string &message) -> void;
+		auto log(vana::log::type type, function<void(out_stream &)> produce_message) -> void;
+		auto log(vana::log::type type, const char *message) -> void;
 		auto get_server_type() const -> server_type;
 		auto get_inter_password() const -> string;
 		auto get_interserver_salting_policy() const -> const config::salt &;
@@ -65,7 +65,7 @@ namespace vana {
 		time_point m_start_time;
 		string m_inter_password;
 		string m_salt;
-		owned_ptr<base_logger> m_logger;
+		owned_ptr<vana::log::base_logger> m_logger;
 		config::inter_server m_inter_server_config;
 		config::salt m_salting_policy;
 		ip_matrix m_external_ips;

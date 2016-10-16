@@ -37,7 +37,7 @@ auto check_mcdb_version(abstract_server *server) -> result {
 		auto &db = database::get_data_db();
 		auto &sql = db.get_session();
 		if (!db.table_exists(vana::data::table::mcdb_info)) {
-			server->log(log_type::critical_error, vana::data::table::mcdb_info + " does not exist.");
+			server->log(vana::log::type::critical_error, vana::data::table::mcdb_info + " does not exist.");
 			exit(exit_code::mcdb_error);
 			return result::failure;
 		}
@@ -48,13 +48,13 @@ auto check_mcdb_version(abstract_server *server) -> result {
 			soci::into(row);
 
 		if (!sql.got_data()) {
-			server->log(log_type::critical_error, vana::data::table::mcdb_info + " is empty.");
+			server->log(vana::log::type::critical_error, vana::data::table::mcdb_info + " is empty.");
 			exit(exit_code::mcdb_error);
 			return result::failure;
 		}
 	}
 	catch (soci::soci_error &e) {
-		server->log(log_type::critical_error, string{e.what()});
+		server->log(vana::log::type::critical_error, string{e.what()});
 		exit(exit_code::mcdb_error);
 		return result::failure;
 	}
@@ -66,7 +66,7 @@ auto check_mcdb_version(abstract_server *server) -> result {
 	string maple_locale = row.get<string>("maple_locale");
 
 	if (major_version != data::version::major || minor_version != data::version::minor) {
-		server->log(log_type::critical_error, [&](out_stream &str) {
+		server->log(vana::log::type::critical_error, [&](out_stream &str) {
 			str
 				<< "MCDB version incompatible." << std::endl
 				<< "Vana: " << data::version::major << "." << data::version::minor << std::endl
@@ -85,7 +85,7 @@ auto check_mcdb_version(abstract_server *server) -> result {
 	};
 
 	if (maple_locale != data::version::locale || test_server != data::version::is_test_server) {
-		server->log(log_type::critical_error, [&](out_stream &str) {
+		server->log(vana::log::type::critical_error, [&](out_stream &str) {
 			str
 			<< "Your MCDB is designed for different locale." << std::endl
 			<< "Vana: " << make_locale(data::version::locale, data::version::is_test_server) << std::endl
@@ -96,7 +96,7 @@ auto check_mcdb_version(abstract_server *server) -> result {
 	}
 
 	if (maple_version != maple_version::version) {
-		server->log(log_type::warning, [&](out_stream &str) {
+		server->log(vana::log::type::warning, [&](out_stream &str) {
 			str
 				<< "WARNING: Your copy of MCDB is based on an incongruent version of the WZ files." << std::endl
 				<< "Vana: " << maple_version::version << std::endl
@@ -113,7 +113,7 @@ auto check_schema_version(abstract_server *server, bool update) -> result {
 	version_check_result check = db.check_version();
 
 	if (check == version_check_result::database_unavailable) {
-		server->log(log_type::critical_error, "Vana database is currently inaccessible.");
+		server->log(vana::log::type::critical_error, "Vana database is currently inaccessible.");
 		exit(exit_code::info_database_error);
 		return result::failure;
 	}
@@ -121,7 +121,7 @@ auto check_schema_version(abstract_server *server, bool update) -> result {
 	if (check == version_check_result::needs_update) {
 		if (!update) {
 			// Wrong version and we're not allowed to update, so let's quit
-			server->log(log_type::critical_error, "Wrong version of database, please run LoginServer to update.");
+			server->log(vana::log::type::critical_error, "Wrong version of database, please run LoginServer to update.");
 			exit(exit_code::info_database_error);
 			return result::failure;
 		}

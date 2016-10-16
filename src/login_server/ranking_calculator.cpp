@@ -157,7 +157,7 @@ auto ranking_calculator::all() -> void {
 		}
 	}
 
-	login_server::get_instance().log(log_type::info, [&](out_stream &str) {
+	login_server::get_instance().log(vana::log::type::info, [&](out_stream &str) {
 		str << "Calculating rankings completed in " << std::setprecision(3) << sw.elapsed<milliseconds>() / 1000.f << " seconds!";
 	});
 

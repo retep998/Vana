@@ -19,9 +19,6 @@
     <Filter Include="Lib">
       <UniqueIdentifier>{535f2c2a-4a21-4fd2-93c0-ca6d3e13da45}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Loggers">
-      <UniqueIdentifier>{fe600ed3-a39e-4c75-9cfd-9836aff52806}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Packets">
       <UniqueIdentifier>{1a4cf086-e5e2-4c4c-9f20-97d3a449c143}</UniqueIdentifier>
     </Filter>
@@ -70,6 +67,9 @@
     <Filter Include="config">
       <UniqueIdentifier>{3ceab430-1c37-4086-9019-31cc885dd1b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="log">
+      <UniqueIdentifier>{fe600ed3-a39e-4c75-9cfd-9836aff52806}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\common\initialize_common.cpp">
@@ -101,18 +101,6 @@
     </ClCompile>
     <ClCompile Include="src\common\item.cpp">
       <Filter>Data Structures</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\console_logger.cpp">
-      <Filter>Loggers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\file_logger.cpp">
-      <Filter>Loggers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\logger.cpp">
-      <Filter>Loggers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\sql_logger.cpp">
-      <Filter>Loggers</Filter>
     </ClCompile>
     <ClCompile Include="src\common\authentication_packet.cpp">
       <Filter>Inter-Server</Filter>
@@ -283,6 +271,18 @@
       <Filter>data\type</Filter>
     </ClCompile>
     <ClCompile Include="src\common\meso_inventory.cpp" />
+    <ClCompile Include="src\common\log\console_logger.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\log\file_logger.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\log\sql_logger.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\log\base_logger.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\common\file_utilities.hpp">
@@ -306,18 +306,6 @@
     <ClInclude Include="src\common\packet_reader.hpp">
       <Filter>Packets</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\console_logger.hpp">
-      <Filter>Loggers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\sql_logger.hpp">
-      <Filter>Loggers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\file_logger.hpp">
-      <Filter>Loggers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\logger.hpp">
-      <Filter>Loggers</Filter>
-    </ClInclude>
     <ClInclude Include="src\common\database.hpp">
       <Filter>Database</Filter>
     </ClInclude>
@@ -338,9 +326,6 @@
     </ClInclude>
     <ClInclude Include="src\common\authentication_packet.hpp">
       <Filter>Inter-Server</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\combo_loggers.hpp">
-      <Filter>Loggers</Filter>
     </ClInclude>
     <ClInclude Include="src\common\bit_utilities.hpp">
       <Filter>Utilities</Filter>
@@ -935,5 +920,26 @@
     </ClInclude>
     <ClInclude Include="src\common\meso_inventory.hpp" />
     <ClInclude Include="src\common\meso_modify_result.hpp" />
+    <ClInclude Include="src\common\log\combo_loggers.hpp">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\log\console_logger.hpp">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\log\file_logger.hpp">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\log\sql_logger.hpp">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\log\type.hpp">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\log\base_logger.hpp">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\log\destination.hpp">
+      <Filter>log</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

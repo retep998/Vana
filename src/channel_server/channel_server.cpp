@@ -191,7 +191,7 @@ auto channel_server::on_disconnect_from_world() -> void {
 	m_world_connection.reset();
 
 	if (is_connected()) {
-		log(log_type::server_disconnect, "Disconnected from the WorldServer. Shutting down...");
+		log(vana::log::type::server_disconnect, "Disconnected from the WorldServer. Shutting down...");
 		m_player_data_provider.disconnect();
 		exit(exit_code::server_disconnection);
 	}
@@ -200,7 +200,7 @@ auto channel_server::on_disconnect_from_world() -> void {
 auto channel_server::established_world_connection(game_channel_id channel_id, connection_port port, const config::world &config) -> void {
 	m_channel_id = channel_id;
 
-	log(log_type::server_connect, [&](out_stream &str) {
+	log(vana::log::type::server_connect, [&](out_stream &str) {
 		str << "Handling channel " << static_cast<int32_t>(channel_id) << " on port " << port;
 	});
 

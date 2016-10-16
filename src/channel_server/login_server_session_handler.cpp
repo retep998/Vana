@@ -38,7 +38,7 @@ auto login_server_session_handler::connect(ref_ptr<login_server_session> session
 	}
 
 	if (show_log_and_exit) {
-		channel_server::get_instance().log(log_type::critical_error, "No world server to connect");
+		channel_server::get_instance().log(vana::log::type::critical_error, "No world server to connect");
 		exit(exit_code::server_connection_error);
 	}
 }
