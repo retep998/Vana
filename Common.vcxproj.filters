@@ -610,79 +610,79 @@
     <ClInclude Include="src\common\timer\func.hpp">
       <Filter>timer</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\gender.hpp">
+    <ClInclude Include="src\common\constant\gender.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\ship_kind.hpp">
+    <ClInclude Include="src\common\constant\ship_kind.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\inventory.hpp">
+    <ClInclude Include="src\common\constant\inventory.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\item\scroll_type.hpp">
+    <ClInclude Include="src\common\constant\item\scroll_type.hpp">
       <Filter>constant\item</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\item\type.hpp">
+    <ClInclude Include="src\common\constant\item\type.hpp">
       <Filter>constant\item</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\item.hpp">
+    <ClInclude Include="src\common\constant\item.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\party.hpp">
+    <ClInclude Include="src\common\constant\party.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\monster_card.hpp">
+    <ClInclude Include="src\common\constant\monster_card.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\mob_skill.hpp">
+    <ClInclude Include="src\common\constant\mob_skill.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\mob.hpp">
+    <ClInclude Include="src\common\constant\mob.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\map.hpp">
+    <ClInclude Include="src\common\constant\map.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\guild.hpp">
+    <ClInclude Include="src\common\constant\guild.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\alliance.hpp">
+    <ClInclude Include="src\common\constant\alliance.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\job\beginner_jobs.hpp">
+    <ClInclude Include="src\common\constant\job\beginner_jobs.hpp">
       <Filter>constant\job</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\job\id.hpp">
+    <ClInclude Include="src\common\constant\job\id.hpp">
       <Filter>constant\job</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\job\line.hpp">
+    <ClInclude Include="src\common\constant\job\line.hpp">
       <Filter>constant\job</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\job\progression.hpp">
+    <ClInclude Include="src\common\constant\job\progression.hpp">
       <Filter>constant\job</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\job\track.hpp">
+    <ClInclude Include="src\common\constant\job\track.hpp">
       <Filter>constant\job</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\stat.hpp">
+    <ClInclude Include="src\common\constant\stat.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\status_effect.hpp">
+    <ClInclude Include="src\common\constant\status_effect.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\skill.hpp">
+    <ClInclude Include="src\common\constant\skill.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\equip_slot.hpp">
+    <ClInclude Include="src\common\constant\equip_slot.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\buff.hpp">
+    <ClInclude Include="src\common\constant\buff.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\buddy.hpp">
+    <ClInclude Include="src\common\constant\buddy.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\character.hpp">
+    <ClInclude Include="src\common\constant\character.hpp">
       <Filter>constant</Filter>
     </ClInclude>
     <ClInclude Include="src\common\constant\item\max_stat.hpp">
