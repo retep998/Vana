@@ -177,37 +177,36 @@ auto player_inventory::add_max_slots(game_inventory inventory, game_inventory_sl
 }
 
 auto player_inventory::set_mesos(game_mesos mesos, bool send_packet) -> void {
-	if (mesos < 0) {
-		mesos = 0;
-	}
-	m_mesos = mesos;
+	m_mesos.set_mesos(mesos);
 	if (auto player = m_player.lock()) {
-		player->send(packets::player::update_stat(constant::stat::mesos, m_mesos, send_packet));
+		player->send(packets::player::update_stat(constant::stat::mesos, m_mesos.get_mesos(), send_packet));
 	}
 	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
-auto player_inventory::modify_mesos(game_mesos mod, bool send_packet) -> bool {
-	if (mod < 0) {
-		if (-mod > m_mesos) {
-			return false;
-		}
-		m_mesos += mod;
-	}
-	else {
-		game_mesos meso_test = m_mesos + mod;
-		if (meso_test < 0) {
-			return false;
-		}
-		m_mesos = meso_test;
+auto player_inventory::modify_mesos(game_mesos mod, bool allow_partial, bool send_packet) -> meso_modify_result {
+	return modify_mesos_internal(m_mesos.modify_mesos(mod, allow_partial), send_packet);
+}
+
+auto player_inventory::add_mesos(game_mesos mod, bool allow_partial, bool send_packet) -> meso_modify_result {
+	return modify_mesos_internal(m_mesos.add_mesos(mod, allow_partial), send_packet);
+}
+
+auto player_inventory::take_mesos(game_mesos mod, bool allow_partial, bool send_packet) -> meso_modify_result {
+	return modify_mesos_internal(m_mesos.take_mesos(mod, allow_partial), send_packet);
+}
+
+auto player_inventory::modify_mesos_internal(meso_modify_result query, bool send_packet) -> meso_modify_result {
+	if (query.get_result() == stack_result::none) {
+		return query;
 	}
 
 	if (auto player = m_player.lock()) {
-		player->send(packets::player::update_stat(constant::stat::mesos, m_mesos, send_packet));
+		player->send(packets::player::update_stat(constant::stat::mesos, query.get_final_amount(), send_packet));
 	}
 	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 
-	return true;
+	return query;
 }
 
 auto player_inventory::add_item(game_inventory inv, game_inventory_slot slot, item *item, bool is_loading) -> void {
@@ -297,6 +296,42 @@ auto player_inventory::destroy_equipped_item(game_item_id item_id) -> void {
 		}
 	}
 	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
+}
+
+auto player_inventory::get_max_slots(game_inventory inv) const -> game_inventory_slot_count {
+	return m_max_slots[inv - 1];
+}
+
+auto player_inventory::get_mesos() const -> game_mesos {
+	return m_mesos.get_mesos();
+}
+
+auto player_inventory::has_any_mesos() const -> bool {
+	return m_mesos.has_any();
+}
+
+auto player_inventory::can_accept(const meso_inventory &other) const -> stack_result {
+	return m_mesos.can_accept(other);
+}
+
+auto player_inventory::can_modify_mesos(game_mesos mesos) const -> stack_result {
+	return m_mesos.can_modify_mesos(mesos);
+}
+
+auto player_inventory::can_add_mesos(game_mesos mesos) const -> stack_result {
+	return m_mesos.can_add_mesos(mesos);
+}
+
+auto player_inventory::can_take_mesos(game_mesos mesos) const -> stack_result {
+	return m_mesos.can_take_mesos(mesos);
+}
+
+auto player_inventory::get_auto_hp_pot() const -> game_item_id {
+	return m_auto_hp_pot_id;
+}
+
+auto player_inventory::get_auto_mp_pot() const -> game_item_id {
+	return m_auto_mp_pot_id;
 }
 
 auto player_inventory::get_item_amount_by_slot(game_inventory inv, game_inventory_slot slot) -> game_slot_qty {
@@ -669,7 +704,7 @@ auto player_inventory::add_wish_list_item(game_item_id item_id) -> void {
 }
 
 auto player_inventory::connect_packet(packet_builder &builder) -> void {
-	builder.add<int32_t>(m_mesos);
+	builder.add<int32_t>(m_mesos.get_mesos());
 
 	for (game_inventory i = constant::inventory::equip; i <= constant::inventory::count; ++i) {
 		builder.add<game_inventory_slot_count>(get_max_slots(i));

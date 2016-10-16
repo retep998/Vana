@@ -176,7 +176,7 @@ auto trade_handler::trade_handler(ref_ptr<player> player, packet_reader &reader)
 				}
 				case trade_opcodes::add_mesos: {
 					game_mesos amount = reader.get<game_mesos>();
-					if (player->get_inventory()->get_mesos() < amount || amount < 0) {
+					if (amount < 0 || player->get_inventory()->can_modify_mesos(-amount) != stack_result::full) {
 						// Hacking
 						return;
 					}

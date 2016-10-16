@@ -137,6 +137,7 @@
     <ClCompile Include="src\common\lua\config_file.cpp" />
     <ClCompile Include="src\common\lua\lua_environment.cpp" />
     <ClCompile Include="src\common\lua\lua_variant.cpp" />
+    <ClCompile Include="src\common\meso_inventory.cpp" />
     <ClCompile Include="src\common\packet_builder.cpp" />
     <ClCompile Include="src\common\packet_handler.cpp" />
     <ClCompile Include="src\common\packet_transformer.cpp" />
@@ -296,6 +297,8 @@
     <ClInclude Include="src\common\lua\lua_environment.hpp" />
     <ClInclude Include="src\common\lua\lua_type.hpp" />
     <ClInclude Include="src\common\lua\lua_variant.hpp" />
+    <ClInclude Include="src\common\meso_inventory.hpp" />
+    <ClInclude Include="src\common\meso_modify_result.hpp" />
     <ClInclude Include="src\common\packet_handler.hpp" />
     <ClInclude Include="src\common\connection_type.hpp" />
     <ClInclude Include="src\common\encrypted_packet_transformer.hpp" />

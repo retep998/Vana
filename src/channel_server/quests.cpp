@@ -60,11 +60,10 @@ auto quests::give_item(ref_ptr<player> player, game_item_id item_id, game_slot_q
 }
 
 auto quests::give_mesos(ref_ptr<player> player, game_mesos amount) -> result {
-	if (amount < 0 && player->get_inventory()->get_mesos() + amount < 0) {
-		// Do a bit of checking if meso is being taken to see if it's enough
+	if (player->get_inventory()->modify_mesos(amount).get_result() != stack_result::full) {
 		return result::failure;
 	}
-	player->get_inventory()->modify_mesos(amount);
+
 	player->send(packets::quests::give_mesos(amount));
 	return result::successful;
 }

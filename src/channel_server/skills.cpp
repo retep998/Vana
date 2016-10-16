@@ -496,12 +496,11 @@ auto skills::apply_skill_costs(ref_ptr<player> player, game_skill_id skill_id, g
 		int16_t min_mesos = money_consume - (80 + level * 5);
 		int16_t max_mesos = money_consume + (80 + level * 5);
 		int16_t amount = randomizer::rand<int16_t>(max_mesos, min_mesos);
-		game_mesos mesos = player->get_inventory()->get_mesos();
-		if (mesos - amount < 0) {
+
+		if (player->get_inventory()->take_mesos(amount).get_result() != stack_result::full) {
 			// Hacking
 			return result::failure;
 		}
-		player->get_inventory()->modify_mesos(-amount);
 	}
 
 	return result::successful;

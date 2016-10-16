@@ -145,6 +145,12 @@ namespace vana {
 		failure,
 	};
 
+	enum class stack_result {
+		full,
+		partial,
+		none,
+	};
+
 	enum class validity_result {
 		valid,
 		invalid,

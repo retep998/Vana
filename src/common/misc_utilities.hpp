@@ -95,6 +95,78 @@ namespace vana {
 				}
 				return ret;
 			}
+
+			template <typename TInteger>
+			inline
+			auto integer_div_ceil(TInteger value, TInteger divisor) -> TInteger {
+				if (value <= 0) throw std::invalid_argument{"Value must be 1 or greater"};
+				if (divisor <= 0) throw std::invalid_argument{"Divisor must be 1 or greater"};
+				return 1 + ((value - 1) / divisor);
+			};
+
+			template <typename TInteger>
+			inline
+			auto is_non_overflowing_addition(TInteger value, TInteger modification) -> bool {
+				if (value == 0 || modification == 0) {
+					// If value is 0, you could add min or add max, either would be fine
+					// If modification is 0, it's an identity operation on value
+					return true;
+				}
+				if (value < 0) {
+					if (modification > 0) {
+						// No addition of positives to a negative will ever overflow
+						return true;
+					}
+					// Our value is negative and we're adding a negative
+					// We resolve the remaining space based on the value
+					// If we already have the minimum value, the modification can only be 0 successfully
+					// If we have, say, -1, the remaining space is 2^(signed_bit_count) - 2
+					// Our modification has to be greater than the remaining amount
+					// This is due to the fact that we're resolving a negative
+					// e.g.
+					// "Maximum" based on bit space: -16
+					// Value: -7
+					// Remaining: -16 - -7 = -9
+					// Modification: -8
+					// Modification is greater than -9, successful
+					// Modification: -10
+					// Modification is less than -9, failed
+					TInteger remaining = std::numeric_limits<TInteger>::min() - value;
+					return modification >= remaining;
+				}
+
+				if (modification < 0) {
+					// No addition of negatives to a positive will ever overflow
+					return true;
+				}
+
+				TInteger remaining = std::numeric_limits<TInteger>::max() - value;
+				return modification <= remaining;
+			}
+
+			template <typename TInteger>
+			inline
+			auto is_non_overflowing_addition_with_zero_min(TInteger value, TInteger modification) -> bool {
+				if (value == 0 || modification == 0) {
+					return true;
+				}
+
+				if (value < 0) {
+					// Categorically reject this operation if the starting point is negative
+					// Even though two negatives may make a positive
+					return false;
+				}
+				if (modification == std::numeric_limits<TInteger>::min()) {
+					// Signed integer negate is undefined on this value
+					return false;
+				}
+
+				return modification < 0 ?
+					// If we're removing, we make sure that there are more than are being removed
+					value >= -modification :
+					// If we're adding, we make sure that there are more available than are being added
+					(std::numeric_limits<TInteger>::max() - value) >= modification;
+			}
 		}
 	}
 }

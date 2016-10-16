@@ -197,7 +197,7 @@ auto player_handler::handle_damage(ref_ptr<player> player, packet_reader &reader
 
 	if (damage > 0 && !player->has_gm_benefits()) {
 		auto meso_guard = player->get_active_buffs()->get_meso_guard_source();
-		if (meso_guard.is_initialized() && player->get_inventory()->get_mesos() > 0) {
+		if (meso_guard.is_initialized() && player->get_inventory()->has_any_mesos()) {
 			auto &source = meso_guard.get();
 			int16_t meso_rate = player->get_active_buffs()->get_buff_skill_info(source)->x; // Meso guard meso %
 			int16_t meso_loss = static_cast<int16_t>(meso_rate * damage / 2 / 100);

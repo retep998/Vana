@@ -234,7 +234,7 @@ auto shop::get_recharge_cost(game_shop_id shop_id, game_item_id item_id, game_sl
 
 	if (!found) THROW_CODE_EXCEPTION(codepath_invalid_exception);
 
-	return -1 * static_cast<game_mesos>(recharge_cost * amount);
+	return static_cast<game_mesos>(recharge_cost * amount);
 }
 
 }

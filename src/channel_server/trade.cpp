@@ -54,11 +54,9 @@ auto active_trade::both_can_trade() -> bool {
 }
 
 auto active_trade::can_trade(ref_ptr<player> target, trade_info *unit) -> bool {
-	bool can_trade = true;
-	game_mesos current_mesos = unit->mesos + target->get_inventory()->get_mesos();
-	if (current_mesos < 0) {
-		can_trade = false;
-	}
+	bool can_trade =
+		target->get_inventory()->can_accept(unit->mesos) == stack_result::full;
+
 	if (can_trade && unit->count > 0) {
 		array<game_trade_slot, constant::inventory::count> totals = {0};
 		hash_map<game_item_id, game_slot_qty> added;
@@ -163,13 +161,14 @@ auto active_trade::give_items(ref_ptr<player> player, trade_info *info) -> void 
 }
 
 auto active_trade::give_mesos(ref_ptr<player> player, trade_info *info, bool traded) -> void {
-	if (info->mesos > 0) {
-		int32_t tax_level = trade_handler::get_tax_level(info->mesos);
+	if (info->mesos.has_any()) {
+		game_mesos apply = info->mesos.get_mesos();
+		int32_t tax_level = trade_handler::get_tax_level(apply);
 		if (traded && tax_level != 0) {
-			int64_t mesos = info->mesos * tax_level / 10000;
-			info->mesos -= static_cast<game_mesos>(mesos);
+			int64_t mesos = apply * tax_level / 10000;
+			apply -= static_cast<game_mesos>(mesos);
 		}
-		player->get_inventory()->modify_mesos(info->mesos);
+		player->get_inventory()->add_mesos(apply);
 	}
 }
 
@@ -208,9 +207,9 @@ auto active_trade::accept(trade_info *unit) -> void {
 }
 
 auto active_trade::add_mesos(ref_ptr<player> holder, trade_info *unit, game_mesos amount) -> game_mesos {
-	unit->mesos += amount;
-	holder->get_inventory()->modify_mesos(-amount, true);
-	return unit->mesos;
+	unit->mesos.add_mesos(amount);
+	holder->get_inventory()->take_mesos(amount, false, true);
+	return unit->mesos.get_mesos();
 }
 
 auto active_trade::add_item(ref_ptr<player> holder, trade_info *unit, item *value, game_trade_slot trade_slot, game_inventory_slot inventory_slot, game_inventory inventory, game_slot_qty amount) -> item * {

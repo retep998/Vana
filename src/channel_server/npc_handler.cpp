@@ -191,7 +191,7 @@ auto npc_handler::use_shop(ref_ptr<player> player, packet_reader &reader) -> voi
 			game_mesos total_price = quantity * price;
 			auto item_info = channel_server::get_instance().get_item_data_provider().get_item_info(item_id);
 
-			if (price == 0 || total_amount > item_info->max_slot || total_amount < 0 || player->get_inventory()->get_mesos() < total_price) {
+			if (price == 0 || total_amount > item_info->max_slot || total_amount < 0 || player->get_inventory()->can_take_mesos(total_price) != stack_result::full) {
 				// Hacking
 				player->send(packets::npc::bought(packets::npc::bought_messages::not_enough_mesos));
 				return;
@@ -202,7 +202,7 @@ auto npc_handler::use_shop(ref_ptr<player> player, packet_reader &reader) -> voi
 				return;
 			}
 			inventory::add_new_item(player, item_id, total_amount);
-			player->get_inventory()->modify_mesos(-total_price);
+			player->get_inventory()->take_mesos(total_price);
 			player->send(packets::npc::bought(packets::npc::bought_messages::success));
 			break;
 		}
@@ -219,7 +219,11 @@ auto npc_handler::use_shop(ref_ptr<player> player, packet_reader &reader) -> voi
 			}
 			game_mesos price = channel_server::get_instance().get_item_data_provider().get_item_info(item_id)->price;
 
-			player->get_inventory()->modify_mesos(price * amount);
+			if (player->get_inventory()->add_mesos(price * amount).get_result() != stack_result::full) {
+				// Packet??
+				return;
+			}
+
 			if (game_logic_utilities::is_rechargeable(item_id)) {
 				inventory::take_item_slot(player, inv, slot, item->get_amount(), true);
 			}
@@ -237,14 +241,22 @@ auto npc_handler::use_shop(ref_ptr<player> player, packet_reader &reader) -> voi
 				return;
 			}
 
-			auto item_info = channel_server::get_instance().get_item_data_provider().get_item_info(item->get_id());
+			auto item_info =
+				channel_server::get_instance().
+				get_item_data_provider().
+				get_item_info(item->get_id());
+
 			game_slot_qty max_slot = item_info->max_slot;
 			if (game_logic_utilities::is_rechargeable(item->get_id())) {
 				max_slot += player->get_skills()->get_rechargeable_bonus();
 			}
-			game_mesos modified_mesos = channel_server::get_instance().get_shop_data_provider().get_recharge_cost(player->get_shop(), item->get_id(), max_slot - item->get_amount());
-			if (modified_mesos < 0 && player->get_inventory()->get_mesos() > -modified_mesos) {
-				player->get_inventory()->modify_mesos(modified_mesos);
+
+			game_mesos cost_mesos =
+				channel_server::get_instance().
+				get_shop_data_provider().
+				get_recharge_cost(player->get_shop(), item->get_id(), max_slot - item->get_amount());
+
+			if (player->get_inventory()->take_mesos(cost_mesos).get_result() == stack_result::full) {
 				item->set_amount(max_slot);
 
 				vector<inventory_packet_operation> ops;
@@ -290,7 +302,7 @@ auto npc_handler::use_storage(ref_ptr<player> player, packet_reader &reader) -> 
 			game_inventory_slot slot = reader.get<game_inventory_slot>();
 			game_item_id item_id = reader.get<game_item_id>();
 			game_slot_qty amount = reader.get<game_slot_qty>();
-			if (player->get_inventory()->get_mesos() < cost) {
+			if (player->get_inventory()->can_modify_mesos(-cost) != stack_result::full) {
 				// Player doesn't have enough mesos to store this item
 				player->send(packets::storage::no_mesos());
 				return;
@@ -347,30 +359,31 @@ auto npc_handler::use_storage(ref_ptr<player> player, packet_reader &reader) -> 
 		}
 		case shop_opcodes::meso_transaction: {
 			game_mesos mesos = reader.get<game_mesos>();
-			// Amount of mesos to remove. Deposits are negative, and withdrawals are positive
 			if (mesos < 0) {
-				// Transferring from inventory to storage
-				if (player->get_inventory()->get_mesos() < -mesos) {
+				game_mesos from_inventory = mesos;
+				game_mesos to_storage = -mesos;
+				if (player->get_inventory()->can_modify_mesos(from_inventory) != stack_result::full) {
 					// Hacking
 					return;
 				}
 
-				if (player->get_storage()->modify_mesos(-mesos)) {
-					player->get_inventory()->modify_mesos(mesos);
+				if (player->get_storage()->modify_mesos(to_storage).get_result() == stack_result::full) {
+					player->get_inventory()->modify_mesos(from_inventory);
 				}
 				else {
 					// TODO FIXME error?
 				}
 			}
 			else {
-				// Transferring from storage to inventory
-				if (player->get_storage()->get_mesos() < mesos) {
+				game_mesos from_storage = -mesos;
+				game_mesos to_inventory = mesos;
+				if (player->get_storage()->can_modify_mesos(from_storage) != stack_result::full) {
 					// Hacking
 					return;
 				}
 
-				if (player->get_inventory()->modify_mesos(mesos)) {
-					player->get_storage()->modify_mesos(-mesos);
+				if (player->get_inventory()->modify_mesos(to_inventory).get_result() == stack_result::full) {
+					player->get_storage()->modify_mesos(from_storage);
 				}
 				else {
 					// TODO FIXME error?

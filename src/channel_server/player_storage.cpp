@@ -46,6 +46,10 @@ auto player_storage::take_item(game_storage_slot slot) -> void {
 	m_items.erase(iter);
 }
 
+auto player_storage::set_mesos(game_mesos mesos) -> void {
+	m_mesos.set_mesos(mesos);
+}
+
 auto player_storage::set_slots(game_storage_slot slots) -> void {
 	m_slots = ext::constrain_range(slots, constant::inventory::min_slots_storage, constant::inventory::max_slots_storage);
 }
@@ -71,27 +75,22 @@ auto player_storage::get_num_items(game_inventory inv) -> game_storage_slot {
 	return item_num;
 }
 
-auto player_storage::modify_mesos(game_mesos mod) -> bool {
-	if (mod < 0) {
-		if (-mod > m_mesos) {
-			return false;
-		}
-		m_mesos += mod;
-	}
-	else {
-		game_mesos meso_test = m_mesos + mod;
-		if (meso_test < 0) {
-			return false;
-		}
-		m_mesos = meso_test;
+auto player_storage::modify_mesos(game_mesos mod) -> meso_modify_result {
+	auto query = m_mesos.modify_mesos(mod);
+	if (query.get_result() == stack_result::none) {
+		return query;
 	}
 
 	if (auto player = m_player.lock()) {
-		player->send(packets::storage::change_mesos(get_slots(), m_mesos));
+		player->send(packets::storage::change_mesos(get_slots(), query.get_final_amount()));
 	}
 	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 
-	return true;
+	return query;
+}
+
+auto player_storage::can_modify_mesos(game_mesos mesos) const -> stack_result {
+	return m_mesos.can_modify_mesos(mesos);
 }
 
 auto player_storage::load() -> void {
@@ -113,7 +112,7 @@ auto player_storage::load() -> void {
 
 		if (sql.got_data()) {
 			m_slots = row.get<game_storage_slot>("slots");
-			m_mesos = row.get<game_mesos>("mesos");
+			m_mesos.set_mesos(row.get<game_mesos>("mesos"));
 			m_char_slots = row.get<int32_t>("char_slots");
 		}
 		else {
@@ -127,7 +126,7 @@ auto player_storage::load() -> void {
 				soci::use(account_id, "account"),
 				soci::use(world_id, "world"),
 				soci::use(m_slots, "slots"),
-				soci::use(m_mesos, "mesos"),
+				soci::use(m_mesos.get_mesos(), "mesos"),
 				soci::use(m_char_slots, "chars");
 		}
 
@@ -168,7 +167,7 @@ auto player_storage::save() -> void {
 			use(account_id, "account"),
 			use(world_id, "world"),
 			use(m_slots, "slots"),
-			use(m_mesos, "mesos"),
+			use(m_mesos.get_mesos(), "mesos"),
 			use(m_char_slots, "chars");
 
 		sql.once

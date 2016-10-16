@@ -282,6 +282,7 @@
     <ClCompile Include="src\common\data\type\buff_source.cpp">
       <Filter>data\type</Filter>
     </ClCompile>
+    <ClCompile Include="src\common\meso_inventory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\common\file_utilities.hpp">
@@ -932,5 +933,7 @@
     <ClInclude Include="src\common\data\table.hpp">
       <Filter>data</Filter>
     </ClInclude>
+    <ClInclude Include="src\common\meso_inventory.hpp" />
+    <ClInclude Include="src\common\meso_modify_result.hpp" />
   </ItemGroup>
 </Project>

@@ -198,11 +198,15 @@ auto drop_handler::do_drops(game_player_id player_id, game_map_id map_id, int32_
 auto drop_handler::drop_mesos(ref_ptr<player> player, packet_reader &reader) -> void {
 	reader.skip<game_tick_count>();
 	int32_t amount = reader.get<int32_t>();
-	if (amount < 10 || amount > 50000 || amount > player->get_inventory()->get_mesos()) {
+	if (amount < vana::constant::inventory::min_drop_mesos || amount > vana::constant::inventory::max_drop_mesos) {
 		// Hacking
 		return;
 	}
-	player->get_inventory()->modify_mesos(-amount, true);
+	auto query = player->get_inventory()->take_mesos(amount, false, true);
+	if (query.get_result() == stack_result::none) {
+		// Hacking
+	}
+
 	drop *value = new drop{player->get_map_id(), amount, player->get_pos(), player->get_id(), true};
 	value->set_time(0);
 	value->do_drop(player->get_pos());
@@ -244,13 +248,38 @@ auto drop_handler::loot_item(ref_ptr<player> player_value, packet_reader &reader
 	if (drop->is_mesos()) {
 		int32_t player_rate = 100;
 		game_mesos raw_mesos = drop->get_object_id();
+
+		// TODO FIXME
+		// This section is a bit broken
+		// I'm not sure how partial meso pickups work in any cases
+		// There are also questions of what happens to mesos if one or more party members cannot accept either in whole or in part the mesos they're given
+		// Clear cases (accounted for):
+		//	1. No party, has plenty of space to fit all mesos
+		//	2. No party, has 0 space for mesos
+		//	3. Has party, player has plenty of space to fit all mesos and so do all party members
+		//	4. Has party, player has 0 space for mesos
+		// Unclear cases:
+		//	1. No party, player has some space for mesos but not all
+		//	2. Has party, player has plenty of space for mesos but one or more party members has 0 space for mesos
+		//	3. Has party, player has plenty of space for mesos but one or more party members has some space for mesos but not all
+		//	4. Has party, player has some space for mesos but not all and all party members have plenty of space to fit all mesos
+		//	5. Has party, player has some space for mesos but one or more party members has 0 space for mesos
+		//	6. Has party, player has some space for mesos but one or more party members has some space for mesos but not all
+
 		auto give_mesos = [](ref_ptr<player> p, game_mesos mesos) -> result {
-			if (p->get_inventory()->modify_mesos(mesos, true)) {
-				p->send(packets::drops::pickup_drop(mesos, 0, true));
-			}
-			else {
-				p->send(packets::drops::dont_take());
-				return result::failure;
+			auto query = p->get_inventory()->add_mesos(mesos, true, true);
+			switch (query.get_result()) {
+				case stack_result::full:
+					p->send(packets::drops::pickup_drop(mesos, 0, true));
+					break;
+				case stack_result::partial:
+					// Packets?
+					p->send(packets::drops::dont_take());
+					break;
+				case stack_result::none:
+					p->send(packets::drops::dont_take());
+					return result::failure;
+				default: THROW_CODE_EXCEPTION(not_implemented_exception, "stack_result");
 			}
 			return result::successful;
 		};

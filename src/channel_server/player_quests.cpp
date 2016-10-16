@@ -331,9 +331,7 @@ auto player_quests::give_rewards(game_quest_id quest_id, bool start) -> result {
 				}
 			}
 			else if (info.is_mesos) {
-				game_mesos mesos = info.id + player->get_inventory()->get_mesos();
-				if (mesos < 0) {
-					// Will trigger for both too low and too high
+				if (player->get_inventory()->can_modify_mesos(info.id) != stack_result::full) {
 					player->send(packets::quests::quest_error(quest_id, packets::quests::error_not_enough_mesos));
 					return iteration_result::stop_iterating;
 				}

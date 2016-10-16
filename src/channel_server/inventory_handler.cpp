@@ -685,7 +685,7 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 			case constant::item::silver_sack_of_mesos:
 			case constant::item::gold_sack_of_mesos: {
 				game_mesos mesos = item_info->mesos;
-				if (!player->get_inventory()->modify_mesos(mesos)) {
+				if (player->get_inventory()->add_mesos(mesos).get_result() == stack_result::full) {
 					player->send(packets::inventory::send_mesobag_failed());
 				}
 				else {
