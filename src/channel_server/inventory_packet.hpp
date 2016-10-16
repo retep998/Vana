@@ -86,7 +86,7 @@ namespace vana {
 				SPLIT_PACKET(stop_chair, game_player_id player_id, bool seat_taken);
 				SPLIT_PACKET(use_scroll, game_player_id player_id, int8_t succeed, bool destroy, bool legendary_spirit);
 				SPLIT_PACKET(send_chalkboard_update, game_player_id player_id, const string &msg);
-				SPLIT_PACKET(use_skillbook, game_player_id player_id, game_skill_id skill_id, int32_t new_max_level, bool use, bool succeed);
+				SPLIT_PACKET(use_skillbook, game_player_id player_id, bool is_mastery_book, game_skill_id skill_id, int32_t new_max_level, bool use, bool succeed);
 				SPLIT_PACKET(use_item_effect, game_player_id player_id, game_item_id item_id);
 				SPLIT_PACKET(send_reward_item_animation, game_player_id player_id, game_item_id item_id, const string &effect);
 				PACKET(inventory_operation, bool unk, const vector<inventory_packet_operation> &operations);
