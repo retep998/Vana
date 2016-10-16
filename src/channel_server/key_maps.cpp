@@ -37,7 +37,7 @@ auto key_maps::default_map() -> void {
 	add(key_map_key::p, key_map{key_map_action::party_list});
 	add(key_map_key::bracket_left, key_map{key_map_action::shortcut});
 	add(key_map_key::bracket_right, key_map{key_map_action::quick_slot});
-	add(key_map_key::ctrl, key_map{key_map_action::attack});
+	add(key_map_key::left_ctrl, key_map{key_map_action::attack});
 	add(key_map_key::s, key_map{key_map_action::ability_menu});
 	add(key_map_key::f, key_map{key_map_action::family_list});
 	add(key_map_key::g, key_map{key_map_action::guild_list});
@@ -52,7 +52,7 @@ auto key_maps::default_map() -> void {
 	add(key_map_key::c, key_map{key_map_action::messenger});
 	add(key_map_key::b, key_map{key_map_action::monster_book});
 	add(key_map_key::m, key_map{key_map_action::minimap});
-	add(key_map_key::alt, key_map{key_map_action::jump});
+	add(key_map_key::left_alt, key_map{key_map_action::jump});
 	add(key_map_key::space, key_map{key_map_action::npc_chat});
 	add(key_map_key::f1, key_map{key_map_action::cockeyed});
 	add(key_map_key::f2, key_map{key_map_action::happy});
