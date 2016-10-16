@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/config/rates.hpp"
 #include "common/data/provider/item.hpp"
 #include "common/database.hpp"
-#include "common/exit_codes.hpp"
+#include "common/exit_code.hpp"
 #include "common/util/string.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/inventory.hpp"

@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "config_file.hpp"
-#include "common/exit_codes.hpp"
+#include "common/exit_code.hpp"
 #include "common/log/base_logger.hpp"
 #include "common/salt_leftover_policy.hpp"
 #include "common/salt_modify_policy.hpp"

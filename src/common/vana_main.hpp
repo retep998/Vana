@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "common/abstract_server.hpp"
-#include "common/exit_codes.hpp"
+#include "common/exit_code.hpp"
 #include "common/lua/config_file.hpp"
 #include <asio.hpp>
 #include <botan/botan.h>

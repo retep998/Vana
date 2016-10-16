@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "channel_server.hpp"
 #include "common/connection_listener_config.hpp"
 #include "common/connection_manager.hpp"
-#include "common/exit_codes.hpp"
+#include "common/exit_code.hpp"
 #include "common/initialize_common.hpp"
 #include "common/lua/config_file.hpp"
 #include "common/packet_builder.hpp"

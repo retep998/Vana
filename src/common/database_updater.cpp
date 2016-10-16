@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "database_updater.hpp"
 #include "common/abstract_server.hpp"
 #include "common/database.hpp"
-#include "common/exit_codes.hpp"
+#include "common/exit_code.hpp"
 #include "common/mysql_query_parser.hpp"
 #include "common/util/string.hpp"
 #include "common/util/tokenizer.hpp"

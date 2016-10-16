@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "world_server_session.hpp"
 #include "common/common_header.hpp"
 #include "common/config/world.hpp"
-#include "common/exit_codes.hpp"
+#include "common/exit_code.hpp"
 #include "common/inter_header.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"

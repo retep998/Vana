@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/config/log.hpp"
 #include "common/config/salting.hpp"
 #include "common/connection_manager.hpp"
-#include "common/exit_codes.hpp"
+#include "common/exit_code.hpp"
 #include "common/hash_utilities.hpp"
 #include "common/log/combo_loggers.hpp"
 #include "common/log/console_logger.hpp"

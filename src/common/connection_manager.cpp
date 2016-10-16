@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/connection_listener.hpp"
 #include "common/connection_listener_config.hpp"
 #include "common/encrypted_packet_transformer.hpp"
-#include "common/exit_codes.hpp"
+#include "common/exit_code.hpp"
 #include "common/session.hpp"
 #include "common/util/misc.hpp"
 #include "common/util/thread_pool.hpp"

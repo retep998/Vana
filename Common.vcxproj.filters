@@ -130,7 +130,6 @@
     <ClCompile Include="src\common\packet_builder.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\exit_codes.cpp" />
     <ClCompile Include="src\common\vana_main.cpp" />
     <ClCompile Include="src\common\line.cpp">
       <Filter>Data Structures\Geometry</Filter>
@@ -285,6 +284,7 @@
     <ClCompile Include="src\common\util\time.cpp">
       <Filter>util</Filter>
     </ClCompile>
+    <ClCompile Include="src\common\exit_code.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\common\packet_reader.hpp">
@@ -335,7 +335,6 @@
     <ClInclude Include="src\common\i_packet.hpp">
       <Filter>Packets</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\exit_codes.hpp" />
     <ClInclude Include="src\common\precompiled_header.hpp" />
     <ClInclude Include="src\common\types.hpp" />
     <ClInclude Include="src\common\ip.hpp">
@@ -971,5 +970,6 @@
     <ClInclude Include="src\common\util\enum_cast.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="src\common\exit_code.hpp" />
   </ItemGroup>
 </Project>

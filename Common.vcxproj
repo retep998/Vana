@@ -122,7 +122,7 @@
     <ClCompile Include="src\common\data\type\buff_map_info.cpp" />
     <ClCompile Include="src\common\data\type\buff_source.cpp" />
     <ClCompile Include="src\common\encrypted_packet_transformer.cpp" />
-    <ClCompile Include="src\common\exit_codes.cpp" />
+    <ClCompile Include="src\common\exit_code.cpp" />
     <ClCompile Include="src\common\external_ip.cpp" />
     <ClCompile Include="src\common\external_ip_resolver.cpp" />
     <ClCompile Include="src\common\file_time.cpp" />
@@ -302,7 +302,7 @@
     <ClInclude Include="src\common\connection_type.hpp" />
     <ClInclude Include="src\common\encrypted_packet_transformer.hpp" />
     <ClInclude Include="src\common\enum_base.hpp" />
-    <ClInclude Include="src\common\exit_codes.hpp" />
+    <ClInclude Include="src\common\exit_code.hpp" />
     <ClInclude Include="src\common\external_ip.hpp" />
     <ClInclude Include="src\common\external_ip_resolver.hpp" />
     <ClInclude Include="src\common\file_time.hpp" />
