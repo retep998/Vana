@@ -26,18 +26,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_TEMP_STATS 0x1f // This beauty can change your stats and it won't change back until you restart your client or send the packet 0x20 :D
 #define SMSG_TEMP_STATS_RESET 0x20 // Bui thinks it's from Balrog (setting your stats to 1 thing)
 #define SMSG_SKILL_ADD 0x21
+#define SMSG_EXCL_REQUEST 0x22 // Basically an 'unstuck' command
 #define SMSG_FAME 0x23
 #define SMSG_NOTICE 0x24 // Bottom-right corner notice
 #define SMSG_CLIENT_UPDATE 0x25 // This thing takes the client to the gamepatches page @ the nexon page
 #define SMSG_NOTE 0x26 // The real note system
 #define SMSG_TELEPORT_ROCK 0x27 // Teleport Rock, VIP Teleport Rock
 #define SMSG_ANTI_MACRO 0x28
-#define SMSG_REPORT_MORE 0x2a // More report functionality
+// 0x29 does not exist?
+#define SMSG_CLAIM_RESULT 0x2a
+#define SMSG_CLAIM_SERVER_AVAILABLE_TIME 0x2b // byte startHour, byte endHour
+#define SMSG_CLAIM_SERVER_STATUS_CHANGED 0x2c // bool isAvailable
+#define SMSG_SET_TAMINGMOB_INFO 0x2d // int characterid, int level, int exp, int fatigue, bool isLevelUp (broadcast to map)
 #define SMSG_QUEST_COMPLETED 0x2e
 #define SMSG_PLAYER_STORE_MESSAGE 0x2f
 #define SMSG_SKILLBOOK 0x30
+// 0x31 and 0x32 are not doing anything other than reading 2 bytes
 #define SMSG_REPORT_USER 0x34
 #define SMSG_REACHED_TRADE_MESOS_LIMIT 0x36 // "Players that are Level 15 and below may only trade 1 million mesos per day. You have reached the limit today, please try again tomorrow"
+// 0x38 is empty
 #define SMSG_PLAYER_INFO 0x3a
 #define SMSG_PARTY 0x3b
 #define SMSG_BUDDY 0x3c
@@ -45,19 +52,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_ALLIANCE 0x3f
 #define SMSG_PORTAL_ACTION 0x40
 #define SMSG_MESSAGE 0x41
+#define SMSG_INCUBATOR 0x42
 #define SMSG_OWL_OF_MINERVA 0x43
+// 0x44 does nothing
 #define SMSG_WEDDING_PROPOSAL_WHISHLIST 0x45 // Holds both whishlist and proposal
 #define SMSG_WEDDING 0x46 // Holds wedding and proposal things like "You are now engaged."...
 #define SMSG_WEDDING_MORE 0x47 // Holds wedding stuff too.....
-#define SMSG_YELLOW_MESSAGE 0x4a // Used by bosses like Stumpy and Mano
+#define SMSG_USE_CASH_PET_FOOD 0x49 // if (failed) { bool true } else { bool false, byte pet index }
+#define SMSG_SET_WEEK_EVENT_MESSAGE 0x4a
+#define SMSG_SET_POTION_DISCOUNT_RATE 0x4b // byte rate
 #define SMSG_ARIANT_CATCH_RESULT 0x4c // Used by the Ariant match when using the Element Rock
+#define SMSG_PLAYER_NPC_RESULT 0x4d // Doesnt have any effect other than reading 1 byte.
 #define SMSG_PLAYER_NPC_SHOW 0x4e
 #define SMSG_MONSTER_BOOK_ADD 0x4f
 #define SMSG_MONSTER_BOOK_COVER 0x50
+
 #define SMSG_PLAYER_LEVEL_UPDATE 0x63 // Byte after it: 2 = guild, everything else = family
 #define SMSG_POPUP_MESSAGE 0x65 // I don't know where it is used, but it's like the admin warning? Might be part of megaphone
 #define SMSG_MEGAPHONE_MESSAGES 0x66 // Wait line or something? Megaphone message too... (when byte is not 0x46 or 0x47)
 #define SMSG_AVATAR_MEGAPHONE 0x67
+#define SMSG_AVATAR_MEGAPHONE_CLEAR 0x68
 #define SMSG_NAME_CANCELLATION_REQUEST 0x69 // It's gone before you know it (when it was successful)
 #define SMSG_TRANSFER_CANCELLATION_REQUEST 0x6a // It's gone before you know it (when it was successful)
 #define SMSG_GM_BAN 0x6c // GMMapleStory with it's HACK reason bans
@@ -122,12 +136,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_CHAIR 0xbb
 #define SMSG_THEATRICS 0xbc // Gain item notice in chat
 #define SMSG_MAP_TELEPORT 0xbd // Instantaneous transfer
-#define SMSG_MESOBAG_SUCCESS 0xbf // "You recieved ... mesos from mesobag"
+#define SMSG_MESOBAG_SUCCESS 0xbf // "You received ... mesos from mesobag"
 #define SMSG_MESOBAG_FAILURE 0xc0 // If the mesobag has failed?
 #define SMSG_QUEST_UPDATE 0xc1
+#define SMSG_NOTIFY_HP_DAMAGE_BY_FIELD 0xc2 // When the field gives you, for example, cold damage, send this opcode + amount of damage
+// 0xc3 is not implemented
 #define SMSG_BUBBLE 0xc4
-#define SMSG_SOUND 0xc6
+#define SMSG_EVENT_SOUND 0xc5 // Play event (field) sound. Sounds under Sound.wz\Field.img\ are accepted
+#define SMSG_SOUND 0xc6 // Play minigame sound
+#define SMSG_MAKER 0xc7 // Creating items and such
 #define SMSG_EVENT_BOARD 0xc9 // Korean event board :D
+// 0xca && 0xcb seem to be UI open/close related
+// 0xcc is not implemented
 #define SMSG_SKILL_COOLDOWN 0xce // Skill cooldown
 #define SMSG_MOB_SHOW 0xd0
 #define SMSG_MOB_DEATH 0xd1

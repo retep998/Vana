@@ -60,7 +60,7 @@ namespace vana {
 				PACKET(instruction_bubble, const game_chat &msg, game_coord width = -1, int16_t time = 5, bool is_static = false, int32_t x = 0, int32_t y = 0);
 				PACKET(show_hp_bar, game_player_id player_id, int32_t hp, int32_t max_hp);
 				PACKET(send_blocked_message, int8_t type);
-				PACKET(send_yellow_message, const game_chat &msg);
+				PACKET(send_week_event_message, const game_chat &msg);
 			}
 		}
 	}
