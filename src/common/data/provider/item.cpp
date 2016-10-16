@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/provider/equip.hpp"
 #include "common/data/provider/shop.hpp"
 #include "common/database.hpp"
-#include "common/initialize_common.hpp"
+#include "common/data/initialize.hpp"
 #include "common/item.hpp"
 #include "common/util/game_logic/item.hpp"
 #include "common/util/randomizer.hpp"
@@ -36,7 +36,7 @@ namespace data {
 namespace provider {
 
 auto item::load_data(buff &provider) -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Items... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Items... ";
 
 	load_items();
 	load_consumes(provider);

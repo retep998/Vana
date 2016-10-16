@@ -23,11 +23,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace vana {
 	class abstract_server;
 
-	namespace initializing {
-		auto check_schema_version(abstract_server *server, bool update = false) -> result;
-		auto check_mcdb_version(abstract_server *server) -> result;
-		auto set_users_offline(abstract_server *server, int32_t online_id) -> void;
+	namespace data {
+		namespace initialize {
+			auto check_schema_version(abstract_server *server, bool update = false) -> result;
+			auto check_mcdb_version(abstract_server *server) -> result;
+			auto set_users_offline(abstract_server *server, int32_t online_id) -> void;
 
-		const int32_t output_width = 27;
+			const int32_t output_width = 27;
+		}
 	}
 }

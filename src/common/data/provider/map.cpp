@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "map.hpp"
 #include "common/algorithm.hpp"
 #include "common/database.hpp"
-#include "common/initialize_common.hpp"
+#include "common/data/initialize.hpp"
 #include "common/util/game_logic/map.hpp"
 #include "common/util/string.hpp"
 #include <iomanip>
@@ -35,7 +35,7 @@ auto map::load_data() -> void {
 }
 
 auto map::load_continents() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Continents... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Continents... ";
 
 	decltype(m_continents) copy;
 	int8_t map_cluster;
@@ -61,7 +61,7 @@ auto map::load_continents() -> void {
 }
 
 auto map::load_maps() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Maps... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Maps... ";
 
 	decltype(m_maps) copy;
 

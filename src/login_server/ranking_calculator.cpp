@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/constant/job/id.hpp"
 #include "common/constant/job/track.hpp"
 #include "common/database.hpp"
-#include "common/initialize_common.hpp"
+#include "common/data/initialize.hpp"
 #include "common/timer/timer.hpp"
 #include "common/timer/thread.hpp"
 #include "common/util/game_logic/job.hpp"
@@ -63,7 +63,7 @@ auto ranking_calculator::all() -> void {
 		return;
 	}
 
-	std::cout << std::setw(initializing::output_width) << std::left << "Calculating rankings... " << std::endl;
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Calculating rankings... " << std::endl;
 	vana::util::stop_watch sw;
 
 	auto &db = database::get_char_db();

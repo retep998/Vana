@@ -102,6 +102,7 @@
     <ClCompile Include="src\common\config\password_transformation.cpp" />
     <ClCompile Include="src\common\config\salt_transformation.cpp" />
     <ClCompile Include="src\common\connection_listener.cpp" />
+    <ClCompile Include="src\common\data\initialize.cpp" />
     <ClCompile Include="src\common\data\provider\beauty.cpp" />
     <ClCompile Include="src\common\data\provider\buff.cpp" />
     <ClCompile Include="src\common\data\provider\curse.cpp" />
@@ -147,7 +148,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\common\initialize_common.cpp" />
     <ClCompile Include="src\common\mysql_query_parser.cpp" />
     <ClCompile Include="src\common\quest.cpp" />
     <ClCompile Include="src\common\ratio.cpp" />
@@ -222,6 +222,7 @@
     <ClInclude Include="src\common\constant\item\cash\serial.hpp" />
     <ClInclude Include="src\common\constant\item\flag.hpp" />
     <ClInclude Include="src\common\constant\item\max_stat.hpp" />
+    <ClInclude Include="src\common\data\initialize.hpp" />
     <ClInclude Include="src\common\data\locale.hpp" />
     <ClInclude Include="src\common\data\provider\map.hpp" />
     <ClInclude Include="src\common\data\table.hpp" />
@@ -354,7 +355,6 @@
     <ClInclude Include="src\common\timer\func.hpp" />
     <ClInclude Include="src\common\timer\type.hpp" />
     <ClInclude Include="src\common\types.hpp" />
-    <ClInclude Include="src\common\initialize_common.hpp" />
     <ClInclude Include="src\common\unix_time.hpp" />
     <ClInclude Include="src\common\database.hpp" />
     <ClInclude Include="src\common\packet_reader.hpp" />

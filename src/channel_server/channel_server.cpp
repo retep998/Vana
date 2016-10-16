@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "channel_server.hpp"
 #include "common/connection_listener_config.hpp"
 #include "common/connection_manager.hpp"
+#include "common/data/initialize.hpp"
 #include "common/exit_code.hpp"
-#include "common/initialize_common.hpp"
 #include "common/lua/config_file.hpp"
 #include "common/packet_builder.hpp"
 #include "common/server_type.hpp"
@@ -57,7 +57,7 @@ auto channel_server::listen() -> void {
 		[&] { return make_ref_ptr<player>(); }
 	);
 
-	initializing::set_users_offline(this, get_online_id());
+	vana::data::initialize::set_users_offline(this, get_online_id());
 }
 
 auto channel_server::finalize_player(ref_ptr<player> session) -> void {
@@ -71,10 +71,10 @@ auto channel_server::shutdown() -> void {
 }
 
 auto channel_server::load_data() -> result {
-	if (initializing::check_schema_version(this) == result::failure) {
+	if (vana::data::initialize::check_schema_version(this) == result::failure) {
 		return result::failure;
 	}
-	if (initializing::check_mcdb_version(this) == result::failure) {
+	if (vana::data::initialize::check_mcdb_version(this) == result::failure) {
 		return result::failure;
 	}
 
@@ -95,7 +95,7 @@ auto channel_server::load_data() -> result {
 	m_map_data_provider.load_data();
 	m_event_data_provider.load_data();
 
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Commands... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Commands... ";
 	chat_handler::initialize_commands();
 	std::cout << "DONE" << std::endl;
 

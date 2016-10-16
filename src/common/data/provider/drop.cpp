@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "drop.hpp"
 #include "common/algorithm.hpp"
 #include "common/database.hpp"
-#include "common/initialize_common.hpp"
+#include "common/data/initialize.hpp"
 #include "common/util/string.hpp"
 #include <iomanip>
 #include <iostream>
@@ -29,7 +29,7 @@ namespace data {
 namespace provider {
 
 auto drop::load_data() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Drops... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Drops... ";
 
 	load_drops();
 	load_global_drops();

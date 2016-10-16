@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "world_server.hpp"
 #include "common/connection_listener_config.hpp"
 #include "common/connection_manager.hpp"
+#include "common/data/initialize.hpp"
 #include "common/exit_code.hpp"
-#include "common/initialize_common.hpp"
 #include "common/server_type.hpp"
 #include "common/util/string.hpp"
 #include "world_server/channels.hpp"
@@ -62,7 +62,7 @@ auto world_server::finalize_server_session(ref_ptr<world_server_accepted_session
 }
 
 auto world_server::load_data() -> result {
-	initializing::check_schema_version(this);
+	vana::data::initialize::check_schema_version(this);
 
 	auto &config = get_inter_server_config();
 	auto result = get_connection_manager().connect(

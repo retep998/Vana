@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "equip.hpp"
 #include "common/constant/job/track.hpp"
 #include "common/database.hpp"
-#include "common/initialize_common.hpp"
+#include "common/data/initialize.hpp"
 #include "common/util/randomizer.hpp"
 #include "common/util/string.hpp"
 #include <iomanip>
@@ -31,7 +31,7 @@ namespace data {
 namespace provider {
 
 auto equip::load_data() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Equips... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Equips... ";
 
 	load_equips();
 

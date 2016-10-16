@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "curse.hpp"
 #include "common/algorithm.hpp"
 #include "common/database.hpp"
-#include "common/initialize_common.hpp"
+#include "common/data/initialize.hpp"
 #include "common/util/string.hpp"
 #include <algorithm>
 #include <iomanip>
@@ -29,7 +29,7 @@ namespace data {
 namespace provider {
 
 auto curse::load_data() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Curse Info...";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Curse Info...";
 
 	m_curse_words.clear();
 	auto &db = database::get_data_db();

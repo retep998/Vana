@@ -4,9 +4,6 @@
     <Filter Include="Data Structures">
       <UniqueIdentifier>{450fb522-4e7d-4db6-9a62-c199384163ca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Data Loading">
-      <UniqueIdentifier>{83919201-7757-496d-93bd-b76823bcb5ab}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Database">
       <UniqueIdentifier>{7f88f4c5-3611-4887-871c-3defe2bced64}</UniqueIdentifier>
     </Filter>
@@ -75,9 +72,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\common\initialize_common.cpp">
-      <Filter>Data Loading</Filter>
-    </ClCompile>
     <ClCompile Include="src\common\database.cpp">
       <Filter>Database</Filter>
     </ClCompile>
@@ -285,6 +279,9 @@
       <Filter>util</Filter>
     </ClCompile>
     <ClCompile Include="src\common\exit_code.cpp" />
+    <ClCompile Include="src\common\data\initialize.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\common\packet_reader.hpp">
@@ -292,9 +289,6 @@
     </ClInclude>
     <ClInclude Include="src\common\database.hpp">
       <Filter>Database</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\initialize_common.hpp">
-      <Filter>Data Loading</Filter>
     </ClInclude>
     <ClInclude Include="src\common\variables.hpp">
       <Filter>Data Structures</Filter>
@@ -971,5 +965,8 @@
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="src\common\exit_code.hpp" />
+    <ClInclude Include="src\common\data\initialize.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

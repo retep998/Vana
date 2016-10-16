@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/algorithm.hpp"
 #include "common/database.hpp"
 #include "common/constant/gender.hpp"
-#include "common/initialize_common.hpp"
+#include "common/data/initialize.hpp"
 #include "common/util/game_logic/player.hpp"
 #include "common/util/string.hpp"
 #include <iomanip>
@@ -31,7 +31,7 @@ namespace data {
 namespace provider {
 
 auto valid_char::load_data() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Char Info... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Char Info... ";
 
 	load_forbidden_names();
 	load_creation_items();

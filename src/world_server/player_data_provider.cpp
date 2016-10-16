@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/algorithm.hpp"
 #include "common/constant/party.hpp"
 #include "common/database.hpp"
-#include "common/initialize_common.hpp"
+#include "common/data/initialize.hpp"
 #include "common/inter_header.hpp"
 #include "common/inter_helper.hpp"
 #include "common/packet_wrapper.hpp"
@@ -61,7 +61,7 @@ auto player_data_provider::get_channel_connect_packet(packet_builder &builder) -
 }
 
 auto player_data_provider::load_players(game_world_id world_id) -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Players... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Players... ";
 
 	auto &db = database::get_char_db();
 	auto &sql = db.get_session();

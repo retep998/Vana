@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/algorithm.hpp"
 #include "common/constant/gender.hpp"
 #include "common/database.hpp"
-#include "common/initialize_common.hpp"
+#include "common/data/initialize.hpp"
 #include "common/util/game_logic/player.hpp"
 #include "common/util/randomizer.hpp"
 #include <algorithm>
@@ -41,7 +41,7 @@ auto beauty::load_data() -> void {
 }
 
 auto beauty::load_skins() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Skins... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Skins... ";
 	m_skins.clear();
 
 	auto &db = database::get_data_db();
@@ -56,7 +56,7 @@ auto beauty::load_skins() -> void {
 }
 
 auto beauty::load_hair() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Hair... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Hair... ";
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();
@@ -73,7 +73,7 @@ auto beauty::load_hair() -> void {
 }
 
 auto beauty::load_faces() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Faces... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Faces... ";
 
 	auto &db = database::get_data_db();
 	auto &sql = db.get_session();

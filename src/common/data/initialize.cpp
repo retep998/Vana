@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "initialize_common.hpp"
+#include "initialize.hpp"
 #include "common/abstract_server.hpp"
 #include "common/data/version.hpp"
 #include "common/database.hpp"
@@ -28,7 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 namespace vana {
-namespace initializing {
+namespace data {
+namespace initialize {
 
 auto check_mcdb_version(abstract_server *server) -> result {
 	soci::row row;
@@ -157,5 +158,6 @@ auto set_users_offline(abstract_server *server, int32_t online_id) -> void {
 	std::cout << "Reset all accounts and players in " << std::setprecision(3) << loading_time / 1000.f << " seconds!" << std::endl << std::endl;
 }
 
+}
 }
 }

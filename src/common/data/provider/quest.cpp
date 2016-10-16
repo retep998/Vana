@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/algorithm.hpp"
 #include "common/database.hpp"
 #include "common/constant/job/id.hpp"
-#include "common/initialize_common.hpp"
+#include "common/data/initialize.hpp"
 #include "common/quest.hpp"
 #include "common/util/game_logic/player.hpp"
 #include "common/util/string.hpp"
@@ -32,7 +32,7 @@ namespace data {
 namespace provider {
 
 auto quest::load_data() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Quests... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Quests... ";
 
 	load_quest_data();
 	load_requests();

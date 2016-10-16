@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/algorithm.hpp"
 #include "common/common_header.hpp"
 #include "common/database.hpp"
-#include "common/initialize_common.hpp"
+#include "common/data/initialize.hpp"
 #include "common/data/provider/item.hpp"
 #include "common/packet_builder.hpp"
 #include "common/session.hpp"
@@ -31,7 +31,7 @@ namespace data {
 namespace provider {
 
 auto shop::load_data() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Shops... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Shops... ";
 
 	load_shops();
 	load_user_shops();

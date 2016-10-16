@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "event_data_provider.hpp"
-#include "common/initialize_common.hpp"
+#include "common/data/initialize.hpp"
 #include "common/timer/timer.hpp"
 #include "common/util/time.hpp"
 #include "channel_server/channel_server.hpp"
@@ -41,7 +41,7 @@ auto event_data_provider::load_data() -> void {
 }
 
 auto event_data_provider::load_events() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Events... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Events... ";
 
 	// Declarations go here for regular server events or whatever you want to put on a timer
 
@@ -61,7 +61,7 @@ auto event_data_provider::load_events() -> void {
 auto event_data_provider::load_instances() -> void {
 	clear_instances();
 
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Instances... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Instances... ";
 
 	// Most common intervals with boats
 	time_point now = vana::util::time::get_now();
