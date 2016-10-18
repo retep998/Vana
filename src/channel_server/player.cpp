@@ -180,7 +180,7 @@ auto player::handle(packet_reader &reader) -> result {
 					// Do nothing
 					break;
 				default:
-					std::cout << "Unhandled 0x" << std::hex << std::setw(4) << header << ": " << reader << std::endl;
+					std::cout << "Unhandled 0x" << std::hex << std::setw(4) << header << std::dec << ": " << reader << std::endl;
 #endif
 			}
 		}
