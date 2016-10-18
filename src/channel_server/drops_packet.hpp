@@ -38,6 +38,7 @@ namespace vana {
 				};
 				enum class drop_despawn_types : int8_t {
 					expire = 0,
+					remove = 1, // No fadeout
 					loot_by_user = 2,
 					loot_by_mob = 3,
 					explode = 4,
@@ -47,7 +48,7 @@ namespace vana {
 				PACKET(show_drop, drop *drop, drop_spawn_types type, const point &origin, uint16_t delay = 0);
 				PACKET(take_drop, game_player_id player_id, game_map_object drop_id, int8_t pet_index = -1);
 				PACKET(dont_take);
-				PACKET(remove_drop, game_map_object drop_id, drop_despawn_types type, int32_t option);
+				PACKET(remove_drop, game_map_object drop_id, drop_despawn_types type, game_map_object looted_by);
 				PACKET(explode_drop, game_map_object drop_id, int16_t delay);
 				PACKET(drop_not_available_for_pickup);
 				PACKET(cant_get_anymore_items);

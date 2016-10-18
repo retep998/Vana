@@ -45,7 +45,7 @@ PACKET_IMPL(show_drop, drop *drop, drop_spawn_types type, const point &origin, u
 		// Give the point of origin for things that are just being dropped
 		builder
 			.add<point>(origin)
-			.unk<int16_t>(delay);
+			.add<int16_t>(delay);
 	}
 
 	if (!drop->is_mesos()) {
@@ -68,7 +68,7 @@ PACKET_IMPL(dont_take) {
 	return builder;
 }
 
-PACKET_IMPL(remove_drop, game_map_object drop_id, drop_despawn_types type, int32_t option) {
+PACKET_IMPL(remove_drop, game_map_object drop_id, drop_despawn_types type, game_map_object looted_by) {
 	packet_builder builder;
 	builder
 		.add<packet_header>(SMSG_DROP_PICKUP)
@@ -76,23 +76,35 @@ PACKET_IMPL(remove_drop, game_map_object drop_id, drop_despawn_types type, int32
 		.add<game_map_object>(drop_id);
 
 	switch (type) {
+	case drop_despawn_types::expire:
+	case drop_despawn_types::remove:
+		// Expire and remove do not have any additional data
+		break;
+
 	case drop_despawn_types::loot_by_mob:
 	case drop_despawn_types::loot_by_user:
 	case drop_despawn_types::loot_by_pet:
 		// Option is either the mob (loot_by_mob) or the user (rest)
-		builder.add<game_map_object>(option);
+		builder.add<game_map_object>(looted_by);
 		break;
 
 	case drop_despawn_types::explode:
-		// Option is the delay before explode
-		builder.add<int16_t>(option);
-		break;
+		throw std::invalid_argument("type cannot be 'explode'; use explode_drop instead");
+
+	default:
+		throw std::invalid_argument("Unknown type supplied");
 	}
 	return builder;
 }
 
 PACKET_IMPL(explode_drop, game_map_object drop_id, int16_t delay) {
-	return remove_drop(drop_id, drop_despawn_types::explode, delay);
+	packet_builder builder;
+	builder
+		.add<packet_header>(SMSG_DROP_PICKUP)
+		.add<int8_t>((int8_t)drop_despawn_types::explode)
+		.add<game_map_object>(drop_id)
+		.add<int16_t>(delay);
+	return builder;
 }
 
 PACKET_IMPL(drop_not_available_for_pickup) {

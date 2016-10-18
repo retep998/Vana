@@ -600,7 +600,6 @@ auto player_handler::use_melee_attack(ref_ptr<player> player, packet_reader &rea
 			uint8_t items = reader.get<int8_t>();
 			for (uint8_t i = 0; i < items; i++) {
 				game_map_object obj_id = reader.get<game_map_object>();
-				// TODO: Run this logic _after_ parsing it
 				reader.unk<uint8_t>(); // Not sure what this is for, but it isn't used?
 				if (drop *drop = map->get_drop(obj_id)) {
 					if (!drop->is_mesos()) {
@@ -1094,10 +1093,21 @@ auto player_handler::compile_attack(ref_ptr<player> player, packet_reader &reade
 
 	for (int8_t i = 0; i < targets; ++i) {
 		game_map_object map_mob_id = reader.get<game_map_object>();
-		reader.skip<int8_t>(); // Hit action
-		reader.skip<int8_t>(); // 'Fore Action' (where bit 8 == facing left)
-		reader.skip<int8_t>(); // Frame index
-		reader.skip<int8_t>(); // Damage stats calculator index. Bit 8 == mob doomed
+		// hitAction is calculated using: rand() % hitAnimation + 7
+		// However, it doesn't match with the standard 6 outcome (when there's only 1 animation)
+		// This should be -1 when there's no hit animation
+		auto hitAction = reader.get<int8_t>();
+		
+		auto tmp = reader.get<uint8_t>();
+		// The imgActionNodeIndex is the wz property node index of the action/animation of the mob
+		// This would be used for mob position checking (in combination with frameIdx)
+		auto imgActionNodeIndex = (tmp & 0x7F);
+		auto facingLeft = (int)((tmp >> 7) & 1);
+
+		auto frameIdx = reader.get<int8_t>(); // Mob animation frame index
+
+		reader.skip<uint8_t>(); // Damage stats calculator index. Bit 8 == mob doomed
+		
 		reader.skip<point>(); // Mob pos
 		reader.skip<point>(); // Damage pos
 		if (!meso_explosion) {
