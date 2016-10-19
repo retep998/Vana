@@ -260,10 +260,10 @@ PACKET_IMPL(send_blocked_message, int8_t type) {
 	return builder;
 }
 
-PACKET_IMPL(send_yellow_message, const game_chat &msg) {
+PACKET_IMPL(send_week_event_message, const game_chat &msg) {
 	packet_builder builder;
 	builder
-		.add<packet_header>(SMSG_YELLOW_MESSAGE)
+		.add<packet_header>(SMSG_SET_WEEK_EVENT_MESSAGE)
 		.add<bool>(true)
 		.add<game_chat>(msg);
 	return builder;

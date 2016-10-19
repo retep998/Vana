@@ -33,7 +33,7 @@ namespace pets {
 SPLIT_PACKET_IMPL(pet_summoned, game_player_id player_id, pet *pet, bool kick, int8_t index) {
 	split_packet_builder builder;
 	builder.player
-		.add<packet_header>(SMSG_PET_SUMMON)
+		.add<packet_header>(SMSG_PET_SPAWN)
 		.add<game_player_id>(player_id)
 		.add<int8_t>(index != -1 ? index : (pet->is_summoned() ? pet->get_index().get() : -1))
 		.add<bool>(pet->is_summoned())
