@@ -30,20 +30,26 @@ namespace vana {
 
 		namespace packets {
 			namespace drops {
-				namespace drop_types {
-					enum drop_types : int8_t {
-						show_drop = 0,
-						drop_animation = 1,
-						show_existing = 2,
-						disappear_during_drop = 3
-					};
-				}
+				enum class drop_spawn_types : int8_t {
+					show_drop = 0,
+					drop_animation = 1,
+					show_existing = 2,
+					disappear_during_drop = 3
+				};
+				enum class drop_despawn_types : int8_t {
+					expire = 0,
+					remove = 1, // No fadeout
+					loot_by_user = 2,
+					loot_by_mob = 3,
+					explode = 4,
+					loot_by_pet = 5
+				};
 
-				PACKET(show_drop, drop *drop, int8_t type, const point &origin);
+				PACKET(show_drop, drop *drop, drop_spawn_types type, const point &origin, uint16_t delay = 0);
 				PACKET(take_drop, game_player_id player_id, game_map_object drop_id, int8_t pet_index = -1);
 				PACKET(dont_take);
-				PACKET(remove_drop, game_map_object drop_id);
-				PACKET(explode_drop, game_map_object drop_id);
+				PACKET(remove_drop, game_map_object drop_id, drop_despawn_types type, game_map_object looted_by);
+				PACKET(explode_drop, game_map_object drop_id, int16_t delay);
 				PACKET(drop_not_available_for_pickup);
 				PACKET(cant_get_anymore_items);
 				PACKET(pickup_drop, game_map_object id, int32_t amount, bool is_mesos = false, int16_t cafe_bonus = 0);
