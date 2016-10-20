@@ -299,6 +299,18 @@ PACKET_IMPL(change_weather, bool admin_weather, game_item_id item_id, const stri
 	return builder;
 }
 
+PACKET_IMPL(upgrade_tomb_effect, game_player_id player_id, game_item_id item_id, int32_t x, int32_t y) {
+	packet_builder builder;
+	builder
+		.add<packet_header>(SMSG_UPGRADE_TOMB_EFFECT)
+		.add<game_player_id>(player_id)
+		.add<game_item_id>(item_id)
+		.add<int32_t>(x)
+		.add<int32_t>(y);
+
+	return builder;
+}
+
 }
 }
 }
