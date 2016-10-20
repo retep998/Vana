@@ -348,6 +348,15 @@ auto player_handler::handle_moving(ref_ptr<player> player, packet_reader &reader
 	else if (player->get_fall_counter() > 0) {
 		player->set_fall_counter(0);
 	}
+
+	// Update all stalking players
+	packet_builder stalking_addition_packet = packets::player::stalk_add_or_update_player(player);
+	player->get_map()->run_function_players([&](ref_ptr<vana::channel_server::player> p) {
+		if (p->is_stalking() && p != player) {
+			p->send(stalking_addition_packet);
+		}
+	});
+
 }
 
 auto player_handler::handle_special_skills(ref_ptr<player> player, packet_reader &reader) -> void {
@@ -449,6 +458,20 @@ auto player_handler::handle_admin_messenger(ref_ptr<player> player_value, packet
 				header.add<packet_header>(IMSG_TO_ALL_PLAYERS);
 			}));
 	}
+}
+
+auto player_handler::handle_stalk(ref_ptr<player> player, packet_reader &reader) -> void {
+	if (!player->is_admin()) {
+		return;
+	}
+
+	if (player->is_stalking()) {
+		// No need to start _again_
+		return;
+	}
+
+	player->set_stalking(true);
+	player->send(packets::player::stalk_result(player));
 }
 
 auto player_handler::use_bomb_skill(ref_ptr<player> player, packet_reader &reader) -> void {

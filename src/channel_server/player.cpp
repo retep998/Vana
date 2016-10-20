@@ -155,6 +155,7 @@ auto player::handle(packet_reader &reader) -> result {
 				case CMSG_SKILL_USE: skills::use_skill(shared_from_this(), reader); break;
 				case CMSG_SKILLBOOK_USE: inventory_handler::use_skillbook(shared_from_this(), reader); break;
 				case CMSG_SPECIAL_SKILL: player_handler::handle_special_skills(shared_from_this(), reader); break;
+				case CMSG_STALK_BEGIN: player_handler::handle_stalk(shared_from_this(), reader); break;
 				case CMSG_STAT_ADDITION: get_stats()->add_stat(reader); break;
 				case CMSG_STORAGE: npc_handler::use_storage(shared_from_this(), reader); break;
 				case CMSG_SUMMON_ATTACK: player_handler::use_summon_attack(shared_from_this(), reader); break;
@@ -171,7 +172,7 @@ auto player::handle(packet_reader &reader) -> result {
 #ifdef DEBUG
 				case CMSG_PONG:
 				case CMSG_PLAYER_MOB_DISTANCE:
-				case CMSG_PLAYER_UNK_MAP:
+				case CMSG_RESET_NLCPQ:
 				case CMSG_PLAYER_BOAT_MAP:
 				case CMSG_PLAYER_UNK_MAP2:
 				case CMSG_ADMIN_COMMAND_LOG:

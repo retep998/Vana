@@ -205,6 +205,17 @@ auto map::add_player(ref_ptr<player> player) -> void {
 		player->send(packets::map::boat_dock_update(m_ship, m_info->ship_kind));
 	}
 
+	if (player->is_stalking()) {
+		player->send(packets::player::stalk_result(player));
+	}
+
+	packet_builder stalking_addition_packet = packets::player::stalk_add_or_update_player(player);
+	run_function_players([&](ref_ptr<vana::channel_server::player> p) {
+		if (p->is_stalking() && p != player) {
+			p->send(stalking_addition_packet);
+		}
+	});
+
 	check_player_equip(player);
 }
 
@@ -276,13 +287,22 @@ auto map::remove_player(ref_ptr<player> player) -> void {
 		summon_handler::remove_summon(player, summon->get_id(), true, summon_messages::none);
 	});
 
-	send(packets::map::remove_player(player->get_id()), player);
+	send(packets::map::remove_player(player_id), player);
 	update_mob_control(player);
 
 	auto kvp = m_players_without_protect_item.find(player_id);
 	if (kvp != std::end(m_players_without_protect_item)) {
 		m_players_without_protect_item.erase(kvp);
 	}
+
+	packet_builder stalking_removal_packet = packets::player::stalk_remove_player(vector<game_player_id>{ player_id });
+	run_function_players([stalking_removal_packet, player](ref_ptr<vana::channel_server::player> p) {
+		if (p->is_stalking() && p != player) {
+			p->send(stalking_removal_packet);
+		}
+	});
+
+	player->send(packets::player::stalk_remove_player(get_all_player_ids()));
 }
 
 auto map::run_function_players(const rect &dimensions, int16_t prop, function<void(ref_ptr<player>)> success_func) -> void {
