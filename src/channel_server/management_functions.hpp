@@ -48,6 +48,7 @@ namespace vana {
 			auto unban(ref_ptr<player> player, const game_chat &args) -> chat_result;
 			auto rehash(ref_ptr<player> player, const game_chat &args) -> chat_result;
 			auto rates(ref_ptr<player> player, const game_chat &args) -> chat_result;
+			auto packet(ref_ptr<player> player, const game_chat &args) -> chat_result;
 		}
 	}
 }
