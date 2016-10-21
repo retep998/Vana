@@ -111,6 +111,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_REACTOR_HIT 0xc3
 #define CMSG_REACTOR_TOUCH 0xc4
 #define CMSG_RESET_NLCPQ 0xc5 // Send on field init. Not sure why, probably an ugly hack. Exists in v.95 and appeared around v.75
+#define CMSG_EVENT_START 0xc8 // Sent when admin uses /start
 #define CMSG_PLAYER_BOAT_MAP 0xd2 // Packet format [map ID:4] [?:1], seems like this gets sent when a player spawns on a boat map, the ? I got was never anything other than 0
 #define CMSG_PLAYER_UNK_MAP2 0xd5 // These almost seem like acknowledgement packets given the lack of any data
 #define CMSG_CASHSHOP_CHECK_CASH 0xda
