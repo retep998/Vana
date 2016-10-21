@@ -235,7 +235,9 @@ auto player_data_provider::stop_following(ref_ptr<player> follower) -> void {
 }
 
 auto player_data_provider::disconnect() -> void {
-	for (auto &kvp : m_players) {
+	auto m_players_copy = hash_map<game_player_id, ref_ptr<player>>(m_players);
+
+	for (auto &kvp : m_players_copy) {
 		if (auto player = kvp.second) {
 			player->disconnect();
 		}

@@ -320,7 +320,9 @@ auto channel_server::get_online_id() const -> int32_t {
 }
 
 auto channel_server::send_world(const packet_builder &builder) -> void {
-	m_world_connection->send(builder);
+	if (m_world_connection != nullptr) {
+		m_world_connection->send(builder);
+	}
 }
 
 auto channel_server::set_scrolling_header(const string &message) -> void {
