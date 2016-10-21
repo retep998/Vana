@@ -821,10 +821,6 @@ auto management_functions::rates(ref_ptr<player> player, const game_chat &args) 
 }
 
 auto management_functions::packet(ref_ptr<player> player, const game_chat &args) -> chat_result {
-	auto is_number = [](char character) {
-		return (character >= '0' && character <= '9');
-	};
-
 	auto is_hex = [](char character) {
 		return (character >= 'a' && character <= 'f') ||
 				(character >= 'A' && character <= 'F') ||
@@ -873,22 +869,22 @@ auto management_functions::packet(ref_ptr<player> player, const game_chat &args)
 					packet.add<int64_t>(value);
 				}
 				else if (character == 'i') {
-					if (value >= INT32_MAX || value <= INT32_MIN) {
-						chat_handler_functions::show_info(player, "Number '" + value_string + "' is not between INT32_MIN and INT32_MAX");
+					if (value < 0 || value >= UINT32_MAX) {
+						chat_handler_functions::show_info(player, "Number '" + value_string + "' is not between 0 and " + lexical_cast<string>(UINT32_MAX));
 						return chat_result::handled_display;
 					}
 					packet.add<int32_t>(static_cast<int32_t>(value));
 				}
 				else if (character == 's') {
-					if (value >= INT16_MAX || value <= INT16_MIN) {
-						chat_handler_functions::show_info(player, "Number '" + value_string + "' is not between INT16_MIN and INT16_MAX");
+					if (value < 0 || value >= UINT16_MAX) {
+						chat_handler_functions::show_info(player, "Number '" + value_string + "' is not between 0 and " + lexical_cast<string>(UINT16_MAX));
 						return chat_result::handled_display;
 					}
 					packet.add<int16_t>(static_cast<int16_t>(value));
 				}
 				else if (character == 'b') {
-					if (value >= INT8_MAX || value <= INT8_MIN) {
-						chat_handler_functions::show_info(player, "Number '" + value_string + "' is not between INT8_MIN and INT8_MAX");
+					if (value < 0 || value >= UINT8_MAX) {
+						chat_handler_functions::show_info(player, "Number '" + value_string + "' is not between 0 and " + lexical_cast<string>(UINT8_MAX));
 						return chat_result::handled_display;
 					}
 					packet.add<int8_t>(static_cast<int8_t>(value));
@@ -935,14 +931,14 @@ auto management_functions::packet(ref_ptr<player> player, const game_chat &args)
 				}
 
 				packet.add_bytes(args.substr(i, string_length));
-				
+
 				i += string_length;
 				continue;
 			}
 
 			// Parsed nothing. huh?
-			
-			chat_handler_functions::show_info(player, "Character is invalid length at " + lexical_cast<string>(i));
+
+			chat_handler_functions::show_info(player, "Character is invalid at " + lexical_cast<string>(i));
 			return chat_result::handled_display;
 		}
 
@@ -962,7 +958,6 @@ auto management_functions::packet(ref_ptr<player> player, const game_chat &args)
 		player->send(packet);
 		return chat_result::handled_display;
 	}
-
 
 	return chat_result::show_syntax;
 }

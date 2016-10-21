@@ -645,10 +645,10 @@ auto chat_handler_functions::initialize() -> void {
 	command.notes.push_back("If you want to send B0 - B9, you need to write it with a capital.");
 	command.notes.push_back("Supported placeholders:");
 	command.notes.push_back(" \"text\": write 'text' as a string (including size)");
-	command.notes.push_back(" lNNN: write an int64 (long), where NNN = number from " + utilities::str::lexical_cast<string>(INT64_MIN) + " to "  + utilities::str::lexical_cast<string>(INT64_MAX) + " inclusive");
-	command.notes.push_back(" iNNN: write an int32 (int), where NNN = number from " + utilities::str::lexical_cast<string>(INT32_MIN) + " to "  + utilities::str::lexical_cast<string>(INT32_MAX) + " inclusive");
-	command.notes.push_back(" sNNN: write an int16 (short), where NNN = number from " + utilities::str::lexical_cast<string>(INT16_MIN) + " to "  + utilities::str::lexical_cast<string>(INT16_MAX) + " inclusive");
-	command.notes.push_back(" bNNN: write an int8 (byte), where NNN = number from " + utilities::str::lexical_cast<string>(INT8_MIN) + " to "  + utilities::str::lexical_cast<string>(INT8_MAX) + " inclusive");
+	command.notes.push_back(" lNNN: write an int64 (long), where NNN = number from " + utilities::str::lexical_cast<string>(INT64_MIN) + " to " + utilities::str::lexical_cast<string>(INT64_MAX) + " inclusive");
+	command.notes.push_back(" iNNN: write an uint32 (unsigned int), where NNN = number from 0 to " + utilities::str::lexical_cast<string>(UINT32_MAX) + " inclusive");
+	command.notes.push_back(" sNNN: write an uint16 (unsigned short), where NNN = number from 0 to " + utilities::str::lexical_cast<string>(UINT16_MAX) + " inclusive");
+	command.notes.push_back(" bNNN: write an uint8 (unsigned byte), where NNN = number from 0 to " + utilities::str::lexical_cast<string>(UINT8_MAX) + " inclusive");
 	command.notes.push_back("Example:");
 	command.notes.push_back(" !packet 7E00 b3 \"dojang/end/clear\"");
 	command.notes.push_back(" !packet 9400 i0 b1 \"This is a message from a gm, probably\" b0 \"Vana\"");
