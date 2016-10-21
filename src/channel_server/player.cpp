@@ -492,7 +492,7 @@ auto player::set_map(game_map_id map_id, game_portal_id portal_id, const point &
 
 auto player::set_map(game_map_id map_id, const data::type::portal_info * const portal, bool is_instance) -> void {
 	if (!maps::get_map(map_id)) {
-		send(packets::map::portal_blocked());
+		send(packets::map::portal_blocked(packets::map::portal_blocked_reason::closed_for_now));
 		return;
 	}
 	map *old_map = maps::get_map(m_map);

@@ -145,12 +145,11 @@ PACKET_IMPL(change_map, ref_ptr<vana::channel_server::player> player, bool spawn
 	return builder;
 }
 
-PACKET_IMPL(portal_blocked) {
+PACKET_IMPL(portal_blocked, portal_blocked_reason reason) {
 	packet_builder builder;
 	builder
-		.add<packet_header>(SMSG_PLAYER_UPDATE)
-		.unk<int8_t>(1)
-		.unk<int32_t>();
+		.add<packet_header>(SMSG_PORTAL_BLOCKED)
+		.unk<int8_t>((int8_t)reason);
 	return builder;
 }
 
