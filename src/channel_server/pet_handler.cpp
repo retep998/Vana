@@ -40,10 +40,9 @@ auto pet_handler::handle_movement(ref_ptr<player> player, packet_reader &reader)
 		return;
 	}
 
-	reader.unk<uint32_t>(); // Not ticks at all, not sure what this is
-	movement_handler::parse_movement(pet, reader);
-	reader.reset(10);
-	player->send_map(packets::pets::show_movement(player->get_id(), pet, reader.get_buffer(), reader.get_buffer_length() - 9));
+	point original_position;
+	auto move_path = movement_handler::read_movement(pet, reader, &original_position);
+	player->send_map(packets::pets::show_movement(player->get_id(), pet, original_position, move_path));
 }
 
 auto pet_handler::handle_chat(ref_ptr<player> player, packet_reader &reader) -> void {

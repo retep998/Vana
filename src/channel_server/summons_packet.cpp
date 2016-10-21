@@ -18,9 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "summons_packet.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "channel_server/maps.hpp"
+#include "channel_server/movement_handler.hpp"
 #include "channel_server/player.hpp"
 #include "channel_server/smsg_header.hpp"
 #include "channel_server/summon.hpp"
+#include <list>
 
 namespace vana {
 namespace channel_server {
@@ -45,14 +47,14 @@ SPLIT_PACKET_IMPL(show_summon, game_player_id player_id, summon *summon, bool is
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(move_summon, game_player_id player_id, summon *summon, const point &start_pos, unsigned char *buf, int32_t buf_len) {
+SPLIT_PACKET_IMPL(move_summon, game_player_id player_id, summon *summon, const point &original_position, const std::list<movement_handler::movement_element> &move_path) {
 	split_packet_builder builder;
 	builder.player
 		.add<packet_header>(SMSG_SUMMON_MOVEMENT)
 		.add<game_player_id>(player_id)
-		.add<game_summon_id>(summon->get_id())
-		.add<point>(start_pos)
-		.add_buffer(buf, buf_len);
+		.add<game_summon_id>(summon->get_id());
+
+	movement_handler::write_movement(builder.player, original_position, move_path);
 
 	builder.map.add_buffer(builder.player);
 	return builder;

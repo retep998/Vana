@@ -147,18 +147,15 @@ auto summon_handler::show_summons(ref_ptr<player> from_player, ref_ptr<player> t
 auto summon_handler::move_summon(ref_ptr<player> player, packet_reader &reader) -> void {
 	game_summon_id summon_id = reader.get<game_summon_id>();
 
-	// I am not certain what this is, but in the Odin source they seemed to think it was original position. However, it caused AIDS.
-	reader.unk<uint32_t>();
-
 	summon *summon = player->get_summons()->get_summon(summon_id);
 	if (summon == nullptr || summon->get_movement_type() == summon::fixed) {
 		// Up to no good, lag, or something else
 		return;
 	}
 
-	movement_handler::parse_movement(summon, reader);
-	reader.reset(10);
-	player->send_map(packets::move_summon(player->get_id(), summon, summon->get_pos(), reader.get_buffer(), (reader.get_buffer_length() - 9)));
+	point original_position;
+	auto move_path = movement_handler::read_movement(summon, reader, &original_position);
+	player->send_map(packets::move_summon(player->get_id(), summon, original_position, move_path));
 }
 
 auto summon_handler::damage_summon(ref_ptr<player> player, packet_reader &reader) -> void {

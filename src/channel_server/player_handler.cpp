@@ -320,10 +320,13 @@ auto player_handler::handle_moving(ref_ptr<player> player, packet_reader &reader
 		// Portal count doesn't match, usually an indication of hacking
 		return;
 	}
-	reader.reset(11);
-	movement_handler::parse_movement(player.get(), reader);
-	reader.reset(11);
-	player->send_map(packets::players::show_moving(player->get_id(), reader.get_buffer(), reader.get_buffer_length()));
+
+	reader.unk<int32_t>();
+	
+	point original_position;
+	auto move_path = movement_handler::read_movement(player.get(), reader, &original_position);
+
+	player->send_map(packets::players::show_moving(player->get_id(), original_position, move_path));
 
 	if (player->get_foothold() == 0 && !player->is_using_gm_hide()) {
 		// Player is floating in the air

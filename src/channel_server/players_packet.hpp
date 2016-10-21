@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/packet_builder.hpp"
 #include "common/split_packet_builder.hpp"
 #include "common/types.hpp"
+#include "channel_server/movement_handler.hpp"
+#include <list>
 #include <string>
 
 namespace vana {
@@ -33,7 +35,7 @@ namespace vana {
 
 		namespace packets {
 			namespace players {
-				SPLIT_PACKET(show_moving, game_player_id player_id, unsigned char *buf, size_t size);
+				SPLIT_PACKET(show_moving, game_player_id player_id, const point &original_position, const std::list<movement_handler::movement_element> &move_path);
 				SPLIT_PACKET(face_expression, game_player_id player_id, int32_t face);
 				PACKET(show_chat, game_player_id player_id, bool is_gm, const string &msg, bool bubble_only);
 				SPLIT_PACKET(damage_player, game_player_id player_id, game_damage dmg, game_mob_id mob, uint8_t hit, int8_t type, uint8_t stance, game_skill_id no_damage_skill, const return_damage_data &pgmr);
