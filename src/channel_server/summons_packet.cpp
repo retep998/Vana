@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "channel_server/player.hpp"
 #include "channel_server/smsg_header.hpp"
 #include "channel_server/summon.hpp"
-#include <list>
 
 namespace vana {
 namespace channel_server {

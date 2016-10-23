@@ -20,15 +20,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/packet_builder.hpp"
 #include "common/split_packet_builder.hpp"
 #include "common/types.hpp"
-#include "channel_server/move_path.hpp"
 #include <string>
-#include <list>
 
 namespace vana {
 	class item;
 	class packet_builder;
 
 	namespace channel_server {
+		class move_path;
 		class pet;
 		class player;
 
