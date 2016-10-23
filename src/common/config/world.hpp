@@ -49,6 +49,7 @@ namespace vana {
 			string scrolling_header;
 			string name;
 			rates rates;
+			hash_map<int32_t, string> npc_forced_script;
 			major_boss pianus;
 			major_boss papulatus;
 			major_boss zakum;
@@ -161,6 +162,20 @@ namespace vana {
 					if (config.validate_value(lua_type::table, value.second, key, prefix, true) == lua_type::nil) continue;
 					ret.rates = value.second.into<config::rates>(config, prefix + "." + key);
 				}
+				else if (key == "npc_forced_script") {
+					if (config.validate_value(lua_type::table, value.second, key, prefix, true) == lua_type::nil) continue;
+					
+					auto &values = value.second.as<hash_map<lua_variant, lua_variant>>();
+					for (const auto &value : values) {
+						config.validate_key(lua_type::number, value.first, prefix + "." + key);
+						config.validate_key(lua_type::string, value.second, prefix + "." + key);
+
+						ret.npc_forced_script.insert_or_assign(
+							value.first.as<int32_t>(),
+							value.second.as<string>()
+						);
+					}
+				}
 				else if (key == "pianus") {
 					has_pianus = true;
 					if (config.validate_value(lua_type::table, value.second, key, prefix, true) == lua_type::nil) continue;
@@ -224,6 +239,13 @@ namespace vana {
 			ret.scrolling_header = reader.get<string>();
 			ret.name = reader.get<string>();
 			ret.rates = reader.get<config::rates>();
+			int32_t npc_forced_scripts = reader.get<int32_t>();
+			for (int32_t i = 0; i < npc_forced_scripts; i++) {
+				ret.npc_forced_script.insert_or_assign(
+					reader.get<int32_t>(),
+					reader.get<string>()
+				);
+			}
 			ret.pianus = reader.get<config::major_boss>();
 			ret.papulatus = reader.get<config::major_boss>();
 			ret.zakum = reader.get<config::major_boss>();
@@ -250,6 +272,11 @@ namespace vana {
 			builder.add<string>(obj.scrolling_header);
 			builder.add<string>(obj.name);
 			builder.add<config::rates>(obj.rates);
+			builder.add<int32_t>(obj.npc_forced_script.size());
+			for (auto &kvp : obj.npc_forced_script) {
+				builder.add<int32_t>(kvp.first);
+				builder.add<string>(kvp.second);
+			}
 			builder.add<config::major_boss>(obj.pianus);
 			builder.add<config::major_boss>(obj.papulatus);
 			builder.add<config::major_boss>(obj.zakum);

@@ -164,6 +164,44 @@ PACKET_IMPL(npc_chat, int8_t type, game_map_object npc_id, const string &text, b
 	return builder;
 }
 
+auto npc_set_script(hash_map<int32_t, string> scripts) -> vector<packet_builder> {
+
+	vector<packet_builder> output;
+	
+	packet_builder current_packet;
+	uint8_t written_scripts = 0;
+
+	for (auto &kvp : scripts) {
+		if (written_scripts == 254) {
+			current_packet.set<uint8_t>(written_scripts, 2);
+			output.push_back(packet_builder{current_packet});
+			current_packet = {};
+			written_scripts = 0;
+		}
+
+		if (written_scripts == 0) {
+			current_packet
+				.add<packet_header>(SMSG_NPC_SET_SCRIPT)
+				.add<uint8_t>(0);
+		}
+		
+		current_packet
+			.add<game_map_object>(kvp.first)
+			.add<string>(kvp.second)
+			.add<int32_t>(20010101) // Start and end date
+			.add<int32_t>(20240101);
+
+		written_scripts++;
+	}
+
+	if (written_scripts > 0) {		
+		current_packet.set<uint8_t>(written_scripts, 2);
+		output.push_back(packet_builder{current_packet});
+	}
+
+	return output;
+}
+
 }
 }
 }

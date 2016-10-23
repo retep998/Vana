@@ -48,6 +48,12 @@ function generateWorld(props)
 		-- Map unload time (in seconds)
 		-- 0 means map unloading is disabled
 		["map_unload_time"] = 60 * 60,
+		
+		-- NPC script allocation, overrides regular scripts set in client
+		-- Note: wrong npc ids give exception!!!
+		["npc_forced_script"] = {
+			[9200000] = "cody",
+		},
 
 		["pianus"] = {
 			-- Valid boss channels

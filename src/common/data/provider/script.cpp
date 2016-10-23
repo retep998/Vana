@@ -133,6 +133,19 @@ auto script::has_quest_script(game_quest_id quest_id, int8_t state) const -> boo
 	});
 }
 
+auto script::register_npc_script(game_npc_id npc_id, const string &script) -> void {
+	int32_t index = 0;
+	for (auto &script : m_npc_scripts) {
+		if (script.first == npc_id) {
+			m_npc_scripts.erase(m_npc_scripts.begin() + index);
+			break;
+		}
+		index++;
+	}
+
+	m_npc_scripts.push_back({npc_id, script});
+}
+
 auto script::resolve(data::type::script_type type) const -> const vector<pair<int32_t, string>> & {
 	switch (type) {
 		case data::type::script_type::item: return m_item_scripts;
