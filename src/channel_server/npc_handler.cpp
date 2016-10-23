@@ -163,7 +163,27 @@ auto npc_handler::handle_npc_in(ref_ptr<player> player, packet_reader &reader) -
 }
 
 auto npc_handler::handle_npc_animation(ref_ptr<player> player, packet_reader &reader) -> void {
-	player->send(packets::npc::animate_npc(reader));
+	game_map_object npc_id = reader.get<game_map_object>();
+	size_t internal_npc_id = map::make_npc_id(npc_id);
+	
+	if (!player->get_map()->is_valid_npc_index(internal_npc_id)) {
+		// Shouldn't ever happen except in edited packets
+		return;
+	}
+	
+	uint8_t action1 = reader.get<uint8_t>();
+	uint8_t action2 = reader.get<uint8_t>();
+
+	move_path *path = nullptr;
+	if (reader.get_buffer_length() > 0) {
+		path = new move_path(reader);
+	}
+
+	player->send(packets::npc::animate_npc(npc_id, action1, action2, path));
+
+	if (path != nullptr) {
+		delete path;
+	}
 }
 
 auto npc_handler::use_shop(ref_ptr<player> player, packet_reader &reader) -> void {

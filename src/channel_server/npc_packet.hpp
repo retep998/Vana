@@ -31,6 +31,7 @@ namespace vana {
 
 	namespace channel_server {
 		class player;
+		class move_path;
 
 		namespace packets {
 			namespace npc {
@@ -59,7 +60,7 @@ namespace vana {
 
 				PACKET(show_npc, const data::type::npc_spawn_info &npc, game_map_object id, bool show = true);
 				PACKET(control_npc, const data::type::npc_spawn_info &npc, game_map_object id, bool show = true);
-				PACKET(animate_npc, packet_reader &reader);
+				PACKET(animate_npc, game_map_object npc_id, uint8_t action1, uint8_t action2, const move_path *opt_path);
 				PACKET(show_npc_effect, int32_t index, bool show = false);
 				PACKET(bought, uint8_t msg);
 				PACKET(show_shop, const shop_data &shop, game_slot_qty rechargeable_bonus);

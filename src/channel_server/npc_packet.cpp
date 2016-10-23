@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/session.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/maps.hpp"
+#include "channel_server/move_path.hpp"
 #include "channel_server/player.hpp"
 #include "channel_server/smsg_header.hpp"
 
@@ -61,21 +62,18 @@ PACKET_IMPL(control_npc, const data::type::npc_spawn_info &npc, game_map_object 
 	return builder;
 }
 
-PACKET_IMPL(animate_npc, packet_reader &reader) {
+PACKET_IMPL(animate_npc, game_map_object npc_id, uint8_t action1, uint8_t action2, const move_path* opt_path) {
 	packet_builder builder;
-	builder.add<packet_header>(SMSG_NPC_ANIMATE);
+	builder
+		.add<packet_header>(SMSG_NPC_ANIMATE)
+		.add<game_map_object>(npc_id)
+		.add<uint8_t>(action1)
+		.add<uint8_t>(action2);
 
-	size_t len = reader.get_buffer_length();
-	if (len == 6) {
-		// NPC talking
-		builder
-			.add<int32_t>(reader.get<int32_t>())
-			.add<int16_t>(reader.get<int16_t>());
+	if (opt_path != nullptr) {
+		opt_path->write_to_packet(builder);
 	}
-	else if (len > 6) {
-		// NPC moving
-		builder.add_buffer(reader.get_buffer(), len - 9);
-	}
+
 	return builder;
 }
 
