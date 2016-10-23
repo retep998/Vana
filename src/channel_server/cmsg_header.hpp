@@ -61,6 +61,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_FAME 0x5e
 #define CMSG_PLAYER_INFO 0x60
 #define CMSG_PET_SUMMON 0x61
+#define CMSG_CHECK_TEMPORARY_STAT_DURATION 0x62 // If you have temporary stats applied, the client will send this packet
 #define CMSG_MAP_CHANGE_SPECIAL 0x63
 #define CMSG_MAP_TELEPORT 0x64
 #define CMSG_TELEPORT_ROCK 0x65
@@ -102,7 +103,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_REACTOR_TOUCH 0xc4
 #define CMSG_PLAYER_UNK_MAP 0xc5 // It seems like the client sends 0xc5 and 0xd5 (as of .75) when it spawns on a map, but 0xc5 isn't sent if the change map packet error 38s the client while 0xd5 is sent
 #define CMSG_PLAYER_BOAT_MAP 0xd2 // Packet format [map ID:4] [?:1], seems like this gets sent when a player spawns on a boat map, the ? I got was never anything other than 0
-#define CMSG_PLAYER_UNK_MAP2 0xd5 // These almost seem like acknowledgement packets given the lack of any data
+#define CMSG_PARTY_SEARCH_START 0xd4 // int min_level, int max_level, int max_players, int jobflags
+#define CMSG_PARTY_SEARCH_STOP 0xd5
 #define CMSG_CASHSHOP_CHECK_CASH 0xda
 #define CMSG_CASHSHOP_REDEEM_COUPON 0xdc
 #define CMSG_CASHSHOP_OPERATION 0xdb
