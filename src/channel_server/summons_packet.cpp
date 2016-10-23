@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "summons_packet.hpp"
 #include "common/game_logic_utilities.hpp"
 #include "channel_server/maps.hpp"
-#include "channel_server/movement_handler.hpp"
+#include "channel_server/move_path.hpp"
 #include "channel_server/player.hpp"
 #include "channel_server/smsg_header.hpp"
 #include "channel_server/summon.hpp"
@@ -47,16 +47,14 @@ SPLIT_PACKET_IMPL(show_summon, game_player_id player_id, summon *summon, bool is
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(move_summon, game_player_id player_id, summon *summon, const point &original_position, const std::list<movement_handler::movement_element> &move_path) {
-	split_packet_builder builder;
-	builder.player
+PACKET_IMPL(move_summon, game_player_id player_id, summon *summon, const move_path &path) {
+	packet_builder builder;
+	builder
 		.add<packet_header>(SMSG_SUMMON_MOVEMENT)
 		.add<game_player_id>(player_id)
 		.add<game_summon_id>(summon->get_id());
 
-	movement_handler::write_movement(builder.player, original_position, move_path);
-
-	builder.map.add_buffer(builder.player);
+	path.write_to_packet(builder);
 	return builder;
 }
 

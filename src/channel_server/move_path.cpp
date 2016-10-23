@@ -15,36 +15,33 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "movement_handler.hpp"
-#include "common/point.hpp"
-#include "common/packet_reader.hpp"
-#include "channel_server/channel_server.hpp"
-#include "channel_server/movable_life.hpp"
-#include <iomanip>
-#include <iostream>
+
+#include "move_path.hpp"
 
 namespace vana {
 namespace channel_server {
 
-auto movement_handler::read_movement(movable_life *life, packet_reader &reader, point* original_position) -> const std::list<movement_element> {
+auto move_path::read_from_packet(packet_reader &reader) -> void {
 	game_foothold_id foothold = 0;
 	int8_t stance = 0;
 
 	game_coord x = reader.get<game_coord>();
 	game_coord y = reader.get<game_coord>();
 
-	if (original_position != nullptr) {
-		*original_position = {x, y};
-	}
+	this->original_position = {x, y};
 
 	uint8_t movement_count = reader.get<uint8_t>();
 
-	std::list<movement_element> move_path;
+	this->elements.clear();
 
 	for (uint8_t i = 0; i < movement_count; ++i) {
 		movement_types type = (movement_types)reader.get<int8_t>();
 		movement_element elem;
 		elem.type = type;
+		elem.foothold = foothold;
+		elem.x = x;
+		elem.y = y;
+		elem.stance = stance;
 
 		switch (type) {
 		case movement_types::normal_movement:
@@ -61,7 +58,7 @@ auto movement_handler::read_movement(movable_life *life, packet_reader &reader, 
 				elem.fall_start = reader.get<int16_t>();
 			}
 
-			stance = elem.stance = reader.get<int8_t>();
+			elem.stance = reader.get<int8_t>();
 			elem.time_elapsed = reader.get<int16_t>();
 			break;
 		case movement_types::jump:
@@ -71,11 +68,9 @@ auto movement_handler::read_movement(movable_life *life, packet_reader &reader, 
 		case movement_types::wings:
 		case movement_types::unk3:
 		case movement_types::excessive_kb:
-			elem.x = x;
-			elem.y = y;
 			elem.x_velocity = reader.get<int16_t>();
 			elem.y_velocity = reader.get<int16_t>();
-			stance = elem.stance = reader.get<int8_t>();
+			elem.stance = reader.get<int8_t>();
 			elem.time_elapsed = reader.get<int16_t>();
 			break;
 		case movement_types::immediate:
@@ -87,27 +82,29 @@ auto movement_handler::read_movement(movable_life *life, packet_reader &reader, 
 			elem.x = reader.get<game_coord>();
 			elem.y = reader.get<game_coord>();
 			elem.foothold = reader.get<game_foothold_id>();
-			stance = elem.stance = reader.get<int8_t>();
+			elem.stance = reader.get<int8_t>();
 			elem.time_elapsed = reader.get<int16_t>();
 			break;
 		case movement_types::unk2:
-			elem.x = x;
-			elem.y = y;
 			elem.x_velocity = reader.get<int16_t>();
 			elem.y_velocity = reader.get<int16_t>();
 			elem.fall_start = reader.get<int16_t>();
+			elem.stance = reader.get<int8_t>();
+			elem.time_elapsed = reader.get<int16_t>();
 			break;
 		case movement_types::falling:
 			elem.stat = reader.get<int8_t>();
 			break;
 		default:
-			stance = elem.stance = reader.get<int8_t>();
+			elem.stance = reader.get<int8_t>();
 			elem.time_elapsed = reader.get<int16_t>();
 			break;
 		}
 		x = elem.x;
 		y = elem.y;
-		move_path.push_back(elem);
+		foothold = elem.foothold;
+		stance = elem.stance;
+		this->elements.push_back(elem);
 	}
 
 	uint8_t keypad_states = reader.get<uint8_t>();
@@ -123,17 +120,17 @@ auto movement_handler::read_movement(movable_life *life, packet_reader &reader, 
 	reader.get<int16_t>(); // right
 	reader.get<int16_t>(); // bottom
 
-	point final_pos = {x, y};
-	life->reset_movement(foothold, final_pos, stance);
-	return move_path;
+	this->new_position = {x, y};
+	this->new_stance = stance;
+	this->new_foothold = foothold;
 }
 
-auto movement_handler::write_movement(packet_builder &builder, const point &original_position, const std::list<movement_element> &move_path) -> void {
-	builder.add<point>(original_position);
+auto move_path::write_to_packet(packet_builder &builder) const -> void {
+	builder.add<point>(this->original_position);
 	
-	builder.add<uint8_t>((uint8_t)move_path.size());
+	builder.add<uint8_t>((uint8_t)this->elements.size());
 	
-	for (auto &elem : move_path) {
+	for (auto &elem : this->elements) {
 		movement_types type = elem.type;
 		builder.add<int8_t>((int8_t)type);
 
@@ -188,7 +185,9 @@ auto movement_handler::write_movement(packet_builder &builder, const point &orig
 			builder
 				.add<int16_t>(elem.x_velocity)
 				.add<int16_t>(elem.y_velocity)
-				.add<int16_t>(elem.fall_start);
+				.add<int16_t>(elem.fall_start)
+				.add<int8_t>(elem.stance)
+				.add<int16_t>(elem.time_elapsed);
 			break;
 		case movement_types::falling:
 			builder.add<int8_t>(elem.stat);
@@ -200,6 +199,8 @@ auto movement_handler::write_movement(packet_builder &builder, const point &orig
 			break;
 		}
 	}
+
+	// Note: keypad and boundary values are not read on the client side.
 }
 
 }

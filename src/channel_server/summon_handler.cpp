@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "channel_server/channel_server.hpp"
 #include "channel_server/map.hpp"
 #include "channel_server/maps.hpp"
-#include "channel_server/movement_handler.hpp"
+#include "channel_server/move_path.hpp"
 #include "channel_server/player.hpp"
 #include "channel_server/player_packet.hpp"
 #include "channel_server/summon.hpp"
@@ -153,9 +153,9 @@ auto summon_handler::move_summon(ref_ptr<player> player, packet_reader &reader) 
 		return;
 	}
 
-	point original_position;
-	auto move_path = movement_handler::read_movement(summon, reader, &original_position);
-	player->send_map(packets::move_summon(player->get_id(), summon, original_position, move_path));
+	move_path path(reader);
+	summon->reset_from_move_path(path);
+	player->send_map(packets::move_summon(player->get_id(), summon, path), true);
 }
 
 auto summon_handler::damage_summon(ref_ptr<player> player, packet_reader &reader) -> void {

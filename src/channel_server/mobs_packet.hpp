@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "common/packet_builder.hpp"
 #include "common/types.hpp"
-#include "channel_server/movement_handler.hpp"
+#include "channel_server/move_path.hpp"
 #include <list>
 #include <vector>
 
@@ -38,7 +38,7 @@ namespace vana {
 				PACKET(mob_packet, ref_ptr<mob> value, int8_t summon_effect, ref_ptr<mob> owner, mob_spawn_type spawn);
 				PACKET(end_control_mob, game_map_object map_mob_id);
 				PACKET(move_mob_response, game_map_object map_mob_id, int16_t move_id, bool skill_possible, int32_t mp, game_mob_skill_id skill, game_mob_skill_level level);
-				PACKET(move_mob, game_map_object map_mob_id, bool skill_possible, int8_t raw_action, game_mob_skill_id skill, game_mob_skill_level level, int16_t option, const point &original_position, const std::list<movement_handler::movement_element> &move_path);
+				PACKET(move_mob, game_map_object map_mob_id, bool skill_possible, int8_t raw_action, game_mob_skill_id skill, game_mob_skill_level level, int16_t option, const move_path &path);
 				PACKET(heal_mob, game_map_object map_mob_id, int32_t amount);
 				PACKET(hurt_mob, game_map_object map_mob_id, game_damage amount);
 				PACKET(damage_friendly_mob, ref_ptr<mob> value, game_damage damage);

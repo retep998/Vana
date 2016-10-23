@@ -298,6 +298,12 @@ auto command_handler::handle_admin_command(ref_ptr<player> player, packet_reader
 			}
 			break;
 		}
+
+		default:
+			reader.reset();
+			std::cout << "Unknown GM command: " << reader << std::endl;
+
+			break;
 	}
 }
 

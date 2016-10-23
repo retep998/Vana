@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/packet_builder.hpp"
 #include "common/split_packet_builder.hpp"
 #include "common/types.hpp"
-#include "channel_server/movement_handler.hpp"
+#include "channel_server/move_path.hpp"
 #include <string>
 #include <list>
 
@@ -36,7 +36,7 @@ namespace vana {
 			namespace pets {
 				SPLIT_PACKET(pet_summoned, game_player_id player_id, pet *pet, bool kick = false, int8_t index = -1);
 				SPLIT_PACKET(show_chat, game_player_id player_id, pet *pet, const string &message, int8_t act);
-				SPLIT_PACKET(show_movement, game_player_id player_id, pet *pet, const point &original_position, const std::list<movement_handler::movement_element> &elements);
+				SPLIT_PACKET(show_movement, game_player_id player_id, pet *pet, const move_path &path);
 				PACKET(show_animation, game_player_id player_id, pet *pet, int8_t animation);
 				PACKET(update_pet, pet *pet, item *pet_item);
 				SPLIT_PACKET(level_up, game_player_id player_id, pet *pet);

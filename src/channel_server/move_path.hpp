@@ -20,13 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <list>
 
 namespace vana {
-	class packet_reader;
-	struct point;
-
 	namespace channel_server {
-		class movable_life;
-
-		namespace movement_handler {
+		class move_path {
+			NONCOPYABLE(move_path);
+		public:
 			enum class movement_types : int8_t {
 				normal_movement = 0,
 				jump = 1,
@@ -59,8 +56,24 @@ namespace vana {
 				int8_t stance, stat;
 			};
 
-			auto read_movement(movable_life *life, packet_reader &reader, point* original_position) -> const std::list<movement_element>;
-			auto write_movement(packet_builder &builder, const point &original_position, const std::list<movement_element> &move_path) -> void;
-		}
+			move_path(packet_reader &reader) {
+				read_from_packet(reader);
+			}
+
+			move_path() {}
+
+			auto read_from_packet(packet_reader &reader) -> void;
+			auto write_to_packet(packet_builder &builder) const -> void;
+
+			auto get_new_position() const -> const point { return new_position; }
+			auto get_new_stance() const -> int8_t { return new_stance; }
+			auto get_new_foothold() const -> game_foothold_id { return new_foothold; }
+		private:
+			point original_position;
+			point new_position;
+			int8_t new_stance;
+			game_foothold_id new_foothold;
+			std::list<movement_element> elements;
+		};
 	}
 }
