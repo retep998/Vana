@@ -32,7 +32,7 @@ if isGm() then
 			skills = {
 				-- Beginner
 				{8, 1}, -- Follow the Lead
-				{12, 20}, -- Blessing of the Spirit
+				{12, 20}, -- Blessing of the Fairy
 				{1003, 1}, -- Legendary Spirit
 				{1007, 1}, -- Maker
 				{1004, 1}, -- Monster Rider
@@ -397,6 +397,9 @@ if isGm() then
 				{5221008, 30, 30}, -- Battleship Torpedo
 				{5221009, 20, 20}, -- Hypnotize
 				{5221010, 5, 5}, -- Speed Infusion
+				-- Manager Skills
+				{8001000, 1}, -- Macro test
+				{8001001, 1}, -- Teleport
 				-- GM Skills
 				{9001000, 1}, -- Haste (Normal)
 				{9001001, 1}, -- Super Dragon Roar
@@ -408,16 +411,16 @@ if isGm() then
 				{9101003, 1}, -- Bless
 				{9101004, 1}, -- Hide
 				{9101005, 1}, -- Resurrection
-				{9101006, 1}, -- Super Dragon Roar
-				{9101007, 1}, -- Teleport
+				{9101006, 1}, -- Super Dragon Roar, does not work (not implemented)!
+				{9101007, 1}, -- Teleport, does not work (not set as teleport skill)!
 				{9101008, 1}, -- Hyper Body
 				-- Noblesse
-				{10000012, 20}, -- Blessing of the Spirit
+				{10000012, 20}, -- Blessing of the Fairy
 				{10001000, 3}, -- Three Snails
 				{10001001, 3}, -- Recovery
 				{10001002, 3}, -- Nimble Feet
 				{10001003, 1}, -- Legendary Spirit
-				{10001007, 1}, -- Legendary Spirit
+				{10001007, 1}, -- Maker
 				{10001004, 1}, -- Monster Rider
 				{10001005, 1}, -- Echo of Hero
 				-- Soul Warrior 1st Job
