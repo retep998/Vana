@@ -636,6 +636,23 @@ auto chat_handler_functions::initialize() -> void {
 	command.syntax = "<${view | reset | set}> <${mobexp | dropmeso | questexp | drop | globaldrop | globaldropmeso}> [#new rate]";
 	command.notes.push_back("Allows the viewing or setting of rates on the current world");
 	g_command_list["rates"] = command.add_to_map();
+
+	command.command = &management_functions::packet;
+	command.syntax = "<hex string and/or special placeholders>";
+	command.notes.push_back("Send a packet to yourself");
+	command.notes.push_back("This command also supports placeholders for making sending packets easier.");
+	command.notes.push_back("Packets of 0 or 1 byte will not be sent.");
+	command.notes.push_back("If you want to send B0 - B9, you need to write it with a capital.");
+	command.notes.push_back("Supported placeholders:");
+	command.notes.push_back(" \"text\": write 'text' as a string (including size)");
+	command.notes.push_back(" lNNN: write an int64 (long), where NNN = number from " + utilities::str::lexical_cast<string>(INT64_MIN) + " to " + utilities::str::lexical_cast<string>(INT64_MAX) + " inclusive");
+	command.notes.push_back(" iNNN: write an uint32 (unsigned int), where NNN = number from 0 to " + utilities::str::lexical_cast<string>(UINT32_MAX) + " inclusive");
+	command.notes.push_back(" sNNN: write an uint16 (unsigned short), where NNN = number from 0 to " + utilities::str::lexical_cast<string>(UINT16_MAX) + " inclusive");
+	command.notes.push_back(" bNNN: write an uint8 (unsigned byte), where NNN = number from 0 to " + utilities::str::lexical_cast<string>(UINT8_MAX) + " inclusive");
+	command.notes.push_back("Example:");
+	command.notes.push_back(" !packet 7E00 b3 \"dojang/end/clear\"");
+	command.notes.push_back(" !packet 9400 i0 b1 \"This is a message from a gm, probably\" b0 \"Vana\"");
+	g_command_list["packet"] = command.add_to_map();
 	#pragma endregion
 
 	#pragma region GM Level 0

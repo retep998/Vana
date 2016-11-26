@@ -820,5 +820,147 @@ auto management_functions::rates(ref_ptr<player> player, const game_chat &args) 
 	return chat_result::handled_display;
 }
 
+auto management_functions::packet(ref_ptr<player> player, const game_chat &args) -> chat_result {
+	auto is_hex = [](char character) {
+		return (character >= 'a' && character <= 'f') ||
+				(character >= 'A' && character <= 'F') ||
+				(character >= '0' && character <= '9');
+	};
+
+	using utilities::str::lexical_cast;
+	if (!args.empty()) {
+		// Build packet
+		packet_builder packet;
+
+		// Build raw hex string from cool format
+		// iNNNN = add int
+		// sNNNN = add short
+		// lNNNN = add long
+		// bNN   = add byte
+		// "...." = add string
+
+		size_t args_length = args.length();
+		for (size_t i = 0; i < args_length; i++) {
+			char character = args.at(i);
+
+			size_t next_space = args.find(' ', i + 1);
+			if (next_space == game_chat::npos) {
+				next_space = args_length;
+			}
+			size_t string_length = (next_space - 1) - (i - 1);
+
+			if (character == ' ') continue;
+
+			// Check for integer value
+
+			if (character == 'i' ||
+				character == 's' ||
+				character == 'l' ||
+				character == 'b') {
+
+				game_chat value_string;
+				int64_t value = 0;
+				if (string_length != 0) {
+					value_string = args.substr(i + 1, string_length - 1);
+					value = utilities::str::atoli(value_string.c_str());
+				}
+
+				if (character == 'l') {
+					packet.add<int64_t>(value);
+				}
+				else if (character == 'i') {
+					if (value < 0 || value >= UINT32_MAX) {
+						chat_handler_functions::show_info(player, "Number '" + value_string + "' is not between 0 and " + lexical_cast<string>(UINT32_MAX));
+						return chat_result::handled_display;
+					}
+					packet.add<int32_t>(static_cast<int32_t>(value));
+				}
+				else if (character == 's') {
+					if (value < 0 || value >= UINT16_MAX) {
+						chat_handler_functions::show_info(player, "Number '" + value_string + "' is not between 0 and " + lexical_cast<string>(UINT16_MAX));
+						return chat_result::handled_display;
+					}
+					packet.add<int16_t>(static_cast<int16_t>(value));
+				}
+				else if (character == 'b') {
+					if (value < 0 || value >= UINT8_MAX) {
+						chat_handler_functions::show_info(player, "Number '" + value_string + "' is not between 0 and " + lexical_cast<string>(UINT8_MAX));
+						return chat_result::handled_display;
+					}
+					packet.add<int8_t>(static_cast<int8_t>(value));
+				}
+
+				i += string_length;
+				continue;
+			}
+
+			if (character == '"') {
+				size_t next_quote = args.find('"', i + 1);
+				if (next_quote == game_chat::npos) {
+					chat_handler_functions::show_info(player, "String not terminated");
+					return chat_result::handled_display;
+				}
+
+				size_t string_length = (next_quote - 1) - i;
+
+				if (string_length == 0) {
+					// no text
+					packet.add<game_chat>("");
+				}
+				else {
+					packet.add<game_chat>(args.substr(i + 1, string_length));
+				}
+
+				i = next_quote;
+				continue;
+			}
+
+			if (is_hex(character)) {
+				if ((string_length % 2) != 0) {
+					chat_handler_functions::show_info(player, "Hex is invalid length at " + lexical_cast<string>(i));
+					return chat_result::handled_display;
+				}
+
+				// quick check
+				for (size_t j = i; j < (i + string_length); j++) {
+					char hex_char = args.at(j);
+					if (!is_hex(hex_char)) {
+						chat_handler_functions::show_info(player, "Hex is invalid length at " + lexical_cast<string>(j));
+						return chat_result::handled_display;
+					}
+				}
+
+				packet.add_bytes(args.substr(i, string_length));
+
+				i += string_length;
+				continue;
+			}
+
+			// Parsed nothing. huh?
+
+			chat_handler_functions::show_info(player, "Character is invalid at " + lexical_cast<string>(i));
+			return chat_result::handled_display;
+		}
+
+		// Make sure we are not consuming an empty string
+		// or a string that does not match a correct packet length
+		if (packet.get_size() < 2) {
+			return chat_result::show_syntax;
+		}
+
+		channel_server::get_instance().log(log_type::gm_command, [&](out_stream &log) {
+			log << "GM " << player->get_name()
+				<< " sent packet to self: " << std::endl
+				<< "raw: " << packet << std::endl
+				<< "cmd: " << args;
+		});
+
+		player->send(packet);
+		return chat_result::handled_display;
+	}
+
+	return chat_result::show_syntax;
+}
+
 }
 }

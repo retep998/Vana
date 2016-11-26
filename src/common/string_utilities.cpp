@@ -76,10 +76,24 @@ auto run_enum(const string &enum_text, function<void (const string &)> func) -> 
 }
 
 auto atoli(const char *str) -> int64_t {
+	// Discard whitespaces
+	while (isspace(*str)) str++;
+
+	bool negative = false;
+	if (*str == '+') str++;
+	else if (*str == '-') {
+		negative = true;
+		str++;
+	}
+	
 	int64_t result = 0;
+	
 	while (*str >= '0' && *str <= '9') {
 		result = (result * 10) + (*str++ - '0');
 	}
+
+	if (negative) result *= -1;
+
 	return result;
 }
 
