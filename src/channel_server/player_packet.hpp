@@ -61,6 +61,9 @@ namespace vana {
 				PACKET(show_hp_bar, game_player_id player_id, int32_t hp, int32_t max_hp);
 				PACKET(send_blocked_message, int8_t type);
 				PACKET(send_week_event_message, const game_chat &msg);
+				PACKET(stalk_result, ref_ptr<vana::channel_server::player> player);
+				PACKET(stalk_add_or_update_player, ref_ptr<vana::channel_server::player> player);
+				PACKET(stalk_remove_player, vector<game_player_id> player_ids);
 			}
 		}
 	}

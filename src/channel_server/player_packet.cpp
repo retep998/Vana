@@ -22,8 +22,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/inter_header.hpp"
 #include "common/session.hpp"
 #include "common/time_utilities.hpp"
+#include "common/wide_point.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/key_maps.hpp"
+#include "channel_server/map.hpp"
 #include "channel_server/pet.hpp"
 #include "channel_server/player.hpp"
 #include "channel_server/player_data_provider.hpp"
@@ -266,6 +268,64 @@ PACKET_IMPL(send_week_event_message, const game_chat &msg) {
 		.add<packet_header>(SMSG_SET_WEEK_EVENT_MESSAGE)
 		.add<bool>(true)
 		.add<game_chat>(msg);
+	return builder;
+}
+
+PACKET_IMPL(stalk_result, ref_ptr<vana::channel_server::player> player) {
+	packet_builder builder;
+	builder
+		.add<packet_header>(SMSG_STALK_RESULT);
+
+	size_t offset = builder.get_size();
+	
+	builder
+		.add<int32_t>(0);
+
+	int32_t players = 0;
+	
+	player->get_map()->run_function_players([&](ref_ptr<vana::channel_server::player> p) {
+		builder
+			.add<game_player_id>(p->get_id())
+			.add<bool>(false)
+			.add<string>(p->get_name())
+			.add<wide_point>(wide_point { p->get_pos() });
+
+		players++;
+	});
+	
+	builder.set<int32_t>(players, offset);
+
+	return builder;
+}
+
+PACKET_IMPL(stalk_add_or_update_player, ref_ptr<vana::channel_server::player> player) {
+	auto pos = player->get_pos();
+
+	packet_builder builder;
+	builder
+		.add<packet_header>(SMSG_STALK_RESULT)
+		.add<int32_t>(1)
+
+		.add<game_player_id>(player->get_id())
+		.add<bool>(false)
+		.add<string>(player->get_name())
+		.add<wide_point>(wide_point { pos });
+		
+	return builder;
+}
+
+PACKET_IMPL(stalk_remove_player, vector<game_player_id> player_ids) {
+	packet_builder builder;
+	builder
+		.add<packet_header>(SMSG_STALK_RESULT)
+		.add<int32_t>(player_ids.size());
+
+	for (auto id : player_ids) {
+		builder
+			.add<game_player_id>(id)
+			.add<bool>(true);
+	}
+		
 	return builder;
 }
 

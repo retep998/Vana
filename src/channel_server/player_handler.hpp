@@ -41,6 +41,7 @@ namespace vana {
 			auto handle_special_skills(ref_ptr<player> player, packet_reader &reader) -> void;
 			auto handle_monster_book(ref_ptr<player> player, packet_reader &reader) -> void;
 			auto handle_admin_messenger(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto handle_stalk(ref_ptr<player> player, packet_reader &reader) -> void;
 
 			auto use_bomb_skill(ref_ptr<player> player, packet_reader &reader) -> void;
 			auto use_melee_attack(ref_ptr<player> player, packet_reader &reader) -> void;

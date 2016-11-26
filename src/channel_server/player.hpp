@@ -66,6 +66,7 @@ namespace vana {
 			auto set_save_on_dc(bool save) -> void { m_save_on_dc = save; }
 			auto set_trading(bool state) -> void { m_trade_state = state; }
 			auto set_changing_channel(bool v) -> void { m_changing_channel = v; }
+			auto set_stalking(bool stalk) -> void { m_stalking = stalk; }
 			auto set_skin(game_skin_id id) -> void;
 			auto set_fall_counter(int8_t falls) -> void { m_fall_counter = falls; }
 			auto set_map_chair(game_seat_id s) -> void { m_map_chair = s; }
@@ -93,6 +94,7 @@ namespace vana {
 			auto is_changing_channel() const -> bool { return m_changing_channel; }
 			auto is_trading() const -> bool { return m_trade_state; }
 			auto is_disconnecting() const -> bool { return m_disconnecting; }
+			auto is_stalking() const -> bool { return m_stalking; }
 			auto has_gm_equip() const -> bool;
 			auto is_using_gm_hide() const -> bool;
 			auto has_gm_benefits() const -> bool;
@@ -175,6 +177,7 @@ namespace vana {
 			bool m_admin = false;
 			bool m_gm_chat = false;
 			bool m_disconnecting = false;
+			bool m_stalking = false;
 			game_world_id m_world_id = -1;
 			game_portal_id m_map_pos = -1;
 			game_gender_id m_gender = -1;

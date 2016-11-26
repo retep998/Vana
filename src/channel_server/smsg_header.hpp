@@ -136,7 +136,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_MAP_OBJECT_STATE_SET 0x8d // Same as SMSG_MAP_OBSTACLE_TOGGLE
 #define SMSG_TIMER_OFF 0x8e // Makes timer disappear from map
 #define SMSG_MAP_ARIANT_RESULT 0x8f // Shows (in Ariant map?) the scores
-#define SMSG_STALK_RESULT 0x90 // int amount, foreach { int charid, if (remove) { bool true } else { bool false, string name, int x, int y } }; Shows tracking on minimap?
+#define SMSG_STALK_RESULT 0x90 // int amount, foreach { int charid, if (remove) { bool true } else { bool false, string name, int x, int y } }; Shows arrows of the people out of bounds. Useful against hackers
 #define SMSG_MAP_PLAYER_SPAWN 0x91
 #define SMSG_MAP_PLAYER_DESPAWN 0x92
 #define SMSG_PLAYER_CHAT 0x93

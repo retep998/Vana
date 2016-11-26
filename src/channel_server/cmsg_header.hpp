@@ -69,6 +69,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_BOMB_SKILL_USE 0x6c
 #define CMSG_MACRO_LIST 0x6d
 #define CMSG_USE_REWARD_ITEM 0x6f
+#define CMSG_USE_REMOTE_GACHAPON_TICKET 0x73 // int itemid, int index; Sent when clicking one of the 10 buttons in the UI
+#define CMSG_ADMIN_BROADCAST 0x74 // Commands like '/alertall'
 #define CMSG_MESSAGE_GROUP 0x75 // Party, buddy and guild chat
 #define CMSG_COMMAND 0x76 // / commands like "/find"
 #define CMSG_PLAYER_CHATROOM 0x78 // Messenger system
@@ -80,13 +82,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_SEND_NOTE 0x81
 #define CMSG_MYSTIC_DOOR_ENTRY 0x83
 #define CMSG_KEYMAP 0x85
+#define CMSG_STALK_BEGIN 0x8c // Click on yourself in the minimap, and you'll send this packet.
+#define CMSG_ALLIANCE 0x8d
+#define CMSG_ALLIANCE_DENIED 0x8e
+#define CMSG_BBS 0x99
 #define CMSG_MTS 0x9a
+#define CMSG_MOB_CRC_KEY_CHANGED_REPLY 0x9b
+#define CMSG_USE_EXP_UP_ITEM 0x9c // int tickcount, short pos, int itemid
+#define CMSG_USE_TEMP_EXP_UP_ITEM 0x9d // int tickcount
 #define CMSG_BUFF_ITEM_USE 0x9f
 #define CMSG_PET_MOVEMENT 0xa1
 #define CMSG_PET_CHAT 0xa2
 #define CMSG_PET_COMMAND 0xa3
 #define CMSG_PET_LOOT 0xa4
 #define CMSG_PET_CONSUME_POTION 0xa5
+#define CMSG_PET_UPDATE_EXCEPTION_LIST 0xa6
 #define CMSG_SUMMON_MOVEMENT 0xa9
 #define CMSG_SUMMON_ATTACK 0xaa
 #define CMSG_SUMMON_DAMAGE 0xab
@@ -100,7 +110,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_ITEM_LOOT 0xc0
 #define CMSG_REACTOR_HIT 0xc3
 #define CMSG_REACTOR_TOUCH 0xc4
-#define CMSG_PLAYER_UNK_MAP 0xc5 // It seems like the client sends 0xc5 and 0xd5 (as of .75) when it spawns on a map, but 0xc5 isn't sent if the change map packet error 38s the client while 0xd5 is sent
+#define CMSG_RESET_NLCPQ 0xc5 // Send on field init. Not sure why, probably an ugly hack. Exists in v.95 and appeared around v.75
+#define CMSG_EVENT_START 0xc8 // Sent when admin uses /start
 #define CMSG_PLAYER_BOAT_MAP 0xd2 // Packet format [map ID:4] [?:1], seems like this gets sent when a player spawns on a boat map, the ? I got was never anything other than 0
 #define CMSG_PLAYER_UNK_MAP2 0xd5 // These almost seem like acknowledgement packets given the lack of any data
 #define CMSG_CASHSHOP_CHECK_CASH 0xda
