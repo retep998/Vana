@@ -34,6 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "channel_server/inventory.hpp"
 #include "channel_server/inventory_packet.hpp"
 #include "channel_server/maple_tvs.hpp"
+#include "channel_server/map_packet.hpp"
 #include "channel_server/maps.hpp"
 #include "channel_server/pet.hpp"
 #include "channel_server/pet_handler.hpp"
@@ -743,6 +744,21 @@ auto inventory_handler::use_item_effect(ref_ptr<player> player, packet_reader &r
 	}
 	player->set_item_effect(item_id);
 	player->send_map(packets::inventory::use_item_effect(player->get_id(), item_id));
+}
+
+auto inventory_handler::upgrade_tomb_effect(ref_ptr<player> player, packet_reader &reader) -> void {
+	auto item_id = reader.get<game_item_id>();
+	auto x = reader.get<int32_t>();
+	auto y = reader.get<int32_t>();
+	
+	// The client doesn't check what item is being used.
+	// However, we know that there's only one true item that can do this: Wheel of Destiny
+	if (item_id != constant::item::wheel_of_destiny) {
+		// Hacking
+		return;
+	}
+
+	player->send_map(packets::map::upgrade_tomb_effect(player->get_id(), item_id, x, y));
 }
 
 auto inventory_handler::handle_rock_functions(ref_ptr<player> player, packet_reader &reader) -> void {

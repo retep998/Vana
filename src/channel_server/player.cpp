@@ -147,7 +147,7 @@ auto player::handle(packet_reader &reader) -> result {
 				case CMSG_QUEST_OBTAIN: quests::get_quest(shared_from_this(), reader); break;
 				case CMSG_REACTOR_HIT: reactor_handler::hit_reactor(shared_from_this(), reader); break;
 				case CMSG_REACTOR_TOUCH: reactor_handler::touch_reactor(shared_from_this(), reader); break;
-				case CMSG_REVIVE_EFFECT: inventory_handler::use_item_effect(shared_from_this(), reader); break;
+				case CMSG_UPGRADE_TOMB_EFFECT: inventory_handler::upgrade_tomb_effect(shared_from_this(), reader); break;
 				case CMSG_SCROLL_USE: inventory_handler::use_scroll(shared_from_this(), reader); break;
 				case CMSG_SHOP: npc_handler::use_shop(shared_from_this(), reader); break;
 				case CMSG_SKILL_ADD: skills::add_skill(shared_from_this(), reader); break;
