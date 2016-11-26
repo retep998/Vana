@@ -72,15 +72,33 @@ PACKET_IMPL(login_connect, ref_ptr<user> user_value, const string &username) {
 			break;
 	}
 
+	// GradeCode
+	// & 0x20 == gmlevel 0
+	// & 0x10
+	// & 0x1 || (??2087) == gmlevel 1
+	//  Notes
+	//  - No warning about items that will disappear when you drop them (also for 0x10)
+	//  - Disables namechecks
+	//  - Ignores hideMinimap prop of maps
+	//  - Does not disable 
 	builder.add<bool>(user_value->is_admin()); // Enables commands like /c, /ch, /m, /h... but disables trading
 
 	// Seems like 0x80 is a "MWLB" account - I doubt it... it disables attacking and allows GM fly
 	// 0x40, 0x20 (and probably 0x10, 0x8, 0x4, 0x2, and 0x1) don't appear to confer any particular benefits, restrictions, or functionality
 	// (Although I didn't test client GM commands or anything of the sort)
 
-	builder
-		.add<uint8_t>(user_value->is_admin() ? 0x80 : 0x00)
-		.add<bool>(user_value->get_gm_level() > 0);
+	// SubGradeCode
+	// & 0x80 == usergm == gmlevel 5 (note 1 << 7)
+	//  Notes:
+	//  - Enables GM fly
+	//  - Will send /u command on enter field
+	//  - Disables attacking (because you will be a MWLB)
+	// & 0x40 = gmlevel 3 (subgm)
+	// & 0x20 = gmlevel 2 (subgm)
+	builder.add<uint8_t>(user_value->is_admin() ? 0x80 : 0x00);
+
+
+	builder.add<uint8_t>(0); // Country code
 
 	builder
 		.add<string>(username)
