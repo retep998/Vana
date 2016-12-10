@@ -65,15 +65,15 @@ namespace vana {
 			auto read_from_packet(packet_reader &reader) -> void;
 			auto write_to_packet(packet_builder &builder) const -> void;
 
-			auto get_new_position() const -> const point { return new_position; }
-			auto get_new_stance() const -> int8_t { return new_stance; }
-			auto get_new_foothold() const -> game_foothold_id { return new_foothold; }
+			auto get_new_position() const -> const point { return m_new_position; }
+			auto get_new_stance() const -> int8_t { return m_new_stance; }
+			auto get_new_foothold() const -> game_foothold_id { return m_new_foothold; }
 		private:
-			point original_position;
-			point new_position;
-			int8_t new_stance;
-			game_foothold_id new_foothold;
-			std::list<movement_element> elements;
+			point m_original_position;
+			point m_new_position;
+			int8_t m_new_stance;
+			game_foothold_id m_new_foothold;
+			std::list<movement_element> m_elements;
 		};
 	}
 }

@@ -62,7 +62,7 @@ PACKET_IMPL(control_npc, const data::type::npc_spawn_info &npc, game_map_object 
 	return builder;
 }
 
-PACKET_IMPL(animate_npc, game_map_object npc_id, uint8_t action1, uint8_t action2, const move_path* opt_path) {
+PACKET_IMPL(move_npc, game_map_object npc_id, uint8_t action1, uint8_t action2, const move_path &path) {
 	packet_builder builder;
 	builder
 		.add<packet_header>(SMSG_NPC_ANIMATE)
@@ -70,9 +70,18 @@ PACKET_IMPL(animate_npc, game_map_object npc_id, uint8_t action1, uint8_t action
 		.add<uint8_t>(action1)
 		.add<uint8_t>(action2);
 
-	if (opt_path != nullptr) {
-		opt_path->write_to_packet(builder);
-	}
+	path.write_to_packet(builder);
+
+	return builder;
+}
+
+PACKET_IMPL(animate_npc, game_map_object npc_id, uint8_t action1, uint8_t action2) {
+	packet_builder builder;
+	builder
+		.add<packet_header>(SMSG_NPC_ANIMATE)
+		.add<game_map_object>(npc_id)
+		.add<uint8_t>(action1)
+		.add<uint8_t>(action2);
 
 	return builder;
 }

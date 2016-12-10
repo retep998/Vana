@@ -28,14 +28,14 @@ auto move_path::read_from_packet(packet_reader &reader) -> void {
 	game_coord x = reader.get<game_coord>();
 	game_coord y = reader.get<game_coord>();
 
-	this->original_position = {x, y};
+	this->m_original_position = {x, y};
 
 	uint8_t movement_count = reader.get<uint8_t>();
 
-	this->elements.clear();
+	this->m_elements.clear();
 
 	for (uint8_t i = 0; i < movement_count; ++i) {
-		movement_types type = (movement_types)reader.get<int8_t>();
+		movement_types type = static_cast<movement_types>(reader.get<int8_t>());
 		movement_element elem;
 		elem.type = type;
 		elem.foothold = foothold;
@@ -104,7 +104,7 @@ auto move_path::read_from_packet(packet_reader &reader) -> void {
 		y = elem.y;
 		foothold = elem.foothold;
 		stance = elem.stance;
-		this->elements.push_back(elem);
+		this->m_elements.push_back(elem);
 	}
 
 	uint8_t keypad_states = reader.get<uint8_t>();
@@ -120,19 +120,19 @@ auto move_path::read_from_packet(packet_reader &reader) -> void {
 	reader.get<int16_t>(); // right
 	reader.get<int16_t>(); // bottom
 
-	this->new_position = {x, y};
-	this->new_stance = stance;
-	this->new_foothold = foothold;
+	this->m_new_position = {x, y};
+	this->m_new_stance = stance;
+	this->m_new_foothold = foothold;
 }
 
 auto move_path::write_to_packet(packet_builder &builder) const -> void {
-	builder.add<point>(this->original_position);
+	builder.add<point>(this->m_original_position);
 	
-	builder.add<uint8_t>((uint8_t)this->elements.size());
+	builder.add<uint8_t>(static_cast<uint8_t>(this->m_elements.size()));
 	
-	for (auto &elem : this->elements) {
+	for (const auto &elem : this->m_elements) {
 		movement_types type = elem.type;
-		builder.add<int8_t>((int8_t)type);
+		builder.add<int8_t>(static_cast<int8_t>(type));
 
 		switch (type) {
 		case movement_types::normal_movement:
