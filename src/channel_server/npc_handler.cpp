@@ -175,15 +175,12 @@ auto npc_handler::handle_npc_animation(ref_ptr<player> player, packet_reader &re
 	uint8_t action1 = reader.get<uint8_t>();
 	uint8_t action2 = reader.get<uint8_t>();
 
-	move_path *path = nullptr;
 	if (reader.get_buffer_length() > 0) {
-		path = new move_path(reader);
+		const move_path path{reader};
+		player->send(packets::npc::move_npc(npc_id, action1, action2, path));
 	}
-
-	player->send(packets::npc::animate_npc(npc_id, action1, action2, path));
-
-	if (path != nullptr) {
-		delete path;
+	else {
+		player->send(packets::npc::animate_npc(npc_id, action1, action2));
 	}
 }
 
