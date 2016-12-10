@@ -49,7 +49,7 @@ namespace vana {
 			string scrolling_header;
 			string name;
 			rates rates;
-			hash_map<int32_t, string> npc_forced_script;
+			hash_map<game_npc_id, string> npc_forced_script;
 			major_boss pianus;
 			major_boss papulatus;
 			major_boss zakum;
@@ -171,7 +171,7 @@ namespace vana {
 						config.validate_key(lua_type::string, value.second, prefix + "." + key);
 
 						ret.npc_forced_script.insert_or_assign(
-							value.first.as<int32_t>(),
+							value.first.as<game_npc_id>(),
 							value.second.as<string>()
 						);
 					}
@@ -239,10 +239,10 @@ namespace vana {
 			ret.scrolling_header = reader.get<string>();
 			ret.name = reader.get<string>();
 			ret.rates = reader.get<config::rates>();
-			int32_t npc_forced_scripts = reader.get<int32_t>();
-			for (int32_t i = 0; i < npc_forced_scripts; i++) {
+			uint32_t npc_forced_scripts = reader.get<uint32_t>();
+			for (uint32_t i = 0; i < npc_forced_scripts; i++) {
 				ret.npc_forced_script.insert_or_assign(
-					reader.get<int32_t>(),
+					reader.get<game_npc_id>(),
 					reader.get<string>()
 				);
 			}
@@ -272,9 +272,9 @@ namespace vana {
 			builder.add<string>(obj.scrolling_header);
 			builder.add<string>(obj.name);
 			builder.add<config::rates>(obj.rates);
-			builder.add<int32_t>(obj.npc_forced_script.size());
+			builder.add<uint32_t>(obj.npc_forced_script.size());
 			for (auto &kvp : obj.npc_forced_script) {
-				builder.add<int32_t>(kvp.first);
+				builder.add<game_npc_id>(kvp.first);
 				builder.add<string>(kvp.second);
 			}
 			builder.add<config::major_boss>(obj.pianus);

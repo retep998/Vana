@@ -150,12 +150,12 @@ PACKET_IMPL(show_shop, const shop_data &shop, game_slot_qty rechargeable_bonus) 
 	return builder;
 }
 
-PACKET_IMPL(npc_chat, int8_t type, game_map_object npc_id, const string &text, bool exclude_text) {
+PACKET_IMPL(npc_chat, int8_t type, game_npc_id npc_id, const string &text, bool exclude_text) {
 	packet_builder builder;
 	builder
 		.add<packet_header>(SMSG_NPC_TALK)
 		.add<int8_t>(4)
-		.add<game_map_object>(npc_id)
+		.add<game_npc_id>(npc_id)
 		.add<int8_t>(type);
 
 	if (!exclude_text) {
@@ -164,15 +164,14 @@ PACKET_IMPL(npc_chat, int8_t type, game_map_object npc_id, const string &text, b
 	return builder;
 }
 
-auto npc_set_script(hash_map<int32_t, string> scripts) -> vector<packet_builder> {
-
+auto npc_set_script(const hash_map<int32_t, string> scripts) -> vector<packet_builder> {
 	vector<packet_builder> output;
 	
 	packet_builder current_packet;
 	uint8_t written_scripts = 0;
 
-	for (auto &kvp : scripts) {
-		if (written_scripts == 254) {
+	for (const auto &kvp : scripts) {
+		if (written_scripts == UINT8_MAX) {
 			current_packet.set<uint8_t>(written_scripts, 2);
 			output.push_back(packet_builder{current_packet});
 			current_packet = {};
@@ -182,14 +181,14 @@ auto npc_set_script(hash_map<int32_t, string> scripts) -> vector<packet_builder>
 		if (written_scripts == 0) {
 			current_packet
 				.add<packet_header>(SMSG_NPC_SET_SCRIPT)
-				.add<uint8_t>(0);
+				.defer<uint8_t>();
 		}
 		
 		current_packet
-			.add<game_map_object>(kvp.first)
+			.add<game_npc_id>(kvp.first)
 			.add<string>(kvp.second)
-			.add<int32_t>(20010101) // Start and end date
-			.add<int32_t>(20240101);
+			.add<packet_date>({2001, 1, 1}) // Start and end date
+			.add<packet_date>({2091, 12, 31});
 
 		written_scripts++;
 	}
