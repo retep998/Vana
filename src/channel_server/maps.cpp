@@ -147,10 +147,10 @@ auto maps::use_portal(ref_ptr<player> player, packet_reader &reader) -> void {
 			const point portal_pos = portal->pos;
 
 			// Client-sided check; server uses an inaccurate check of 100 for each direction
-			rect possible_rect = rect(
+			rect possible_rect{
 				point{ portal_pos.x - 20, portal_pos.y - 50 },
 				point{ portal_pos.x + 20, portal_pos.y + 50 }
-			);
+			};
 
 			if (!possible_rect.contains(client_pos)) {
 				// Hacks

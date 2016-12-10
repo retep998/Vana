@@ -149,7 +149,7 @@ PACKET_IMPL(portal_blocked, portal_blocked_reason reason) {
 	packet_builder builder;
 	builder
 		.add<packet_header>(SMSG_PORTAL_BLOCKED)
-		.unk<int8_t>((int8_t)reason);
+		.add<int8_t>(static_cast<int8_t>(reason));
 	return builder;
 }
 
