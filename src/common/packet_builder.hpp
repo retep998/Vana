@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "common/i_packet.hpp"
-#include "common/shared_array.hpp"
 #include "common/types.hpp"
+#include "common/util/shared_array.hpp"
 #include <cstring>
 #include <iostream>
 #include <limits>
@@ -119,7 +119,7 @@ namespace vana {
 
 		size_t m_pos = 0;
 		size_t m_packet_capacity = 0;
-		utilities::misc::shared_array<unsigned char> m_packet;
+		vana::util::shared_array<unsigned char> m_packet;
 	};
 
 	template <typename TValue>

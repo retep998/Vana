@@ -17,10 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "npc.hpp"
 #include "common/algorithm.hpp"
-#include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/initialize_common.hpp"
-#include "common/string_utilities.hpp"
+#include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
+#include "common/util/string.hpp"
 #include <iomanip>
 #include <iostream>
 
@@ -29,18 +28,18 @@ namespace data {
 namespace provider {
 
 auto npc::load_data() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing NPCs... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing NPCs... ";
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("npc_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::npc_data));
 
 	for (const auto &row : rs) {
 		data::type::npc_info info;
 		info.id = row.get<game_npc_id>("npcid");
 		info.storage_cost = row.get<game_mesos>("storage_cost");
 
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&info](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("flags"), [&info](const string &cmp) {
 			if (cmp == "maple_tv") info.is_maple_tv = true;
 			else if (cmp == "is_guild_rank") info.is_guild_rank = true;
 		});

@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "players_packet.hpp"
 #include "common/attack_data.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/inter_header.hpp"
 #include "common/packet_reader.hpp"
 #include "common/return_damage_data.hpp"
 #include "common/session.hpp"
+#include "common/util/game_logic/player_skill.hpp"
 #include "common/wide_point.hpp"
 #include "channel_server.hpp"
 #include "channel_server/maps.hpp"
@@ -183,7 +183,7 @@ SPLIT_PACKET_IMPL(use_melee_attack, game_player_id player_id, game_skill_id mast
 		.add<uint8_t>(attack.display)
 		.add<uint8_t>(attack.animation)
 		.add<uint8_t>(attack.weapon_speed)
-		.add<uint8_t>(mastery_skill_id > 0 ? game_logic_utilities::get_mastery_display(mastery_level) : 0)
+		.add<uint8_t>(mastery_skill_id > 0 ? vana::util::game_logic::player_skill::get_mastery_display(mastery_level) : 0)
 		.unk<int32_t>();
 
 	for (const auto &target : attack.damages) {
@@ -219,7 +219,7 @@ SPLIT_PACKET_IMPL(use_ranged_attack, game_player_id player_id, game_skill_id mas
 		.add<uint8_t>(attack.display)
 		.add<uint8_t>(attack.animation)
 		.add<uint8_t>(attack.weapon_speed)
-		.add<uint8_t>(mastery_skill_id > 0 ? game_logic_utilities::get_mastery_display(mastery_level) : 0)
+		.add<uint8_t>(mastery_skill_id > 0 ? vana::util::game_logic::player_skill::get_mastery_display(mastery_level) : 0)
 		// Bug in global:
 		// The colored swoosh does not display as it should
 		.add<game_item_id>(attack.star_id);
@@ -318,7 +318,7 @@ SPLIT_PACKET_IMPL(use_energy_charge_attack, game_player_id player_id, int32_t ma
 		.add<uint8_t>(attack.display)
 		.add<uint8_t>(attack.animation)
 		.add<uint8_t>(attack.weapon_speed)
-		.add<uint8_t>(mastery_skill_id > 0 ? game_logic_utilities::get_mastery_display(mastery_level) : 0)
+		.add<uint8_t>(mastery_skill_id > 0 ? vana::util::game_logic::player_skill::get_mastery_display(mastery_level) : 0)
 		.unk<int32_t>();
 
 	for (const auto &target : attack.damages) {

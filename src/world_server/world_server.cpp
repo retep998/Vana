@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "world_server.hpp"
 #include "common/connection_listener_config.hpp"
 #include "common/connection_manager.hpp"
-#include "common/exit_codes.hpp"
-#include "common/initialize_common.hpp"
+#include "common/data/initialize.hpp"
+#include "common/exit_code.hpp"
 #include "common/server_type.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/string.hpp"
 #include "world_server/channels.hpp"
 #include "world_server/sync_packet.hpp"
 #include "world_server/world_server_accept_packet.hpp"
@@ -62,7 +62,7 @@ auto world_server::finalize_server_session(ref_ptr<world_server_accepted_session
 }
 
 auto world_server::load_data() -> result {
-	initializing::check_schema_version(this);
+	vana::data::initialize::check_schema_version(this);
 
 	auto &config = get_inter_server_config();
 	auto result = get_connection_manager().connect(
@@ -79,7 +79,7 @@ auto world_server::load_data() -> result {
 	}
 
 	send_auth(result.second);
-	return result::successful;
+	return result::success;
 }
 
 auto world_server::on_connect_to_login(ref_ptr<login_server_session> connection) -> void {
@@ -91,7 +91,7 @@ auto world_server::on_disconnect_from_login() -> void {
 
 	if (is_connected()) {
 		m_world_id = -1;
-		log(log_type::server_disconnect, "Disconnected from the LoginServer. Shutting down...");
+		log(vana::log::type::server_disconnect, "Disconnected from the LoginServer. Shutting down...");
 		get_channels().disconnect();
 		exit(exit_code::server_disconnection);
 	}
@@ -106,7 +106,7 @@ auto world_server::rehash_config(const config::world &config) -> void {
 auto world_server::established_login_connection(game_world_id world_id, connection_port port, const config::world &conf) -> void {
 	m_world_id = world_id;
 
-	log(log_type::server_connect, [&](out_stream &str) {
+	log(vana::log::type::server_connect, [&](out_stream &str) {
 		str << "Handling world " << static_cast<int32_t>(world_id);
 	});
 

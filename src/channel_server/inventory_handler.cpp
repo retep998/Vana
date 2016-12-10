@@ -24,16 +24,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/provider/script.hpp"
 #include "common/data/provider/shop.hpp"
 #include "common/data/provider/valid_char.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/inter_header.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
-#include "common/randomizer.hpp"
+#include "common/util/game_logic/inventory.hpp"
+#include "common/util/game_logic/item.hpp"
+#include "common/util/game_logic/player_skill.hpp"
+#include "common/util/randomizer.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/drop.hpp"
 #include "channel_server/inventory.hpp"
 #include "channel_server/inventory_packet.hpp"
 #include "channel_server/maple_tvs.hpp"
+#include "channel_server/map_packet.hpp"
 #include "channel_server/maps.hpp"
 #include "channel_server/pet.hpp"
 #include "channel_server/pet_handler.hpp"
@@ -53,8 +56,8 @@ auto inventory_handler::move_item(ref_ptr<player> player, packet_reader &reader)
 	bool dropped = (slot2 == 0);
 	bool equipped_slot1 = (slot1 < 0);
 	bool equipped_slot2 = (slot2 < 0);
-	game_inventory_slot stripped_slot1 = game_logic_utilities::strip_cash_slot(slot1);
-	game_inventory_slot stripped_slot2 = game_logic_utilities::strip_cash_slot(slot2);
+	game_inventory_slot stripped_slot1 = vana::util::game_logic::inventory::strip_cash_slot(slot1);
+	game_inventory_slot stripped_slot2 = vana::util::game_logic::inventory::strip_cash_slot(slot2);
 	auto test_slot = [&slot1, &slot2, &stripped_slot1, &stripped_slot2](game_inventory_slot test_slot) -> bool {
 		return (slot1 < 0 && stripped_slot1 == test_slot) || (slot2 < 0 && stripped_slot2 == test_slot);
 	};
@@ -89,7 +92,7 @@ auto inventory_handler::move_item(ref_ptr<player> player, packet_reader &reader)
 
 auto inventory_handler::drop_item(ref_ptr<player> player, packet_reader &reader, item *item_value, game_inventory_slot slot, game_inventory inv) -> void {
 	game_slot_qty amount = reader.get<game_slot_qty>();
-	if (!game_logic_utilities::is_stackable(item_value->get_id())) {
+	if (!vana::util::game_logic::item::is_stackable(item_value->get_id())) {
 		amount = item_value->get_amount();
 	}
 	else if (amount <= 0 || amount > item_value->get_amount()) {
@@ -100,7 +103,7 @@ auto inventory_handler::drop_item(ref_ptr<player> player, packet_reader &reader,
 		// Hacking
 		return;
 	}
-	if (game_logic_utilities::is_gm_equip(item_value->get_id()) || item_value->has_lock()) {
+	if (vana::util::game_logic::item::is_gm_equip(item_value->get_id()) || item_value->has_lock()) {
 		// We don't allow these to be dropped or traded
 		return;
 	}
@@ -189,10 +192,10 @@ auto inventory_handler::use_skillbook(ref_ptr<player> player, packet_reader &rea
 	for (const auto &s : *skillbook_items) {
 		skill_id = s.skill_id;
 		new_max_level = s.max_level;
-		if (game_logic_utilities::item_skill_matches_job(skill_id, player->get_stats()->get_job())) {
+		if (vana::util::game_logic::player_skill::item_skill_matches_job(skill_id, player->get_stats()->get_job())) {
 			if (player->get_skills()->get_skill_level(skill_id) >= s.req_level) {
 				if (player->get_skills()->get_max_skill_level(skill_id) < new_max_level) {
-					if (randomizer::percentage<int8_t>() < s.chance) {
+					if (vana::util::randomizer::percentage<int8_t>() < s.chance) {
 						player->get_skills()->set_max_skill_level(skill_id, new_max_level);
 						succeed = true;
 					}
@@ -205,7 +208,7 @@ auto inventory_handler::use_skillbook(ref_ptr<player> player, packet_reader &rea
 	}
 
 	if (skill_id != 0) {
-		bool is_mastery_book = game_logic_utilities::get_item_type(item_id) == constant::item::type::item_mastery_book;
+		bool is_mastery_book = vana::util::game_logic::item::get_item_type(item_id) == constant::item::type::item_mastery_book;
 		player->send_map(packets::inventory::use_skillbook(player->get_id(), is_mastery_book, skill_id, new_max_level, true, succeed));
 	}
 }
@@ -262,7 +265,7 @@ auto inventory_handler::use_summon_bag(ref_ptr<player> player, packet_reader &re
 	inventory::take_item_slot(player, constant::inventory::use, slot, 1);
 
 	for (const auto &bag : *item_info) {
-		if (randomizer::percentage<uint32_t>() < bag.chance) {
+		if (vana::util::randomizer::percentage<uint32_t>() < bag.chance) {
 			if (channel_server::get_instance().get_mob_data_provider().mob_exists(bag.mob_id)) {
 				player->get_map()->spawn_mob(bag.mob_id, player->get_pos());
 			}
@@ -401,7 +404,7 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 
 	auto item_info = channel_server::get_instance().get_item_data_provider().get_item_info(item_id);
 	bool used = false;
-	if (game_logic_utilities::get_item_type(item_id) == constant::item::type::weather_cash) {
+	if (vana::util::game_logic::item::get_item_type(item_id) == constant::item::type::weather_cash) {
 		string message = reader.get<string>();
 		reader.skip<game_tick_count>();
 		if (message.length() <= 35) {
@@ -410,7 +413,7 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 			used = map->create_weather(player, false, constant::item::weather_time, item_id, message);
 		}
 	}
-	else if (game_logic_utilities::get_item_type(item_id) == constant::item::type::cash_pet_food) {
+	else if (vana::util::game_logic::item::get_item_type(item_id) == constant::item::type::cash_pet_food) {
 		pet *pet = player->get_pets()->get_summoned(0);
 		if (pet != nullptr) {
 			if (pet->get_fullness() < constant::stat::max_fullness) {
@@ -684,7 +687,7 @@ auto inventory_handler::use_cash_item(ref_ptr<player> player, packet_reader &rea
 			case constant::item::silver_sack_of_mesos:
 			case constant::item::gold_sack_of_mesos: {
 				game_mesos mesos = item_info->mesos;
-				if (!player->get_inventory()->modify_mesos(mesos)) {
+				if (player->get_inventory()->add_mesos(mesos).get_result() == stack_result::full) {
 					player->send(packets::inventory::send_mesobag_failed());
 				}
 				else {
@@ -743,6 +746,21 @@ auto inventory_handler::use_item_effect(ref_ptr<player> player, packet_reader &r
 	}
 	player->set_item_effect(item_id);
 	player->send_map(packets::inventory::use_item_effect(player->get_id(), item_id));
+}
+
+auto inventory_handler::upgrade_tomb_effect(ref_ptr<player> player, packet_reader &reader) -> void {
+	auto item_id = reader.get<game_item_id>();
+	auto x = reader.get<int32_t>();
+	auto y = reader.get<int32_t>();
+	
+	// The client doesn't check what item is being used.
+	// However, we know that there's only one true item that can do this: Wheel of Destiny
+	if (item_id != constant::item::wheel_of_destiny) {
+		// Hacking
+		return;
+	}
+
+	player->send_map(packets::map::upgrade_tomb_effect(player->get_id(), item_id, x, y));
 }
 
 auto inventory_handler::handle_rock_functions(ref_ptr<player> player, packet_reader &reader) -> void {
@@ -882,7 +900,7 @@ auto inventory_handler::handle_reward_item(ref_ptr<player> player, packet_reader
 		return;
 	}
 
-	auto reward = randomizer::select(rewards);
+	auto reward = vana::util::randomizer::select(rewards);
 	inventory::take_item(player, item_id, 1);
 	item *reward_item = new item{reward->reward_id, reward->quantity};
 	inventory::add_item(player, reward_item, true);

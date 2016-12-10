@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/hash_combine.hpp"
 #include "common/timer/type.hpp"
 #include "common/types.hpp"
+#include "common/util/hash_combine.hpp"
 #include <algorithm>
 #include <functional>
 
@@ -110,7 +110,7 @@ namespace std {
 	template <>
 	struct hash<vana::timer::id> {
 		auto operator()(const vana::timer::id &v) const -> size_t {
-			return vana::utilities::misc::hash_combinator(v.type, v.id1, v.id2);
+			return vana::util::hash_combinator(v.type, v.id1, v.id2);
 		}
 	};
 }

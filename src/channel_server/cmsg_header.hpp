@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_CHALKBOARD 0x31
 #define CMSG_EMOTE 0x32
 #define CMSG_ITEM_EFFECT 0x33
-#define CMSG_REVIVE_EFFECT 0x34
+#define CMSG_UPGRADE_TOMB_EFFECT 0x34
 #define CMSG_MONSTER_BOOK 0x38
 #define CMSG_NPC_TALK 0x39
 #define CMSG_NPC_TALK_CONT 0x3b // i.e. clicking next on NPC

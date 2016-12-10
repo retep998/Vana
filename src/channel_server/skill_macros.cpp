@@ -16,16 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "skill_macros.hpp"
-#include "common/database.hpp"
-#include "common/misc_utilities.hpp"
+#include "common/io/database.hpp"
+#include "common/util/misc.hpp"
 
 namespace vana {
 namespace channel_server {
 
 auto skill_macros::load(game_player_id char_id) -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT s.* FROM " << db.make_table("skill_macros") << " s WHERE s.character_id = :char",
+	soci::rowset<> rs = (sql.prepare << "SELECT s.* FROM " << db.make_table(vana::table::skill_macros) << " s WHERE s.character_id = :char",
 		soci::use(char_id, "char"));
 
 	for (const auto &row : rs) {
@@ -35,7 +35,7 @@ auto skill_macros::load(game_player_id char_id) -> void {
 
 auto skill_macros::save(game_player_id char_id) -> void {
 	static init_list<game_skill_id> nulls = {0};
-	utilities::misc::nullable_mode null_mode = utilities::misc::nullable_mode::null_if_found;
+	vana::util::nullable_mode null_mode = vana::util::nullable_mode::null_if_found;
 
 	int8_t i = 0;
 	string name = "";
@@ -44,10 +44,10 @@ auto skill_macros::save(game_player_id char_id) -> void {
 	optional<game_skill_id> skill2 = 0;
 	optional<game_skill_id> skill3 = 0;
 
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	soci::statement st = (sql.prepare
-		<< "REPLACE INTO " << db.make_table("skill_macros") << " "
+		<< "REPLACE INTO " << db.make_table(vana::table::skill_macros) << " "
 		<< "VALUES (:char, :key, :name, :shout, :skill1, :skill2, :skill3)",
 		soci::use(char_id, "char"),
 		soci::use(i, "key"),
@@ -62,9 +62,9 @@ auto skill_macros::save(game_player_id char_id) -> void {
 		if (macro != nullptr) {
 			name = macro->name;
 			shout = macro->shout;
-			skill1 = utilities::misc::get_optional(macro->skill1, null_mode, nulls);
-			skill2 = utilities::misc::get_optional(macro->skill2, null_mode, nulls);
-			skill3 = utilities::misc::get_optional(macro->skill3, null_mode, nulls);
+			skill1 = vana::util::misc::get_optional(macro->skill1, null_mode, nulls);
+			skill2 = vana::util::misc::get_optional(macro->skill2, null_mode, nulls);
+			skill3 = vana::util::misc::get_optional(macro->skill3, null_mode, nulls);
 			st.execute(true);
 		}
 	}

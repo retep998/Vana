@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "script.hpp"
 #include "common/abstract_server.hpp"
 #include "common/algorithm.hpp"
-#include "common/database.hpp"
-#include "common/file_utilities.hpp"
-#include "common/initialize_common.hpp"
-#include "common/string_utilities.hpp"
+#include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
+#include "common/util/file.hpp"
+#include "common/util/string.hpp"
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
@@ -32,7 +32,7 @@ namespace data {
 namespace provider {
 
 auto script::load_data() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Scripts... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Scripts... ";
 
 	m_npc_scripts.clear();
 	m_reactor_scripts.clear();
@@ -41,16 +41,16 @@ auto script::load_data() -> void {
 	m_first_map_entry_scripts.clear();
 	m_item_scripts.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("scripts"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::scripts));
 
 	for (const auto &row : rs) {
 		int32_t object_id = row.get<int32_t>("objectid");
 		string script = row.get<string>("script");
 		int8_t modifier = row.get<int8_t>("helper");
 
-		utilities::str::run_enum(row.get<string>("script_type"), [&](const string &cmp) {
+		vana::util::str::run_enum(row.get<string>("script_type"), [&](const string &cmp) {
 			if (cmp == "npc") m_npc_scripts.push_back(std::make_pair(object_id, script));
 			else if (cmp == "reactor") m_reactor_scripts.push_back(std::make_pair(object_id, script));
 			else if (cmp == "map_enter") m_map_entry_scripts.push_back(std::make_pair(object_id, script));
@@ -73,11 +73,11 @@ auto script::get_script(abstract_server *server, int32_t object_id, data::type::
 		for (const auto &script : scripts) {
 			if (script.first == object_id) {
 				string s = build_script_path(type, script.second);
-				if (utilities::file::exists(s)) {
+				if (vana::util::file::exists(s)) {
 					return s;
 				}
 #ifdef DEBUG
-				server->log(log_type::debug_error, "Missing script '" + s + "'");
+				server->log(vana::log::type::debug_error, "Missing script '" + s + "'");
 #endif
 				break;
 			}
@@ -99,11 +99,11 @@ auto script::get_quest_script(abstract_server *server, game_quest_id quest_id, i
 				}
 
 				string s = build_script_path(data::type::script_type::quest, script_state.second);
-				if (utilities::file::exists(s)) {
+				if (vana::util::file::exists(s)) {
 					return s;
 				}
 #ifdef DEBUG
-				server->log(log_type::debug_error, "Missing quest script '" + s + "'");
+				server->log(vana::log::type::debug_error, "Missing quest script '" + s + "'");
 #endif
 				break;
 			}

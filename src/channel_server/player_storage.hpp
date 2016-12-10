@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "common/types.hpp"
+#include "common/util/meso_inventory.hpp"
 #include <vector>
 
 namespace vana {
@@ -36,13 +37,14 @@ namespace vana {
 			auto set_slots(game_storage_slot slots) -> void;
 			auto add_item(item *item) -> void;
 			auto take_item(game_storage_slot slot) -> void;
-			auto set_mesos(game_mesos mesos) -> void { m_mesos = mesos; }
-			auto modify_mesos(game_mesos mod) -> bool;
+			auto set_mesos(game_mesos mesos) -> void;
+			auto modify_mesos(game_mesos mod) -> vana::util::meso_modify_result;
+			auto can_modify_mesos(game_mesos mesos) const -> stack_result;
 
 			auto get_slots() const -> game_storage_slot { return m_slots; }
 			auto get_num_items() const -> game_storage_slot { return static_cast<game_storage_slot>(m_items.size()); }
 			auto get_num_items(game_inventory inv) -> game_storage_slot;
-			auto get_mesos() const -> game_mesos { return m_mesos; }
+			auto get_mesos() const -> game_mesos { return m_mesos.get_mesos(); }
 			auto is_full() const -> bool { return m_items.size() == m_slots; }
 			auto get_item(game_storage_slot slot) const -> item * {
 				if (slot < m_items.size()) {
@@ -55,8 +57,8 @@ namespace vana {
 			auto save() -> void;
 		private:
 			game_storage_slot m_slots = 0;
-			game_mesos m_mesos = 0;
 			int32_t m_char_slots = 0;
+			vana::util::meso_inventory m_mesos;
 			vector<item *> m_items;
 			view_ptr<player> m_player;
 		};

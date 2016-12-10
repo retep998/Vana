@@ -17,12 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_active_buffs.hpp"
 #include "common/data/provider/skill.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/packet_reader.hpp"
-#include "common/randomizer.hpp"
-#include "common/time_utilities.hpp"
 #include "common/timer/container.hpp"
 #include "common/timer/timer.hpp"
+#include "common/util/game_logic/mob_skill.hpp"
+#include "common/util/game_logic/player_skill.hpp"
+#include "common/util/randomizer.hpp"
+#include "common/util/time.hpp"
 #include "channel_server/buffs_packet.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/maps.hpp"
@@ -80,7 +81,7 @@ auto player_active_buffs::translate_to_source(int32_t buff_id) const -> data::ty
 	if (buff_id < 0) {
 		return data::type::buff_source::from_item(-buff_id);
 	}
-	if (game_logic_utilities::is_mob_skill(buff_id)) {
+	if (vana::util::game_logic::mob_skill::is_mob_skill(buff_id)) {
 		return data::type::buff_source::from_mob_skill(
 			buff_id,
 			static_cast<game_mob_skill_level>(get_buff_level(data::type::buff_source_type::mob_skill, buff_id)));
@@ -315,7 +316,7 @@ auto player_active_buffs::add_buff(const data::type::buff_source &source, const 
 				buffs::convert_to_packet(player, source, time, buff),
 				0));
 
-		return result::successful;
+		return result::success;
 	}
 	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
@@ -566,7 +567,7 @@ auto player_active_buffs::reset_battleship_hp() -> void {
 	if (auto player = m_player.lock()) {
 		game_skill_level ship_level = player->get_skills()->get_skill_level(constant::skill::corsair::battleship);
 		game_player_level player_level = player->get_stats()->get_level();
-		m_battleship_hp = game_logic_utilities::get_battleship_hp(ship_level, player_level);
+		m_battleship_hp = vana::util::game_logic::player_skill::get_battleship_hp(ship_level, player_level);
 	}
 	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
@@ -646,7 +647,7 @@ auto player_active_buffs::add_combo() -> void {
 				return;
 			}
 
-			if (adv_combo > 0 && randomizer::percentage<uint16_t>() < skill->prop) {
+			if (adv_combo > 0 && vana::util::randomizer::percentage<uint16_t>() < skill->prop) {
 				m_combo += 1;
 			}
 			m_combo += 1;

@@ -16,16 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "lua_environment.hpp"
-#include "common/file_utilities.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/file.hpp"
+#include "common/util/string.hpp"
 #include <iostream>
 #include <stdexcept>
 
 namespace vana {
 namespace lua {
 
-object_pool<int32_t, lua_environment *> lua_environment::s_environments =
-	object_pool<int32_t, lua_environment *>{1, 1000000};
+vana::util::object_pool<int32_t, lua_environment *> lua_environment::s_environments =
+	vana::util::object_pool<int32_t, lua_environment *>{1, 1000000};
 
 auto lua_environment::get_environment(lua_State *lua_vm) -> lua_environment & {
 	lua_getglobal(lua_vm, "system_environment_id");
@@ -64,7 +64,7 @@ auto lua_environment::load_file(const string &filename) -> void {
 	if (m_lua_vm != nullptr) {
 		throw std::runtime_error{"lua_vm was still specified"};
 	}
-	if (!utilities::file::exists(filename)) {
+	if (!vana::util::file::exists(filename)) {
 		handle_file_not_found(filename);
 	}
 
@@ -96,7 +96,7 @@ auto lua_environment::run() -> result {
 		}
 		return resume(0);
 	}
-	return result::successful;
+	return result::success;
 }
 
 auto lua_environment::resume(lua::lua_return pushed_arg_count) -> result {
@@ -110,7 +110,7 @@ auto lua_environment::resume(lua::lua_return pushed_arg_count) -> result {
 		handle_error(m_file, error);
 		return result::failure;
 	}
-	return result::successful;
+	return result::success;
 }
 
 auto lua_environment::handle_error(const string &filename, const string &error) -> void {
@@ -155,12 +155,12 @@ auto lua_environment::push_nil(lua_State *lua_vm) -> lua_environment & {
 }
 
 auto lua_environment::get_script_name() -> string {
-	vector<string> parts = utilities::str::split(m_file, "/");
-	return utilities::file::remove_extension(parts[parts.size() - 1]);
+	vector<string> parts = vana::util::str::split(m_file, "/");
+	return vana::util::file::remove_extension(parts[parts.size() - 1]);
 }
 
 auto lua_environment::get_script_path() -> vector<string> {
-	vector<string> parts = utilities::str::split(m_file, "/");
+	vector<string> parts = vana::util::str::split(m_file, "/");
 	if (parts.size() == 1) {
 		vector<string> ret;
 		return ret;

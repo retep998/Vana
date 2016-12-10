@@ -20,12 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/provider/buff.hpp"
 #include "common/data/provider/equip.hpp"
 #include "common/data/provider/shop.hpp"
-#include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/initialize_common.hpp"
+#include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
 #include "common/item.hpp"
-#include "common/randomizer.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/game_logic/item.hpp"
+#include "common/util/randomizer.hpp"
+#include "common/util/string.hpp"
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -36,7 +36,7 @@ namespace data {
 namespace provider {
 
 auto item::load_data(buff &provider) -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Items... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Items... ";
 
 	load_items();
 	load_consumes(provider);
@@ -55,17 +55,17 @@ auto item::load_data(buff &provider) -> void {
 auto item::load_items() -> void {
 	m_item_info.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT id.*, s.label "
-		<< "FROM " << db.make_table("item_data") << " id "
-		<< "LEFT JOIN " << db.make_table("strings") << " s ON id.itemid = s.objectid AND s.object_type = :item",
+		<< "FROM " << db.make_table(vana::data::table::item_data) << " id "
+		<< "LEFT JOIN " << db.make_table(vana::data::table::strings) << " s ON id.itemid = s.objectid AND s.object_type = :item",
 		soci::use(string{"item"}, "item"));
 
 	for (const auto &row : rs) {
 		data::type::item_info info;
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&info](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("flags"), [&info](const string &cmp) {
 			if (cmp == "time_limited") info.time_limited = true;
 			else if (cmp == "cash_item") info.cash = true;
 			else if (cmp == "no_trade") info.no_trade = true;
@@ -95,9 +95,9 @@ auto item::load_items() -> void {
 auto item::load_scrolls() -> void {
 	m_scroll_info.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_scroll_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_scroll_data));
 
 	for (const auto &row : rs) {
 		data::type::scroll_info info;
@@ -119,7 +119,7 @@ auto item::load_scrolls() -> void {
 		info.jump = row.get<game_stat>("ijump");
 		info.speed = row.get<game_stat>("ispeed");
 
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&info](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("flags"), [&info](const string &cmp) {
 			if (cmp == "rand_stat") info.rand_stat = true;
 			else if (cmp == "recover_slot") info.recover = 1;
 			else if (cmp == "warm_support") info.warm_support = true;
@@ -133,9 +133,9 @@ auto item::load_scrolls() -> void {
 auto item::load_consumes(buff &provider) -> void {
 	m_consume_info.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_random_morphs"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_random_morphs));
 
 	hash_map<game_item_id, vector<data::type::morph_chance_info>> morph_data;
 	for (const auto &row : rs) {
@@ -147,7 +147,7 @@ auto item::load_consumes(buff &provider) -> void {
 		morph_data[item_id].push_back(info);
 	}
 
-	rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_consume_data"));
+	rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_consume_data));
 
 	for (const auto &row : rs) {
 		data::type::consume_info info;
@@ -198,7 +198,7 @@ auto item::load_consumes(buff &provider) -> void {
 		info.seal_def = row.get<int16_t>("defense_vs_seal");
 		info.curse_def = row.get<int16_t>("defense_vs_curse");
 
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&info](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("flags"), [&info](const string &cmp) {
 			if (cmp == "auto_consume") info.auto_consume = true;
 			else if (cmp == "party_item") info.party = true;
 			else if (cmp == "meso_up") info.meso_up = true;
@@ -214,7 +214,7 @@ auto item::load_consumes(buff &provider) -> void {
 			else if (cmp == "drop_up_for_party") info.party_drop_up = true;
 		});
 
-		utilities::str::run_flags(row.get<opt_string>("drop_up"), [&info, &row](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("drop_up"), [&info, &row](const string &cmp) {
 			if (cmp == "none") return;
 
 			info.drop_up = true;
@@ -222,7 +222,7 @@ auto item::load_consumes(buff &provider) -> void {
 			else if (cmp == "item_range") info.drop_up_item_range = row.get<int16_t>("drop_up_item_range");
 		});
 
-		utilities::str::run_flags(row.get<opt_string>("cure_ailments"), [&info](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("cure_ailments"), [&info](const string &cmp) {
 			if (cmp == "darkness") info.ailment |= 0x01;
 			else if (cmp == "poison") info.ailment |= 0x02;
 			else if (cmp == "curse") info.ailment |= 0x04;
@@ -236,9 +236,9 @@ auto item::load_consumes(buff &provider) -> void {
 }
 
 auto item::load_map_ranges() -> void {
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_monster_card_map_ranges"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_monster_card_map_ranges));
 
 	for (const auto &row : rs) {
 		data::type::card_map_range_info info;
@@ -262,9 +262,9 @@ auto item::load_map_ranges() -> void {
 auto item::load_monster_card_data() -> void {
 	m_mob_to_card_mapping.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("monster_card_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::monster_card_data));
 
 	for (const auto &row : rs) {
 		game_item_id card_id = row.get<game_item_id>("cardid");
@@ -277,9 +277,9 @@ auto item::load_monster_card_data() -> void {
 auto item::load_item_skills() -> void {
 	m_skillbooks.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_skills"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_skills));
 
 	for (const auto &row : rs) {
 		data::type::skillbook_info info;
@@ -309,9 +309,9 @@ auto item::load_item_skills() -> void {
 auto item::load_summon_bags() -> void {
 	m_summon_bags.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_summons"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_summons));
 
 	for (const auto &row : rs) {
 		data::type::summon_bag_info info;
@@ -339,9 +339,9 @@ auto item::load_summon_bags() -> void {
 auto item::load_item_rewards() -> void {
 	m_item_rewards.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_reward_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_reward_data));
 
 	for (const auto &row : rs) {
 		data::type::item_reward_info info;
@@ -371,9 +371,9 @@ auto item::load_item_rewards() -> void {
 auto item::load_pets() -> void {
 	m_pet_info.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_pet_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_pet_data));
 
 	for (const auto &row : rs) {
 		data::type::pet_info info;
@@ -384,7 +384,7 @@ auto item::load_pets() -> void {
 		info.limited_life = row.get<int32_t>("limited_life");
 		info.evolve_item = row.get<game_item_id>("evolution_item");
 		info.evolve_level = row.get<int8_t>("req_level_for_evolution");
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&info](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("flags"), [&info](const string &cmp) {
 			if (cmp == "no_revive") info.no_revive = true;
 			else if (cmp == "no_move_to_cash_shop") info.no_storing_in_cash_shop = true;
 			else if (cmp == "auto_react") info.auto_react = true;
@@ -397,9 +397,9 @@ auto item::load_pets() -> void {
 auto item::load_pet_interactions() -> void {
 	m_pet_interact_info.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("item_pet_interactions"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::item_pet_interactions));
 
 	for (const auto &row : rs) {
 		data::type::pet_interact_info info;
@@ -450,7 +450,7 @@ auto item::scroll_item(const equip &provider, game_item_id scroll_id, vana::item
 
 	if (item_info.prevent_slip || item_info.warm_support) {
 		succeed = 0;
-		if (gm_scroller || randomizer::percentage<uint16_t>() < item_info.success) {
+		if (gm_scroller || vana::util::randomizer::percentage<uint16_t>() < item_info.success) {
 			if (item_info.prevent_slip) {
 				equip->set_prevent_slip(true);
 			}
@@ -463,7 +463,7 @@ auto item::scroll_item(const equip &provider, game_item_id scroll_id, vana::item
 	else if (item_info.rand_stat) {
 		if (equip->get_slots() > 0) {
 			succeed = 0;
-			if (gm_scroller || randomizer::percentage<uint16_t>() < item_info.success) {
+			if (gm_scroller || vana::util::randomizer::percentage<uint16_t>() < item_info.success) {
 				provider.set_equip_stats(equip, stat_variance::chaos_normal, gm_scroller, false);
 
 				equip->inc_scrolls();
@@ -479,7 +479,7 @@ auto item::scroll_item(const equip &provider, game_item_id scroll_id, vana::item
 		int8_t recover_slots = std::min(item_info.recover, max_recoverable_slots);
 		if (recover_slots > 0) {
 			succeed = 0;
-			if (gm_scroller || randomizer::percentage<uint16_t>() < item_info.success) {
+			if (gm_scroller || vana::util::randomizer::percentage<uint16_t>() < item_info.success) {
 				// Give back slot(s)
 				equip->inc_slots(recover_slots);
 				succeed = 1;
@@ -487,13 +487,13 @@ auto item::scroll_item(const equip &provider, game_item_id scroll_id, vana::item
 		}
 	}
 	else {
-		if (game_logic_utilities::item_type_to_scroll_type(equip->get_id()) != game_logic_utilities::get_scroll_type(scroll_id)) {
+		if (vana::util::game_logic::item::item_type_to_scroll_type(equip->get_id()) != vana::util::game_logic::item::get_scroll_type(scroll_id)) {
 			// Hacking, equip slot different from the scroll slot
 			return hacking_result::definitely_hacking;
 		}
 		if (equip->get_slots() > 0) {
 			succeed = 0;
-			if (gm_scroller || randomizer::percentage<uint16_t>() < item_info.success) {
+			if (gm_scroller || vana::util::randomizer::percentage<uint16_t>() < item_info.success) {
 				succeed = 1;
 				equip->add_str(item_info.str);
 				equip->add_dex(item_info.dex);
@@ -516,7 +516,7 @@ auto item::scroll_item(const equip &provider, game_item_id scroll_id, vana::item
 	}
 
 	if (succeed == 0) {
-		if (item_info.cursed > 0 && randomizer::percentage<uint16_t>() < item_info.cursed) {
+		if (item_info.cursed > 0 && vana::util::randomizer::percentage<uint16_t>() < item_info.cursed) {
 			cursed = true;
 		}
 	}

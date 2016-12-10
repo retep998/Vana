@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_pets.hpp"
-#include "common/database.hpp"
+#include "common/io/database.hpp"
 #include "channel_server/pet.hpp"
 #include "channel_server/player.hpp"
 
@@ -50,7 +50,7 @@ auto player_pets::get_summoned(int8_t index) -> pet * {
 
 auto player_pets::save() -> void {
 	if (m_pets.size() > 0) {
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		opt_int8_t index = 0;
 		string name = "";
@@ -60,7 +60,7 @@ auto player_pets::save() -> void {
 		game_pet_id pet_id = 0;
 
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << db.make_table("pets") << " "
+			<< "UPDATE " << db.make_table(vana::table::pets) << " "
 			<< "SET "
 			<< "	`index` = :index, "
 			<< "	name = :name, "

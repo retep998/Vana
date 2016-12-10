@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "characters.hpp"
 #include "common/algorithm.hpp"
+#include "common/client_ip.hpp"
 #include "common/constant/equip_slot.hpp"
 #include "common/constant/inventory.hpp"
 #include "common/constant/item.hpp"
@@ -24,12 +25,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/provider/curse.hpp"
 #include "common/data/provider/equip.hpp"
 #include "common/data/provider/valid_char.hpp"
-#include "common/client_ip.hpp"
-#include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/misc_utilities.hpp"
+#include "common/io/database.hpp"
 #include "common/packet_reader.hpp"
 #include "common/session.hpp"
+#include "common/util/game_logic/inventory.hpp"
+#include "common/util/game_logic/job.hpp"
+#include "common/util/misc.hpp"
 #include "login_server/login_packet.hpp"
 #include "login_server/login_server.hpp"
 #include "login_server/login_server_accept_packet.hpp"
@@ -43,11 +44,11 @@ namespace vana {
 namespace login_server {
 
 auto characters::load_equips(game_player_id id, vector<char_equip> &vec) -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT i.item_id, i.slot "
-		<< "FROM " << db.make_table("items") << " i "
+		<< "FROM " << db.make_table(vana::table::items) << " i "
 		<< "WHERE "
 		<< "	i.character_id = :id "
 		<< "	AND i.inv = :inv "
@@ -88,7 +89,7 @@ auto characters::load_character(character &charc, const soci::row &row) -> void 
 	charc.map = row.get<game_map_id>("map");
 	charc.pos = row.get<int8_t>("pos");
 
-	if (game_logic_utilities::get_job_track(charc.job) == constant::job::track::gm) {
+	if (vana::util::game_logic::job::get_job_track(charc.job) == constant::job::track::gm) {
 		// GMs can't have their rank sent otherwise the client will crash
 		charc.world_rank = 0;
 		charc.world_rank_change = 0;
@@ -105,11 +106,11 @@ auto characters::load_character(character &charc, const soci::row &row) -> void 
 }
 
 auto characters::show_all_characters(ref_ptr<user> user_value) -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT * "
-		<< "FROM " << db.make_table("characters") << " c "
+		<< "FROM " << db.make_table(vana::table::characters) << " c "
 		<< "WHERE c.account_id = :account ",
 		soci::use(user_value->get_account_id(), "account"));
 
@@ -139,7 +140,7 @@ auto characters::show_all_characters(ref_ptr<user> user_value) -> void {
 }
 
 auto characters::show_characters(ref_ptr<user> user_value) -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	auto world_id = user_value->get_world_id();
 	game_account_id account_id = user_value->get_account_id();
@@ -149,7 +150,7 @@ auto characters::show_characters(ref_ptr<user> user_value) -> void {
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT * "
-		<< "FROM " << db.make_table("characters") << " c "
+		<< "FROM " << db.make_table(vana::table::characters) << " c "
 		<< "WHERE c.account_id = :account AND c.world_id = :world ",
 		soci::use(account_id, "account"),
 		soci::use(world_id.get(), "world"));
@@ -164,7 +165,7 @@ auto characters::show_characters(ref_ptr<user> user_value) -> void {
 	opt_int32_t max;
 	sql.once
 		<< "SELECT s.char_slots "
-		<< "FROM " << db.make_table("storage") << " s "
+		<< "FROM " << db.make_table(vana::table::storage) << " s "
 		<< "WHERE s.account_id = :account AND s.world_id = :world ",
 		soci::use(account_id, "account"),
 		soci::use(world_id.get(), "world"),
@@ -196,8 +197,8 @@ auto characters::check_character_name(ref_ptr<user> user_value, packet_reader &r
 }
 
 auto characters::create_item(game_item_id item_id, ref_ptr<user> user_value, game_player_id char_id, game_inventory_slot slot, game_slot_qty amount) -> void {
-	auto &db = database::get_char_db();
-	game_inventory inventory = game_logic_utilities::get_inventory(item_id);
+	auto &db = vana::io::database::get_char_db();
+	game_inventory inventory = vana::util::game_logic::inventory::get_inventory(item_id);
 	auto world_id = user_value->get_world_id();
 	if (!world_id.is_initialized()) {
 		THROW_CODE_EXCEPTION(codepath_invalid_exception, "!world_id.is_initialized()");
@@ -256,7 +257,7 @@ auto characters::create_character(ref_ptr<user> user_value, packet_reader &reade
 	game_stat intl = 4;
 	game_stat luk = 4;
 
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	optional<game_world_id> world_id = user_value->get_world_id();
 	if (!world_id.is_initialized()) {
@@ -264,7 +265,7 @@ auto characters::create_character(ref_ptr<user> user_value, packet_reader &reade
 	}
 
 	sql.once
-		<< "INSERT INTO " << db.make_table("characters") << " (name, account_id, world_id, face, hair, skin, gender, str, dex, `int`, luk) "
+		<< "INSERT INTO " << db.make_table(vana::table::characters) << " (name, account_id, world_id, face, hair, skin, gender, str, dex, `int`, luk) "
 		<< "VALUES (:name, :account, :world, :face, :hair, :skin, :gender, :str, :dex, :int, :luk)",
 		soci::use(name, "name"),
 		soci::use(user_value->get_account_id(), "account"),
@@ -289,7 +290,7 @@ auto characters::create_character(ref_ptr<user> user_value, packet_reader &reade
 	soci::row row;
 	sql.once
 		<< "SELECT * "
-		<< "FROM " << db.make_table("characters") << " c "
+		<< "FROM " << db.make_table(vana::table::characters) << " c "
 		<< "WHERE c.character_id = :id",
 		soci::use(id, "id"),
 		soci::into(row);
@@ -321,13 +322,13 @@ auto characters::delete_character(ref_ptr<user> user_value, packet_reader &reade
 	};
 
 	uint8_t result = success;
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	optional<game_world_id> world_id;
 
 	sql.once
 		<< "SELECT world_id "
-		<< "FROM " << db.make_table("characters") << " c "
+		<< "FROM " << db.make_table(vana::table::characters) << " c "
 		<< "WHERE c.character_id = :char ",
 		soci::use(id, "char"),
 		soci::into(world_id);
@@ -348,10 +349,16 @@ auto characters::delete_character(ref_ptr<user> user_value, packet_reader &reade
 			return false;
 		});
 
-		sql.once << "DELETE p FROM " << db.make_table("pets") << " p INNER JOIN " << db.make_table("items") << " i ON p.pet_id = i.pet_id WHERE i.character_id = :char ",
+		sql.once
+			<< "DELETE p "
+			<< "FROM " << db.make_table(vana::table::pets) << " p "
+			<< "INNER JOIN " << db.make_table(vana::table::items) << " i ON p.pet_id = i.pet_id "
+			<< "WHERE i.character_id = :char ",
 			soci::use(id, "char");
 
-		sql.once << "DELETE FROM " << db.make_table("characters") << " WHERE character_id = :char ",
+		sql.once
+			<< "DELETE FROM " << db.make_table(vana::table::characters) << " "
+			<< "WHERE character_id = :char ",
 			soci::use(id, "char");
 	}
 	else {
@@ -409,11 +416,11 @@ auto characters::connect_game_world_from_view_all_characters(ref_ptr<user> user_
 	// And another to ensure that the world matches the expected world
 	optional<game_world_id> char_world_id;
 	optional<game_account_id> account_id;
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	sql.once
 		<< "SELECT world_id, account_id "
-		<< "FROM " << db.make_table("characters") << " c "
+		<< "FROM " << db.make_table(vana::table::characters) << " c "
 		<< "WHERE c.character_id = :char ",
 		soci::use(id, "char"),
 		soci::into(char_world_id),
@@ -447,13 +454,13 @@ auto characters::connect_game_world_from_view_all_characters(ref_ptr<user> user_
 }
 
 auto characters::owner_check(ref_ptr<user> user_value, int32_t id) -> bool {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	opt_int32_t exists;
 
 	sql.once
 		<< "SELECT 1 "
-		<< "FROM " << db.make_table("characters") << " c "
+		<< "FROM " << db.make_table(vana::table::characters) << " c "
 		<< "WHERE c.character_id = :char AND c.account_id = :account "
 		<< "LIMIT 1 ",
 		soci::use(id, "char"),
@@ -464,13 +471,13 @@ auto characters::owner_check(ref_ptr<user> user_value, int32_t id) -> bool {
 }
 
 auto characters::name_taken(const string &name) -> bool {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	opt_int32_t exists;
 
 	sql.once
 		<< "SELECT 1 "
-		<< "FROM " << db.make_table("characters") << " c "
+		<< "FROM " << db.make_table(vana::table::characters) << " c "
 		<< "WHERE c.name = :name "
 		<< "LIMIT 1",
 		soci::use(name, "name"),

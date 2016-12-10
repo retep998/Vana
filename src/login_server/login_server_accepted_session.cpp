@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/packet_wrapper.hpp"
 #include "common/server_type.hpp"
 #include "common/session.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/string.hpp"
 #include "login_server/login_server.hpp"
 #include "login_server/login_server_accept_handler.hpp"
 #include "login_server/ranking_calculator.hpp"
@@ -69,7 +69,7 @@ auto login_server_accepted_session::handle(packet_reader &reader) -> result {
 
 		default: return result::failure;
 	}
-	return result::successful;
+	return result::success;
 }
 
 auto login_server_accepted_session::authenticated(server_type type) -> void {
@@ -95,7 +95,7 @@ auto login_server_accepted_session::on_disconnect() -> void {
 		world_value->set_connected(false);
 		world_value->clear_channels();
 
-		server.log(log_type::server_disconnect, [&](out_stream &log) {
+		server.log(vana::log::type::server_disconnect, [&](out_stream &log) {
 			log << "World " << static_cast<int32_t>(m_world_id.get());
 		});
 	}

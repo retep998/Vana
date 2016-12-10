@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/optional.hpp"
 #include "common/types.hpp"
 #include "common/unix_time.hpp"
+#include "common/util/optional.hpp"
 #include <soci.h>
 #include <string>
 

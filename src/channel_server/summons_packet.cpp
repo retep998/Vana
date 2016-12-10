@@ -16,7 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "summons_packet.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "channel_server/maps.hpp"
 #include "channel_server/move_path.hpp"
 #include "channel_server/player.hpp"

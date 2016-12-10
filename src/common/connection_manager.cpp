@@ -20,10 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/connection_listener.hpp"
 #include "common/connection_listener_config.hpp"
 #include "common/encrypted_packet_transformer.hpp"
-#include "common/exit_codes.hpp"
-#include "common/misc_utilities.hpp"
+#include "common/exit_code.hpp"
 #include "common/session.hpp"
-#include "common/thread_pool.hpp"
+#include "common/util/misc.hpp"
+#include "common/util/thread_pool.hpp"
 
 namespace vana {
 
@@ -99,12 +99,12 @@ auto connection_manager::connect(const ip &destination, connection_port port, co
 					exit(exit_code::server_version_mismatch);
 				}
 				else {
-					new_session->set_type(utilities::misc::get_connection_type(source_type));
+					new_session->set_type(vana::util::misc::get_connection_type(source_type));
 					new_session->start(ping, make_ref_ptr<encrypted_packet_transformer>(recv_iv, send_iv));
 
 					m_sessions.insert(new_session);
 
-					return std::make_pair(result::successful, new_session);
+					return std::make_pair(result::success, new_session);
 				}
 			}
 		}
@@ -150,7 +150,7 @@ auto connection_manager::get_server() -> abstract_server * {
 }
 
 auto connection_manager::run() -> void {
-	m_thread = thread_pool::lease(
+	m_thread = vana::util::thread_pool::lease(
 		[this] { m_io_service.run(); },
 		[this] { m_work.reset(); });
 }

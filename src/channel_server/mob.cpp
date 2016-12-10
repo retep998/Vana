@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "mob.hpp"
 #include "common/algorithm.hpp"
-#include "common/misc_utilities.hpp"
 #include "common/mp_eater_data.hpp"
-#include "common/randomizer.hpp"
-#include "common/time_utilities.hpp"
 #include "common/timer/timer.hpp"
+#include "common/util/misc.hpp"
+#include "common/util/randomizer.hpp"
+#include "common/util/time.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/drop_handler.hpp"
 #include "channel_server/instance.hpp"
@@ -504,7 +504,7 @@ auto mob::skill_heal(int32_t heal_hp, int32_t heal_range) -> void {
 	if (is_sponge()) {
 		return;
 	}
-	int32_t amount = randomizer::range<int32_t>(heal_hp, heal_range);
+	int32_t amount = vana::util::randomizer::range<int32_t>(heal_hp, heal_range);
 	int32_t original = amount;
 
 	if (m_hp + amount > get_max_hp()) {
@@ -547,7 +547,7 @@ auto mob::do_crash_skill(game_skill_id skill_id) -> void {
 }
 
 auto mob::mp_eat(ref_ptr<player> player, mp_eater_data *mp) -> void {
-	if (m_mp_eater_count < 3 && get_mp() > 0 && randomizer::percentage<uint16_t>() < mp->prop) {
+	if (m_mp_eater_count < 3 && get_mp() > 0 && vana::util::randomizer::percentage<uint16_t>() < mp->prop) {
 		mp->used = true;
 		int32_t eaten_mp = get_max_mp() * mp->x / 100;
 
@@ -581,8 +581,8 @@ auto mob::choose_random_skill(ref_ptr<player> player, game_mob_skill_id &skill_i
 		return;
 	}
 
-	time_point now = utilities::time::get_now();
-	if (utilities::time::get_distance_in_seconds(now, m_last_skill_use) < seconds{3}) {
+	time_point now = vana::util::time::get_now();
+	if (vana::util::time::get_distance_in_seconds(now, m_last_skill_use) < seconds{3}) {
 		return;
 	}
 
@@ -647,7 +647,7 @@ auto mob::choose_random_skill(ref_ptr<player> player, game_mob_skill_id &skill_i
 		return;
 	}
 
-	auto skill = *randomizer::select(viable_skills);
+	auto skill = *vana::util::randomizer::select(viable_skills);
 	skill_id = skill->skill_id;
 	skill_level = skill->level;
 	m_anticipated_skill = skill_id;
@@ -671,7 +671,7 @@ auto mob::use_anticipated_skill() -> result {
 		return result::failure;
 	}
 
-	time_point now = utilities::time::get_now();
+	time_point now = vana::util::time::get_now();
 	m_skill_use[skill_id] = now;
 	m_last_skill_use = now;
 
@@ -757,7 +757,7 @@ auto mob::use_anticipated_skill() -> result {
 			else {
 				game_player_id player_id = m_anticipated_skill_player_id;
 				game_mob_id mob_id = get_mob_id_or_link();
-				channel.log(log_type::hacking, [&](out_stream &str) {
+				channel.log(vana::log::type::hacking, [&](out_stream &str) {
 					str << "Likely hacking by player ID " << player_id << ". "
 						<< "SendToTown used on an invalid mob: " << mob_id;
 				});
@@ -805,7 +805,7 @@ auto mob::use_anticipated_skill() -> result {
 		}
 	}
 
-	return result::successful;
+	return result::success;
 }
 
 auto mob::can_cast_skills() const -> bool {

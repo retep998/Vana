@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_storage.hpp"
 #include "common/algorithm.hpp"
-#include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/misc_utilities.hpp"
+#include "common/io/database.hpp"
+#include "common/util/game_logic/inventory.hpp"
+#include "common/util/misc.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/inventory.hpp"
 #include "channel_server/player.hpp"
@@ -46,15 +46,19 @@ auto player_storage::take_item(game_storage_slot slot) -> void {
 	m_items.erase(iter);
 }
 
+auto player_storage::set_mesos(game_mesos mesos) -> void {
+	m_mesos.set_mesos(mesos);
+}
+
 auto player_storage::set_slots(game_storage_slot slots) -> void {
 	m_slots = ext::constrain_range(slots, constant::inventory::min_slots_storage, constant::inventory::max_slots_storage);
 }
 
 auto player_storage::add_item(item *item) -> void {
-	game_inventory inv = game_logic_utilities::get_inventory(item->get_id());
+	game_inventory inv = vana::util::game_logic::inventory::get_inventory(item->get_id());
 	game_storage_slot i;
 	for (i = 0; i < m_items.size(); ++i) {
-		if (game_logic_utilities::get_inventory(m_items[i]->get_id()) > inv) {
+		if (vana::util::game_logic::inventory::get_inventory(m_items[i]->get_id()) > inv) {
 			break;
 		}
 	}
@@ -64,39 +68,34 @@ auto player_storage::add_item(item *item) -> void {
 auto player_storage::get_num_items(game_inventory inv) -> game_storage_slot {
 	game_storage_slot item_num = 0;
 	for (game_storage_slot i = 0; i < m_items.size(); ++i) {
-		if (game_logic_utilities::get_inventory(m_items[i]->get_id()) == inv) {
+		if (vana::util::game_logic::inventory::get_inventory(m_items[i]->get_id()) == inv) {
 			item_num++;
 		}
 	}
 	return item_num;
 }
 
-auto player_storage::modify_mesos(game_mesos mod) -> bool {
-	if (mod < 0) {
-		if (-mod > m_mesos) {
-			return false;
-		}
-		m_mesos += mod;
-	}
-	else {
-		game_mesos meso_test = m_mesos + mod;
-		if (meso_test < 0) {
-			return false;
-		}
-		m_mesos = meso_test;
+auto player_storage::modify_mesos(game_mesos mod) -> vana::util::meso_modify_result {
+	auto query = m_mesos.modify_mesos(mod);
+	if (query.get_result() == stack_result::none) {
+		return query;
 	}
 
 	if (auto player = m_player.lock()) {
-		player->send(packets::storage::change_mesos(get_slots(), m_mesos));
+		player->send(packets::storage::change_mesos(get_slots(), query.get_final_amount()));
 	}
 	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 
-	return true;
+	return query;
+}
+
+auto player_storage::can_modify_mesos(game_mesos mesos) const -> stack_result {
+	return m_mesos.can_modify_mesos(mesos);
 }
 
 auto player_storage::load() -> void {
 	if (auto player = m_player.lock()) {
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		soci::row row;
 		game_account_id account_id = player->get_account_id();
@@ -104,7 +103,7 @@ auto player_storage::load() -> void {
 
 		sql.once
 			<< "SELECT s.slots, s.mesos, s.char_slots "
-			<< "FROM " << db.make_table("storage") << " s "
+			<< "FROM " << db.make_table(vana::table::storage) << " s "
 			<< "WHERE s.account_id = :account AND s.world_id = :world "
 			<< "LIMIT 1",
 			soci::use(account_id, "account"),
@@ -113,7 +112,7 @@ auto player_storage::load() -> void {
 
 		if (sql.got_data()) {
 			m_slots = row.get<game_storage_slot>("slots");
-			m_mesos = row.get<game_mesos>("mesos");
+			m_mesos.set_mesos(row.get<game_mesos>("mesos"));
 			m_char_slots = row.get<int32_t>("char_slots");
 		}
 		else {
@@ -122,12 +121,12 @@ auto player_storage::load() -> void {
 			m_mesos = 0;
 			m_char_slots = config.default_chars;
 			sql.once
-				<< "INSERT INTO " << db.make_table("storage") << " (account_id, world_id, slots, mesos, char_slots) "
+				<< "INSERT INTO " << db.make_table(vana::table::storage) << " (account_id, world_id, slots, mesos, char_slots) "
 				<< "VALUES (:account, :world, :slots, :mesos, :chars)",
 				soci::use(account_id, "account"),
 				soci::use(world_id, "world"),
 				soci::use(m_slots, "slots"),
-				soci::use(m_mesos, "mesos"),
+				soci::use(m_mesos.get_mesos(), "mesos"),
 				soci::use(m_char_slots, "chars");
 		}
 
@@ -137,7 +136,7 @@ auto player_storage::load() -> void {
 
 		soci::rowset<> rs = (sql.prepare
 			<< "SELECT i.* "
-			<< "FROM " << db.make_table("items") << " i "
+			<< "FROM " << db.make_table(vana::table::items) << " i "
 			<< "WHERE i.location = :location AND i.account_id = :account AND i.world_id = :world "
 			<< "ORDER BY i.slot ASC",
 			soci::use(location, "location"),
@@ -159,20 +158,20 @@ auto player_storage::save() -> void {
 		game_account_id account_id = player->get_account_id();
 		game_player_id player_id = player->get_id();
 
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		sql.once
-			<< "UPDATE " << db.make_table("storage") << " "
+			<< "UPDATE " << db.make_table(vana::table::storage) << " "
 			<< "SET slots = :slots, mesos = :mesos, char_slots = :chars "
 			<< "WHERE account_id = :account AND world_id = :world",
 			use(account_id, "account"),
 			use(world_id, "world"),
 			use(m_slots, "slots"),
-			use(m_mesos, "mesos"),
+			use(m_mesos.get_mesos(), "mesos"),
 			use(m_char_slots, "chars");
 
 		sql.once
-			<< "DELETE FROM " << db.make_table("items") << " "
+			<< "DELETE FROM " << db.make_table(vana::table::items) << " "
 			<< "WHERE location = :location AND account_id = :account AND world_id = :world",
 			use(item::storage, "location"),
 			use(account_id, "account"),

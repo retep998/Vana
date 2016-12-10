@@ -54,7 +54,7 @@ auto login_server_session::handle(packet_reader &reader) -> result {
 
 		default: return result::failure;
 	}
-	return result::successful;
+	return result::success;
 }
 
 auto login_server_session::on_connect() -> void {

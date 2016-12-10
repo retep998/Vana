@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_monster_book.hpp"
 #include "common/data/provider/item.hpp"
-#include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
+#include "common/io/database.hpp"
+#include "common/util/game_logic/monster_card.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/monster_book_packet.hpp"
 #include "channel_server/player.hpp"
@@ -33,14 +33,14 @@ player_monster_book::player_monster_book(ref_ptr<player> player) :
 }
 
 auto player_monster_book::load() -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	if (auto player = m_player.lock()) {
 		game_player_id char_id = player->get_id();
 
 		soci::rowset<> rs = (sql.prepare
 			<< "SELECT b.card_id, b.level "
-			<< "FROM " << db.make_table("monster_book") << " b "
+			<< "FROM " << db.make_table(vana::table::monster_book) << " b "
 			<< "WHERE b.character_id = :char "
 			<< "ORDER BY b.card_id ASC",
 			soci::use(char_id, "char"));
@@ -55,12 +55,12 @@ auto player_monster_book::load() -> void {
 }
 
 auto player_monster_book::save() -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	if (auto player = m_player.lock()) {
 		game_player_id char_id = player->get_id();
 
-		sql.once << "DELETE FROM " << db.make_table("monster_book") << " WHERE character_id = :char",
+		sql.once << "DELETE FROM " << db.make_table(vana::table::monster_book) << " WHERE character_id = :char",
 			soci::use(char_id, "char");
 
 		if (m_cards.size() > 0) {
@@ -68,7 +68,7 @@ auto player_monster_book::save() -> void {
 			uint8_t level = 0;
 
 			soci::statement st = (sql.prepare
-				<< "INSERT INTO " << db.make_table("monster_book") << " "
+				<< "INSERT INTO " << db.make_table(vana::table::monster_book) << " "
 				<< "VALUES (:char, :card, :level) ",
 				soci::use(char_id, "char"),
 				soci::use(card_id, "card"),
@@ -91,7 +91,7 @@ auto player_monster_book::get_card_level(int32_t card_id) -> uint8_t {
 
 auto player_monster_book::add_card(int32_t card_id, uint8_t level, bool initial_load) -> bool {
 	if (m_cards.find(card_id) == std::end(m_cards)) {
-		if (game_logic_utilities::is_special_card(card_id)) {
+		if (vana::util::game_logic::monster_card::is_special_card(card_id)) {
 			++m_special_count;
 		}
 		else {
@@ -138,7 +138,7 @@ auto player_monster_book::connect_packet(packet_builder &builder) -> void {
 
 	builder.add<uint16_t>(static_cast<uint16_t>(m_cards.size()));
 	for (const auto &kvp : m_cards) {
-		builder.add<int16_t>(game_logic_utilities::get_card_short_id(kvp.second.id));
+		builder.add<int16_t>(vana::util::game_logic::monster_card::get_card_short_id(kvp.second.id));
 		builder.add<int8_t>(kvp.second.level);
 	}
 }

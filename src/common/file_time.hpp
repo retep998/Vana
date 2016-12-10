@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/hash_combine.hpp"
 #include "common/i_packet.hpp"
 #include "common/packet_builder.hpp"
 #include "common/packet_reader.hpp"
 #include "common/types.hpp"
+#include "common/util/hash_combine.hpp"
 
 namespace vana {
 	class unix_time;
@@ -96,7 +96,7 @@ namespace std {
 	template <>
 	struct hash<vana::file_time> {
 		auto operator()(const vana::file_time &v) const -> size_t {
-			return vana::utilities::misc::hash_combinator(static_cast<int64_t>(v.get_value()));
+			return vana::util::hash_combinator(static_cast<int64_t>(v.get_value()));
 		}
 	};
 }

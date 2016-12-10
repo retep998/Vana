@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_buddy_list.hpp"
 #include "common/algorithm.hpp"
-#include "common/database.hpp"
-#include "common/misc_utilities.hpp"
-#include "common/string_utilities.hpp"
+#include "common/io/database.hpp"
+#include "common/util/misc.hpp"
+#include "common/util/string.hpp"
 #include "channel_server/buddy_list_packet.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/player.hpp"
@@ -36,15 +36,15 @@ player_buddy_list::player_buddy_list(ref_ptr<player> player) :
 }
 
 auto player_buddy_list::load() -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 
 	if (auto player = m_player.lock()) {
 		soci::rowset<> rs = (sql.prepare
 			<< "SELECT bl.id, bl.buddy_character_id, bl.name AS name_cache, c.name, bl.group_name, CASE WHEN c.online = 1 THEN u.online ELSE 0 END AS `online` "
-			<< "FROM " << db.make_table("buddylist") << " bl "
-			<< "LEFT JOIN " << db.make_table("characters") << " c ON bl.buddy_character_id = c.character_id "
-			<< "LEFT JOIN " << db.make_table("accounts") << " u ON c.account_id = u.account_id "
+			<< "FROM " << db.make_table(vana::table::buddylist) << " bl "
+			<< "LEFT JOIN " << db.make_table(vana::table::characters) << " c ON bl.buddy_character_id = c.character_id "
+			<< "LEFT JOIN " << db.make_table(vana::table::accounts) << " u ON c.account_id = u.account_id "
 			<< "WHERE bl.character_id = :char",
 			soci::use(player->get_id(), "char"));
 
@@ -54,8 +54,8 @@ auto player_buddy_list::load() -> void {
 
 		rs = (sql.prepare
 			<< "SELECT p.* "
-			<< "FROM " << db.make_table("buddylist_pending") << " p "
-			<< "LEFT JOIN " << db.make_table("characters") << " c ON c.character_id = p.inviter_character_id "
+			<< "FROM " << db.make_table(vana::table::buddylist_pending) << " p "
+			<< "LEFT JOIN " << db.make_table(vana::table::characters) << " c ON c.character_id = p.inviter_character_id "
 			<< "WHERE c.world_id = :world AND p.character_id = :char ",
 			soci::use(player->get_id(), "char"),
 			soci::use(channel_server::get_instance().get_world_id(), "world"));
@@ -83,18 +83,18 @@ auto player_buddy_list::add_buddy(const string &name, const string &group, bool 
 			return packets::buddy::errors::user_does_not_exist;
 		}
 
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		soci::row row;
 
 		sql.once
 			<< "SELECT c.character_id, c.name, u.gm_level, u.admin, c.buddylist_size AS buddylist_limit, ("
 			<< "	SELECT COUNT(b.id) "
-			<< "	FROM " << db.make_table("buddylist") << " b "
+			<< "	FROM " << db.make_table(vana::table::buddylist) << " b "
 			<< "	WHERE b.character_id = c.character_id"
 			<< ") AS buddylist_size "
-			<< "FROM " << db.make_table("characters") << " c "
-			<< "INNER JOIN " << db.make_table("accounts") << " u ON c.account_id = u.account_id "
+			<< "FROM " << db.make_table(vana::table::characters) << " c "
+			<< "INNER JOIN " << db.make_table(vana::table::accounts) << " u ON c.account_id = u.account_id "
 			<< "WHERE c.name = :name AND c.world_id = :world ",
 			soci::use(name, "name"),
 			soci::use(channel_server::get_instance().get_world_id(), "world"),
@@ -128,7 +128,7 @@ auto player_buddy_list::add_buddy(const string &name, const string &group, bool 
 			}
 			else {
 				sql.once
-					<< "UPDATE " << db.make_table("buddylist") << " "
+					<< "UPDATE " << db.make_table(vana::table::buddylist) << " "
 					<< "SET group_name = :name "
 					<< "WHERE buddy_character_id = :buddy AND character_id = :owner ",
 					soci::use(group, "name"),
@@ -140,7 +140,7 @@ auto player_buddy_list::add_buddy(const string &name, const string &group, bool 
 		}
 		else {
 			sql.once
-				<< "INSERT INTO " << db.make_table("buddylist") << " (character_id, buddy_character_id, name, group_name) "
+				<< "INSERT INTO " << db.make_table(vana::table::buddylist) << " (character_id, buddy_character_id, name, group_name) "
 				<< "VALUES (:owner, :buddy, :name, :group)",
 				soci::use(name, "name"),
 				soci::use(group, "group"),
@@ -151,9 +151,9 @@ auto player_buddy_list::add_buddy(const string &name, const string &group, bool 
 
 			sql.once
 				<< "SELECT bl.id, bl.buddy_character_id, bl.name AS name_cache, c.name, bl.group_name, CASE WHEN c.online = 1 THEN u.online ELSE 0 END AS `online` "
-				<< "FROM " << db.make_table("buddylist") << " bl "
-				<< "LEFT JOIN " << db.make_table("characters") << " c ON bl.buddy_character_id = c.character_id "
-				<< "LEFT JOIN " << db.make_table("accounts") << " u ON c.account_id = u.account_id "
+				<< "FROM " << db.make_table(vana::table::buddylist) << " bl "
+				<< "LEFT JOIN " << db.make_table(vana::table::characters) << " c ON bl.buddy_character_id = c.character_id "
+				<< "LEFT JOIN " << db.make_table(vana::table::accounts) << " u ON c.account_id = u.account_id "
 				<< "WHERE bl.id = :row",
 				soci::use(row_id, "row"),
 				soci::into(row);
@@ -162,7 +162,7 @@ auto player_buddy_list::add_buddy(const string &name, const string &group, bool 
 
 			sql.once
 				<< "SELECT id "
-				<< "FROM " << db.make_table("buddylist") << " "
+				<< "FROM " << db.make_table(vana::table::buddylist) << " "
 				<< "WHERE character_id = :char AND buddy_character_id = :buddy",
 				soci::use(char_id, "char"),
 				soci::use(player->get_id(), "buddy"),
@@ -202,10 +202,10 @@ auto player_buddy_list::remove_buddy(game_player_id char_id) -> void {
 		channel_server::get_instance().send_world(packets::interserver::buddy::remove_buddy(player->get_id(), char_id));
 		m_buddies.erase(char_id);
 
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		sql.once
-			<< "DELETE FROM " << db.make_table("buddylist") << " "
+			<< "DELETE FROM " << db.make_table(vana::table::buddylist) << " "
 			<< "WHERE character_id = :char AND buddy_character_id = :buddy",
 			soci::use(player->get_id(), "char"),
 			soci::use(char_id, "buddy");
@@ -215,7 +215,7 @@ auto player_buddy_list::remove_buddy(game_player_id char_id) -> void {
 	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }
 
-auto player_buddy_list::add_buddy(database &db, const soci::row &row) -> void {
+auto player_buddy_list::add_buddy(vana::io::database &db, const soci::row &row) -> void {
 	game_player_id char_id = row.get<game_player_id>("buddy_character_id");
 	int32_t row_id = row.get<int32_t>("id");
 	opt_string name = row.get<opt_string>("name");
@@ -226,7 +226,7 @@ auto player_buddy_list::add_buddy(database &db, const soci::row &row) -> void {
 	if (name.is_initialized() && name.get() != cache) {
 		// Outdated name cache, i.e. character renamed
 		sql.once
-			<< "UPDATE " << db.make_table("buddylist") << " "
+			<< "UPDATE " << db.make_table(vana::table::buddylist) << " "
 			<< "SET name = :name "
 			<< "WHERE id = :id ",
 			soci::use(name.get(), "name"),
@@ -243,7 +243,7 @@ auto player_buddy_list::add_buddy(database &db, const soci::row &row) -> void {
 		if (!group.is_initialized()) {
 			value->group_name = "default group";
 			sql.once
-				<< "UPDATE " << db.make_table("buddylist") << " "
+				<< "UPDATE " << db.make_table(vana::table::buddylist) << " "
 				<< "SET group_name = :name "
 				<< "WHERE buddy_character_id = :buddy AND character_id = :owner ",
 				soci::use(value->group_name, "name"),
@@ -256,7 +256,7 @@ auto player_buddy_list::add_buddy(database &db, const soci::row &row) -> void {
 
 		sql.once
 			<< "SELECT id "
-			<< "FROM " << db.make_table("buddylist") << " "
+			<< "FROM " << db.make_table(vana::table::buddylist) << " "
 			<< "WHERE character_id = :char AND buddy_character_id = :buddy ",
 			soci::use(char_id, "char"),
 			soci::use(player->get_id(), "buddy"),
@@ -336,7 +336,7 @@ auto player_buddy_list::remove_pending_buddy(game_player_id id, bool accepted) -
 		buddy_invite invite = m_pending_buddies.front();
 		if (invite.id != id) {
 			// Hacking
-			channel_server::get_instance().log(log_type::warning, [&](out_stream &log) {
+			channel_server::get_instance().log(vana::log::type::warning, [&](out_stream &log) {
 				log << "Player tried to accept a player with player ID " << id
 					<< " but the sent player ID was " << invite.id
 					<< ". Player: " << player->get_name();
@@ -350,10 +350,10 @@ auto player_buddy_list::remove_pending_buddy(game_player_id id, bool accepted) -
 				player->send(packets::buddy::error(error));
 			}
 
-			auto &db = database::get_char_db();
+			auto &db = vana::io::database::get_char_db();
 			auto &sql = db.get_session();
 			sql.once
-				<< "DELETE FROM " << db.make_table("buddylist_pending") << " "
+				<< "DELETE FROM " << db.make_table(vana::table::buddylist_pending) << " "
 				<< "WHERE character_id = :char AND inviter_character_id = :buddy",
 				soci::use(player->get_id(), "char"),
 				soci::use(id, "buddy");

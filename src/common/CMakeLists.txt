@@ -34,6 +34,14 @@ file(GLOB COMMON_DATA_TYPE_SRC data\type\*.cpp)
 file(GLOB COMMON_DATA_TYPE_HDR data\type\*.hpp)
 source_group("common\\data\\type" FILES ${COMMON_DATA_TYPE_SRC} ${COMMON_DATA_TYPE_HDR})
 
+file(GLOB COMMON_IO_SRC io\*.cpp)
+file(GLOB COMMON_IO_HDR io\*.hpp)
+source_group("common\\io" FILES ${COMMON_IO_SRC} ${COMMON_IO_HDR})
+
+file(GLOB COMMON_LOG_SRC log\*.cpp)
+file(GLOB COMMON_LOG_HDR log\*.hpp)
+source_group("common\\log" FILES ${COMMON_LOG_SRC} ${COMMON_LOG_HDR})
+
 file(GLOB COMMON_LUA_SRC lua\*.cpp)
 file(GLOB COMMON_LUA_HDR lua\*.hpp)
 source_group("common\\lua" FILES ${COMMON_LUA_SRC} ${COMMON_LUA_HDR})
@@ -41,6 +49,14 @@ source_group("common\\lua" FILES ${COMMON_LUA_SRC} ${COMMON_LUA_HDR})
 file(GLOB COMMON_TIMER_SRC timer\*.cpp)
 file(GLOB COMMON_TIMER_HDR timer\*.hpp)
 source_group("common\\timer" FILES ${COMMON_TIMER_SRC} ${COMMON_TIMER_HDR})
+
+file(GLOB COMMON_UTIL_SRC util\*.cpp)
+file(GLOB COMMON_UTIL_HDR util\*.hpp)
+source_group("common\\util" FILES ${COMMON_UTIL_SRC} ${COMMON_UTIL_HDR})
+
+file(GLOB COMMON_UTIL_GAME_LOGIC_SRC util\*.cpp)
+file(GLOB COMMON_UTIL_GAME_LOGIC_HDR util\*.hpp)
+source_group("common\\util\\game_logic" FILES ${COMMON_UTIL_GAME_LOGIC_SRC} ${COMMON_UTIL_GAME_LOGIC_HDR})
 
 add_library(common STATIC
 	${COMMON_SRC} ${COMMON_HDR}
@@ -52,6 +68,10 @@ add_library(common STATIC
 	${COMMON_DATA_SRC} ${COMMON_DATA_HDR}
 	${COMMON_DATA_PROVIDER_SRC} ${COMMON_DATA_PROVIDER_HDR}
 	${COMMON_DATA_TYPE_SRC} ${COMMON_DATA_TYPE_HDR}
+	${COMMON_IO_SRC} ${COMMON_IO_HDR}
+	${COMMON_LOG_SRC} ${COMMON_LOG_HDR}
 	${COMMON_LUA_SRC} ${COMMON_LUA_HDR}
 	${COMMON_TIMER_SRC} ${COMMON_TIMER_HDR}
+	${COMMON_UTIL_SRC} ${COMMON_UTIL_HDR}
+	${COMMON_UTIL_GAME_LOGIC_SRC} ${COMMON_UTIL_GAME_LOGIC_HDR}
 )

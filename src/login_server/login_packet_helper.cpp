@@ -34,12 +34,10 @@ PACKET_IMPL(add_character, const character &charc) {
 		.add<game_skin_id>(charc.skin)
 		.add<game_face_id>(charc.face)
 		.add<game_hair_id>(charc.hair)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
+		// Pet cash id (3x)
+		.add<int64_t>(0)
+		.add<int64_t>(0)
+		.add<int64_t>(0)
 		.add<game_player_level>(charc.level)
 		.add<game_job_id>(charc.job)
 		.add<game_stat>(charc.str)
@@ -54,14 +52,14 @@ PACKET_IMPL(add_character, const character &charc) {
 		.add<game_stat>(charc.sp)
 		.add<game_experience>(charc.exp)
 		.add<game_fame>(charc.fame)
-		.add<int32_t>(0) // Unknown int32 added in .62
+		.add<int32_t>(0) // Gachapon EXP
 		.add<game_map_id>(charc.map)
 		.add<int8_t>(charc.pos)
-		.add<int32_t>(0) // Unknown int32 added in .62
+		.unk<int32_t>() // Added in .62
 		.add<game_gender_id>(charc.gender)
 		.add<game_skin_id>(charc.skin)
 		.add<game_face_id>(charc.face)
-		.add<int8_t>(1)
+		.unk<int8_t>(1)
 		.add<game_hair_id>(charc.hair);
 
 	game_item_id equips[constant::inventory::equipped_slots][2] = {0};
@@ -108,9 +106,10 @@ PACKET_IMPL(add_character, const character &charc) {
 	builder
 		.add<int8_t>(-1)
 		.add<game_item_id>(equips[constant::equip_slot::weapon][0]) // Cash weapon
-		.add<int32_t>(0)
-		.add<int32_t>(0)
-		.add<int32_t>(0)
+		// Pet item id (3x)
+		.add<game_item_id>(0)
+		.add<game_item_id>(0)
+		.add<game_item_id>(0)
 		// Rankings
 		.add<int8_t>(1)
 		.add<int32_t>(charc.world_rank)

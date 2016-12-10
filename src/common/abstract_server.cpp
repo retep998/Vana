@@ -17,22 +17,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "abstract_server.hpp"
 #include "common/authentication_packet.hpp"
-#include "common/combo_loggers.hpp"
 #include "common/config/log.hpp"
 #include "common/config/salting.hpp"
 #include "common/connection_manager.hpp"
-#include "common/console_logger.hpp"
-#include "common/exit_codes.hpp"
-#include "common/file_logger.hpp"
+#include "common/exit_code.hpp"
 #include "common/hash_utilities.hpp"
-#include "common/logger.hpp"
+#include "common/log/combo_loggers.hpp"
+#include "common/log/console_logger.hpp"
+#include "common/log/file_logger.hpp"
+#include "common/log/base_logger.hpp"
+#include "common/log/sql_logger.hpp"
 #include "common/lua/config_file.hpp"
-#include "common/misc_utilities.hpp"
 #include "common/session.hpp"
-#include "common/sql_logger.hpp"
-#include "common/thread_pool.hpp"
 #include "common/timer/thread.hpp"
-#include "common/time_utilities.hpp"
+#include "common/util/misc.hpp"
+#include "common/util/thread_pool.hpp"
+#include "common/util/time.hpp"
 #include <chrono>
 #include <ctime>
 #include <iomanip>
@@ -47,7 +47,7 @@ abstract_server::abstract_server(server_type type) :
 }
 
 auto abstract_server::initialize() -> result {
-	m_start_time = utilities::time::get_now();
+	m_start_time = vana::util::time::get_now();
 
 	load_log_config();
 
@@ -58,12 +58,12 @@ auto abstract_server::initialize() -> result {
 	m_salt = config->get<string>("inter_salt");
 
 	if (m_inter_password == "changeme") {
-		log(log_type::critical_error, "inter_password is not changed.");
+		log(vana::log::type::critical_error, "inter_password is not changed.");
 		exit(exit_code::config_error);
 		return result::failure;
 	}
 	if (m_salt == "changeme") {
-		log(log_type::critical_error, "inter_salt is not changed.");
+		log(vana::log::type::critical_error, "inter_salt is not changed.");
 		exit(exit_code::config_error);
 		return result::failure;
 	}
@@ -73,7 +73,7 @@ auto abstract_server::initialize() -> result {
 		auto ip_value = pair.find("ip");
 		auto mask_value = pair.find("mask");
 		if (ip_value == std::end(pair) || mask_value == std::end(pair)) {
-			log(log_type::critical_error, "External IP configuration is malformed!");
+			log(vana::log::type::critical_error, "External IP configuration is malformed!");
 			exit(exit_code::config_error);
 			return result::failure;
 		}
@@ -102,7 +102,7 @@ auto abstract_server::initialize() -> result {
 
 	m_connection_manager.run();
 
-	return result::successful;
+	return result::success;
 }
 
 auto abstract_server::load_log_config() -> void {
@@ -119,7 +119,7 @@ auto abstract_server::load_log_config() -> void {
 
 auto abstract_server::shutdown() -> void {
 	m_connection_manager.stop();
-	thread_pool::wait();
+	vana::util::thread_pool::wait();
 }
 
 auto abstract_server::get_server_type() const -> server_type {
@@ -140,7 +140,7 @@ auto abstract_server::get_inter_server_config() const -> const config::inter_ser
 
 auto abstract_server::load_config() -> result {
 	// Intentionally left blank
-	return result::successful;
+	return result::success;
 }
 
 auto abstract_server::init_complete() -> void {
@@ -150,7 +150,7 @@ auto abstract_server::init_complete() -> void {
 auto abstract_server::send_auth(ref_ptr<session> session) const -> void {
 	session->send(
 		packets::send_password(
-			utilities::misc::get_server_type(session->get_type()),
+			vana::util::misc::get_server_type(session->get_type()),
 			get_inter_password(),
 			m_external_ips));
 }
@@ -162,30 +162,30 @@ auto abstract_server::create_logger(const config::log &conf) -> void {
 	server_type server_type = get_server_type();
 	size_t buffer_size = conf.buffer_size;
 
-	switch (conf.destination) {
-		case log_destinations::console: m_logger = make_owned_ptr<console_logger>(file, format, time_format, server_type, buffer_size); break;
-		case log_destinations::file: m_logger = make_owned_ptr<file_logger>(file, format, time_format, server_type, buffer_size); break;
-		case log_destinations::sql: m_logger = make_owned_ptr<sql_logger>(file, format, time_format, server_type, buffer_size); break;
-		case log_destinations::file_sql: m_logger = make_owned_ptr<duo_logger<file_logger, sql_logger>>(file, format, time_format, server_type, buffer_size); break;
-		case log_destinations::file_console: m_logger = make_owned_ptr<duo_logger<file_logger, console_logger>>(file, format, time_format, server_type, buffer_size); break;
-		case log_destinations::sql_console: m_logger = make_owned_ptr<duo_logger<sql_logger, console_logger>>(file, format, time_format, server_type, buffer_size); break;
-		case log_destinations::file_sql_console: m_logger = make_owned_ptr<tri_logger<file_logger, sql_logger, console_logger>>(file, format, time_format, server_type, buffer_size); break;
+	switch (static_cast<vana::log::destination>(conf.destination)) {
+		case vana::log::destination::console: m_logger = make_owned_ptr<vana::log::console_logger>(file, format, time_format, server_type, buffer_size); break;
+		case vana::log::destination::file: m_logger = make_owned_ptr<vana::log::file_logger>(file, format, time_format, server_type, buffer_size); break;
+		case vana::log::destination::sql: m_logger = make_owned_ptr<vana::log::sql_logger>(file, format, time_format, server_type, buffer_size); break;
+		case vana::log::destination::file_sql: m_logger = make_owned_ptr<vana::log::dual_logger<vana::log::file_logger, vana::log::sql_logger>>(file, format, time_format, server_type, buffer_size); break;
+		case vana::log::destination::file_console: m_logger = make_owned_ptr<vana::log::dual_logger<vana::log::file_logger, vana::log::console_logger>>(file, format, time_format, server_type, buffer_size); break;
+		case vana::log::destination::sql_console: m_logger = make_owned_ptr<vana::log::dual_logger<vana::log::sql_logger, vana::log::console_logger>>(file, format, time_format, server_type, buffer_size); break;
+		case vana::log::destination::file_sql_console: m_logger = make_owned_ptr<vana::log::tri_logger<vana::log::file_logger, vana::log::sql_logger, vana::log::console_logger>>(file, format, time_format, server_type, buffer_size); break;
 	}
 }
 
-auto abstract_server::log(log_type type, const string &message) -> void {
+auto abstract_server::log(vana::log::type type, const string &message) -> void {
 	if (auto logger = m_logger.get()) {
 		logger->log(type, make_log_identifier(), message);
 	}
 }
 
-auto abstract_server::log(log_type type, function<void(out_stream &)> produce_message) -> void {
+auto abstract_server::log(vana::log::type type, function<void(out_stream &)> produce_message) -> void {
 	out_stream message;
 	produce_message(message);
 	log(type, message.str());
 }
 
-auto abstract_server::log(log_type type, const char *message) -> void {
+auto abstract_server::log(vana::log::type type, const char *message) -> void {
 	log(type, string{message});
 }
 
@@ -196,7 +196,7 @@ auto abstract_server::build_log_identifier(function<void(out_stream &)> produce_
 }
 
 auto abstract_server::display_launch_time() const -> void {
-	auto loading_time = utilities::time::get_distance<milliseconds>(utilities::time::get_now(), m_start_time);
+	auto loading_time = vana::util::time::get_distance<milliseconds>(vana::util::time::get_now(), m_start_time);
 	std::cout << "Started in " << std::setprecision(3) << loading_time / 1000.f << " seconds!" << std::endl << std::endl;
 }
 

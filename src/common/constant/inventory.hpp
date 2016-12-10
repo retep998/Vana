@@ -40,6 +40,9 @@ namespace vana {
 			const int8_t max_pet_count = 3;
 			const uint8_t vip_rock_max = 10;
 			const uint8_t teleport_rock_max = 5;
+
+			const game_mesos min_drop_mesos = 10;
+			const game_mesos max_drop_mesos = 50000;
 		}
 	}
 }

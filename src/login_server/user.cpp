@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "user.hpp"
-#include "common/database.hpp"
+#include "common/io/database.hpp"
 #include "common/packet_builder.hpp"
 #include "common/packet_reader.hpp"
 #include "login_server/characters.hpp"
@@ -37,8 +37,8 @@ auto user::handle(packet_reader &reader) -> result {
 			case CMSG_ACCOUNT_GENDER: login::set_gender(shared_from_this(), reader); break;
 			case CMSG_AUTHENTICATION: login::login_user(shared_from_this(), reader); break;
 			case CMSG_CHANNEL_CONNECT: characters::connect_game(shared_from_this(), reader); break;
-			case CMSG_CLIENT_ERROR: login_server::get_instance().log(log_type::client_error, reader.get<string>()); break;
-			case CMSG_CLIENT_STARTED: login_server::get_instance().log(log_type::info, [&](out_stream &log) { log << "client connected and started from " << get_ip().get(ip{0}); }); break;
+			case CMSG_CLIENT_ERROR: login_server::get_instance().log(vana::log::type::client_error, reader.get<string>()); break;
+			case CMSG_CLIENT_STARTED: login_server::get_instance().log(vana::log::type::info, [&](out_stream &log) { log << "client connected and started from " << get_ip().get(ip{0}); }); break;
 			case CMSG_LOGIN_RETURN: send(packets::relog_response()); break;
 			case CMSG_PIN: login::handle_login(shared_from_this(), reader); break;
 			case CMSG_PLAYER_CREATE: characters::create_character(shared_from_this(), reader); break;
@@ -59,7 +59,7 @@ auto user::handle(packet_reader &reader) -> result {
 		// We may not process the structure properly
 
 		reader.reset();
-		login_server::get_instance().log(log_type::malformed_packet, [&](out_stream &log) {
+		login_server::get_instance().log(vana::log::type::malformed_packet, [&](out_stream &log) {
 			log << "User ID: " << get_account_id()
 				<< "; Packet: " << reader
 				<< "; Error: " << e.what();
@@ -67,7 +67,7 @@ auto user::handle(packet_reader &reader) -> result {
 		return result::failure;
 	}
 
-	return result::successful;
+	return result::success;
 }
 
 auto user::on_disconnect() -> void {
@@ -76,10 +76,10 @@ auto user::on_disconnect() -> void {
 }
 
 auto user::set_online(bool online) -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	sql.once
-		<< "UPDATE " << db.make_table("accounts") << " u "
+		<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
 		<< "SET "
 		<< "	u.online = :online,"
 		<< "	u.last_login = NOW() "

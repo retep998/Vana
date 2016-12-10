@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "pet.hpp"
 #include "common/data/provider/item.hpp"
-#include "common/database.hpp"
-#include "common/time_utilities.hpp"
+#include "common/io/database.hpp"
 #include "common/timer/timer.hpp"
+#include "common/util/time.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/map.hpp"
 #include "channel_server/pets_packet.hpp"
@@ -36,10 +36,10 @@ pet::pet(player *player, item *item) :
 	m_name{channel_server::get_instance().get_item_data_provider().get_item_info(m_item_id)->name},
 	m_item{item}
 {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 
-	sql.once << "INSERT INTO " << db.make_table("pets") << " (name) VALUES (:name)",
+	sql.once << "INSERT INTO " << db.make_table(vana::table::pets) << " (name) VALUES (:name)",
 		soci::use(m_name, "name");
 
 	m_id = db.get_last_id<game_pet_id>();

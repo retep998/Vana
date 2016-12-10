@@ -664,7 +664,7 @@ auto chat_handler_functions::initialize() -> void {
 auto chat_handler_functions::get_map(const game_chat &query, ref_ptr<player> player) -> int32_t {
 	game_map_id map_id = -1;
 	// Special
-	game_chat lowercase_query = utilities::str::to_lower(query);
+	game_chat lowercase_query = vana::util::str::to_lower(query);
 	if (lowercase_query == "here") map_id = player->get_map_id();
 	else if (lowercase_query == "back") map_id = player->get_last_map_id();
 	else if (lowercase_query == "town") map_id = player->get_map()->get_return_map();

@@ -34,9 +34,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/provider/skill.hpp"
 #include "common/data/provider/shop.hpp"
 #include "common/data/provider/valid_char.hpp"
-#include "common/finalization_pool.hpp"
 #include "common/ip.hpp"
 #include "common/types.hpp"
+#include "common/util/finalization_pool.hpp"
 #include "channel_server/event_data_provider.hpp"
 #include "channel_server/instances.hpp"
 #include "channel_server/login_server_session.hpp"
@@ -123,7 +123,7 @@ namespace vana {
 			config::world m_config;
 			ref_ptr<world_server_session> m_world_connection;
 			ref_ptr<login_server_session> m_login_connection;
-			finalization_pool<player> m_session_pool;
+			vana::util::finalization_pool<player> m_session_pool;
 
 			data::provider::valid_char m_valid_char_data_provider;
 			data::provider::equip m_equip_data_provider;

@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "lua_reactor.hpp"
-#include "common/game_logic_utilities.hpp"
+#include "common/util/game_logic/item.hpp"
 #include "channel_server/drop.hpp"
 #include "channel_server/maps.hpp"
 #include "channel_server/mob.hpp"
@@ -94,7 +94,7 @@ auto lua_exports::drop_item_reactor(lua_State *lua_vm) -> lua_return {
 	reactor *reactor = get_reactor(lua_vm, env);
 	auto player = get_player(lua_vm, env);
 	drop *value;
-	if (game_logic_utilities::is_equip(item_id)) {
+	if (vana::util::game_logic::item::is_equip(item_id)) {
 		item f{item_id, true};
 		value = new drop{reactor->get_map_id(), f, reactor->get_pos(), player != nullptr ? player->get_id() : 0};
 	}

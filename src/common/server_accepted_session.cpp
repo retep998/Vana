@@ -43,8 +43,8 @@ auto server_accepted_session::handle(packet_reader &reader) -> result {
 			authenticated(type);
 		}
 		else {
-			m_server.log(log_type::server_auth_failure, [&](out_stream &log) {
-				log << "i_p: " << m_session->get_ip();
+			m_server.log(vana::log::type::server_auth_failure, [&](out_stream &log) {
+				log << "IP: " << m_session->get_ip();
 			});
 			m_session->disconnect();
 			return result::failure;
@@ -55,7 +55,7 @@ auto server_accepted_session::handle(packet_reader &reader) -> result {
 		return result::failure;
 	}
 	reader.reset();
-	return result::successful;
+	return result::success;
 }
 
 auto server_accepted_session::authenticated(server_type type) -> void {

@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "player_quests.hpp"
 #include "common/algorithm.hpp"
 #include "common/data/provider/quest.hpp"
-#include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/randomizer.hpp"
-#include "common/time_utilities.hpp"
+#include "common/io/database.hpp"
+#include "common/util/game_logic/inventory.hpp"
+#include "common/util/randomizer.hpp"
+#include "common/util/time.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/inventory.hpp"
 #include "channel_server/player.hpp"
@@ -38,15 +38,15 @@ player_quests::player_quests(ref_ptr<player> player) :
 }
 
 auto player_quests::save() -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	if (auto player = m_player.lock()) {
 		game_player_id char_id = player->get_id();
 		game_quest_id quest_id = 0;
 
-		sql.once << "DELETE FROM " << db.make_table("active_quests") << " WHERE character_id = :char",
+		sql.once << "DELETE FROM " << db.make_table(vana::table::active_quests) << " WHERE character_id = :char",
 			soci::use(char_id, "char");
-		sql.once << "DELETE FROM " << db.make_table("completed_quests") << " WHERE character_id = :char",
+		sql.once << "DELETE FROM " << db.make_table(vana::table::completed_quests) << " WHERE character_id = :char",
 			soci::use(char_id, "char");
 
 		if (m_quests.size() > 0) {
@@ -58,14 +58,14 @@ auto player_quests::save() -> void {
 			data = "";
 
 			soci::statement st = (sql.prepare
-				<< "INSERT INTO " << db.make_table("active_quests") << " (character_id, quest_id, data) "
+				<< "INSERT INTO " << db.make_table(vana::table::active_quests) << " (character_id, quest_id, data) "
 				<< "VALUES (:char, :quest, :data)",
 				soci::use(char_id, "char"),
 				soci::use(quest_id, "quest"),
 				soci::use(data, "data"));
 
 			soci::statement st_mobs = (sql.prepare
-				<< "INSERT INTO " << db.make_table("active_quests_mobs") << " (active_quest_id, mob_id, quantity_killed) "
+				<< "INSERT INTO " << db.make_table(vana::table::active_quests_mobs) << " (active_quest_id, mob_id, quantity_killed) "
 				<< "VALUES (:id, :mob, :killed)",
 				soci::use(id, "id"),
 				soci::use(mob_id, "mob"),
@@ -97,7 +97,7 @@ auto player_quests::save() -> void {
 			int64_t time = 0;
 
 			soci::statement st = (sql.prepare
-				<< "INSERT INTO " << db.make_table("completed_quests") << " "
+				<< "INSERT INTO " << db.make_table(vana::table::completed_quests) << " "
 				<< "VALUES (:char, :quest, :time)",
 				soci::use(char_id, "char"),
 				soci::use(quest_id, "quest"),
@@ -114,7 +114,7 @@ auto player_quests::save() -> void {
 }
 
 auto player_quests::load() -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	if (auto player = m_player.lock()) {
 		game_player_id char_id = player->get_id();
@@ -125,8 +125,8 @@ auto player_quests::load() -> void {
 
 		soci::rowset<> rs = (sql.prepare
 			<< "SELECT a.quest_id, am.mob_id, am.quantity_killed, a.data "
-			<< "FROM " << db.make_table("active_quests") << " a "
-			<< "LEFT OUTER JOIN " << db.make_table("active_quests_mobs") << " am ON am.active_quest_id = a.id "
+			<< "FROM " << db.make_table(vana::table::active_quests) << " a "
+			<< "LEFT OUTER JOIN " << db.make_table(vana::table::active_quests_mobs) << " am ON am.active_quest_id = a.id "
 			<< "WHERE a.character_id = :char ORDER BY a.quest_id ASC",
 			soci::use(char_id, "char"));
 
@@ -157,7 +157,7 @@ auto player_quests::load() -> void {
 			m_quests[previous] = cur_quest;
 		}
 
-		rs = (sql.prepare << "SELECT c.quest_id, c.end_time FROM " << db.make_table("completed_quests") << " c WHERE c.character_id = :char",
+		rs = (sql.prepare << "SELECT c.quest_id, c.end_time FROM " << db.make_table(vana::table::completed_quests) << " c WHERE c.character_id = :char",
 			soci::use(char_id, "char"));
 
 		for (const auto &row : rs) {
@@ -319,7 +319,7 @@ auto player_quests::give_rewards(game_quest_id quest_id, bool start) -> result {
 
 		auto check_rewards = [this, &quest_id, &needed_slots, &chance_item, player](const data::type::quest_reward_info &info) -> iteration_result {
 			if (info.is_item) {
-				game_inventory inv = game_logic_utilities::get_inventory(info.id) - 1;
+				game_inventory inv = vana::util::game_logic::inventory::get_inventory(info.id) - 1;
 				if (info.count > 0) {
 					if (info.prop > 0 && !chance_item[inv]) {
 						chance_item[inv] = true;
@@ -331,9 +331,7 @@ auto player_quests::give_rewards(game_quest_id quest_id, bool start) -> result {
 				}
 			}
 			else if (info.is_mesos) {
-				game_mesos mesos = info.id + player->get_inventory()->get_mesos();
-				if (mesos < 0) {
-					// Will trigger for both too low and too high
+				if (player->get_inventory()->can_modify_mesos(info.id) != stack_result::full) {
 					player->send(packets::quests::quest_error(quest_id, packets::quests::error_not_enough_mesos));
 					return iteration_result::stop_iterating;
 				}
@@ -399,7 +397,7 @@ auto player_quests::give_rewards(game_quest_id quest_id, bool start) -> result {
 		});
 
 		if (chance > 0) {
-			int32_t random = randomizer::rand<int32_t>(chance - 1);
+			int32_t random = vana::util::randomizer::rand<int32_t>(chance - 1);
 			chance = 0;
 			for (const auto &info : items) {
 				if (chance >= random) {
@@ -418,7 +416,7 @@ auto player_quests::give_rewards(game_quest_id quest_id, bool start) -> result {
 			}
 		}
 
-		return result::successful;
+		return result::success;
 	}
 	else THROW_CODE_EXCEPTION(invalid_operation_exception, "This should never be thrown");
 }

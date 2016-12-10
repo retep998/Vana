@@ -17,12 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "quest.hpp"
 #include "common/algorithm.hpp"
-#include "common/database.hpp"
 #include "common/constant/job/id.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/initialize_common.hpp"
+#include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
 #include "common/quest.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/game_logic/player.hpp"
+#include "common/util/string.hpp"
 #include <initializer_list>
 #include <iomanip>
 #include <iostream>
@@ -32,7 +32,7 @@ namespace data {
 namespace provider {
 
 auto quest::load_data() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Quests... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Quests... ";
 
 	load_quest_data();
 	load_requests();
@@ -45,9 +45,9 @@ auto quest::load_data() -> void {
 auto quest::load_quest_data() -> void {
 	m_quests.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("quest_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::quest_data));
 
 	for (const auto &row : rs) {
 		vana::quest quest;
@@ -64,9 +64,9 @@ auto quest::load_requests() -> void {
 	// TODO FIXME quest
 	// Process the state when you add quest requests
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("quest_requests"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::quest_requests));
 
 	for (const auto &row : rs) {
 		game_quest_id quest_id = row.get<game_quest_id>("questid");
@@ -75,7 +75,7 @@ auto quest::load_requests() -> void {
 		int32_t request = row.get<int32_t>("objectid");
 		int16_t count = row.get<int16_t>("quantity");
 
-		utilities::str::run_enum(row.get<string>("request_type"), [&quest_request, request, count](const string &cmp) {
+		vana::util::str::run_enum(row.get<string>("request_type"), [&quest_request, request, count](const string &cmp) {
 			if (cmp == "item") {
 				quest_request.is_item = true;
 				quest_request.id = request;
@@ -116,9 +116,9 @@ auto quest::load_requests() -> void {
 }
 
 auto quest::load_required_jobs() -> void {
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("quest_required_jobs"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::quest_required_jobs));
 
 	for (const auto &row : rs) {
 		game_quest_id quest_id = row.get<game_quest_id>("questid");
@@ -140,9 +140,9 @@ auto quest::load_required_jobs() -> void {
 }
 
 auto quest::load_rewards() -> void {
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("quest_rewards"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::quest_rewards));
 
 	for (const auto &row : rs) {
 		game_quest_id quest_id = row.get<game_quest_id>("questid");
@@ -151,7 +151,7 @@ auto quest::load_rewards() -> void {
 		string job_tracks = row.get<string>("job_tracks");
 		bool start = (row.get<string>("quest_state") == "start");
 
-		utilities::str::run_enum(row.get<string>("reward_type"), [&reward](const string &cmp) {
+		vana::util::str::run_enum(row.get<string>("reward_type"), [&reward](const string &cmp) {
 			if (cmp == "item") reward.is_item = true;
 			else if (cmp == "exp") reward.is_exp = true;
 			else if (cmp == "mesos") reward.is_mesos = true;
@@ -159,14 +159,14 @@ auto quest::load_rewards() -> void {
 			else if (cmp == "skill") reward.is_skill = true;
 			else if (cmp == "buff") reward.is_buff = true;
 		});
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&reward](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("flags"), [&reward](const string &cmp) {
 			if (cmp == "master_level_only") reward.master_level_only = true;
 		});
 
 		reward.id = row.get<int32_t>("rewardid");
 		reward.count = row.get<int16_t>("quantity");
 		reward.master_level = row.get<int16_t>("master_level");
-		reward.gender = game_logic_utilities::get_gender_id(row.get<string>("gender"));
+		reward.gender = vana::util::game_logic::player::get_gender_id(row.get<string>("gender"));
 		reward.prop = row.get<int32_t>("prop");
 
 		bool found = false;
@@ -179,7 +179,7 @@ auto quest::load_rewards() -> void {
 					break;
 				}
 
-				utilities::str::run_flags(job_tracks, [&quest, &reward, &start](const string &cmp) {
+				vana::util::str::run_flags(job_tracks, [&quest, &reward, &start](const string &cmp) {
 					auto add_reward_for_jobs = [&quest, &reward, &start](init_list<game_job_id> jobs) {
 						for (const auto &job : jobs) {
 							quest.add_reward(start, reward, job);

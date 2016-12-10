@@ -17,11 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "equip.hpp"
 #include "common/constant/job/track.hpp"
-#include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/initialize_common.hpp"
-#include "common/randomizer.hpp"
-#include "common/string_utilities.hpp"
+#include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
+#include "common/util/randomizer.hpp"
+#include "common/util/string.hpp"
 #include <iomanip>
 #include <iostream>
 #include <random>
@@ -32,7 +31,7 @@ namespace data {
 namespace provider {
 
 auto equip::load_data() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Equips... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Equips... ";
 
 	load_equips();
 
@@ -42,7 +41,7 @@ auto equip::load_data() -> void {
 auto equip::load_equips() -> void {
 	m_equip_info.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	// Ugly hack to get the integers instead of scientific notation
 	// Note: This is MySQL's crappy behavior
@@ -50,7 +49,7 @@ auto equip::load_equips() -> void {
 	// We just use the string and send it to a translation function
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT *, REPLACE(FORMAT(equip_slots + 0, 0), \",\", \"\") AS equip_slot_flags "
-		<< "FROM " << db.make_table("item_equip_data"));
+		<< "FROM " << db.make_table(vana::data::table::item_equip_data));
 
 	for (const auto &row : rs) {
 		data::type::equip_info equip;
@@ -86,12 +85,12 @@ auto equip::load_equips() -> void {
 		equip.poison_damage = row.get<uint8_t>("inc_poison_damage");
 		equip.elemental_default = row.get<uint8_t>("elemental_default");
 		equip.traction = row.get<double>("traction");
-		equip.valid_slots = utilities::str::atoli(row.get<string>("equip_slot_flags").c_str());
+		equip.valid_slots = vana::util::str::atoli(row.get<string>("equip_slot_flags").c_str());
 
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&equip](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("flags"), [&equip](const string &cmp) {
 			if (cmp == "wear_trade_block") equip.trade_block_on_equip = true;
 		});
-		utilities::str::run_flags(row.get<opt_string>("req_job"), [&equip](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("req_job"), [&equip](const string &cmp) {
 			if (cmp == "common") equip.valid_jobs.push_back(-1);
 			else if (cmp == "beginner") equip.valid_jobs.push_back(constant::job::track::beginner);
 			else if (cmp == "warrior") equip.valid_jobs.push_back(constant::job::track::warrior);
@@ -121,13 +120,13 @@ auto equip::set_equip_stats(vana::item *equip, stat_variance policy, bool is_gm,
 
 			bool increase_only = false;
 			if (policy == stat_variance::only_increase_with_great_chance) {
-				if (!is_gm && randomizer::rand<int8_t>(10, 1) <= 3) {
+				if (!is_gm && vana::util::randomizer::rand<int8_t>(10, 1) <= 3) {
 					return amount;
 				}
 				increase_only = true;
 			}
 			else if (policy == stat_variance::only_increase_with_amazing_chance) {
-				if (!is_gm && randomizer::rand<int8_t>(10, 1) == 1) {
+				if (!is_gm && vana::util::randomizer::rand<int8_t>(10, 1) == 1) {
 					return amount;
 				}
 				increase_only = true;
@@ -154,14 +153,14 @@ auto equip::set_equip_stats(vana::item *equip, stat_variance policy, bool is_gm,
 				// This makes it like flipping 7 coins instead of rolling a single die
 
 				std::binomial_distribution<> dist{variance + 2, .5};
-				variance = randomizer::rand(dist) - 2;
+				variance = vana::util::randomizer::rand(dist) - 2;
 			}
 
 			if (variance <= 0) {
 				return amount;
 			}
 
-			if (is_gm || increase_only || randomizer::rand<bool>()) {
+			if (is_gm || increase_only || vana::util::randomizer::rand<bool>()) {
 				return amount + variance;
 			}
 

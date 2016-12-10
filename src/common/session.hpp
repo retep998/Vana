@@ -17,14 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/decoder.hpp"
 #include "common/config/ping.hpp"
 #include "common/connection_type.hpp"
 #include "common/ip.hpp"
 #include "common/packet_transformer.hpp"
-#include "common/shared_array.hpp"
 #include "common/timer/container_holder.hpp"
 #include "common/types.hpp"
+#include "common/util/shared_array.hpp"
 #include <asio.hpp>
 #include <memory>
 #include <mutex>
@@ -65,7 +64,7 @@ namespace vana {
 		auto handle_read_body(const asio::error_code &error, size_t bytes_transferred) -> void;
 		auto get_socket() -> asio::ip::tcp::socket &;
 		auto get_codec() -> packet_transformer &;
-		auto get_buffer() -> utilities::misc::shared_array<unsigned char> &;
+		auto get_buffer() -> vana::util::shared_array<unsigned char> &;
 		auto start(const config::ping &ping, ref_ptr<packet_transformer> transformer) -> void;
 		auto send(const unsigned char *buf, int32_t len, bool encrypt = true) -> void;
 		auto ping() -> void;
@@ -84,8 +83,8 @@ namespace vana {
 		ip m_ip;
 		connection_manager &m_manager;
 		asio::ip::tcp::socket m_socket;
-		utilities::misc::shared_array<unsigned char> m_buffer;
-		utilities::misc::shared_array<unsigned char> m_send_packet;
+		vana::util::shared_array<unsigned char> m_buffer;
+		vana::util::shared_array<unsigned char> m_send_packet;
 		ref_ptr<packet_transformer> m_codec;
 		mutex m_send_mutex;
 	};

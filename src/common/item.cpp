@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "item.hpp"
 #include "common/constant/item/max_stat.hpp"
 #include "common/data/provider/equip.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/misc_utilities.hpp"
 #include "common/soci_extensions.hpp"
+#include "common/util/game_logic/inventory.hpp"
+#include "common/util/misc.hpp"
 #include <soci.h>
 
 namespace vana {
@@ -324,18 +324,18 @@ auto item::initialize_item(const soci::row &row) -> void {
 	m_name = name.get("");
 }
 
-auto item::database_insert(database &db, const item_db_info &info) -> void {
+auto item::database_insert(vana::io::database &db, const item_db_info &info) -> void {
 	vector<item_db_record> v;
 	item_db_record r{info, this};
 	v.push_back(r);
 	item::database_insert(db, v);
 }
 
-auto item::database_insert(database &db, const vector<item_db_record> &items) -> void {
+auto item::database_insert(vana::io::database &db, const vector<item_db_record> &items) -> void {
 	using namespace soci;
 	auto &sql = db.get_session();
-	using utilities::misc::get_optional;
-	using utilities::misc::nullable_mode;
+	using vana::util::misc::get_optional;
+	using vana::util::nullable_mode;
 
 	static init_list<int8_t> nulls_int8 = {0};
 	static init_list<int16_t> nulls_int16 = {0};
@@ -380,7 +380,7 @@ auto item::database_insert(database &db, const vector<item_db_record> &items) ->
 	opt_string name;
 
 	statement st = (sql.prepare
-		<< "INSERT INTO " << db.make_table("items") << " (character_id, inv, slot, location, account_id, world_id, item_id, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, hammers, pet_id, name, expiration) "
+		<< "INSERT INTO " << db.make_table(vana::table::items) << " (character_id, inv, slot, location, account_id, world_id, item_id, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, hammers, pet_id, name, expiration) "
 		<< "VALUES (:char, :inv, :slot, :location, :account, :world, :item_id, :amount, :slots, :scrolls, :str, :dex, :int, :luk, :hp, :mp, :watk, :matk, :wdef, :mdef, :acc, :avo, :hands, :speed, :jump, :flags, :hammers, :pet, :name, :expiration)",
 		use(player_id, "char"),
 		use(inventory, "inv"),
@@ -423,7 +423,7 @@ auto item::database_insert(database &db, const vector<item_db_record> &items) ->
 		slot = rec.slot;
 		amount = item->m_amount;
 		item_id = item->m_id;
-		inventory = game_logic_utilities::get_inventory(item_id);
+		inventory = vana::util::game_logic::inventory::get_inventory(item_id);
 		bool equip = (inventory == constant::inventory::equip);
 		nullable_mode nulls = (equip ?
 			nullable_mode::null_if_found :

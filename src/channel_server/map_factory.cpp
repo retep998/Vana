@@ -16,10 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "map_factory.hpp"
-#include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/initialize_common.hpp"
-#include "common/string_utilities.hpp"
+#include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
+#include "common/util/string.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/map.hpp"
 #include "channel_server/maple_tvs.hpp"

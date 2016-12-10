@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "inventory_packet.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/inter_header.hpp"
 #include "common/session.hpp"
+#include "common/util/game_logic/inventory.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/inventory.hpp"
 #include "channel_server/inventory_packet_helper.hpp"
@@ -145,7 +145,7 @@ PACKET_IMPL(inventory_operation, bool unk, const vector<inventory_packet_operati
 	for (const auto &operation : operations) {
 		builder
 			.add<int8_t>(operation.operation_type)
-			.add<game_inventory>(game_logic_utilities::get_inventory(operation.item->get_id()));
+			.add<game_inventory>(vana::util::game_logic::inventory::get_inventory(operation.item->get_id()));
 
 		switch (operation.operation_type) {
 			case packets::inventory::operation_types::add_item:

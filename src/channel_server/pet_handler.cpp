@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/provider/item.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
-#include "common/randomizer.hpp"
+#include "common/util/randomizer.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/inventory.hpp"
 #include "channel_server/inventory_packet.hpp"
@@ -152,7 +152,7 @@ auto pet_handler::handle_feed(ref_ptr<player> player, packet_reader &reader) -> 
 			player->send(packets::pets::show_animation(player->get_id(), pet, 1));
 
 			pet->modify_fullness(constant::stat::pet_feed_fullness, false);
-			if (randomizer::percentage() < 60) {
+			if (vana::util::randomizer::percentage() < 60) {
 				// 60% chance for feed to add closeness
 				pet->add_closeness(1);
 			}
@@ -178,7 +178,7 @@ auto pet_handler::handle_command(ref_ptr<player> player, packet_reader &reader) 
 		return;
 	}
 
-	if (randomizer::percentage<uint32_t>() < action->prob) {
+	if (vana::util::randomizer::percentage<uint32_t>() < action->prob) {
 		pet->add_closeness(action->increase);
 	}
 

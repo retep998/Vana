@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/algorithm.hpp"
 #include "common/data/provider/buff.hpp"
 #include "common/data/provider/skill.hpp"
-#include "common/game_logic_utilities.hpp"
+#include "common/util/game_logic/player_skill.hpp"
 #include "channel_server/buffs_packet.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/map.hpp"
@@ -102,7 +102,7 @@ auto buffs::buff_may_apply(ref_ptr<player> player, const data::type::buff_source
 		case data::type::buff_source_type::skill: {
 			game_skill_id skill_id = source.get_skill_id();
 			game_skill_level skill_level = source.get_skill_level();
-			if (game_logic_utilities::is_dark_sight(skill_id)) {
+			if (vana::util::game_logic::player_skill::is_dark_sight(skill_id)) {
 				return
 					buff.get_value() != data::type::buff_skill_value::speed ||
 					skill_level != channel_server::get_instance().get_skill_data_provider().get_max_level(skill_id);
@@ -163,7 +163,7 @@ auto buffs::preprocess_buff(ref_ptr<player> player, const data::type::buff_sourc
 	vector<data::type::buff_info> applicable_buffs;
 	vector<data::type::buff_info> existing_buffs;
 	if (buff_value.is_selection_buff()) {
-		int16_t chance = randomizer::percentage<int16_t>();
+		int16_t chance = vana::util::randomizer::percentage<int16_t>();
 		for (const auto &buff_info : buff_value.get_buff_info()) {
 			if (chance < buff_info.get_chance()) {
 				existing_buffs.push_back(buff_info);

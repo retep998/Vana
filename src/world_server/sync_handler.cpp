@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "sync_handler.hpp"
 #include "common/config/rates.hpp"
-#include "common/database.hpp"
 #include "common/inter_header.hpp"
 #include "common/inter_helper.hpp"
+#include "common/io/database.hpp"
 #include "common/packet_reader.hpp"
 #include "common/session.hpp"
 #include "world_server/channel.hpp"

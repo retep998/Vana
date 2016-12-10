@@ -16,10 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "instance.hpp"
-#include "common/time_utilities.hpp"
 #include "common/timer/container.hpp"
 #include "common/timer/timer.hpp"
-#include "common/time_utilities.hpp"
+#include "common/util/time.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/instances.hpp"
 #include "channel_server/lua/lua_instance.hpp"
@@ -40,13 +39,13 @@ instance::instance(const string &name, game_map_id map, game_player_id player_id
 	m_name{name},
 	m_persistent{persistent},
 	m_show_timer{show_timer},
-	m_start{utilities::time::get_now()}
+	m_start{vana::util::time::get_now()}
 {
 	m_variables = make_owned_ptr<variables>();
 	m_lua_instance = make_owned_ptr<lua::lua_instance>(name, player_id);
 
 	if (player_id != 0) {
-		channel_server::get_instance().log(log_type::instance_begin, [&](out_stream &log) { log << name << " started by player ID " << player_id; });
+		channel_server::get_instance().log(vana::log::type::instance_begin, [&](out_stream &log) { log << name << " started by player ID " << player_id; });
 	}
 	set_instance_timer(time, true);
 }
@@ -180,7 +179,7 @@ auto instance::add_second_of_hour_timer(const string &timer_name, int16_t second
 
 		vana::timer::id id{vana::timer::type::instance_timer, timer.counter_id};
 		vana::timer::timer::create([this, timer_name](const time_point &now) { this->timer_complete(timer_name, true); },
-			id, get_timers(), utilities::time::get_distance_to_next_occurring_second_of_hour(second_of_hour), persistence);
+			id, get_timers(), vana::util::time::get_distance_to_next_occurring_second_of_hour(second_of_hour), persistence);
 
 		return true;
 	}

@@ -110,25 +110,25 @@ namespace vana {
 				out = static_cast<FullyQualifiedTypeName>(value); \
 				switch (out) { \
 					DEFER(List)(FullyQualifiedTypeName, CASE_VALUE_IMPL) \
-						return result::successful; \
+						return result::success; \
 					default: \
 						return result::failure; \
 				} \
 			} \
 			static auto cast_from_underlying(UnderlyingType value) -> FullyQualifiedTypeName { \
 				FullyQualifiedTypeName ret; \
-				if (try_cast_from_underlying(value, ret) != result::successful) { \
+				if (try_cast_from_underlying(value, ret) != result::success) { \
 					throw invalid_enum_exception{#FullyQualifiedTypeName}; \
 				} \
 				return ret; \
 			} \
 			static auto try_cast_to_underlying(FullyQualifiedTypeName value, UnderlyingType &out) -> result { \
 				out = static_cast<UnderlyingType>(value); \
-				return result::successful; \
+				return result::success; \
 			} \
 			static auto cast_to_underlying(FullyQualifiedTypeName value) -> UnderlyingType { \
 				UnderlyingType ret; \
-				if (try_cast_to_underlying(value, ret) != result::successful) { \
+				if (try_cast_to_underlying(value, ret) != result::success) { \
 					throw invalid_enum_exception{#FullyQualifiedTypeName}; \
 				} \
 				return ret; \
@@ -163,11 +163,11 @@ namespace vana {
 					}); \
 				if (iter == std::end(s_strings)) return result::failure; \
 				out = std::get<0>(*iter); \
-				return result::successful; \
+				return result::success; \
 			} \
 			auto get_from_string(const std::string &value) -> FullyQualifiedTypeName { \
 				FullyQualifiedTypeName out; \
-				if (try_get_from_string(value, out) != result::successful) { \
+				if (try_get_from_string(value, out) != result::success) { \
 					throw invalid_enum_exception{#FullyQualifiedTypeName}; \
 				} \
 				return out; \

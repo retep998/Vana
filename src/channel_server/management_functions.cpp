@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "management_functions.hpp"
 #include "common/config/rates.hpp"
 #include "common/data/provider/item.hpp"
-#include "common/database.hpp"
-#include "common/exit_codes.hpp"
-#include "common/string_utilities.hpp"
+#include "common/exit_code.hpp"
+#include "common/io/database.hpp"
+#include "common/util/string.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/inventory.hpp"
 #include "channel_server/maps.hpp"
@@ -41,7 +41,7 @@ auto management_functions::user_warp(ref_ptr<player> player, const game_chat &ar
 		string raw_map = matches[1];
 		string raw_portal = matches[2];
 		if (raw_map.empty()) {
-			chat_handler_functions::show_info(player, "Current map: " + utilities::str::lexical_cast<string>(player->get_map_id()));
+			chat_handler_functions::show_info(player, "Current map: " + vana::util::str::lexical_cast<string>(player->get_map_id()));
 			return chat_result::handled_display;
 		}
 
@@ -56,14 +56,14 @@ auto management_functions::user_warp(ref_ptr<player> player, const game_chat &ar
 				string x_position = matches[1];
 				string y_position = matches[2];
 				point pos{
-					utilities::str::lexical_cast<game_coord>(x_position),
-					utilities::str::lexical_cast<game_coord>(y_position)
+					vana::util::str::lexical_cast<game_coord>(x_position),
+					vana::util::str::lexical_cast<game_coord>(y_position)
 				};
 				player->set_map(map_id, mystic_door::portal_id, pos);
 			}
 			else if (!raw_portal.empty() && chat_handler_functions::run_regex_pattern(raw_portal, R"(\[(\d+)\])", matches) == match_result::any_matches) {
 				string foothold_id = matches[1];
-				game_foothold_id foothold = utilities::str::lexical_cast<game_foothold_id>(foothold_id);
+				game_foothold_id foothold = vana::util::str::lexical_cast<game_foothold_id>(foothold_id);
 				if (!map->is_valid_foothold(foothold) || map->is_vertical_foothold(foothold)) {
 					chat_handler_functions::show_error(player, "Invalid foothold: " + foothold_id);
 					return chat_result::handled_display;
@@ -342,7 +342,7 @@ auto management_functions::lag(ref_ptr<player> player, const game_chat &args) ->
 	if (chat_handler_functions::run_regex_pattern(args, R"((\w+))", matches) == match_result::any_matches) {
 		string target = matches[1];
 		if (auto p = channel_server::get_instance().get_player_data_provider().get_player(target)) {
-			chat_handler_functions::show_info(player, p->get_name() + "'s lag: " + utilities::str::lexical_cast<string>(p->get_latency().count()) + "ms");
+			chat_handler_functions::show_info(player, p->get_name() + "'s lag: " + vana::util::str::lexical_cast<string>(p->get_latency().count()) + "ms");
 		}
 		else {
 			chat_handler_functions::show_error(player, "Invalid player: " + target);
@@ -359,7 +359,7 @@ auto management_functions::header(ref_ptr<player> player, const game_chat &args)
 
 auto management_functions::shutdown(ref_ptr<player> player, const game_chat &args) -> chat_result {
 	chat_handler_functions::show_info(player, "Shutting down the server");
-	channel_server::get_instance().log(log_type::gm_command, "GM shutdown the server. GM: " + player->get_name());
+	channel_server::get_instance().log(vana::log::type::gm_command, "GM shutdown the server. GM: " + player->get_name());
 	// TODO FIXME remove this or figure out a better way to post a shutdown than just doing the shutdown here
 	exit(exit_code::forced_by_gm);
 	return chat_result::handled_display;
@@ -431,7 +431,7 @@ auto management_functions::shop(ref_ptr<player> player, const game_chat &args) -
 		else if (args == "pet") shop_id = 9999992;
 		else shop_id = atoi(args.c_str());
 
-		if (npc_handler::show_shop(player, shop_id) == result::successful) {
+		if (npc_handler::show_shop(player, shop_id) == result::success) {
 			return chat_result::handled_display;
 		}
 	}
@@ -485,7 +485,7 @@ auto management_functions::add_npc(ref_ptr<player> player, const game_chat &args
 			npc.rx0 = npc.pos.x - 50;
 			npc.rx1 = npc.pos.x + 50;
 			game_map_object id = player->get_map()->add_npc(npc);
-			chat_handler_functions::show_info(player, "Spawned NPC " + args + " with object ID " + utilities::str::lexical_cast<string>(id));
+			chat_handler_functions::show_info(player, "Spawned NPC " + args + " with object ID " + vana::util::str::lexical_cast<string>(id));
 		}
 		else {
 			chat_handler_functions::show_error(player, "Invalid NPC ID: " + args);
@@ -523,7 +523,7 @@ auto management_functions::kill(ref_ptr<player> player_value, const game_chat &a
 				p->get_stats()->set_hp(0);
 				return true;
 			});
-			chat_handler_functions::show_info(player_value, "Killed " + utilities::str::lexical_cast<string>(kills) + " players in the current map");
+			chat_handler_functions::show_info(player_value, "Killed " + vana::util::str::lexical_cast<string>(kills) + " players in the current map");
 		}
 		else if (args == "gm" || args == "players") {
 			proceed = false;
@@ -534,7 +534,7 @@ auto management_functions::kill(ref_ptr<player> player_value, const game_chat &a
 				}
 				return false;
 			});
-			chat_handler_functions::show_info(player_value, "Killed " + utilities::str::lexical_cast<string>(kills) + " " + (args == "gm" ? "GMs" : "players") + " in the current map");
+			chat_handler_functions::show_info(player_value, "Killed " + vana::util::str::lexical_cast<string>(kills) + " " + (args == "gm" ? "GMs" : "players") + " in the current map");
 		}
 		if (proceed) {
 			if (args == "me") {
@@ -568,11 +568,11 @@ auto management_functions::ban(ref_ptr<player> player, const game_chat &args) ->
 		// Ban account
 		string expire{"2130-00-00 00:00:00"};
 
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << db.make_table("accounts") << " u "
-			<< "INNER JOIN " << db.make_table("characters") << " c ON u.account_id = c.account_id "
+			<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
+			<< "INNER JOIN " << db.make_table(vana::table::characters) << " c ON u.account_id = c.account_id "
 			<< "SET "
 			<< "	u.banned = 1, "
 			<< "	u.ban_expire = :expire, "
@@ -587,7 +587,7 @@ auto management_functions::ban(ref_ptr<player> player, const game_chat &args) ->
 		if (st.get_affected_rows() > 0) {
 			string ban_message = target_name + " has been banned" + chat_handler_functions::get_ban_string(reason);
 			channel_server::get_instance().get_player_data_provider().send(packets::player::show_message(ban_message, packets::player::notice_types::notice));
-			channel_server::get_instance().log(log_type::gm_command, [&](out_stream &log) {
+			channel_server::get_instance().log(vana::log::type::gm_command, [&](out_stream &log) {
 				log << "GM " << player->get_name()
 					<< " banned a player with reason " << static_cast<int32_t>(reason)
 					<< ", player: " << target_name;
@@ -614,11 +614,11 @@ auto management_functions::temp_ban(ref_ptr<player> player, const game_chat &arg
 		int8_t reason = reason_string.empty() ? 1 : atoi(reason_string.c_str());
 
 		// Ban account
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << db.make_table("accounts") << " u "
-			<< "INNER JOIN " << db.make_table("characters") << " c ON u.account_id = c.account_id "
+			<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
+			<< "INNER JOIN " << db.make_table(vana::table::characters) << " c ON u.account_id = c.account_id "
 			<< "SET "
 			<< "	u.banned = 1, "
 			<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL :expire DAY), "
@@ -634,7 +634,7 @@ auto management_functions::temp_ban(ref_ptr<player> player, const game_chat &arg
 			string ban_message = target_name + " has been banned" + chat_handler_functions::get_ban_string(reason);
 			channel_server::get_instance().get_player_data_provider().send(packets::player::show_message(ban_message, packets::player::notice_types::notice));
 
-			channel_server::get_instance().log(log_type::gm_command, [&](out_stream &log) {
+			channel_server::get_instance().log(vana::log::type::gm_command, [&](out_stream &log) {
 				log << "GM " << player->get_name()
 					<< " temporary banned a player with reason " << static_cast<int32_t>(reason)
 					<< " for " << length
@@ -662,9 +662,9 @@ auto management_functions::ip_ban(ref_ptr<player> player, const game_chat &args)
 			int8_t reason = reason_string.empty() ? 1 : atoi(reason_string.c_str());
 
 			// IP ban
-			auto &db = database::get_char_db();
+			auto &db = vana::io::database::get_char_db();
 			auto &sql = db.get_session();
-			soci::statement st = (sql.prepare << "INSERT INTO " << db.make_table("ip_bans") << " (ip) VALUES (:ip)",
+			soci::statement st = (sql.prepare << "INSERT INTO " << db.make_table(vana::table::ip_bans) << " (ip) VALUES (:ip)",
 				soci::use(target_ip, "ip"));
 
 			st.execute();
@@ -673,7 +673,7 @@ auto management_functions::ip_ban(ref_ptr<player> player, const game_chat &args)
 				string ban_message = target_name + " has been banned" + chat_handler_functions::get_ban_string(reason);
 
 				channel_server::get_instance().get_player_data_provider().send(packets::player::show_message(ban_message, packets::player::notice_types::notice));
-				channel_server::get_instance().log(log_type::gm_command, [&](out_stream &log) {
+				channel_server::get_instance().log(vana::log::type::gm_command, [&](out_stream &log) {
 					log << "GM " << player->get_name()
 						<< " IP banned a player with reason " << static_cast<int32_t>(reason)
 						<< ", player: " << target_name;
@@ -695,11 +695,11 @@ auto management_functions::ip_ban(ref_ptr<player> player, const game_chat &args)
 auto management_functions::unban(ref_ptr<player> player, const game_chat &args) -> chat_result {
 	if (!args.empty()) {
 		// Unban account
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		soci::statement st = (sql.prepare
-			<< "UPDATE " << db.make_table("accounts") << " u "
-			<< "INNER JOIN " << db.make_table("characters") << " c ON u.account_id = c.account_id "
+			<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
+			<< "INNER JOIN " << db.make_table(vana::table::characters) << " c ON u.account_id = c.account_id "
 			<< "SET "
 			<< "	u.banned = 0, "
 			<< "	u.ban_reason = NULL, "
@@ -712,7 +712,7 @@ auto management_functions::unban(ref_ptr<player> player, const game_chat &args) 
 		if (st.get_affected_rows() > 0) {
 			string banMessage = args + " has been unbanned";
 			chat_handler_functions::show_info(player, banMessage);
-			channel_server::get_instance().log(log_type::gm_command, [&](out_stream &log) {
+			channel_server::get_instance().log(vana::log::type::gm_command, [&](out_stream &log) {
 				log << "GM " << player->get_name()
 					<< " unbanned a player: " << args;
 			});
@@ -752,7 +752,7 @@ auto management_functions::rates(ref_ptr<player> player, const game_chat &args) 
 		string value = matches[3];
 		if (type == "view") {
 			auto display = [player](const string &type, int32_t rate) {
-				chat_handler_functions::show_info(player, type + " rate: " + utilities::str::lexical_cast<string>(rate) + "x");
+				chat_handler_functions::show_info(player, type + " rate: " + vana::util::str::lexical_cast<string>(rate) + "x");
 			};
 
 			chat_handler_functions::show_info(player, "Current Rates");

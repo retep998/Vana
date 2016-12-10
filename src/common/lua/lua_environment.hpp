@@ -25,8 +25,8 @@ extern "C" {
 
 #include "common/lua/lua_type.hpp"
 #include "common/lua/lua_variant.hpp"
-#include "common/object_pool.hpp"
 #include "common/types.hpp"
+#include "common/util/object_pool.hpp"
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -271,7 +271,7 @@ namespace vana {
 			auto get_impl(lua_State *lua_vm, int index, ord_map<TKey, TElement, TOperation> *) -> ord_map<TKey, TElement, TOperation>;
 			// End get_impl index
 
-			static object_pool<int32_t, lua_environment *> s_environments;
+			static vana::util::object_pool<int32_t, lua_environment *> s_environments;
 
 			lua_State *m_lua_vm = nullptr;
 			lua_State *m_lua_thread = nullptr;
@@ -385,7 +385,7 @@ namespace vana {
 				return result::failure;
 			}
 
-			return result::successful;
+			return result::success;
 		}
 
 		template <typename THead, typename ... TTail>

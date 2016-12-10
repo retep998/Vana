@@ -56,23 +56,22 @@ auto quests::give_item(ref_ptr<player> player, game_item_id item_id, game_slot_q
 	}
 
 	player->send(packets::quests::give_item(item_id, amount));
-	return result::successful;
+	return result::success;
 }
 
 auto quests::give_mesos(ref_ptr<player> player, game_mesos amount) -> result {
-	if (amount < 0 && player->get_inventory()->get_mesos() + amount < 0) {
-		// Do a bit of checking if meso is being taken to see if it's enough
+	if (player->get_inventory()->modify_mesos(amount).get_result() != stack_result::full) {
 		return result::failure;
 	}
-	player->get_inventory()->modify_mesos(amount);
+
 	player->send(packets::quests::give_mesos(amount));
-	return result::successful;
+	return result::success;
 }
 
 auto quests::give_fame(ref_ptr<player> player, game_fame amount) -> result {
 	player->get_stats()->set_fame(player->get_stats()->get_fame() + amount);
 	player->send(packets::quests::give_fame(amount));
-	return result::successful;
+	return result::success;
 }
 
 auto quests::get_quest(ref_ptr<player> player, packet_reader &reader) -> void {
@@ -88,7 +87,7 @@ auto quests::get_quest(ref_ptr<player> player, packet_reader &reader) -> void {
 			player->get_quests()->remove_quest(quest_id);
 		}
 		else {
-			channel_server::get_instance().log(log_type::malformed_packet, [&](out_stream &log) {
+			channel_server::get_instance().log(vana::log::type::malformed_packet, [&](out_stream &log) {
 				log << "Player (ID: " << player->get_id()
 					<< ", Name: " << player->get_name()
 					<< ") tried to forfeit a quest that wasn't started yet."
@@ -102,7 +101,7 @@ auto quests::get_quest(ref_ptr<player> player, packet_reader &reader) -> void {
 	if (act != quest_opcodes::start_quest && act != quest_opcodes::start_npc_quest_chat) {
 		if (!player->get_quests()->is_quest_active(quest_id)) {
 			// Hacking
-			channel_server::get_instance().log(log_type::malformed_packet, [&](out_stream &log) {
+			channel_server::get_instance().log(vana::log::type::malformed_packet, [&](out_stream &log) {
 				log << "Player (ID: " << player->get_id()
 					<< ", Name: " << player->get_name()
 					<< ") tried to perform an action with a non-started quest."
@@ -114,7 +113,7 @@ auto quests::get_quest(ref_ptr<player> player, packet_reader &reader) -> void {
 	// quest_opcodes::restore_lost_quest_item for some reason appears to use "NPC ID" as a different kind of identifier, maybe quantity?
 
 	if (act != quest_opcodes::restore_lost_quest_item && !channel_server::get_instance().get_npc_data_provider().is_valid_npc_id(npc_id)) {
-		channel_server::get_instance().log(log_type::malformed_packet, [&](out_stream &log) {
+		channel_server::get_instance().log(vana::log::type::malformed_packet, [&](out_stream &log) {
 			log << "Player (ID: " << player->get_id()
 				<< ", Name: " << player->get_name()
 				<< ") tried to do a quest action with an invalid NPC ID."
@@ -138,7 +137,7 @@ auto quests::get_quest(ref_ptr<player> player, packet_reader &reader) -> void {
 				inventory::add_new_item(player, item_id, 1);
 			}
 			else {
-				channel_server::get_instance().log(log_type::malformed_packet, [&](out_stream &log) {
+				channel_server::get_instance().log(vana::log::type::malformed_packet, [&](out_stream &log) {
 					log << "Player (ID: " << player->get_id()
 						<< ", Name: " << player->get_name()
 						<< ") tried to restore a lost quest item which isn't a quest item."
@@ -151,7 +150,7 @@ auto quests::get_quest(ref_ptr<player> player, packet_reader &reader) -> void {
 		}
 		case quest_opcodes::start_quest:
 			if (player->get_quests()->is_quest_active(quest_id)) {
-				channel_server::get_instance().log(log_type::malformed_packet, [&](out_stream &log) {
+				channel_server::get_instance().log(vana::log::type::malformed_packet, [&](out_stream &log) {
 					log << "Player (ID: " << player->get_id()
 						<< ", Name: " << player->get_name()
 						<< ") tried to start an already started quest."

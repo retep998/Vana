@@ -26,13 +26,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 namespace vana {
-	class database;
 	class soci::row;
 
 	namespace data {
 		namespace provider {
 			class equip;
 		}
+	}
+	namespace io {
+		class database;
 	}
 
 	class item {
@@ -80,7 +82,7 @@ namespace vana {
 		auto set_karma(bool karma) -> void;
 		auto set_trade_block(bool block) -> void;
 
-		auto database_insert(database &db, const item_db_info &info) -> void;
+		auto database_insert(vana::io::database &db, const item_db_info &info) -> void;
 		auto set_slots(int8_t slots) -> void;
 		auto set_str(game_stat strength) -> void;
 		auto set_dex(game_stat dexterity) -> void;
@@ -122,7 +124,7 @@ namespace vana {
 		auto dec_slots(int8_t dec = 1) -> void { m_slots -= dec; }
 		auto inc_scrolls() -> void { m_scrolls++; }
 
-		static auto database_insert(database &db, const vector<item_db_record> &items) -> void;
+		static auto database_insert(vana::io::database &db, const vector<item_db_record> &items) -> void;
 
 		const static string inventory;
 		const static string storage;

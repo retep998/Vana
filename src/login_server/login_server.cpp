@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/config/salting.hpp"
 #include "common/connection_listener_config.hpp"
 #include "common/connection_manager.hpp"
-#include "common/initialize_common.hpp"
+#include "common/data/initialize.hpp"
 #include "common/maple_version.hpp"
 #include "common/server_type.hpp"
 #include "login_server/login_server_accept_packet.hpp"
@@ -80,13 +80,13 @@ auto login_server::finalize_server_session(ref_ptr<login_server_accepted_session
 }
 
 auto login_server::load_data() -> result {
-	if (initializing::check_schema_version(this, true) == result::failure) {
+	if (vana::data::initialize::check_schema_version(this, true) == result::failure) {
 		return result::failure;
 	}
-	if (initializing::check_mcdb_version(this) == result::failure) {
+	if (vana::data::initialize::check_mcdb_version(this) == result::failure) {
 		return result::failure;
 	}
-	initializing::set_users_offline(this, 1);
+	vana::data::initialize::set_users_offline(this, 1);
 
 	m_valid_char_data_provider.load_data();
 	m_equip_data_provider.load_data();
@@ -95,7 +95,7 @@ auto login_server::load_data() -> result {
 	ranking_calculator::set_timer();
 	display_launch_time();
 
-	return result::successful;
+	return result::success;
 }
 
 auto login_server::load_config() -> result {
@@ -114,7 +114,7 @@ auto login_server::load_config() -> result {
 
 	load_worlds();
 
-	return result::successful;
+	return result::success;
 }
 
 auto login_server::init_complete() -> void {

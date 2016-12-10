@@ -21,11 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/provider/map.hpp"
 #include "common/data/provider/quest.hpp"
 #include "common/data/provider/skill.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/item.hpp"
 #include "common/packet_reader.hpp"
 #include "common/point.hpp"
-#include "common/randomizer.hpp"
+#include "common/util/game_logic/item.hpp"
+#include "common/util/randomizer.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/drop.hpp"
 #include "channel_server/drops_packet.hpp"
@@ -98,7 +98,7 @@ auto drop_handler::do_drops(game_player_id player_id, game_map_id map_id, int32_
 		return;
 	}
 
-	randomizer::shuffle(drops);
+	vana::util::randomizer::shuffle(drops);
 	game_coord mod = explosive ? 35 : 25;
 	for (const auto &drop_info : drops) {
 		if (drop_info.is_mesos && meso_rate == 0) {
@@ -108,7 +108,7 @@ auto drop_handler::do_drops(game_player_id player_id, game_map_id map_id, int32_
 			continue;
 		}
 
-		game_slot_qty amount = static_cast<game_slot_qty>(randomizer::rand<int32_t>(drop_info.max_amount, drop_info.min_amount));
+		game_slot_qty amount = static_cast<game_slot_qty>(vana::util::randomizer::rand<int32_t>(drop_info.max_amount, drop_info.min_amount));
 		drop *value = nullptr;
 		uint32_t chance = drop_info.chance;
 
@@ -122,7 +122,7 @@ auto drop_handler::do_drops(game_player_id player_id, game_map_id map_id, int32_
 				drop_rate;
 		}
 
-		if (randomizer::rand<uint32_t>(999999) < chance) {
+		if (vana::util::randomizer::rand<uint32_t>(999999) < chance) {
 			pos.x = origin.x + ((drop_pos_counter % 2) ?
 				(mod * (drop_pos_counter + 1) / 2) :
 				-(mod * (drop_pos_counter / 2)));
@@ -145,7 +145,7 @@ auto drop_handler::do_drops(game_player_id player_id, game_map_id map_id, int32_
 					}
 				}
 
-				item f = game_logic_utilities::is_equip(item_id) ?
+				item f = vana::util::game_logic::item::is_equip(item_id) ?
 					item{channel_server::get_instance().get_equip_data_provider(),
 						item_id,
 						stat_variance::normal,
@@ -198,11 +198,15 @@ auto drop_handler::do_drops(game_player_id player_id, game_map_id map_id, int32_
 auto drop_handler::drop_mesos(ref_ptr<player> player, packet_reader &reader) -> void {
 	reader.skip<game_tick_count>();
 	int32_t amount = reader.get<int32_t>();
-	if (amount < 10 || amount > 50000 || amount > player->get_inventory()->get_mesos()) {
+	if (amount < vana::constant::inventory::min_drop_mesos || amount > vana::constant::inventory::max_drop_mesos) {
 		// Hacking
 		return;
 	}
-	player->get_inventory()->modify_mesos(-amount, true);
+	auto query = player->get_inventory()->take_mesos(amount, false, true);
+	if (query.get_result() == stack_result::none) {
+		// Hacking
+	}
+
 	drop *value = new drop{player->get_map_id(), amount, player->get_pos(), player->get_id(), true};
 	value->set_time(0);
 	value->do_drop(player->get_pos());
@@ -244,15 +248,40 @@ auto drop_handler::loot_item(ref_ptr<player> player_value, packet_reader &reader
 	if (drop->is_mesos()) {
 		int32_t player_rate = 100;
 		game_mesos raw_mesos = drop->get_object_id();
+
+		// TODO FIXME
+		// This section is a bit broken
+		// I'm not sure how partial meso pickups work in any cases
+		// There are also questions of what happens to mesos if one or more party members cannot accept either in whole or in part the mesos they're given
+		// Clear cases (accounted for):
+		//	1. No party, has plenty of space to fit all mesos
+		//	2. No party, has 0 space for mesos
+		//	3. Has party, player has plenty of space to fit all mesos and so do all party members
+		//	4. Has party, player has 0 space for mesos
+		// Unclear cases:
+		//	1. No party, player has some space for mesos but not all
+		//	2. Has party, player has plenty of space for mesos but one or more party members has 0 space for mesos
+		//	3. Has party, player has plenty of space for mesos but one or more party members has some space for mesos but not all
+		//	4. Has party, player has some space for mesos but not all and all party members have plenty of space to fit all mesos
+		//	5. Has party, player has some space for mesos but one or more party members has 0 space for mesos
+		//	6. Has party, player has some space for mesos but one or more party members has some space for mesos but not all
+
 		auto give_mesos = [](ref_ptr<player> p, game_mesos mesos) -> result {
-			if (p->get_inventory()->modify_mesos(mesos, true)) {
-				p->send(packets::drops::pickup_drop(mesos, 0, true));
+			auto query = p->get_inventory()->add_mesos(mesos, true, true);
+			switch (query.get_result()) {
+				case stack_result::full:
+					p->send(packets::drops::pickup_drop(mesos, 0, true));
+					break;
+				case stack_result::partial:
+					// Packets?
+					p->send(packets::drops::dont_take());
+					break;
+				case stack_result::none:
+					p->send(packets::drops::dont_take());
+					return result::failure;
+				default: THROW_CODE_EXCEPTION(not_implemented_exception, "stack_result");
 			}
-			else {
-				p->send(packets::drops::dont_take());
-				return result::failure;
-			}
-			return result::successful;
+			return result::success;
 		};
 
 		if (player_value->get_party() != nullptr && !drop->is_player_drop()) {
@@ -289,7 +318,7 @@ auto drop_handler::loot_item(ref_ptr<player> player_value, packet_reader &reader
 		item drop_item = drop->get_item();
 		auto cons = channel_server::get_instance().get_item_data_provider().get_consume_info(drop_item.get_id());
 		if (cons != nullptr && cons->auto_consume) {
-			if (game_logic_utilities::is_monster_card(drop->get_object_id())) {
+			if (vana::util::game_logic::item::is_monster_card(drop->get_object_id())) {
 				player_value->send(packets::drops::pickup_drop_special(drop->get_object_id()));
 				inventory::use_item(player_value, drop_item.get_id());
 				player_value->send(packets::drops::dont_take());

@@ -17,16 +17,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_data_provider.hpp"
 #include "common/algorithm.hpp"
-#include "common/database.hpp"
 #include "common/inter_header.hpp"
 #include "common/inter_helper.hpp"
+#include "common/io/database.hpp"
 #include "common/packet_builder.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
 #include "common/party_data.hpp"
 #include "common/session.hpp"
-#include "common/string_utilities.hpp"
-#include "common/time_utilities.hpp"
+#include "common/util/string.hpp"
+#include "common/util/time.hpp"
 #include "channel_server/buddy_list_packet.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/party.hpp"
@@ -292,7 +292,7 @@ auto player_data_provider::handle_gm_chat(ref_ptr<player> player, const game_cha
 auto player_data_provider::new_player(game_player_id id, const ip &ip, packet_reader &reader) -> void {
 	connecting_player player;
 	player.connect_ip = ip;
-	player.connect_time = utilities::time::get_now();
+	player.connect_time = vana::util::time::get_now();
 	uint16_t packet_size = reader.get<uint16_t>();
 	player.packet_size = packet_size;
 	if (packet_size > 0) {
@@ -309,9 +309,9 @@ auto player_data_provider::check_player(game_player_id id, const ip &ip, bool &h
 	auto kvp = m_connections.find(id);
 	if (kvp != std::end(m_connections)) {
 		auto &test = kvp->second;
-		auto distance = utilities::time::get_distance<milliseconds>(utilities::time::get_now(), test.connect_time);
+		auto distance = vana::util::time::get_distance<milliseconds>(vana::util::time::get_now(), test.connect_time);
 		if (test.connect_ip == ip && distance < max_connection_milliseconds) {
-			result = result::successful;
+			result = result::success;
 			if (test.packet_size > 0) {
 				has_packet = true;
 			}

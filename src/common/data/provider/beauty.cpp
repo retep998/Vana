@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "beauty.hpp"
 #include "common/algorithm.hpp"
 #include "common/constant/gender.hpp"
-#include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/initialize_common.hpp"
-#include "common/randomizer.hpp"
+#include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
+#include "common/util/game_logic/player.hpp"
+#include "common/util/randomizer.hpp"
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
@@ -41,12 +41,12 @@ auto beauty::load_data() -> void {
 }
 
 auto beauty::load_skins() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Skins... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Skins... ";
 	m_skins.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("character_skin_data") << " ORDER BY skinid ASC");
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::character_skin_data) << " ORDER BY skinid ASC");
 
 	for (const auto &row : rs) {
 		m_skins.push_back(row.get<game_skin_id>("skinid"));
@@ -56,14 +56,14 @@ auto beauty::load_skins() -> void {
 }
 
 auto beauty::load_hair() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Hair... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Hair... ";
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("character_hair_data") << " ORDER BY hairid ASC");
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::character_hair_data) << " ORDER BY hairid ASC");
 
 	for (const auto &row : rs) {
-		game_gender_id gender_id = game_logic_utilities::get_gender_id(row.get<string>("gender"));
+		game_gender_id gender_id = vana::util::game_logic::player::get_gender_id(row.get<string>("gender"));
 		game_hair_id hair = row.get<game_hair_id>("hairid");
 		auto &gender = gender_id == constant::gender::female ? m_female : m_male;
 		gender.hair.push_back(hair);
@@ -73,14 +73,14 @@ auto beauty::load_hair() -> void {
 }
 
 auto beauty::load_faces() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Faces... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Faces... ";
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("character_face_data") << " ORDER BY faceid ASC");
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::character_face_data) << " ORDER BY faceid ASC");
 
 	for (const auto &row : rs) {
-		game_gender_id gender_id = game_logic_utilities::get_gender_id(row.get<string>("gender"));
+		game_gender_id gender_id = vana::util::game_logic::player::get_gender_id(row.get<string>("gender"));
 		game_face_id face = row.get<game_face_id>("faceid");
 		auto &gender = gender_id == constant::gender::female ? m_female : m_male;
 		gender.faces.push_back(face);
@@ -90,15 +90,15 @@ auto beauty::load_faces() -> void {
 }
 
 auto beauty::get_random_skin() const -> game_skin_id {
-	return *randomizer::select(m_skins);
+	return *vana::util::randomizer::select(m_skins);
 }
 
 auto beauty::get_random_hair(game_gender_id gender_id) const -> game_hair_id {
-	return *randomizer::select(get_gender(gender_id).hair);
+	return *vana::util::randomizer::select(get_gender(gender_id).hair);
 }
 
 auto beauty::get_random_face(game_gender_id gender_id) const -> game_face_id {
-	return *randomizer::select(get_gender(gender_id).faces);
+	return *vana::util::randomizer::select(get_gender(gender_id).faces);
 }
 
 auto beauty::get_skins() const -> const vector<game_skin_id> & {

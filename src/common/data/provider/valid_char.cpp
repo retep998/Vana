@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "valid_char.hpp"
 #include "common/algorithm.hpp"
-#include "common/database.hpp"
 #include "common/constant/gender.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/initialize_common.hpp"
-#include "common/string_utilities.hpp"
+#include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
+#include "common/util/game_logic/player.hpp"
+#include "common/util/string.hpp"
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
@@ -31,7 +31,7 @@ namespace data {
 namespace provider {
 
 auto valid_char::load_data() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Char Info... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Char Info... ";
 
 	load_forbidden_names();
 	load_creation_items();
@@ -42,9 +42,9 @@ auto valid_char::load_data() -> void {
 auto valid_char::load_forbidden_names() -> void {
 	m_forbidden_names.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("character_forbidden_names"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::character_forbidden_names));
 
 	for (const auto &row : rs) {
 		m_forbidden_names.push_back(row.get<string>("forbidden_name"));
@@ -55,16 +55,16 @@ auto valid_char::load_creation_items() -> void {
 	m_adventurer.clear();
 	m_cygnus.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("character_creation_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::character_creation_data));
 
 	for (const auto &row : rs) {
-		game_gender_id gender_id = game_logic_utilities::get_gender_id(row.get<string>("gender"));
+		game_gender_id gender_id = vana::util::game_logic::player::get_gender_id(row.get<string>("gender"));
 		int32_t object_id = row.get<int32_t>("objectid");
 		int8_t class_id = -1;
 
-		utilities::str::run_enum(row.get<string>("character_type"), [&class_id](const string &cmp) {
+		vana::util::str::run_enum(row.get<string>("character_type"), [&class_id](const string &cmp) {
 			if (cmp == "regular") class_id = adventurer;
 			else if (cmp == "cygnus") class_id = cygnus;
 		});
@@ -73,7 +73,7 @@ auto valid_char::load_creation_items() -> void {
 			(class_id == adventurer ? m_adventurer.male : m_cygnus.male) :
 			(class_id == adventurer ? m_adventurer.female : m_cygnus.female);
 
-		utilities::str::run_enum(row.get<string>("object_type"), [&items, &object_id](const string &cmp) {
+		vana::util::str::run_enum(row.get<string>("object_type"), [&items, &object_id](const string &cmp) {
 			if (cmp == "face") items.faces.push_back(object_id);
 			else if (cmp == "hair") items.hair.push_back(object_id);
 			else if (cmp == "haircolor") items.hair_color.push_back(object_id);
@@ -87,7 +87,7 @@ auto valid_char::load_creation_items() -> void {
 }
 
 auto valid_char::is_forbidden_name(const string &cmp) const -> bool {
-	string c = utilities::str::remove_spaces(utilities::str::to_lower(cmp));
+	string c = vana::util::str::remove_spaces(vana::util::str::to_lower(cmp));
 	return ext::any_of(m_forbidden_names, [&c](const string &s) -> bool {
 		return c.find(s, 0) != string::npos;
 	});

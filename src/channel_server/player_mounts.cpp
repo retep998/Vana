@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "player_mounts.hpp"
-#include "common/database.hpp"
+#include "common/io/database.hpp"
 #include "channel_server/player.hpp"
 
 namespace vana {
@@ -29,7 +29,7 @@ player_mounts::player_mounts(ref_ptr<player> player) :
 }
 
 auto player_mounts::save() -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	if (auto player = m_player.lock()) {
 		game_player_id char_id = player->get_id();
@@ -38,12 +38,12 @@ auto player_mounts::save() -> void {
 		uint8_t tiredness = 0;
 		uint8_t level = 0;
 
-		sql.once << "DELETE FROM " << db.make_table("mounts") << " WHERE character_id = :char",
+		sql.once << "DELETE FROM " << db.make_table(vana::table::mounts) << " WHERE character_id = :char",
 			soci::use(char_id, "char");
 
 		if (m_mounts.size() > 0) {
 			soci::statement st = (sql.prepare
-				<< "INSERT INTO " << db.make_table("mounts") << " "
+				<< "INSERT INTO " << db.make_table(vana::table::mounts) << " "
 				<< "VALUES (:char, :item, :exp, :level, :tiredness) ",
 				soci::use(char_id, "char"),
 				soci::use(item_id, "item"),
@@ -65,12 +65,12 @@ auto player_mounts::save() -> void {
 }
 
 auto player_mounts::load() -> void {
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	if (auto player = m_player.lock()) {
 		game_player_id char_id = player->get_id();
 
-		soci::rowset<> rs = (sql.prepare << "SELECT m.* FROM " << db.make_table("mounts") << " m WHERE m.character_id = :char ",
+		soci::rowset<> rs = (sql.prepare << "SELECT m.* FROM " << db.make_table(vana::table::mounts) << " m WHERE m.character_id = :char ",
 			soci::use(char_id, "char"));
 
 		for (const auto &row : rs) {

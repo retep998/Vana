@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "command_handler.hpp"
 #include "common/algorithm.hpp"
 #include "common/data/provider/mob.hpp"
-#include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/inter_header.hpp"
+#include "common/io/database.hpp"
 #include "common/packet_wrapper.hpp"
 #include "common/packet_reader.hpp"
+#include "common/util/game_logic/inventory.hpp"
 #include "channel_server/buffs.hpp"
 #include "channel_server/chat_handler_functions.hpp"
 #include "channel_server/channel_server.hpp"
@@ -157,7 +157,7 @@ auto command_handler::handle_admin_command(ref_ptr<player> player, packet_reader
 					1,
 					0);
 
-				if (result == result::successful) {
+				if (result == result::success) {
 					player->send(packets::gm::begin_hide());
 					player->get_map()->gm_hide_change(player);
 				}
@@ -205,7 +205,7 @@ auto command_handler::handle_admin_command(ref_ptr<player> player, packet_reader
 		}
 		case admin_opcodes::destroy_first_item: {
 			game_inventory inv = reader.get<game_inventory>();
-			if (!game_logic_utilities::is_valid_inventory(inv)) {
+			if (!vana::util::game_logic::inventory::is_valid_inventory(inv)) {
 				return;
 			}
 			game_inventory_slot_count slots = player->get_inventory()->get_max_slots(inv);
@@ -238,11 +238,11 @@ auto command_handler::handle_admin_command(ref_ptr<player> player, packet_reader
 			int32_t length = reader.get<int32_t>();
 			game_chat reason_message = reader.get<game_chat>();
 			if (auto receiver = channel_server::get_instance().get_player_data_provider().get_player(victim)) {
-				auto &db = database::get_char_db();
+				auto &db = vana::io::database::get_char_db();
 				auto &sql = db.get_session();
 				sql.once
-					<< "UPDATE " << db.make_table("accounts") << " u "
-					<< "INNER JOIN " << db.make_table("characters") << " c ON u.account_id = c.account_id "
+					<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
+					<< "INNER JOIN " << db.make_table(vana::table::characters) << " c ON u.account_id = c.account_id "
 					<< "SET "
 					<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL :expire DAY),"
 					<< "	u.ban_reason = :reason,"

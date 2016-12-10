@@ -20,14 +20,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/common_header.hpp"
 #include "common/common_packet.hpp"
 #include "common/connection_manager.hpp"
-#include "common/decoder.hpp"
-#include "common/exit_codes.hpp"
-#include "common/logger.hpp"
+#include "common/exit_code.hpp"
+#include "common/log/base_logger.hpp"
 #include "common/packet_builder.hpp"
 #include "common/packet_handler.hpp"
 #include "common/packet_reader.hpp"
-#include "common/randomizer.hpp"
-#include "common/time_utilities.hpp"
+#include "common/util/randomizer.hpp"
+#include "common/util/time.hpp"
 #include <functional>
 #include <iostream>
 
@@ -51,7 +50,7 @@ auto session::get_codec() -> packet_transformer & {
 	return *m_codec;
 }
 
-auto session::get_buffer() -> utilities::misc::shared_array<unsigned char> & {
+auto session::get_buffer() -> vana::util::shared_array<unsigned char> & {
 	return m_buffer;
 }
 
@@ -76,7 +75,7 @@ auto session::ping() -> void {
 	}
 
 	m_ping_count++;
-	m_last_ping = utilities::time::get_now();
+	m_last_ping = vana::util::time::get_now();
 	send(packets::ping());
 }
 
@@ -130,7 +129,7 @@ auto session::disconnect() -> void {
 	asio::error_code ec;
 	m_socket.close(ec);
 	if (ec) {
-		m_manager.get_server()->log(log_type::error, [&](out_stream &str) {
+		m_manager.get_server()->log(vana::log::type::error, [&](out_stream &str) {
 			str << "FAILURE TO CLOSE SESSION (" << ec.value() << "): " << ec.message();
 		});
 	}
@@ -249,7 +248,7 @@ auto session::base_handle_request(packet_reader &reader) -> void {
 				}
 				m_ping_count = 0;
 				// This is for the trip to and from, so latency is averaged between them
-				m_latency = duration_cast<milliseconds>(utilities::time::get_now() - m_last_ping) / 2;
+				m_latency = duration_cast<milliseconds>(vana::util::time::get_now() - m_last_ping) / 2;
 				break;
 		}
 

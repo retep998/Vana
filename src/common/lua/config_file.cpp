@@ -16,12 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "config_file.hpp"
-#include "common/exit_codes.hpp"
-#include "common/file_utilities.hpp"
-#include "common/logger.hpp"
+#include "common/exit_code.hpp"
+#include "common/log/base_logger.hpp"
 #include "common/salt_leftover_policy.hpp"
 #include "common/salt_modify_policy.hpp"
 #include "common/salt_policy.hpp"
+#include "common/util/file.hpp"
 #include <iostream>
 
 namespace vana {
@@ -112,9 +112,9 @@ auto config_file::get_logger_config() -> owned_ptr<config_file> {
 	auto env = make_owned_ptr<config_file>("conf/logger.lua");
 
 	hash_map<string, int32_t> constants;
-	constants["console"] = log_destinations::console;
-	constants["file"] = log_destinations::file;
-	constants["sql"] = log_destinations::sql;
+	constants["console"] = static_cast<int32_t>(vana::log::destination::console);
+	constants["file"] = static_cast<int32_t>(vana::log::destination::file);
+	constants["sql"] = static_cast<int32_t>(vana::log::destination::sql);
 
 	function<void(string, int32_t, uint32_t)> options = [&](string base, int32_t val, uint32_t depth) {
 		int32_t original_val = val;
@@ -132,8 +132,8 @@ auto config_file::get_logger_config() -> owned_ptr<config_file> {
 		}
 	};
 
-	env->set<int32_t>("system_log_none", log_destinations::none);
-	env->set<int32_t>("system_log_all", log_destinations::all);
+	env->set<int32_t>("system_log_none", static_cast<int32_t>(vana::log::destination::none));
+	env->set<int32_t>("system_log_all", static_cast<int32_t>(vana::log::destination::all));
 
 	options("system_log", 0, 0);
 

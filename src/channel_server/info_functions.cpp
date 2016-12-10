@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "info_functions.hpp"
-#include "common/database.hpp"
+#include "common/io/database.hpp"
 #include "common/map_position.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/maps.hpp"
@@ -94,7 +94,7 @@ auto info_functions::lookup(ref_ptr<player> player, const game_chat &args) -> ch
 			return chat_result::handled_display;
 		};
 
-		auto &db = database::get_data_db();
+		auto &db = vana::io::database::get_data_db();
 		auto &sql = db.get_session();
 		auto display_func = [&sql, &player](const soci::rowset<> &rs, function<void(const soci::row &row, out_stream &str)> format_message, const string &query) {
 			// Bug in the behavior of SOCI
@@ -132,8 +132,8 @@ auto info_functions::lookup(ref_ptr<player> player, const game_chat &args) -> ch
 				q = "%" + q + "%";
 				soci::rowset<> rs = (sql.prepare
 					<< "SELECT s.objectid, s.`label` "
-					<< "FROM " << db.make_table("strings") << " s "
-					<< "INNER JOIN " << db.make_table("item_data") << " i ON s.objectid = i.itemid "
+					<< "FROM " << db.make_table(vana::data::table::strings) << " s "
+					<< "INNER JOIN " << db.make_table(vana::data::table::item_data) << " i ON s.objectid = i.itemid "
 					<< "WHERE s.object_type = :type AND s.label LIKE :q AND i.inventory = :subtype",
 					soci::use(q, "q"),
 					soci::use(type, "type"),
@@ -145,7 +145,7 @@ auto info_functions::lookup(ref_ptr<player> player, const game_chat &args) -> ch
 				q = "%" + q + "%";
 				soci::rowset<> rs = (sql.prepare
 					<< "SELECT objectid, `label` "
-					<< "FROM " << db.make_table("strings") << " "
+					<< "FROM " << db.make_table(vana::data::table::strings) << " "
 					<< "WHERE object_type = :type AND label LIKE :q",
 					soci::use(q, "q"),
 					soci::use(type, "type"));
@@ -166,7 +166,7 @@ auto info_functions::lookup(ref_ptr<player> player, const game_chat &args) -> ch
 				str << row.get<int32_t>(0) << " (" << row.get<string>(2) << ") : " << row.get<string>(1);
 			};
 
-			soci::rowset<> rs = (sql.prepare << "SELECT objectid, `label`, object_type FROM " << db.make_table("strings") << " WHERE objectid = :q", soci::use(q, "q"));
+			soci::rowset<> rs = (sql.prepare << "SELECT objectid, `label`, object_type FROM " << db.make_table(vana::data::table::strings) << " WHERE objectid = :q", soci::use(q, "q"));
 			display_func(rs, format, matches[2]);
 		}
 		else if (raw_type == "continent") {
@@ -201,7 +201,7 @@ auto info_functions::lookup(ref_ptr<player> player, const game_chat &args) -> ch
 			}
 			if (raw_type == "scriptbyname") {
 				q = "%" + q + "%";
-				soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM " << db.make_table("scripts") << " WHERE script LIKE :q",
+				soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM " << db.make_table(vana::data::table::scripts) << " WHERE script LIKE :q",
 					soci::use(q, "q"));
 				display_func(rs, format, matches[2]);
 			}
@@ -209,7 +209,7 @@ auto info_functions::lookup(ref_ptr<player> player, const game_chat &args) -> ch
 				if (!is_integer_string(q)) {
 					return should_be_id_only("scriptbyid", q);
 				}
-				soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM " << db.make_table("scripts") << " WHERE objectid = :q",
+				soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM " << db.make_table(vana::data::table::scripts) << " WHERE objectid = :q",
 					soci::use(q, "q"));
 				display_func(rs, format, matches[2]);
 			}
@@ -229,13 +229,13 @@ auto info_functions::lookup(ref_ptr<player> player, const game_chat &args) -> ch
 
 			soci::rowset<> rs = (sql.prepare
 				<< "SELECT d.dropperid, s.label "
-				<< "FROM " << db.make_table("drop_data") << " d "
-				<< "INNER JOIN " << db.make_table("strings") << " s ON s.objectid = d.dropperid AND s.object_type = 'mob' "
-				<< "WHERE d.dropperid NOT IN (SELECT DISTINCT dropperid FROM " << db.make_table("user_drop_data") << ") AND d.itemid = :q "
+				<< "FROM " << db.make_table(vana::data::table::drop_data) << " d "
+				<< "INNER JOIN " << db.make_table(vana::data::table::strings) << " s ON s.objectid = d.dropperid AND s.object_type = 'mob' "
+				<< "WHERE d.dropperid NOT IN (SELECT DISTINCT dropperid FROM " << db.make_table(vana::data::table::user_drop_data) << ") AND d.itemid = :q "
 				<< "UNION ALL "
 				<< "SELECT d.dropperid, s.label "
-				<< "FROM " << db.make_table("user_drop_data") << " d "
-				<< "INNER JOIN " << db.make_table("strings") << " s ON s.objectid = d.dropperid AND s.object_type = 'mob' "
+				<< "FROM " << db.make_table(vana::data::table::user_drop_data) << " d "
+				<< "INNER JOIN " << db.make_table(vana::data::table::strings) << " s ON s.objectid = d.dropperid AND s.object_type = 'mob' "
 				<< "WHERE d.itemid = :q ",
 				soci::use(q, "q"));
 
@@ -256,11 +256,11 @@ auto info_functions::lookup(ref_ptr<player> player, const game_chat &args) -> ch
 				if (option == "portal") {
 					soci::rowset<> rs = (sql.prepare
 						<< "SELECT m.mapid, s.label "
-						<< "FROM " << db.make_table("map_data") << " m "
-						<< "INNER JOIN " << db.make_table("strings") << " s ON s.objectid = m.mapid AND s.object_type = 'map' "
+						<< "FROM " << db.make_table(vana::data::table::map_data) << " m "
+						<< "INNER JOIN " << db.make_table(vana::data::table::strings) << " s ON s.objectid = m.mapid AND s.object_type = 'map' "
 						<< "WHERE m.mapid IN ("
 						<< "	SELECT mp.mapid "
-						<< "	FROM " << db.make_table("map_portals") << " mp "
+						<< "	FROM " << db.make_table(vana::data::table::map_portals) << " mp "
 						<< "	WHERE mp.script = :query "
 						<< ")",
 						soci::use(test, "query"));
@@ -276,11 +276,11 @@ auto info_functions::lookup(ref_ptr<player> player, const game_chat &args) -> ch
 
 					soci::rowset<> rs = (sql.prepare
 						<< "SELECT m.mapid, s.label "
-						<< "FROM " << db.make_table("map_data") << " m "
-						<< "INNER JOIN " << db.make_table("strings") << " s ON s.objectid = m.mapid AND s.object_type = 'map' "
+						<< "FROM " << db.make_table(vana::data::table::map_data) << " m "
+						<< "INNER JOIN " << db.make_table(vana::data::table::strings) << " s ON s.objectid = m.mapid AND s.object_type = 'map' "
 						<< "WHERE m.mapid IN ("
 						<< "	SELECT ml.mapid "
-						<< "	FROM " << db.make_table("map_life") << " ml "
+						<< "	FROM " << db.make_table(vana::data::table::map_life) << " ml "
 						<< "	WHERE ml.lifeid = :object_id "
 						<< "	" << option
 						<< ")",
@@ -310,7 +310,7 @@ auto info_functions::lookup(ref_ptr<player> player, const game_chat &args) -> ch
 			q = "%" + q + "%";
 			soci::rowset<> rs = (sql.prepare
 				<< "SELECT DISTINCT m.default_bgm "
-				<< "FROM " << db.make_table("map_data") << " m "
+				<< "FROM " << db.make_table(vana::data::table::map_data) << " m "
 				<< "WHERE m.default_bgm LIKE :q",
 				soci::use(q, "q"));
 
@@ -331,13 +331,13 @@ auto info_functions::lookup(ref_ptr<player> player, const game_chat &args) -> ch
 
 			soci::rowset<> rs = (sql.prepare
 				<< "SELECT d.itemid, s.label, d.chance "
-				<< "FROM " << db.make_table("drop_data") << " d "
-				<< "INNER JOIN " << db.make_table("strings") << " s ON s.objectid = d.itemid AND s.object_type = 'item' "
-				<< "WHERE d.dropperid NOT IN (SELECT DISTINCT dropperid FROM " << db.make_table("user_drop_data") << ") AND d.dropperid = :q "
+				<< "FROM " << db.make_table(vana::data::table::drop_data) << " d "
+				<< "INNER JOIN " << db.make_table(vana::data::table::strings) << " s ON s.objectid = d.itemid AND s.object_type = 'item' "
+				<< "WHERE d.dropperid NOT IN (SELECT DISTINCT dropperid FROM " << db.make_table(vana::data::table::user_drop_data) << ") AND d.dropperid = :q "
 				<< "UNION ALL "
 				<< "SELECT d.itemid, s.label, d.chance "
-				<< "FROM " << db.make_table("user_drop_data") << " d "
-				<< "INNER JOIN " << db.make_table("strings") << " s ON s.objectid = d.itemid AND s.object_type = 'item' "
+				<< "FROM " << db.make_table(vana::data::table::user_drop_data) << " d "
+				<< "INNER JOIN " << db.make_table(vana::data::table::strings) << " s ON s.objectid = d.itemid AND s.object_type = 'item' "
 				<< "WHERE d.dropperid = :q "
 				<< "ORDER BY itemid",
 				soci::use(q, "q"));

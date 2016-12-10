@@ -19,15 +19,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/algorithm.hpp"
 #include "common/constant/character.hpp"
 #include "common/constant/gender.hpp"
-#include "common/database.hpp"
 #include "common/file_time.hpp"
 #include "common/hash_utilities.hpp"
+#include "common/io/database.hpp"
 #include "common/packet_reader.hpp"
-#include "common/randomizer.hpp"
 #include "common/session.hpp"
-#include "common/string_utilities.hpp"
-#include "common/time_utilities.hpp"
 #include "common/unix_time.hpp"
+#include "common/util/randomizer.hpp"
+#include "common/util/string.hpp"
+#include "common/util/time.hpp"
 #include "login_server/login_packet.hpp"
 #include "login_server/login_server.hpp"
 #include "login_server/player_status.hpp"
@@ -50,13 +50,13 @@ auto login::login_user(ref_ptr<user> user_value, packet_reader &reader) -> void 
 		return;
 	}
 
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 	soci::row row;
 
 	sql.once
 		<< "SELECT u.* "
-		<< "FROM " << db.make_table("accounts") << " u "
+		<< "FROM " << db.make_table(vana::table::accounts) << " u "
 		<< "WHERE u.username = :user",
 		soci::use(username, "user"),
 		soci::into(row);
@@ -77,7 +77,7 @@ auto login::login_user(ref_ptr<user> user_value, packet_reader &reader) -> void 
 
 		sql.once
 			<< "SELECT i.ip_ban_id "
-			<< "FROM " << db.make_table("ip_bans") << " i "
+			<< "FROM " << db.make_table(vana::table::ip_bans) << " i "
 			<< "WHERE i.ip = :ip",
 			soci::use(ip, "ip"),
 			soci::into(ip_banned);
@@ -111,7 +111,7 @@ auto login::login_user(ref_ptr<user> user_value, packet_reader &reader) -> void 
 						hash_utilities::hash_password(password, salt.get(), salting_policy);
 
 					sql.once
-						<< "UPDATE " << db.make_table("accounts") << " u "
+						<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
 						<< "SET u.password = :password, u.salt = :salt "
 						<< "WHERE u.account_id = :account",
 						soci::use(hashed_password, "password"),
@@ -142,7 +142,7 @@ auto login::login_user(ref_ptr<user> user_value, packet_reader &reader) -> void 
 		}
 	}
 	else {
-		login_server::get_instance().log(log_type::login, [&](out_stream &log) {
+		login_server::get_instance().log(vana::log::type::login, [&](out_stream &log) {
 			log << username << " from IP " << ip;
 		});
 
@@ -175,7 +175,7 @@ auto login::login_user(ref_ptr<user> user_value, packet_reader &reader) -> void 
 			time_t ban_time = quiet_ban.get();
 			if (time(nullptr) > ban_time) {
 				sql.once
-					<< "UPDATE " << db.make_table("accounts") << " u "
+					<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
 					<< "SET u.quiet_ban_expire = NULL, u.quiet_ban_reason = NULL "
 					<< "WHERE u.account_id = :account",
 					soci::use(account_id, "account");
@@ -210,10 +210,10 @@ auto login::set_gender(ref_ptr<user> user_value, packet_reader &reader) -> void 
 
 		user_value->set_status(player_status::not_logged_in);
 
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		sql.once
-			<< "UPDATE " << db.make_table("accounts") << " u "
+			<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
 			<< "SET u.gender = :gender "
 			<< "WHERE u.account_id = :account",
 			soci::use(gender, "gender"),
@@ -263,7 +263,7 @@ auto login::check_pin(ref_ptr<user> user_value, packet_reader &reader) -> void {
 		user_value->set_status(player_status::ask_pin);
 	}
 	else if (act == 0x01) {
-		int32_t pin = utilities::str::lexical_cast<int32_t>(reader.get<string>());
+		int32_t pin = vana::util::str::lexical_cast<int32_t>(reader.get<string>());
 		opt_int32_t current = user_value->get_pin();
 		if (!current.is_initialized()) {
 			// Hacking
@@ -278,7 +278,7 @@ auto login::check_pin(ref_ptr<user> user_value, packet_reader &reader) -> void {
 		}
 	}
 	else if (act == 0x02) {
-		int32_t pin = utilities::str::lexical_cast<int32_t>(reader.get<string>());
+		int32_t pin = vana::util::str::lexical_cast<int32_t>(reader.get<string>());
 		auto current = user_value->get_pin();
 		if (!current.is_initialized()) {
 			// Hacking
@@ -306,14 +306,14 @@ auto login::register_pin(ref_ptr<user> user_value, packet_reader &reader) -> voi
 		}
 		return;
 	}
-	int32_t pin = utilities::str::lexical_cast<int32_t>(reader.get<string>());
+	int32_t pin = vana::util::str::lexical_cast<int32_t>(reader.get<string>());
 	user_value->set_status(player_status::not_logged_in);
 
-	auto &db = database::get_char_db();
+	auto &db = vana::io::database::get_char_db();
 	auto &sql = db.get_session();
 
 	sql.once
-		<< "UPDATE " << db.make_table("accounts") << " u "
+		<< "UPDATE " << db.make_table(vana::table::accounts) << " u "
 		<< "SET u.pin = :pin "
 		<< "WHERE u.account_id = :account",
 		soci::use(pin, "pin"),

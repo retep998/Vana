@@ -18,10 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "shop.hpp"
 #include "common/algorithm.hpp"
 #include "common/common_header.hpp"
-#include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/initialize_common.hpp"
+#include "common/data/initialize.hpp"
 #include "common/data/provider/item.hpp"
+#include "common/io/database.hpp"
 #include "common/packet_builder.hpp"
 #include "common/session.hpp"
 #include <iomanip>
@@ -32,7 +31,7 @@ namespace data {
 namespace provider {
 
 auto shop::load_data() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Shops... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Shops... ";
 
 	load_shops();
 	load_user_shops();
@@ -44,9 +43,9 @@ auto shop::load_data() -> void {
 auto shop::load_shops() -> void {
 	m_shops.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("shop_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::shop_data));
 
 	for (const auto &row : rs) {
 		data::type::shop_info info;
@@ -56,7 +55,7 @@ auto shop::load_shops() -> void {
 		m_shops.push_back(info);
 	}
 
-	rs = (sql.prepare << "SELECT * FROM " << db.make_table("shop_items") << " ORDER BY shopid, sort DESC");
+	rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::shop_items) << " ORDER BY shopid, sort DESC");
 
 	for (const auto &row : rs) {
 		data::type::shop_item_info info;
@@ -79,9 +78,9 @@ auto shop::load_shops() -> void {
 }
 
 auto shop::load_user_shops() -> void {
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("user_shop_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::user_shop_data));
 
 	for (const auto &row : rs) {
 		data::type::shop_info info;
@@ -99,7 +98,7 @@ auto shop::load_user_shops() -> void {
 		m_shops.push_back(info);
 	}
 
-	rs = (sql.prepare << "SELECT * FROM " << db.make_table("user_shop_items") << " ORDER BY shopid, sort DESC");
+	rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::user_shop_items) << " ORDER BY shopid, sort DESC");
 
 	for (const auto &row : rs) {
 		data::type::shop_item_info info;
@@ -124,9 +123,9 @@ auto shop::load_user_shops() -> void {
 auto shop::load_recharge_tiers() -> void {
 	m_recharge_costs.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("shop_recharge_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::shop_recharge_data));
 
 	for (const auto &row : rs) {
 		int8_t recharge_tier = row.get<int8_t>("tierid");
@@ -234,7 +233,7 @@ auto shop::get_recharge_cost(game_shop_id shop_id, game_item_id item_id, game_sl
 
 	if (!found) THROW_CODE_EXCEPTION(codepath_invalid_exception);
 
-	return -1 * static_cast<game_mesos>(recharge_cost * amount);
+	return static_cast<game_mesos>(recharge_cost * amount);
 }
 
 }

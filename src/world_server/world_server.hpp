@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/abstract_server.hpp"
 #include "common/config/rates.hpp"
 #include "common/config/world.hpp"
-#include "common/finalization_pool.hpp"
 #include "common/ip.hpp"
 #include "common/types.hpp"
+#include "common/util/finalization_pool.hpp"
 #include "world_server/channels.hpp"
 #include "world_server/login_server_session.hpp"
 #include "world_server/player_data_provider.hpp"
@@ -65,7 +65,7 @@ namespace vana {
 			ref_ptr<login_server_session> m_login_session;
 			player_data_provider m_player_data_provider;
 			channels m_channels;
-			finalization_pool<world_server_accepted_session> m_session_pool;
+			vana::util::finalization_pool<world_server_accepted_session> m_session_pool;
 		};
 	}
 }

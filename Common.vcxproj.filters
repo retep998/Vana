@@ -1,17 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Connection">
-      <UniqueIdentifier>{141f19d0-b99a-489a-8871-97bdb6db4f5c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Data Structures">
       <UniqueIdentifier>{450fb522-4e7d-4db6-9a62-c199384163ca}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Data Loading">
-      <UniqueIdentifier>{83919201-7757-496d-93bd-b76823bcb5ab}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Database">
-      <UniqueIdentifier>{7f88f4c5-3611-4887-871c-3defe2bced64}</UniqueIdentifier>
     </Filter>
     <Filter Include="Inter-Server">
       <UniqueIdentifier>{ee05f7d7-a4e3-43c8-a447-243f43321d17}</UniqueIdentifier>
@@ -19,14 +10,8 @@
     <Filter Include="Lib">
       <UniqueIdentifier>{535f2c2a-4a21-4fd2-93c0-ca6d3e13da45}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Loggers">
-      <UniqueIdentifier>{fe600ed3-a39e-4c75-9cfd-9836aff52806}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Packets">
       <UniqueIdentifier>{1a4cf086-e5e2-4c4c-9f20-97d3a449c143}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Utilities">
-      <UniqueIdentifier>{5f4db1cc-5069-40bd-b5d3-c03db8af0732}</UniqueIdentifier>
     </Filter>
     <Filter Include="Packets\Headers">
       <UniqueIdentifier>{3fb5cdff-e02c-4539-a3e4-a39004b525ab}</UniqueIdentifier>
@@ -70,28 +55,25 @@
     <Filter Include="config">
       <UniqueIdentifier>{3ceab430-1c37-4086-9019-31cc885dd1b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="log">
+      <UniqueIdentifier>{fe600ed3-a39e-4c75-9cfd-9836aff52806}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{033b52fe-ce87-43a0-9f1c-4a515e377d37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\game_logic">
+      <UniqueIdentifier>{fddf41f0-f5be-4206-a427-88ad5a846a23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Connection">
+      <UniqueIdentifier>{141f19d0-b99a-489a-8871-97bdb6db4f5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io">
+      <UniqueIdentifier>{fa2f0702-9ff4-4572-9335-816717d3b419}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\common\initialize_common.cpp">
-      <Filter>Data Loading</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\database.cpp">
-      <Filter>Database</Filter>
-    </ClCompile>
     <ClCompile Include="src\common\packet_reader.cpp">
       <Filter>Packets</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\file_utilities.cpp">
-      <Filter>Utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\randomizer.cpp">
-      <Filter>Utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\string_utilities.cpp">
-      <Filter>Utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\time_utilities.cpp">
-      <Filter>Utilities</Filter>
     </ClCompile>
     <ClCompile Include="src\common\connection_manager.cpp">
       <Filter>Connection</Filter>
@@ -102,23 +84,8 @@
     <ClCompile Include="src\common\item.cpp">
       <Filter>Data Structures</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\console_logger.cpp">
-      <Filter>Loggers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\file_logger.cpp">
-      <Filter>Loggers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\logger.cpp">
-      <Filter>Loggers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\sql_logger.cpp">
-      <Filter>Loggers</Filter>
-    </ClCompile>
     <ClCompile Include="src\common\authentication_packet.cpp">
       <Filter>Inter-Server</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\decoder.cpp">
-      <Filter>Connection</Filter>
     </ClCompile>
     <ClCompile Include="src\common\session.cpp">
       <Filter>Connection</Filter>
@@ -128,15 +95,6 @@
     </ClCompile>
     <ClCompile Include="src\common\quest.cpp">
       <Filter>Data Structures</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\tausworthe_generator.cpp">
-      <Filter>Utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\mysql_query_parser.cpp">
-      <Filter>Database</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\database_updater.cpp">
-      <Filter>Database</Filter>
     </ClCompile>
     <ClCompile Include="src\common\abstract_server.cpp">
       <Filter>Connection</Filter>
@@ -157,7 +115,6 @@
     <ClCompile Include="src\common\packet_builder.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\common\exit_codes.cpp" />
     <ClCompile Include="src\common\vana_main.cpp" />
     <ClCompile Include="src\common\line.cpp">
       <Filter>Data Structures\Geometry</Filter>
@@ -176,9 +133,6 @@
     </ClCompile>
     <ClCompile Include="src\common\ratio.cpp">
       <Filter>Data Structures\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common\thread_pool.cpp">
-      <Filter>Utilities</Filter>
     </ClCompile>
     <ClCompile Include="src\common\encrypted_packet_transformer.cpp">
       <Filter>Encryption</Filter>
@@ -282,46 +236,56 @@
     <ClCompile Include="src\common\data\type\buff_source.cpp">
       <Filter>data\type</Filter>
     </ClCompile>
+    <ClCompile Include="src\common\log\console_logger.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\log\file_logger.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\log\sql_logger.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\log\base_logger.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\util\meso_inventory.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\util\tausworthe_generator.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\util\thread_pool.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\util\randomizer.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\util\file.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\util\string.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\util\time.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\exit_code.cpp" />
+    <ClCompile Include="src\common\data\initialize.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\io\database.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\io\database_updater.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\io\mysql_query_parser.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\common\file_utilities.hpp">
-      <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\time_utilities.hpp">
-      <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\game_logic_utilities.hpp">
-      <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\misc_utilities.hpp">
-      <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\randomizer.hpp">
-      <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\string_utilities.hpp">
-      <Filter>Utilities</Filter>
-    </ClInclude>
     <ClInclude Include="src\common\packet_reader.hpp">
       <Filter>Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\console_logger.hpp">
-      <Filter>Loggers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\sql_logger.hpp">
-      <Filter>Loggers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\file_logger.hpp">
-      <Filter>Loggers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\logger.hpp">
-      <Filter>Loggers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\database.hpp">
-      <Filter>Database</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\initialize_common.hpp">
-      <Filter>Data Loading</Filter>
     </ClInclude>
     <ClInclude Include="src\common\variables.hpp">
       <Filter>Data Structures</Filter>
@@ -338,15 +302,6 @@
     <ClInclude Include="src\common\authentication_packet.hpp">
       <Filter>Inter-Server</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\combo_loggers.hpp">
-      <Filter>Loggers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\bit_utilities.hpp">
-      <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\decoder.hpp">
-      <Filter>Connection</Filter>
-    </ClInclude>
     <ClInclude Include="src\common\session.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
@@ -356,29 +311,8 @@
     <ClInclude Include="src\common\quest.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\tausworthe_generator.hpp">
-      <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\hash_combine.hpp">
-      <Filter>Lib</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\shared_array.hpp">
-      <Filter>Lib</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\tokenizer.hpp">
-      <Filter>Lib</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\optional.hpp">
-      <Filter>Lib</Filter>
-    </ClInclude>
     <ClInclude Include="src\common\soci_extensions.hpp">
       <Filter>Lib</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\mysql_query_parser.hpp">
-      <Filter>Database</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\database_updater.hpp">
-      <Filter>Database</Filter>
     </ClInclude>
     <ClInclude Include="src\common\abstract_server.hpp">
       <Filter>Connection</Filter>
@@ -386,7 +320,6 @@
     <ClInclude Include="src\common\i_packet.hpp">
       <Filter>Packets</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\exit_codes.hpp" />
     <ClInclude Include="src\common\precompiled_header.hpp" />
     <ClInclude Include="src\common\types.hpp" />
     <ClInclude Include="src\common\ip.hpp">
@@ -404,17 +337,8 @@
     <ClInclude Include="src\common\external_ip_resolver.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\stop_watch.hpp">
-      <Filter>Utilities</Filter>
-    </ClInclude>
     <ClInclude Include="src\common\make_unique.hpp">
       <Filter>Lib</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\case_insensitive_hash.hpp">
-      <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\case_insensitive_equals.hpp">
-      <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="src\common\vana_main.hpp" />
     <ClInclude Include="src\common\algorithm.hpp">
@@ -431,15 +355,6 @@
     </ClInclude>
     <ClInclude Include="src\common\common_header.hpp">
       <Filter>Packets\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\id_pool.hpp">
-      <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\id_looper.hpp">
-      <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\object_pool.hpp">
-      <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="src\common\line.hpp">
       <Filter>Data Structures\Geometry</Filter>
@@ -479,9 +394,6 @@
     </ClInclude>
     <ClInclude Include="src\common\ratio.hpp">
       <Filter>Data Structures\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\thread_pool.hpp">
-      <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="src\common\server_type.hpp">
       <Filter>Connection</Filter>
@@ -544,9 +456,6 @@
     <ClInclude Include="src\common\enum_base.hpp">
       <Filter>Lib</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\enum_utilities.hpp">
-      <Filter>Utilities</Filter>
-    </ClInclude>
     <ClInclude Include="src\common\connection_type.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
@@ -573,9 +482,6 @@
     </ClInclude>
     <ClInclude Include="src\common\packet_handler.hpp">
       <Filter>Connection</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common\finalization_pool.hpp">
-      <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="src\common\lua\lua_environment.hpp">
       <Filter>lua</Filter>
@@ -610,79 +516,79 @@
     <ClInclude Include="src\common\timer\func.hpp">
       <Filter>timer</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\gender.hpp">
+    <ClInclude Include="src\common\constant\gender.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\ship_kind.hpp">
+    <ClInclude Include="src\common\constant\ship_kind.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\inventory.hpp">
+    <ClInclude Include="src\common\constant\inventory.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\item\scroll_type.hpp">
+    <ClInclude Include="src\common\constant\item\scroll_type.hpp">
       <Filter>constant\item</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\item\type.hpp">
+    <ClInclude Include="src\common\constant\item\type.hpp">
       <Filter>constant\item</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\item.hpp">
+    <ClInclude Include="src\common\constant\item.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\party.hpp">
+    <ClInclude Include="src\common\constant\party.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\monster_card.hpp">
+    <ClInclude Include="src\common\constant\monster_card.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\mob_skill.hpp">
+    <ClInclude Include="src\common\constant\mob_skill.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\mob.hpp">
+    <ClInclude Include="src\common\constant\mob.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\map.hpp">
+    <ClInclude Include="src\common\constant\map.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\guild.hpp">
+    <ClInclude Include="src\common\constant\guild.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\alliance.hpp">
+    <ClInclude Include="src\common\constant\alliance.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\job\beginner_jobs.hpp">
+    <ClInclude Include="src\common\constant\job\beginner_jobs.hpp">
       <Filter>constant\job</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\job\id.hpp">
+    <ClInclude Include="src\common\constant\job\id.hpp">
       <Filter>constant\job</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\job\line.hpp">
+    <ClInclude Include="src\common\constant\job\line.hpp">
       <Filter>constant\job</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\job\progression.hpp">
+    <ClInclude Include="src\common\constant\job\progression.hpp">
       <Filter>constant\job</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\job\track.hpp">
+    <ClInclude Include="src\common\constant\job\track.hpp">
       <Filter>constant\job</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\stat.hpp">
+    <ClInclude Include="src\common\constant\stat.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\status_effect.hpp">
+    <ClInclude Include="src\common\constant\status_effect.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\skill.hpp">
+    <ClInclude Include="src\common\constant\skill.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\equip_slot.hpp">
+    <ClInclude Include="src\common\constant\equip_slot.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\buff.hpp">
+    <ClInclude Include="src\common\constant\buff.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\buddy.hpp">
+    <ClInclude Include="src\common\constant\buddy.hpp">
       <Filter>constant</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\constants\character.hpp">
+    <ClInclude Include="src\common\constant\character.hpp">
       <Filter>constant</Filter>
     </ClInclude>
     <ClInclude Include="src\common\constant\item\max_stat.hpp">
@@ -927,6 +833,143 @@
     </ClInclude>
     <ClInclude Include="src\common\data\type\script_type.hpp">
       <Filter>data\type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\table.hpp" />
+    <ClInclude Include="src\common\data\table.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\log\combo_loggers.hpp">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\log\console_logger.hpp">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\log\file_logger.hpp">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\log\sql_logger.hpp">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\log\type.hpp">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\log\base_logger.hpp">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\log\destination.hpp">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\meso_inventory.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\meso_modify_result.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\id_looper.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\id_pool.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\object_pool.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\hash_combine.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\shared_array.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\optional.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\tokenizer.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\case_insensitive_equals.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\case_insensitive_hash.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\stop_watch.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\tausworthe_generator.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\thread_pool.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\finalization_pool.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\randomizer.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\nullable_mode.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\bit.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\file.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\string.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\misc.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\time.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\game_logic\inventory.hpp">
+      <Filter>util\game_logic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\game_logic\player.hpp">
+      <Filter>util\game_logic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\game_logic\player_skill.hpp">
+      <Filter>util\game_logic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\game_logic\mob_skill.hpp">
+      <Filter>util\game_logic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\game_logic\job.hpp">
+      <Filter>util\game_logic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\game_logic\monster_card.hpp">
+      <Filter>util\game_logic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\game_logic\item.hpp">
+      <Filter>util\game_logic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\game_logic\map.hpp">
+      <Filter>util\game_logic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\game_logic\party.hpp">
+      <Filter>util\game_logic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\util\enum_cast.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\exit_code.hpp" />
+    <ClInclude Include="src\common\data\initialize.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\io\database.hpp">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\io\database_updater.hpp">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\io\mysql_query_parser.hpp">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\io\version_check_result.hpp">
+      <Filter>io</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

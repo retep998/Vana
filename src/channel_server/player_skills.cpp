@@ -18,11 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "player_skills.hpp"
 #include "common/algorithm.hpp"
 #include "common/data/provider/skill.hpp"
-#include "common/database.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/randomizer.hpp"
+#include "common/io/database.hpp"
 #include "common/timer/id.hpp"
 #include "common/timer/timer.hpp"
+#include "common/util/game_logic/item.hpp"
+#include "common/util/game_logic/job.hpp"
+#include "common/util/game_logic/player_skill.hpp"
+#include "common/util/randomizer.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/map.hpp"
 #include "channel_server/map_packet.hpp"
@@ -44,7 +46,7 @@ player_skills::player_skills(ref_ptr<player> player) :
 
 auto player_skills::load() -> void {
 	if (auto player = m_player.lock()) {
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 		player_skill_info skill;
 		game_player_id player_id = player->get_id();
@@ -52,13 +54,13 @@ auto player_skills::load() -> void {
 
 		soci::rowset<> rs = (sql.prepare
 			<< "SELECT s.skill_id, s.points, s.max_level "
-			<< "FROM " << db.make_table("skills") << " s "
+			<< "FROM " << db.make_table(vana::table::skills) << " s "
 			<< "WHERE s.character_id = :char",
 			soci::use(player_id, "char"));
 
 		for (const auto &row : rs) {
 			skill_id = row.get<game_skill_id>("skill_id");
-			if (game_logic_utilities::is_blessing_of_the_fairy(skill_id)) {
+			if (vana::util::game_logic::player_skill::is_blessing_of_the_fairy(skill_id)) {
 				continue;
 			}
 
@@ -71,7 +73,7 @@ auto player_skills::load() -> void {
 
 		rs = (sql.prepare
 			<< "SELECT c.* "
-			<< "FROM " << db.make_table("cooldowns") << " c "
+			<< "FROM " << db.make_table(vana::table::cooldowns) << " c "
 			<< "WHERE c.character_id = :char",
 			soci::use(player_id, "char"));
 
@@ -96,7 +98,7 @@ auto player_skills::load() -> void {
 		// Some later versions lifted this restriction entirely
 		sql.once
 			<< "SELECT c.name, c.level "
-			<< "FROM " << db.make_table("characters") << " c "
+			<< "FROM " << db.make_table(vana::table::characters) << " c "
 			<< "WHERE c.world_id = :world AND c.account_id = :account AND c.character_id <> :char "
 			<< "ORDER BY c.level DESC "
 			<< "LIMIT 1 ",
@@ -121,21 +123,21 @@ auto player_skills::save(bool save_cooldowns) -> void {
 	if (auto player = m_player.lock()) {
 		using namespace soci;
 		game_player_id player_id = player->get_id();
-		auto &db = database::get_char_db();
+		auto &db = vana::io::database::get_char_db();
 		auto &sql = db.get_session();
 
 		game_skill_id skill_id = 0;
 		game_skill_level level = 0;
 		game_skill_level max_level = 0;
 		statement st = (sql.prepare
-			<< "REPLACE INTO " << db.make_table("skills") << " VALUES (:player, :skill, :level, :max_level)",
+			<< "REPLACE INTO " << db.make_table(vana::table::skills) << " VALUES (:player, :skill, :level, :max_level)",
 			use(player_id, "player"),
 			use(skill_id, "skill"),
 			use(level, "level"),
 			use(max_level, "max_level"));
 
 		for (const auto &kvp : m_skills) {
-			if (game_logic_utilities::is_blessing_of_the_fairy(kvp.first)) {
+			if (vana::util::game_logic::player_skill::is_blessing_of_the_fairy(kvp.first)) {
 				continue;
 			}
 			skill_id = kvp.first;
@@ -145,13 +147,13 @@ auto player_skills::save(bool save_cooldowns) -> void {
 		}
 
 		if (save_cooldowns) {
-			sql.once << "DELETE FROM " << db.make_table("cooldowns") << " WHERE character_id = :char",
+			sql.once << "DELETE FROM " << db.make_table(vana::table::cooldowns) << " WHERE character_id = :char",
 				soci::use(player_id, "char");
 
 			if (m_cooldowns.size() > 0) {
 				int16_t remaining_time = 0;
 				st = (sql.prepare
-					<< "INSERT INTO " << db.make_table("cooldowns") << " (character_id, skill_id, remaining_time) "
+					<< "INSERT INTO " << db.make_table(vana::table::cooldowns) << " (character_id, skill_id, remaining_time) "
 					<< "VALUES (:char, :skill, :time)",
 					use(player_id, "char"),
 					use(skill_id, "skill"),
@@ -178,7 +180,7 @@ auto player_skills::add_skill_level(game_skill_id skill_id, game_skill_level amo
 		auto kvp = m_skills.find(skill_id);
 		game_skill_level new_level = (kvp != std::end(m_skills) ? kvp->second.level : 0) + amount;
 		game_skill_level max_skill_level = channel_server::get_instance().get_skill_data_provider().get_max_level(skill_id);
-		if (new_level > max_skill_level || (game_logic_utilities::is_fourth_job_skill(skill_id) && new_level > get_max_skill_level(skill_id))) {
+		if (new_level > max_skill_level || (vana::util::game_logic::player_skill::is_fourth_job_skill(skill_id) && new_level > get_max_skill_level(skill_id))) {
 			return false;
 		}
 
@@ -213,7 +215,7 @@ auto player_skills::get_max_skill_level(game_skill_id skill_id) const -> game_sk
 	// Get max level for 4th job skills
 	if (m_skills.find(skill_id) != std::end(m_skills)) {
 		const player_skill_info &info = m_skills.find(skill_id)->second;
-		if (game_logic_utilities::is_fourth_job_skill(skill_id)) {
+		if (vana::util::game_logic::player_skill::is_fourth_job_skill(skill_id)) {
 			return info.player_max_skill_level;
 		}
 		return info.max_skill_level;
@@ -352,7 +354,7 @@ auto player_skills::get_alchemist() const -> game_skill_id {
 auto player_skills::get_hp_increase() const -> game_skill_id {
 	game_skill_id skill_id = 0;
 	if (auto player = m_player.lock()) {
-		switch (game_logic_utilities::get_job_track(player->get_stats()->get_job())) {
+		switch (vana::util::game_logic::job::get_job_track(player->get_stats()->get_job())) {
 			case constant::job::track::warrior: skill_id = constant::skill::swordsman::improved_max_hp_increase; break;
 			case constant::job::track::dawn_warrior: skill_id = constant::skill::dawn_warrior::max_hp_enhancement; break;
 			case constant::job::track::thunder_breaker: skill_id = constant::skill::thunder_breaker::improve_max_hp; break;
@@ -370,7 +372,7 @@ auto player_skills::get_hp_increase() const -> game_skill_id {
 auto player_skills::get_mp_increase() const -> game_skill_id {
 	game_skill_id skill_id = 0;
 	if (auto player = m_player.lock()) {
-		switch (game_logic_utilities::get_job_track(player->get_stats()->get_job())) {
+		switch (vana::util::game_logic::job::get_job_track(player->get_stats()->get_job())) {
 			case constant::job::track::magician: skill_id = constant::skill::magician::improved_max_mp_increase; break;
 			case constant::job::track::blaze_wizard: skill_id = constant::skill::blaze_wizard::increasing_max_mp; break;
 		}
@@ -382,7 +384,7 @@ auto player_skills::get_mp_increase() const -> game_skill_id {
 auto player_skills::get_mastery() const -> game_skill_id {
 	game_skill_id mastery_id = 0;
 	if (auto player = m_player.lock()) {
-		switch (game_logic_utilities::get_item_type(player->get_inventory()->get_equipped_id(constant::equip_slot::weapon))) {
+		switch (vana::util::game_logic::item::get_item_type(player->get_inventory()->get_equipped_id(constant::equip_slot::weapon))) {
 			case constant::item::type::weapon_1h_sword:
 			case constant::item::type::weapon_2h_sword:
 				switch (player->get_stats()->get_job()) {
@@ -478,7 +480,7 @@ auto player_skills::get_no_damage_skill() const -> game_skill_id {
 auto player_skills::get_follow_the_lead() const -> game_skill_id {
 	game_skill_id skill_id = 0;
 	if (auto player = m_player.lock()) {
-		switch (game_logic_utilities::get_job_type(player->get_stats()->get_job())) {
+		switch (vana::util::game_logic::job::get_job_type(player->get_stats()->get_job())) {
 			case job_type::adventurer: skill_id = constant::skill::beginner::follow_the_lead; break;
 			case job_type::cygnus: skill_id = constant::skill::noblesse::follow_the_lead; break;
 		}
@@ -490,7 +492,7 @@ auto player_skills::get_follow_the_lead() const -> game_skill_id {
 auto player_skills::get_legendary_spirit() const -> game_skill_id {
 	game_skill_id skill_id = 0;
 	if (auto player = m_player.lock()) {
-		switch (game_logic_utilities::get_job_type(player->get_stats()->get_job())) {
+		switch (vana::util::game_logic::job::get_job_type(player->get_stats()->get_job())) {
 			case job_type::adventurer: skill_id = constant::skill::beginner::legendary_spirit; break;
 			case job_type::cygnus: skill_id = constant::skill::noblesse::legendary_spirit; break;
 		}
@@ -502,7 +504,7 @@ auto player_skills::get_legendary_spirit() const -> game_skill_id {
 auto player_skills::get_maker() const -> game_skill_id {
 	game_skill_id skill_id = 0;
 	if (auto player = m_player.lock()) {
-		switch (game_logic_utilities::get_job_type(player->get_stats()->get_job())) {
+		switch (vana::util::game_logic::job::get_job_type(player->get_stats()->get_job())) {
 			case job_type::adventurer: skill_id = constant::skill::beginner::maker; break;
 			case job_type::cygnus: skill_id = constant::skill::noblesse::maker; break;
 		}
@@ -514,7 +516,7 @@ auto player_skills::get_maker() const -> game_skill_id {
 auto player_skills::get_blessing_of_the_fairy() const -> game_skill_id {
 	game_skill_id skill_id = 0;
 	if (auto player = m_player.lock()) {
-		switch (game_logic_utilities::get_job_type(player->get_stats()->get_job())) {
+		switch (vana::util::game_logic::job::get_job_type(player->get_stats()->get_job())) {
 			case job_type::adventurer: skill_id = constant::skill::beginner::blessing_of_the_fairy; break;
 			case job_type::cygnus: skill_id = constant::skill::noblesse::blessing_of_the_fairy; break;
 		}
@@ -849,7 +851,7 @@ auto player_skills::connect_packet(packet_builder &builder) const -> void {
 	for (const auto &kvp : m_skills) {
 		builder.add<game_skill_id>(kvp.first);
 		builder.add<int32_t>(kvp.second.level);
-		if (game_logic_utilities::is_fourth_job_skill(kvp.first)) {
+		if (vana::util::game_logic::player_skill::is_fourth_job_skill(kvp.first)) {
 			builder.add<int32_t>(kvp.second.player_max_skill_level);
 		}
 	}

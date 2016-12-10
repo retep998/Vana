@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "curse.hpp"
 #include "common/algorithm.hpp"
-#include "common/database.hpp"
-#include "common/initialize_common.hpp"
-#include "common/string_utilities.hpp"
+#include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
+#include "common/util/string.hpp"
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
@@ -29,12 +29,12 @@ namespace data {
 namespace provider {
 
 auto curse::load_data() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Curse Info...";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Curse Info...";
 
 	m_curse_words.clear();
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("curse_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::curse_data));
 
 	for (const auto &row : rs) {
 		m_curse_words.push_back(row.get<string>("word"));
@@ -44,7 +44,7 @@ auto curse::load_data() -> void {
 }
 
 auto curse::is_curse_word(const string &cmp) const -> bool {
-	string c = utilities::str::remove_spaces(utilities::str::to_lower(cmp));
+	string c = vana::util::str::remove_spaces(vana::util::str::to_lower(cmp));
 	return ext::any_of(m_curse_words, [&c](const string &s) -> bool {
 		return c.find(s, 0) != string::npos;
 	});

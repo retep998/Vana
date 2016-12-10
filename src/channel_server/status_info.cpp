@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "status_info.hpp"
-#include "common/randomizer.hpp"
+#include "common/util/randomizer.hpp"
 
 namespace vana {
 namespace channel_server {
@@ -37,7 +37,7 @@ status_info::status_info(int32_t status, int32_t val, int32_t skill_id, seconds 
 			time = seconds{
 				time.count() +
 				(skill_id == constant::skill::il_arch_mage::blizzard ? 3 : 1) +
-				randomizer::rand<int32_t>(static_cast<int32_t>(time.count()) * 2)
+				vana::util::randomizer::rand<int32_t>(static_cast<int32_t>(time.count()) * 2)
 			};
 			// The 1 accounts for the skill cast time
 			// Ideally we'd like to remove both these additions with MCDB support for cast times

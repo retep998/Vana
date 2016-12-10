@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/file_time.hpp"
 #include "common/point.hpp"
 #include "common/session.hpp"
-#include "common/time_utilities.hpp"
+#include "common/util/time.hpp"
 #include "common/wide_point.hpp"
 #include "channel_server/buffs.hpp"
 #include "channel_server/buffs_packet_helper.hpp"
@@ -296,6 +296,18 @@ PACKET_IMPL(change_weather, bool admin_weather, game_item_id item_id, const stri
 		// Admin weathers doesn't have a message
 		builder.add<string>(message);
 	}
+	return builder;
+}
+
+PACKET_IMPL(upgrade_tomb_effect, game_player_id player_id, game_item_id item_id, int32_t x, int32_t y) {
+	packet_builder builder;
+	builder
+		.add<packet_header>(SMSG_UPGRADE_TOMB_EFFECT)
+		.add<game_player_id>(player_id)
+		.add<game_item_id>(item_id)
+		.add<int32_t>(x)
+		.add<int32_t>(y);
+
 	return builder;
 }
 

@@ -18,12 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "channel_server.hpp"
 #include "common/connection_listener_config.hpp"
 #include "common/connection_manager.hpp"
-#include "common/exit_codes.hpp"
-#include "common/initialize_common.hpp"
+#include "common/data/initialize.hpp"
+#include "common/exit_code.hpp"
 #include "common/lua/config_file.hpp"
-#include "common/misc_utilities.hpp"
 #include "common/packet_builder.hpp"
 #include "common/server_type.hpp"
+#include "common/util/misc.hpp"
 #include "channel_server/chat_handler.hpp"
 #include "channel_server/map.hpp"
 #include "channel_server/player.hpp"
@@ -57,7 +57,7 @@ auto channel_server::listen() -> void {
 		[&] { return make_ref_ptr<player>(); }
 	);
 
-	initializing::set_users_offline(this, get_online_id());
+	vana::data::initialize::set_users_offline(this, get_online_id());
 }
 
 auto channel_server::finalize_player(ref_ptr<player> session) -> void {
@@ -71,10 +71,10 @@ auto channel_server::shutdown() -> void {
 }
 
 auto channel_server::load_data() -> result {
-	if (initializing::check_schema_version(this) == result::failure) {
+	if (vana::data::initialize::check_schema_version(this) == result::failure) {
 		return result::failure;
 	}
-	if (initializing::check_mcdb_version(this) == result::failure) {
+	if (vana::data::initialize::check_mcdb_version(this) == result::failure) {
 		return result::failure;
 	}
 
@@ -95,7 +95,7 @@ auto channel_server::load_data() -> result {
 	m_map_data_provider.load_data();
 	m_event_data_provider.load_data();
 
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Commands... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Commands... ";
 	chat_handler::initialize_commands();
 	std::cout << "DONE" << std::endl;
 
@@ -114,7 +114,7 @@ auto channel_server::load_data() -> result {
 	}
 
 	send_auth(result.second);
-	return result::successful;
+	return result::success;
 }
 
 auto channel_server::reload_data(const string &args) -> void {
@@ -172,7 +172,7 @@ auto channel_server::connect_to_world(game_world_id world_id, connection_port po
 	}
 
 	send_auth(result.second);
-	return result::successful;
+	return result::success;
 }
 
 auto channel_server::on_connect_to_login(ref_ptr<login_server_session> session) -> void {
@@ -191,7 +191,7 @@ auto channel_server::on_disconnect_from_world() -> void {
 	m_world_connection.reset();
 
 	if (is_connected()) {
-		log(log_type::server_disconnect, "Disconnected from the WorldServer. Shutting down...");
+		log(vana::log::type::server_disconnect, "Disconnected from the WorldServer. Shutting down...");
 		m_player_data_provider.disconnect();
 		exit(exit_code::server_disconnection);
 	}
@@ -200,7 +200,7 @@ auto channel_server::on_disconnect_from_world() -> void {
 auto channel_server::established_world_connection(game_channel_id channel_id, connection_port port, const config::world &config) -> void {
 	m_channel_id = channel_id;
 
-	log(log_type::server_connect, [&](out_stream &str) {
+	log(vana::log::type::server_connect, [&](out_stream &str) {
 		str << "Handling channel " << static_cast<int32_t>(channel_id) << " on port " << port;
 	});
 

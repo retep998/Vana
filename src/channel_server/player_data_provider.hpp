@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/inter_helper.hpp"
 #include "common/ip.hpp"
 #include "common/player_data.hpp"
-#include "common/shared_array.hpp"
 #include "common/types.hpp"
+#include "common/util/shared_array.hpp"
 #include <functional>
 #include <memory>
 #include <string>
@@ -43,7 +43,7 @@ namespace vana {
 			game_map_id map_id = -1;
 			string portal;
 			uint16_t packet_size;
-			utilities::misc::shared_array<unsigned char> held_packet;
+			vana::util::shared_array<unsigned char> held_packet;
 		};
 
 		class player_data_provider {

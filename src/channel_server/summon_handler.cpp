@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "summon_handler.hpp"
 #include "common/data/provider/buff.hpp"
 #include "common/data/provider/skill.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/id_pool.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
+#include "common/util/game_logic/player_skill.hpp"
+#include "common/util/id_pool.hpp"
 #include "channel_server/buffs_packet.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/map.hpp"
@@ -35,7 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace vana {
 namespace channel_server {
 
-id_pool<game_summon_id> summon_handler::g_summon_ids;
+vana::util::id_pool<game_summon_id> summon_handler::g_summon_ids;
 
 auto summon_handler::use_summon(ref_ptr<player> player, game_skill_id skill_id, game_skill_level level) -> void {
 	// Determine if any summons need to be removed and do it
@@ -54,7 +54,7 @@ auto summon_handler::use_summon(ref_ptr<player> player, game_skill_id skill_id, 
 		case constant::skill::sniper::golden_eagle:
 		case constant::skill::marksman::frostprey:
 			player->get_summons()->for_each([player, skill_id](summon *summon) {
-				if (!game_logic_utilities::is_puppet(summon->get_skill_id())) {
+				if (!vana::util::game_logic::player_skill::is_puppet(summon->get_skill_id())) {
 					remove_summon(player, summon->get_id(), false, summon_messages::none);
 				}
 			});
@@ -99,7 +99,7 @@ auto summon_handler::use_summon(ref_ptr<player> player, game_skill_id skill_id, 
 	point player_position = player->get_pos();
 	point summon_position;
 	game_foothold_id foothold = player->get_foothold();
-	bool puppet = game_logic_utilities::is_puppet(skill_id);
+	bool puppet = vana::util::game_logic::player_skill::is_puppet(skill_id);
 	if (puppet) {
 		// TODO FIXME formula
 		// TODO FIXME skill
@@ -165,7 +165,7 @@ auto summon_handler::damage_summon(ref_ptr<player> player, packet_reader &reader
 	game_map_object mob_id = reader.get<game_map_object>();
 
 	if (summon *summon = player->get_summons()->get_summon(summon_id)) {
-		if (!game_logic_utilities::is_puppet(summon->get_skill_id())) {
+		if (!vana::util::game_logic::player_skill::is_puppet(summon->get_skill_id())) {
 			// Hacking
 			return;
 		}

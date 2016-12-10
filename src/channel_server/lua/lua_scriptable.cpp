@@ -23,12 +23,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/provider/script.hpp"
 #include "common/data/provider/shop.hpp"
 #include "common/data/version.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/inter_header.hpp"
 #include "common/packet_wrapper.hpp"
-#include "common/randomizer.hpp"
-#include "common/string_utilities.hpp"
-#include "common/time_utilities.hpp"
+#include "common/util/game_logic/item.hpp"
+#include "common/util/game_logic/mob_skill.hpp"
+#include "common/util/randomizer.hpp"
+#include "common/util/string.hpp"
+#include "common/util/time.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/drop.hpp"
 #include "channel_server/effect_packet.hpp"
@@ -394,7 +395,7 @@ auto lua_scriptable::handle_error(const string &filename, const string &error) -
 	auto &channel = channel_server::get_instance();
 	auto player = channel.get_player_data_provider().get_player(m_player_id);
 
-	channel.log(log_type::script_log, "script error in " + filename + ": " + error);
+	channel.log(vana::log::type::script_log, "script error in " + filename + ": " + error);
 	if (player == nullptr) {
 		return;
 	}
@@ -439,7 +440,7 @@ auto lua_exports::obtain_set_variable_pair(lua_State *lua_vm, lua_environment &e
 	switch (env.type_of(lua_vm, 2)) {
 		case lua::lua_type::nil: ret.second = "nil"; break;
 		case lua::lua_type::boolean: ret.second = env.get<bool>(lua_vm, 2) ? "true" : "false"; break;
-		case lua::lua_type::number: ret.second = utilities::str::lexical_cast<string>(env.get<int32_t>(lua_vm, 2)); break;
+		case lua::lua_type::number: ret.second = vana::util::str::lexical_cast<string>(env.get<int32_t>(lua_vm, 2)); break;
 		case lua::lua_type::string: ret.second = env.get<string>(lua_vm, 2); break;
 		default: THROW_CODE_EXCEPTION(not_implemented_exception, "lua datatype");
 	}
@@ -458,7 +459,7 @@ auto lua_exports::push_get_variable_data(lua_State *lua_vm, lua_environment &env
 					env.push_nil(lua_vm);
 				}
 				else {
-					env.push<double>(lua_vm, utilities::str::lexical_cast<double>(value));
+					env.push<double>(lua_vm, vana::util::str::lexical_cast<double>(value));
 				}
 				break;
 			case variable_type::integer:
@@ -466,7 +467,7 @@ auto lua_exports::push_get_variable_data(lua_State *lua_vm, lua_environment &env
 					env.push_nil(lua_vm);
 				}
 				else {
-					env.push<int32_t>(lua_vm, utilities::str::lexical_cast<int32_t>(value));
+					env.push<int32_t>(lua_vm, vana::util::str::lexical_cast<int32_t>(value));
 				}
 				break;
 			case variable_type::string: env.push<string>(lua_vm, value); break;
@@ -503,13 +504,13 @@ auto lua_exports::console_output(lua_State *lua_vm) -> lua_return {
 
 auto lua_exports::get_random_number(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
-	env.push<int32_t>(lua_vm, randomizer::rand<int32_t>(env.get<int32_t>(lua_vm, 1), 1));
+	env.push<int32_t>(lua_vm, vana::util::randomizer::rand<int32_t>(env.get<int32_t>(lua_vm, 1), 1));
 	return 1;
 }
 
 auto lua_exports::log(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
-	channel_server::get_instance().log(log_type::script_log, env.get<string>(lua_vm, 1));
+	channel_server::get_instance().log(vana::log::type::script_log, env.get<string>(lua_vm, 1));
 	return 0;
 }
 
@@ -522,7 +523,7 @@ auto lua_exports::select_discrete(lua_State *lua_vm) -> lua_return {
 	else {
 		std::discrete_distribution<> dist{relative_chances.begin(), relative_chances.end()};
 		// Account for Lua array start
-		env.push<int32_t>(lua_vm, randomizer::rand(dist) + 1);
+		env.push<int32_t>(lua_vm, vana::util::randomizer::rand(dist) + 1);
 	}
 	return 1;
 }
@@ -959,7 +960,7 @@ auto lua_exports::give_item(lua_State *lua_vm) -> lua_return {
 	if (env.is(lua_vm, 2, lua::lua_type::number)) {
 		amount = env.get<game_slot_qty>(lua_vm, 2);
 	}
-	bool success = quests::give_item(get_player(lua_vm, env), item_id, amount) == result::successful;
+	bool success = quests::give_item(get_player(lua_vm, env), item_id, amount) == result::success;
 	env.push<bool>(lua_vm, success);
 	return 1;
 }
@@ -971,7 +972,7 @@ auto lua_exports::give_item_gachapon(lua_State *lua_vm) -> lua_return {
 	if (env.is(lua_vm, 2, lua::lua_type::number)) {
 		amount = env.get<game_slot_qty>(lua_vm, 2);
 	}
-	bool success = quests::give_item(get_player(lua_vm, env), item_id, amount, stat_variance::gachapon) == result::successful;
+	bool success = quests::give_item(get_player(lua_vm, env), item_id, amount, stat_variance::gachapon) == result::success;
 	env.push<bool>(lua_vm, success);
 	return 1;
 }
@@ -979,7 +980,7 @@ auto lua_exports::give_item_gachapon(lua_State *lua_vm) -> lua_return {
 auto lua_exports::give_mesos(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_mesos mesos = env.get<game_mesos>(lua_vm, 1);
-	bool success = quests::give_mesos(get_player(lua_vm, env), mesos) == result::successful;
+	bool success = quests::give_mesos(get_player(lua_vm, env), mesos) == result::success;
 	env.push<bool>(lua_vm, success);
 	return 1;
 }
@@ -1226,7 +1227,7 @@ auto lua_exports::give_exp(lua_State *lua_vm) -> lua_return {
 auto lua_exports::give_fame(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_fame fame = env.get<game_fame>(lua_vm, 1);
-	bool success = quests::give_fame(get_player(lua_vm, env), fame) == result::successful;
+	bool success = quests::give_fame(get_player(lua_vm, env), fame) == result::success;
 	env.push<bool>(lua_vm, success);
 	return 1;
 }
@@ -1253,7 +1254,7 @@ auto lua_exports::is_active_skill(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	game_skill_id skill = env.get<game_skill_id>(lua_vm, 1);
 	bool has_buff = get_player(lua_vm, env)->get_active_buffs()->has_buff(
-		game_logic_utilities::is_mob_skill(skill) ?
+		vana::util::game_logic::mob_skill::is_mob_skill(skill) ?
 			data::type::buff_source_type::mob_skill :
 			data::type::buff_source_type::skill,
 		skill);
@@ -1413,7 +1414,7 @@ auto lua_exports::set_str(lua_State *lua_vm) -> lua_return {
 auto lua_exports::set_style(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
 	int32_t id = env.get<int32_t>(lua_vm, 1);
-	int32_t type = game_logic_utilities::get_item_type(id);
+	int32_t type = vana::util::game_logic::item::get_item_type(id);
 	auto player = get_player(lua_vm, env);
 	if (type == 0) {
 		player->set_skin(static_cast<game_skin_id>(id));
@@ -1778,7 +1779,7 @@ auto lua_exports::mob_drop_item(lua_State *lua_vm) -> lua_return {
 // Time
 auto lua_exports::get_date(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
-	env.push<int32_t>(lua_vm, utilities::time::get_date());
+	env.push<int32_t>(lua_vm, vana::util::time::get_date());
 	return 1;
 }
 
@@ -1789,10 +1790,10 @@ auto lua_exports::get_day(lua_State *lua_vm) -> lua_return {
 		is_string_return = env.get<bool>(lua_vm, 1);
 	}
 	if (is_string_return) {
-		env.push<string>(lua_vm, utilities::time::get_day_string(false));
+		env.push<string>(lua_vm, vana::util::time::get_day_string(false));
 	}
 	else {
-		env.push<int32_t>(lua_vm, utilities::time::get_day());
+		env.push<int32_t>(lua_vm, vana::util::time::get_day());
 	}
 	return 1;
 }
@@ -1803,31 +1804,31 @@ auto lua_exports::get_hour(lua_State *lua_vm) -> lua_return {
 	if (env.is(lua_vm, 1, lua::lua_type::boolean)) {
 		military = env.get<bool>(lua_vm, 1);
 	}
-	env.push<int32_t>(lua_vm, utilities::time::get_hour(military));
+	env.push<int32_t>(lua_vm, vana::util::time::get_hour(military));
 	return 1;
 }
 
 auto lua_exports::get_minute(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
-	env.push<int32_t>(lua_vm, utilities::time::get_minute());
+	env.push<int32_t>(lua_vm, vana::util::time::get_minute());
 	return 1;
 }
 
 auto lua_exports::get_month(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
-	env.push<int32_t>(lua_vm, utilities::time::get_month());
+	env.push<int32_t>(lua_vm, vana::util::time::get_month());
 	return 1;
 }
 
 auto lua_exports::get_nearest_minute(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
-	env.push<seconds>(lua_vm, utilities::time::get_distance_to_next_minute_mark(env.get<int32_t>(lua_vm, 1)));
+	env.push<seconds>(lua_vm, vana::util::time::get_distance_to_next_minute_mark(env.get<int32_t>(lua_vm, 1)));
 	return 1;
 }
 
 auto lua_exports::get_second(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
-	env.push<int32_t>(lua_vm, utilities::time::get_second());
+	env.push<int32_t>(lua_vm, vana::util::time::get_second());
 	return 1;
 }
 
@@ -1839,25 +1840,25 @@ auto lua_exports::get_time(lua_State *lua_vm) -> lua_return {
 
 auto lua_exports::get_time_zone_offset(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
-	env.push<int32_t>(lua_vm, utilities::time::get_time_zone_offset());
+	env.push<int32_t>(lua_vm, vana::util::time::get_time_zone_offset());
 	return 1;
 }
 
 auto lua_exports::get_week(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
-	env.push<int32_t>(lua_vm, utilities::time::get_week());
+	env.push<int32_t>(lua_vm, vana::util::time::get_week());
 	return 1;
 }
 
 auto lua_exports::get_year(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
-	env.push<int32_t>(lua_vm, utilities::time::get_year(false));
+	env.push<int32_t>(lua_vm, vana::util::time::get_year(false));
 	return 1;
 }
 
 auto lua_exports::is_dst(lua_State *lua_vm) -> lua_return {
 	auto &env = get_environment(lua_vm);
-	env.push<bool>(lua_vm, utilities::time::is_dst());
+	env.push<bool>(lua_vm, vana::util::time::is_dst());
 	return 1;
 }
 
@@ -1908,7 +1909,7 @@ auto lua_exports::check_party_footholds(lua_State *lua_vm) -> lua_return {
 		vector<vector<game_foothold_id>> footholds = env.get<vector<vector<game_foothold_id>>>(lua_vm, 2);
 		verified = p->check_footholds(member_count, footholds);
 	}
-	env.push<bool>(lua_vm, verified == result::successful);
+	env.push<bool>(lua_vm, verified == result::success);
 	return 1;
 }
 
@@ -1990,7 +1991,7 @@ auto lua_exports::verify_party_footholds(lua_State *lua_vm) -> lua_return {
 		vector<vector<game_foothold_id>> footholds = env.get<vector<vector<game_foothold_id>>>(lua_vm, 1);
 		verified = p->verify_footholds(footholds);
 	}
-	env.push<bool>(lua_vm, verified == result::successful);
+	env.push<bool>(lua_vm, verified == result::success);
 	return 1;
 }
 

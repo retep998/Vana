@@ -19,10 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/algorithm.hpp"
 #include "common/constant/mob_skill.hpp"
 #include "common/constant/skill.hpp"
+#include "common/data/initialize.hpp"
 #include "common/data/provider/item.hpp"
 #include "common/data/type/buff_source.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/initialize_common.hpp"
 #include <iomanip>
 #include <iostream>
 
@@ -41,7 +40,7 @@ auto buff::process_skills(data::type::buff value, const init_list<game_skill_id>
 }
 
 auto buff::load_data() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Buffs... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Buffs... ";
 
 	auto physical_attack = data::type::buff_info::from_player_only(1, data::type::buff_skill_value::watk);
 	auto physical_defense = data::type::buff_info::from_player_only(2, data::type::buff_skill_value::wdef);

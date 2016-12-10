@@ -34,6 +34,7 @@ namespace vana {
 			auto use_skillbook(ref_ptr<player> player, packet_reader &reader) -> void;
 			auto use_chair(ref_ptr<player> player, packet_reader &reader) -> void;
 			auto use_item_effect(ref_ptr<player> player, packet_reader &reader) -> void;
+			auto upgrade_tomb_effect(ref_ptr<player> player, packet_reader &reader) -> void;
 			auto handle_chair(ref_ptr<player> player, packet_reader &reader) -> void;
 			auto use_summon_bag(ref_ptr<player> player, packet_reader &reader) -> void;
 			auto use_return_scroll(ref_ptr<player> player, packet_reader &reader) -> void;

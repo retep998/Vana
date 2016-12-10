@@ -18,12 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "world_server_accepted_session.hpp"
 #include "common/common_header.hpp"
 #include "common/inter_header.hpp"
-#include "common/misc_utilities.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
 #include "common/server_type.hpp"
 #include "common/session.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/misc.hpp"
+#include "common/util/string.hpp"
 #include "world_server/channels.hpp"
 #include "world_server/login_server_connect_packet.hpp"
 #include "world_server/player_data_provider.hpp"
@@ -81,7 +81,7 @@ auto world_server_accepted_session::handle(packet_reader &reader) -> result {
 
 		default: return result::failure;
 	}
-	return result::successful;
+	return result::success;
 }
 
 auto world_server_accepted_session::authenticated(server_type type) -> void {
@@ -103,13 +103,13 @@ auto world_server_accepted_session::authenticated(server_type type) -> void {
 
 			server.send_login(packets::register_channel(m_channel, ip_value, ips, port));
 
-			server.log(log_type::server_connect, [&](out_stream &log) {
+			server.log(vana::log::type::server_connect, [&](out_stream &log) {
 				log << "Channel " << static_cast<int32_t>(m_channel);
 			});
 		}
 		else {
 			send(packets::interserver::connect(-1, 0));
-			server.log(log_type::error, "No more channels to assign.");
+			server.log(vana::log::type::error, "No more channels to assign.");
 			disconnect();
 		}
 	}
@@ -129,7 +129,7 @@ auto world_server_accepted_session::on_disconnect() -> void {
 			server.get_player_data_provider().channel_disconnect(m_channel);
 			server.get_channels().remove_channel(m_channel);
 
-			server.log(log_type::server_disconnect, [&](out_stream &log) { log << "Channel " << static_cast<int32_t>(m_channel); });
+			server.log(vana::log::type::server_disconnect, [&](out_stream &log) { log << "Channel " << static_cast<int32_t>(m_channel); });
 		}
 	}
 }

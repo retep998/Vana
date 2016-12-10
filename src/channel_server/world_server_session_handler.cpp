@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/provider/script.hpp"
 #include "common/data/provider/shop.hpp"
 #include "common/data/provider/skill.hpp"
-#include "common/exit_codes.hpp"
+#include "common/exit_code.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
 #include "common/session.hpp"
@@ -50,7 +50,7 @@ auto world_server_session_handler::connect(ref_ptr<world_server_session> session
 		channel_server::get_instance().established_world_connection(channel, port, conf);
 	}
 	else {
-		channel_server::get_instance().log(log_type::critical_error, "no channel to handle");
+		channel_server::get_instance().log(vana::log::type::critical_error, "no channel to handle");
 		channel_server::get_instance().shutdown();
 	}
 }

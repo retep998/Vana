@@ -17,12 +17,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "skills.hpp"
 #include "common/data/provider/skill.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
-#include "common/randomizer.hpp"
-#include "common/time_utilities.hpp"
 #include "common/timer/timer.hpp"
+#include "common/util/game_logic/item.hpp"
+#include "common/util/game_logic/job.hpp"
+#include "common/util/game_logic/party.hpp"
+#include "common/util/game_logic/player_skill.hpp"
+#include "common/util/randomizer.hpp"
+#include "common/util/time.hpp"
 #include "channel_server/buffs.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/gm_packet.hpp"
@@ -45,17 +48,17 @@ namespace channel_server {
 auto skills::add_skill(ref_ptr<player> player, packet_reader &reader) -> void {
 	reader.skip<game_tick_count>();
 	game_skill_id skill_id = reader.get<game_skill_id>();
-	if (!game_logic_utilities::is_beginner_skill(skill_id)) {
+	if (!vana::util::game_logic::player_skill::is_beginner_skill(skill_id)) {
 		if (player->get_stats()->get_sp() == 0) {
 			// Hacking
 			return;
 		}
-		if (!player->is_gm() && !game_logic_utilities::skill_matches_job(skill_id, player->get_stats()->get_job())) {
+		if (!player->is_gm() && !vana::util::game_logic::player_skill::skill_matches_job(skill_id, player->get_stats()->get_job())) {
 			// Hacking
 			return;
 		}
 	}
-	if (player->get_skills()->add_skill_level(skill_id, 1) && !game_logic_utilities::is_beginner_skill(skill_id)) {
+	if (player->get_skills()->add_skill_level(skill_id, 1) && !vana::util::game_logic::player_skill::is_beginner_skill(skill_id)) {
 		player->get_stats()->set_sp(player->get_stats()->get_sp() - 1);
 	}
 }
@@ -109,22 +112,22 @@ auto skills::stop_skill(ref_ptr<player> player, const data::type::buff_source &s
 
 auto skills::get_affected_party_members(party *party, int8_t affected, int8_t members) -> const vector<ref_ptr<player>> {
 	vector<ref_ptr<player>> ret;
-	if (affected & game_logic_utilities::get_party_member1(members)) {
+	if (affected & vana::util::game_logic::party::get_party_member1(members)) {
 		ret.push_back(party->get_member_by_index(1));
 	}
-	if (affected & game_logic_utilities::get_party_member2(members)) {
+	if (affected & vana::util::game_logic::party::get_party_member2(members)) {
 		ret.push_back(party->get_member_by_index(2));
 	}
-	if (affected & game_logic_utilities::get_party_member3(members)) {
+	if (affected & vana::util::game_logic::party::get_party_member3(members)) {
 		ret.push_back(party->get_member_by_index(3));
 	}
-	if (affected & game_logic_utilities::get_party_member4(members)) {
+	if (affected & vana::util::game_logic::party::get_party_member4(members)) {
 		ret.push_back(party->get_member_by_index(4));
 	}
-	if (affected & game_logic_utilities::get_party_member5(members)) {
+	if (affected & vana::util::game_logic::party::get_party_member5(members)) {
 		ret.push_back(party->get_member_by_index(5));
 	}
-	if (affected & game_logic_utilities::get_party_member6(members)) {
+	if (affected & vana::util::game_logic::party::get_party_member6(members)) {
 		ret.push_back(party->get_member_by_index(6));
 	}
 	return ret;
@@ -203,7 +206,7 @@ auto skills::use_skill(ref_ptr<player> player_value, packet_reader &reader) -> v
 			for (uint8_t k = 0; k < mobs; k++) {
 				game_map_object map_mob_id = reader.get<game_map_object>();
 				if (auto mob = player_value->get_map()->get_mob(map_mob_id)) {
-					if (randomizer::percentage<uint16_t>() < skill->prop) {
+					if (vana::util::randomizer::percentage<uint16_t>() < skill->prop) {
 						mob->do_crash_skill(skill_id);
 					}
 				}
@@ -266,7 +269,7 @@ auto skills::use_skill(ref_ptr<player> player_value, packet_reader &reader) -> v
 				const auto members = get_affected_party_members(party, affected, party->get_members_count());
 				for (const auto &party_member : members) {
 					if (party_member != nullptr && party_member != player_value && party_member->get_map() == player_value->get_map()) {
-						if (randomizer::percentage<uint16_t>() < skill->prop) {
+						if (vana::util::randomizer::percentage<uint16_t>() < skill->prop) {
 							party_member->send(packets::skills::show_skill(party_member->get_id(), skill_id, level, direction, true, true));
 							party_member->send_map(packets::skills::show_skill(party_member->get_id(), skill_id, level, direction, true));
 							party_member->get_active_buffs()->use_player_dispel();
@@ -281,7 +284,7 @@ auto skills::use_skill(ref_ptr<player> player_value, packet_reader &reader) -> v
 			for (int8_t k = 0; k < affected; k++) {
 				game_map_object map_mob_id = reader.get<game_map_object>();
 				if (auto mob = player_value->get_map()->get_mob(map_mob_id)) {
-					if (randomizer::percentage<uint16_t>() < skill->prop) {
+					if (vana::util::randomizer::percentage<uint16_t>() < skill->prop) {
 						mob->dispel_buffs();
 					}
 				}
@@ -426,7 +429,7 @@ auto skills::use_skill(ref_ptr<player> player_value, packet_reader &reader) -> v
 
 	player_value->send_map(packets::skills::show_skill(player_value->get_id(), skill_id, level, direction));
 
-	if (buffs::add_buff(player_value, skill_id, level, added_info) == result::successful) {
+	if (buffs::add_buff(player_value, skill_id, level, added_info) == result::success) {
 		if (skill_id == constant::skill::super_gm::hide) {
 			player_value->send(packets::gm::begin_hide());
 			player_value->get_map()->gm_hide_change(player_value);
@@ -435,7 +438,7 @@ auto skills::use_skill(ref_ptr<player> player_value, packet_reader &reader) -> v
 		return;
 	}
 
-	if (game_logic_utilities::is_summon(skill_id)) {
+	if (vana::util::game_logic::player_skill::is_summon(skill_id)) {
 		point pos = reader.get<point>(); // Useful?
 		summon_handler::use_summon(player_value, skill_id, level);
 	}
@@ -446,7 +449,7 @@ auto skills::apply_skill_costs(ref_ptr<player> player, game_skill_id skill_id, g
 		// Ensure we don't lock, but don't actually use anything
 		player->get_stats()->set_hp(player->get_stats()->get_hp(), true);
 		player->get_stats()->set_mp(player->get_stats()->get_mp(), true);
-		return result::successful;
+		return result::success;
 	}
 
 	auto skill = channel_server::get_instance().get_skill_data_provider().get_skill(skill_id, level);
@@ -495,16 +498,15 @@ auto skills::apply_skill_costs(ref_ptr<player> player, game_skill_id skill_id, g
 	if (money_consume > 0) {
 		int16_t min_mesos = money_consume - (80 + level * 5);
 		int16_t max_mesos = money_consume + (80 + level * 5);
-		int16_t amount = randomizer::rand<int16_t>(max_mesos, min_mesos);
-		game_mesos mesos = player->get_inventory()->get_mesos();
-		if (mesos - amount < 0) {
+		int16_t amount = vana::util::randomizer::rand<int16_t>(max_mesos, min_mesos);
+
+		if (player->get_inventory()->take_mesos(amount).get_result() != stack_result::full) {
 			// Hacking
 			return result::failure;
 		}
-		player->get_inventory()->modify_mesos(-amount);
 	}
 
-	return result::successful;
+	return result::success;
 }
 
 auto skills::use_attack_skill(ref_ptr<player> player, game_skill_id skill_id) -> result {
@@ -515,7 +517,7 @@ auto skills::use_attack_skill(ref_ptr<player> player, game_skill_id skill_id) ->
 		}
 		return apply_skill_costs(player, skill_id, level, true);
 	}
-	return result::successful;
+	return result::success;
 }
 
 auto skills::use_attack_skill_ranged(ref_ptr<player> player, game_skill_id skill_id, game_inventory_slot projectile_pos, game_inventory_slot cash_projectile_pos, game_item_id projectile_id) -> result {
@@ -531,23 +533,23 @@ auto skills::use_attack_skill_ranged(ref_ptr<player> player, game_skill_id skill
 	}
 
 	if (player->has_gm_benefits()) {
-		return result::successful;
+		return result::success;
 	}
 
-	switch (game_logic_utilities::get_job_track(player->get_stats()->get_job())) {
+	switch (vana::util::game_logic::job::get_job_track(player->get_stats()->get_job())) {
 		case constant::job::track::bowman:
 		case constant::job::track::wind_archer:
 			if (player->get_active_buffs()->has_soul_arrow()) {
-				return result::successful;
+				return result::success;
 			}
-			if (!game_logic_utilities::is_arrow(projectile_id)) {
+			if (!vana::util::game_logic::item::is_arrow(projectile_id)) {
 				return result::failure;
 			}
 			break;
 		case constant::job::track::thief:
 		case constant::job::track::night_walker:
 			if (player->get_active_buffs()->has_shadow_stars()) {
-				return result::successful;
+				return result::success;
 			}
 			if (cash_projectile_pos > 0) {
 				item *cash_item = player->get_inventory()->get_item(constant::inventory::cash, cash_projectile_pos);
@@ -562,12 +564,12 @@ auto skills::use_attack_skill_ranged(ref_ptr<player> player, game_skill_id skill
 
 				projectile_id = projectile->get_id();
 			}
-			if (!game_logic_utilities::is_star(projectile_id)) {
+			if (!vana::util::game_logic::item::is_star(projectile_id)) {
 				return result::failure;
 			}
 			break;
 		case constant::job::track::pirate:
-			if (!game_logic_utilities::is_bullet(projectile_id)) {
+			if (!vana::util::game_logic::item::is_bullet(projectile_id)) {
 				return result::failure;
 			}
 			break;
@@ -592,7 +594,7 @@ auto skills::use_attack_skill_ranged(ref_ptr<player> player, game_skill_id skill
 				return result::failure;
 			}
 			inventory::take_item_slot(player, constant::inventory::use, projectile_pos, skill->item_count);
-			return result::successful;
+			return result::success;
 		}
 
 		game_slot_qty bullets = skill->bullet_consume;
@@ -610,7 +612,7 @@ auto skills::use_attack_skill_ranged(ref_ptr<player> player, game_skill_id skill
 	}
 
 	inventory::take_item_slot(player, constant::inventory::use, projectile_pos, hits);
-	return result::successful;
+	return result::success;
 }
 
 auto skills::heal(ref_ptr<player> player, int64_t value, const data::type::buff_source &source) -> void {

@@ -17,12 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "trade_handler.hpp"
 #include "common/data/provider/item.hpp"
-#include "common/game_logic_utilities.hpp"
 #include "common/maple_version.hpp"
 #include "common/packet_reader.hpp"
-#include "common/time_utilities.hpp"
 #include "common/timer/thread.hpp"
 #include "common/timer/timer.hpp"
+#include "common/util/game_logic/item.hpp"
+#include "common/util/time.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/player.hpp"
 #include "channel_server/player_data_provider.hpp"
@@ -157,12 +157,12 @@ auto trade_handler::trade_handler(ref_ptr<player> player, packet_reader &reader)
 						// Hacking
 						return;
 					}
-					if (game_logic_utilities::is_gm_equip(value->get_id())) {
+					if (vana::util::game_logic::item::is_gm_equip(value->get_id())) {
 						// We don't allow these to be dropped or traded
 						return;
 					}
 
-					if (game_logic_utilities::is_rechargeable(value->get_id())) {
+					if (vana::util::game_logic::item::is_rechargeable(value->get_id())) {
 						amount = value->get_amount();
 					}
 					else if (amount > value->get_amount() || amount < 0) {
@@ -176,7 +176,7 @@ auto trade_handler::trade_handler(ref_ptr<player> player, packet_reader &reader)
 				}
 				case trade_opcodes::add_mesos: {
 					game_mesos amount = reader.get<game_mesos>();
-					if (player->get_inventory()->get_mesos() < amount || amount < 0) {
+					if (amount < 0 || player->get_inventory()->can_modify_mesos(-amount) != stack_result::full) {
 						// Hacking
 						return;
 					}

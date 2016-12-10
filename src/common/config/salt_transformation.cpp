@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "salt_transformation.hpp"
-#include "common/bit_utilities.hpp"
 #include "common/salt_leftover_policy.hpp"
 #include "common/types.hpp"
+#include "common/util/bit.hpp"
 #include <cstdlib>
 #include <string>
 #include <vector>
@@ -190,7 +190,7 @@ auto salt_transformation::apply(string input) const -> string {
 			int32_t value = m_args[0].as<int32_t>();
 			ret = input;
 			for (size_t i = 0; i < ret.size(); i++) {
-				ret[i] = utilities::bit::rotate_right<uint8_t>(ret[i], value);
+				ret[i] = vana::util::bit::rotate_right<uint8_t>(ret[i], value);
 			}
 			break;
 		}
@@ -198,7 +198,7 @@ auto salt_transformation::apply(string input) const -> string {
 			int32_t value = m_args[0].as<int32_t>();
 			ret = input;
 			if (ret.size() == 1) {
-				ret[0] = utilities::bit::rotate_right<uint8_t>(ret[0], value);
+				ret[0] = vana::util::bit::rotate_right<uint8_t>(ret[0], value);
 			}
 			else {
 				bool bit = true;
@@ -238,7 +238,7 @@ auto salt_transformation::apply(string input) const -> string {
 		case salt_modify_policy::bit_reverse_cipher: {
 			ret = input;
 			for (size_t i = 0; i < ret.size(); i++) {
-				ret[i] = utilities::bit::reverse<uint8_t>(ret[i]);
+				ret[i] = vana::util::bit::reverse<uint8_t>(ret[i]);
 			}
 			break;
 		}

@@ -23,8 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/provider/curse.hpp"
 #include "common/data/provider/equip.hpp"
 #include "common/data/provider/valid_char.hpp"
-#include "common/finalization_pool.hpp"
 #include "common/types.hpp"
+#include "common/util/finalization_pool.hpp"
 #include "login_server/login_server_accepted_session.hpp"
 #include "login_server/worlds.hpp"
 
@@ -62,8 +62,8 @@ namespace vana {
 			data::provider::equip m_equip_data_provider;
 			data::provider::curse m_curse_data_provider;
 			worlds m_worlds;
-			finalization_pool<user> m_user_pool;
-			finalization_pool<login_server_accepted_session> m_session_pool;
+			vana::util::finalization_pool<user> m_user_pool;
+			vana::util::finalization_pool<login_server_accepted_session> m_session_pool;
 		};
 	}
 }

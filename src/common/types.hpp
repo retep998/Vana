@@ -17,10 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "common/case_insensitive_equals.hpp"
-#include "common/case_insensitive_hash.hpp"
 #include "common/make_unique.hpp"
 #include "common/preprocessor.hpp"
+#include "common/util/case_insensitive_equals.hpp"
+#include "common/util/case_insensitive_hash.hpp"
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -141,8 +141,14 @@ namespace vana {
 	};
 
 	enum class result {
-		successful,
+		success,
 		failure,
+	};
+
+	enum class stack_result {
+		full,
+		partial,
+		none,
 	};
 
 	enum class validity_result {
@@ -237,9 +243,9 @@ namespace vana {
 	template <typename TKey, typename THash = std::hash<TKey>, typename TOperation = std::equal_to<TKey>>
 	using hash_set = std::unordered_set<TKey, THash, TOperation>;
 	template <typename TElement, typename TString = string>
-	using case_insensitive_hash_map = std::unordered_map<TString, TElement, case_insensitive_hash, case_insensitive_equals>;
+	using case_insensitive_hash_map = std::unordered_map<TString, TElement, vana::util::case_insensitive_hash, vana::util::case_insensitive_equals>;
 	template <typename TString = string>
-	using case_insensitive_hash_set = std::unordered_set<TString, case_insensitive_hash, case_insensitive_equals>;
+	using case_insensitive_hash_set = std::unordered_set<TString, vana::util::case_insensitive_hash, vana::util::case_insensitive_equals>;
 	template <typename TKey, typename TElement, typename TOrdering = std::less<TKey>>
 	using ord_map = std::map<TKey, TElement, TOrdering>;
 	template <typename TKey, typename TOrdering = std::less<TKey>>

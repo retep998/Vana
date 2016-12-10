@@ -24,12 +24,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/data/type/portal_info.hpp"
 #include "common/data/type/seat_info.hpp"
 #include "common/data/type/spawn_info.hpp"
-#include "common/id_pool.hpp"
 #include "common/point.hpp"
 #include "common/rect.hpp"
 #include "common/respawnable.hpp"
 #include "common/timer/container_holder.hpp"
 #include "common/types.hpp"
+#include "common/util/id_pool.hpp"
 #include "channel_server/map_factory.hpp"
 #include "channel_server/mob.hpp"
 #include <ctime>
@@ -253,8 +253,8 @@ namespace vana {
 			time_point m_last_spawn = time_point{seconds{0}};
 			string m_music;
 			rect m_real_dimensions;
-			id_pool<game_map_object> m_object_ids;
-			id_pool<game_mist_id> m_mist_ids;
+			vana::util::id_pool<game_map_object> m_object_ids;
+			vana::util::id_pool<game_mist_id> m_mist_ids;
 			recursive_mutex m_drops_mutex;
 			ref_ptr<const data::type::map_info> m_info;
 			vector<data::type::foothold_info> m_footholds;

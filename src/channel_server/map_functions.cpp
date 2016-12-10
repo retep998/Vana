@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "map_functions.hpp"
 #include "common/algorithm.hpp"
 #include "common/map_position.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/string.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/map.hpp"
 #include "channel_server/maps.hpp"
@@ -88,7 +88,7 @@ auto map_functions::kill_mob(ref_ptr<player> player, const game_chat &args) -> c
 		game_map_object mob_id = atoi(args.c_str());
 		auto mob = player->get_map()->get_mob(mob_id);
 		if (mob != nullptr) {
-			chat_handler_functions::show_info(player, "Killed mob with map mob ID " + args + ". Damage applied: " + utilities::str::lexical_cast<string>(mob->get_hp()));
+			chat_handler_functions::show_info(player, "Killed mob with map mob ID " + args + ". Damage applied: " + vana::util::str::lexical_cast<string>(mob->get_hp()));
 			mob->apply_damage(player->get_id(), mob->get_hp());
 		}
 		else {
@@ -176,11 +176,11 @@ auto map_functions::list_portals(ref_ptr<player> player, const game_chat &args) 
 		return chat_result::handled_display;
 	}
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT mp.id, mp.label, mp.destination, mp.destination_label, mp.script, mp.x_pos, mp.y_pos "
-		<< "FROM " << db.make_table("map_portals") << " mp "
+		<< "FROM " << db.make_table(vana::data::table::map_portals) << " mp "
 		<< "WHERE mp.mapid = :map_id",
 		soci::use(map_id, "map_id"));
 
@@ -234,7 +234,7 @@ auto map_functions::list_portals(ref_ptr<player> player, const game_chat &args) 
 	for (const auto &row : rs) {
 		string portal_label = row.get<string>(1);
 		if (filter.is_initialized()) {
-			if (utilities::str::no_case_compare(filter.get(), portal_label) != 0) {
+			if (vana::util::str::no_case_compare(filter.get(), portal_label) != 0) {
 				continue;
 			}
 		}
@@ -279,7 +279,7 @@ auto map_functions::list_players(ref_ptr<player> player_value, const game_chat &
 		str.str("");
 		str.clear();
 
-		str << utilities::str::to_upper(target->get_name())
+		str << vana::util::str::to_upper(target->get_name())
 			<< " (ID: " << target->get_id() << ", ";
 
 		if (party *party = target->get_party()) {
@@ -310,12 +310,12 @@ auto map_functions::list_reactors(ref_ptr<player> player, const game_chat &args)
 		return chat_result::handled_display;
 	}
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT ml.lifeid, sc.script, ml.x_pos, ml.y_pos, ml.foothold "
-		<< "FROM " << db.make_table("map_life") << " ml "
-		<< "LEFT OUTER JOIN " << db.make_table("scripts") << " sc ON sc.objectid = ml.lifeid AND sc.script_type = 'reactor' "
+		<< "FROM " << db.make_table(vana::data::table::map_life) << " ml "
+		<< "LEFT OUTER JOIN " << db.make_table(vana::data::table::scripts) << " sc ON sc.objectid = ml.lifeid AND sc.script_type = 'reactor' "
 		<< "WHERE ml.life_type = 'reactor' AND ml.mapid = :mapId",
 		soci::use(map_id, "map_id"));
 
@@ -366,13 +366,13 @@ auto map_functions::list_npcs(ref_ptr<player> player, const game_chat &args) -> 
 		return chat_result::handled_display;
 	}
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT ml.lifeid, st.label, sc.script, ml.x_pos, ml.y_pos, ml.foothold "
-		<< "FROM " << db.make_table("map_life") << " ml "
-		<< "INNER JOIN " << db.make_table("strings") << " st ON st.objectid = ml.lifeid AND st.object_type = 'npc' "
-		<< "LEFT OUTER JOIN " << db.make_table("scripts") << " sc ON sc.objectid = ml.lifeid AND sc.script_type = 'npc' "
+		<< "FROM " << db.make_table(vana::data::table::map_life) << " ml "
+		<< "INNER JOIN " << db.make_table(vana::data::table::strings) << " st ON st.objectid = ml.lifeid AND st.object_type = 'npc' "
+		<< "LEFT OUTER JOIN " << db.make_table(vana::data::table::scripts) << " sc ON sc.objectid = ml.lifeid AND sc.script_type = 'npc' "
 		<< "WHERE ml.life_type = 'npc' AND ml.mapid = :mapId",
 		soci::use(map_id, "map_id"));
 
@@ -428,7 +428,7 @@ auto map_functions::map_dimensions(ref_ptr<player> player, const game_chat &args
 
 auto map_functions::zakum(ref_ptr<player> player, const game_chat &args) -> chat_result {
 	player->get_map()->spawn_zakum(player->get_pos());
-	channel_server::get_instance().log(log_type::gm_command, [&](out_stream &log) {
+	channel_server::get_instance().log(vana::log::type::gm_command, [&](out_stream &log) {
 		log << "GM " << player->get_name()
 			<< " spawned Zakum on map " << player->get_map_id();
 	});
@@ -437,7 +437,7 @@ auto map_functions::zakum(ref_ptr<player> player, const game_chat &args) -> chat
 
 auto map_functions::horntail(ref_ptr<player> player, const game_chat &args) -> chat_result {
 	player->get_map()->spawn_mob(constant::mob::summon_horntail, player->get_pos());
-	channel_server::get_instance().log(log_type::gm_command, [&](out_stream &log) {
+	channel_server::get_instance().log(vana::log::type::gm_command, [&](out_stream &log) {
 		log << "GM " << player->get_name()
 			<< " spawned Horntail on map " << player->get_map_id();
 	});
@@ -449,7 +449,7 @@ auto map_functions::music(ref_ptr<player> player, const game_chat &args) -> chat
 		chat_handler_functions::show_info(player, "Current music: " + player->get_map()->get_music());
 	}
 	else {
-		auto &db = database::get_data_db();
+		auto &db = vana::io::database::get_data_db();
 		auto &sql = db.get_session();
 		string music;
 
@@ -459,7 +459,7 @@ auto map_functions::music(ref_ptr<player> player, const game_chat &args) -> chat
 		else {
 			sql
 				<< "SELECT m.default_bgm "
-				<< "FROM " << db.make_table("map_data") << " m "
+				<< "FROM " << db.make_table(vana::data::table::map_data) << " m "
 				<< "WHERE m.default_bgm = :q "
 				<< "LIMIT 1",
 				soci::use(args, "q"),

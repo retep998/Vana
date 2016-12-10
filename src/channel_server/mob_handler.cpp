@@ -18,13 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mob_handler.hpp"
 #include "common/algorithm.hpp"
 #include "common/data/provider/skill.hpp"
-#include "common/game_logic_utilities.hpp"
-#include "common/misc_utilities.hpp"
 #include "common/packet_reader.hpp"
 #include "common/point.hpp"
-#include "common/randomizer.hpp"
-#include "common/time_utilities.hpp"
 #include "common/timer/timer.hpp"
+#include "common/util/game_logic/item.hpp"
+#include "common/util/misc.hpp"
+#include "common/util/randomizer.hpp"
+#include "common/util/time.hpp"
 #include "channel_server/channel_server.hpp"
 #include "channel_server/instance.hpp"
 #include "channel_server/maps.hpp"
@@ -62,7 +62,7 @@ auto mob_handler::friendly_damaged(ref_ptr<player> player, packet_reader &reader
 	auto dealer = map->get_mob(mob_from);
 	auto taker = map->get_mob(mob_to);
 	if (dealer != nullptr && taker != nullptr && taker->is_friendly()) {
-		game_damage damage = dealer->get_level() * randomizer::rand<int32_t>(100) / 10;
+		game_damage damage = dealer->get_level() * vana::util::randomizer::rand<int32_t>(100) / 10;
 		// Temp for now until I figure out something more effective
 		// TODO FIXME: Formula
 		game_mob_id mob_id = taker->get_mob_id();
@@ -168,7 +168,7 @@ auto mob_handler::handle_mob_status(game_player_id player_id, ref_ptr<mob> mob, 
 	vector<status_info> statuses;
 	int16_t y = 0;
 	auto skill = channel_server::get_instance().get_skill_data_provider().get_skill(skill_id, level);
-	bool success = (skill_id == 0 ? false : (randomizer::percentage<uint16_t>() < skill->prop));
+	bool success = (skill_id == 0 ? false : (vana::util::randomizer::percentage<uint16_t>() < skill->prop));
 	if (mob->can_freeze()) {
 		// Freezing stuff
 		switch (skill_id) {
@@ -190,7 +190,7 @@ auto mob_handler::handle_mob_status(game_player_id player_id, ref_ptr<mob> mob, 
 				statuses.emplace_back(constant::status_effect::mob::freeze, constant::status_effect::mob::freeze, skill_id, seconds{skill->x});
 				break;
 		}
-		if ((game_logic_utilities::is_sword(weapon) || game_logic_utilities::is_mace(weapon)) && player->get_active_buffs()->has_ice_charge()) {
+		if ((vana::util::game_logic::item::is_sword(weapon) || vana::util::game_logic::item::is_mace(weapon)) && player->get_active_buffs()->has_ice_charge()) {
 			// Ice charges
 			auto source = player->get_active_buffs()->get_charge_source();
 			auto &buff_source = source.get();
@@ -225,10 +225,10 @@ auto mob_handler::handle_mob_status(game_player_id player_id, ref_ptr<mob> mob, 
 					game_damage min_damage = ((80 * part1 / 10 + part2) / 100) * v_atk;
 					game_damage max_damage = ((185 * part1 / 10 + part2) / 100) * v_atk;
 
-					damage = randomizer::rand<game_damage>(max_damage, min_damage);
+					damage = vana::util::randomizer::rand<game_damage>(max_damage, min_damage);
 
 					for (int8_t counter = 0; ((counter < hits) && (mob->get_venom_count() < constant::status_effect::mob::max_venom_count)); ++counter) {
-						success = (randomizer::percentage<uint16_t>() < venom->prop);
+						success = (vana::util::randomizer::percentage<uint16_t>() < venom->prop);
 						if (success) {
 							statuses.emplace_back(constant::status_effect::mob::venomous_weapon, damage, v_skill, venom->buff_time);
 							mob->add_status(player->get_id(), statuses);
@@ -344,7 +344,7 @@ auto mob_handler::handle_mob_status(game_player_id player_id, ref_ptr<mob> mob, 
 			statuses.emplace_back(constant::status_effect::mob::speed, skill->x, skill_id, skill->buff_time);
 			break;
 	}
-	if (game_logic_utilities::is_bow(weapon)) {
+	if (vana::util::game_logic::item::is_bow(weapon)) {
 		auto hamstring = player->get_active_buffs()->get_hamstring_source();
 		if (hamstring.is_initialized()) {
 			auto info = player->get_active_buffs()->get_buff_skill_info(hamstring.get());
@@ -354,7 +354,7 @@ auto mob_handler::handle_mob_status(game_player_id player_id, ref_ptr<mob> mob, 
 			}
 		}
 	}
-	else if (game_logic_utilities::is_crossbow(weapon)) {
+	else if (vana::util::game_logic::item::is_crossbow(weapon)) {
 		auto blind = player->get_active_buffs()->get_blind_source();
 		if (blind.is_initialized()) {
 			auto info = player->get_active_buffs()->get_buff_skill_info(blind.get());

@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "reactor.hpp"
-#include "common/database.hpp"
-#include "common/initialize_common.hpp"
-#include "common/string_utilities.hpp"
+#include "common/data/initialize.hpp"
+#include "common/io/database.hpp"
+#include "common/util/string.hpp"
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -28,7 +28,7 @@ namespace data {
 namespace provider {
 
 auto reactor::load_data() -> void {
-	std::cout << std::setw(initializing::output_width) << std::left << "Initializing Reactors... ";
+	std::cout << std::setw(vana::data::initialize::output_width) << std::left << "Initializing Reactors... ";
 
 	load_reactors();
 	load_states();
@@ -40,9 +40,9 @@ auto reactor::load_data() -> void {
 auto reactor::load_reactors() -> void {
 	m_reactor_info.clear();
 
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("reactor_data"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::reactor_data));
 
 	for (const auto &row : rs) {
 		data::type::reactor_info reactor;
@@ -50,7 +50,7 @@ auto reactor::load_reactors() -> void {
 		reactor.max_states = row.get<int8_t>("max_states");
 		reactor.link = row.get<game_reactor_id>("link");
 
-		utilities::str::run_flags(row.get<opt_string>("flags"), [&reactor](const string &cmp) {
+		vana::util::str::run_flags(row.get<opt_string>("flags"), [&reactor](const string &cmp) {
 			if (cmp == "remove_in_field_set") reactor.remove_in_field_set = true;
 			else if (cmp == "activate_by_touch") reactor.activate_by_touch = true;
 		});
@@ -60,9 +60,9 @@ auto reactor::load_reactors() -> void {
 }
 
 auto reactor::load_states() -> void {
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("reactor_events") << " ORDER BY reactorId, state ASC");
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::reactor_events) << " ORDER BY reactorId, state ASC");
 
 	for (const auto &row : rs) {
 		data::type::reactor_state_info state;
@@ -77,7 +77,7 @@ auto reactor::load_states() -> void {
 		state.next_state = row.get<int8_t>("next_state");
 		state.timeout = row.get<int32_t>("timeout");
 
-		utilities::str::run_enum(row.get<string>("event_type"), [&state](const string &cmp) {
+		vana::util::str::run_enum(row.get<string>("event_type"), [&state](const string &cmp) {
 			if (cmp == "plain_advance_state") state.type = 0;
 			else if (cmp == "no_clue") state.type = 0;
 			else if (cmp == "no_clue2") state.type = 0;
@@ -101,9 +101,9 @@ auto reactor::load_states() -> void {
 }
 
 auto reactor::load_trigger_skills() -> void {
-	auto &db = database::get_data_db();
+	auto &db = vana::io::database::get_data_db();
 	auto &sql = db.get_session();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table("reactor_event_trigger_skills"));
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << db.make_table(vana::data::table::reactor_event_trigger_skills));
 
 	for (const auto &row : rs) {
 		game_reactor_id id = row.get<game_reactor_id>("reactorid");

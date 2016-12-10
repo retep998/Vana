@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/packet_builder.hpp"
 #include "common/packet_reader.hpp"
 #include "common/packet_wrapper.hpp"
-#include "common/string_utilities.hpp"
+#include "common/util/string.hpp"
 #include "login_server/channel.hpp"
 #include "login_server/login_server.hpp"
 #include "login_server/login_server_accepted_session.hpp"
@@ -42,7 +42,7 @@ auto login_server_accept_handler::register_channel(ref_ptr<login_server_accepted
 	chan->set_external_ip_information(ip_value, reader.get<vector<external_ip>>());
 	chan->set_port(reader.get<connection_port>());
 	login_server::get_instance().get_worlds().get_world(world_id.get())->add_channel(chan_id, chan);
-	login_server::get_instance().log(log_type::server_connect, [&](out_stream &log) {
+	login_server::get_instance().log(vana::log::type::server_connect, [&](out_stream &log) {
 		log << "World " << static_cast<int32_t>(world_id.get()) << "; Channel " << static_cast<int32_t>(chan_id);
 	});
 }
@@ -70,7 +70,7 @@ auto login_server_accept_handler::remove_channel(ref_ptr<login_server_accepted_s
 	}
 
 	login_server::get_instance().get_worlds().get_world(world_id.get())->remove_channel(chan_id);
-	login_server::get_instance().log(log_type::server_disconnect, [&](out_stream &log) {
+	login_server::get_instance().log(vana::log::type::server_disconnect, [&](out_stream &log) {
 		log << "World " << static_cast<int32_t>(world_id.get()) << "; Channel " << static_cast<int32_t>(chan_id);
 	});
 }

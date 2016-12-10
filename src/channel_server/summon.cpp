@@ -66,7 +66,7 @@ summon::summon(game_summon_id id, game_skill_id summon_id, game_skill_level leve
 			break;
 		default:
 			// Might be a processing problem or it might be a hacking problem
-			channel_server::get_instance().log(log_type::malformed_packet, [&](out_stream &str) {
+			channel_server::get_instance().log(vana::log::type::malformed_packet, [&](out_stream &str) {
 				str << "Summon not accounted for in the types: " << summon_id;
 			});
 			break;
