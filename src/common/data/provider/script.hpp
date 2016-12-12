@@ -36,6 +36,8 @@ namespace vana {
 				auto has_quest_script(game_quest_id quest_id, int8_t state) const -> bool;
 				auto has_script(int32_t object_id, data::type::script_type type) const -> bool;
 				auto build_script_path(data::type::script_type type, const string &location) const -> string;
+
+				auto register_npc_script(game_npc_id npc_id, const string &script) -> void;
 			private:
 				auto resolve(data::type::script_type type) const -> const vector<pair<int32_t, string>> &;
 				auto resolve_path(data::type::script_type type) const -> string;

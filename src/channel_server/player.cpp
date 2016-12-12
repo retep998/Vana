@@ -50,6 +50,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "channel_server/mystic_door.hpp"
 #include "channel_server/npc.hpp"
 #include "channel_server/npc_handler.hpp"
+#include "channel_server/npc_packet.hpp"
 #include "channel_server/party.hpp"
 #include "channel_server/party_handler.hpp"
 #include "channel_server/pet.hpp"
@@ -406,6 +407,9 @@ auto player::player_connect(packet_reader &reader) -> void {
 	get_buddy_list()->check_for_pending_buddy();
 
 	send(packets::player::show_skill_macros(&skill_macros));
+	for (auto &packet : packets::npc::npc_set_script(channel_server::get_instance().get_config().npc_forced_script)) {
+		send(packet);
+	}
 
 	provider.add_player(shared_from_this());
 	maps::add_player(shared_from_this(), m_map);

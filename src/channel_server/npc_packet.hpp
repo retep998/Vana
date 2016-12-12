@@ -65,7 +65,8 @@ namespace vana {
 				PACKET(show_npc_effect, int32_t index, bool show = false);
 				PACKET(bought, uint8_t msg);
 				PACKET(show_shop, const shop_data &shop, game_slot_qty rechargeable_bonus);
-				PACKET(npc_chat, int8_t type, game_map_object npc_id, const string &text, bool exclude_text = false);
+				PACKET(npc_chat, int8_t type, game_npc_id npc_id, const string &text, bool exclude_text = false);
+				auto npc_set_script(const hash_map<game_npc_id, string> scripts) -> vector<packet_builder>;
 			}
 		}
 	}

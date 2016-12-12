@@ -205,8 +205,7 @@ auto channel_server::established_world_connection(game_channel_id channel_id, co
 	});
 
 	m_port = port;
-	m_config = config;
-	map::set_map_unload_time(config.map_unload_time);
+	set_config(config);
 	listen();
 	display_launch_time();
 }
@@ -349,6 +348,10 @@ auto channel_server::set_config(const config::world &config) -> void {
 	set_scrolling_header(config.scrolling_header);
 	if (config.map_unload_time != m_config.map_unload_time) {
 		map::set_map_unload_time(config.map_unload_time);
+	}
+
+	for (auto &kvp : config.npc_forced_script) {
+		m_script_data_provider.register_npc_script(kvp.first, kvp.second);
 	}
 	m_config = config;
 }

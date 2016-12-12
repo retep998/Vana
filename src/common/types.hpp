@@ -204,6 +204,12 @@ namespace vana {
 		chaos_high,
 	};
 
+	struct packet_date {
+		int16_t year;
+		int8_t month;
+		int8_t day;
+	};
+
 	using std::chrono::duration_cast;
 
 	// Miscellaneous utility types
