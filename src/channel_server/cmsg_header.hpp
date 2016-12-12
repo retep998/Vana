@@ -34,19 +34,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_EMOTE 0x32
 #define CMSG_ITEM_EFFECT 0x33
 #define CMSG_UPGRADE_TOMB_EFFECT 0x34
+// 0x36 does not exist?
+#define CMSG_BAN_MAP_BY_MOB 0x37 // int mapmobid; Triggered when mobs with banType == 1 hit you (for example, 9300160).
 #define CMSG_MONSTER_BOOK 0x38
 #define CMSG_NPC_TALK 0x39
+#define CMSG_REMOTE_MERCHANT_OPEN 0x3a // For 'Store Remote Controller', 5470000
 #define CMSG_NPC_TALK_CONT 0x3b // i.e. clicking next on NPC
 #define CMSG_SHOP 0x3c
 #define CMSG_STORAGE 0x3d
+#define CMSG_MERCHANT 0x3e
+#define CMSG_STORE_BANK 0x3f // For Fredrick / store bank responses
+#define CMSG_DUEY 0x40
+#define CMSG_SHOP_SCANNER 0x41
+#define CMSG_SHOP_LINK 0x42 // int ?, int ?
+#define CMSG_ADMIN_SHOP 0x43
+#define CMSG_INVENTORY_SLOT_MERGER 0x44 // int ticks, byte inventory
+#define CMSG_INVENTORY_SLOT_SORTER 0x45 // int ticks, byte inventory; Also known as 'gather'. It should be a little icon with three dashes (burger), but isnt rendered nor usable
 #define CMSG_ITEM_MOVE 0x46
 #define CMSG_ITEM_USE 0x47
 #define CMSG_ITEM_CANCEL 0x48
+#define CMSG_HEAL_BY_CHAIR 0x49 // Sent when you sit on a chair that heals you
 #define CMSG_SUMMON_BAG_USE 0x4a
 #define CMSG_PET_FOOD_USE 0x4b
+#define CMSG_MOUNT_FOOD_USE 0x4c // int ticks, short slot, int itemid; Item 2260000
 #define CMSG_USE_SCRIPT_ITEM 0x4d // For items that runs scripts
 #define CMSG_CASH_ITEM_USE 0x4e
+#define CMSG_DESTROY_PET_ITEM 0x4f // int ticks, long cashid; Sent when you try to open up a dead 'trail' pet, like the snail.
+#define CMSG_USE_BRIDLE_ITEM 0x50 // int ticks, short slot, int itemid, int mapmobid; Sent when using a bridle item (227000 and higher)
 #define CMSG_SKILLBOOK_USE 0x51
+#define CMSG_OWL_OF_MINERVA_USE 0x52 // byte slot; Sent when you open up the Owl of Minerva use item (2310000)
 #define CMSG_TELEPORT_ROCK_USE 0x53 // Only the one in your Use
 #define CMSG_TOWN_SCROLL_USE 0x54
 #define CMSG_SCROLL_USE 0x55
@@ -61,6 +77,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_FAME 0x5e
 #define CMSG_PLAYER_INFO 0x60
 #define CMSG_PET_SUMMON 0x61
+#define CMSG_CHECK_TEMPORARY_STAT_DURATION 0x62 // If you have temporary stats applied, the client will send this packet
 #define CMSG_MAP_CHANGE_SPECIAL 0x63
 #define CMSG_MAP_TELEPORT 0x64
 #define CMSG_TELEPORT_ROCK 0x65
@@ -102,7 +119,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_REACTOR_TOUCH 0xc4
 #define CMSG_PLAYER_UNK_MAP 0xc5 // It seems like the client sends 0xc5 and 0xd5 (as of .75) when it spawns on a map, but 0xc5 isn't sent if the change map packet error 38s the client while 0xd5 is sent
 #define CMSG_PLAYER_BOAT_MAP 0xd2 // Packet format [map ID:4] [?:1], seems like this gets sent when a player spawns on a boat map, the ? I got was never anything other than 0
-#define CMSG_PLAYER_UNK_MAP2 0xd5 // These almost seem like acknowledgement packets given the lack of any data
+#define CMSG_PARTY_SEARCH_START 0xd4 // int min_level, int max_level, int max_players, int jobflags
+#define CMSG_PARTY_SEARCH_STOP 0xd5
 #define CMSG_CASHSHOP_CHECK_CASH 0xda
 #define CMSG_CASHSHOP_REDEEM_COUPON 0xdc
 #define CMSG_CASHSHOP_OPERATION 0xdb

@@ -173,10 +173,12 @@ auto player::handle(packet_reader &reader) -> result {
 				case CMSG_PLAYER_MOB_DISTANCE:
 				case CMSG_PLAYER_UNK_MAP:
 				case CMSG_PLAYER_BOAT_MAP:
-				case CMSG_PLAYER_UNK_MAP2:
+				case CMSG_PARTY_SEARCH_START:
+				case CMSG_PARTY_SEARCH_STOP:
 				case CMSG_ADMIN_COMMAND_LOG:
 				case CMSG_BUFF_ACKNOWLEDGE:
 				case CMSG_MAP_TELEPORT:
+				case CMSG_CHECK_TEMPORARY_STAT_DURATION:
 					// Do nothing
 					break;
 				default:
