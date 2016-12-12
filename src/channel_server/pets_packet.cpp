@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/packet_reader.hpp"
 #include "common/session.hpp"
 #include "channel_server/maps.hpp"
+#include "channel_server/move_path.hpp"
 #include "channel_server/pet.hpp"
 #include "channel_server/player.hpp"
 #include "channel_server/smsg_header.hpp"
@@ -68,13 +69,13 @@ SPLIT_PACKET_IMPL(show_chat, game_player_id player_id, pet *pet, const string &m
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(show_movement, game_player_id player_id, pet *pet, unsigned char *buf, int32_t buf_len) {
+SPLIT_PACKET_IMPL(show_movement, game_player_id player_id, pet *pet, const move_path &path) {
 	split_packet_builder builder;
 	builder.map
 		.add<packet_header>(SMSG_PET_MOVEMENT)
 		.add<game_player_id>(player_id)
-		.add<int8_t>(pet->is_summoned() ? pet->get_index().get() : -1)
-		.add_buffer(buf, buf_len);
+		.add<int8_t>(pet->is_summoned() ? pet->get_index().get() : -1);
+	path.write_to_packet(builder.map);
 	return builder;
 }
 

@@ -1300,7 +1300,7 @@ auto map::show_objects(ref_ptr<player> player) -> void {
 	int32_t i = 0;
 	for (const auto &npc : m_npc_spawns) {
 		game_map_object id = i + map::npc_start;
-		player->send(packets::npc::show_npc(npc, id));
+		// No need to spawn the npc, because they are local and control request spawns it anyway
 		player->send(packets::npc::control_npc(npc, id));
 		i++;
 	}

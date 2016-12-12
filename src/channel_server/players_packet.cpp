@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/wide_point.hpp"
 #include "channel_server.hpp"
 #include "channel_server/maps.hpp"
+#include "channel_server/move_path.hpp"
 #include "channel_server/pet.hpp"
 #include "channel_server/player.hpp"
 #include "channel_server/player_data_provider.hpp"
@@ -35,13 +36,12 @@ namespace channel_server {
 namespace packets {
 namespace players {
 
-SPLIT_PACKET_IMPL(show_moving, game_player_id player_id, unsigned char *buf, size_t size) {
+SPLIT_PACKET_IMPL(show_moving, game_player_id player_id, const move_path &path) {
 	split_packet_builder builder;
 	builder.map
 		.add<packet_header>(SMSG_PLAYER_MOVEMENT)
-		.add<game_player_id>(player_id)
-		.unk<int32_t>()
-		.add_buffer(buf, size);
+		.add<game_player_id>(player_id);
+	path.write_to_packet(builder.map);
 	return builder;
 }
 

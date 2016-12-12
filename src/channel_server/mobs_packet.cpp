@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common/session.hpp"
 #include "common/wide_point.hpp"
 #include "channel_server/maps.hpp"
+#include "channel_server/move_path.hpp"
 #include "channel_server/mob.hpp"
 #include "channel_server/player.hpp"
 #include "channel_server/smsg_header.hpp"
@@ -95,7 +96,7 @@ PACKET_IMPL(mob_packet, ref_ptr<mob> value, int8_t summon_effect, ref_ptr<mob> o
 	}
 
 	builder
-		.unk<int8_t>(-1)
+		.add<int8_t>(-1) // Monster Carnival team
 		.unk<int32_t>();
 	return builder;
 }
@@ -122,7 +123,7 @@ PACKET_IMPL(move_mob_response, game_map_object map_mob_id, int16_t move_id, bool
 	return builder;
 }
 
-PACKET_IMPL(move_mob, game_map_object map_mob_id, bool skill_possible, int8_t raw_action, game_mob_skill_id skill, game_mob_skill_level level, int16_t option, unsigned char *buf, int32_t len) {
+PACKET_IMPL(move_mob, game_map_object map_mob_id, bool skill_possible, int8_t raw_action, game_mob_skill_id skill, game_mob_skill_level level, int16_t option, const move_path &path) {
 	packet_builder builder;
 	builder
 		.add<packet_header>(SMSG_MOB_CONTROL_MOVEMENT)
@@ -131,8 +132,9 @@ PACKET_IMPL(move_mob, game_map_object map_mob_id, bool skill_possible, int8_t ra
 		.add<int8_t>(raw_action)
 		.add<game_mob_skill_id>(skill)
 		.add<game_mob_skill_level>(level)
-		.add<int16_t>(option)
-		.add_buffer(buf, len);
+		.add<int16_t>(option);
+
+	path.write_to_packet(builder);
 	return builder;
 }
 

@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "channel_server/maps.hpp"
 #include "channel_server/mob.hpp"
 #include "channel_server/mobs_packet.hpp"
-#include "channel_server/movement_handler.hpp"
+#include "channel_server/move_path.hpp"
 #include "channel_server/player.hpp"
 #include "channel_server/player_data_provider.hpp"
 #include "channel_server/player_packet.hpp"
@@ -115,11 +115,10 @@ auto mob_handler::monster_control(ref_ptr<player> player, packet_reader &reader)
 	int16_t option = reader.get<int16_t>();
 	reader.unk<uint8_t>();
 	reader.unk<uint32_t>(); // 4 bytes of always 1 or always 0?
-	reader.unk<uint32_t>(); // Pos?
 
-	// TODO FIXME mob.get() - perhaps movement parsing should be on the MovableLife class itself?
-	movement_handler::parse_movement(mob.get(), reader);
-
+	move_path path(reader);
+	mob->reset_from_move_path(path);
+	
 	int8_t parsed_activity = raw_activity;
 	if (parsed_activity >= 0) {
 		parsed_activity = static_cast<int8_t>(static_cast<uint8_t>(parsed_activity) >> 1);
@@ -160,8 +159,8 @@ auto mob_handler::monster_control(ref_ptr<player> player, packet_reader &reader)
 	}
 
 	player->send(packets::mobs::move_mob_response(mob_id, move_id, next_movement_could_be_skill, mob->get_mp(), next_cast_skill, next_cast_skill_level));
-	reader.reset(19);
-	player->send_map(packets::mobs::move_mob(mob_id, next_movement_could_be_skill, raw_activity, use_skill_id, use_skill_level, option, reader.get_buffer(), reader.get_buffer_length()), true);
+	
+	player->send_map(packets::mobs::move_mob(mob_id, next_movement_could_be_skill, raw_activity, use_skill_id, use_skill_level, option, path), true);
 }
 
 auto mob_handler::handle_mob_status(game_player_id player_id, ref_ptr<mob> mob, game_skill_id skill_id, game_skill_level level, game_item_id weapon, int8_t hits, game_damage damage) -> int32_t {

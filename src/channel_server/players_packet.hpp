@@ -29,11 +29,12 @@ namespace vana {
 	struct wide_point;
 
 	namespace channel_server {
+		class move_path;
 		class player;
 
 		namespace packets {
 			namespace players {
-				SPLIT_PACKET(show_moving, game_player_id player_id, unsigned char *buf, size_t size);
+				SPLIT_PACKET(show_moving, game_player_id player_id, const move_path &move_path);
 				SPLIT_PACKET(face_expression, game_player_id player_id, int32_t face);
 				PACKET(show_chat, game_player_id player_id, bool is_gm, const string &msg, bool bubble_only);
 				SPLIT_PACKET(damage_player, game_player_id player_id, game_damage dmg, game_mob_id mob, uint8_t hit, int8_t type, uint8_t stance, game_skill_id no_damage_skill, const return_damage_data &pgmr);

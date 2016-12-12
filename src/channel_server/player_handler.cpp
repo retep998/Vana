@@ -40,7 +40,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "channel_server/mist.hpp"
 #include "channel_server/mob_handler.hpp"
 #include "channel_server/monster_book_packet.hpp"
-#include "channel_server/movement_handler.hpp"
+#include "channel_server/move_path.hpp"
 #include "channel_server/mystic_door.hpp"
 #include "channel_server/player.hpp"
 #include "channel_server/player_data_provider.hpp"
@@ -319,10 +319,12 @@ auto player_handler::handle_moving(ref_ptr<player> player, packet_reader &reader
 		// Portal count doesn't match, usually an indication of hacking
 		return;
 	}
-	reader.reset(11);
-	movement_handler::parse_movement(player.get(), reader);
-	reader.reset(11);
-	player->send_map(packets::players::show_moving(player->get_id(), reader.get_buffer(), reader.get_buffer_length()));
+
+	reader.unk<int32_t>();
+	
+	move_path path(reader);
+	player->reset_from_move_path(path);
+	player->send_map(packets::players::show_moving(player->get_id(), path));
 
 	if (player->get_foothold() == 0 && !player->is_using_gm_hide()) {
 		// Player is floating in the air

@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "channel_server/channel_server.hpp"
 #include "channel_server/map.hpp"
 #include "channel_server/maps.hpp"
-#include "channel_server/movement_handler.hpp"
+#include "channel_server/move_path.hpp"
 #include "channel_server/player.hpp"
 #include "channel_server/player_packet.hpp"
 #include "channel_server/summon.hpp"
@@ -147,18 +147,15 @@ auto summon_handler::show_summons(ref_ptr<player> from_player, ref_ptr<player> t
 auto summon_handler::move_summon(ref_ptr<player> player, packet_reader &reader) -> void {
 	game_summon_id summon_id = reader.get<game_summon_id>();
 
-	// I am not certain what this is, but in the Odin source they seemed to think it was original position. However, it caused AIDS.
-	reader.unk<uint32_t>();
-
 	summon *summon = player->get_summons()->get_summon(summon_id);
 	if (summon == nullptr || summon->get_movement_type() == summon::fixed) {
 		// Up to no good, lag, or something else
 		return;
 	}
 
-	movement_handler::parse_movement(summon, reader);
-	reader.reset(10);
-	player->send_map(packets::move_summon(player->get_id(), summon, summon->get_pos(), reader.get_buffer(), (reader.get_buffer_length() - 9)));
+	move_path path(reader);
+	summon->reset_from_move_path(path);
+	player->send_map(packets::move_summon(player->get_id(), summon, path), true);
 }
 
 auto summon_handler::damage_summon(ref_ptr<player> player, packet_reader &reader) -> void {

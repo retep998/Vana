@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "channel_server/inventory.hpp"
 #include "channel_server/inventory_packet.hpp"
 #include "channel_server/map.hpp"
-#include "channel_server/movement_handler.hpp"
+#include "channel_server/move_path.hpp"
 #include "channel_server/pet.hpp"
 #include "channel_server/pets_packet.hpp"
 #include "channel_server/player.hpp"
@@ -40,10 +40,9 @@ auto pet_handler::handle_movement(ref_ptr<player> player, packet_reader &reader)
 		return;
 	}
 
-	reader.unk<uint32_t>(); // Not ticks at all, not sure what this is
-	movement_handler::parse_movement(pet, reader);
-	reader.reset(10);
-	player->send_map(packets::pets::show_movement(player->get_id(), pet, reader.get_buffer(), reader.get_buffer_length() - 9));
+	move_path path(reader);
+	pet->reset_from_move_path(path);
+	player->send_map(packets::pets::show_movement(player->get_id(), pet, path));
 }
 
 auto pet_handler::handle_chat(ref_ptr<player> player, packet_reader &reader) -> void {

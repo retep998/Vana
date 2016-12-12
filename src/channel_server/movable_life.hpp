@@ -19,9 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "common/map_position.hpp"
 #include "common/point.hpp"
+#include "channel_server/move_path.hpp"
 
 namespace vana {
 	namespace channel_server {
+		class move_path;
+
 		// A base class for player, mobs that can move
 		class movable_life {
 			NONCOPYABLE(movable_life);
@@ -48,6 +51,10 @@ namespace vana {
 				m_stance = stance;
 				m_foothold = foothold;
 				m_pos = pos;
+			}
+
+			auto reset_from_move_path(const move_path &path) -> void {
+				reset_movement(path.get_new_foothold(), path.get_new_position(), path.get_new_stance());
 			}
 		protected:
 			auto set_stance(int8_t val) -> void { m_stance = val; }

@@ -27,6 +27,7 @@ namespace vana {
 	class packet_builder;
 
 	namespace channel_server {
+		class move_path;
 		class pet;
 		class player;
 
@@ -34,7 +35,7 @@ namespace vana {
 			namespace pets {
 				SPLIT_PACKET(pet_summoned, game_player_id player_id, pet *pet, bool kick = false, int8_t index = -1);
 				SPLIT_PACKET(show_chat, game_player_id player_id, pet *pet, const string &message, int8_t act);
-				SPLIT_PACKET(show_movement, game_player_id player_id, pet *pet, unsigned char *buf, int32_t buf_len);
+				SPLIT_PACKET(show_movement, game_player_id player_id, pet *pet, const move_path &path);
 				PACKET(show_animation, game_player_id player_id, pet *pet, int8_t animation);
 				PACKET(update_pet, pet *pet, item *pet_item);
 				SPLIT_PACKET(level_up, game_player_id player_id, pet *pet);

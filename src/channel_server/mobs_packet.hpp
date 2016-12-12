@@ -26,6 +26,7 @@ namespace vana {
 
 	namespace channel_server {
 		class mob;
+		class move_path;
 		class player;
 		struct status_info;
 
@@ -36,7 +37,7 @@ namespace vana {
 				PACKET(mob_packet, ref_ptr<mob> value, int8_t summon_effect, ref_ptr<mob> owner, mob_spawn_type spawn);
 				PACKET(end_control_mob, game_map_object map_mob_id);
 				PACKET(move_mob_response, game_map_object map_mob_id, int16_t move_id, bool skill_possible, int32_t mp, game_mob_skill_id skill, game_mob_skill_level level);
-				PACKET(move_mob, game_map_object map_mob_id, bool skill_possible, int8_t raw_action, game_mob_skill_id skill, game_mob_skill_level level, int16_t option, unsigned char *buf, int32_t len);
+				PACKET(move_mob, game_map_object map_mob_id, bool skill_possible, int8_t raw_action, game_mob_skill_id skill, game_mob_skill_level level, int16_t option, const move_path &path);
 				PACKET(heal_mob, game_map_object map_mob_id, int32_t amount);
 				PACKET(hurt_mob, game_map_object map_mob_id, game_damage amount);
 				PACKET(damage_friendly_mob, ref_ptr<mob> value, game_damage damage);

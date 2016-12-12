@@ -25,12 +25,13 @@ namespace vana {
 	struct point;
 
 	namespace channel_server {
+		class move_path;
 		class player;
 		class summon;
 
 		namespace packets {
 			SPLIT_PACKET(show_summon, game_player_id player_id, summon *summon, bool is_map_entry = true);
-			SPLIT_PACKET(move_summon, game_player_id player_id, summon *summon, const point &start_pos, unsigned char *buf, int32_t buf_len);
+			PACKET(move_summon, game_player_id player_id, summon *summon, const move_path &path);
 			SPLIT_PACKET(remove_summon, game_player_id player_id, summon *summon, int8_t message);
 			SPLIT_PACKET(damage_summon, game_player_id player_id, game_summon_id summon_id, int8_t unk, game_damage damage, game_map_object mob_id);
 			PACKET(summon_skill, game_player_id player_id, game_skill_id skill_id, uint8_t display, game_skill_level level);

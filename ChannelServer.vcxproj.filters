@@ -228,9 +228,6 @@
     <ClCompile Include="src\channel_server\mob_handler.cpp">
       <Filter>Handlers</Filter>
     </ClCompile>
-    <ClCompile Include="src\channel_server\movement_handler.cpp">
-      <Filter>Handlers</Filter>
-    </ClCompile>
     <ClCompile Include="src\channel_server\npc_handler.cpp">
       <Filter>Handlers</Filter>
     </ClCompile>
@@ -351,6 +348,9 @@
     <ClCompile Include="src\channel_server\map_factory.cpp">
       <Filter>Data Loading</Filter>
     </ClCompile>
+    <ClCompile Include="src\channel_server\move_path.cpp">
+      <Filter>ChannelServer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\channel_server\buffs.hpp">
@@ -426,9 +426,6 @@
       <Filter>Handlers</Filter>
     </ClInclude>
     <ClInclude Include="src\channel_server\mob_handler.hpp">
-      <Filter>Handlers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\channel_server\movement_handler.hpp">
       <Filter>Handlers</Filter>
     </ClInclude>
     <ClInclude Include="src\channel_server\npc_handler.hpp">
@@ -672,6 +669,9 @@
     </ClInclude>
     <ClInclude Include="src\channel_server\map_factory.hpp">
       <Filter>Data Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="src\channel_server\move_path.hpp">
+      <Filter>ChannelServer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
