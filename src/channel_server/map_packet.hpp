@@ -31,10 +31,21 @@ namespace vana {
 
 		namespace packets {
 			namespace map {
+
+				enum class portal_blocked_reason : int8_t {
+					no_reason = 0,
+					closed_for_now = 1, // Its a blocked map or portal is not enabled
+					cannot_go = 2, // Scroll used is not in same 'map category'
+					unable_to_approach_force_of_ground = 3,
+					no_teleport_to_or_on_this_map = 4,
+					unable_to_approach_force_of_ground_2 = 5, // Duplicate
+					cashshop_unavailable = 6,
+				};
+
 				PACKET(player_packet, ref_ptr<vana::channel_server::player> player);
 				PACKET(remove_player, game_player_id player_id);
 				PACKET(change_map, ref_ptr<vana::channel_server::player> player, bool spawn_by_position, const point &spawn_position);
-				PACKET(portal_blocked);
+				PACKET(portal_blocked, portal_blocked_reason reason);
 				PACKET(show_clock, int8_t hour, int8_t min, int8_t sec);
 				PACKET(show_timer, const seconds &sec);
 				PACKET(force_map_equip);
